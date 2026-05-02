@@ -1,0 +1,579 @@
+"""
+Persistent agentic crawl and ETL daemon for 211info.org.
+
+This module keeps a durable crawl queue, fetches pages through the optional
+ipfs_datasets_py unified web-archiving API when available, extracts service
+records, and exports normalized datasets after every run.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import os
+import re
+import sys
+import time
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Iterable
+from urllib.parse import urlparse
+
+import requests
+from bs4 import BeautifulSoup
+
+from .config import Config
+from .processor import DataProcessor
+from .storage import Storage
+from .utils import clean_text, extract_phone, normalise_url, same_domain, setup_logging
+
+logger = logging.getLogger("scraper.agentic_daemon")
+
+
+SERVICE_HINTS = {
+    "eligibility",
+    "hours",
+    "intake",
+    "service",
+    "program",
+    "phone",
+    "address",
+    "resources",
+    "food",
+    "housing",
+    "shelter",
+    "utility",
+    "mental health",
+    "transportation",
+}
+
+
+@dataclass
+class FetchResult:
+    """Provider-neutral page fetch result used by the daemon."""
+
+    url: str
+    title: str = ""
+    text: str = ""
+    html: str = ""
+    links: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    success: bool = True
+    errors: list[str] = field(default_factory=list)
+    quality_score: float = 0.0
+
+
+@dataclass
+class CrawlItem:
+    """Durable crawl queue item."""
+
+    url: str
+    depth: int = 0
+    kind: str = "page"
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class CrawlState:
+    """JSON-serializable daemon state."""
+
+    queue: list[CrawlItem] = field(default_factory=list)
+    seen_urls: set[str] = field(default_factory=set)
+    failed_urls: dict[str, int] = field(default_factory=dict)
+    active_url: str = ""
+    heartbeat_at: str = ""
+    last_progress_at: str = ""
+    processed_pages: int = 0
+    extracted_services: int = 0
+    errors: int = 0
+    strategy_generation: int = 0
+
+    @classmethod
+    def load(cls, path: Path) -> "CrawlState":
+        if not path.exists():
+            return cls()
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return cls(
+            queue=[CrawlItem(**item) for item in payload.get("queue", [])],
+            seen_urls=set(payload.get("seen_urls", [])),
+            failed_urls=dict(payload.get("failed_urls", {})),
+            active_url=str(payload.get("active_url", "")),
+            heartbeat_at=str(payload.get("heartbeat_at", "")),
+            last_progress_at=str(payload.get("last_progress_at", "")),
+            processed_pages=int(payload.get("processed_pages", 0)),
+            extracted_services=int(payload.get("extracted_services", 0)),
+            errors=int(payload.get("errors", 0)),
+            strategy_generation=int(payload.get("strategy_generation", 0)),
+        )
+
+    def save(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        payload = asdict(self)
+        payload["seen_urls"] = sorted(self.seen_urls)
+        payload["queue"] = [asdict(item) for item in self.queue]
+        path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+class WebArchivingAdapter:
+    """Fetch and archive pages through ipfs_datasets_py when available."""
+
+    def __init__(self, cfg: Config, archive_dir: Path | None = None) -> None:
+        self.cfg = cfg
+        self.archive_dir = archive_dir
+        self._api: Any | None = None
+        self._web_archive: Any | None = None
+        self._session = requests.Session()
+        self._session.headers.update(cfg.headers)
+        self._session.headers["User-Agent"] = (
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        )
+        self._load_optional_tools()
+
+    def _load_optional_tools(self) -> None:
+        if not external_tools_enabled():
+            logger.info("External ipfs_datasets tools disabled; using lightweight local fetch/archive")
+            return
+
+        repo_root = Path(__file__).resolve().parent.parent
+        local_ipfs = repo_root / "ipfs_datasets_py"
+        if (local_ipfs / "ipfs_datasets_py").exists() and str(local_ipfs) not in sys.path:
+            sys.path.insert(0, str(local_ipfs))
+
+        try:
+            from ipfs_datasets_py.processors.web_archiving import UnifiedWebArchivingAPI
+
+            self._api = UnifiedWebArchivingAPI()
+        except Exception as exc:
+            logger.info("Unified web archiving API unavailable; using requests fallback: %s", exc)
+
+        try:
+            from ipfs_datasets_py.processors.web_archiving import WebArchive
+
+            self._web_archive = WebArchive(storage_path=str(self.archive_dir) if self.archive_dir else None)
+        except Exception as exc:
+            logger.info("WebArchive unavailable; archive metadata will be file-only: %s", exc)
+
+    def fetch(self, url: str) -> FetchResult:
+        if self._api is not None:
+            try:
+                response = self._api.fetch(url, domain="general")
+                if response.success and response.document:
+                    doc = response.document
+                    links = list((doc.metadata or {}).get("links") or [])
+                    if not links and doc.html:
+                        links = extract_links(doc.html, doc.url)
+                    return FetchResult(
+                        url=doc.url,
+                        title=doc.title,
+                        text=doc.text,
+                        html=doc.html,
+                        links=links,
+                        metadata=dict(doc.metadata or {}),
+                        success=True,
+                        quality_score=float(response.quality_score or 0.0),
+                    )
+                errors = [err.message for err in response.errors]
+                logger.debug("Unified fetch failed for %s: %s", url, errors)
+            except Exception as exc:
+                logger.debug("Unified fetch exception for %s: %s", url, exc)
+
+        return self._fetch_with_requests(url)
+
+    def archive(self, result: FetchResult, metadata: dict[str, Any]) -> dict[str, Any]:
+        if self._web_archive is not None:
+            archive_result = self._web_archive.archive_url(result.url, metadata=metadata)
+            if archive_result.get("status") == "success":
+                return archive_result
+
+        if not self.archive_dir:
+            return {"status": "skipped"}
+        self.archive_dir.mkdir(parents=True, exist_ok=True)
+        archive_id = f"page_{abs(hash(result.url))}"
+        payload = {
+            "id": archive_id,
+            "url": result.url,
+            "title": result.title,
+            "text": result.text,
+            "metadata": metadata,
+            "timestamp": utc_now(),
+        }
+        path = self.archive_dir / f"{archive_id}.json"
+        path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        return {"status": "success", "archive_id": archive_id, "path": str(path)}
+
+    def _fetch_with_requests(self, url: str) -> FetchResult:
+        try:
+            response = self._session.get(url, timeout=self.cfg.timeout)
+            response.raise_for_status()
+            html = response.text
+            soup = BeautifulSoup(html, "lxml")
+            title = clean_text(soup.title.string) if soup.title else ""
+            for remove in soup.find_all(["script", "style", "nav", "footer", "header"]):
+                remove.decompose()
+            text = clean_text((soup.find("main") or soup.body or soup).get_text(separator=" "))
+            links = extract_links(html, response.url)
+            return FetchResult(
+                url=response.url,
+                title=title,
+                text=text,
+                html=html,
+                links=links,
+                metadata={"provider": "requests"},
+                success=True,
+                quality_score=1.0 if text else 0.4,
+            )
+        except Exception as exc:
+            return FetchResult(url=url, success=False, errors=[str(exc)], metadata={"provider": "requests"})
+
+
+class DatasetSink:
+    """Persist snapshots through dataset tools when available, else JSON."""
+
+    def __init__(self, output_dir: Path) -> None:
+        self.output_dir = output_dir
+        self._save_dataset: Any | None = None
+        self._load_optional_tool()
+
+    def _load_optional_tool(self) -> None:
+        if not external_tools_enabled():
+            logger.info("External dataset tools disabled; using JSON snapshot fallback")
+            return
+
+        repo_root = Path(__file__).resolve().parent.parent
+        local_ipfs = repo_root / "ipfs_datasets_py"
+        if (local_ipfs / "ipfs_datasets_py").exists() and str(local_ipfs) not in sys.path:
+            sys.path.insert(0, str(local_ipfs))
+        try:
+            from ipfs_datasets_py.mcp_server.tools.dataset_tools.save_dataset import save_dataset
+
+            self._save_dataset = save_dataset
+        except Exception as exc:
+            logger.info("Dataset save tool unavailable; using JSON snapshot fallback: %s", exc)
+
+    def save_snapshot(self, records: list[dict[str, Any]], destination: Path) -> dict[str, Any]:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "name": "211info-agentic-services",
+            "created_at": utc_now(),
+            "data": records,
+        }
+        if self._save_dataset is not None:
+            try:
+                import asyncio
+
+                return asyncio.run(
+                    self._save_dataset(payload, destination=str(destination), format="json")
+                )
+            except Exception as exc:
+                logger.debug("Dataset tool save failed; falling back to JSON: %s", exc)
+
+        destination.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        return {
+            "status": "success",
+            "destination": str(destination),
+            "format": "json",
+            "record_count": len(records),
+        }
+
+
+class AgenticCrawlerDaemon:
+    """Stateful crawler that continuously discovers, extracts, and ETLs."""
+
+    def __init__(
+        self,
+        cfg: Config,
+        *,
+        state_path: Path,
+        strategy_path: Path,
+        fetcher: WebArchivingAdapter | None = None,
+        dataset_sink: DatasetSink | None = None,
+    ) -> None:
+        self.cfg = cfg
+        self.state_path = state_path
+        self.strategy_path = strategy_path
+        self.storage = Storage(cfg.raw_dir, cfg.processed_dir)
+        self.processor = DataProcessor(cfg)
+        self.fetcher = fetcher or WebArchivingAdapter(cfg, archive_dir=cfg.raw_dir / "archive")
+        self.dataset_sink = dataset_sink or DatasetSink(cfg.processed_dir)
+
+    def run_once(self, *, seed_urls: Iterable[str], max_pages: int = 25) -> dict[str, Any]:
+        state = CrawlState.load(self.state_path)
+        strategy = self.load_strategy()
+        state.strategy_generation = int(strategy.get("generation", state.strategy_generation))
+        self._seed_queue(state, seed_urls)
+        processed_this_run = 0
+        raw_services: list[dict[str, Any]] = []
+
+        while state.queue and processed_this_run < max_pages:
+            item = state.queue.pop(0)
+            if item.url in state.seen_urls or self._is_blocked(item.url, strategy):
+                continue
+            state.active_url = item.url
+            state.heartbeat_at = utc_now()
+            state.save(self.state_path)
+
+            result = self.fetcher.fetch(item.url)
+            if not result.success:
+                state.errors += 1
+                state.failed_urls[item.url] = state.failed_urls.get(item.url, 0) + 1
+                continue
+
+            state.seen_urls.add(item.url)
+            state.processed_pages += 1
+            state.last_progress_at = utc_now()
+            processed_this_run += 1
+
+            archive_meta = {
+                "depth": item.depth,
+                "kind": item.kind,
+                "quality_score": result.quality_score,
+                "strategy_generation": state.strategy_generation,
+            }
+            archive_info = self.fetcher.archive(result, archive_meta)
+            page_record = self._page_record(result, item, archive_info)
+            self.storage.append_jsonl([page_record], "agentic_pages_raw.jsonl")
+
+            service = self._extract_service_record(result, item)
+            if service:
+                raw_services.append(service)
+                state.extracted_services += 1
+
+            self._enqueue_links(state, result, item.depth + 1, strategy)
+            state.active_url = ""
+            state.heartbeat_at = utc_now()
+            state.save(self.state_path)
+
+            delay = float(strategy.get("request_delay", self.cfg.request_delay))
+            if delay > 0:
+                time.sleep(delay)
+
+        if raw_services:
+            self.storage.append_jsonl(raw_services, "services_raw_agentic.jsonl")
+            clean = self.processor.process(raw_services)
+            self.processor.export(clean, "services_agentic")
+            self.dataset_sink.save_snapshot(clean, self.cfg.processed_dir / "services_agentic_dataset.json")
+
+        state.active_url = ""
+        state.heartbeat_at = utc_now()
+        state.save(self.state_path)
+        return {
+            "processed_pages": processed_this_run,
+            "extracted_services": len(raw_services),
+            "queue_remaining": len(state.queue),
+            "state_path": str(self.state_path),
+        }
+
+    def load_strategy(self) -> dict[str, Any]:
+        defaults = {
+            "generation": 0,
+            "max_depth": 3,
+            "request_delay": self.cfg.request_delay,
+            "allowed_hosts": ["www.211info.org", "211info.org", "gethelp.211info.org"],
+            "blocked_urls": [],
+            "target_terms": sorted(SERVICE_HINTS),
+        }
+        if not self.strategy_path.exists():
+            self.strategy_path.parent.mkdir(parents=True, exist_ok=True)
+            self.strategy_path.write_text(json.dumps(defaults, indent=2, sort_keys=True), encoding="utf-8")
+            return defaults
+        payload = json.loads(self.strategy_path.read_text(encoding="utf-8"))
+        return {**defaults, **payload}
+
+    def _seed_queue(self, state: CrawlState, seed_urls: Iterable[str]) -> None:
+        queued = {item.url for item in state.queue}
+        for url in seed_urls:
+            if url not in state.seen_urls and url not in queued:
+                state.queue.append(CrawlItem(url=url, depth=0, kind="seed"))
+                queued.add(url)
+
+    def _enqueue_links(
+        self,
+        state: CrawlState,
+        result: FetchResult,
+        next_depth: int,
+        strategy: dict[str, Any],
+    ) -> None:
+        if next_depth > int(strategy.get("max_depth", 3)):
+            return
+        queued = {item.url for item in state.queue}
+        ranked = rank_links(result.links, strategy.get("target_terms", []))
+        for url in ranked:
+            if url in queued or url in state.seen_urls or self._is_blocked(url, strategy):
+                continue
+            if not self._allowed_host(url, strategy):
+                continue
+            state.queue.append(CrawlItem(url=url, depth=next_depth, kind="discovered"))
+            queued.add(url)
+
+    def _allowed_host(self, url: str, strategy: dict[str, Any]) -> bool:
+        host = urlparse(url).netloc.lower()
+        allowed_hosts = {str(item).lower() for item in strategy.get("allowed_hosts", [])}
+        return not allowed_hosts or host in allowed_hosts
+
+    def _is_blocked(self, url: str, strategy: dict[str, Any]) -> bool:
+        blocked = {str(item) for item in strategy.get("blocked_urls", [])}
+        return url in blocked
+
+    def _page_record(
+        self,
+        result: FetchResult,
+        item: CrawlItem,
+        archive_info: dict[str, Any],
+    ) -> dict[str, Any]:
+        return {
+            "url": result.url,
+            "title": result.title,
+            "body_text": result.text,
+            "links": result.links,
+            "depth": item.depth,
+            "kind": item.kind,
+            "quality_score": result.quality_score,
+            "archive": archive_info,
+            "fetched_at": utc_now(),
+        }
+
+    def _extract_service_record(self, result: FetchResult, item: CrawlItem) -> dict[str, Any] | None:
+        haystack = f"{result.title} {result.text}".lower()
+        if not any(hint in haystack for hint in SERVICE_HINTS):
+            return None
+
+        phone = extract_phone(result.text) or ""
+        email = extract_email(result.text)
+        address = extract_address(result.text)
+        description = clean_text(result.text[:1200])
+        name = result.title or first_heading(result.html) or first_sentence(result.text)
+        categories = infer_categories(result.text)
+
+        if not name and not phone and not address:
+            return None
+
+        return {
+            "name": name,
+            "description": description,
+            "address": address,
+            "phone": phone,
+            "email": email,
+            "website": result.url,
+            "hours": extract_labeled_value(result.text, "hours"),
+            "eligibility": extract_labeled_value(result.text, "eligibility"),
+            "categories": categories,
+            "detail_url": result.url,
+            "category": item.metadata.get("category", ""),
+            "search_zip": item.metadata.get("zip", ""),
+        }
+
+
+def extract_links(html: str, base_url: str) -> list[str]:
+    soup = BeautifulSoup(html or "", "lxml")
+    links: list[str] = []
+    seen: set[str] = set()
+    for anchor in soup.find_all("a", href=True):
+        href = normalise_url(anchor["href"], base_url)
+        if href and href not in seen and same_domain(href, base_url):
+            links.append(href)
+            seen.add(href)
+    return links
+
+
+def rank_links(links: Iterable[str], target_terms: Iterable[str]) -> list[str]:
+    terms = [term.lower() for term in target_terms]
+
+    def score(url: str) -> tuple[int, str]:
+        lowered = url.lower().replace("-", " ")
+        return (sum(1 for term in terms if term in lowered), url)
+
+    return sorted(links, key=score, reverse=True)
+
+
+def extract_email(text: str) -> str:
+    match = re.search(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", text, re.IGNORECASE)
+    return match.group(0) if match else ""
+
+
+def extract_address(text: str) -> str:
+    match = re.search(
+        r"\b\d{1,6}\s+[A-Za-z0-9 .'-]+,\s*[A-Za-z .'-]+,\s*(?:OR|WA)\s+\d{5}(?:-\d{4})?\b",
+        text,
+    )
+    return clean_text(match.group(0)) if match else ""
+
+
+def extract_labeled_value(text: str, label: str) -> str:
+    pattern = rf"{re.escape(label)}\s*:?\s*(.{0,240})"
+    match = re.search(pattern, text, re.IGNORECASE)
+    return clean_text(match.group(1)) if match else ""
+
+
+def infer_categories(text: str) -> str:
+    lowered = text.lower()
+    categories = sorted(term for term in SERVICE_HINTS if term in lowered and len(term) > 3)
+    return ", ".join(categories[:8])
+
+
+def first_heading(html: str) -> str:
+    soup = BeautifulSoup(html or "", "lxml")
+    heading = soup.find(["h1", "h2", "h3"])
+    return clean_text(heading.get_text()) if heading else ""
+
+
+def first_sentence(text: str) -> str:
+    sentence = clean_text(text).split(".")[0]
+    return sentence[:120]
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def external_tools_enabled() -> bool:
+    raw = os.getenv("SCRAPER_ENABLE_IPFS_TOOLS", "").strip().lower()
+    return raw in {"1", "true", "yes", "on"}
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the persistent 211info agentic ETL daemon")
+    parser.add_argument("--once", action="store_true", help="Run one crawl/ETL pass and exit")
+    parser.add_argument("--interval", type=float, default=300.0, help="Seconds between daemon passes")
+    parser.add_argument("--max-pages", type=int, default=25, help="Maximum pages per pass")
+    parser.add_argument("--output-dir", type=Path, default=Path("data"), help="Output data directory")
+    parser.add_argument("--state-dir", type=Path, default=Path("data/state"), help="Daemon state directory")
+    parser.add_argument(
+        "--seed-url",
+        action="append",
+        dest="seed_urls",
+        default=[],
+        help="Seed URL. May be passed multiple times.",
+    )
+    parser.add_argument(
+        "--log-level",
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging verbosity",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    setup_logging(getattr(logging, args.log_level))
+    cfg = Config(raw_dir=args.output_dir / "raw", processed_dir=args.output_dir / "processed")
+    daemon = AgenticCrawlerDaemon(
+        cfg,
+        state_path=args.state_dir / "agentic_daemon_state.json",
+        strategy_path=args.state_dir / "daemon_strategy.json",
+    )
+    seeds = args.seed_urls or [cfg.base_url, cfg.gethelp_url]
+
+    while True:
+        result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages)
+        logger.info("Agentic daemon pass complete: %s", result)
+        if args.once:
+            break
+        time.sleep(args.interval)
+
+
+if __name__ == "__main__":
+    main()

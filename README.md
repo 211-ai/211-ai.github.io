@@ -103,6 +103,33 @@ This runs both the **static** (informational pages) and **browser** (search resu
 | `crawl` | BFS link-following crawl of the entire site |
 | `all` | Run `static` then `browser` (default) |
 
+### Agentic daemon + supervisor
+
+The batch CLI above is still the safest way to run a bounded scrape. For continuous
+discovery and ETL, this repo also includes a persistent agentic daemon with a
+self-healing supervisor:
+
+```bash
+# One bounded pass, useful for smoke tests
+python -m scraper.agentic_daemon --once --max-pages 25
+
+# Continuous crawl/ETL loop
+python -m scraper.agentic_daemon --interval 300 --max-pages 25
+
+# Monitor the daemon and rewrite its strategy when it stalls
+python -m scraper.supervisor --stale-seconds 600 --check-interval 30
+```
+
+The daemon writes heartbeat and queue state to `data/state/agentic_daemon_state.json`,
+strategy controls to `data/state/daemon_strategy.json`, raw pages to
+`data/raw/agentic_pages_raw.jsonl`, raw service candidates to
+`data/raw/services_raw_agentic.jsonl`, and normalized outputs to
+`data/processed/services_agentic.*`.
+
+By default the daemon uses lightweight local HTTP fetching and local JSON
+snapshots. To opt into the local `ipfs_datasets_py` unified web-archiving API and
+dataset save tool, set `SCRAPER_ENABLE_IPFS_TOOLS=true`.
+
 ---
 
 ### Common options
