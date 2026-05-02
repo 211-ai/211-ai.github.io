@@ -12,12 +12,18 @@ from functools import wraps
 from typing import Any, Callable, TypeVar
 from urllib.parse import urljoin, urlparse, urlunparse
 
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+try:
+    from tenacity import (
+        retry,
+        retry_if_exception_type,
+        stop_after_attempt,
+        wait_exponential,
+    )
+except ModuleNotFoundError:  # pragma: no cover - exercised only in minimal envs
+    retry = None
+    retry_if_exception_type = None
+    stop_after_attempt = None
+    wait_exponential = None
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -67,6 +73,27 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 def with_retry(max_attempts: int = 3, base_wait: float = 2.0) -> Callable[[F], F]:
     """Return a tenacity-based retry decorator with exponential backoff."""
+    if retry is None:
+        def decorator(func: F) -> F:
+            @wraps(func)
+            def wrapper(*args: Any, **kwargs: Any) -> Any:
+                last_exc: Exception | None = None
+                for attempt in range(1, max_attempts + 1):
+                    try:
+                        return func(*args, **kwargs)
+                    except Exception as exc:
+                        last_exc = exc
+                        if attempt >= max_attempts:
+                            raise
+                        time.sleep(base_wait * (2 ** (attempt - 1)))
+                if last_exc is not None:
+                    raise last_exc
+                raise RuntimeError("retry wrapper exited unexpectedly")
+
+            return wrapper  # type: ignore[return-value]
+
+        return decorator
+
     return retry(
         reraise=True,
         stop=stop_after_attempt(max_attempts),
