@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Bell,
   BarChart3,
@@ -24,6 +24,7 @@ import {
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
+  EasyBotCheckStatus,
   RegistrationProfileDraft,
   RouteId,
   UploadItem,
@@ -64,17 +65,145 @@ const secondaryRoutes: Array<{ id: RouteId; label: string; icon: typeof Home }> 
 
 const serviceNeeds = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation"];
 
+const shelterOptions = [
+  "Rose City Shelter",
+  "Downtown Outreach Shelter",
+  "Harbor Night Shelter",
+  "Northside Family Shelter"
+];
+
+type ShelterStaffAccount = {
+  id: string;
+  shelter: string;
+  displayName: string;
+  email: string;
+  verified: boolean;
+  updatedAt: string;
+};
+
+type ShelterUserAccount = {
+  id: string;
+  shelter: string;
+  legalName: string;
+  preferredName: string;
+  pronouns: string;
+  dateOfBirth: string;
+  photoAssetId: string;
+  phone: string;
+  email: string;
+  currentLocation: string;
+  preferredShelter: string;
+  serviceNeeds: string[];
+  easyBotCheckStatus: EasyBotCheckStatus;
+  captchaToken: string;
+  localPrecinctNotified: boolean;
+  foundPermanentHousing: boolean;
+  createdByStaffId: string;
+  createdAt: string;
+};
+
+const defaultManagedUserDraft = {
+  legalName: "",
+  preferredName: "",
+  pronouns: "",
+  dateOfBirth: "",
+  photoAssetId: "",
+  phone: "",
+  email: "",
+  currentLocation: "",
+  preferredShelter: "",
+  serviceNeeds: [] as string[],
+  easyBotCheckStatus: "pending" as EasyBotCheckStatus,
+  captchaToken: "",
+  localPrecinctNotified: false,
+  foundPermanentHousing: false
+};
+
 const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: string }> = [
   { id: "identity_minimum", label: "Minimum identity", detail: "Name, birth date, and contact status" },
   { id: "profile", label: "Profile", detail: "Basic profile details and service needs" },
   { id: "photo", label: "Photo", detail: "The account photo selected during setup" },
   { id: "current_location", label: "Current location", detail: "Most recent safe location or shelter" },
   { id: "uploaded_documents", label: "Uploads", detail: "Documents the user explicitly includes" },
+  { id: "missed_check_in", label: "Missed check-in", detail: "Whether a check-in was missed" },
+  { id: "found_permanent_housing", label: "Found permanent housing", detail: "Whether stable housing was reported" },
   { id: "medical_notes", label: "Medical notes", detail: "Sensitive health context" },
   { id: "shelter_history", label: "Shelter history", detail: "Shelter stays and staff contact details" },
   { id: "benefits_information", label: "Benefits information", detail: "Benefits identifiers and status" },
   { id: "custom", label: "Custom note", detail: "A user-written emergency note" }
 ];
+
+const APP_PERSIST_KEY = "abby-ui-state-v1";
+
+const defaultShelterChecklist = {
+  userPresent: false,
+  clearBrowserData: false,
+  auditLogConfirmed: false
+};
+
+type PersistedAppState = {
+  profile?: RegistrationProfileDraft;
+  policy?: typeof defaultCheckInPolicy;
+  recipients?: DisclosureRecipientDraft[];
+  uploads?: UploadItem[];
+  shelterStaffAccounts?: ShelterStaffAccount[];
+  shelterUserAccounts?: ShelterUserAccount[];
+  benefitsOptIn?: boolean;
+  analyticsOptIn?: Record<string, boolean>;
+  shelterChecklist?: typeof defaultShelterChecklist;
+};
+
+function readPersistedAppState(): PersistedAppState {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(APP_PERSIST_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? (parsed as PersistedAppState) : {};
+  } catch {
+    return {};
+  }
+}
+
+function toShortSummaryTitle(text: string): string {
+  const cleaned = text
+    .replace(/machine\s+summary\s*:\s*/gi, " ")
+    .replace(/[_-]+/g, " ")
+    .replace(/[^a-zA-Z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!cleaned) return "Uploaded document";
+
+  const words = cleaned
+    .split(" ")
+    .filter((word) => word.length > 1)
+    .slice(0, 4);
+  if (!words.length) return "Uploaded document";
+
+  const title = words
+    .map((word) => `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`)
+    .join(" ");
+  return title;
+}
+
+async function generateUploadSummary(file: File): Promise<string> {
+  try {
+    if (file.type.startsWith("text/")) {
+      return toShortSummaryTitle(await file.text());
+    }
+
+    if (file.type.startsWith("image/")) {
+      const { recognize } = await import("tesseract.js");
+      const result = await recognize(file, "eng");
+      return toShortSummaryTitle(result.data.text || file.name);
+    }
+  } catch {
+    // Fall through to a safe fallback summary when extraction/OCR fails.
+  }
+
+  const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, "");
+  return toShortSummaryTitle(fileNameWithoutExtension || "Uploaded document");
+}
 
 function getRouteFromHash(): RouteId {
   const route = window.location.hash.replace("#/", "") || "home";
@@ -82,15 +211,47 @@ function getRouteFromHash(): RouteId {
 }
 
 export function App() {
+  const persistedState = useMemo(readPersistedAppState, []);
   const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
-  const [profile, setProfile] = useState<RegistrationProfileDraft>(emptyRegistrationProfile);
-  const [policy, setPolicy] = useState(defaultCheckInPolicy);
-  const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(initialRecipients);
-  const [uploads, setUploads] = useState<UploadItem[]>(initialUploads);
+  const [profile, setProfile] = useState<RegistrationProfileDraft>(() => ({
+    ...emptyRegistrationProfile,
+    ...persistedState.profile
+  }));
+  const [policy, setPolicy] = useState(() => ({
+    ...defaultCheckInPolicy,
+    ...persistedState.policy
+  }));
+  const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() =>
+    Array.isArray(persistedState.recipients) ? persistedState.recipients : initialRecipients
+  );
+  const [uploads, setUploads] = useState<UploadItem[]>(() =>
+    Array.isArray(persistedState.uploads) ? persistedState.uploads : initialUploads
+  );
   const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
+  const [shelterStaffAccounts, setShelterStaffAccounts] = useState<ShelterStaffAccount[]>(() =>
+    Array.isArray(persistedState.shelterStaffAccounts) ? persistedState.shelterStaffAccounts : []
+  );
+  const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(() =>
+    Array.isArray(persistedState.shelterUserAccounts)
+      ? persistedState.shelterUserAccounts.map((account) => ({
+          ...account,
+          easyBotCheckStatus: (account.easyBotCheckStatus as EasyBotCheckStatus) ?? "pending",
+          localPrecinctNotified: Boolean(account.localPrecinctNotified),
+          foundPermanentHousing: Boolean(account.foundPermanentHousing)
+        }))
+      : []
+  );
   const [recipientVerified, setRecipientVerified] = useState(false);
-  const [benefitsOptIn, setBenefitsOptIn] = useState(false);
-  const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>({});
+  const [benefitsOptIn, setBenefitsOptIn] = useState(() => persistedState.benefitsOptIn ?? false);
+  const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() =>
+    persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"
+      ? persistedState.analyticsOptIn
+      : {}
+  );
+  const [shelterChecklist, setShelterChecklist] = useState(() => ({
+    ...defaultShelterChecklist,
+    ...persistedState.shelterChecklist
+  }));
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
@@ -98,6 +259,32 @@ export function App() {
     window.addEventListener("hashchange", syncRouteFromHash);
     return () => window.removeEventListener("hashchange", syncRouteFromHash);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const payload: PersistedAppState = {
+      profile,
+      policy,
+      recipients,
+      uploads,
+      shelterStaffAccounts,
+      shelterUserAccounts,
+      benefitsOptIn,
+      analyticsOptIn,
+      shelterChecklist
+    };
+    window.localStorage.setItem(APP_PERSIST_KEY, JSON.stringify(payload));
+  }, [
+    profile,
+    policy,
+    recipients,
+    uploads,
+    shelterStaffAccounts,
+    shelterUserAccounts,
+    benefitsOptIn,
+    analyticsOptIn,
+    shelterChecklist
+  ]);
 
   function navigate(route: RouteId) {
     window.location.hash = route === "home" ? "#/" : `#/${route}`;
@@ -182,7 +369,14 @@ export function App() {
         {activeRoute === "home" ? (
           <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} recipients={recipients} uploads={uploads} />
         ) : null}
-        {activeRoute === "register" ? <RegistrationScreen profile={profile} setProfile={setProfile} /> : null}
+        {activeRoute === "register" ? (
+          <RegistrationScreen
+            profile={profile}
+            setProfile={setProfile}
+            shelterStaffAccounts={shelterStaffAccounts}
+            setShelterStaffAccounts={setShelterStaffAccounts}
+          />
+        ) : null}
         {activeRoute === "check-in" ? (
           <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} setPolicy={setPolicy} />
         ) : null}
@@ -192,7 +386,16 @@ export function App() {
         ) : null}
         {activeRoute === "uploads" ? <UploadsScreen uploads={uploads} setUploads={setUploads} /> : null}
         {activeRoute === "social-services" ? <SocialServicesScreen /> : null}
-        {activeRoute === "shelter" ? <ShelterScreen /> : null}
+        {activeRoute === "shelter" ? (
+          <ShelterScreen
+            checklist={shelterChecklist}
+            setChecklist={setShelterChecklist}
+            shelterStaffAccounts={shelterStaffAccounts}
+            setShelterStaffAccounts={setShelterStaffAccounts}
+            shelterUserAccounts={shelterUserAccounts}
+            setShelterUserAccounts={setShelterUserAccounts}
+          />
+        ) : null}
         {activeRoute === "recipient-access" ? (
           <RecipientAccessScreen
             accessRequests={accessRequests}
@@ -266,28 +469,39 @@ function HomeScreen({
           title="Social services"
         />
       </div>
-      <div className="dashboard-grid">
-        <StatusPanel label="Next check-in" value={nextCheckIn} tone="teal" />
-        <StatusPanel label="Stored uploads" value={String(uploads.length)} tone="gold" />
-        <StatusPanel label="Sharing rules" value="Review due" tone="red" />
-      </div>
+      <button className="checkin-panel" onClick={() => navigate("check-in")}>
+        <div className="checkin-panel-icon"><CalendarCheck size={24} aria-hidden="true" /></div>
+        <div className="checkin-panel-text">
+          <span className="checkin-panel-label">Next check-in</span>
+          <span className="checkin-panel-value">{nextCheckIn}</span>
+        </div>
+        <span className="checkin-panel-cta">Check in now</span>
+      </button>
       <Section title="Quick actions">
         <div className="quick-actions">
-          <Button onClick={() => navigate("check-in")}>
-            <CalendarCheck size={18} /> Check in now
-          </Button>
           <Button onClick={() => navigate("sharing-rules")} variant="secondary">
             <ShieldCheck size={18} /> Review sharing
           </Button>
         </div>
       </Section>
+      <div className="home-footer">
+        <div className="home-footer-stat">
+          <small>Stored uploads</small>
+          <span>{uploads.length} file{uploads.length !== 1 ? "s" : ""}</span>
+        </div>
+        <div className="home-footer-divider" />
+        <div className="home-footer-stat">
+          <small>Sharing rules</small>
+          <button className="home-footer-link" onClick={() => navigate("sharing-rules")}>Review due</button>
+        </div>
+      </div>
     </div>
   );
 }
 
-function StatusPanel({ label, value, tone }: { label: string; value: string; tone: string }) {
+function StatusPanel({ label, value, tone, onClick }: { label: string; value: string; tone: string; onClick?: () => void }) {
   return (
-    <div className={`status-panel panel-${tone}`}>
+    <div className={`status-panel panel-${tone}${onClick ? " status-panel-clickable" : ""}`} onClick={onClick} role={onClick ? "button" : undefined} tabIndex={onClick ? 0 : undefined} onKeyDown={onClick ? (e) => (e.key === "Enter" || e.key === " ") && onClick() : undefined}>
       <small>{label}</small>
       <strong>{value}</strong>
     </div>
@@ -296,13 +510,80 @@ function StatusPanel({ label, value, tone }: { label: string; value: string; ton
 
 function RegistrationScreen({
   profile,
-  setProfile
+  setProfile,
+  shelterStaffAccounts,
+  setShelterStaffAccounts
 }: {
   profile: RegistrationProfileDraft;
   setProfile: (profile: RegistrationProfileDraft) => void;
+  shelterStaffAccounts: ShelterStaffAccount[];
+  setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
 }) {
-  const requiredMissing = !profile.legalName || !profile.dateOfBirth || !profile.photoAssetId || !profile.captchaToken;
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState("");
+  const [photoPreviewLabel, setPhotoPreviewLabel] = useState("");
+  const [showPhotoPreview, setShowPhotoPreview] = useState(false);
+  const [isShelterStaff, setIsShelterStaff] = useState(false);
+  const [selectedShelter, setSelectedShelter] = useState("");
+  const [shelterPin, setShelterPin] = useState("");
+  const [currentStaffAccountId, setCurrentStaffAccountId] = useState("");
+
+  const currentStaffAccount = shelterStaffAccounts.find((account) => account.id === currentStaffAccountId);
+  const staffVerified = Boolean(currentStaffAccount?.verified);
+
+  async function handleProfileUploadChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    update({ photoAssetId: file?.name ?? "" });
+
+    if (!file) {
+      setPhotoPreviewUrl("");
+      setPhotoPreviewLabel("");
+      setShowPhotoPreview(false);
+      return;
+    }
+
+    setShowPhotoPreview(false);
+
+    try {
+      if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+        const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
+        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+
+        const bytes = await file.arrayBuffer();
+        const pdf = await getDocument({ data: bytes }).promise;
+        const firstPage = await pdf.getPage(1);
+        const viewport = firstPage.getViewport({ scale: 1.2 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        if (!context) throw new Error("Canvas unavailable");
+
+        canvas.width = Math.ceil(viewport.width);
+        canvas.height = Math.ceil(viewport.height);
+        await firstPage.render({ canvas: canvas as HTMLCanvasElement, canvasContext: context, viewport }).promise;
+
+        setPhotoPreviewUrl(canvas.toDataURL("image/png"));
+        setPhotoPreviewLabel("PDF first page preview");
+        return;
+      }
+
+      if (file.type.startsWith("image/")) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+          setPhotoPreviewUrl(String(fileReader.result || ""));
+          setPhotoPreviewLabel("Selected image preview");
+        };
+        fileReader.readAsDataURL(file);
+        return;
+      }
+    } catch {
+      setPhotoPreviewUrl("");
+      setPhotoPreviewLabel("Preview unavailable for this file.");
+      return;
+    }
+
+    setPhotoPreviewUrl("");
+    setPhotoPreviewLabel("Preview unavailable for this file.");
+  }
 
   function toggleNeed(need: string) {
     update({
@@ -326,6 +607,9 @@ function RegistrationScreen({
         <Field help="Shown in the app when provided." label="Preferred name">
           <input value={profile.preferredName} onChange={(event) => update({ preferredName: event.target.value })} />
         </Field>
+        <Field help="e.g. she/her, he/him, they/them — optional and not shared without permission." label="Pronouns">
+          <input value={profile.pronouns} onChange={(event) => update({ pronouns: event.target.value })} />
+        </Field>
         <Field help="Required to distinguish people with similar names." label="Birth date" required>
           <input
             type="date"
@@ -333,14 +617,30 @@ function RegistrationScreen({
             onChange={(event) => update({ dateOfBirth: event.target.value })}
           />
         </Field>
-        <Field help="Use camera on mobile or upload a file on desktop." label="Account photo" required>
+        <Field help="Use camera on mobile, upload an image, or upload a PDF photo ID." label="Photo or photo ID" required>
           <input
-            accept="image/*"
+            accept="image/*,.pdf,application/pdf"
             capture="user"
             type="file"
-            onChange={(event) => update({ photoAssetId: event.target.files?.[0]?.name ?? "" })}
+            onChange={handleProfileUploadChange}
           />
+          {photoPreviewUrl ? (
+            <div className="photo-preview-toggle">
+              <button className="preview-toggle-button" onClick={() => setShowPhotoPreview(!showPhotoPreview)} type="button">
+                {showPhotoPreview ? "Hide preview" : "See preview"}
+              </button>
+              {showPhotoPreview ? (
+                <div className="photo-preview-card">
+                  <small>{photoPreviewLabel}</small>
+                  <img alt="Profile upload preview" src={photoPreviewUrl} />
+                </div>
+              ) : null}
+            </div>
+          ) : photoPreviewLabel ? (
+            <small>{photoPreviewLabel}</small>
+          ) : null}
         </Field>
+        <hr className="form-divider full-span" />
         <Field help="Used for text reminders if enabled." label="Phone">
           <input value={profile.phone} onChange={(event) => update({ phone: event.target.value })} />
         </Field>
@@ -350,7 +650,7 @@ function RegistrationScreen({
         <Field help="Can be a neighborhood, shelter, or general area." label="Current safe location">
           <input value={profile.currentLocation} onChange={(event) => update({ currentLocation: event.target.value })} />
         </Field>
-        <Field help="Optional; useful for assisted setup." label="Shelter affiliation">
+        <Field help="Optional; useful for assisted setup." label="Preferred shelter">
           <input
             value={profile.shelterAffiliation}
             onChange={(event) => update({ shelterAffiliation: event.target.value })}
@@ -374,24 +674,119 @@ function RegistrationScreen({
         </div>
         <label className="captcha-box full-span">
           <input
+            checked={profile.easyBotCheckStatus === "passed"}
+            onChange={(event) =>
+              update({ easyBotCheckStatus: event.target.checked ? "passed" : "failed", captchaToken: "" })
+            }
+            type="checkbox"
+          />
+          <span>Quick health check complete (step 1)</span>
+        </label>
+        <label className="captcha-box full-span">
+          <input
             checked={Boolean(profile.captchaToken)}
+            disabled={profile.easyBotCheckStatus !== "passed"}
             onChange={(event) => update({ captchaToken: event.target.checked ? "mock-captcha-token" : "" })}
             type="checkbox"
           />
-          <span>Bot check complete</span>
+          <span>Bot check complete (step 2)</span>
         </label>
+        <label className="consent-box full-span">
+          <input
+            checked={isShelterStaff}
+            onChange={(event) => {
+              const checked = event.target.checked;
+              setIsShelterStaff(checked);
+              if (!checked) {
+                setSelectedShelter("");
+                setShelterPin("");
+                setCurrentStaffAccountId("");
+              }
+            }}
+            type="checkbox"
+          />
+          <span>
+            <strong>I am shelter staff</strong>
+          </span>
+        </label>
+        {isShelterStaff ? (
+          <div className="shelter-staff-panel full-span">
+            <Field help="Choose the shelter where you currently work." label="Shelter" required>
+              <select
+                value={selectedShelter}
+                onChange={(event) => {
+                  setSelectedShelter(event.target.value);
+                  setCurrentStaffAccountId("");
+                }}
+              >
+                <option value="">Select shelter</option>
+                {shelterOptions.map((shelter) => (
+                  <option key={shelter} value={shelter}>
+                    {shelter}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field help="Enter your assigned shelter staff PIN to verify this account." label="Shelter staff PIN" required>
+              <input
+                placeholder="Enter PIN"
+                value={shelterPin}
+                onChange={(event) => setShelterPin(event.target.value)}
+              />
+            </Field>
+            <div>
+              <Button
+                disabled={!selectedShelter || !shelterPin.trim()}
+                onClick={() => {
+                  const displayName = profile.preferredName || profile.legalName || "Shelter staff";
+                  const emailKey = profile.email.trim().toLowerCase();
+                  const existingAccount = shelterStaffAccounts.find(
+                    (account) =>
+                      account.shelter === selectedShelter &&
+                      ((emailKey && account.email.toLowerCase() === emailKey) ||
+                        (!emailKey && account.displayName.toLowerCase() === displayName.toLowerCase()))
+                  );
+
+                  if (existingAccount) {
+                    const updated = shelterStaffAccounts.map((account) =>
+                      account.id === existingAccount.id
+                        ? {
+                            ...account,
+                            displayName,
+                            email: profile.email,
+                            verified: true,
+                            updatedAt: new Date().toISOString()
+                          }
+                        : account
+                    );
+                    setShelterStaffAccounts(updated);
+                    setCurrentStaffAccountId(existingAccount.id);
+                    return;
+                  }
+
+                  const createdAccount: ShelterStaffAccount = {
+                    id: `staff-${Date.now()}`,
+                    shelter: selectedShelter,
+                    displayName,
+                    email: profile.email,
+                    verified: true,
+                    updatedAt: new Date().toISOString()
+                  };
+                  setShelterStaffAccounts([...shelterStaffAccounts, createdAccount]);
+                  setCurrentStaffAccountId(createdAccount.id);
+                }}
+                type="button"
+              >
+                Verify shelter staff
+              </Button>
+              {staffVerified ? <small className="pin-request-note">Shelter staff verified.</small> : null}
+              {!staffVerified && currentStaffAccountId ? (
+                <small className="pin-request-note">Verification revoked by shelter administrator.</small>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </form>
-      <Section title="Profile review">
-        <div className="review-list">
-          <ReviewRow label="Name" value={profile.legalName || "Required"} />
-          <ReviewRow label="Birth date" value={profile.dateOfBirth || "Required"} />
-          <ReviewRow label="Photo" value={profile.photoAssetId || "Required"} />
-          <ReviewRow label="Needs" value={profile.serviceNeeds.join(", ") || "None selected"} />
-        </div>
-        <Button disabled={requiredMissing}>
-          <ShieldCheck size={18} /> Create profile draft
-        </Button>
-      </Section>
     </div>
   );
 }
@@ -497,7 +892,7 @@ function ContactsScreen({
         agencyName: "",
         precinctName: "",
         verified: false,
-        allowedScopes: []
+        allowedScopes: ["identity_minimum", "photo"]
       }
     ]);
     setDraft({ displayName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
@@ -507,6 +902,7 @@ function ContactsScreen({
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Emergency contacts</p>
+<<<<<<< Updated upstream
         <h1>People and agencies</h1>
       </div>
       <div className="list-stack">
@@ -532,6 +928,9 @@ function ContactsScreen({
             </Button>
           </article>
         ))}
+=======
+        <h1>People and services</h1>
+>>>>>>> Stashed changes
       </div>
       <Section title="Add recipient">
         <form className="form-grid" onSubmit={addRecipient}>
@@ -566,6 +965,29 @@ function ContactsScreen({
           </div>
         </form>
       </Section>
+      <div className="list-stack">
+        {recipients.map((recipient) => (
+          <article className="list-item" key={recipient.id}>
+            <div>
+              <h3>{recipient.displayName}</h3>
+              <p>{recipient.relationship || recipient.agencyName || recipient.type.replace("_", " ")}</p>
+              <div className="badge-row">
+                <Badge tone={recipient.verified ? "success" : "warning"}>
+                  {recipient.verified ? "Verified" : "Needs verification"}
+                </Badge>
+                <Badge>{recipient.allowedScopes.length} scopes</Badge>
+              </div>
+            </div>
+            <Button
+              ariaLabel={`Remove ${recipient.displayName}`}
+              onClick={() => setRecipients(recipients.filter((item) => item.id !== recipient.id))}
+              variant="quiet"
+            >
+              Remove
+            </Button>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
@@ -638,13 +1060,15 @@ function UploadsScreen({
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
-  function addUpload(fileName: string) {
-    if (!fileName) return;
+  async function addUpload(file: File | null) {
+    if (!file) return;
+    const machineSummary = await generateUploadSummary(file);
     setUploads([
       ...uploads,
       {
         id: `up-${Date.now()}`,
-        fileName,
+        fileName: file.name,
+        machineSummary,
         category: "Uncategorized",
         sensitivity: "high",
         status: "stored",
@@ -669,7 +1093,7 @@ function UploadsScreen({
           </span>
           <input
             type="file"
-            onChange={(event) => addUpload(event.target.files?.[0]?.name ?? "")}
+            onChange={(event) => addUpload(event.target.files?.[0] ?? null)}
             aria-label="Choose file to upload"
           />
         </label>
@@ -680,6 +1104,7 @@ function UploadsScreen({
             <div>
               <h3>{upload.fileName}</h3>
               <p>{upload.category}</p>
+              <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
               <div className="badge-row">
                 <Badge tone="success">{upload.status}</Badge>
                 <Badge tone="warning">{upload.sensitivity}</Badge>
@@ -747,7 +1172,112 @@ function SocialServicesScreen() {
   );
 }
 
-function ShelterScreen() {
+function ShelterScreen({
+  checklist,
+  setChecklist,
+  shelterStaffAccounts,
+  setShelterStaffAccounts,
+  shelterUserAccounts,
+  setShelterUserAccounts
+}: {
+  checklist: typeof defaultShelterChecklist;
+  setChecklist: (value: typeof defaultShelterChecklist) => void;
+  shelterStaffAccounts: ShelterStaffAccount[];
+  setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
+  shelterUserAccounts: ShelterUserAccount[];
+  setShelterUserAccounts: (accounts: ShelterUserAccount[]) => void;
+}) {
+  const [isShelterAdmin, setIsShelterAdmin] = useState(false);
+  const [adminShelter, setAdminShelter] = useState(shelterOptions[0]);
+  const [operatorShelter, setOperatorShelter] = useState(shelterOptions[0]);
+  const [operatorStaffId, setOperatorStaffId] = useState("");
+  const [userDraft, setUserDraft] = useState(defaultManagedUserDraft);
+  const [staffDraft, setStaffDraft] = useState({ displayName: "", email: "" });
+
+  const staffForShelter = shelterStaffAccounts.filter((account) => account.shelter === adminShelter);
+  const verifiedStaffForOperatorShelter = shelterStaffAccounts.filter(
+    (account) => account.shelter === operatorShelter && account.verified
+  );
+  const selectedOperator = shelterStaffAccounts.find((account) => account.id === operatorStaffId && account.verified);
+  const usersForOperatorShelter = shelterUserAccounts.filter((account) => account.shelter === operatorShelter);
+  const oversightShelter = isShelterAdmin ? adminShelter : operatorShelter;
+
+  function accountSortByHousingThenDate(a: ShelterUserAccount, b: ShelterUserAccount) {
+    if (a.foundPermanentHousing !== b.foundPermanentHousing) {
+      return a.foundPermanentHousing ? 1 : -1;
+    }
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  }
+
+  const staffRegisteredUsersForShelter = shelterUserAccounts
+    .filter((account) => account.shelter === oversightShelter)
+    .sort(accountSortByHousingThenDate);
+
+  const preferredShelterMentionUsers = shelterUserAccounts
+    .filter(
+      (account) =>
+        account.shelter !== oversightShelter &&
+        account.preferredShelter.toLowerCase().includes(oversightShelter.toLowerCase())
+    )
+    .sort(accountSortByHousingThenDate);
+
+  function toggleManagedUserNeed(need: string) {
+    setUserDraft((prev) => ({
+      ...prev,
+      serviceNeeds: prev.serviceNeeds.includes(need)
+        ? prev.serviceNeeds.filter((item) => item !== need)
+        : [...prev.serviceNeeds, need]
+    }));
+  }
+
+  function createManagedUserAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const hasRequiredIdentity = userDraft.legalName.trim() && userDraft.photoAssetId;
+    const botCheckReady =
+      userDraft.easyBotCheckStatus === "failed" ||
+      (userDraft.easyBotCheckStatus === "passed" && Boolean(userDraft.captchaToken));
+    if (!selectedOperator || !hasRequiredIdentity || !botCheckReady) return;
+
+    const newUser: ShelterUserAccount = {
+      id: `user-${Date.now()}`,
+      shelter: operatorShelter,
+      legalName: userDraft.legalName.trim(),
+      preferredName: userDraft.preferredName.trim(),
+      pronouns: userDraft.pronouns.trim(),
+      dateOfBirth: userDraft.dateOfBirth,
+      photoAssetId: userDraft.photoAssetId,
+      phone: userDraft.phone.trim(),
+      email: userDraft.email.trim(),
+      currentLocation: userDraft.currentLocation.trim(),
+      preferredShelter: userDraft.preferredShelter.trim(),
+      serviceNeeds: userDraft.serviceNeeds,
+      easyBotCheckStatus: userDraft.easyBotCheckStatus,
+      captchaToken: userDraft.captchaToken,
+      localPrecinctNotified: userDraft.localPrecinctNotified,
+      foundPermanentHousing: userDraft.foundPermanentHousing,
+      createdByStaffId: selectedOperator.id,
+      createdAt: new Date().toISOString()
+    };
+    setShelterUserAccounts([...shelterUserAccounts, newUser]);
+    setUserDraft(defaultManagedUserDraft);
+  }
+
+  function createStaffAccount(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedOperator || !staffDraft.displayName.trim()) return;
+
+    const newStaff: ShelterStaffAccount = {
+      id: `staff-${Date.now()}`,
+      shelter: operatorShelter,
+      displayName: staffDraft.displayName.trim(),
+      email: staffDraft.email.trim(),
+      verified: false,
+      updatedAt: new Date().toISOString()
+    };
+    setShelterStaffAccounts([...shelterStaffAccounts, newStaff]);
+    setStaffDraft({ displayName: "", email: "" });
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -768,18 +1298,354 @@ function ShelterScreen() {
           </button>
         </div>
       </Section>
+      <Section title="Verified staff workspace">
+        <div className="shelter-staff-panel">
+          <Field label="Shelter" required>
+            <select
+              value={operatorShelter}
+              onChange={(event) => {
+                setOperatorShelter(event.target.value);
+                setOperatorStaffId("");
+              }}
+            >
+              {shelterOptions.map((shelter) => (
+                <option key={shelter} value={shelter}>
+                  {shelter}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field help="Only verified staff can create accounts." label="Verified staff operator" required>
+            <select value={operatorStaffId} onChange={(event) => setOperatorStaffId(event.target.value)}>
+              <option value="">Select verified staff</option>
+              {verifiedStaffForOperatorShelter.map((staff) => (
+                <option key={staff.id} value={staff.id}>
+                  {staff.displayName}
+                </option>
+              ))}
+            </select>
+          </Field>
+          {!selectedOperator ? (
+            <small className="pin-request-note">Select a verified staff operator to create client or staff accounts.</small>
+          ) : (
+            <>
+              <Section title="Create user account">
+                <form className="form-grid" onSubmit={createManagedUserAccount}>
+                  <Field label="Legal or full name" required>
+                    <input
+                      value={userDraft.legalName}
+                      onChange={(event) => setUserDraft({ ...userDraft, legalName: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Preferred name">
+                    <input
+                      value={userDraft.preferredName}
+                      onChange={(event) => setUserDraft({ ...userDraft, preferredName: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Pronouns">
+                    <input
+                      value={userDraft.pronouns}
+                      onChange={(event) => setUserDraft({ ...userDraft, pronouns: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Birth date">
+                    <input
+                      type="date"
+                      value={userDraft.dateOfBirth}
+                      onChange={(event) => setUserDraft({ ...userDraft, dateOfBirth: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Photo or photo ID" required>
+                    <input
+                      accept="image/*,.pdf,application/pdf"
+                      capture="user"
+                      type="file"
+                      onChange={(event) =>
+                        setUserDraft({ ...userDraft, photoAssetId: event.target.files?.[0]?.name ?? "" })
+                      }
+                    />
+                  </Field>
+                  <Field label="Phone">
+                    <input
+                      value={userDraft.phone}
+                      onChange={(event) => setUserDraft({ ...userDraft, phone: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Email">
+                    <input
+                      type="email"
+                      value={userDraft.email}
+                      onChange={(event) => setUserDraft({ ...userDraft, email: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Current safe location">
+                    <input
+                      value={userDraft.currentLocation}
+                      onChange={(event) => setUserDraft({ ...userDraft, currentLocation: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Preferred shelter">
+                    <input
+                      value={userDraft.preferredShelter}
+                      onChange={(event) => setUserDraft({ ...userDraft, preferredShelter: event.target.value })}
+                    />
+                  </Field>
+                  <label className="captcha-box full-span">
+                    <input
+                      checked={userDraft.easyBotCheckStatus === "passed"}
+                      onChange={(event) =>
+                        setUserDraft({
+                          ...userDraft,
+                          easyBotCheckStatus: event.target.checked ? "passed" : "failed",
+                          captchaToken: ""
+                        })
+                      }
+                      type="checkbox"
+                    />
+                    <span>Quick health check complete (step 1)</span>
+                  </label>
+                  <div className="full-span">
+                    <span className="field-label">Service needs</span>
+                    <div className="chip-grid">
+                      {serviceNeeds.map((need) => (
+                        <button
+                          aria-pressed={userDraft.serviceNeeds.includes(need)}
+                          className="choice-chip"
+                          key={need}
+                          onClick={() => toggleManagedUserNeed(need)}
+                          type="button"
+                        >
+                          {need}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <label className="captcha-box full-span">
+                    <input
+                      checked={Boolean(userDraft.captchaToken)}
+                      disabled={userDraft.easyBotCheckStatus !== "passed"}
+                      onChange={(event) =>
+                        setUserDraft({ ...userDraft, captchaToken: event.target.checked ? "mock-captcha-token" : "" })
+                      }
+                      type="checkbox"
+                    />
+                    <span>Bot check complete (step 2)</span>
+                  </label>
+                  <label className="consent-box full-span">
+                    <input
+                      checked={userDraft.localPrecinctNotified}
+                      onChange={(event) => setUserDraft({ ...userDraft, localPrecinctNotified: event.target.checked })}
+                      type="checkbox"
+                    />
+                    <span>
+                      <strong>Local precinct notified as emergency contact</strong>
+                    </span>
+                  </label>
+                  <label className="consent-box full-span">
+                    <input
+                      checked={userDraft.foundPermanentHousing}
+                      onChange={(event) => setUserDraft({ ...userDraft, foundPermanentHousing: event.target.checked })}
+                      type="checkbox"
+                    />
+                    <span>
+                      <strong>Found permanent housing</strong>
+                    </span>
+                  </label>
+                  <div className="full-span">
+                    <Button
+                      disabled={
+                        !userDraft.legalName.trim() ||
+                        !userDraft.photoAssetId ||
+                        (userDraft.easyBotCheckStatus === "pending") ||
+                        (userDraft.easyBotCheckStatus === "passed" && !userDraft.captchaToken)
+                      }
+                      type="submit"
+                    >
+                      Create user account
+                    </Button>
+                  </div>
+                </form>
+              </Section>
+
+              <Section title="Create staff account">
+                <form className="form-grid" onSubmit={createStaffAccount}>
+                  <Field label="Staff name" required>
+                    <input
+                      value={staffDraft.displayName}
+                      onChange={(event) => setStaffDraft({ ...staffDraft, displayName: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Staff email">
+                    <input
+                      type="email"
+                      value={staffDraft.email}
+                      onChange={(event) => setStaffDraft({ ...staffDraft, email: event.target.value })}
+                    />
+                  </Field>
+                  <div className="full-span">
+                    <Button type="submit">Create staff account</Button>
+                  </div>
+                </form>
+              </Section>
+
+              <div className="list-stack">
+                {usersForOperatorShelter.length ? (
+                  usersForOperatorShelter.map((account) => (
+                    <article className="list-item" key={account.id}>
+                      <div>
+                        <h3>{account.preferredName || account.legalName}</h3>
+                        <p>{account.legalName}</p>
+                        <small>
+                          Created by {shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"}
+                          {account.dateOfBirth ? ` · DOB ${account.dateOfBirth}` : ""}
+                        </small>
+                      </div>
+                      <Badge>User account</Badge>
+                    </article>
+                  ))
+                ) : (
+                  <small>No user accounts created for this shelter yet.</small>
+                )}
+              </div>
+
+              <Section title="Shelter user oversight">
+                <div className="list-stack">
+                  {staffRegisteredUsersForShelter.length ? (
+                    staffRegisteredUsersForShelter.map((account) => (
+                      <article className="list-item" key={`overview-${account.id}`}>
+                        <div>
+                          <h3>{account.preferredName || account.legalName}</h3>
+                          <p>{account.legalName}</p>
+                          <div className="badge-row">
+                            <Badge tone={account.localPrecinctNotified ? "success" : "warning"}>
+                              {account.localPrecinctNotified ? "Precinct notified" : "Precinct not notified"}
+                            </Badge>
+                            <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
+                              {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
+                            </Badge>
+                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                          </div>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <small>No shelter-registered users for this shelter yet.</small>
+                  )}
+                </div>
+                <div className="list-stack">
+                  {preferredShelterMentionUsers.length ? (
+                    preferredShelterMentionUsers.map((account) => (
+                      <article className="list-item" key={`preferred-${account.id}`}>
+                        <div>
+                          <h3>{account.preferredName || account.legalName}</h3>
+                          <p>{account.legalName}</p>
+                          <div className="badge-row">
+                            <Badge tone={account.localPrecinctNotified ? "success" : "warning"}>
+                              {account.localPrecinctNotified ? "Precinct notified" : "Precinct not notified"}
+                            </Badge>
+                            <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
+                              {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
+                            </Badge>
+                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                          </div>
+                        </div>
+                      </article>
+                    ))
+                  ) : (
+                    <small>No users listed this shelter as preferred shelter.</small>
+                  )}
+                </div>
+              </Section>
+            </>
+          )}
+        </div>
+      </Section>
       <Section title="Shared-device safety">
         <div className="checklist">
           <label>
-            <input type="checkbox" /> Confirm user is present for assisted setup
+            <input
+              checked={checklist.userPresent}
+              onChange={(event) => setChecklist({ ...checklist, userPresent: event.target.checked })}
+              type="checkbox"
+            />{" "}
+            Confirm user is present for assisted setup
           </label>
           <label>
-            <input type="checkbox" /> Clear browser data after shared-device session
+            <input
+              checked={checklist.clearBrowserData}
+              onChange={(event) => setChecklist({ ...checklist, clearBrowserData: event.target.checked })}
+              type="checkbox"
+            />{" "}
+            Clear browser data after shared-device session
           </label>
           <label>
-            <input type="checkbox" /> Staff action will be added to the audit log
+            <input
+              checked={checklist.auditLogConfirmed}
+              onChange={(event) => setChecklist({ ...checklist, auditLogConfirmed: event.target.checked })}
+              type="checkbox"
+            />{" "}
+            Staff action will be added to the audit log
           </label>
         </div>
+      </Section>
+      <Section title="Shelter administrator">
+        <label className="consent-box">
+          <input
+            checked={isShelterAdmin}
+            onChange={(event) => setIsShelterAdmin(event.target.checked)}
+            type="checkbox"
+          />
+          <span>
+            <strong>I am shelter administrator</strong>
+          </span>
+        </label>
+        {isShelterAdmin ? (
+          <div className="shelter-staff-panel">
+            <Field label="Shelter" required>
+              <select value={adminShelter} onChange={(event) => setAdminShelter(event.target.value)}>
+                {shelterOptions.map((shelter) => (
+                  <option key={shelter} value={shelter}>
+                    {shelter}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <div className="list-stack">
+              {staffForShelter.length ? (
+                staffForShelter.map((account) => (
+                  <article className="list-item" key={account.id}>
+                    <div>
+                      <h3>{account.displayName}</h3>
+                      <p>{account.email || "No email provided"}</p>
+                      <div className="badge-row">
+                        <Badge tone={account.verified ? "success" : "warning"}>
+                          {account.verified ? "Verified" : "Revoked"}
+                        </Badge>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() =>
+                        setShelterStaffAccounts(
+                          shelterStaffAccounts.map((item) =>
+                            item.id === account.id
+                              ? { ...item, verified: !item.verified, updatedAt: new Date().toISOString() }
+                              : item
+                          )
+                        )
+                      }
+                      variant="secondary"
+                    >
+                      {account.verified ? "Revoke verification" : "Re-verify"}
+                    </Button>
+                  </article>
+                ))
+              ) : (
+                <small>No staff accounts registered for this shelter yet.</small>
+              )}
+            </div>
+          </div>
+        ) : null}
       </Section>
     </div>
   );
@@ -1130,11 +1996,3 @@ function AuditScreen() {
   );
 }
 
-function ReviewRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="review-row">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
