@@ -1,8 +1,8 @@
 # Abby UI Multimodal Review
 
-Generated: 2026-05-03T05:20:35.511432+00:00
+Generated: 2026-05-03T06:26:02.965963+00:00
 Dry run: True
-Entries: 37
+Entries: 43
 
 ## desktop · Two-card home screen
 
@@ -396,6 +396,62 @@ Goals:
 - The screen should not expose unrelated wallet data.
 - The next action for contacting a liaison should be clear.
 
+## desktop · Emergency recipient access with active grant
+
+- Route: `/#/recipient-access`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png`
+- State: `active grant visible`
+
+### Goals
+
+- Active grants should be visually distinct from pending requests.
+- Revocation should be available without exposing unrelated private wallet data.
+- The screen should make it clear which organization currently has access.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency recipient access with active grant
+Viewport: desktop
+State: active grant visible
+Screenshot: artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png
+
+Goals:
+- Active grants should be visually distinct from pending requests.
+- Revocation should be available without exposing unrelated private wallet data.
+- The screen should make it clear which organization currently has access.
+
+## desktop · Emergency recipient access after revocation
+
+- Route: `/#/recipient-access`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png`
+- State: `active grant revoked`
+
+### Goals
+
+- Revoked grants should no longer look active.
+- The revoked state should remain auditable and understandable.
+- The UI should not imply the recipient still has decrypt or analyze access.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency recipient access after revocation
+Viewport: desktop
+State: active grant revoked
+Screenshot: artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png
+
+Goals:
+- Revoked grants should no longer look active.
+- The revoked state should remain auditable and understandable.
+- The UI should not imply the recipient still has decrypt or analyze access.
+
 ## desktop · Benefits protection opt-in
 
 - Route: `/#/benefits-protection`
@@ -507,6 +563,34 @@ Goals:
 - The consented study should be visually distinct from paused or available studies.
 - Derived field badges should remain visible after opt-in.
 - Privacy budget and cohort threshold should stay prominent.
+
+## desktop · Proof center
+
+- Route: `/#/proof-center`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/proof-center.png`
+- State: `public proof receipts`
+
+### Goals
+
+- Public proof inputs should be easy to inspect.
+- Precise coordinates, raw documents, and private source data should not appear.
+- Simulated proof receipts should be clearly distinguishable from verified receipts.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Proof center
+Viewport: desktop
+State: public proof receipts
+Screenshot: artifacts/ui-screenshots/latest/desktop/proof-center.png
+
+Goals:
+- Public proof inputs should be easy to inspect.
+- Precise coordinates, raw documents, and private source data should not appear.
+- Simulated proof receipts should be clearly distinguishable from verified receipts.
 
 ## mobile · Two-card home screen
 
@@ -928,6 +1012,62 @@ Goals:
 - The screen should not expose unrelated wallet data.
 - The next action for contacting a liaison should be clear.
 
+## mobile · Emergency recipient access with active grant
+
+- Route: `/#/recipient-access`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png`
+- State: `active grant visible`
+
+### Goals
+
+- Active grants should be visually distinct from pending requests.
+- Revocation should be available without exposing unrelated private wallet data.
+- The screen should make it clear which organization currently has access.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency recipient access with active grant
+Viewport: mobile
+State: active grant visible
+Screenshot: artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png
+
+Goals:
+- Active grants should be visually distinct from pending requests.
+- Revocation should be available without exposing unrelated private wallet data.
+- The screen should make it clear which organization currently has access.
+
+## mobile · Emergency recipient access after revocation
+
+- Route: `/#/recipient-access`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png`
+- State: `active grant revoked`
+
+### Goals
+
+- Revoked grants should no longer look active.
+- The revoked state should remain auditable and understandable.
+- The UI should not imply the recipient still has decrypt or analyze access.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency recipient access after revocation
+Viewport: mobile
+State: active grant revoked
+Screenshot: artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png
+
+Goals:
+- Revoked grants should no longer look active.
+- The revoked state should remain auditable and understandable.
+- The UI should not imply the recipient still has decrypt or analyze access.
+
 ## mobile · Benefits protection opt-in
 
 - Route: `/#/benefits-protection`
@@ -1039,3 +1179,31 @@ Goals:
 - The consented study should be visually distinct from paused or available studies.
 - Derived field badges should remain visible after opt-in.
 - Privacy budget and cohort threshold should stay prominent.
+
+## mobile · Proof center
+
+- Route: `/#/proof-center`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/proof-center.png`
+- State: `public proof receipts`
+
+### Goals
+
+- Public proof inputs should be easy to inspect.
+- Precise coordinates, raw documents, and private source data should not appear.
+- Simulated proof receipts should be clearly distinguishable from verified receipts.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Proof center
+Viewport: mobile
+State: public proof receipts
+Screenshot: artifacts/ui-screenshots/latest/mobile/proof-center.png
+
+Goals:
+- Public proof inputs should be easy to inspect.
+- Precise coordinates, raw documents, and private source data should not appear.
+- Simulated proof receipts should be clearly distinguishable from verified receipts.

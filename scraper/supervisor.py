@@ -18,9 +18,11 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+
+import duckdb
 
 from .agentic_daemon import CrawlState, utc_now
+from .duckdb_state import pattern_prefix_for_url
 from .utils import setup_logging
 
 logger = logging.getLogger("scraper.supervisor")
@@ -46,6 +48,7 @@ class SelfHealingSupervisor:
 
     def __init__(self, config: SupervisorConfig) -> None:
         self.config = config
+        self.db_path = self.config.state_path.with_suffix(".duckdb")
         self.restart_count = 0
         self.last_start_at: float | None = None
 
@@ -74,11 +77,12 @@ class SelfHealingSupervisor:
         generation = int(strategy.get("generation", 0)) + 1
         blocked_urls = list(dict.fromkeys([*strategy.get("blocked_urls", []), state.active_url]))
         blocked_urls = [url for url in blocked_urls if url]
+        coverage_mode = bool(strategy.get("coverage_mode"))
         deprioritized_patterns = list(
             dict.fromkeys(
                 [
                     *strategy.get("deprioritized_url_patterns", []),
-                    *self._suggest_deprioritized_patterns(state),
+                    *([] if coverage_mode else self._suggest_deprioritized_patterns(state)),
                 ]
             )
         )
@@ -124,6 +128,8 @@ class SelfHealingSupervisor:
 
     def reconcile_failure_patterns(self, state: CrawlState) -> dict[str, Any] | None:
         strategy = self._load_strategy()
+        if bool(strategy.get("coverage_mode")):
+            return None
         current_deprioritized = list(strategy.get("deprioritized_url_patterns", []) or [])
         current_patterns = list(strategy.get("blocked_url_patterns", []) or [])
         suggested_patterns = self._suggest_blocked_patterns(state)
@@ -248,13 +254,25 @@ class SelfHealingSupervisor:
         for url, count in failure_items:
             if count < 2:
                 continue
-            prefix = self._failure_prefix(url)
+            prefix = pattern_prefix_for_url(url)
             if prefix:
                 prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
 
+        low_yield_stats = self._pattern_yield_stats()
         for prefix, count in sorted(prefix_counts.items()):
             if count >= 5:
                 patterns.append(prefix)
+        for stat in low_yield_stats:
+            pattern = str(stat["pattern"])
+            attempts = int(stat["attempts"])
+            successes = int(stat["successes"])
+            fetch_failures = int(stat["fetch_failures"])
+            success_rate = float(stat["success_rate"])
+            if attempts >= 10 and successes == 0:
+                patterns.append(pattern)
+                continue
+            if attempts >= 12 and success_rate <= 0.05 and fetch_failures >= 2:
+                patterns.append(pattern)
         return patterns
 
     def _suggest_deprioritized_patterns(self, state: CrawlState) -> list[str]:
@@ -263,26 +281,61 @@ class SelfHealingSupervisor:
         for url, count in (state.failed_urls or {}).items():
             if int(count) < 2:
                 continue
-            prefix = self._failure_prefix(str(url).strip().lower())
+            prefix = pattern_prefix_for_url(str(url).strip().lower())
             if prefix:
                 prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
         for prefix, count in sorted(prefix_counts.items()):
             if 2 <= count < 5:
                 patterns.append(prefix)
+        for stat in self._pattern_yield_stats():
+            pattern = str(stat["pattern"])
+            attempts = int(stat["attempts"])
+            successes = int(stat["successes"])
+            success_rate = float(stat["success_rate"])
+            if attempts >= 4 and successes == 0:
+                patterns.append(pattern)
+                continue
+            if attempts >= 6 and success_rate < 0.20:
+                patterns.append(pattern)
         return patterns
 
-    @staticmethod
-    def _failure_prefix(url: str) -> str:
-        parsed = urlparse(url)
-        path = parsed.path.rstrip("/").lower()
-        if not path:
-            return ""
-        if "/get-help/" not in path:
-            return ""
-        segments = [segment for segment in path.split("/") if segment]
-        if len(segments) >= 2 and segments[0] == "get-help":
-            return "/" + "/".join(segments[:2]) + "/"
-        return ""
+    def _pattern_yield_stats(self) -> list[dict[str, int | str | float]]:
+        if not self.db_path.exists():
+            return []
+        try:
+            conn = duckdb.connect(str(self.db_path), read_only=True)
+            rows = conn.execute(
+                """
+                SELECT
+                    pattern,
+                    attempts,
+                    successes,
+                    fetch_failures,
+                    CASE
+                        WHEN attempts > 0 THEN CAST(successes AS DOUBLE) / CAST(attempts AS DOUBLE)
+                        ELSE 0.0
+                    END AS success_rate
+                FROM pattern_yield_stats
+                ORDER BY attempts DESC, pattern ASC
+                """
+            ).fetchall()
+        except Exception:
+            return []
+        finally:
+            try:
+                conn.close()
+            except Exception:
+                pass
+        return [
+            {
+                "pattern": str(pattern),
+                "attempts": int(attempts),
+                "successes": int(successes),
+                "fetch_failures": int(fetch_failures),
+                "success_rate": float(success_rate),
+            }
+            for pattern, attempts, successes, fetch_failures, success_rate in rows
+        ]
 
     @staticmethod
     def _age_seconds(timestamp: str, now_ts: float) -> float:

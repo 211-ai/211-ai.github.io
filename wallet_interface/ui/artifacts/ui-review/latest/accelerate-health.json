@@ -1,0 +1,58 @@
+{
+  "ipfs_accelerate_py": {
+    "status": "unavailable",
+    "detail": "Could not import module 'pipeline'. Are this object's requirements defined correctly?"
+  },
+  "p2p_task_queue": {
+    "status": "unavailable",
+    "detail": "no multiaddr configured (set IPFS_ACCELERATE_PY_TASK_P2P_REMOTE_MULTIADDR)"
+  },
+  "http_peers": {
+    "status": "unavailable",
+    "detail": "none configured (set IPFS_DATASETS_PY_LLM_P2P_ENDPOINTS)"
+  },
+  "llm_router_providers": {
+    "codex_cli": {
+      "status": "ok",
+      "detail": "codex-cli 0.125.0; credentials at auth.json"
+    },
+    "copilot_cli": {
+      "status": "ok",
+      "detail": "GitHub Copilot CLI 1.0.11.; credentials at hosts.yml"
+    },
+    "openai": {
+      "status": "unavailable",
+      "detail": "no API key (OPENAI_API_KEY, OPENAI_KEY, OPENAI_TOKEN, IPFS_DATASETS_PY_OPENAI_API_KEY)"
+    },
+    "hf_inference_api": {
+      "status": "unavailable",
+      "detail": "no API key (HF_TOKEN, HUGGING_FACE_HUB_TOKEN, IPFS_DATASETS_PY_HF_API_TOKEN)"
+    },
+    "openrouter": {
+      "status": "unavailable",
+      "detail": "no API key (OPENROUTER_API_KEY, IPFS_DATASETS_PY_OPENROUTER_API_KEY)"
+    },
+    "gemini_cli": {
+      "status": "unavailable",
+      "detail": "no credentials (GEMINI_API_KEY, GOOGLE_API_KEY, IPFS_DATASETS_PY_GEMINI_API_KEY or credentials.json, oauth_creds.json, credentials.json)"
+    },
+    "claude_code": {
+      "status": "unavailable",
+      "detail": "no credentials (ANTHROPIC_API_KEY, IPFS_DATASETS_PY_ANTHROPIC_API_KEY or credentials.json, credentials.json)"
+    },
+    "claude_py": {
+      "status": "unavailable",
+      "detail": "no API key (ANTHROPIC_API_KEY, IPFS_DATASETS_PY_ANTHROPIC_API_KEY)"
+    },
+    "gemini_py": {
+      "status": "unavailable",
+      "detail": "no API key (GOOGLE_API_KEY, GEMINI_API_KEY, IPFS_DATASETS_PY_GEMINI_API_KEY)"
+    },
+    "copilot_sdk": {
+      "status": "ok",
+      "detail": "credentials at hosts.yml"
+    }
+  },
+  "summary": "Available backends: codex_cli, copilot_cli, copilot_sdk",
+  "any_available": true
+}

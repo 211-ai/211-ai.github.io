@@ -179,6 +179,14 @@ def build_tasks(payload: dict[str, Any]) -> list[BacklogTask]:
     return tasks
 
 
+def count_tasks(tasks: list[BacklogTask], field_name: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for task in tasks:
+        value = str(getattr(task, field_name))
+        counts[value] = counts.get(value, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def write_outputs(output_dir: Path, tasks: list[BacklogTask], source_path: Path) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_at = datetime.now(timezone.utc).isoformat()
@@ -196,6 +204,19 @@ def write_outputs(output_dir: Path, tasks: list[BacklogTask], source_path: Path)
         f"Generated: {generated_at}",
         f"Source: `{source_path.relative_to(UI_ROOT)}`",
         f"Tasks: {len(tasks)}",
+        "",
+        "## Summary",
+        "",
+        "By status:",
+        *[f"- `{status}`: {count}" for status, count in count_tasks(tasks, "status").items()],
+        "",
+        "By priority:",
+        *[f"- `{priority}`: {count}" for priority, count in count_tasks(tasks, "priority").items()],
+        "",
+        "By viewport:",
+        *[f"- `{viewport}`: {count}" for viewport, count in count_tasks(tasks, "viewport").items()],
+        "",
+        "## Tasks",
         "",
     ]
     for task in tasks:

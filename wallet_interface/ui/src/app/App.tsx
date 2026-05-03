@@ -25,10 +25,12 @@ import {
   DisclosureRecipientDraft,
   DisclosureRecipientType,
   EasyBotCheckStatus,
+  ExportBundleView,
   RegistrationProfileDraft,
   RouteId,
   UploadItem,
   WalletAccessRequest,
+  WalletGrantReceipt,
   ProofReceiptView
 } from "../models/abby";
 import {
@@ -36,12 +38,23 @@ import {
   auditEvents,
   defaultCheckInPolicy,
   emptyRegistrationProfile,
+  exportBundles,
   initialRecipients,
   initialAccessRequests,
+  initialGrantReceipts,
   initialUploads,
   proofReceipts,
   serviceMatches
 } from "../services/mockAbbyService";
+import {
+  approveAccessRequest,
+  createVerifiedExportBundleView,
+  loadExportBundleView,
+  loadWalletAccessState,
+  rejectAccessRequest,
+  revokeAccessRequest,
+  WalletApiConfig
+} from "../services/walletApi";
 
 const routes: Array<{ id: RouteId; label: string; icon: typeof Home }> = [
   { id: "home", label: "Home", icon: Home },
@@ -59,6 +72,7 @@ const secondaryRoutes: Array<{ id: RouteId; label: string; icon: typeof Home }> 
   { id: "benefits-protection", label: "Benefits opt-in", icon: Landmark },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "proof-center", label: "Proofs", icon: ShieldCheck },
+  { id: "exports", label: "Exports", icon: LogOut },
   { id: "security", label: "Security", icon: LockKeyhole },
   { id: "audit", label: "Audit", icon: ClipboardCheck }
 ];
@@ -232,15 +246,10 @@ export function App() {
     Array.isArray(persistedState.shelterStaffAccounts) ? persistedState.shelterStaffAccounts : []
   );
   const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(() =>
-    Array.isArray(persistedState.shelterUserAccounts)
-      ? persistedState.shelterUserAccounts.map((account) => ({
-          ...account,
-          easyBotCheckStatus: (account.easyBotCheckStatus as EasyBotCheckStatus) ?? "pending",
-          localPrecinctNotified: Boolean(account.localPrecinctNotified),
-          foundPermanentHousing: Boolean(account.foundPermanentHousing)
-        }))
-      : []
+    Array.isArray(persistedState.shelterUserAccounts) ? persistedState.shelterUserAccounts : []
   );
+  const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>(initialGrantReceipts);
+  const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(() => persistedState.benefitsOptIn ?? false);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() =>
@@ -253,38 +262,82 @@ export function App() {
     ...persistedState.shelterChecklist
   }));
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const walletApiConfig = useMemo(readWalletApiConfig, []);
+
+  async function refreshWalletAccessState() {
+    if (!walletApiConfig) return;
+    const walletState = await loadWalletAccessState(walletApiConfig);
+    setAccessRequests(walletState.accessRequests);
+    setGrantReceipts(walletState.grantReceipts);
+  }
 
   useEffect(() => {
-    const syncRouteFromHash = () => setActiveRoute(getRouteFromHash());
+    const syncRouteFromHash = () => {
+      setActiveRoute(getRouteFromHash());
+      setMobileNavOpen(false);
+    };
     window.addEventListener("hashchange", syncRouteFromHash);
     return () => window.removeEventListener("hashchange", syncRouteFromHash);
   }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const payload: PersistedAppState = {
-      profile,
-      policy,
-      recipients,
-      uploads,
-      shelterStaffAccounts,
-      shelterUserAccounts,
-      benefitsOptIn,
-      analyticsOptIn,
-      shelterChecklist
-    };
-    window.localStorage.setItem(APP_PERSIST_KEY, JSON.stringify(payload));
+    window.localStorage.setItem(
+      APP_PERSIST_KEY,
+      JSON.stringify({
+        profile,
+        policy,
+        recipients,
+        uploads,
+        shelterStaffAccounts,
+        shelterUserAccounts,
+        benefitsOptIn,
+        analyticsOptIn,
+        shelterChecklist
+      })
+    );
   }, [
-    profile,
+    analyticsOptIn,
+    benefitsOptIn,
     policy,
+    profile,
     recipients,
-    uploads,
+    shelterChecklist,
     shelterStaffAccounts,
     shelterUserAccounts,
-    benefitsOptIn,
-    analyticsOptIn,
-    shelterChecklist
+    uploads
   ]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
+    refreshWalletAccessState().catch(() => {
+      setAccessRequests(initialAccessRequests);
+      setGrantReceipts(initialGrantReceipts);
+    });
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
+    const demoBundleJson = import.meta.env.VITE_DEMO_EXPORT_BUNDLE_JSON as string | undefined;
+    if (!demoBundleJson) return;
+
+    try {
+      const bundle = JSON.parse(demoBundleJson);
+      loadExportBundleView({
+        apiBaseUrl: walletApiConfig.apiBaseUrl,
+        bundle,
+        imported: true
+      })
+        .then((bundleView) => {
+          setExportBundleViews((current) =>
+            current.some((item) => item.id === bundleView.id) ? current : [bundleView, ...current]
+          );
+        })
+        .catch(() => undefined);
+    } catch {
+      // Ignore malformed optional demo data and keep the static bundle examples.
+    }
+  }, [walletApiConfig]);
 
   function navigate(route: RouteId) {
     window.location.hash = route === "home" ? "#/" : `#/${route}`;
@@ -399,8 +452,12 @@ export function App() {
         {activeRoute === "recipient-access" ? (
           <RecipientAccessScreen
             accessRequests={accessRequests}
+            apiConfig={walletApiConfig}
+            grantReceipts={grantReceipts}
             recipients={recipients}
+            refreshWalletAccessState={refreshWalletAccessState}
             setAccessRequests={setAccessRequests}
+            setGrantReceipts={setGrantReceipts}
             verified={recipientVerified}
             setVerified={setRecipientVerified}
           />
@@ -412,11 +469,31 @@ export function App() {
           <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
         ) : null}
         {activeRoute === "proof-center" ? <ProofCenterScreen proofs={proofReceipts} /> : null}
+        {activeRoute === "exports" ? (
+          <ExportCenterScreen
+            apiConfig={walletApiConfig}
+            bundles={exportBundleViews}
+            setBundles={setExportBundleViews}
+          />
+        ) : null}
         {activeRoute === "security" ? <SecurityScreen /> : null}
         {activeRoute === "audit" ? <AuditScreen /> : null}
       </main>
     </div>
   );
+}
+
+function readWalletApiConfig(): WalletApiConfig | undefined {
+  const apiBaseUrl = import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined;
+  const walletId = import.meta.env.VITE_DEMO_WALLET_ID as string | undefined;
+  if (!apiBaseUrl || !walletId) return undefined;
+  return {
+    apiBaseUrl,
+    walletId,
+    actorDid: import.meta.env.VITE_DEMO_ACTOR_DID as string | undefined,
+    issuerKeyHex: import.meta.env.VITE_DEMO_ISSUER_KEY_HEX as string | undefined,
+    audienceKeyHex: import.meta.env.VITE_DEMO_AUDIENCE_KEY_HEX as string | undefined
+  };
 }
 
 function NavButton({
@@ -902,7 +979,6 @@ function ContactsScreen({
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Emergency contacts</p>
-<<<<<<< Updated upstream
         <h1>People and agencies</h1>
       </div>
       <div className="list-stack">
@@ -928,9 +1004,6 @@ function ContactsScreen({
             </Button>
           </article>
         ))}
-=======
-        <h1>People and services</h1>
->>>>>>> Stashed changes
       </div>
       <Section title="Add recipient">
         <form className="form-grid" onSubmit={addRecipient}>
@@ -965,29 +1038,6 @@ function ContactsScreen({
           </div>
         </form>
       </Section>
-      <div className="list-stack">
-        {recipients.map((recipient) => (
-          <article className="list-item" key={recipient.id}>
-            <div>
-              <h3>{recipient.displayName}</h3>
-              <p>{recipient.relationship || recipient.agencyName || recipient.type.replace("_", " ")}</p>
-              <div className="badge-row">
-                <Badge tone={recipient.verified ? "success" : "warning"}>
-                  {recipient.verified ? "Verified" : "Needs verification"}
-                </Badge>
-                <Badge>{recipient.allowedScopes.length} scopes</Badge>
-              </div>
-            </div>
-            <Button
-              ariaLabel={`Remove ${recipient.displayName}`}
-              onClick={() => setRecipients(recipients.filter((item) => item.id !== recipient.id))}
-              variant="quiet"
-            >
-              Remove
-            </Button>
-          </article>
-        ))}
-      </div>
     </div>
   );
 }
@@ -1653,14 +1703,22 @@ function ShelterScreen({
 
 function RecipientAccessScreen({
   accessRequests,
+  apiConfig,
+  grantReceipts,
   recipients,
+  refreshWalletAccessState,
   setAccessRequests,
+  setGrantReceipts,
   verified,
   setVerified
 }: {
   accessRequests: WalletAccessRequest[];
+  apiConfig?: WalletApiConfig;
+  grantReceipts: WalletGrantReceipt[];
   recipients: DisclosureRecipientDraft[];
+  refreshWalletAccessState: () => Promise<void>;
   setAccessRequests: (requests: WalletAccessRequest[]) => void;
+  setGrantReceipts: (receipts: WalletGrantReceipt[]) => void;
   verified: boolean;
   setVerified: (verified: boolean) => void;
 }) {
@@ -1686,7 +1744,21 @@ function RecipientAccessScreen({
     );
   }
 
-  function decideRequest(requestId: string, status: "approved" | "rejected") {
+  async function decideRequest(requestId: string, status: "approved" | "rejected") {
+    const request = accessRequests.find((item) => item.id === requestId);
+    if (apiConfig?.actorDid) {
+      try {
+        if (status === "approved") {
+          await approveAccessRequest(apiConfig, requestId);
+        } else {
+          await rejectAccessRequest(apiConfig, requestId);
+        }
+        await refreshWalletAccessState();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      }
+    }
     setAccessRequests(
       accessRequests.map((request) =>
         request.id === requestId
@@ -1694,14 +1766,53 @@ function RecipientAccessScreen({
           : request
       )
     );
+    if (status === "approved" && request && !grantReceipts.some((receipt) => receipt.id === `receipt-${request.id}`)) {
+      setGrantReceipts([
+        ...grantReceipts,
+        {
+          id: `receipt-${request.id}`,
+          grantId: `grant-${request.id}`,
+          audienceName: request.requesterName,
+          audienceDid: request.audienceDid,
+          resourceLabel: request.resourceLabel,
+          abilities: request.abilities,
+          purpose: request.purpose,
+          receiptHash: `local-${request.id}-receipt`,
+          status: "active",
+          createdAt: "Just now",
+          expiresAt: "30 days"
+        }
+      ]);
+    }
   }
 
-  function revokeRequest(requestId: string) {
+  async function revokeRequest(requestId: string) {
+    const request = accessRequests.find((item) => item.id === requestId);
+    if (apiConfig?.actorDid) {
+      try {
+        await revokeAccessRequest(apiConfig, requestId);
+        await refreshWalletAccessState();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      }
+    }
     setAccessRequests(
       accessRequests.map((request) =>
         request.id === requestId ? { ...request, grantStatus: "revoked" } : request
       )
     );
+    if (request) {
+      setGrantReceipts(
+        grantReceipts.map((receipt) =>
+          receipt.audienceDid === request.audienceDid &&
+          receipt.resourceLabel === request.resourceLabel &&
+          receipt.status === "active"
+            ? { ...receipt, status: "revoked" }
+            : receipt
+        )
+      );
+    }
   }
 
   return (
@@ -1712,64 +1823,108 @@ function RecipientAccessScreen({
       </div>
       <Section title="Review requested access">
         <div className="list-stack">
-          {accessRequests.map((request) => (
-            <article className="list-item access-request-item" key={request.id}>
-              <div>
-                <div className="scope-header">
-                  <div>
-                    <h3>{request.requesterName}</h3>
-                    <p>{request.resourceLabel} · {request.purpose}</p>
+          {accessRequests.map((request) => {
+            const isRevoked = request.status === "approved" && request.grantStatus === "revoked";
+            const statusLabel = isRevoked ? "revoked" : request.status;
+            const statusTone = isRevoked
+              ? "warning"
+              : request.status === "approved"
+                ? "success"
+                : request.status === "rejected"
+                  ? "warning"
+                  : "neutral";
+
+            return (
+              <article className={`list-item access-request-item${isRevoked ? " access-request-revoked" : ""}`} key={request.id}>
+                <div>
+                  <div className="scope-header">
+                    <div>
+                      <h3>{request.requesterName}</h3>
+                      <p>{request.resourceLabel} · {request.purpose}</p>
+                    </div>
+                    <Badge tone={statusTone}>{statusLabel}</Badge>
                   </div>
-                  <Badge tone={request.status === "approved" ? "success" : request.status === "rejected" ? "warning" : "neutral"}>
-                    {request.status}
-                  </Badge>
-                </div>
-                <div className="badge-row">
-                  {request.abilities.map((ability) => (
-                    <Badge key={ability}>{ability}</Badge>
-                  ))}
-                  <Badge>{request.createdAt}</Badge>
-                  {request.approvalRequired ? (
-                    <Badge tone={hasThresholdApproval(request) ? "success" : "warning"}>
-                      {request.approvalCount ?? 0}/{request.approvalThreshold ?? 1} approvals
-                    </Badge>
+                  <div className="badge-row">
+                    {request.abilities.map((ability) => (
+                      <Badge key={ability}>{ability}</Badge>
+                    ))}
+                    <Badge>{request.createdAt}</Badge>
+                    {request.approvalRequired ? (
+                      <Badge tone={hasThresholdApproval(request) ? "success" : "warning"}>
+                        {request.approvalCount ?? 0}/{request.approvalThreshold ?? 1} approvals
+                      </Badge>
+                    ) : null}
+                    {request.status === "approved" && request.grantStatus !== "revoked" ? (
+                      <Badge tone="success">active grant</Badge>
+                    ) : null}
+                  </div>
+                  {isRevoked ? (
+                    <p className="revoked-note">
+                      Access was revoked. This recipient no longer has decrypt or analysis access.
+                    </p>
                   ) : null}
-                  {request.status === "approved" ? (
-                    <Badge tone={request.grantStatus === "revoked" ? "warning" : "success"}>
-                      {request.grantStatus === "revoked" ? "revoked" : "active grant"}
-                    </Badge>
-                  ) : null}
-                </div>
-                {request.approvalRequired && !hasThresholdApproval(request) ? (
-                  <p className="approval-note">Multi-sig approval is required before this access can be granted.</p>
-                ) : null}
-                <small>{request.requesterDid}</small>
-              </div>
-              {request.status === "pending" ? (
-                <div className="row-actions">
                   {request.approvalRequired && !hasThresholdApproval(request) ? (
-                    <Button onClick={() => recordControllerApproval(request.id)} variant="secondary">
-                      <ShieldCheck size={18} /> Record approval
-                    </Button>
+                    <p className="approval-note">Multi-sig approval is required before this access can be granted.</p>
                   ) : null}
-                  <Button
-                    disabled={!hasThresholdApproval(request)}
-                    onClick={() => decideRequest(request.id, "approved")}
-                    variant="secondary"
-                  >
-                    <ShieldCheck size={18} /> Approve
-                  </Button>
-                  <Button onClick={() => decideRequest(request.id, "rejected")} variant="danger">
-                    Reject
-                  </Button>
+                  <small>{request.requesterDid}</small>
                 </div>
-              ) : request.status === "approved" && request.grantStatus !== "revoked" ? (
-                <div className="row-actions">
-                  <Button onClick={() => revokeRequest(request.id)} variant="danger">
-                    Revoke
-                  </Button>
+                {request.status === "pending" ? (
+                  <div className="row-actions">
+                    {request.approvalRequired && !hasThresholdApproval(request) ? (
+                      <Button onClick={() => recordControllerApproval(request.id)} variant="secondary">
+                        <ShieldCheck size={18} /> Record approval
+                      </Button>
+                    ) : null}
+                    <Button
+                      disabled={!hasThresholdApproval(request)}
+                      onClick={() => decideRequest(request.id, "approved")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} /> Approve
+                    </Button>
+                    <Button onClick={() => decideRequest(request.id, "rejected")} variant="danger">
+                      Reject
+                    </Button>
+                  </div>
+                ) : request.status === "approved" && request.grantStatus !== "revoked" ? (
+                  <div className="row-actions">
+                    <Button onClick={() => revokeRequest(request.id)} variant="danger">
+                      Revoke
+                    </Button>
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      </Section>
+      <Section title="Sharing receipts">
+        <div className="list-stack">
+          {grantReceipts.map((receipt) => (
+            <article
+              aria-labelledby={`grant-receipt-${receipt.id}`}
+              className={`grant-receipt-card${receipt.status === "revoked" ? " grant-receipt-revoked" : ""}`}
+              key={receipt.id}
+            >
+              <div className="scope-header">
+                <div>
+                  <h3 id={`grant-receipt-${receipt.id}`}>{receipt.audienceName}</h3>
+                  <p>{receipt.resourceLabel} · {receipt.purpose}</p>
                 </div>
-              ) : null}
+                <Badge tone={receipt.status === "active" ? "success" : "warning"}>{receipt.status}</Badge>
+              </div>
+              <div className="badge-row">
+                {receipt.abilities.map((ability) => (
+                  <Badge key={ability}>{ability}</Badge>
+                ))}
+                <Badge>{receipt.createdAt}</Badge>
+                {receipt.expiresAt ? <Badge>expires {receipt.expiresAt}</Badge> : null}
+              </div>
+              <div className="receipt-hash-row">
+                <span>Receipt hash</span>
+                <code>{receipt.receiptHash}</code>
+              </div>
+              <small>{receipt.audienceDid}</small>
             </article>
           ))}
         </div>
@@ -1950,6 +2105,132 @@ function ProofCenterScreen({ proofs }: { proofs: ProofReceiptView[] }) {
   );
 }
 
+function ExportCenterScreen({
+  apiConfig,
+  bundles,
+  setBundles
+}: {
+  apiConfig?: WalletApiConfig;
+  bundles: ExportBundleView[];
+  setBundles: (bundles: ExportBundleView[]) => void;
+}) {
+  const [audienceDid, setAudienceDid] = useState("did:key:legal-aid-desk");
+  const [audienceName, setAudienceName] = useState("Legal Aid desk");
+  const [recordIds, setRecordIds] = useState("rec-document-benefits\nrec-location-current");
+  const [purpose, setPurpose] = useState("user_export");
+  const [exportStatus, setExportStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+
+  async function createBundle(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig) return;
+    const normalizedRecordIds = recordIds
+      .split(/[\n,]/)
+      .map((recordId) => recordId.trim())
+      .filter(Boolean);
+    if (!audienceDid.trim() || normalizedRecordIds.length === 0) {
+      setExportStatus("failed");
+      return;
+    }
+    setExportStatus("creating");
+    try {
+      const bundleView = await createVerifiedExportBundleView(apiConfig, {
+        audienceDid: audienceDid.trim(),
+        audienceName: audienceName.trim() || undefined,
+        purpose: purpose.trim() || "user_export",
+        recordIds: normalizedRecordIds
+      });
+      setBundles([bundleView, ...bundles.filter((bundle) => bundle.bundleId !== bundleView.bundleId)]);
+      setExportStatus("created");
+    } catch {
+      setExportStatus("failed");
+    }
+  }
+
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Encrypted exports</p>
+        <h1>Shareable wallet bundles</h1>
+      </div>
+      <StatusBanner tone="info">
+        Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal plaintext.
+      </StatusBanner>
+      {!apiConfig ? (
+        <StatusBanner tone="warning">Connect the wallet API environment to build live export bundles.</StatusBanner>
+      ) : null}
+      {exportStatus === "created" ? <StatusBanner tone="success">Export bundle verified.</StatusBanner> : null}
+      {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
+      <Section title="Create export bundle">
+        <form className="form-grid export-builder" onSubmit={createBundle}>
+          <Field label="Recipient DID" required>
+            <input
+              onChange={(event) => setAudienceDid(event.target.value)}
+              placeholder="did:key:recipient"
+              value={audienceDid}
+            />
+          </Field>
+          <Field label="Recipient label">
+            <input
+              onChange={(event) => setAudienceName(event.target.value)}
+              placeholder="Legal Aid desk"
+              value={audienceName}
+            />
+          </Field>
+          <Field label="Purpose">
+            <input onChange={(event) => setPurpose(event.target.value)} value={purpose} />
+          </Field>
+          <Field label="Record IDs" required>
+            <textarea
+              onChange={(event) => setRecordIds(event.target.value)}
+              placeholder="rec-document-benefits"
+              rows={3}
+              value={recordIds}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button disabled={!apiConfig || exportStatus === "creating"} type="submit" variant="secondary">
+              <ShieldCheck size={18} /> {exportStatus === "creating" ? "Creating" : "Create bundle"}
+            </Button>
+          </div>
+        </form>
+      </Section>
+      <div className="list-stack">
+        {bundles.map((bundle) => {
+          const titleId = `export-title-${bundle.id}`;
+
+          return (
+            <article aria-labelledby={titleId} className="export-card" key={bundle.id}>
+              <div className="scope-header">
+                <div>
+                  <h3 id={titleId}>{bundle.audienceName}</h3>
+                  <p>{bundle.bundleId}</p>
+                </div>
+                <Badge tone={bundle.storageOk ? "success" : "warning"}>
+                  {bundle.storageOk ? "storage verified" : "storage missing"}
+                </Badge>
+              </div>
+              <div className="privacy-metrics">
+                <StatusPanel label="Records" value={String(bundle.recordCount)} tone="teal" />
+                <StatusPanel label="Proofs" value={String(bundle.proofCount)} tone="gold" />
+              </div>
+              <div className="receipt-hash-row">
+                <span>Bundle hash</span>
+                <code>{bundle.bundleHash}</code>
+              </div>
+              <div className="badge-row">
+                <Badge>{bundle.createdAt}</Badge>
+                <Badge tone={bundle.imported ? "success" : "neutral"}>
+                  {bundle.imported ? "import verified" : "not imported"}
+                </Badge>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function SecurityScreen() {
   return (
     <div className="screen">
@@ -1995,4 +2276,3 @@ function AuditScreen() {
     </div>
   );
 }
-

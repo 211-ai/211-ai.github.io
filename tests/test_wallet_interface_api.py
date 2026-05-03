@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
+
 from fastapi.testclient import TestClient
 
 from ipfs_datasets_py.wallet.crypto import random_key
-from ipfs_datasets_py.wallet.ucan import resource_for_record
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
 
@@ -232,6 +234,16 @@ def test_wallet_api_document_analysis_invocation_flow() -> None:
     assert response.status_code == 200
     grant = response.json()
 
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/grant-receipts",
+        params={"audience_did": "did:key:delegate"},
+    )
+    assert response.status_code == 200
+    receipt = response.json()["receipts"][0]
+    assert receipt["grant_id"] == grant["grant_id"]
+    assert receipt["status"] == "active"
+    assert receipt["receipt_hash"]
+
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
         json={
@@ -410,11 +422,15 @@ def test_wallet_api_revoked_access_blocks_invocation() -> None:
     ).json()
 
     response = client.post(
-        f"/wallets/{wallet['wallet_id']}/grants/{approved['grant_id']}/revoke",
-        json={"actor_did": "did:key:owner"},
+        f"/wallets/{wallet['wallet_id']}/access-requests/{access_request['request_id']}/revoke",
+        json={"actor_did": "did:key:owner", "reason": "user withdrew consent"},
     )
     assert response.status_code == 200
     assert response.json()["status"] == "revoked"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/access-requests?status=revoked")
+    assert response.status_code == 200
+    assert response.json()["requests"][0]["request_id"] == access_request["request_id"]
 
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
@@ -426,6 +442,50 @@ def test_wallet_api_revoked_access_blocks_invocation() -> None:
     )
     assert response.status_code == 400
     assert "not active" in response.json()["detail"]
+
+
+def test_wallet_api_grant_revoke_updates_access_request_status() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "grant-revoke.txt",
+            "text": "Grant revoke should update access request.",
+        },
+    ).json()
+    access_request = client.post(
+        f"/wallets/{wallet['wallet_id']}/access-requests",
+        json={
+            "record_id": record["record_id"],
+            "requester_did": "did:key:delegate",
+            "ability": "record/analyze",
+            "purpose": "benefits_screening",
+        },
+    ).json()
+    approved = client.post(
+        f"/wallets/{wallet['wallet_id']}/access-requests/{access_request['request_id']}/approve",
+        json={
+            "actor_did": "did:key:owner",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{approved['grant_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "revoked"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/access-requests?status=revoked")
+    assert response.status_code == 200
+    assert response.json()["requests"][0]["request_id"] == access_request["request_id"]
 
 
 def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None:
@@ -459,6 +519,14 @@ def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None
             "purpose": "identity_verification",
         },
     ).json()
+    response = client.get(f"/wallets/{wallet['wallet_id']}/access-requests")
+    assert response.status_code == 200
+    review_item = response.json()["requests"][0]
+    assert review_item["approval_required"] is True
+    assert review_item["approval_id"] is None
+    assert review_item["approval_count"] == 0
+    assert review_item["grant_status"] is None
+
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/access-requests/{access_request['request_id']}/approve",
         json={
@@ -483,6 +551,14 @@ def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None
     approval = response.json()
     assert approval["threshold"] == 2
 
+    response = client.get(f"/wallets/{wallet['wallet_id']}/access-requests")
+    assert response.status_code == 200
+    review_item = response.json()["requests"][0]
+    assert review_item["approval_id"] == approval["approval_id"]
+    assert review_item["approval_status"] == "pending"
+    assert review_item["approval_threshold"] == 2
+    assert review_item["approval_count"] == 0
+
     for approver in ["did:key:owner", "did:key:second-controller"]:
         response = client.post(
             f"/wallets/{wallet['wallet_id']}/approvals/{approval['approval_id']}/approve",
@@ -491,6 +567,12 @@ def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None
         assert response.status_code == 200
         approval_status = response.json()["status"]
     assert approval_status == "approved"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/access-requests")
+    assert response.status_code == 200
+    review_item = response.json()["requests"][0]
+    assert review_item["approval_status"] == "approved"
+    assert review_item["approval_count"] == 2
 
     response = client.get(f"/wallets/{wallet['wallet_id']}/approvals?status=approved")
     assert response.status_code == 200
@@ -588,3 +670,220 @@ def test_wallet_api_service_matching_rejects_precise_location() -> None:
         },
     )
     assert response.status_code == 422
+
+
+def test_wallet_api_export_bundle_uses_export_grant_without_plaintext() -> None:
+    client = _client()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    document = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "notice.txt",
+            "text": "Confidential export document",
+        },
+    ).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports",
+        json={
+            "actor_did": "did:key:delegate",
+            "record_ids": [document["record_id"], location["record_id"]],
+        },
+    )
+    assert response.status_code == 400
+    assert "requires" in response.json()["detail"]
+
+    grant = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "audience_key_hex": delegate_key,
+            "record_ids": [document["record_id"], location["record_id"]],
+        },
+    ).json()
+    invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/invocations",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+            "record_ids": [document["record_id"]],
+        },
+    ).json()
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": invocation["invocation_token"],
+            "record_ids": [document["record_id"]],
+        },
+    )
+    assert response.status_code == 200
+    bundle = response.json()
+    assert bundle["bundle_type"] == "wallet_export_v1"
+    assert bundle["bundle_id"] == f"export-{bundle['bundle_hash'][:24]}"
+    assert "controller_dids" not in bundle["wallet"]
+    assert "device_dids" not in bundle["wallet"]
+    assert [record["data_type"] for record in bundle["records"]] == ["document"]
+    public_bundle = json.dumps(bundle)
+    assert "Confidential export document" not in public_bundle
+    assert "45.515232" not in public_bundle
+    assert "-122.678385" not in public_bundle
+    response = client.post("/exports/verify", json={"bundle": bundle})
+    assert response.status_code == 200
+    verified = response.json()
+    assert verified["valid"] is True
+    assert verified["computed_hash"] == bundle["bundle_hash"]
+    response = client.post("/exports/import", json={"bundle": bundle})
+    assert response.status_code == 200
+    imported = response.json()
+    assert imported["record_count"] == 1
+    assert imported["bundle_hash"] == bundle["bundle_hash"]
+    response = client.post("/exports/storage", json={"bundle": bundle})
+    assert response.status_code == 200
+    storage = response.json()
+    assert storage["record_count"] == 1
+    assert "ok" in storage
+    tampered = {**bundle, "records": []}
+    response = client.post("/exports/verify", json={"bundle": tampered})
+    assert response.status_code == 200
+    assert response.json()["valid"] is False
+    response = client.post("/exports/import", json={"bundle": tampered})
+    assert response.status_code == 400
+    assert "verification failed" in response.json()["detail"]
+    malformed = {**bundle, "bundle_type": "not_wallet_export"}
+    verify = client.post("/exports/verify", json={"bundle": malformed}).json()
+    malformed["bundle_hash"] = verify["computed_hash"]
+    malformed["bundle_id"] = f"export-{malformed['bundle_hash'][:24]}"
+    response = client.post("/exports/import", json={"bundle": malformed})
+    assert response.status_code == 400
+    assert "Unsupported" in response.json()["detail"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": invocation["invocation_token"],
+            "record_ids": [location["record_id"]],
+        },
+    )
+    assert response.status_code == 400
+    assert "invocation" in response.json()["detail"]
+
+
+def test_wallet_api_revoked_export_grant_blocks_invocation() -> None:
+    client = _client()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    document = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "revoked-export.txt",
+            "text": "Export must stop after revocation.",
+        },
+    ).json()
+    grant = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "audience_key_hex": delegate_key,
+            "record_ids": [document["record_id"]],
+        },
+    ).json()
+    invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/invocations",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+            "record_ids": [document["record_id"]],
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{grant['grant_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": invocation["invocation_token"],
+            "record_ids": [document["record_id"]],
+        },
+    )
+
+    assert response.status_code == 400
+    assert "not active" in response.json()["detail"]
+
+
+def test_wallet_api_export_grant_respects_threshold_approval() -> None:
+    client = _client()
+    wallet = client.post(
+        "/wallets",
+        json={
+            "owner_did": "did:key:owner",
+            "controller_dids": ["did:key:owner", "did:key:second-controller"],
+            "approval_threshold": 2,
+        },
+    ).json()
+    document = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "export-approval.txt",
+            "text": "API export approval document",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "record_ids": [document["record_id"]],
+        },
+    )
+    assert response.status_code == 400
+    assert "approval_id is required" in response.json()["detail"]
+
+    approval = client.post(
+        f"/wallets/{wallet['wallet_id']}/approvals",
+        json={
+            "requested_by": "did:key:owner",
+            "operation": "grant/create",
+            "resources": [resource_for_export(wallet["wallet_id"])],
+            "abilities": ["export/create"],
+        },
+    ).json()
+    for approver in ["did:key:owner", "did:key:second-controller"]:
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/approvals/{approval['approval_id']}/approve",
+            json={"approver_did": approver},
+        )
+        assert response.status_code == 200
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/exports/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "record_ids": [document["record_id"]],
+            "approval_id": approval["approval_id"],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["abilities"] == ["export/create"]

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 
 from wallet_interface import ServiceRecord, WalletInterfaceService, match_services
-from ipfs_datasets_py.wallet.ucan import resource_for_location, resource_for_record
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record
 
 
 OWNER = "did:key:owner"
@@ -171,8 +173,13 @@ def test_wallet_interface_document_analysis_grant_and_audit_timeline(tmp_path):
         actor_secret=delegate_secret,
     )
     timeline = app.audit_timeline(wallet.wallet_id)
+    [receipt] = app.list_grant_receipts(wallet.wallet_id, audience_did=ADVOCATE)
 
     assert artifact.artifact_type == "summary"
+    assert receipt.grant_id == grant.grant_id
+    assert receipt.audience_did == ADVOCATE
+    assert receipt.status == "active"
+    assert receipt.receipt_hash
     assert timeline[-1]["action"] == "record/analyze"
     assert any(event["action"] == "grant/create" for event in timeline)
 
@@ -316,9 +323,15 @@ def test_wallet_interface_revoked_access_blocks_invocation(tmp_path):
         issue_invocation=True,
     )
 
-    grant = app.revoke_grant(wallet.wallet_id, approved.grant_id, actor_did=OWNER)
+    revoked = app.revoke_access_request(
+        wallet.wallet_id,
+        request_id=approved.request_id,
+        actor_did=OWNER,
+        reason="user withdrew consent",
+    )
 
-    assert grant.status == "revoked"
+    assert revoked.status == "revoked"
+    assert app.wallet_service.grants[approved.grant_id].status == "revoked"
     with pytest.raises(Exception, match="not active"):
         app.decrypt_record_with_invocation(
             wallet.wallet_id,
@@ -348,6 +361,9 @@ def test_wallet_interface_decrypt_access_request_respects_threshold_approval(tmp
         ability="record/decrypt",
         purpose="identity_verification",
     )
+    review = app.access_request_review_items(wallet.wallet_id)
+    assert review[0]["approval_required"] is True
+    assert review[0]["approval_count"] == 0
 
     with pytest.raises(Exception, match="approval_id is required"):
         app.approve_access_request(
@@ -365,6 +381,9 @@ def test_wallet_interface_decrypt_access_request_respects_threshold_approval(tmp
         resources=[resource_for_record(wallet.wallet_id, record.record_id)],
         abilities=["record/decrypt"],
     )
+    review = app.access_request_review_items(wallet.wallet_id)
+    assert review[0]["approval_id"] == approval.approval_id
+    assert review[0]["approval_threshold"] == 2
     app.approve_threshold_approval(wallet.wallet_id, approval_id=approval.approval_id, approver_did=OWNER)
     approved_threshold = app.approve_threshold_approval(
         wallet.wallet_id,
@@ -473,3 +492,72 @@ def test_wallet_interface_analytics_rejects_precise_location_fields():
             template_id=template_id,
             fields={"lat": 45.515232},
         )
+
+
+def test_wallet_interface_export_bundle_is_grant_scoped_and_encrypted(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "housing-notice.txt"
+    source.write_text("Confidential housing notice", encoding="utf-8")
+    document = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    location = app.add_location(wallet.wallet_id, actor_did=OWNER, lat=45.515232, lon=-122.678385)
+
+    grant = app.create_export_grant(
+        wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        record_ids=[document.record_id, location.record_id],
+    )
+    bundle = app.create_export_bundle(
+        wallet.wallet_id,
+        actor_did=ADVOCATE,
+        grant_id=grant.grant_id,
+        record_ids=[document.record_id, location.record_id],
+    )
+
+    assert bundle["bundle_type"] == "wallet_export_v1"
+    assert [record["data_type"] for record in bundle["records"]] == ["document", "location"]
+    public_bundle = json.dumps(bundle)
+    assert "Confidential housing notice" not in public_bundle
+    assert "45.515232" not in public_bundle
+    assert "-122.678385" not in public_bundle
+    assert app.audit_timeline(wallet.wallet_id)[-1]["action"] == "export/create"
+
+
+def test_wallet_interface_export_grant_respects_threshold_approval(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(
+        OWNER,
+        controller_dids=[OWNER, SECOND_CONTROLLER],
+        approval_threshold=2,
+    )
+    source = tmp_path / "export-approval.txt"
+    source.write_text("Threshold gated export", encoding="utf-8")
+    document = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+
+    with pytest.raises(Exception, match="approval_id is required"):
+        app.create_export_grant(
+            wallet.wallet_id,
+            issuer_did=OWNER,
+            audience_did=ADVOCATE,
+            record_ids=[document.record_id],
+        )
+
+    approval = app.request_threshold_approval(
+        wallet.wallet_id,
+        requested_by=OWNER,
+        operation="grant/create",
+        resources=[resource_for_export(wallet.wallet_id)],
+        abilities=["export/create"],
+    )
+    app.approve_threshold_approval(wallet.wallet_id, approval_id=approval.approval_id, approver_did=OWNER)
+    app.approve_threshold_approval(wallet.wallet_id, approval_id=approval.approval_id, approver_did=SECOND_CONTROLLER)
+    grant = app.create_export_grant(
+        wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        record_ids=[document.record_id],
+        approval_id=approval.approval_id,
+    )
+
+    assert grant.grant_id.startswith("grant-")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 from typing import Any
@@ -42,6 +43,8 @@ class DuckDBETLWarehouse:
                     source_run TEXT,
                     source TEXT,
                     name TEXT,
+                    provider_name TEXT,
+                    program_name TEXT,
                     description TEXT,
                     address TEXT,
                     phone TEXT,
@@ -65,6 +68,8 @@ class DuckDBETLWarehouse:
                     source_run TEXT,
                     id TEXT,
                     name TEXT,
+                    provider_name TEXT,
+                    program_name TEXT,
                     description TEXT,
                     address TEXT,
                     city TEXT,
@@ -107,11 +112,90 @@ class DuckDBETLWarehouse:
                 ("raw_services", "source_run"),
                 ("processed_services", "source_run"),
                 ("warc_documents", "source_run"),
+                ("raw_services", "provider_name"),
+                ("raw_services", "program_name"),
+                ("processed_services", "provider_name"),
+                ("processed_services", "program_name"),
             ):
                 try:
                     conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
                 except Exception:
                     pass
+            conn.execute("DROP VIEW IF EXISTS canonical_raw_services")
+            conn.execute("DROP VIEW IF EXISTS canonical_processed_services")
+            conn.execute(
+                """
+                CREATE OR REPLACE VIEW canonical_raw_services AS
+                WITH ranked AS (
+                    SELECT
+                        raw_services.*,
+                        CASE
+                            WHEN source = 'agentic_reextract_v2' THEN 300
+                            WHEN source = 'warc_etl' THEN 200
+                            WHEN source = 'agentic_daemon' THEN 100
+                            ELSE 0
+                        END AS source_priority,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY COALESCE(
+                                NULLIF(detail_url, ''),
+                                NULLIF(website, ''),
+                                NULLIF(name || '|' || address || '|' || phone, ''),
+                                payload_json
+                            )
+                            ORDER BY
+                                CASE
+                                    WHEN source = 'agentic_reextract_v2' THEN 300
+                                    WHEN source = 'warc_etl' THEN 200
+                                    WHEN source = 'agentic_daemon' THEN 100
+                                    ELSE 0
+                                END DESC,
+                                captured_at DESC,
+                                source_run DESC
+                        ) AS rn
+                    FROM raw_services
+                )
+                SELECT * EXCLUDE (source_priority, rn)
+                FROM ranked
+                WHERE rn = 1
+                """
+            )
+            conn.execute(
+                """
+                CREATE OR REPLACE VIEW canonical_processed_services AS
+                WITH ranked AS (
+                    SELECT
+                        processed_services.*,
+                        CASE
+                            WHEN source = 'agentic_reextract_v2' THEN 300
+                            WHEN source = 'warc_etl' THEN 200
+                            WHEN source = 'agentic_daemon' THEN 100
+                            ELSE 0
+                        END AS source_priority,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY COALESCE(
+                                NULLIF(source_url, ''),
+                                NULLIF(id, ''),
+                                NULLIF(website, ''),
+                                NULLIF(name || '|' || address || '|' || phone, ''),
+                                name || '|' || address || '|' || phone || '|' || source
+                            )
+                            ORDER BY
+                                CASE
+                                    WHEN source = 'agentic_reextract_v2' THEN 300
+                                    WHEN source = 'warc_etl' THEN 200
+                                    WHEN source = 'agentic_daemon' THEN 100
+                                    ELSE 0
+                                END DESC,
+                                processed_at DESC,
+                                source_run DESC
+                        ) AS rn
+                    FROM processed_services
+                )
+                SELECT * EXCLUDE (source_priority, rn)
+                FROM ranked
+                WHERE rn = 1
+                """
+            )
 
     def append_crawl_pages(self, records: list[dict[str, Any]], *, source_run: str = "") -> None:
         if not records:
@@ -147,15 +231,17 @@ class DuckDBETLWarehouse:
                 conn.execute(
                     """
                     INSERT INTO raw_services (
-                        source_run, source, name, description, address, phone, email, website,
+                        source_run, source, name, provider_name, program_name, description, address, phone, email, website,
                         hours, eligibility, categories, detail_url, source_archive,
                         category, search_zip, payload_json
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     [
                         source_run,
                         source,
                         str(record.get("name") or ""),
+                        str(record.get("provider_name") or ""),
+                        str(record.get("program_name") or ""),
                         str(record.get("description") or ""),
                         str(record.get("address") or ""),
                         str(record.get("phone") or ""),
@@ -180,16 +266,18 @@ class DuckDBETLWarehouse:
                 conn.execute(
                     """
                     INSERT INTO processed_services (
-                        source_run, id, name, description, address, city, state, zip,
+                        source_run, id, name, provider_name, program_name, description, address, city, state, zip,
                         phone, email, website, hours, eligibility, languages,
                         categories, accessibility, source_url, search_category,
                         search_zip, source
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     [
                         source_run,
                         str(record.get("id") or ""),
                         str(record.get("name") or ""),
+                        str(record.get("provider_name") or ""),
+                        str(record.get("program_name") or ""),
                         str(record.get("description") or ""),
                         str(record.get("address") or ""),
                         str(record.get("city") or ""),
@@ -234,3 +322,47 @@ class DuckDBETLWarehouse:
                         json.dumps(record.get("metadata") or {}, ensure_ascii=False),
                     ],
                 )
+
+    def delete_service_source(self, *, source: str) -> None:
+        with self._connect() as conn:
+            conn.execute("DELETE FROM raw_services WHERE source = ?", [str(source)])
+            conn.execute("DELETE FROM processed_services WHERE source = ?", [str(source)])
+
+    def export_canonical_processed_services(
+        self,
+        *,
+        jsonl_path: Path,
+        csv_path: Path,
+    ) -> dict[str, Any]:
+        jsonl_path.parent.mkdir(parents=True, exist_ok=True)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+        conn = duckdb.connect(str(self.db_path), read_only=True)
+        rows = conn.execute(
+            """
+            SELECT *
+            FROM canonical_processed_services
+            ORDER BY source_url ASC, name ASC, provider_name ASC, program_name ASC
+            """
+        ).fetchall()
+        columns = [str(item[0]) for item in conn.description]
+        records = [
+            {
+                key: (value.isoformat() if hasattr(value, "isoformat") else value)
+                for key, value in dict(zip(columns, row, strict=False)).items()
+            }
+            for row in rows
+        ]
+        with jsonl_path.open("w", encoding="utf-8") as fh:
+            for record in records:
+                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+        with csv_path.open("w", newline="", encoding="utf-8") as fh:
+            writer = csv.DictWriter(fh, fieldnames=columns, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(records)
+        conn.close()
+        return {
+            "status": "success",
+            "record_count": len(records),
+            "jsonl_path": str(jsonl_path),
+            "csv_path": str(csv_path),
+        }

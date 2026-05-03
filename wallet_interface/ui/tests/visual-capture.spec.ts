@@ -73,7 +73,7 @@ const captureScenarios: CaptureScenario[] = [
       await page.getByLabel(/Legal or full name/i).fill("Abby Example");
       await page.getByLabel(/Preferred name/i).fill("Abby");
       await page.getByLabel(/Birth date/i).fill("1990-01-01");
-      await page.getByLabel(/Account photo/i).setInputFiles({
+      await page.getByLabel(/Photo or photo ID/i).setInputFiles({
         name: "abby-profile.png",
         mimeType: "image/png",
         buffer: Buffer.from("iVBORw0KGgo=", "base64")
@@ -81,9 +81,10 @@ const captureScenarios: CaptureScenario[] = [
       await page.getByLabel(/Phone/i).fill("(503) 555-0100");
       await page.getByLabel(/Email/i).fill("abby@example.org");
       await page.getByLabel(/Current safe location/i).fill("Downtown shelter area");
-      await page.getByLabel(/Shelter affiliation/i).fill("Rose City Shelter");
+      await page.getByLabel(/Preferred shelter/i).fill("Rose City Shelter");
       await screen.getByRole("button", { name: "Shelter" }).click();
       await screen.getByRole("button", { name: "Benefits" }).click();
+      await page.getByLabel(/Quick health check complete/i).check();
       await page.getByLabel(/Bot check complete/i).check();
     }
   },
@@ -229,6 +230,32 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "recipient-access-active-grant",
+    path: "/#/recipient-access",
+    title: "Emergency recipient access with active grant",
+    state: "active grant visible",
+    goals: [
+      "Active grants should be visually distinct from pending requests.",
+      "Revocation should be available without exposing unrelated private wallet data.",
+      "The screen should make it clear which organization currently has access."
+    ]
+  },
+  {
+    id: "recipient-access-grant-revoked",
+    path: "/#/recipient-access",
+    title: "Emergency recipient access after revocation",
+    state: "active grant revoked",
+    goals: [
+      "Revoked grants should no longer look active.",
+      "The revoked state should remain auditable and understandable.",
+      "The UI should not imply the recipient still has decrypt or analyze access."
+    ],
+    prepare: async (page) => {
+      const legalAidRequest = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
+      await legalAidRequest.getByRole("button", { name: /Revoke/i }).click();
+    }
+  },
+  {
     id: "benefits-protection",
     path: "/#/benefits-protection",
     title: "Benefits protection opt-in",
@@ -278,6 +305,17 @@ const captureScenarios: CaptureScenario[] = [
       const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
       await housingStudy.getByRole("checkbox").check();
     }
+  },
+  {
+    id: "proof-center",
+    path: "/#/proof-center",
+    title: "Proof center",
+    state: "public proof receipts",
+    goals: [
+      "Public proof inputs should be easy to inspect.",
+      "Precise coordinates, raw documents, and private source data should not appear.",
+      "Simulated proof receipts should be clearly distinguishable from verified receipts."
+    ]
   }
 ];
 
@@ -304,6 +342,14 @@ function buildPrompt(route: CaptureScenario, viewport: CaptureViewport) {
   ].join("\n");
 }
 
+async function resetMobileNavigation(page: Page, routeId: string) {
+  if (routeId === "mobile-navigation-open") return;
+  const mobileNavigation = page.locator("#mobile-navigation");
+  if (await mobileNavigation.isVisible().catch(() => false)) {
+    await page.getByRole("button", { name: /Close menu/i }).click();
+  }
+}
+
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {
   const viewport = projectSlug(testInfo.project.name);
   const viewportDir = path.join(artifactRoot, viewport);
@@ -317,6 +363,7 @@ test("capture Abby UI screenshots for multimodal UX review", async ({ page }, te
       continue;
     }
     await page.goto(route.path);
+    await resetMobileNavigation(page, route.id);
     await expect(page.locator(".screen")).toBeVisible();
     if (route.prepare) {
       await route.prepare(page);

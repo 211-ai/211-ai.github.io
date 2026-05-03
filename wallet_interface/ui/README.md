@@ -7,6 +7,22 @@ recipient access, and benefits-protection opt-in.
 The app currently uses local mock state and can be connected to the backend
 later through `src/services/`.
 
+Access requests and grant receipts can be loaded from the wallet API by setting:
+
+```bash
+VITE_WALLET_API_BASE_URL=http://localhost:8000
+VITE_DEMO_WALLET_ID=wallet-...
+VITE_DEMO_ACTOR_DID=did:key:owner
+```
+
+When those variables are absent, the recipient-access screen uses local mock
+access-request and receipt state for demos and tests.
+
+Approving, rejecting, and revoking access requests call the wallet API when
+`VITE_DEMO_ACTOR_DID` is set. For demo wallets that need explicit key material
+to issue useful decrypt grants, also set `VITE_DEMO_ISSUER_KEY_HEX` and
+`VITE_DEMO_AUDIENCE_KEY_HEX`.
+
 ## Development
 
 ```bash
@@ -26,6 +42,7 @@ For focused checks:
 ```bash
 npm run test:smoke
 npm run test:visual
+npm run test:refinement
 npm run review:visual:dry-run
 npm run review:tasks
 npm run review:prompts -- --include-blocked
@@ -33,6 +50,9 @@ npm run review:prompts -- --include-blocked
 
 The visual test writes review screenshots and manifests to
 `artifacts/ui-screenshots/latest/`, including default and stateful UI scenarios.
+The refinement test writes a smaller iteration packet to
+`artifacts/ui-iterations/latest/` for faster multimodal review and UI/UX
+revision loops.
 See
 `docs/multimodal-ui-review.md` for the `ipfs_datasets_py.multimodal_router`
 review loop.

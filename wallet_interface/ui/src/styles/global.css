@@ -69,7 +69,8 @@ select:focus-visible {
   background: #ffffff;
   border-bottom: 1px solid #d8dee6;
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 10px 16px 14px;
 }
 
@@ -80,10 +81,14 @@ select:focus-visible {
   border-radius: 8px;
   color: #374151;
   display: flex;
-  gap: 10px;
-  min-height: 48px;
-  padding: 10px 12px;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 10px;
   text-align: left;
+}
+
+.mobile-nav-panel .nav-button span {
+  overflow-wrap: anywhere;
 }
 
 .mobile-nav-panel .nav-button[aria-current="page"] {
@@ -461,13 +466,19 @@ select:focus-visible {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   background: #ffffff;
   border: 1px solid #aeb8c5;
   border-radius: 8px;
+  font: inherit;
   min-height: 44px;
   padding: 10px 12px;
   width: 100%;
+}
+
+.field textarea {
+  resize: vertical;
 }
 
 .full-span {
@@ -551,6 +562,7 @@ select:focus-visible {
 .scope-editor,
 .analytics-card,
 .proof-card,
+.export-card,
 .timeline-event,
 .liaison-panel,
 .schedule-preview {
@@ -593,6 +605,43 @@ select:focus-visible {
   gap: 14px;
 }
 
+.grant-receipt-card {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.grant-receipt-revoked {
+  border-left-color: #b7791f;
+}
+
+.receipt-hash-row {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(120px, 0.35fr) minmax(0, 1fr);
+  padding: 10px 12px;
+}
+
+.receipt-hash-row span {
+  color: #5b6776;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.receipt-hash-row code {
+  color: #111827;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
 .access-request-item > div:first-child {
   min-width: 0;
 }
@@ -616,16 +665,31 @@ select:focus-visible {
   flex: 1 1 156px;
 }
 
+.access-request-revoked {
+  border-left: 4px solid #b7791f;
+}
+
 .approval-note {
   color: #6f4e00;
   font-size: 14px;
   margin-top: 8px;
 }
 
+.revoked-note {
+  background: #fff7dc;
+  border-radius: 8px;
+  color: #6f4e00;
+  font-size: 14px;
+  margin-top: 8px;
+  padding: 10px 12px;
+}
+
 .list-item h3,
+.grant-receipt-card h3,
 .scope-editor h3,
 .analytics-card h3,
 .proof-card h3,
+.export-card h3,
 .liaison-panel h3,
 .timeline-event h3 {
   font-size: 17px;
@@ -633,9 +697,11 @@ select:focus-visible {
 }
 
 .list-item p,
+.grant-receipt-card p,
 .scope-editor p,
 .analytics-card p,
 .proof-card p,
+.export-card p,
 .liaison-panel p,
 .timeline-event p {
   color: #5b6776;
@@ -655,6 +721,11 @@ select:focus-visible {
 }
 
 .proof-card {
+  display: grid;
+  gap: 12px;
+}
+
+.export-card {
   display: grid;
   gap: 12px;
 }
@@ -867,6 +938,18 @@ select:focus-visible {
   width: 12px;
 }
 
+@media (max-width: 640px) {
+  .receipt-hash-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 360px) {
+  .mobile-nav-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (min-width: 760px) {
   .app {
     grid-template-columns: 264px minmax(0, 1fr);
@@ -888,6 +971,18 @@ select:focus-visible {
     display: flex;
     gap: 12px;
     margin-bottom: 18px;
+  }
+
+  .brand > div {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .brand strong,
+  .brand small {
+    display: block;
+    line-height: 1.2;
   }
 
   .brand-mark {

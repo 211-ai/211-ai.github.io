@@ -1,8 +1,22 @@
 # Abby UI Refinement Backlog
 
-Generated: 2026-05-03T05:20:35.497894+00:00
+Generated: 2026-05-03T06:26:03.284207+00:00
 Source: `artifacts/ui-review/latest/review-results.json`
-Tasks: 37
+Tasks: 43
+
+## Summary
+
+By status:
+- `blocked`: 43
+
+By priority:
+- `P3`: 43
+
+By viewport:
+- `desktop`: 21
+- `mobile`: 22
+
+## Tasks
 
 ## ABBY-UI-DESKTOP-HOME-001: Two-card home screen: Run multimodal review for desktop default Two-card home screen
 
@@ -256,6 +270,42 @@ Tasks: 37
 - Changes are checked against `artifacts/ui-screenshots/latest/desktop/recipient-access-verified.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
+## ABBY-UI-DESKTOP-RECIPIENT-ACCESS-ACTIVE-GRANT-001: Emergency recipient access with active grant: Run multimodal review for desktop active grant visible Emergency recipient access with active grant
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/recipient-access`
+- Viewport: `desktop`
+- State: `active grant visible`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png`
+
+### Acceptance Criteria
+
+- Updated `/#/recipient-access` remains usable in `desktop`.
+- The `active grant visible` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
+## ABBY-UI-DESKTOP-RECIPIENT-ACCESS-GRANT-REVOKED-001: Emergency recipient access after revocation: Run multimodal review for desktop active grant revoked Emergency recipient access after revocation
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/recipient-access`
+- Viewport: `desktop`
+- State: `active grant revoked`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png`
+
+### Acceptance Criteria
+
+- Updated `/#/recipient-access` remains usable in `desktop`.
+- The `active grant revoked` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
 ## ABBY-UI-DESKTOP-BENEFITS-PROTECTION-001: Benefits protection opt-in: Run multimodal review for desktop default Benefits protection opt-in
 
 - Priority: `P3`
@@ -326,6 +376,24 @@ Tasks: 37
 - Updated `/#/analytics` remains usable in `desktop`.
 - The `one study consented` UI state is preserved or improved.
 - Changes are checked against `artifacts/ui-screenshots/latest/desktop/analytics-consented.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
+## ABBY-UI-DESKTOP-PROOF-CENTER-001: Proof center: Run multimodal review for desktop public proof receipts Proof center
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/proof-center`
+- Viewport: `desktop`
+- State: `public proof receipts`
+- Screenshot: `artifacts/ui-screenshots/latest/desktop/proof-center.png`
+
+### Acceptance Criteria
+
+- Updated `/#/proof-center` remains usable in `desktop`.
+- The `public proof receipts` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/desktop/proof-center.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
 ## ABBY-UI-MOBILE-HOME-001: Two-card home screen: Run multimodal review for mobile default Two-card home screen
@@ -598,6 +666,42 @@ Tasks: 37
 - Changes are checked against `artifacts/ui-screenshots/latest/mobile/recipient-access-verified.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
+## ABBY-UI-MOBILE-RECIPIENT-ACCESS-ACTIVE-GRANT-001: Emergency recipient access with active grant: Run multimodal review for mobile active grant visible Emergency recipient access with active grant
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/recipient-access`
+- Viewport: `mobile`
+- State: `active grant visible`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png`
+
+### Acceptance Criteria
+
+- Updated `/#/recipient-access` remains usable in `mobile`.
+- The `active grant visible` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
+## ABBY-UI-MOBILE-RECIPIENT-ACCESS-GRANT-REVOKED-001: Emergency recipient access after revocation: Run multimodal review for mobile active grant revoked Emergency recipient access after revocation
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/recipient-access`
+- Viewport: `mobile`
+- State: `active grant revoked`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png`
+
+### Acceptance Criteria
+
+- Updated `/#/recipient-access` remains usable in `mobile`.
+- The `active grant revoked` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
 ## ABBY-UI-MOBILE-BENEFITS-PROTECTION-001: Benefits protection opt-in: Run multimodal review for mobile default Benefits protection opt-in
 
 - Priority: `P3`
@@ -668,4 +772,22 @@ Tasks: 37
 - Updated `/#/analytics` remains usable in `mobile`.
 - The `one study consented` UI state is preserved or improved.
 - Changes are checked against `artifacts/ui-screenshots/latest/mobile/analytics-consented.png` and a regenerated screenshot.
+- No sensitive data is implied to be shared without explicit user action.
+
+## ABBY-UI-MOBILE-PROOF-CENTER-001: Proof center: Run multimodal review for mobile public proof receipts Proof center
+
+- Priority: `P3`
+- Status: `blocked`
+- Category: `review_needed`
+- Suggested agent: `review-agent`
+- Route: `/#/proof-center`
+- Viewport: `mobile`
+- State: `public proof receipts`
+- Screenshot: `artifacts/ui-screenshots/latest/mobile/proof-center.png`
+
+### Acceptance Criteria
+
+- Updated `/#/proof-center` remains usable in `mobile`.
+- The `public proof receipts` UI state is preserved or improved.
+- Changes are checked against `artifacts/ui-screenshots/latest/mobile/proof-center.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
