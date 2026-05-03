@@ -10,6 +10,7 @@ export type RouteId =
   | "recipient-access"
   | "benefits-protection"
   | "analytics"
+  | "proof-center"
   | "security"
   | "audit";
 
@@ -117,4 +118,16 @@ export interface WalletAccessRequest {
   approvalRequired?: boolean;
   approvalThreshold?: number;
   approvalCount?: number;
+  grantStatus?: "active" | "revoked";
+}
+
+export interface ProofReceiptView {
+  id: string;
+  proofType: string;
+  claim: string;
+  verifier: string;
+  publicInputs: Record<string, string>;
+  witnessLabel: string;
+  simulated: boolean;
+  createdAt: string;
 }

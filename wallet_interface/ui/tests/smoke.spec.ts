@@ -55,6 +55,17 @@ test("analytics consent shows privacy controls and derived fields", async ({ pag
   await expect(housingStudy.getByText("county", { exact: true })).toBeVisible();
 });
 
+test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
+  await page.goto("/#/proof-center");
+  await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
+  const regionProof = page.getByRole("article", { name: /Location is in service region/i });
+  await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
+  await expect(regionProof.getByText(/location_in_region/i)).toBeVisible();
+  await expect(regionProof.getByText(/Simulated/i)).toBeVisible();
+  await expect(regionProof.getByText(/^lat$/i)).not.toBeVisible();
+  await expect(regionProof.getByText(/^lon$/i)).not.toBeVisible();
+});
+
 test("recipient access requires multi-sig approval before decrypt sharing", async ({ page }) => {
   await page.goto("/#/recipient-access");
   const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
@@ -64,4 +75,13 @@ test("recipient access requires multi-sig approval before decrypt sharing", asyn
   await expect(request.getByText(/2\/2 approvals/i)).toBeVisible();
   await request.getByRole("button", { name: /^Approve$/i }).click();
   await expect(request.getByText("approved", { exact: true })).toBeVisible();
+});
+
+test("recipient access can revoke an active grant", async ({ page }) => {
+  await page.goto("/#/recipient-access");
+  const request = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
+  await expect(request.getByText(/active grant/i)).toBeVisible();
+  await request.getByRole("button", { name: /Revoke/i }).click();
+  await expect(request.getByText("revoked", { exact: true })).toBeVisible();
+  await expect(request.getByRole("button", { name: /Revoke/i })).toHaveCount(0);
 });

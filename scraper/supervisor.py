@@ -47,8 +47,15 @@ class SelfHealingSupervisor:
     def __init__(self, config: SupervisorConfig) -> None:
         self.config = config
         self.restart_count = 0
+        self.last_start_at: float | None = None
 
-    def is_stuck(self, state: CrawlState, *, now_ts: float | None = None) -> tuple[bool, str]:
+    def is_stuck(
+        self,
+        state: CrawlState,
+        *,
+        now_ts: float | None = None,
+        ignore_progress_until_ts: float | None = None,
+    ) -> tuple[bool, str]:
         now_ts = now_ts if now_ts is not None else time.time()
         heartbeat_age = self._age_seconds(state.heartbeat_at, now_ts)
         progress_age = self._age_seconds(state.last_progress_at, now_ts)
@@ -56,6 +63,8 @@ class SelfHealingSupervisor:
 
         if state.active_url and heartbeat_age > stale:
             return True, f"heartbeat stale for active URL {state.active_url}"
+        if ignore_progress_until_ts is not None and now_ts < ignore_progress_until_ts:
+            return False, ""
         if state.queue and state.last_progress_at and progress_age > stale and state.processed_pages > 0:
             return True, "queued work exists but no recent progress"
         return False, ""
@@ -65,6 +74,14 @@ class SelfHealingSupervisor:
         generation = int(strategy.get("generation", 0)) + 1
         blocked_urls = list(dict.fromkeys([*strategy.get("blocked_urls", []), state.active_url]))
         blocked_urls = [url for url in blocked_urls if url]
+        deprioritized_patterns = list(
+            dict.fromkeys(
+                [
+                    *strategy.get("deprioritized_url_patterns", []),
+                    *self._suggest_deprioritized_patterns(state),
+                ]
+            )
+        )
         blocked_patterns = list(
             dict.fromkeys(
                 [
@@ -73,6 +90,7 @@ class SelfHealingSupervisor:
                 ]
             )
         )
+        deprioritized_patterns = [pattern for pattern in deprioritized_patterns if pattern not in blocked_patterns]
         current_delay = float(strategy.get("request_delay", 1.5))
 
         strategy.update(
@@ -82,6 +100,7 @@ class SelfHealingSupervisor:
                 "max_depth": max(1, int(strategy.get("max_depth", 3)) - 1),
                 "blocked_urls": blocked_urls,
                 "blocked_url_patterns": blocked_patterns,
+                "deprioritized_url_patterns": deprioritized_patterns,
                 "last_rewrite_at": utc_now(),
                 "last_rewrite_reason": reason,
             }
@@ -98,6 +117,44 @@ class SelfHealingSupervisor:
                 "generation": generation,
                 "blocked_url_count": len(blocked_urls),
                 "blocked_pattern_count": len(blocked_patterns),
+                "deprioritized_pattern_count": len(deprioritized_patterns),
+            },
+        )
+        return strategy
+
+    def reconcile_failure_patterns(self, state: CrawlState) -> dict[str, Any] | None:
+        strategy = self._load_strategy()
+        current_deprioritized = list(strategy.get("deprioritized_url_patterns", []) or [])
+        current_patterns = list(strategy.get("blocked_url_patterns", []) or [])
+        suggested_patterns = self._suggest_blocked_patterns(state)
+        suggested_deprioritized = self._suggest_deprioritized_patterns(state)
+        merged_patterns = list(dict.fromkeys([*current_patterns, *suggested_patterns]))
+        merged_deprioritized = [
+            pattern
+            for pattern in dict.fromkeys([*current_deprioritized, *suggested_deprioritized])
+            if pattern not in merged_patterns
+        ]
+        if merged_patterns == current_patterns and merged_deprioritized == current_deprioritized:
+            return None
+
+        strategy["blocked_url_patterns"] = merged_patterns
+        strategy["deprioritized_url_patterns"] = merged_deprioritized
+        strategy["last_rewrite_at"] = utc_now()
+        strategy["last_rewrite_reason"] = "automatic failure-pattern refresh"
+        self.config.strategy_path.parent.mkdir(parents=True, exist_ok=True)
+        self.config.strategy_path.write_text(
+            json.dumps(strategy, indent=2, sort_keys=True),
+            encoding="utf-8",
+        )
+        self._record_event(
+            "failure_pattern_refresh",
+            {
+                "added_patterns": [pattern for pattern in merged_patterns if pattern not in current_patterns],
+                "added_deprioritized_patterns": [
+                    pattern for pattern in merged_deprioritized if pattern not in current_deprioritized
+                ],
+                "blocked_pattern_count": len(merged_patterns),
+                "deprioritized_pattern_count": len(merged_deprioritized),
             },
         )
         return strategy
@@ -108,11 +165,17 @@ class SelfHealingSupervisor:
             while self.restart_count <= self.config.max_restarts:
                 if process is None or process.poll() is not None:
                     process = self._start_daemon()
+                    self.last_start_at = time.time()
                     self.restart_count += 1
                     self._record_event("daemon_start", {"restart_count": self.restart_count})
 
                 state = CrawlState.load(self.config.state_path)
-                stuck, reason = self.is_stuck(state)
+                self.reconcile_failure_patterns(state)
+                stuck, reason = self.is_stuck(
+                    state,
+                    now_ts=time.time(),
+                    ignore_progress_until_ts=(self.last_start_at or 0.0) + self.config.stale_seconds,
+                )
                 if stuck:
                     self.rewrite_strategy(state, reason)
                     self._terminate(process)
@@ -190,7 +253,21 @@ class SelfHealingSupervisor:
                 prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
 
         for prefix, count in sorted(prefix_counts.items()):
-            if count >= 3:
+            if count >= 5:
+                patterns.append(prefix)
+        return patterns
+
+    def _suggest_deprioritized_patterns(self, state: CrawlState) -> list[str]:
+        patterns: list[str] = []
+        prefix_counts: dict[str, int] = {}
+        for url, count in (state.failed_urls or {}).items():
+            if int(count) < 2:
+                continue
+            prefix = self._failure_prefix(str(url).strip().lower())
+            if prefix:
+                prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+        for prefix, count in sorted(prefix_counts.items()):
+            if 2 <= count < 5:
                 patterns.append(prefix)
         return patterns
 

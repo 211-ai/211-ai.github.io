@@ -181,13 +181,13 @@ select:focus-visible {
 
 .dashboard-grid,
 .tool-grid,
-.category-grid,
 .privacy-metrics {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
+.category-grid,
 .analytics-grid {
   display: grid;
   gap: 12px;
@@ -398,6 +398,7 @@ select:focus-visible {
 .list-item,
 .scope-editor,
 .analytics-card,
+.proof-card,
 .timeline-event,
 .liaison-panel,
 .schedule-preview {
@@ -408,12 +409,30 @@ select:focus-visible {
 }
 
 .review-row,
-.list-item,
+.list-item {
+  align-items: stretch;
+  display: grid;
+  gap: 14px;
+}
+
 .schedule-preview {
   align-items: center;
   display: flex;
   gap: 14px;
   justify-content: space-between;
+}
+
+.list-item > div:first-child {
+  min-width: 0;
+}
+
+.list-item-action {
+  justify-self: stretch;
+}
+
+.compact-list-action {
+  justify-self: start;
+  padding-inline: 0;
 }
 
 .access-request-item {
@@ -454,6 +473,7 @@ select:focus-visible {
 .list-item h3,
 .scope-editor h3,
 .analytics-card h3,
+.proof-card h3,
 .liaison-panel h3,
 .timeline-event h3 {
   font-size: 17px;
@@ -463,6 +483,7 @@ select:focus-visible {
 .list-item p,
 .scope-editor p,
 .analytics-card p,
+.proof-card p,
 .liaison-panel p,
 .timeline-event p {
   color: #5b6776;
@@ -472,6 +493,18 @@ select:focus-visible {
 .analytics-card {
   display: grid;
   gap: 12px;
+}
+
+.proof-card {
+  display: grid;
+  gap: 12px;
+}
+
+.proof-inputs {
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  overflow: hidden;
 }
 
 .badge {
@@ -546,7 +579,23 @@ select:focus-visible {
 }
 
 .upload-dropzone input {
-  max-width: 230px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+}
+
+.upload-picker {
+  align-items: center;
+  background: #0f766e;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  gap: 8px;
+  margin-top: 8px;
+  min-height: 44px;
+  padding: 10px 14px;
 }
 
 .category-tile,
@@ -698,9 +747,29 @@ select:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .form-grid,
   .scope-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-row,
+  .list-item {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .list-item-action {
+    justify-self: auto;
+  }
+
+  .compact-list-action {
+    justify-self: auto;
+    padding-inline: 14px;
   }
 
   .scope-header {
