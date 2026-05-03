@@ -376,6 +376,58 @@ def test_wallet_api_access_request_can_delegate_document_view() -> None:
     assert decrypted["size_bytes"] == len("Delegate may view this identity document.")
 
 
+def test_wallet_api_revoked_access_blocks_invocation() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "revoked.txt",
+            "text": "Delegate access should be revoked.",
+        },
+    ).json()
+    access_request = client.post(
+        f"/wallets/{wallet['wallet_id']}/access-requests",
+        json={
+            "record_id": record["record_id"],
+            "requester_did": "did:key:delegate",
+            "ability": "record/decrypt",
+            "purpose": "identity_verification",
+        },
+    ).json()
+    approved = client.post(
+        f"/wallets/{wallet['wallet_id']}/access-requests/{access_request['request_id']}/approve",
+        json={
+            "actor_did": "did:key:owner",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+            "issue_invocation": True,
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{approved['grant_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "revoked"
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": approved["invocation_token"],
+        },
+    )
+    assert response.status_code == 400
+    assert "not active" in response.json()["detail"]
+
+
 def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None:
     client = _client()
     owner_key = random_key().hex()

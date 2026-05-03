@@ -23,6 +23,7 @@ UI_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = UI_ROOT.parents[1]
 DEFAULT_MANIFEST_GLOB = "artifacts/ui-screenshots/latest/*/manifest.json"
 DEFAULT_OUTPUT_DIR = "artifacts/ui-review/latest"
+CURRENT_VIEWPORTS = {"desktop", "mobile"}
 SYSTEM_PROMPT = """You are reviewing UI screenshots for Abby, a safety check-in
 and social-services liaison product. Be concrete and implementation-oriented.
 Prioritize privacy clarity, emergency/safety comprehension, mobile ergonomics,
@@ -84,6 +85,9 @@ def load_targets(manifest_glob: str, limit: int = 0) -> list[ReviewTarget]:
 
     targets: list[ReviewTarget] = []
     for manifest_path in manifest_paths:
+        if manifest_path.parent.name not in CURRENT_VIEWPORTS:
+            continue
+
         manifest = json.loads(manifest_path.read_text())
         screenshots = manifest.get("screenshots")
         if not isinstance(screenshots, list):

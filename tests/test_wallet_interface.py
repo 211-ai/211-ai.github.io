@@ -292,6 +292,43 @@ def test_wallet_interface_access_request_can_delegate_document_view(tmp_path):
     assert plaintext == source.read_bytes()
 
 
+def test_wallet_interface_revoked_access_blocks_invocation(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    owner_secret = b"o" * 32
+    delegate_secret = b"d" * 32
+    source = tmp_path / "revoked-view.txt"
+    source.write_text("This view should be revoked.", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER, actor_secret=owner_secret)
+    request = app.request_record_access(
+        wallet.wallet_id,
+        record.record_id,
+        requester_did=ADVOCATE,
+        ability="record/decrypt",
+        purpose="identity_verification",
+    )
+    approved = app.approve_access_request(
+        wallet.wallet_id,
+        request_id=request.request_id,
+        actor_did=OWNER,
+        issuer_secret=owner_secret,
+        audience_secret=delegate_secret,
+        issue_invocation=True,
+    )
+
+    grant = app.revoke_grant(wallet.wallet_id, approved.grant_id, actor_did=OWNER)
+
+    assert grant.status == "revoked"
+    with pytest.raises(Exception, match="not active"):
+        app.decrypt_record_with_invocation(
+            wallet.wallet_id,
+            record.record_id,
+            actor_did=ADVOCATE,
+            invocation=app.wallet_service.invocations[approved.invocation_id],
+            actor_secret=delegate_secret,
+        )
+
+
 def test_wallet_interface_decrypt_access_request_respects_threshold_approval(tmp_path):
     app = WalletInterfaceService(services=_services())
     wallet = app.create_wallet(

@@ -118,6 +118,10 @@ class ThresholdApprovalDecisionRequest(BaseModel):
     approver_did: str
 
 
+class RevokeGrantRequest(BaseModel):
+    actor_did: str
+
+
 class AnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -471,6 +475,14 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 approver_did=request.approver_did,
             )
             return approval.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/grants/{grant_id}/revoke")
+    def revoke_grant(wallet_id: str, grant_id: str, request: RevokeGrantRequest) -> Dict[str, Any]:
+        try:
+            grant = app_service.revoke_grant(wallet_id, grant_id, actor_did=request.actor_did)
+            return grant.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

@@ -181,6 +181,23 @@ class DuckDBCrawlStore:
                 inserted += 1
         return inserted
 
+    def apply_strategy_priorities(self, strategy: dict[str, object]) -> None:
+        with self._connect() as conn:
+            rows = conn.execute("SELECT seq, url, depth, kind FROM queue").fetchall()
+            for seq, url, depth, kind in rows:
+                conn.execute(
+                    "UPDATE queue SET priority = ? WHERE seq = ?",
+                    [
+                        score_queue_item(
+                            str(url),
+                            depth=int(depth),
+                            kind=str(kind),
+                            strategy=strategy,
+                        ),
+                        int(seq),
+                    ],
+                )
+
     def claim_batch(self, *, limit: int, blocked_urls: set[str]) -> list["CrawlItem"]:
         from .agentic_daemon import CrawlItem
 
@@ -286,7 +303,13 @@ class DuckDBCrawlStore:
         return {str(url): int(failures) for url, failures in rows}
 
 
-def score_queue_item(url: str, *, depth: int, kind: str) -> int:
+def score_queue_item(
+    url: str,
+    *,
+    depth: int,
+    kind: str,
+    strategy: dict[str, object] | None = None,
+) -> int:
     """Prefer deep service-detail URLs over roots and category pages."""
     lowered = str(url or "").strip().lower()
     parsed = urlparse(lowered)
@@ -321,5 +344,12 @@ def score_queue_item(url: str, *, depth: int, kind: str) -> int:
         )
     ):
         score -= 35
+    deprioritized_patterns = [
+        str(item).strip().lower()
+        for item in ((strategy or {}).get("deprioritized_url_patterns", []) if strategy else [])
+        if str(item).strip()
+    ]
+    if any(pattern in lowered for pattern in deprioritized_patterns):
+        score -= 90
     score -= min(30, max(0, depth) * 3)
     return int(score)

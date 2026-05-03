@@ -27,7 +27,8 @@ import {
   RegistrationProfileDraft,
   RouteId,
   UploadItem,
-  WalletAccessRequest
+  WalletAccessRequest,
+  ProofReceiptView
 } from "../models/abby";
 import {
   analyticsStudies,
@@ -37,6 +38,7 @@ import {
   initialRecipients,
   initialAccessRequests,
   initialUploads,
+  proofReceipts,
   serviceMatches
 } from "../services/mockAbbyService";
 
@@ -55,6 +57,7 @@ const secondaryRoutes: Array<{ id: RouteId; label: string; icon: typeof Home }> 
   { id: "recipient-access", label: "Recipient access", icon: KeyRound },
   { id: "benefits-protection", label: "Benefits opt-in", icon: Landmark },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "proof-center", label: "Proofs", icon: ShieldCheck },
   { id: "security", label: "Security", icon: LockKeyhole },
   { id: "audit", label: "Audit", icon: ClipboardCheck }
 ];
@@ -205,6 +208,7 @@ export function App() {
         {activeRoute === "analytics" ? (
           <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
         ) : null}
+        {activeRoute === "proof-center" ? <ProofCenterScreen proofs={proofReceipts} /> : null}
         {activeRoute === "security" ? <SecurityScreen /> : null}
         {activeRoute === "audit" ? <AuditScreen /> : null}
       </main>
@@ -507,7 +511,7 @@ function ContactsScreen({
       </div>
       <div className="list-stack">
         {recipients.map((recipient) => (
-          <article className="list-item" key={recipient.id}>
+          <article className="list-item recipient-list-item" key={recipient.id}>
             <div>
               <h3>{recipient.displayName}</h3>
               <p>{recipient.relationship || recipient.agencyName || recipient.type.replace("_", " ")}</p>
@@ -520,6 +524,7 @@ function ContactsScreen({
             </div>
             <Button
               ariaLabel={`Remove ${recipient.displayName}`}
+              className="compact-list-action"
               onClick={() => setRecipients(recipients.filter((item) => item.id !== recipient.id))}
               variant="quiet"
             >
@@ -659,6 +664,9 @@ function UploadsScreen({
           <Upload aria-hidden="true" size={28} />
           <span>Choose a file or photo</span>
           <small>Stored items stay private until added to a sharing rule.</small>
+          <span className="upload-picker">
+            <FileUp aria-hidden="true" size={18} /> Select file
+          </span>
           <input
             type="file"
             onChange={(event) => addUpload(event.target.files?.[0]?.name ?? "")}
@@ -668,7 +676,7 @@ function UploadsScreen({
       </Section>
       <div className="list-stack">
         {uploads.map((upload) => (
-          <article className="list-item" key={upload.id}>
+          <article className="list-item upload-list-item" key={upload.id}>
             <div>
               <h3>{upload.fileName}</h3>
               <p>{upload.category}</p>
@@ -679,6 +687,7 @@ function UploadsScreen({
               </div>
             </div>
             <Button
+              className="list-item-action"
               onClick={() =>
                 setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item)))
               }
@@ -812,7 +821,21 @@ function RecipientAccessScreen({
   }
 
   function decideRequest(requestId: string, status: "approved" | "rejected") {
-    setAccessRequests(accessRequests.map((request) => (request.id === requestId ? { ...request, status } : request)));
+    setAccessRequests(
+      accessRequests.map((request) =>
+        request.id === requestId
+          ? { ...request, status, grantStatus: status === "approved" ? "active" : request.grantStatus }
+          : request
+      )
+    );
+  }
+
+  function revokeRequest(requestId: string) {
+    setAccessRequests(
+      accessRequests.map((request) =>
+        request.id === requestId ? { ...request, grantStatus: "revoked" } : request
+      )
+    );
   }
 
   return (
@@ -845,6 +868,11 @@ function RecipientAccessScreen({
                       {request.approvalCount ?? 0}/{request.approvalThreshold ?? 1} approvals
                     </Badge>
                   ) : null}
+                  {request.status === "approved" ? (
+                    <Badge tone={request.grantStatus === "revoked" ? "warning" : "success"}>
+                      {request.grantStatus === "revoked" ? "revoked" : "active grant"}
+                    </Badge>
+                  ) : null}
                 </div>
                 {request.approvalRequired && !hasThresholdApproval(request) ? (
                   <p className="approval-note">Multi-sig approval is required before this access can be granted.</p>
@@ -867,6 +895,12 @@ function RecipientAccessScreen({
                   </Button>
                   <Button onClick={() => decideRequest(request.id, "rejected")} variant="danger">
                     Reject
+                  </Button>
+                </div>
+              ) : request.status === "approved" && request.grantStatus !== "revoked" ? (
+                <div className="row-actions">
+                  <Button onClick={() => revokeRequest(request.id)} variant="danger">
+                    Revoke
                   </Button>
                 </div>
               ) : null}
@@ -995,6 +1029,53 @@ function AnalyticsScreen({
                   <small>Precise location, raw documents, names, and contact details are excluded.</small>
                 </span>
               </label>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ProofCenterScreen({ proofs }: { proofs: ProofReceiptView[] }) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Proof center</p>
+        <h1>Verified wallet claims</h1>
+      </div>
+      <StatusBanner tone="info">
+        Proof receipts expose public claims and verifier details without showing raw documents or precise location.
+      </StatusBanner>
+      <div className="list-stack">
+        {proofs.map((proof) => {
+          const titleId = `proof-title-${proof.id}`;
+
+          return (
+            <article aria-labelledby={titleId} className="proof-card" key={proof.id}>
+              <div className="scope-header">
+                <div>
+                  <h3 id={titleId}>{proof.claim}</h3>
+                  <p>
+                    {proof.proofType} · {proof.verifier}
+                  </p>
+                </div>
+                <Badge tone={proof.simulated ? "warning" : "success"}>
+                  {proof.simulated ? "Simulated" : "Verified"}
+                </Badge>
+              </div>
+              <div className="badge-row">
+                <Badge>{proof.createdAt}</Badge>
+                <Badge>{proof.witnessLabel}</Badge>
+              </div>
+              <div className="proof-inputs" aria-label={`${proof.claim} public inputs`}>
+                {Object.entries(proof.publicInputs).map(([key, value]) => (
+                  <div className="disclosure-row" key={key}>
+                    <strong>{key}</strong>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
             </article>
           );
         })}

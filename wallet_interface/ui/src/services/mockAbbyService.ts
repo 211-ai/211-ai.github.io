@@ -3,6 +3,7 @@ import {
   AnalyticsStudy,
   CheckInPolicyDraft,
   DisclosureRecipientDraft,
+  ProofReceiptView,
   RegistrationProfileDraft,
   ServiceMatch,
   UploadItem,
@@ -162,5 +163,46 @@ export const initialAccessRequests: WalletAccessRequest[] = [
     approvalRequired: true,
     approvalThreshold: 2,
     approvalCount: 1
+  },
+  {
+    id: "access-3",
+    requesterName: "Legal Aid desk",
+    requesterDid: "did:key:legal-aid",
+    audienceDid: "did:key:legal-aid",
+    resourceLabel: "Housing notice",
+    abilities: ["record/analyze"],
+    purpose: "Prepare appeal options",
+    status: "approved",
+    createdAt: "Apr 30, 3:05 PM",
+    grantStatus: "active"
+  }
+];
+
+export const proofReceipts: ProofReceiptView[] = [
+  {
+    id: "proof-1",
+    proofType: "location_region",
+    claim: "Location is in service region",
+    verifier: "211 service matcher",
+    publicInputs: {
+      region_id: "multnomah_county",
+      claim: "location_in_region"
+    },
+    witnessLabel: "Current location",
+    simulated: true,
+    createdAt: "Today, 10:38 AM"
+  },
+  {
+    id: "proof-2",
+    proofType: "analytics_contribution",
+    claim: "Contribution follows study consent",
+    verifier: "Analytics template verifier",
+    publicInputs: {
+      template_id: "housing_service_gap_v1",
+      fields: "county, need_category"
+    },
+    witnessLabel: "Derived service needs",
+    simulated: true,
+    createdAt: "Today, 10:41 AM"
   }
 ];

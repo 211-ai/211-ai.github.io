@@ -297,6 +297,9 @@ class WalletInterfaceService:
             reason=reason,
         )
 
+    def revoke_grant(self, wallet_id: str, grant_id: str, *, actor_did: str):
+        return self.wallet_service.revoke_grant(wallet_id, grant_id, actor_did=actor_did)
+
     def analyze_record_with_invocation(
         self,
         wallet_id: str,

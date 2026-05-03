@@ -175,6 +175,22 @@ def test_duckdb_store_claims_high_priority_urls_first(tmp_path):
     assert "/get-help/food/" in batch[1].url
 
 
+def test_queue_priority_deprioritizes_pattern_matches():
+    detail_score = score_queue_item(
+        "https://gethelp.211info.org/get-help/food/community-meals-at-risk-youth/",
+        depth=1,
+        kind="discovered",
+    )
+    deprioritized_score = score_queue_item(
+        "https://gethelp.211info.org/get-help/food/community-meals-at-risk-youth/",
+        depth=1,
+        kind="discovered",
+        strategy={"deprioritized_url_patterns": ["/get-help/food/"]},
+    )
+
+    assert deprioritized_score < detail_score
+
+
 def test_supervisor_rewrites_strategy_for_stale_active_url(tmp_path):
     state_path = tmp_path / "state.json"
     strategy_path = tmp_path / "strategy.json"
@@ -280,4 +296,90 @@ def test_supervisor_rewrite_adds_blocked_patterns_from_failures(tmp_path):
 
     assert "/search/?" in updated["blocked_url_patterns"]
     assert "resources@" in updated["blocked_url_patterns"]
-    assert "/get-help/food/" in updated["blocked_url_patterns"]
+    assert "/get-help/food/" in updated["deprioritized_url_patterns"]
+
+
+def test_supervisor_reconcile_failure_patterns_updates_strategy_without_generation_bump(tmp_path):
+    state_path = tmp_path / "state.json"
+    strategy_path = tmp_path / "strategy.json"
+    events_path = tmp_path / "events.jsonl"
+    state = CrawlState(
+        failed_urls={
+            "https://www.211info.org/search/?search_term=abc": 1,
+            "https://www.211info.org/give-help/provider-tools/resources@wa211.org": 1,
+        },
+    )
+    state.save(state_path)
+    strategy_path.write_text(json.dumps({"generation": 7, "blocked_url_patterns": []}), encoding="utf-8")
+    supervisor = SelfHealingSupervisor(
+        SupervisorConfig(
+            state_path=state_path,
+            strategy_path=strategy_path,
+            events_path=events_path,
+            stale_seconds=60,
+        )
+    )
+
+    updated = supervisor.reconcile_failure_patterns(state)
+
+    assert updated is not None
+    assert updated["generation"] == 7
+    assert "/search/?" in updated["blocked_url_patterns"]
+    assert "resources@" in updated["blocked_url_patterns"]
+    lines = events_path.read_text(encoding="utf-8").splitlines()
+    assert any("failure_pattern_refresh" in line for line in lines)
+
+
+def test_supervisor_reconcile_failure_patterns_deprioritizes_before_blocking(tmp_path):
+    state_path = tmp_path / "state.json"
+    strategy_path = tmp_path / "strategy.json"
+    events_path = tmp_path / "events.jsonl"
+    state = CrawlState(
+        failed_urls={
+            "https://gethelp.211info.org/get-help/food/detail-one": 2,
+            "https://gethelp.211info.org/get-help/food/detail-two": 2,
+            "https://gethelp.211info.org/get-help/food/detail-three": 2,
+        },
+    )
+    state.save(state_path)
+    strategy_path.write_text(json.dumps({"generation": 7}), encoding="utf-8")
+    supervisor = SelfHealingSupervisor(
+        SupervisorConfig(
+            state_path=state_path,
+            strategy_path=strategy_path,
+            events_path=events_path,
+            stale_seconds=60,
+        )
+    )
+
+    updated = supervisor.reconcile_failure_patterns(state)
+
+    assert updated is not None
+    assert "/get-help/food/" in updated["deprioritized_url_patterns"]
+    assert "/get-help/food/" not in updated.get("blocked_url_patterns", [])
+
+
+def test_supervisor_startup_grace_skips_stale_progress_check(tmp_path):
+    supervisor = SelfHealingSupervisor(
+        SupervisorConfig(
+            state_path=tmp_path / "state.json",
+            strategy_path=tmp_path / "strategy.json",
+            events_path=tmp_path / "events.jsonl",
+            stale_seconds=60,
+        )
+    )
+    stale_at = (datetime.now(timezone.utc) - timedelta(minutes=20)).isoformat()
+    state = CrawlState(
+        queue=[CrawlItem(url="https://www.211info.org/pending")],
+        processed_pages=10,
+        last_progress_at=stale_at,
+    )
+
+    stuck, reason = supervisor.is_stuck(
+        state,
+        now_ts=datetime.now(timezone.utc).timestamp(),
+        ignore_progress_until_ts=datetime.now(timezone.utc).timestamp() + 30,
+    )
+
+    assert stuck is False
+    assert reason == ""

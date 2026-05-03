@@ -320,6 +320,7 @@ class AgenticCrawlerDaemon:
         state = CrawlState.load(self.state_path)
         self.store.migrate_from_state(state)
         strategy = self.load_strategy()
+        self.store.apply_strategy_priorities(strategy)
         state.strategy_generation = int(strategy.get("generation", state.strategy_generation))
         all_seed_urls = [*seed_urls, *self._load_external_seed_urls()]
         self._seed_queue(all_seed_urls)
@@ -424,6 +425,7 @@ class AgenticCrawlerDaemon:
             "allowed_hosts": ["www.211info.org", "211info.org", "gethelp.211info.org"],
             "blocked_urls": [],
             "blocked_url_patterns": [],
+            "deprioritized_url_patterns": [],
             "target_terms": sorted(SERVICE_HINTS),
         }
         if not self.strategy_path.exists():
