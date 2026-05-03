@@ -13,6 +13,7 @@ import {
 export const emptyRegistrationProfile: RegistrationProfileDraft = {
   legalName: "",
   preferredName: "",
+  pronouns: "",
   dateOfBirth: "",
   photoAssetId: "",
   phone: "",
@@ -21,6 +22,7 @@ export const emptyRegistrationProfile: RegistrationProfileDraft = {
   shelterAffiliation: "",
   serviceNeeds: [],
   preferredCheckInChannels: ["web"],
+  easyBotCheckStatus: "pending",
   captchaToken: ""
 };
 
@@ -55,7 +57,7 @@ export const initialRecipients: DisclosureRecipientDraft[] = [
     agencyName: "Downtown Outreach",
     precinctName: "",
     verified: false,
-    allowedScopes: ["identity_minimum", "profile", "uploaded_documents"]
+    allowedScopes: ["identity_minimum", "photo", "profile", "uploaded_documents"]
   }
 ];
 
@@ -63,6 +65,7 @@ export const initialUploads: UploadItem[] = [
   {
     id: "up-1",
     fileName: "State ID photo",
+    machineSummary: "State Id Photo",
     category: "Identity",
     sensitivity: "high",
     status: "stored",

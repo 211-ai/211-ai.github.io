@@ -30,14 +30,19 @@ export type DisclosureDataScope =
   | "photo"
   | "current_location"
   | "uploaded_documents"
+  | "missed_check_in"
+  | "found_permanent_housing"
   | "medical_notes"
   | "shelter_history"
   | "benefits_information"
   | "custom";
 
+export type EasyBotCheckStatus = "pending" | "passed" | "failed";
+
 export interface RegistrationProfileDraft {
   legalName: string;
   preferredName: string;
+  pronouns: string;
   dateOfBirth: string;
   photoAssetId: string;
   phone: string;
@@ -46,6 +51,7 @@ export interface RegistrationProfileDraft {
   shelterAffiliation: string;
   serviceNeeds: string[];
   preferredCheckInChannels: CheckInChannel[];
+  easyBotCheckStatus: EasyBotCheckStatus;
   captchaToken: string;
 }
 
@@ -73,6 +79,7 @@ export interface DisclosureRecipientDraft {
 export interface UploadItem {
   id: string;
   fileName: string;
+  machineSummary: string;
   category: string;
   sensitivity: "low" | "moderate" | "high" | "restricted";
   status: "stored" | "encrypting" | "failed";
