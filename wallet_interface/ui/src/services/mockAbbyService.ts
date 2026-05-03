@@ -3,11 +3,13 @@ import {
   AnalyticsStudy,
   CheckInPolicyDraft,
   DisclosureRecipientDraft,
+  ExportBundleView,
   ProofReceiptView,
   RegistrationProfileDraft,
   ServiceMatch,
   UploadItem,
-  WalletAccessRequest
+  WalletAccessRequest,
+  WalletGrantReceipt
 } from "../models/abby";
 
 export const emptyRegistrationProfile: RegistrationProfileDraft = {
@@ -181,6 +183,22 @@ export const initialAccessRequests: WalletAccessRequest[] = [
   }
 ];
 
+export const initialGrantReceipts: WalletGrantReceipt[] = [
+  {
+    id: "receipt-1",
+    grantId: "grant-legal-aid",
+    audienceName: "Legal Aid desk",
+    audienceDid: "did:key:legal-aid",
+    resourceLabel: "Housing notice",
+    abilities: ["record/analyze"],
+    purpose: "Prepare appeal options",
+    receiptHash: "8d2e31b4f7a9c6eab2d4f0c98a3e7b1f",
+    status: "active",
+    createdAt: "Apr 30, 3:05 PM",
+    expiresAt: "May 30, 2026"
+  }
+];
+
 export const proofReceipts: ProofReceiptView[] = [
   {
     id: "proof-1",
@@ -207,5 +225,30 @@ export const proofReceipts: ProofReceiptView[] = [
     witnessLabel: "Derived service needs",
     simulated: true,
     createdAt: "Today, 10:41 AM"
+  }
+];
+
+export const exportBundles: ExportBundleView[] = [
+  {
+    id: "export-1",
+    bundleId: "export-6d8f4e92b1a7c340d57a92ce",
+    bundleHash: "6d8f4e92b1a7c340d57a92ce90ef335aa64b85d62ef4d8e2b66a2010b16f5718",
+    audienceName: "Legal Aid desk",
+    recordCount: 2,
+    proofCount: 1,
+    storageOk: true,
+    imported: true,
+    createdAt: "Today, 11:18 AM"
+  },
+  {
+    id: "export-2",
+    bundleId: "export-3a41c9fe8420d718ce1490b4",
+    bundleHash: "3a41c9fe8420d718ce1490b45820ad275b01365f1d51287b27b835e192fc0062",
+    audienceName: "Benefits navigation clinic",
+    recordCount: 1,
+    proofCount: 0,
+    storageOk: false,
+    imported: false,
+    createdAt: "Yesterday, 2:35 PM"
   }
 ];

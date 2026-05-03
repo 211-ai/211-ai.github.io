@@ -195,8 +195,8 @@ def etl_warc_paths(
                 "fetched_at": utc_now(),
             }
         )
-        service = extractor._extract_service_record(result, item)
-        if service:
+        services = extractor._extract_service_records(result, item)
+        for service in services:
             service["source_archive"] = doc.warc_path
             raw_services.append(service)
 

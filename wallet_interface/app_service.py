@@ -11,7 +11,7 @@ from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, 
 ensure_ipfs_datasets_py_path()
 
 from ipfs_datasets_py.wallet import WalletService  # noqa: E402
-from ipfs_datasets_py.wallet.ucan import resource_for_location, resource_for_record  # noqa: E402
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record  # noqa: E402
 
 
 class WalletInterfaceService:
@@ -216,6 +216,21 @@ class WalletInterfaceService:
             audience_did=audience_did,
         )
 
+    def access_request_review_items(
+        self,
+        wallet_id: str,
+        *,
+        status: str | None = "pending",
+        requester_did: str | None = None,
+        audience_did: str | None = None,
+    ) -> List[Dict[str, Any]]:
+        return self.wallet_service.access_request_review_items(
+            wallet_id,
+            status=status,
+            requester_did=requester_did,
+            audience_did=audience_did,
+        )
+
     def approve_access_request(
         self,
         wallet_id: str,
@@ -297,8 +312,142 @@ class WalletInterfaceService:
             reason=reason,
         )
 
+    def revoke_access_request(
+        self,
+        wallet_id: str,
+        *,
+        request_id: str,
+        actor_did: str,
+        reason: str | None = None,
+    ):
+        return self.wallet_service.revoke_access_request(
+            wallet_id,
+            request_id=request_id,
+            actor_did=actor_did,
+            reason=reason,
+        )
+
     def revoke_grant(self, wallet_id: str, grant_id: str, *, actor_did: str):
         return self.wallet_service.revoke_grant(wallet_id, grant_id, actor_did=actor_did)
+
+    def list_grant_receipts(
+        self,
+        wallet_id: str,
+        *,
+        audience_did: str | None = None,
+        status: str | None = None,
+    ):
+        return self.wallet_service.list_grant_receipts(
+            wallet_id,
+            audience_did=audience_did,
+            status=status,
+        )
+
+    def create_export_grant(
+        self,
+        wallet_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        record_ids: Sequence[str],
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        purpose: str = "user_export",
+        expires_at: str | None = None,
+        approval_id: str | None = None,
+    ):
+        return self.wallet_service.create_grant(
+            wallet_id=wallet_id,
+            issuer_did=issuer_did,
+            audience_did=audience_did,
+            resources=[resource_for_export(wallet_id)],
+            abilities=["export/create"],
+            caveats={"purpose": purpose, "record_ids": list(record_ids)},
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+            expires_at=expires_at,
+            approval_id=approval_id,
+        )
+
+    def create_export_bundle(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        record_ids: Sequence[str] | None = None,
+        include_proofs: bool = True,
+        include_derived_artifacts: bool = True,
+    ):
+        return self.wallet_service.create_export_bundle(
+            wallet_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            record_ids=list(record_ids) if record_ids is not None else None,
+            include_proofs=include_proofs,
+            include_derived_artifacts=include_derived_artifacts,
+        )
+
+    def issue_export_invocation(
+        self,
+        wallet_id: str,
+        *,
+        grant_id: str,
+        actor_did: str,
+        actor_secret: bytes | None = None,
+        record_ids: Sequence[str] | None = None,
+        expires_at: str | None = None,
+    ):
+        caveats: Dict[str, Any] = {"purpose": "user_export"}
+        if record_ids is not None:
+            caveats["record_ids"] = list(record_ids)
+        return self.wallet_service.issue_invocation(
+            wallet_id,
+            grant_id=grant_id,
+            actor_did=actor_did,
+            resource=resource_for_export(wallet_id),
+            ability="export/create",
+            actor_secret=actor_secret,
+            caveats=caveats,
+            expires_at=expires_at,
+        )
+
+    def create_export_bundle_with_invocation(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        invocation,
+        actor_secret: bytes | None = None,
+        record_ids: Sequence[str] | None = None,
+        include_proofs: bool = True,
+        include_derived_artifacts: bool = True,
+    ):
+        return self.wallet_service.create_export_bundle_with_invocation(
+            wallet_id,
+            actor_did=actor_did,
+            invocation=invocation,
+            actor_secret=actor_secret,
+            record_ids=list(record_ids) if record_ids is not None else None,
+            include_proofs=include_proofs,
+            include_derived_artifacts=include_derived_artifacts,
+        )
+
+    def verify_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+        bundle_hash = self.wallet_service.export_bundle_hash(bundle)
+        embedded_hash = bundle.get("bundle_hash")
+        return {
+            "valid": self.wallet_service.verify_export_bundle(bundle),
+            "bundle_id": bundle.get("bundle_id"),
+            "bundle_hash": embedded_hash,
+            "computed_hash": bundle_hash,
+        }
+
+    def import_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+        return self.wallet_service.import_export_bundle(bundle)
+
+    def verify_export_bundle_storage(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+        return self.wallet_service.verify_export_bundle_storage(bundle)
 
     def analyze_record_with_invocation(
         self,

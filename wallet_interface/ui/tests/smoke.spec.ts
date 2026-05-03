@@ -8,11 +8,16 @@ test("mobile home exposes the two required primary cards", async ({ page }) => {
 
 test("registration enforces minimum required profile fields", async ({ page }) => {
   await page.goto("/#/register");
-  await expect(page.getByRole("button", { name: /Create profile draft/i })).toBeDisabled();
+  await expect(page.getByLabel(/Legal or full name/i)).toBeVisible();
+  await expect(page.getByLabel(/Birth date/i)).toBeVisible();
+  await expect(page.getByLabel(/Photo or photo ID/i)).toBeVisible();
+  await expect(page.getByLabel(/Bot check complete/i)).toBeDisabled();
   await page.getByLabel(/Legal or full name/i).fill("Abby Example");
   await page.getByLabel(/Birth date/i).fill("1990-01-01");
+  await page.getByLabel(/Quick health check complete/i).check();
+  await expect(page.getByLabel(/Bot check complete/i)).toBeEnabled();
   await page.getByLabel(/Bot check complete/i).check();
-  await expect(page.getByRole("button", { name: /Create profile draft/i })).toBeDisabled();
+  await expect(page.getByLabel(/Bot check complete/i)).toBeChecked();
 });
 
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
@@ -66,6 +71,19 @@ test("proof center shows public proof inputs without private coordinates", async
   await expect(regionProof.getByText(/^lon$/i)).not.toBeVisible();
 });
 
+test("exports show receipt hashes and storage status", async ({ page }) => {
+  await page.goto("/#/exports");
+  await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Create export bundle/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
+  const legalAidExport = page.getByRole("article", { name: /Legal Aid desk/i });
+  await expect(legalAidExport.getByText(/Bundle hash/i)).toBeVisible();
+  await expect(legalAidExport.getByText(/storage verified/i)).toBeVisible();
+  await expect(legalAidExport.getByText(/import verified/i)).toBeVisible();
+  const benefitsExport = page.getByRole("article", { name: /Benefits navigation clinic/i });
+  await expect(benefitsExport.getByText(/storage missing/i)).toBeVisible();
+});
+
 test("recipient access requires multi-sig approval before decrypt sharing", async ({ page }) => {
   await page.goto("/#/recipient-access");
   const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
@@ -75,6 +93,9 @@ test("recipient access requires multi-sig approval before decrypt sharing", asyn
   await expect(request.getByText(/2\/2 approvals/i)).toBeVisible();
   await request.getByRole("button", { name: /^Approve$/i }).click();
   await expect(request.getByText("approved", { exact: true })).toBeVisible();
+  const receipt = page.getByRole("article", { name: /Downtown Outreach/i }).filter({ hasText: "Receipt hash" });
+  await expect(receipt.getByText(/record\/decrypt/i)).toBeVisible();
+  await expect(receipt.getByText(/active/i)).toBeVisible();
 });
 
 test("recipient access can revoke an active grant", async ({ page }) => {
@@ -84,4 +105,6 @@ test("recipient access can revoke an active grant", async ({ page }) => {
   await request.getByRole("button", { name: /Revoke/i }).click();
   await expect(request.getByText("revoked", { exact: true })).toBeVisible();
   await expect(request.getByRole("button", { name: /Revoke/i })).toHaveCount(0);
+  const receipt = page.getByRole("article", { name: /Legal Aid desk/i }).filter({ hasText: "Receipt hash" });
+  await expect(receipt.getByText("revoked", { exact: true })).toBeVisible();
 });

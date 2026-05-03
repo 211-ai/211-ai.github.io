@@ -61,6 +61,37 @@ def task_should_generate(task: dict[str, Any], include_blocked: bool) -> bool:
     return str(task.get("status")) != "blocked"
 
 
+def count_by(tasks: list[dict[str, Any]], key: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for task in tasks:
+        value = str(task.get(key, "unknown"))
+        counts[value] = counts.get(value, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def validate_task(task: dict[str, Any]) -> None:
+    required_fields = [
+        "task_id",
+        "title",
+        "priority",
+        "category",
+        "suggested_agent",
+        "status",
+        "route_path",
+        "viewport",
+        "state",
+        "screenshot_path",
+        "source_feedback",
+    ]
+    missing_fields = [field for field in required_fields if field not in task]
+    if missing_fields:
+        raise ValueError(f"{task.get('task_id', '<unknown>')} is missing fields: {', '.join(missing_fields)}")
+
+    screenshot_path = resolve_ui_path(str(task["screenshot_path"]))
+    if not screenshot_path.exists():
+        raise FileNotFoundError(f"{task['task_id']} screenshot missing: {screenshot_path}")
+
+
 def build_prompt(task: dict[str, Any]) -> str:
     criteria = "\n".join(f"- {criterion}" for criterion in task.get("acceptance_criteria", []))
     likely_files = "\n".join(f"- `{path}`" for path in LIKELY_FILES)
@@ -127,9 +158,23 @@ def write_outputs(output_dir: Path, backlog: dict[str, Any], tasks: list[dict[st
         f"Source: `{backlog.get('sourceReviewResults', DEFAULT_BACKLOG)}`",
         f"Prompts: {len(tasks)}",
         "",
+        "## Summary",
+        "",
+        "By status:",
+        *[f"- `{status}`: {count}" for status, count in count_by(tasks, "status").items()],
+        "",
+        "By priority:",
+        *[f"- `{priority}`: {count}" for priority, count in count_by(tasks, "priority").items()],
+        "",
+        "By viewport:",
+        *[f"- `{viewport}`: {count}" for viewport, count in count_by(tasks, "viewport").items()],
+        "",
+        "## Prompts",
+        "",
     ]
 
     for task in tasks:
+        validate_task(task)
         filename = f"{slugify(task['task_id'])}.md"
         prompt_path = output_dir / filename
         prompt_path.write_text(build_prompt(task))

@@ -57,6 +57,22 @@ class DuckDBCrawlStore:
                 )
                 """
             )
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS pattern_yield_stats (
+                    pattern TEXT PRIMARY KEY,
+                    attempts INTEGER NOT NULL DEFAULT 0,
+                    successes INTEGER NOT NULL DEFAULT 0,
+                    fetch_failures INTEGER NOT NULL DEFAULT 0,
+                    last_url TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            conn.execute("DROP VIEW IF EXISTS queue_summary")
+            conn.execute("DROP VIEW IF EXISTS queue_priority_frontier")
+            conn.execute("DROP VIEW IF EXISTS failure_summary")
+            conn.execute("DROP VIEW IF EXISTS queue_pattern_frontier")
             queue_columns = {
                 str(row[1])
                 for row in conn.execute("PRAGMA table_info('queue')").fetchall()
@@ -71,6 +87,7 @@ class DuckDBCrawlStore:
                     [score_queue_item(str(url), depth=int(depth), kind=str(kind)), int(seq)],
                 )
             conn.execute("UPDATE queue SET status = 'queued', claimed_at = NULL WHERE status = 'active'")
+        with self._connect() as conn:
             conn.execute(
                 """
                 CREATE OR REPLACE VIEW queue_summary AS
@@ -108,6 +125,41 @@ class DuckDBCrawlStore:
                     updated_at
                 FROM failed_urls
                 ORDER BY failures DESC, updated_at DESC
+                """
+            )
+            conn.execute(
+                """
+                CREATE OR REPLACE VIEW queue_pattern_frontier AS
+                WITH queued AS (
+                    SELECT
+                        regexp_extract(lower(url), '(/get-help/[^/]+/)', 1) AS pattern,
+                        priority
+                    FROM queue
+                    WHERE status = 'queued'
+                )
+                SELECT
+                    queued.pattern,
+                    COUNT(*) AS queued_urls,
+                    MAX(queued.priority) AS max_priority,
+                    AVG(queued.priority) AS avg_priority,
+                    COALESCE(stats.attempts, 0) AS attempts,
+                    COALESCE(stats.successes, 0) AS successes,
+                    COALESCE(stats.fetch_failures, 0) AS fetch_failures,
+                    CASE
+                        WHEN COALESCE(stats.attempts, 0) > 0
+                            THEN CAST(stats.successes AS DOUBLE) / CAST(stats.attempts AS DOUBLE)
+                        ELSE NULL
+                    END AS success_rate
+                FROM queued
+                LEFT JOIN pattern_yield_stats AS stats
+                    ON queued.pattern = stats.pattern
+                WHERE queued.pattern IS NOT NULL AND queued.pattern <> ''
+                GROUP BY
+                    queued.pattern,
+                    stats.attempts,
+                    stats.successes,
+                    stats.fetch_failures
+                ORDER BY max_priority DESC, queued_urls DESC, queued.pattern ASC
                 """
             )
 
@@ -182,9 +234,11 @@ class DuckDBCrawlStore:
         return inserted
 
     def apply_strategy_priorities(self, strategy: dict[str, object]) -> None:
+        stats_map = {str(row["pattern"]): row for row in self.pattern_yield_stats()}
         with self._connect() as conn:
             rows = conn.execute("SELECT seq, url, depth, kind FROM queue").fetchall()
             for seq, url, depth, kind in rows:
+                pattern = pattern_prefix_for_url(str(url))
                 conn.execute(
                     "UPDATE queue SET priority = ? WHERE seq = ?",
                     [
@@ -193,6 +247,7 @@ class DuckDBCrawlStore:
                             depth=int(depth),
                             kind=str(kind),
                             strategy=strategy,
+                            pattern_stats=stats_map.get(pattern),
                         ),
                         int(seq),
                     ],
@@ -257,6 +312,30 @@ class DuckDBCrawlStore:
             row = conn.execute("SELECT failures FROM failed_urls WHERE url = ?", [url]).fetchone()
         return int(row[0]) if row else 1
 
+    def record_pattern_outcome(self, url: str, *, extracted: bool, fetch_success: bool) -> None:
+        pattern = pattern_prefix_for_url(url)
+        if not pattern:
+            return
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO pattern_yield_stats(pattern, attempts, successes, fetch_failures, last_url)
+                VALUES (?, 1, ?, ?, ?)
+                ON CONFLICT(pattern) DO UPDATE
+                SET attempts = pattern_yield_stats.attempts + 1,
+                    successes = pattern_yield_stats.successes + excluded.successes,
+                    fetch_failures = pattern_yield_stats.fetch_failures + excluded.fetch_failures,
+                    last_url = excluded.last_url,
+                    updated_at = now()
+                """,
+                [
+                    pattern,
+                    1 if extracted else 0,
+                    0 if fetch_success else 1,
+                    str(url),
+                ],
+            )
+
     def queue_count(self, *, include_active: bool = False) -> int:
         status_sql = "IN ('queued', 'active')" if include_active else "= 'queued'"
         with self._connect() as conn:
@@ -302,6 +381,68 @@ class DuckDBCrawlStore:
             rows = conn.execute("SELECT url, failures FROM failed_urls ORDER BY url").fetchall()
         return {str(url): int(failures) for url, failures in rows}
 
+    def pattern_yield_stats(self) -> list[dict[str, int | str | float]]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT
+                    pattern,
+                    attempts,
+                    successes,
+                    fetch_failures,
+                    CASE
+                        WHEN attempts > 0 THEN CAST(successes AS DOUBLE) / CAST(attempts AS DOUBLE)
+                        ELSE 0.0
+                    END AS success_rate
+                FROM pattern_yield_stats
+                ORDER BY attempts DESC, pattern ASC
+                """
+            ).fetchall()
+        return [
+            {
+                "pattern": str(pattern),
+                "attempts": int(attempts),
+                "successes": int(successes),
+                "fetch_failures": int(fetch_failures),
+                "success_rate": float(success_rate),
+            }
+            for pattern, attempts, successes, fetch_failures, success_rate in rows
+        ]
+
+    def upsert_pattern_yield_stats(self, rows: list[dict[str, int | str]]) -> int:
+        if not rows:
+            return 0
+        merged = 0
+        with self._connect() as conn:
+            for row in rows:
+                pattern = str(row.get("pattern") or "").strip()
+                if not pattern:
+                    continue
+                conn.execute(
+                    """
+                    INSERT INTO pattern_yield_stats(pattern, attempts, successes, fetch_failures, last_url)
+                    VALUES (?, ?, ?, ?, ?)
+                    ON CONFLICT(pattern) DO UPDATE
+                    SET attempts = GREATEST(pattern_yield_stats.attempts, excluded.attempts),
+                        successes = GREATEST(pattern_yield_stats.successes, excluded.successes),
+                        fetch_failures = GREATEST(pattern_yield_stats.fetch_failures, excluded.fetch_failures),
+                        last_url = CASE
+                            WHEN excluded.last_url <> '' THEN excluded.last_url
+                            ELSE pattern_yield_stats.last_url
+                        END,
+                        updated_at = now()
+                    """,
+                    [
+                        pattern,
+                        int(row.get("attempts") or 0),
+                        int(row.get("successes") or 0),
+                        int(row.get("fetch_failures") or 0),
+                        str(row.get("last_url") or ""),
+                    ],
+                )
+                merged += 1
+        return merged
+
 
 def score_queue_item(
     url: str,
@@ -309,6 +450,7 @@ def score_queue_item(
     depth: int,
     kind: str,
     strategy: dict[str, object] | None = None,
+    pattern_stats: dict[str, int | str | float] | None = None,
 ) -> int:
     """Prefer deep service-detail URLs over roots and category pages."""
     lowered = str(url or "").strip().lower()
@@ -351,5 +493,28 @@ def score_queue_item(
     ]
     if any(pattern in lowered for pattern in deprioritized_patterns):
         score -= 90
+    attempts = int((pattern_stats or {}).get("attempts") or 0)
+    successes = int((pattern_stats or {}).get("successes") or 0)
+    success_rate = float((pattern_stats or {}).get("success_rate") or 0.0)
+    if attempts >= 20:
+        if success_rate >= 0.9:
+            score += 18
+        elif success_rate >= 0.75:
+            score += 10
+        elif success_rate < 0.5:
+            score -= 20
+        elif success_rate < 0.65 and successes < attempts:
+            score -= 10
     score -= min(30, max(0, depth) * 3)
     return int(score)
+
+
+def pattern_prefix_for_url(url: str) -> str:
+    parsed = urlparse(str(url or "").strip().lower())
+    path = parsed.path.rstrip("/")
+    if not path or "/get-help/" not in path:
+        return ""
+    segments = [segment for segment in path.split("/") if segment]
+    if len(segments) >= 2 and segments[0] == "get-help":
+        return "/" + "/".join(segments[:2]) + "/"
+    return ""

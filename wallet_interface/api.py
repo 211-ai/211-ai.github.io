@@ -122,6 +122,47 @@ class RevokeGrantRequest(BaseModel):
     actor_did: str
 
 
+class ExportGrantRequest(BaseModel):
+    issuer_did: str
+    audience_did: str
+    record_ids: List[str] = Field(default_factory=list)
+    issuer_key_hex: str | None = None
+    audience_key_hex: str | None = None
+    purpose: str = "user_export"
+    expires_at: str | None = None
+    approval_id: str | None = None
+
+
+class ExportBundleRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    record_ids: List[str] = Field(default_factory=list)
+    include_proofs: bool = True
+    include_derived_artifacts: bool = True
+
+
+class ExportBundleVerifyRequest(BaseModel):
+    bundle: Dict[str, Any]
+
+
+class ExportBundleImportRequest(BaseModel):
+    bundle: Dict[str, Any]
+
+
+class ExportBundleStorageRequest(BaseModel):
+    bundle: Dict[str, Any]
+
+
+class ExportInvocationRequest(BaseModel):
+    grant_id: str
+    actor_did: str
+    actor_key_hex: str | None = None
+    record_ids: List[str] = Field(default_factory=list)
+    expires_at: str | None = None
+
+
 class AnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -383,13 +424,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
     ) -> Dict[str, Any]:
         try:
             normalized_status = None if status == "all" else status
-            requests = app_service.list_access_requests(
+            requests = app_service.access_request_review_items(
                 wallet_id,
                 status=normalized_status,
                 requester_did=requester_did,
                 audience_did=audience_did,
             )
-            return {"requests": [request.to_dict() for request in requests]}
+            return {"requests": requests}
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -426,6 +467,23 @@ def create_app(*, service: WalletInterfaceService | None = None):
     ) -> Dict[str, Any]:
         try:
             access_request = app_service.reject_access_request(
+                wallet_id,
+                request_id=request_id,
+                actor_did=request.actor_did,
+                reason=request.reason,
+            )
+            return access_request.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/access-requests/{request_id}/revoke")
+    def revoke_access_request(
+        wallet_id: str,
+        request_id: str,
+        request: AccessRequestDecisionRequest,
+    ) -> Dict[str, Any]:
+        try:
+            access_request = app_service.revoke_access_request(
                 wallet_id,
                 request_id=request_id,
                 actor_did=request.actor_did,
@@ -483,6 +541,106 @@ def create_app(*, service: WalletInterfaceService | None = None):
         try:
             grant = app_service.revoke_grant(wallet_id, grant_id, actor_did=request.actor_did)
             return grant.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/grant-receipts")
+    def list_grant_receipts(
+        wallet_id: str,
+        audience_did: str | None = None,
+        status: str = "all",
+    ) -> Dict[str, Any]:
+        try:
+            normalized_status = None if status == "all" else status
+            receipts = app_service.list_grant_receipts(
+                wallet_id,
+                audience_did=audience_did,
+                status=normalized_status,
+            )
+            return {"receipts": [receipt.to_dict() for receipt in receipts]}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/exports/grants")
+    def create_export_grant(wallet_id: str, request: ExportGrantRequest) -> Dict[str, Any]:
+        try:
+            if not request.record_ids:
+                raise ValueError("export grants require at least one record_id")
+            grant = app_service.create_export_grant(
+                wallet_id,
+                issuer_did=request.issuer_did,
+                audience_did=request.audience_did,
+                record_ids=request.record_ids,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                purpose=request.purpose,
+                expires_at=request.expires_at,
+                approval_id=request.approval_id,
+            )
+            return grant.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/exports/invocations")
+    def issue_export_invocation(wallet_id: str, request: ExportInvocationRequest) -> Dict[str, Any]:
+        try:
+            invocation = app_service.issue_export_invocation(
+                wallet_id,
+                grant_id=request.grant_id,
+                actor_did=request.actor_did,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+                record_ids=request.record_ids or None,
+                expires_at=request.expires_at,
+            )
+            return {
+                **invocation.to_dict(),
+                "invocation_token": invocation_to_token(invocation),
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/exports")
+    def create_export_bundle(wallet_id: str, request: ExportBundleRequest) -> Dict[str, Any]:
+        try:
+            if request.invocation_token:
+                return app_service.create_export_bundle_with_invocation(
+                    wallet_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=_key_from_optional_hex(request.actor_key_hex),
+                    record_ids=request.record_ids or None,
+                    include_proofs=request.include_proofs,
+                    include_derived_artifacts=request.include_derived_artifacts,
+                )
+            return app_service.create_export_bundle(
+                wallet_id,
+                actor_did=request.actor_did,
+                grant_id=request.grant_id,
+                record_ids=request.record_ids or None,
+                include_proofs=request.include_proofs,
+                include_derived_artifacts=request.include_derived_artifacts,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/exports/verify")
+    def verify_export_bundle(request: ExportBundleVerifyRequest) -> Dict[str, Any]:
+        try:
+            return app_service.verify_export_bundle(request.bundle)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/exports/import")
+    def import_export_bundle(request: ExportBundleImportRequest) -> Dict[str, Any]:
+        try:
+            return app_service.import_export_bundle(request.bundle)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/exports/storage")
+    def verify_export_bundle_storage(request: ExportBundleStorageRequest) -> Dict[str, Any]:
+        try:
+            return app_service.verify_export_bundle_storage(request.bundle)
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

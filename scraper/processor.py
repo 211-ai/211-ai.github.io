@@ -23,6 +23,8 @@ logger = logging.getLogger("scraper.processor")
 CANONICAL_FIELDS = [
     "id",
     "name",
+    "provider_name",
+    "program_name",
     "description",
     "address",
     "city",
@@ -130,6 +132,8 @@ class DataProcessor:
         return {
             "id": record_id,
             "name": name,
+            "provider_name": clean_text(raw.get("provider_name", "")) or name,
+            "program_name": clean_text(raw.get("program_name", "")),
             "description": description,
             "address": address_raw,
             "city": city,

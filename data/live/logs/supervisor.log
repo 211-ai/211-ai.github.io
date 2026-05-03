@@ -210,3 +210,611 @@ LINE 6:                     MIN(priority) AS min_priority,
 2026-05-02 22:18:48 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
 2026-05-02 22:23:29 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
 2026-05-02 22:23:29 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 22:29:32 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:29:32 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 22:32:07 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:32:07 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 678, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 662, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 310, in __init__
+    self.store = DuckDBCrawlStore(self.db_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 20, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 26, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 675356) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 22:32:45 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:32:45 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 678, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 662, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 310, in __init__
+    self.store = DuckDBCrawlStore(self.db_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 20, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 26, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 675356) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 22:33:00 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:33:00 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 22:37:09 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:37:09 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 678, in <module>
+    name_blob, body = chunk.rsplit(RESULT_PAGE_MARKER, 1)
+    ^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 670, in main
+    if record:
+             ^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 380, in run_once
+    self.warehouse.append_crawl_pages([page_record])
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 119, in append_crawl_pages
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 775023) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 22:46:08 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:46:08 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 799, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 791, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 396, in run_once
+    self._refresh_state_snapshot(state)
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 497, in _refresh_state_snapshot
+    state.queue = self.store.queue_preview(limit=50)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 358, in queue_preview
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 777415) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 22:47:08 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:47:08 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 22:48:08 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 22:48:08 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 23:06:08 [INFO] scraper.processor: Processed 953 raw → 953 normalised → 953 unique records
+2026-05-02 23:06:08 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (953 rows)
+2026-05-02 23:06:08 [INFO] scraper.processor: Exported 953 records to services_agentic.[jsonl|csv]
+2026-05-02 23:06:10 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 953, 'queue_remaining': 8054, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 799, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 791, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 380, in run_once
+    self.warehouse.append_crawl_pages([page_record])
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 119, in append_crawl_pages
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 852818) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:16:09 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:16:09 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 799, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 783, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 311, in __init__
+    self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 16, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 22, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 852818) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:16:39 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:16:39 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 799, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 783, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 311, in __init__
+    self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 16, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 22, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 852818) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:17:09 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:17:09 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 799, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 783, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 311, in __init__
+    self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 16, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 22, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 852818) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:17:39 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:17:39 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 23:19:20 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:19:20 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 23:37:21 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:37:21 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 23:49:05 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:49:05 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 834, in <module>
+    path = urlparse(str(url or "")).path.rstrip("/")
+    ^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 826, in main
+    
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 380, in run_once
+    self.warehouse.append_crawl_pages([page_record])
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 194, in append_crawl_pages
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 998882) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:52:35 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:52:35 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 880, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 311, in __init__
+    self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 16, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 22, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 998882) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:53:05 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:53:05 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 880, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 311, in __init__
+    self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 16, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 22, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_etl.py", line 19, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/etl_warehouse.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 998882) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-02 23:53:35 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:53:35 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-02 23:53:55 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-02 23:53:55 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 00:07:53 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 00:07:53 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 00:07:53 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 00:07:53 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 7694, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 00:23:47 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 00:23:47 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 00:23:47 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 00:23:48 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 7594, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 00:39:48 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 00:39:48 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 00:39:48 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 00:39:49 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 7494, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 00:55:51 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 00:55:51 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 00:55:51 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 00:55:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 7394, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 01:12:13 [INFO] scraper.processor: Processed 175 raw → 175 normalised → 175 unique records
+2026-05-03 01:12:13 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (175 rows)
+2026-05-03 01:12:13 [INFO] scraper.processor: Exported 175 records to services_agentic.[jsonl|csv]
+2026-05-03 01:12:15 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 175, 'queue_remaining': 7294, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 01:28:06 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 01:28:06 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 01:28:06 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 01:28:07 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 7194, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 01:44:00 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 01:44:00 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 01:44:00 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 01:44:00 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 7094, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 888, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 396, in run_once
+    self._refresh_state_snapshot(state)
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 498, in _refresh_state_snapshot
+    state.failed_urls = self.store.failed_map()
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 380, in failed_map
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 1003221) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 01:50:59 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 01:50:59 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 02:04:49 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 02:04:49 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 02:04:49 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 02:04:49 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6967, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 02:20:46 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 02:20:46 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 02:20:46 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 02:20:46 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6867, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 02:36:44 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 02:36:44 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 02:36:44 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 02:36:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6767, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 02:52:38 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 02:52:38 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 02:52:38 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 02:52:38 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6667, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 03:08:30 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 03:08:30 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 03:08:30 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 03:08:30 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 6567, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 03:24:20 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 03:24:20 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 03:24:20 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 03:24:21 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6467, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 03:40:39 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 03:40:39 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 03:40:39 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 03:40:39 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6366, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 03:56:32 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 03:56:32 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 03:56:32 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 03:56:33 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6266, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 888, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 333, in run_once
+    batch = self._next_batch(strategy, limit=min(workers, max_pages - processed_this_run))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 473, in _next_batch
+    return self.store.claim_batch(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 261, in claim_batch
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 1003221) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 04:10:34 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 04:10:34 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 04:24:22 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 04:24:22 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 04:24:22 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 04:24:22 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 6084, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 04:40:15 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 04:40:15 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 04:40:15 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 04:40:15 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5984, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 04:56:10 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 04:56:10 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 04:56:10 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 04:56:11 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 5884, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 05:12:02 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 05:12:02 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 05:12:02 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 05:12:02 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5784, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 05:27:56 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 05:27:56 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 05:27:56 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 05:27:56 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5684, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 05:43:52 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 05:43:52 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 05:43:52 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 05:43:53 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5584, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 05:59:48 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 05:59:48 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 05:59:48 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 05:59:48 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5484, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 06:15:48 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 06:15:48 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 06:15:48 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 06:15:48 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5384, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 888, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 365, in run_once
+    self.store.mark_seen(item.url)
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 291, in mark_seen
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 1003221) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 06:31:10 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 06:31:10 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 06:45:06 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 06:45:06 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 06:45:06 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 06:45:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 5193, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 07:01:01 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 07:01:01 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 07:01:01 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 07:01:01 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 5093, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 07:18:39 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 07:18:39 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 07:18:39 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 07:18:39 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4989, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 07:34:58 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 07:34:58 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 07:34:58 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 07:34:59 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4889, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 07:51:17 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 07:51:17 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 07:51:17 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 07:51:17 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4789, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 08:07:37 [INFO] scraper.processor: Processed 98 raw → 98 normalised → 98 unique records
+2026-05-03 08:07:37 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (98 rows)
+2026-05-03 08:07:37 [INFO] scraper.processor: Exported 98 records to services_agentic.[jsonl|csv]
+2026-05-03 08:07:38 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 98, 'queue_remaining': 4689, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 08:24:00 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 08:24:00 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 08:24:00 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 08:24:00 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4589, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 08:40:03 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 08:40:03 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 08:40:03 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 08:40:03 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 4489, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 08:55:55 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 08:55:55 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 08:55:55 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 08:55:55 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4389, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 09:11:49 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 09:11:49 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 09:11:49 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 09:11:49 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4289, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 09:27:44 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 09:27:44 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 09:27:44 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 09:27:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4189, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 09:43:35 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 09:43:35 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 09:43:35 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 09:43:35 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 4089, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 896, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 888, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 396, in run_once
+    self._refresh_state_snapshot(state)
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 498, in _refresh_state_snapshot
+    state.failed_urls = self.store.failed_map()
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 380, in failed_map
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 1003221) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 09:48:22 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 09:48:22 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 09:57:48 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 09:57:48 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 919, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 911, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 396, in run_once
+    self._refresh_state_snapshot(state)
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 497, in _refresh_state_snapshot
+    state.queue = self.store.queue_preview(limit=50)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 358, in queue_preview
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 2287811) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 10:01:48 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:01:48 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 10:15:28 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:15:28 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 10:16:53 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:16:53 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 919, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 911, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 332, in run_once
+    while self.store.queue_count() and processed_this_run < max_pages:
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 341, in queue_count
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 2356194) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 10:16:59 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:16:59 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 10:17:33 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:17:33 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 919, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 903, in main
+    daemon = AgenticCrawlerDaemon(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 310, in __init__
+    self.store = DuckDBCrawlStore(self.db_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 20, in __init__
+    self._initialize()
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 26, in _initialize
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 2357103) by user barberb. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 10:18:03 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 10:18:03 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 10:21:33 [INFO] scraper.processor: Processed 98 raw → 98 normalised → 98 unique records
+2026-05-03 10:21:33 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (98 rows)
+2026-05-03 10:21:33 [INFO] scraper.processor: Exported 98 records to services_agentic.[jsonl|csv]
+2026-05-03 10:21:34 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 98, 'queue_remaining': 3701, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:27:00 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 10:27:00 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 10:27:00 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 10:27:00 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 3601, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:32:27 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 10:32:27 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 10:32:27 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 10:32:27 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 3501, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:37:56 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 10:37:56 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 10:37:56 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 10:37:56 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 3401, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:43:24 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 10:43:24 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 10:43:24 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 10:43:25 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 3301, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:48:51 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 10:48:51 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 10:48:51 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 10:48:51 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 3201, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:54:15 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 10:54:15 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 10:54:15 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 10:54:15 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 3101, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 10:59:44 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 10:59:44 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 10:59:44 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 10:59:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 3001, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:05:06 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 11:05:06 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 11:05:06 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 11:05:07 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 2901, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:10:39 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 11:10:39 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 11:10:39 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 11:10:39 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 2801, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:16:07 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 11:16:07 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 11:16:07 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 11:16:08 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 2701, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:21:37 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 11:21:37 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 11:21:37 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 11:21:38 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 2601, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:27:09 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 11:27:09 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 11:27:09 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 11:27:09 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 2501, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 11:32:46 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 11:32:46 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 11:32:46 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 11:32:46 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 2401, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}

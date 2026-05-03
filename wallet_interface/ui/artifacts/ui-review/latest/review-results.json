@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-03T05:20:35.511432+00:00",
+  "generatedAt": "2026-05-03T06:26:02.965963+00:00",
   "dryRun": true,
-  "entryCount": 37,
+  "entryCount": 43,
   "entries": [
     {
       "routeId": "home",
@@ -228,6 +228,38 @@
       "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access after verification\nViewport: desktop\nState: verified\nScreenshot: artifacts/ui-screenshots/latest/desktop/recipient-access-verified.png\n\nGoals:\n- Authorized disclosure scopes should be obvious after verification.\n- The screen should not expose unrelated wallet data.\n- The next action for contacting a liaison should be clear.\n"
     },
     {
+      "routeId": "recipient-access-active-grant",
+      "routePath": "/#/recipient-access",
+      "title": "Emergency recipient access with active grant",
+      "state": "active grant visible",
+      "viewport": "desktop",
+      "manifestPath": "artifacts/ui-screenshots/latest/desktop/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png",
+      "goals": [
+        "Active grants should be visually distinct from pending requests.",
+        "Revocation should be available without exposing unrelated private wallet data.",
+        "The screen should make it clear which organization currently has access."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Emergency recipient access with active grant.\nViewport: desktop.\nState: active grant visible.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Active grants should be visually distinct from pending requests.\n- Revocation should be available without exposing unrelated private wallet data.\n- The screen should make it clear which organization currently has access.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access with active grant\nViewport: desktop\nState: active grant visible\nScreenshot: artifacts/ui-screenshots/latest/desktop/recipient-access-active-grant.png\n\nGoals:\n- Active grants should be visually distinct from pending requests.\n- Revocation should be available without exposing unrelated private wallet data.\n- The screen should make it clear which organization currently has access.\n"
+    },
+    {
+      "routeId": "recipient-access-grant-revoked",
+      "routePath": "/#/recipient-access",
+      "title": "Emergency recipient access after revocation",
+      "state": "active grant revoked",
+      "viewport": "desktop",
+      "manifestPath": "artifacts/ui-screenshots/latest/desktop/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png",
+      "goals": [
+        "Revoked grants should no longer look active.",
+        "The revoked state should remain auditable and understandable.",
+        "The UI should not imply the recipient still has decrypt or analyze access."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Emergency recipient access after revocation.\nViewport: desktop.\nState: active grant revoked.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Revoked grants should no longer look active.\n- The revoked state should remain auditable and understandable.\n- The UI should not imply the recipient still has decrypt or analyze access.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access after revocation\nViewport: desktop\nState: active grant revoked\nScreenshot: artifacts/ui-screenshots/latest/desktop/recipient-access-grant-revoked.png\n\nGoals:\n- Revoked grants should no longer look active.\n- The revoked state should remain auditable and understandable.\n- The UI should not imply the recipient still has decrypt or analyze access.\n"
+    },
+    {
       "routeId": "benefits-protection",
       "routePath": "/#/benefits-protection",
       "title": "Benefits protection opt-in",
@@ -290,6 +322,22 @@
       ],
       "prompt": "Review the Abby UI screenshot for: Analytics consent selected study.\nViewport: desktop.\nState: one study consented.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The consented study should be visually distinct from paused or available studies.\n- Derived field badges should remain visible after opt-in.\n- Privacy budget and cohort threshold should stay prominent.",
       "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Analytics consent selected study\nViewport: desktop\nState: one study consented\nScreenshot: artifacts/ui-screenshots/latest/desktop/analytics-consented.png\n\nGoals:\n- The consented study should be visually distinct from paused or available studies.\n- Derived field badges should remain visible after opt-in.\n- Privacy budget and cohort threshold should stay prominent.\n"
+    },
+    {
+      "routeId": "proof-center",
+      "routePath": "/#/proof-center",
+      "title": "Proof center",
+      "state": "public proof receipts",
+      "viewport": "desktop",
+      "manifestPath": "artifacts/ui-screenshots/latest/desktop/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/desktop/proof-center.png",
+      "goals": [
+        "Public proof inputs should be easy to inspect.",
+        "Precise coordinates, raw documents, and private source data should not appear.",
+        "Simulated proof receipts should be clearly distinguishable from verified receipts."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Proof center.\nViewport: desktop.\nState: public proof receipts.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Public proof inputs should be easy to inspect.\n- Precise coordinates, raw documents, and private source data should not appear.\n- Simulated proof receipts should be clearly distinguishable from verified receipts.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Proof center\nViewport: desktop\nState: public proof receipts\nScreenshot: artifacts/ui-screenshots/latest/desktop/proof-center.png\n\nGoals:\n- Public proof inputs should be easy to inspect.\n- Precise coordinates, raw documents, and private source data should not appear.\n- Simulated proof receipts should be clearly distinguishable from verified receipts.\n"
     },
     {
       "routeId": "home",
@@ -532,6 +580,38 @@
       "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access after verification\nViewport: mobile\nState: verified\nScreenshot: artifacts/ui-screenshots/latest/mobile/recipient-access-verified.png\n\nGoals:\n- Authorized disclosure scopes should be obvious after verification.\n- The screen should not expose unrelated wallet data.\n- The next action for contacting a liaison should be clear.\n"
     },
     {
+      "routeId": "recipient-access-active-grant",
+      "routePath": "/#/recipient-access",
+      "title": "Emergency recipient access with active grant",
+      "state": "active grant visible",
+      "viewport": "mobile",
+      "manifestPath": "artifacts/ui-screenshots/latest/mobile/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png",
+      "goals": [
+        "Active grants should be visually distinct from pending requests.",
+        "Revocation should be available without exposing unrelated private wallet data.",
+        "The screen should make it clear which organization currently has access."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Emergency recipient access with active grant.\nViewport: mobile.\nState: active grant visible.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Active grants should be visually distinct from pending requests.\n- Revocation should be available without exposing unrelated private wallet data.\n- The screen should make it clear which organization currently has access.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access with active grant\nViewport: mobile\nState: active grant visible\nScreenshot: artifacts/ui-screenshots/latest/mobile/recipient-access-active-grant.png\n\nGoals:\n- Active grants should be visually distinct from pending requests.\n- Revocation should be available without exposing unrelated private wallet data.\n- The screen should make it clear which organization currently has access.\n"
+    },
+    {
+      "routeId": "recipient-access-grant-revoked",
+      "routePath": "/#/recipient-access",
+      "title": "Emergency recipient access after revocation",
+      "state": "active grant revoked",
+      "viewport": "mobile",
+      "manifestPath": "artifacts/ui-screenshots/latest/mobile/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png",
+      "goals": [
+        "Revoked grants should no longer look active.",
+        "The revoked state should remain auditable and understandable.",
+        "The UI should not imply the recipient still has decrypt or analyze access."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Emergency recipient access after revocation.\nViewport: mobile.\nState: active grant revoked.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Revoked grants should no longer look active.\n- The revoked state should remain auditable and understandable.\n- The UI should not imply the recipient still has decrypt or analyze access.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Emergency recipient access after revocation\nViewport: mobile\nState: active grant revoked\nScreenshot: artifacts/ui-screenshots/latest/mobile/recipient-access-grant-revoked.png\n\nGoals:\n- Revoked grants should no longer look active.\n- The revoked state should remain auditable and understandable.\n- The UI should not imply the recipient still has decrypt or analyze access.\n"
+    },
+    {
       "routeId": "benefits-protection",
       "routePath": "/#/benefits-protection",
       "title": "Benefits protection opt-in",
@@ -594,6 +674,22 @@
       ],
       "prompt": "Review the Abby UI screenshot for: Analytics consent selected study.\nViewport: mobile.\nState: one study consented.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The consented study should be visually distinct from paused or available studies.\n- Derived field badges should remain visible after opt-in.\n- Privacy budget and cohort threshold should stay prominent.",
       "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Analytics consent selected study\nViewport: mobile\nState: one study consented\nScreenshot: artifacts/ui-screenshots/latest/mobile/analytics-consented.png\n\nGoals:\n- The consented study should be visually distinct from paused or available studies.\n- Derived field badges should remain visible after opt-in.\n- Privacy budget and cohort threshold should stay prominent.\n"
+    },
+    {
+      "routeId": "proof-center",
+      "routePath": "/#/proof-center",
+      "title": "Proof center",
+      "state": "public proof receipts",
+      "viewport": "mobile",
+      "manifestPath": "artifacts/ui-screenshots/latest/mobile/manifest.json",
+      "screenshotPath": "artifacts/ui-screenshots/latest/mobile/proof-center.png",
+      "goals": [
+        "Public proof inputs should be easy to inspect.",
+        "Precise coordinates, raw documents, and private source data should not appear.",
+        "Simulated proof receipts should be clearly distinguishable from verified receipts."
+      ],
+      "prompt": "Review the Abby UI screenshot for: Proof center.\nViewport: mobile.\nState: public proof receipts.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Public proof inputs should be easy to inspect.\n- Precise coordinates, raw documents, and private source data should not appear.\n- Simulated proof receipts should be clearly distinguishable from verified receipts.",
+      "feedback": "DRY RUN: router call skipped.\n\nThis target is ready for multimodal review.\n\nScreen: Proof center\nViewport: mobile\nState: public proof receipts\nScreenshot: artifacts/ui-screenshots/latest/mobile/proof-center.png\n\nGoals:\n- Public proof inputs should be easy to inspect.\n- Precise coordinates, raw documents, and private source data should not appear.\n- Simulated proof receipts should be clearly distinguishable from verified receipts.\n"
     }
   ]
 }

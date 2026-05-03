@@ -11,6 +11,7 @@ export type RouteId =
   | "benefits-protection"
   | "analytics"
   | "proof-center"
+  | "exports"
   | "security"
   | "audit";
 
@@ -120,12 +121,26 @@ export interface WalletAccessRequest {
   resourceLabel: string;
   abilities: string[];
   purpose: string;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "revoked";
   createdAt: string;
   approvalRequired?: boolean;
   approvalThreshold?: number;
   approvalCount?: number;
   grantStatus?: "active" | "revoked";
+}
+
+export interface WalletGrantReceipt {
+  id: string;
+  grantId: string;
+  audienceName: string;
+  audienceDid: string;
+  resourceLabel: string;
+  abilities: string[];
+  purpose: string;
+  receiptHash: string;
+  status: "active" | "revoked";
+  createdAt: string;
+  expiresAt?: string;
 }
 
 export interface ProofReceiptView {
@@ -136,5 +151,17 @@ export interface ProofReceiptView {
   publicInputs: Record<string, string>;
   witnessLabel: string;
   simulated: boolean;
+  createdAt: string;
+}
+
+export interface ExportBundleView {
+  id: string;
+  bundleId: string;
+  bundleHash: string;
+  audienceName: string;
+  recordCount: number;
+  proofCount: number;
+  storageOk: boolean;
+  imported: boolean;
   createdAt: string;
 }

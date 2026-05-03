@@ -20,7 +20,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -355,6 +355,7 @@ class AgenticCrawlerDaemon:
                             item.url,
                             error="; ".join(result.errors),
                         )
+                        self.store.record_pattern_outcome(item.url, extracted=False, fetch_success=False)
                         state.active_urls = [url for url in state.active_urls if url != item.url]
                         state.heartbeat_at = utc_now()
                         self._refresh_state_snapshot(state)
@@ -378,10 +379,15 @@ class AgenticCrawlerDaemon:
                     self.storage.append_jsonl([page_record], "agentic_pages_raw.jsonl")
                     self.warehouse.append_crawl_pages([page_record])
 
-                    service = self._extract_service_record(result, item)
-                    if service:
-                        raw_services.append(service)
-                        state.extracted_services += 1
+                    services = self._extract_service_records(result, item)
+                    self.store.record_pattern_outcome(
+                        item.url,
+                        extracted=bool(services),
+                        fetch_success=True,
+                    )
+                    if services:
+                        raw_services.extend(services)
+                        state.extracted_services += len(services)
 
                     self._enqueue_links(result, item.depth + 1, strategy)
                     state.active_urls = [url for url in state.active_urls if url != item.url]
@@ -522,7 +528,26 @@ class AgenticCrawlerDaemon:
             "fetched_at": utc_now(),
         }
 
-    def _extract_service_record(self, result: FetchResult, item: CrawlItem) -> dict[str, Any] | None:
+    def _extract_service_records(self, result: FetchResult, item: CrawlItem) -> list[dict[str, Any]]:
+        text = clean_text(result.text)
+        if not text:
+            return []
+        if "0 matching service providers" in text.lower():
+            return []
+        result_page_services = extract_result_page_services(text, result.url)
+        if result_page_services:
+            records: list[dict[str, Any]] = []
+            for service in result_page_services:
+                service["detail_url"] = result.url
+                service["category"] = item.metadata.get("category", "")
+                service["search_zip"] = item.metadata.get("zip", "")
+                records.append(service)
+            return records
+
+        service = self._extract_single_service_record(result, item)
+        return [service] if service else []
+
+    def _extract_single_service_record(self, result: FetchResult, item: CrawlItem) -> dict[str, Any] | None:
         haystack = f"{result.title} {result.text}".lower()
         if not any(hint in haystack for hint in SERVICE_HINTS):
             return None
@@ -531,14 +556,18 @@ class AgenticCrawlerDaemon:
         email = extract_email(result.text)
         address = extract_address(result.text)
         description = clean_text(result.text[:1200])
-        name = result.title or first_heading(result.html) or first_sentence(result.text)
+        name = normalize_provider_name(result.title or first_heading(result.html) or first_sentence(result.text))
         categories = infer_categories(result.text)
 
         if not name and not phone and not address:
             return None
+        if is_result_page_title_name(result.text, result.title, name) and not phone and not address:
+            return None
 
         return {
             "name": name,
+            "provider_name": name,
+            "program_name": "",
             "description": description,
             "address": address,
             "phone": phone,
@@ -581,11 +610,15 @@ def extract_email(text: str) -> str:
 
 
 def extract_address(text: str) -> str:
-    match = re.search(
-        r"\b\d{1,6}\s+[A-Za-z0-9 .'-]+,\s*[A-Za-z .'-]+,\s*(?:OR|WA)\s+\d{5}(?:-\d{4})?\b",
-        text,
+    patterns = (
+        r"\b\d{1,6}\s+[A-Za-z0-9 .#'/:-]{3,120}?\s+[A-Za-z .'-]+,\s*(?:[A-Z]{2})\s+\d{5}(?:-\d{4})?\b",
+        r"\bP\.?O\.?\s+Box\s+\d+[^.]{0,80}?\s+[A-Za-z .'-]+,\s*(?:[A-Z]{2})\s+\d{5}(?:-\d{4})?\b",
     )
-    return clean_text(match.group(0)) if match else ""
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return clean_text(match.group(0))
+    return ""
 
 
 def extract_labeled_value(text: str, label: str) -> str:
@@ -609,6 +642,220 @@ def first_heading(html: str) -> str:
 def first_sentence(text: str) -> str:
     sentence = clean_text(text).split(".")[0]
     return sentence[:120]
+
+
+RESULT_PAGE_MARKER = "Print & Share X Print & Share Print PDF"
+DESCRIPTION_CUES = (
+    "Provides",
+    "Arranges",
+    "Offers",
+    "Coordinates",
+    "Helps",
+    "Operates",
+    "Connects",
+    "Supports",
+    "Advocates",
+    "Walk-in center providing",
+    "Locator for",
+    "Access to",
+)
+
+
+def extract_result_page_services(text: str, detail_url: str) -> list[dict[str, Any]]:
+    if "matching service providers" not in text.lower():
+        return []
+    normalized = clean_text(text)
+    if RESULT_PAGE_MARKER not in normalized:
+        return []
+    chunks = [chunk.strip() for chunk in re.split(r"\bMore Details\b", normalized) if chunk.strip()]
+    records: list[dict[str, Any]] = []
+    for chunk in chunks:
+        record = extract_service_from_result_chunk(chunk, detail_url)
+        if record:
+            records.append(record)
+    return records
+
+
+def extract_service_from_result_chunk(chunk: str, detail_url: str) -> dict[str, Any] | None:
+    if RESULT_PAGE_MARKER not in chunk:
+        return None
+    name_blob, body = chunk.rsplit(RESULT_PAGE_MARKER, 1)
+    body = clean_text(body)
+    if not body:
+        return None
+
+    name = extract_result_provider_name(name_blob)
+    address = extract_address(body)
+    phone = extract_phone(body) or ""
+    if not any(cue.lower() in body.lower() for cue in DESCRIPTION_CUES) and not address and not phone:
+        return None
+    email = extract_email(body)
+    hours = extract_labeled_value(body, "hours")
+    eligibility = extract_labeled_value(body, "eligibility")
+    description = extract_result_description(body, address=address)
+    categories = infer_categories(body)
+
+    if not name and not address and not phone:
+        return None
+
+    base_name = normalize_provider_name(name or first_sentence(body))
+    display_name = choose_result_display_name(
+        base_name,
+        description=description,
+        detail_url=detail_url,
+    )
+    provider_name, program_name = split_provider_program_names(base_name, display_name)
+
+    return {
+        "name": display_name,
+        "provider_name": provider_name,
+        "program_name": program_name,
+        "description": description,
+        "address": address,
+        "phone": phone,
+        "email": email,
+        "website": detail_url,
+        "hours": hours,
+        "eligibility": eligibility,
+        "categories": categories,
+        "detail_url": detail_url,
+        "category": "",
+        "search_zip": "",
+    }
+
+
+def extract_result_provider_name(name_blob: str) -> str:
+    cleaned = clean_text(name_blob)
+    if not cleaned:
+        return ""
+    tokens = cleaned.split()
+    selected: list[str] = []
+    for token in reversed(tokens):
+        stripped = token.strip(" ,;:-")
+        if re.fullmatch(r"[A-Z0-9&'()./#-]+", stripped):
+            selected.append(stripped)
+            continue
+        if selected:
+            break
+    if not selected:
+        return ""
+    return normalize_provider_name(" ".join(reversed(selected)))[:160]
+
+
+def extract_result_description(body: str, *, address: str) -> str:
+    description = body
+    if address and address in description:
+        description = description.split(address, 1)[0]
+    for marker in ("Eligibility:", "Hours:", "Email", "Get Directions", "Visit Website"):
+        if marker in description:
+            description = description.split(marker, 1)[0]
+    return clean_text(description[:1200])
+
+
+def normalize_provider_name(name: str) -> str:
+    cleaned = clean_text(name)
+    if not cleaned:
+        return ""
+    cleaned = re.sub(r"^(?:PDF\s+)+", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\s*-\s*211info\s*$", "", cleaned, flags=re.IGNORECASE)
+    cleaned = collapse_repeated_prefix(cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned).strip(" -,:;")
+    return cleaned[:160]
+
+
+def collapse_repeated_prefix(text: str) -> str:
+    tokens = text.split()
+    limit = min(len(tokens) // 2, 8)
+    for size in range(limit, 0, -1):
+        left = tokens[:size]
+        right = tokens[size : size * 2]
+        if left == right:
+            return " ".join(tokens[size:])
+    return text
+
+
+def is_result_page_title_name(text: str, title: str, normalized_name: str) -> bool:
+    cleaned_title = normalize_provider_name(title)
+    if not cleaned_title or not normalized_name:
+        return False
+    lowered_text = clean_text(text).lower()
+    return (
+        "matching service providers" in lowered_text
+        and normalized_name == cleaned_title
+    )
+
+
+STRONG_PROGRAM_TAIL_WORDS = {
+    "HELPLINE",
+    "HOTLINE",
+    "LOCATOR",
+    "PROGRAM",
+    "ADVOCACY",
+    "SUPPORT",
+    "CENTER",
+    "CENTRE",
+    "SERVICES",
+    "SERVICE",
+    "CLINIC",
+    "CARE",
+    "HOUSING",
+    "HEALTH",
+    "CONNECTIONS",
+    "AC",
+}
+
+
+def choose_result_display_name(name: str, *, description: str, detail_url: str) -> str:
+    normalized = normalize_provider_name(name)
+    if not normalized:
+        return ""
+    if len(normalized.split()) < 8 or normalized != normalized.upper():
+        return normalized
+
+    slug_tokens = set(tokenize_nameish(url_slug_tail(detail_url)))
+    desc_tokens = set(tokenize_nameish(description))
+    tokens = normalized.split()
+    best = normalized
+    best_score = -1
+    for size in range(2, min(5, len(tokens)) + 1):
+        candidate = " ".join(tokens[-size:])
+        candidate_tokens = set(tokenize_nameish(candidate))
+        if not candidate_tokens:
+            continue
+        overlap = len(candidate_tokens & slug_tokens) * 3 + len(candidate_tokens & desc_tokens)
+        tail_bonus = 2 if tokens[-1] in STRONG_PROGRAM_TAIL_WORDS else 0
+        score = overlap + tail_bonus - size
+        if score > best_score:
+            best = candidate
+            best_score = score
+    if best_score >= 2:
+        return best
+    return normalized
+
+
+def split_provider_program_names(base_name: str, display_name: str) -> tuple[str, str]:
+    normalized_base = normalize_provider_name(base_name)
+    normalized_display = normalize_provider_name(display_name)
+    if not normalized_base:
+        return "", normalized_display
+    if not normalized_display or normalized_display == normalized_base:
+        return normalized_base, ""
+
+    if normalized_base.endswith(normalized_display):
+        provider = normalize_provider_name(normalized_base[: -len(normalized_display)])
+        if provider:
+            return provider, normalized_display
+    return normalized_base, normalized_display
+
+
+def tokenize_nameish(text: str) -> list[str]:
+    normalized = unquote(str(text or "")).replace("-", " ").replace("/", " ").replace("*", " ")
+    return [token for token in re.findall(r"[A-Za-z0-9']+", normalized.upper()) if len(token) >= 2]
+
+
+def url_slug_tail(url: str) -> str:
+    path = urlparse(str(url or "")).path.rstrip("/")
+    return path.split("/")[-1] if path else ""
 
 
 def utc_now() -> str:

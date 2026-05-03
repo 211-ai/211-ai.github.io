@@ -553,15 +553,27 @@ Current MVP status:
   wallets without logging raw contribution fields.
 - `ipfs-datasets wallet` exposes an MVP analytics CLI flow for registering
   templates, creating consent, submitting derived-field contributions, and
-  running private aggregate counts across local wallet snapshots.
+  running private aggregate counts across local wallet snapshots. It also
+  exposes bounded encrypted export grant, invocation, and bundle commands for
+  `export/create` capabilities. `export/create` is treated as a sensitive
+  capability and participates in threshold approval before grant issuance when
+  wallet governance requires multi-controller review. Export bundles include a
+  deterministic `bundle_hash` and `bundle_id` so recipients can detect tampering
+  independent of JSON key order. Bundle receipt verification is exposed through
+  both CLI and the 211-AI API, and verified bundles can be imported as encrypted
+  descriptors without granting plaintext access. Import validates the expected
+  bundle type and required record/version sections after hash verification.
+  Storage availability checks report whether referenced encrypted blobs are
+  locally retrievable without decrypting them.
 - `wallet_interface.api` exposes an initial FastAPI surface for wallet
   creation, analytics templates, consent, derived-field contributions, private
   aggregate counts, encrypted location creation, wallet-backed service matching
   from coarse location claims, coarse-location grant/invocation workflows for
   delegated service matching, location-region proof grant/proof workflows,
   encrypted text document creation, analysis grant/invocation workflows,
-  encrypted storage health verification/repair, derived service matching, and
-  proof receipt listing for proof-center views, and audit timelines.
+  encrypted export grant/invocation/bundle workflows, encrypted storage health
+  verification/repair, derived service matching, proof receipt listing for
+  proof-center views, and audit timelines.
 - The current DP implementation is deterministic for local reproducible tests.
   Production deployments must replace this with reviewed randomness, durable
   analyst/study ledgers, and privacy review for each analytics template.
