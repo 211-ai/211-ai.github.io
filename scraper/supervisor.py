@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from .agentic_daemon import CrawlState, utc_now
 from .utils import setup_logging
@@ -34,6 +35,7 @@ class SupervisorConfig:
     check_interval: float = 30.0
     max_restarts: int = 10
     daemon_max_pages: int = 25
+    daemon_workers: int = 1
     daemon_interval: float = 300.0
     output_dir: Path = Path("data")
     state_dir: Path = Path("data/state")
@@ -54,7 +56,7 @@ class SelfHealingSupervisor:
 
         if state.active_url and heartbeat_age > stale:
             return True, f"heartbeat stale for active URL {state.active_url}"
-        if state.queue and progress_age > stale and state.processed_pages > 0:
+        if state.queue and state.last_progress_at and progress_age > stale and state.processed_pages > 0:
             return True, "queued work exists but no recent progress"
         return False, ""
 
@@ -63,6 +65,14 @@ class SelfHealingSupervisor:
         generation = int(strategy.get("generation", 0)) + 1
         blocked_urls = list(dict.fromkeys([*strategy.get("blocked_urls", []), state.active_url]))
         blocked_urls = [url for url in blocked_urls if url]
+        blocked_patterns = list(
+            dict.fromkeys(
+                [
+                    *strategy.get("blocked_url_patterns", []),
+                    *self._suggest_blocked_patterns(state),
+                ]
+            )
+        )
         current_delay = float(strategy.get("request_delay", 1.5))
 
         strategy.update(
@@ -71,6 +81,7 @@ class SelfHealingSupervisor:
                 "request_delay": min(max(current_delay * 1.5, 1.5), 30.0),
                 "max_depth": max(1, int(strategy.get("max_depth", 3)) - 1),
                 "blocked_urls": blocked_urls,
+                "blocked_url_patterns": blocked_patterns,
                 "last_rewrite_at": utc_now(),
                 "last_rewrite_reason": reason,
             }
@@ -80,7 +91,15 @@ class SelfHealingSupervisor:
             json.dumps(strategy, indent=2, sort_keys=True),
             encoding="utf-8",
         )
-        self._record_event("strategy_rewrite", {"reason": reason, "generation": generation})
+        self._record_event(
+            "strategy_rewrite",
+            {
+                "reason": reason,
+                "generation": generation,
+                "blocked_url_count": len(blocked_urls),
+                "blocked_pattern_count": len(blocked_patterns),
+            },
+        )
         return strategy
 
     def run_forever(self) -> None:
@@ -113,6 +132,8 @@ class SelfHealingSupervisor:
             str(self.config.daemon_interval),
             "--max-pages",
             str(self.config.daemon_max_pages),
+            "--workers",
+            str(self.config.daemon_workers),
             "--output-dir",
             str(self.config.output_dir),
             "--state-dir",
@@ -146,6 +167,46 @@ class SelfHealingSupervisor:
         with self.config.events_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(event, ensure_ascii=False) + "\n")
 
+    def _suggest_blocked_patterns(self, state: CrawlState) -> list[str]:
+        patterns: list[str] = []
+        failure_items = [
+            (str(url).strip().lower(), int(count))
+            for url, count in (state.failed_urls or {}).items()
+            if str(url).strip()
+        ]
+        lowered_urls = [url for url, _count in failure_items]
+
+        if any("/search/?" in url for url in lowered_urls):
+            patterns.append("/search/?")
+        if any("resources@" in url for url in lowered_urls):
+            patterns.append("resources@")
+
+        prefix_counts: dict[str, int] = {}
+        for url, count in failure_items:
+            if count < 2:
+                continue
+            prefix = self._failure_prefix(url)
+            if prefix:
+                prefix_counts[prefix] = prefix_counts.get(prefix, 0) + 1
+
+        for prefix, count in sorted(prefix_counts.items()):
+            if count >= 3:
+                patterns.append(prefix)
+        return patterns
+
+    @staticmethod
+    def _failure_prefix(url: str) -> str:
+        parsed = urlparse(url)
+        path = parsed.path.rstrip("/").lower()
+        if not path:
+            return ""
+        if "/get-help/" not in path:
+            return ""
+        segments = [segment for segment in path.split("/") if segment]
+        if len(segments) >= 2 and segments[0] == "get-help":
+            return "/" + "/".join(segments[:2]) + "/"
+        return ""
+
     @staticmethod
     def _age_seconds(timestamp: str, now_ts: float) -> float:
         if not timestamp:
@@ -167,6 +228,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--check-interval", type=float, default=30.0)
     parser.add_argument("--max-restarts", type=int, default=10)
     parser.add_argument("--daemon-max-pages", type=int, default=25)
+    parser.add_argument("--daemon-workers", type=int, default=1)
     parser.add_argument("--daemon-interval", type=float, default=300.0)
     parser.add_argument(
         "--log-level",
@@ -188,6 +250,7 @@ def main(argv: list[str] | None = None) -> None:
         check_interval=args.check_interval,
         max_restarts=args.max_restarts,
         daemon_max_pages=args.daemon_max_pages,
+        daemon_workers=args.daemon_workers,
         daemon_interval=args.daemon_interval,
         output_dir=args.output_dir,
         state_dir=args.state_dir,

@@ -27,14 +27,18 @@ python -m scraper.agentic_daemon --once --max-pages 25
 Run the daemon continuously:
 
 ```bash
-python -m scraper.agentic_daemon --interval 300 --max-pages 25
+python -m scraper.agentic_daemon --interval 300 --max-pages 25 --workers 4
 ```
 
 Run the supervisor:
 
 ```bash
-python -m scraper.supervisor --stale-seconds 600 --check-interval 30
+python -m scraper.supervisor --stale-seconds 600 --check-interval 30 --daemon-workers 4
 ```
+
+`--workers` controls bounded parallel page fetches inside each daemon pass.
+Keep this modest for live-site crawling. Larger parallelism is better suited to
+archive/index backends such as Common Crawl or Cloudflare Browser Rendering.
 
 ## Supervisor Rewrite Policy
 
