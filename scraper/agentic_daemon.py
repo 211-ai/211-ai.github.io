@@ -15,6 +15,7 @@ import os
 import re
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,6 +26,8 @@ import requests
 from bs4 import BeautifulSoup
 
 from .config import Config
+from .duckdb_etl import DuckDBETLWarehouse
+from .duckdb_state import DuckDBCrawlStore
 from .processor import DataProcessor
 from .storage import Storage
 from .utils import clean_text, extract_phone, normalise_url, same_domain, setup_logging
@@ -83,6 +86,7 @@ class CrawlState:
     seen_urls: set[str] = field(default_factory=set)
     failed_urls: dict[str, int] = field(default_factory=dict)
     active_url: str = ""
+    active_urls: list[str] = field(default_factory=list)
     heartbeat_at: str = ""
     last_progress_at: str = ""
     processed_pages: int = 0
@@ -100,6 +104,7 @@ class CrawlState:
             seen_urls=set(payload.get("seen_urls", [])),
             failed_urls=dict(payload.get("failed_urls", {})),
             active_url=str(payload.get("active_url", "")),
+            active_urls=list(payload.get("active_urls", [])),
             heartbeat_at=str(payload.get("heartbeat_at", "")),
             last_progress_at=str(payload.get("last_progress_at", "")),
             processed_pages=int(payload.get("processed_pages", 0)),
@@ -130,6 +135,7 @@ class WebArchivingAdapter:
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         )
+        self._headers = dict(self._session.headers)
         self._load_optional_tools()
 
     def _load_optional_tools(self) -> None:
@@ -206,7 +212,7 @@ class WebArchivingAdapter:
 
     def _fetch_with_requests(self, url: str) -> FetchResult:
         try:
-            response = self._session.get(url, timeout=self.cfg.timeout)
+            response = requests.get(url, headers=self._headers, timeout=self.cfg.timeout)
             response.raise_for_status()
             html = response.text
             soup = BeautifulSoup(html, "lxml")
@@ -288,82 +294,126 @@ class AgenticCrawlerDaemon:
         *,
         state_path: Path,
         strategy_path: Path,
+        db_path: Path | None = None,
         fetcher: WebArchivingAdapter | None = None,
         dataset_sink: DatasetSink | None = None,
     ) -> None:
         self.cfg = cfg
         self.state_path = state_path
         self.strategy_path = strategy_path
+        self.db_path = db_path or state_path.with_suffix(".duckdb")
+        self.etl_db_path = self.state_path.parent / "etl_warehouse.duckdb"
         self.storage = Storage(cfg.raw_dir, cfg.processed_dir)
         self.processor = DataProcessor(cfg)
         self.fetcher = fetcher or WebArchivingAdapter(cfg, archive_dir=cfg.raw_dir / "archive")
         self.dataset_sink = dataset_sink or DatasetSink(cfg.processed_dir)
+        self.store = DuckDBCrawlStore(self.db_path)
+        self.warehouse = DuckDBETLWarehouse(self.etl_db_path)
 
-    def run_once(self, *, seed_urls: Iterable[str], max_pages: int = 25) -> dict[str, Any]:
+    def run_once(
+        self,
+        *,
+        seed_urls: Iterable[str],
+        max_pages: int = 25,
+        max_workers: int = 1,
+    ) -> dict[str, Any]:
         state = CrawlState.load(self.state_path)
+        self.store.migrate_from_state(state)
         strategy = self.load_strategy()
         state.strategy_generation = int(strategy.get("generation", state.strategy_generation))
-        self._seed_queue(state, seed_urls)
+        all_seed_urls = [*seed_urls, *self._load_external_seed_urls()]
+        self._seed_queue(all_seed_urls)
+        self._refresh_state_snapshot(state)
         processed_this_run = 0
         raw_services: list[dict[str, Any]] = []
+        workers = max(1, int(max_workers))
 
-        while state.queue and processed_this_run < max_pages:
-            item = state.queue.pop(0)
-            if item.url in state.seen_urls or self._is_blocked(item.url, strategy):
-                continue
-            state.active_url = item.url
+        while self.store.queue_count() and processed_this_run < max_pages:
+            batch = self._next_batch(strategy, limit=min(workers, max_pages - processed_this_run))
+            if not batch:
+                break
+
+            state.active_urls = [item.url for item in batch]
+            state.active_url = state.active_urls[0] if len(state.active_urls) == 1 else ""
             state.heartbeat_at = utc_now()
+            self._refresh_state_snapshot(state)
             state.save(self.state_path)
 
-            result = self.fetcher.fetch(item.url)
-            if not result.success:
-                state.errors += 1
-                state.failed_urls[item.url] = state.failed_urls.get(item.url, 0) + 1
-                continue
+            with ThreadPoolExecutor(max_workers=len(batch)) as executor:
+                futures = {executor.submit(self.fetcher.fetch, item.url): item for item in batch}
+                for future in as_completed(futures):
+                    item = futures[future]
+                    try:
+                        result = future.result()
+                    except Exception as exc:
+                        result = FetchResult(url=item.url, success=False, errors=[str(exc)])
 
-            state.seen_urls.add(item.url)
-            state.processed_pages += 1
-            state.last_progress_at = utc_now()
-            processed_this_run += 1
+                    if not result.success:
+                        state.errors += 1
+                        state.failed_urls[item.url] = self.store.mark_failed(
+                            item.url,
+                            error="; ".join(result.errors),
+                        )
+                        state.active_urls = [url for url in state.active_urls if url != item.url]
+                        state.heartbeat_at = utc_now()
+                        self._refresh_state_snapshot(state)
+                        state.save(self.state_path)
+                        continue
 
-            archive_meta = {
-                "depth": item.depth,
-                "kind": item.kind,
-                "quality_score": result.quality_score,
-                "strategy_generation": state.strategy_generation,
-            }
-            archive_info = self.fetcher.archive(result, archive_meta)
-            page_record = self._page_record(result, item, archive_info)
-            self.storage.append_jsonl([page_record], "agentic_pages_raw.jsonl")
+                    self.store.mark_seen(item.url)
+                    state.seen_urls.add(item.url)
+                    state.processed_pages += 1
+                    state.last_progress_at = utc_now()
+                    processed_this_run += 1
 
-            service = self._extract_service_record(result, item)
-            if service:
-                raw_services.append(service)
-                state.extracted_services += 1
+                    archive_meta = {
+                        "depth": item.depth,
+                        "kind": item.kind,
+                        "quality_score": result.quality_score,
+                        "strategy_generation": state.strategy_generation,
+                    }
+                    archive_info = self.fetcher.archive(result, archive_meta)
+                    page_record = self._page_record(result, item, archive_info)
+                    self.storage.append_jsonl([page_record], "agentic_pages_raw.jsonl")
+                    self.warehouse.append_crawl_pages([page_record])
 
-            self._enqueue_links(state, result, item.depth + 1, strategy)
-            state.active_url = ""
-            state.heartbeat_at = utc_now()
-            state.save(self.state_path)
+                    service = self._extract_service_record(result, item)
+                    if service:
+                        raw_services.append(service)
+                        state.extracted_services += 1
+
+                    self._enqueue_links(result, item.depth + 1, strategy)
+                    state.active_urls = [url for url in state.active_urls if url != item.url]
+                    state.active_url = ""
+                    state.heartbeat_at = utc_now()
+                    self._refresh_state_snapshot(state)
+                    state.save(self.state_path)
 
             delay = float(strategy.get("request_delay", self.cfg.request_delay))
-            if delay > 0:
+            if delay > 0 and self.store.queue_count() and processed_this_run < max_pages:
                 time.sleep(delay)
 
         if raw_services:
             self.storage.append_jsonl(raw_services, "services_raw_agentic.jsonl")
+            self.warehouse.append_raw_services(raw_services, source="agentic_daemon")
             clean = self.processor.process(raw_services)
             self.processor.export(clean, "services_agentic")
+            self.warehouse.append_processed_services(clean, source="agentic_daemon")
             self.dataset_sink.save_snapshot(clean, self.cfg.processed_dir / "services_agentic_dataset.json")
 
         state.active_url = ""
+        state.active_urls = []
         state.heartbeat_at = utc_now()
+        self._refresh_state_snapshot(state)
         state.save(self.state_path)
         return {
             "processed_pages": processed_this_run,
             "extracted_services": len(raw_services),
-            "queue_remaining": len(state.queue),
+            "queue_remaining": self.store.queue_count(),
+            "max_workers": workers,
             "state_path": str(self.state_path),
+            "db_path": str(self.db_path),
+            "etl_db_path": str(self.etl_db_path),
         }
 
     def load_strategy(self) -> dict[str, Any]:
@@ -373,6 +423,7 @@ class AgenticCrawlerDaemon:
             "request_delay": self.cfg.request_delay,
             "allowed_hosts": ["www.211info.org", "211info.org", "gethelp.211info.org"],
             "blocked_urls": [],
+            "blocked_url_patterns": [],
             "target_terms": sorted(SERVICE_HINTS),
         }
         if not self.strategy_path.exists():
@@ -382,31 +433,61 @@ class AgenticCrawlerDaemon:
         payload = json.loads(self.strategy_path.read_text(encoding="utf-8"))
         return {**defaults, **payload}
 
-    def _seed_queue(self, state: CrawlState, seed_urls: Iterable[str]) -> None:
-        queued = {item.url for item in state.queue}
-        for url in seed_urls:
-            if url not in state.seen_urls and url not in queued:
-                state.queue.append(CrawlItem(url=url, depth=0, kind="seed"))
-                queued.add(url)
+    def _seed_queue(self, seed_urls: Iterable[str]) -> None:
+        self.store.enqueue_items(
+            [CrawlItem(url=url, depth=0, kind="seed") for url in seed_urls if str(url or "").strip()]
+        )
+
+    def _load_external_seed_urls(self) -> list[str]:
+        path = self.state_path.parent / "external_seed_urls.jsonl"
+        if not path.exists():
+            return []
+        urls: list[str] = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            text = line.strip()
+            if not text:
+                continue
+            try:
+                payload = json.loads(text)
+                url = str(payload.get("url") or "").strip() if isinstance(payload, dict) else ""
+            except json.JSONDecodeError:
+                url = text
+            if url:
+                urls.append(url)
+        return urls
+
+    def _next_batch(
+        self,
+        strategy: dict[str, Any],
+        *,
+        limit: int,
+    ) -> list[CrawlItem]:
+        return self.store.claim_batch(
+            limit=limit,
+            blocked_urls={str(item) for item in strategy.get("blocked_urls", [])},
+        )
 
     def _enqueue_links(
         self,
-        state: CrawlState,
         result: FetchResult,
         next_depth: int,
         strategy: dict[str, Any],
     ) -> None:
         if next_depth > int(strategy.get("max_depth", 3)):
             return
-        queued = {item.url for item in state.queue}
         ranked = rank_links(result.links, strategy.get("target_terms", []))
+        items: list[CrawlItem] = []
         for url in ranked:
-            if url in queued or url in state.seen_urls or self._is_blocked(url, strategy):
+            if self._is_blocked(url, strategy):
                 continue
             if not self._allowed_host(url, strategy):
                 continue
-            state.queue.append(CrawlItem(url=url, depth=next_depth, kind="discovered"))
-            queued.add(url)
+            items.append(CrawlItem(url=url, depth=next_depth, kind="discovered"))
+        self.store.enqueue_items(items)
+
+    def _refresh_state_snapshot(self, state: CrawlState) -> None:
+        state.queue = self.store.queue_preview(limit=50)
+        state.failed_urls = self.store.failed_map()
 
     def _allowed_host(self, url: str, strategy: dict[str, Any]) -> bool:
         host = urlparse(url).netloc.lower()
@@ -415,7 +496,11 @@ class AgenticCrawlerDaemon:
 
     def _is_blocked(self, url: str, strategy: dict[str, Any]) -> bool:
         blocked = {str(item) for item in strategy.get("blocked_urls", [])}
-        return url in blocked
+        if url in blocked:
+            return True
+        patterns = [str(item).strip().lower() for item in strategy.get("blocked_url_patterns", []) if str(item).strip()]
+        lowered = url.lower()
+        return any(pattern in lowered for pattern in patterns)
 
     def _page_record(
         self,
@@ -538,6 +623,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--once", action="store_true", help="Run one crawl/ETL pass and exit")
     parser.add_argument("--interval", type=float, default=300.0, help="Seconds between daemon passes")
     parser.add_argument("--max-pages", type=int, default=25, help="Maximum pages per pass")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=int(os.getenv("SCRAPER_DAEMON_WORKERS", "1")),
+        help="Concurrent fetch workers per daemon pass",
+    )
     parser.add_argument("--output-dir", type=Path, default=Path("data"), help="Output data directory")
     parser.add_argument("--state-dir", type=Path, default=Path("data/state"), help="Daemon state directory")
     parser.add_argument(
@@ -568,7 +659,7 @@ def main(argv: list[str] | None = None) -> None:
     seeds = args.seed_urls or [cfg.base_url, cfg.gethelp_url]
 
     while True:
-        result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages)
+        result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
         logger.info("Agentic daemon pass complete: %s", result)
         if args.once:
             break
