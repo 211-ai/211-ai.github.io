@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import argparse
-import asyncio
+import hashlib
 import importlib.machinery
+import importlib.util
 import json
 import logging
 import math
@@ -12,13 +13,19 @@ import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any, Iterable
 from urllib.parse import urlparse
 
 import duckdb
 import pandas as pd
 
+from .office_text_extraction import (
+    extract_office_text_from_url,
+    is_binary_like_text,
+    is_office_document,
+    office_title_from_metadata,
+)
+from .pdf_text_extraction import extract_pdf_text_from_url, is_pdf_document, pdf_title_from_metadata
 from .utils import clean_text, setup_logging
 
 logger = logging.getLogger("scraper.retrieval_package")
@@ -73,6 +80,32 @@ def _bootstrap_local_ipfs_datasets() -> None:
         sys.path.insert(0, str(local_ipfs))
 
 
+def _load_cid_utils_module() -> Any:
+    local_module = (
+        Path(__file__).resolve().parent.parent
+        / "ipfs_datasets_py"
+        / "ipfs_datasets_py"
+        / "utils"
+        / "cid_utils.py"
+    )
+    if local_module.exists():
+        module_name = "_vendor_ipfs_datasets_py_cid_utils"
+        module = sys.modules.get(module_name)
+        if module is None:
+            spec = importlib.util.spec_from_file_location(module_name, local_module)
+            if spec is None or spec.loader is None:
+                raise ImportError(f"Could not load CID utilities from {local_module}")
+            module = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = module
+            spec.loader.exec_module(module)
+        return module
+
+    _bootstrap_local_ipfs_datasets()
+    from ipfs_datasets_py.utils import cid_utils
+
+    return cid_utils
+
+
 def _ensure_torchvision_stub() -> None:
     if "torchvision" in sys.modules:
         return
@@ -110,17 +143,15 @@ def _ensure_torchvision_stub() -> None:
 
 
 def _cid_for_obj(payload: dict[str, Any]) -> str:
-    _bootstrap_local_ipfs_datasets()
-    from ipfs_datasets_py.utils.cid_utils import cid_for_obj
-
-    return str(cid_for_obj(payload))
+    return str(_load_cid_utils_module().cid_for_obj(payload))
 
 
 def _cid_for_file(path: Path) -> str:
-    _bootstrap_local_ipfs_datasets()
-    from ipfs_datasets_py.utils.cid_utils import cid_for_bytes
+    return str(_load_cid_utils_module().cid_for_bytes(path.read_bytes()))
 
-    return str(cid_for_bytes(path.read_bytes()))
+
+def _cid_for_bytes(data: bytes) -> str:
+    return str(_load_cid_utils_module().cid_for_bytes(data))
 
 
 def tokenize_text(text: str) -> list[str]:
@@ -676,6 +707,8 @@ def load_corpus_documents(
     warehouse_path: Path,
     max_pages: int = 0,
     max_services: int = 0,
+    extract_pdfs: bool = True,
+    pdf_timeout_seconds: int = 60,
 ) -> tuple[list[CorpusDocument], dict[str, list[str]], dict[str, str]]:
     con = duckdb.connect(str(warehouse_path), read_only=True)
     try:
@@ -714,21 +747,77 @@ def load_corpus_documents(
         documents: list[CorpusDocument] = []
 
         for row in page_rows:
-            payload = _page_content_payload(row)
-            source_content_cid = _cid_for_obj(payload)
-            page_cid_by_url[str(row["url"])] = source_content_cid
+            url = str(row["url"])
+            raw_body_text = str(row.get("body_text") or "")
+            body_text = raw_body_text
+            pdf_extraction: dict[str, Any] | None = None
+            office_extraction: dict[str, Any] | None = None
+            source_content_cid = ""
+            if extract_pdfs and is_pdf_document(url, text=raw_body_text):
+                extraction = extract_pdf_text_from_url(url, timeout_seconds=pdf_timeout_seconds)
+                pdf_extraction = extraction.as_metadata()
+                if extraction.success and extraction.text:
+                    body_text = extraction.text
+                    pdf_extraction["extracted_text_cid"] = _cid_for_bytes(extraction.text.encode("utf-8"))
+                    metadata_title = pdf_title_from_metadata(extraction.metadata)
+                    if metadata_title and not str(row.get("title") or "").strip():
+                        row["title"] = metadata_title
+                    logger.info(
+                        "Extracted PDF text for %s with %s: %d bytes -> %d chars",
+                        url,
+                        extraction.method,
+                        extraction.byte_length,
+                        len(extraction.text),
+                    )
+                else:
+                    logger.warning("PDF text extraction failed for %s: %s", url, extraction.error)
+                    if raw_body_text.lstrip().startswith("%PDF-"):
+                        body_text = ""
+            elif is_office_document(url, text=raw_body_text):
+                extraction = extract_office_text_from_url(url, timeout_seconds=pdf_timeout_seconds)
+                office_extraction = extraction.as_metadata()
+                if extraction.success and extraction.text:
+                    body_text = extraction.text
+                    office_extraction["extracted_text_cid"] = _cid_for_bytes(extraction.text.encode("utf-8"))
+                    metadata_title = office_title_from_metadata(office_extraction)
+                    if metadata_title and not str(row.get("title") or "").strip():
+                        row["title"] = metadata_title
+                    logger.info(
+                        "Extracted office text for %s with %s: %d bytes -> %d chars",
+                        url,
+                        extraction.method,
+                        extraction.byte_length,
+                        len(extraction.text),
+                    )
+                else:
+                    logger.warning("Office text extraction failed for %s: %s", url, extraction.error)
+                    if is_binary_like_text(raw_body_text):
+                        body_text = ""
+
+            payload = _page_content_payload({**row, "body_text": body_text})
+            if pdf_extraction is not None:
+                payload["pdf_extraction"] = pdf_extraction
+            if office_extraction is not None:
+                payload["office_extraction"] = office_extraction
+            if not source_content_cid:
+                source_content_cid = _cid_for_obj(payload)
+            page_cid_by_url[url] = source_content_cid
             links = json.loads(str(row.get("links_json") or "[]"))
-            page_links[str(row["url"])] = [str(link) for link in links]
+            page_links[url] = [str(link) for link in links]
             title = clean_text(str(row.get("title") or ""))
-            text = clean_text(" ".join(part for part in [title, str(row.get("body_text") or "")] if part))
-            host = urlparse(str(row["url"])).netloc.lower()
+            if not title and is_pdf_document(url, text=raw_body_text):
+                title = Path(urlparse(url).path).stem.replace("-", " ").replace("_", " ").strip()
+            if (not title or is_binary_like_text(title)) and is_office_document(url, text=raw_body_text):
+                title = Path(urlparse(url).path).stem.replace("-", " ").replace("_", " ").strip()
+            text = clean_text(" ".join(part for part in [title, body_text] if part))
+            host = urlparse(url).netloc.lower()
             documents.append(
                 CorpusDocument(
                     doc_id=f"page:{source_content_cid}",
                     doc_type="page",
-                    title=title or str(row["url"]),
+                    title=title or url,
                     text=text,
-                    source_url=str(row["url"]),
+                    source_url=url,
                     source_content_cid=source_content_cid,
                     source_page_cid=source_content_cid,
                     host=host,
@@ -750,6 +839,15 @@ def load_corpus_documents(
         ).fetchall()
         service_columns = [str(item[0]) for item in con.description]
         for row in [dict(zip(service_columns, item, strict=False)) for item in services]:
+            source_url = str(row.get("source_url") or "")
+            if is_pdf_document(source_url) and str(row.get("name") or row.get("description") or "").lstrip().startswith("%PDF-"):
+                logger.warning("Skipping non-service PDF binary row from canonical services: %s", source_url)
+                continue
+            if is_office_document(source_url) and is_binary_like_text(
+                " ".join(str(row.get(field) or "") for field in ["name", "description", "provider_name", "program_name"])
+            ):
+                logger.warning("Skipping non-service office/archive binary row from canonical services: %s", source_url)
+                continue
             payload = _service_content_payload(row)
             source_content_cid = _cid_for_obj(payload)
             title = clean_text(str(row.get("name") or ""))
@@ -772,7 +870,6 @@ def load_corpus_documents(
                 str(row.get("accessibility") or ""),
             ]
             text = clean_text(" ".join(part for part in text_parts if part))
-            source_url = str(row.get("source_url") or "")
             source_page_cid = page_cid_by_url.get(source_url, "")
             host = urlparse(source_url).netloc.lower()
             doc_primary = str(row.get("id") or source_content_cid)
@@ -873,11 +970,15 @@ def build_retrieval_package(
     embedding_batch_size: int = 64,
     max_pages: int = 0,
     max_services: int = 0,
+    extract_pdfs: bool = True,
+    pdf_timeout_seconds: int = 60,
 ) -> dict[str, Any]:
     documents, page_links, page_cid_by_url = load_corpus_documents(
         warehouse_path=warehouse_path,
         max_pages=max_pages,
         max_services=max_services,
+        extract_pdfs=extract_pdfs,
+        pdf_timeout_seconds=pdf_timeout_seconds,
     )
     known_page_urls = set(page_cid_by_url.keys())
 
@@ -958,6 +1059,7 @@ def build_retrieval_package(
         "bm25_term_count": len(bm25_term_rows),
         "embedding_count": len(embedding_rows),
         "embedding_model": embedding_model,
+        "pdf_extraction_enabled": bool(extract_pdfs),
         "graph_node_count": len(graph_nodes),
         "graph_edge_count": len(graph_edges),
         "graph_community_count": len(graph_communities),
@@ -1001,30 +1103,115 @@ def upload_package_to_huggingface(
     private: bool = False,
     force_reupload: bool = False,
 ) -> dict[str, Any]:
-    _bootstrap_local_ipfs_datasets()
-    from huggingface_hub import HfApi
-    from ipfs_datasets_py.processors.legal_scrapers.huggingface_pipeline_engine import (
-        UploadToHuggingFaceInParallel,
-    )
+    from huggingface_hub import HfApi, hf_hub_download
 
-    api = HfApi()
+    remote_prefix = "data"
+    package_dir = package_dir.resolve()
+    api = HfApi(token=os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_TOKEN") or None)
     api.create_repo(repo_id=repo_id, repo_type="dataset", private=private, exist_ok=True)
-    configs = SimpleNamespace(
-        REPO_ID=repo_id,
-        REQUEST_LIMIT_PER_HOUR=300,
-        HUGGING_FACE_USER_ACCESS_TOKEN=os.getenv("HF_TOKEN") or os.getenv("HUGGINGFACE_TOKEN"),
-        paths=SimpleNamespace(INPUT_FROM_SQL=str(package_dir)),
+
+    def iter_local_files() -> list[Path]:
+        return sorted(path for path in package_dir.rglob("*") if path.is_file())
+
+    def remote_size_map() -> tuple[str, dict[str, int]]:
+        info = api.repo_info(repo_id, repo_type="dataset", files_metadata=True)
+        sizes: dict[str, int] = {}
+        for sibling in info.siblings:
+            size = getattr(sibling, "size", None)
+            if size is not None:
+                sizes[sibling.rfilename] = int(size)
+        return str(info.sha), sizes
+
+    def sha256_file(path: Path) -> str:
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
+
+    def audit_package(*, verify_documents_hash: bool) -> dict[str, Any]:
+        commit_sha, remote_sizes = remote_size_map()
+        records: list[dict[str, Any]] = []
+        missing: list[str] = []
+        size_mismatches: list[dict[str, Any]] = []
+        for local_path in iter_local_files():
+            relative_path = local_path.relative_to(package_dir).as_posix()
+            remote_path = f"{remote_prefix}/{relative_path}".strip("/")
+            local_size = int(local_path.stat().st_size)
+            remote_size = remote_sizes.get(remote_path)
+            status = "ok" if remote_size == local_size else "missing" if remote_size is None else "size_mismatch"
+            record = {
+                "relative_path": relative_path,
+                "remote_path": remote_path,
+                "local_size": local_size,
+                "remote_size": remote_size,
+                "status": status,
+            }
+            records.append(record)
+            if status == "missing":
+                missing.append(remote_path)
+            elif status == "size_mismatch":
+                size_mismatches.append(record)
+
+        result: dict[str, Any] = {
+            "repo_id": repo_id,
+            "repo_commit_sha": commit_sha,
+            "package_dir": str(package_dir),
+            "remote_prefix": remote_prefix,
+            "local_file_count": len(records),
+            "remote_file_count": len(remote_sizes),
+            "matched_file_count": sum(1 for record in records if record["status"] == "ok"),
+            "missing_remote_files": missing,
+            "size_mismatches": size_mismatches,
+            "local_total_size": sum(record["local_size"] for record in records),
+            "matched_total_size": sum(record["local_size"] for record in records if record["status"] == "ok"),
+        }
+        if verify_documents_hash:
+            local_documents = package_dir / "content" / "documents.parquet"
+            remote_documents = f"{remote_prefix}/content/documents.parquet"
+            if local_documents.exists():
+                downloaded_path = Path(hf_hub_download(repo_id, remote_documents, repo_type="dataset"))
+                result["documents_hash_check"] = {
+                    "remote_path": remote_documents,
+                    "local_size": int(local_documents.stat().st_size),
+                    "remote_size": int(downloaded_path.stat().st_size),
+                    "local_sha256": sha256_file(local_documents),
+                    "remote_sha256": sha256_file(downloaded_path),
+                }
+                result["documents_hash_check"]["sha256_match"] = (
+                    result["documents_hash_check"]["local_sha256"]
+                    == result["documents_hash_check"]["remote_sha256"]
+                )
+        return result
+
+    pre_upload_audit = audit_package(verify_documents_hash=False)
+    needs_upload = bool(
+        force_reupload
+        or pre_upload_audit["missing_remote_files"]
+        or pre_upload_audit["size_mismatches"]
+        or pre_upload_audit["matched_file_count"] != pre_upload_audit["local_file_count"]
     )
-    uploader = UploadToHuggingFaceInParallel(configs=configs)
-    return asyncio.run(
-        uploader.upload_to_hugging_face_in_parallel(
-            output_dir=package_dir,
-            target_dir_name="data",
-            max_concurrency=4,
-            retry_limit=3,
-            force_reupload=force_reupload,
+    if needs_upload:
+        delete_patterns = [f"{remote_prefix}/**"] if force_reupload else None
+        api.upload_folder(
+            repo_id=repo_id,
+            repo_type="dataset",
+            folder_path=str(package_dir),
+            path_in_repo=remote_prefix,
+            delete_patterns=delete_patterns,
+            commit_message="Refresh 211 retrieval package with PDF extraction fixes",
         )
-    )
+
+    post_upload_audit = audit_package(verify_documents_hash=True)
+    return {
+        "repo_id": repo_id,
+        "package_dir": str(package_dir),
+        "remote_prefix": remote_prefix,
+        "upload_performed": needs_upload,
+        "force_reupload": force_reupload,
+        "pre_upload_audit": pre_upload_audit,
+        "post_upload_audit": post_upload_audit,
+    }
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -1049,6 +1236,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--embedding-batch-size", type=int, default=64)
     parser.add_argument("--max-pages", type=int, default=0, help="Optional page cap for bounded builds")
     parser.add_argument("--max-services", type=int, default=0, help="Optional service cap for bounded builds")
+    parser.add_argument("--disable-pdf-extraction", action="store_true", help="Leave PDF-like page bodies unchanged")
+    parser.add_argument("--pdf-timeout-seconds", type=int, default=60, help="Timeout for refetching PDF bytes")
     parser.add_argument("--hf-repo-id", default="", help="Optional Hugging Face dataset repo id to upload into")
     parser.add_argument("--hf-private", action="store_true", help="Create the HF repo as private when uploading")
     parser.add_argument(
@@ -1076,6 +1265,8 @@ def main(argv: list[str] | None = None) -> None:
         embedding_batch_size=args.embedding_batch_size,
         max_pages=args.max_pages,
         max_services=args.max_services,
+        extract_pdfs=not bool(args.disable_pdf_extraction),
+        pdf_timeout_seconds=args.pdf_timeout_seconds,
     )
     result: dict[str, Any] = {"build": manifest}
     if args.hf_repo_id and not args.skip_upload:

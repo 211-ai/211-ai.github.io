@@ -72,12 +72,12 @@ export async function answerWith211GraphRag(
       build211GraphRagPrompt(trimmedQuestion, evidence),
       options.maxTokens || 220,
     );
-    const answer = cleanModelAnswer(rawAnswer);
+    const answer = clean211GraphRagModelAnswer(rawAnswer);
     return {
       question: trimmedQuestion,
-      answer: isGroundedAnswer(answer) ? answer : buildEvidenceSummary(evidence.results),
+      answer: isGrounded211GraphRagAnswer(answer) ? answer : buildEvidenceSummary(evidence.results),
       evidence,
-      usedLocalModel: isGroundedAnswer(answer),
+      usedLocalModel: isGrounded211GraphRagAnswer(answer),
     };
   } catch (error) {
     console.warn("211 GraphRAG local model unavailable; falling back to evidence summary", error);
@@ -162,14 +162,14 @@ function shouldDisableLocalLlm(): boolean {
   return window.localStorage.getItem("211_DISABLE_LOCAL_LLM") === "true";
 }
 
-function cleanModelAnswer(answer: string): string {
+export function clean211GraphRagModelAnswer(answer: string): string {
   return answer
     .replace(/<\|[^>]+?\|>/g, "")
     .replace(/^answer:\s*/i, "")
     .trim();
 }
 
-function isGroundedAnswer(answer: string): boolean {
+export function isGrounded211GraphRagAnswer(answer: string): boolean {
   return answer.length >= 24 && /\[[1-6]\]/.test(answer);
 }
 

@@ -1,5 +1,7 @@
 import {
   AuditEvent,
+  AnalyticsStudy,
+  DecryptedRecordView,
   DerivedArtifactView,
   ExportBundleView,
   ProofReceiptView,
@@ -98,6 +100,41 @@ interface RecordStorageApiResponse {
   ok: boolean;
 }
 
+export interface StorageReplicaStatusView {
+  uri: string;
+  storage_type: string;
+  role: string;
+  ok: boolean;
+  size_bytes?: number | null;
+  sha256?: string | null;
+  error?: string | null;
+  repaired?: boolean;
+}
+
+export interface RecordStorageReportView {
+  wallet_id: string;
+  record_id: string;
+  version_id: string;
+  payload: StorageReplicaStatusView[];
+  metadata: StorageReplicaStatusView[];
+  ok: boolean;
+  repaired?: boolean;
+  created_at: string;
+}
+
+export interface WalletStorageReportView {
+  wallet_id: string;
+  record_count: number;
+  reports: RecordStorageReportView[];
+  ok: boolean;
+  replica_count: number;
+  failed_replica_count: number;
+  repaired?: boolean;
+  repaired_replica_count?: number;
+  storage_types: Record<string, number>;
+  created_at: string;
+}
+
 interface WalletSnapshotListApiResponse {
   wallet_ids: string[];
 }
@@ -106,6 +143,65 @@ interface WalletSnapshotMutationApiResponse {
   wallet_id: string;
   path?: string;
   loaded?: boolean;
+}
+
+interface AnalyticsTemplateApiRecord {
+  template_id: string;
+  title: string;
+  purpose: string;
+  allowed_record_types: string[];
+  allowed_derived_fields: string[];
+  aggregation_policy: Record<string, unknown>;
+  created_by: string;
+  status: string;
+  expires_at?: string | null;
+}
+
+interface AnalyticsTemplatesApiResponse {
+  templates: AnalyticsTemplateApiRecord[];
+}
+
+interface AnalyticsConsentApiRecord {
+  consent_id: string;
+  wallet_id: string;
+  template_id: string;
+  allowed_record_types: string[];
+  allowed_derived_fields: string[];
+  aggregation_policy: Record<string, unknown>;
+  created_at: string;
+  expires_at?: string | null;
+  revoked_at?: string | null;
+  status: "active" | "revoked" | string;
+}
+
+interface AnalyticsConsentsApiResponse {
+  consents: AnalyticsConsentApiRecord[];
+}
+
+export interface WalletGovernancePolicy {
+  approver_dids?: string[];
+  threshold?: number;
+  sensitive_abilities?: string[];
+  sensitive_operations?: string[];
+  recovery_policy?: WalletRecoveryPolicy;
+  [key: string]: unknown;
+}
+
+export interface WalletRecoveryPolicy {
+  contact_dids: string[];
+  threshold: number;
+  status: "active" | "disabled" | string;
+  updated_at?: string;
+}
+
+export interface WalletDetails {
+  wallet_id: string;
+  owner_did: string;
+  controller_dids: string[];
+  device_dids: string[];
+  governance_policy: WalletGovernancePolicy;
+  manifest_head?: string | null;
+  updated_at?: string;
 }
 
 export interface WalletSnapshotVerification {
@@ -119,6 +215,16 @@ export interface WalletSnapshotVerification {
   error?: string;
 }
 
+export interface WalletAnalyticsConsent {
+  id: string;
+  templateId: string;
+  fields: string[];
+  status: "active" | "revoked" | string;
+  createdAt: string;
+  expiresAt?: string;
+  expiresAtRaw?: string;
+}
+
 interface DerivedArtifactApiResponse {
   artifact_id: string;
   source_record_ids: string[];
@@ -130,6 +236,23 @@ interface DerivedArtifactApiResponse {
     digest?: string;
   };
   created_at: string;
+}
+
+interface DecryptedRecordApiResponse {
+  record_id?: string;
+  text: string;
+  size_bytes: number;
+}
+
+interface RecordInvocationApiResponse {
+  token: string;
+  invocation: {
+    invocation_id: string;
+    grant_id: string;
+    audience_did: string;
+    resource: string;
+    ability: string;
+  };
 }
 
 export interface ExportBundleApi {
@@ -191,6 +314,64 @@ export interface ExportInvocationResponse {
   created_at?: string;
 }
 
+export interface DelegatedGrantResponse {
+  grant_id: string;
+  issuer_did: string;
+  audience_did: string;
+  resources: string[];
+  abilities: string[];
+  caveats?: Record<string, unknown>;
+  proof_chain?: string[];
+  status?: string;
+  created_at?: string;
+  expires_at?: string | null;
+}
+
+export interface ThresholdApprovalResponse {
+  approval_id: string;
+  wallet_id: string;
+  operation: string;
+  requested_by: string;
+  threshold: number;
+  approvals?: Record<string, string>;
+  status: string;
+}
+
+export type WalletAdminOperation =
+  | "wallet/controller_add"
+  | "wallet/controller_remove"
+  | "wallet/device_add"
+  | "wallet/device_revoke"
+  | "wallet/recovery_policy_set"
+  | "wallet/controller_recover"
+  | "wallet/emergency_revoke";
+
+export interface OpsHealthCheck {
+  name: string;
+  status: "ok" | "warning" | "error" | string;
+  summary: string;
+  details: Record<string, unknown>;
+}
+
+export interface OpsHealthReport {
+  status: "ok" | "warning" | "error" | string;
+  generated_at: string;
+  wallet_count: number;
+  check_count: number;
+  checks: OpsHealthCheck[];
+}
+
+export interface EmergencyRevokeReport {
+  wallet_id: string;
+  revoked_grant_ids: string[];
+  revoked_grant_count: number;
+  rotated_record_ids: string[];
+  rotated_record_count: number;
+  rotation_errors?: Record<string, string>;
+  rotate_keys: boolean;
+  reason?: string | null;
+}
+
 export interface WalletApiConfig {
   apiBaseUrl: string;
   walletId: string;
@@ -208,6 +389,13 @@ export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBa
     listGrantReceipts(config)
   ]);
   return { accessRequests, grantReceipts };
+}
+
+export async function loadWalletDetails(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<WalletDetails>(url, "Wallet details");
 }
 
 export async function listWalletAuditEvents(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<AuditEvent[]> {
@@ -229,6 +417,57 @@ export async function listWalletProofReceipts(
   const url = new URL(`/wallets/${config.walletId}/proofs`, normalizedBaseUrl(config.apiBaseUrl));
   const data = await fetchJson<ProofReceiptsApiResponse>(url, "Proof receipts");
   return data.proofs.map(toProofReceiptView);
+}
+
+export async function listAnalyticsTemplates({
+  apiBaseUrl,
+  includeInactive = true
+}: Pick<WalletApiConfig, "apiBaseUrl"> & { includeInactive?: boolean }): Promise<AnalyticsStudy[]> {
+  const url = new URL("/analytics/templates", normalizedBaseUrl(apiBaseUrl));
+  if (includeInactive) {
+    url.searchParams.set("include_inactive", "true");
+  }
+  const data = await fetchJson<AnalyticsTemplatesApiResponse>(url, "Analytics templates");
+  return data.templates.map(toAnalyticsStudyView);
+}
+
+export async function listWalletAnalyticsConsents(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletAnalyticsConsent[]> {
+  const url = new URL(`/wallets/${config.walletId}/analytics/consents`, normalizedBaseUrl(config.apiBaseUrl));
+  const data = await fetchJson<AnalyticsConsentsApiResponse>(url, "Analytics consents");
+  return data.consents.map(toWalletAnalyticsConsentView);
+}
+
+export async function createWalletAnalyticsConsent(
+  config: WalletApiConfig,
+  templateId: string,
+  expiresAt?: string
+): Promise<WalletAnalyticsConsent> {
+  const url = new URL(
+    `/wallets/${config.walletId}/analytics/consents/from-template`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const consent = await postJson<AnalyticsConsentApiRecord>(url, "Analytics consent", {
+    actor_did: requiredActorDid(config),
+    expires_at: expiresAt || undefined,
+    template_id: templateId
+  });
+  return toWalletAnalyticsConsentView(consent);
+}
+
+export async function revokeWalletAnalyticsConsent(
+  config: WalletApiConfig,
+  consentId: string
+): Promise<WalletAnalyticsConsent> {
+  const url = new URL(
+    `/wallets/${config.walletId}/analytics/consents/${consentId}/revoke`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const consent = await postJson<AnalyticsConsentApiRecord>(url, "Analytics consent revoke", {
+    actor_did: requiredActorDid(config)
+  });
+  return toWalletAnalyticsConsentView(consent);
 }
 
 export async function createLocationRegionProof(
@@ -317,6 +556,20 @@ export async function verifyRecordStorage(
   return report.ok;
 }
 
+export async function verifyWalletStorage(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletStorageReportView> {
+  const url = new URL(`/wallets/${config.walletId}/storage`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<WalletStorageReportView>(url, "Wallet storage");
+}
+
+export async function repairWalletStorage(config: WalletApiConfig): Promise<WalletStorageReportView> {
+  const url = new URL(`/wallets/${config.walletId}/storage/repair`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletStorageReportView>(url, "Wallet storage repair", {
+    actor_did: requiredActorDid(config)
+  });
+}
+
 export async function repairRecordStorage(config: WalletApiConfig, recordId: string): Promise<boolean> {
   const url = new URL(
     `/wallets/${config.walletId}/records/${recordId}/storage/repair`,
@@ -326,6 +579,17 @@ export async function repairRecordStorage(config: WalletApiConfig, recordId: str
     actor_did: requiredActorDid(config)
   });
   return report.ok;
+}
+
+export async function rotateRecordKey(config: WalletApiConfig, recordId: string): Promise<void> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/rotate-key`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  await postJson<Record<string, unknown>>(url, "Record key rotation", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.issuerKeyHex
+  });
 }
 
 export async function listWalletSnapshots(config: Pick<WalletApiConfig, "apiBaseUrl">): Promise<string[]> {
@@ -355,6 +619,17 @@ export async function loadWalletSnapshot(
   return postJson<WalletSnapshotMutationApiResponse>(url, "Wallet snapshot load", {});
 }
 
+export async function loadOpsHealth(
+  config: Pick<WalletApiConfig, "apiBaseUrl">,
+  verifyStorage = false
+): Promise<OpsHealthReport> {
+  const url = new URL("/ops/health", normalizedBaseUrl(config.apiBaseUrl));
+  if (verifyStorage) {
+    url.searchParams.set("verify_storage", "true");
+  }
+  return fetchJson<OpsHealthReport>(url, "Ops health");
+}
+
 export async function analyzeRecordWithGrant(
   config: WalletApiConfig,
   {
@@ -375,6 +650,54 @@ export async function analyzeRecordWithGrant(
     max_chars: maxChars
   });
   return toDerivedArtifactView(artifact);
+}
+
+export async function decryptRecordWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    invocationToken
+  }: {
+    recordId: string;
+    grantId?: string;
+    invocationToken?: string;
+  }
+): Promise<DecryptedRecordView> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/decrypt`, normalizedBaseUrl(config.apiBaseUrl));
+  const decrypted = await postJson<DecryptedRecordApiResponse>(url, "Record decrypt", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined
+  });
+  return {
+    recordId: decrypted.record_id ?? recordId,
+    text: decrypted.text,
+    sizeBytes: decrypted.size_bytes
+  };
+}
+
+export async function issueRecordDecryptInvocation(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId
+  }: {
+    recordId: string;
+    grantId: string;
+  }
+): Promise<string> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/decrypt-invocations`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const response = await postJson<RecordInvocationApiResponse>(url, "Record decrypt invocation", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId
+  });
+  return response.token;
 }
 
 export async function listAccessRequests({
@@ -446,6 +769,171 @@ export async function approveThresholdApproval(config: WalletApiConfig, approval
   );
   await postJson<Record<string, unknown>>(url, "Threshold approval", {
     approver_did: requiredActorDid(config)
+  });
+}
+
+export async function requestWalletAdminApproval(
+  config: WalletApiConfig,
+  operation: WalletAdminOperation,
+  requestedBy = requiredActorDid(config)
+): Promise<ThresholdApprovalResponse> {
+  const url = new URL(`/wallets/${config.walletId}/approvals`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<ThresholdApprovalResponse>(url, "Wallet admin approval", {
+    abilities: ["wallet/admin"],
+    operation,
+    requested_by: requestedBy,
+    resources: [`wallet://${config.walletId}`]
+  });
+}
+
+export async function setWalletRecoveryPolicy(
+  config: WalletApiConfig,
+  {
+    contactDids,
+    threshold,
+    approvalId
+  }: {
+    contactDids: string[];
+    threshold: number;
+    approvalId?: string;
+  }
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-policy`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet recovery policy", {
+    actor_did: requiredActorDid(config),
+    approval_id: approvalId || undefined,
+    contact_dids: contactDids,
+    threshold
+  });
+}
+
+export async function recoverWalletController(
+  config: WalletApiConfig,
+  {
+    actorDid,
+    controllerDid,
+    approvalId
+  }: {
+    actorDid: string;
+    controllerDid: string;
+    approvalId?: string;
+  }
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/controllers/recover`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet controller recovery", {
+    actor_did: actorDid,
+    approval_id: approvalId || undefined,
+    controller_did: controllerDid
+  });
+}
+
+export async function emergencyRevoke(
+  config: WalletApiConfig,
+  {
+    approvalId,
+    rotateKeys = true,
+    reason
+  }: {
+    approvalId?: string;
+    rotateKeys?: boolean;
+    reason?: string;
+  }
+): Promise<EmergencyRevokeReport> {
+  const url = new URL(`/wallets/${config.walletId}/emergency-revoke`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<EmergencyRevokeReport>(url, "Emergency revoke", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.issuerKeyHex,
+    approval_id: approvalId || undefined,
+    reason: reason || undefined,
+    rotate_keys: rotateKeys
+  });
+}
+
+export async function delegateGrant(
+  config: WalletApiConfig,
+  {
+    parentGrantId,
+    audienceDid,
+    resources,
+    abilities,
+    purpose,
+    expiresAt,
+    audienceKeyHex
+  }: {
+    parentGrantId: string;
+    audienceDid: string;
+    resources: string[];
+    abilities: string[];
+    purpose?: string;
+    expiresAt?: string;
+    audienceKeyHex?: string;
+  }
+): Promise<DelegatedGrantResponse> {
+  const url = new URL(
+    `/wallets/${config.walletId}/grants/${parentGrantId}/delegate`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  return postJson<DelegatedGrantResponse>(url, "Grant delegation", {
+    abilities,
+    audience_did: audienceDid,
+    audience_key_hex: audienceKeyHex || undefined,
+    caveats: purpose ? { purpose } : {},
+    expires_at: expiresAt || undefined,
+    issuer_did: requiredActorDid(config),
+    issuer_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    resources
+  });
+}
+
+export async function addWalletController(
+  config: WalletApiConfig,
+  controllerDid: string,
+  approvalId?: string
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/controllers`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet controller add", {
+    actor_did: requiredActorDid(config),
+    approval_id: approvalId || undefined,
+    controller_did: controllerDid
+  });
+}
+
+export async function removeWalletController(
+  config: WalletApiConfig,
+  controllerDid: string,
+  approvalId?: string
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/controllers/remove`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet controller remove", {
+    actor_did: requiredActorDid(config),
+    approval_id: approvalId || undefined,
+    controller_did: controllerDid
+  });
+}
+
+export async function addWalletDevice(
+  config: WalletApiConfig,
+  deviceDid: string,
+  approvalId?: string
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/devices`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet device add", {
+    actor_did: requiredActorDid(config),
+    approval_id: approvalId || undefined,
+    device_did: deviceDid
+  });
+}
+
+export async function revokeWalletDevice(
+  config: WalletApiConfig,
+  deviceDid: string,
+  approvalId?: string
+): Promise<WalletDetails> {
+  const url = new URL(`/wallets/${config.walletId}/devices/revoke`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletDetails>(url, "Wallet device revoke", {
+    actor_did: requiredActorDid(config),
+    approval_id: approvalId || undefined,
+    device_did: deviceDid
   });
 }
 
@@ -749,6 +1237,31 @@ function toAuditEventView(event: AuditEventApiRecord): AuditEvent {
   };
 }
 
+function toAnalyticsStudyView(template: AnalyticsTemplateApiRecord): AnalyticsStudy {
+  return {
+    id: template.template_id,
+    title: template.title,
+    purpose: template.purpose,
+    fields: template.allowed_derived_fields,
+    minCohortSize: numberFromPolicy(template.aggregation_policy.min_cohort_size, 10),
+    epsilonBudget: numberFromPolicy(template.aggregation_policy.epsilon_budget, 1),
+    spentBudget: 0,
+    status: template.status === "active" ? "approved" : template.status
+  };
+}
+
+function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): WalletAnalyticsConsent {
+  return {
+    id: consent.consent_id,
+    templateId: consent.template_id,
+    fields: consent.allowed_derived_fields,
+    status: consent.status,
+    createdAt: formatTimestamp(consent.created_at),
+    expiresAt: consent.expires_at ? formatTimestamp(consent.expires_at) : undefined,
+    expiresAtRaw: consent.expires_at ?? undefined
+  };
+}
+
 function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
   return {
     id: record.record_id,
@@ -829,6 +1342,19 @@ function stringValue(value: unknown): string {
     return String(value);
   }
   return JSON.stringify(value);
+}
+
+function numberFromPolicy(value: unknown, fallback: number): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+  return fallback;
 }
 
 function labelFromResource(resource: string): string {

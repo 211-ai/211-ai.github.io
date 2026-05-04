@@ -23,9 +23,16 @@ text-document fallback for simpler local API deployments.
 API-loaded documents show encrypted storage health by calling each record's
 storage verification endpoint. If a stored record reports a storage problem,
 the uploads screen can call the wallet storage repair endpoint for that record.
+The Security screen can also request a wallet-level encrypted storage report
+showing total replicas, failed replicas, and the IPFS/S3/Filecoin provider mix,
+then repair all configured replicas from available encrypted copies.
 Active `record/analyze` receipts expose an analysis action that creates an
 encrypted, derived-only artifact; the UI shows artifact metadata and storage
-reference rather than raw document plaintext.
+reference rather than raw document plaintext. Active `record/decrypt` receipts
+expose a separate document-view action that decrypts only after the recipient
+invokes that specific grant. Active receipts held by the current actor that
+include `record/share` or `document/share` can also create attenuated delegated
+grants for another DID through the wallet API.
 When connected to the wallet API, the audit screen loads the wallet audit
 timeline so grant, invocation, analysis, repair, and revocation events remain
 traceable with actor, resource, decision, and grant metadata.

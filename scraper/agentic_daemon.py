@@ -29,6 +29,7 @@ from requests import exceptions as requests_exceptions
 from .config import Config
 from .duckdb_etl import DuckDBETLWarehouse
 from .duckdb_state import DuckDBCrawlStore
+from .pdf_text_extraction import extract_pdf_text_from_bytes, is_pdf_document, pdf_title_from_metadata
 from .processor import DataProcessor
 from .storage import Storage
 from .utils import clean_text, extract_phone, normalise_url, same_domain, setup_logging
@@ -232,6 +233,26 @@ class WebArchivingAdapter:
     def _request_with_timeout(self, url: str, *, timeout_seconds: int) -> FetchResult:
         response = self._session.get(url, timeout=timeout_seconds)
         response.raise_for_status()
+        content_type = response.headers.get("Content-Type", "")
+        if is_pdf_document(response.url, content_type=content_type, content=response.content):
+            extraction = extract_pdf_text_from_bytes(response.content, source_name=response.url)
+            title = pdf_title_from_metadata(extraction.metadata) or Path(urlparse(response.url).path).stem.replace("-", " ")
+            return FetchResult(
+                url=response.url,
+                title=clean_text(title),
+                text=clean_text(extraction.text),
+                html="",
+                links=[],
+                metadata={
+                    "provider": "requests",
+                    "timeout_seconds": int(timeout_seconds),
+                    "content_type": content_type,
+                    "pdf_extraction": extraction.as_metadata(),
+                },
+                success=bool(extraction.success and extraction.text),
+                errors=[] if extraction.success else [extraction.error or "PDF extraction returned no text"],
+                quality_score=1.0 if extraction.text else 0.0,
+            )
         html = response.text
         soup = BeautifulSoup(html, "lxml")
         title = clean_text(soup.title.string) if soup.title else ""

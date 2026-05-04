@@ -294,21 +294,6 @@ const captureScenarios: CaptureScenario[] = [
     ]
   },
   {
-    id: "security-customized",
-    path: "/#/security",
-    title: "Security settings customized",
-    state: "recovery on and public-form bot checks off",
-    goals: [
-      "Changed settings should have clear checked and unchecked states.",
-      "The layout should remain easy to scan on mobile.",
-      "The page should not imply local-only preferences are production enforcement."
-    ],
-    prepare: async (page) => {
-      await page.getByLabel(/Send recovery reminder prompts/i).check();
-      await page.getByLabel(/Require bot checks on public forms/i).uncheck();
-    }
-  },
-  {
     id: "audit",
     path: "/#/audit",
     title: "Audit history",
@@ -321,13 +306,16 @@ const captureScenarios: CaptureScenario[] = [
   }
 ];
 
-const artifactRoot = path.resolve(process.cwd(), "artifacts/ui-screenshots/latest");
+const artifactRoot = path.resolve(
+  process.cwd(),
+  process.env.UI_SCREENSHOT_ROOT ?? "artifacts/ui-screenshots/latest"
+);
 const routeReadyHeadings: Record<string, RegExp> = {
   "/": /Your safety plan/i,
   "/#/analytics": /Share patterns, not personal records/i,
   "/#/benefits-protection": /Optional agency notification/i,
   "/#/check-in": /Set your schedule/i,
-  "/#/contacts": /People and services/i,
+  "/#/contacts": /People and agencies/i,
   "/#/recipient-access": /Access requests/i,
   "/#/register": /Create your Abby profile/i,
   "/#/security": /Account safety/i,
@@ -376,7 +364,7 @@ async function verifyShelterStaffForCapture(page: Page) {
   await page.locator("select").first().selectOption("Rose City Shelter");
   await page.getByLabel(/Shelter staff PIN/i).fill("1234");
   await page.getByRole("button", { name: /Verify shelter staff/i }).click();
-  await expect(page.getByText(/verified_staff/i)).toBeVisible();
+  await expect(page.getByText(/Shelter staff verified\./i)).toBeVisible();
   await page.goto("/#/shelter");
   await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
 }

@@ -13,7 +13,7 @@ import type {
   GraphNode,
 } from "./types";
 
-const DEFAULT_CORPUS_BASE_URL = `${import.meta.env.BASE_URL}corpus/211-info/current`;
+const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env.VITE_211_CORPUS_BASE_URL as string | undefined;
 const CORPUS_BASE_URL = stripTrailingSlash(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
@@ -200,4 +200,18 @@ export function get211CorpusAssetUrl(relativePath: string): string {
 
 function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/, "");
+}
+
+function resolveDefaultCorpusBaseUrl(): string {
+  const baseUrl = String(import.meta.env.BASE_URL || "/");
+  if (/^https?:\/\//i.test(baseUrl)) {
+    return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
+  }
+  if (baseUrl === "." || baseUrl === "./") {
+    return "/corpus/211-info/current";
+  }
+  if (baseUrl.startsWith("/")) {
+    return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
+  }
+  return `/${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
 }

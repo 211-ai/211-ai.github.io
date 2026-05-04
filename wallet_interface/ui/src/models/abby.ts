@@ -115,7 +115,7 @@ export interface AnalyticsStudy {
   minCohortSize: number;
   epsilonBudget: number;
   spentBudget: number;
-  status: "available" | "consented" | "paused";
+  status: "available" | "consented" | "draft" | "approved" | "paused" | "retired" | string;
 }
 
 export interface WalletAccessRequest {
@@ -159,6 +159,12 @@ export interface DerivedArtifactView {
   outputPolicy: string;
   encryptedPayloadRef: string;
   createdAt: string;
+}
+
+export interface DecryptedRecordView {
+  recordId: string;
+  text: string;
+  sizeBytes: number;
 }
 
 export interface ProofReceiptView {

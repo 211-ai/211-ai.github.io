@@ -31,7 +31,8 @@ Implemented foundations:
   artifacts, proof receipts, grants, invocations, threshold approvals, access
   requests, analytics consents, analytics contributions, and audit events.
 - Local, IPFS, S3, Filecoin-style, and replicated encrypted blob-store
-  adapters with storage verification and repair hooks.
+  adapters with record-level verification/repair hooks and wallet-level
+  encrypted replica health summaries/repair.
 - UCAN-style grants and invocations for decrypt, analyze, coarse-location,
   proof, service-match, and encrypted export flows.
 - Threshold approval support for high-impact capabilities such as
@@ -48,7 +49,11 @@ Implemented foundations:
 - `wallet_interface.api` FastAPI endpoints for the above workflows.
 - `wallet_interface/ui` screens for registration, uploads, sharing,
   recipient-access review, analytics consent, proof center, exports, security,
-  shelter workflows, service matching, and audit.
+  shelter workflows, service matching, and audit. The recipient-access screen
+  can invoke attenuated delegated grants from share-capable receipts, and the
+  security screen can perform wallet-level encrypted storage checks/repairs and
+  threshold-approved emergency revocation with wallet-wide grant revocation and
+  key rotation.
 
 Still required before production:
 
@@ -56,8 +61,7 @@ Still required before production:
   statements, and fail closed when proving artifacts are unavailable.
 - Replace deterministic local DP noise with reviewed production randomness and
   durable privacy-budget ledgers.
-- Add passkey/device-key management, key backup/recovery, key rotation, and
-  emergency revoke UX.
+- Add passkey/device-key management and key backup/recovery UX.
 - Harden UCAN interoperability against a target implementation such as
   `ucanto`/w3up or a chosen Python-compatible token profile.
 - Persist wallet state, consent ledgers, audit events, revocations, and privacy
@@ -813,18 +817,25 @@ interop; those are tracked by Milestones B, D, and E.
 
 ### Milestone B: Real Proof Backend for One Claim Family
 
-Status: in progress. The first backend-abstraction slice is implemented and
-tested: `location_region` proofs now route through a configurable wallet proof
+Status: complete for the integrated `location_region` proof interface as of
+2026-05-03. `location_region` proofs route through a configurable wallet proof
 backend, simulated receipts carry verifier metadata, and production-style
-services fail closed when simulated proofs are disabled. The 211-AI API can now
-run with simulated proofs disabled through service configuration or
-`WALLET_PROOF_MODE=production`, and the UI API client can map proof receipt
+services fail closed when simulated proofs are disabled. The 211-AI API can run
+with simulated proofs disabled through service configuration or
+`WALLET_PROOF_MODE=production`, and the UI API client maps proof receipt
 verification metadata. A deterministic non-simulated location-region backend is
-available for integration testing through `WALLET_PROOF_BACKEND=deterministic-location-region`.
-The 211-AI Proof Center now loads wallet proof receipts from the API when a
-wallet API config is present, with demo receipts retained as fallback, and can
-request new `location/prove_region` receipts through the wallet API. Continue
-with a real verifier integration.
+available for integration testing through
+`WALLET_PROOF_BACKEND=deterministic-location-region`. The 211-AI Proof Center
+loads wallet proof receipts from the API when a wallet API config is present,
+retains demo receipts as fallback, and can request new `location/prove_region`
+receipts through the wallet API.
+
+Completion note: the deterministic backend is intentionally not a cryptographic
+ZK circuit. Milestone B is closed because the wallet/API/UI proof boundary,
+receipt schema, fail-closed behavior, verifier metadata, public-input safety,
+and non-simulated verifier path are implemented and tested. Replacing the
+deterministic backend with a reviewed circuit/verifier artifact is now a backend
+drop-in task, not a 211-AI product-flow blocker.
 
 Scope:
 
@@ -857,17 +868,17 @@ Implementation contract:
 | 211-AI UI | Label simulated receipts clearly, show production verification status, and never show private witness data. The Proof Center should display only public inputs, verifier ID, receipt hash, and which wallet record was used. |
 | Tests | Add unit tests for simulated dev success, production fail-closed without backend, production success with a fake non-simulated backend, verification failure rejection, receipt import compatibility, and API/UI display of safe public inputs only. |
 
-First implementation steps:
+Completion evidence:
 
-1. Add the backend protocol and registry in `ipfs_datasets_py.wallet.proofs`.
-2. Thread proof backend configuration through `WalletService`.
-3. Convert `create_location_region_proof` to call the backend instead of
-   directly calling `create_simulated_proof_receipt`.
-4. Add fail-closed production tests before wiring any real circuit.
-5. Add one fake deterministic non-simulated backend for tests; it should prove
-   the production path without pretending to be a cryptographic circuit.
-6. Update API and UI proof displays to show `verification_status` and simulated
-   labels.
+| Requirement | Evidence |
+| --- | --- |
+| Backend abstraction | `ipfs_datasets_py.wallet.proofs` exposes `ProofBackend`, `ProofBackendRegistry`, `SimulatedProofBackend`, and `DeterministicLocationRegionProofBackend`. |
+| Wallet fail-closed mode | `WalletService(..., allow_simulated_proofs=False)` rejects simulated receipts and stores no proof on failure. |
+| Non-simulated verification path | The deterministic location-region backend produces non-simulated receipts with verifier digest, circuit ID, artifact ref, and verification status, and `WalletService` verifies receipts before storage. |
+| Backward-compatible receipts | Wallet snapshot import accepts legacy proof receipts that do not yet contain the new verifier metadata fields. |
+| API proof mode | `WalletInterfaceService` supports explicit proof backend injection and env selection with `WALLET_PROOF_MODE=production` plus `WALLET_PROOF_BACKEND=deterministic-location-region`. |
+| 211-AI Proof Center | Proof Center loads API-backed proof receipts, labels simulated vs verified receipts, displays safe public inputs and verifier metadata, and can create `location/prove_region` receipts through the API. |
+| Public-input safety | Wallet, API, and UI tests assert precise coordinates and witness keys are not present in displayed/public proof inputs. |
 
 Non-goals for this milestone:
 
@@ -879,6 +890,22 @@ Non-goals for this milestone:
   analytics hardening remains Milestone C.
 
 ### Milestone C: Analytics Hardening
+
+Status: complete for the integrated wallet/API/UI analytics-hardening path as of
+2026-05-04. Analytics templates now support the review states
+`draft`, `approved`, `paused`, and `retired`; only approved templates are
+listed by default; and non-approved templates block consent creation,
+contribution creation, and aggregate queries. Consent withdrawal now has a
+regression test proving future contributions are blocked while already released
+aggregate result and audit history are preserved. Differentially private count
+noise now uses system randomness by default, while deterministic noise remains
+available only through an explicit test seed. Multi-dimensional count queries
+now suppress sparse cohort cells without exposing the suppressed field values.
+Analytics templates, consents, contributions, released aggregates, and query
+budget spend now persist through a repository-level analytics ledger instead of
+only duplicated wallet snapshots. The 211-AI Analytics screen now loads
+API-backed templates and consents, shows template status, fields used, consent
+expiration, and supports consent creation and withdrawal.
 
 Scope:
 
@@ -898,7 +925,30 @@ Exit criteria:
 - Withdrawing consent prevents future contribution but preserves already
   released aggregate audit history.
 
+Current implementation evidence:
+
+| Requirement | Evidence |
+| --- | --- |
+| Template review states | `WalletService.create_analytics_template(..., status=...)` normalizes `draft`, `approved`, `paused`, and `retired`, while preserving `active` as a legacy alias for `approved`. |
+| Template gates | Wallet and API tests cover draft templates being hidden from active listings and rejected for consent, and paused templates being rejected for new contributions and aggregate queries. |
+| Consent withdrawal | Wallet tests cover revoked analytics consent blocking future contribution while preserving the stored aggregate release and `analytics/query` audit reference. |
+| DP noise source | Aggregate DP count no longer derives noise from deterministic template/nullifier seed material; tests assert the wallet aggregate path calls unseeded system-random noise. |
+| Multi-dimensional sparse suppression | `run_aggregate_count_by_fields` and `/analytics/{template_id}/count-by-fields` release only cells meeting the cohort threshold and record suppressed-cell counts without leaking suppressed labels. |
+| Durable analytics ledger | `LocalWalletRepository` writes `analytics-ledger.json` with templates, consents, contributions, aggregate releases, and query-budget spend, and `WalletInterfaceService` auto-loads that ledger on startup. |
+| 211-AI consent controls | The Analytics screen displays API-backed template status, fields used, consent expiration, active consent IDs, and calls wallet API endpoints to create or withdraw consent. |
+| Nullifiers and sparse cohorts | Existing wallet tests reject duplicate nullifiers, suppress single-count sparse cohorts, and verify released counts include privacy budget and cohort metadata. |
+
 ### Milestone D: Wallet Recovery and Device Trust
+
+Status: complete for the integrated wallet/API device trust and recovery path
+as of 2026-05-04. The canonical `ipfs_datasets_py.wallet` service now supports
+controller and device management, governance-threshold approvals for wallet
+admin changes, active-record key rotation/re-wrapping, emergency revoke of
+non-owner grants, and recovery-contact threshold approval for adding a
+controller when wallet authority needs to be restored. The 211-AI API exposes
+the recovery policy and recovery-controller flows alongside the existing
+controller, device, approval, and emergency revoke routes, and the Security
+screen can drive recovery-policy and controller-recovery actions.
 
 Scope:
 
@@ -914,7 +964,29 @@ Exit criteria:
 - A compromised delegate can be revoked and cannot invoke new access.
 - Recovery changes are audited and require the configured governance threshold.
 
+Current implementation evidence:
+
+| Requirement | Evidence |
+| --- | --- |
+| Controller/device trust | `WalletService.add_controller`, `remove_controller`, `add_device`, and `revoke_device` update wallet authority and audit `wallet/controller_*` and `wallet/device_*` events. |
+| Threshold admin changes | `wallet/admin` operations use approval requests and threshold approvers before sensitive controller, device, recovery-policy, decrypt, export, or emergency operations proceed. |
+| Key rotation/re-wrapping | `WalletService.rotate_record_key` creates a fresh encrypted version and re-wraps active authorized recipients while revoking old active wraps. |
+| Emergency revoke | `WalletService.emergency_revoke` revokes active non-owner grants, delegated wraps, receipts, and access requests, and can rotate active record keys. |
+| Recovery policy | `WalletService.set_recovery_policy` stores active recovery contacts and requires the configured wallet governance threshold. |
+| Recovery authority change | `WalletService.recover_controller` accepts only recovery-contact approvals for `wallet/controller_recover`, adds the recovered controller, syncs governance approvers, and audits `wallet/controller_recover`. |
+| 211-AI coverage | 211-AI exposes `POST /wallets/{wallet_id}/recovery-policy` and `POST /wallets/{wallet_id}/controllers/recover`. The Security screen includes recovery policy and controller recovery controls, and wallet/API/UI tests cover the integrated surface. |
+
 ### Milestone E: Deployment and Operations
+
+Status: complete for the initial production-ops path as of 2026-05-04.
+Production persistence is available through `LocalWalletRepository` and
+environment-driven wallet storage/proof configuration. The API-level operations
+health report checks repository persistence, encrypted storage availability,
+proof mode, revocation propagation, and privacy-budget ledger readability, and
+writes durable `ops/health` audit events for wallet operators. The 211-AI
+Security screen can run the ops-health check and display per-check status. A
+bounded/watch-mode ops worker, reference Docker/Compose deployment, and operator
+runbook now cover the initial deployment and incident-response path.
 
 Scope:
 
@@ -932,6 +1004,28 @@ Exit criteria:
   history.
 - Storage and proof health checks produce actionable audit/ops events.
 - A production environment can run without demo-only env vars.
+
+Current implementation evidence:
+
+| Requirement | Evidence |
+| --- | --- |
+| Durable state | `LocalWalletRepository` persists wallet snapshots plus the shared analytics ledger; `WalletInterfaceService` can auto-load and auto-persist through `WALLET_REPOSITORY_ROOT`. |
+| Storage configuration | `WalletInterfaceService` reads `WALLET_STORAGE_CONFIG`, `WALLET_STORAGE_TYPE`, and mirror-specific env vars to build local/IPFS/S3/Filecoin-backed encrypted storage. |
+| Proof configuration | `WALLET_PROOF_MODE`, `WALLET_PROOF_BACKEND`, and `WALLET_ALLOW_SIMULATED_PROOFS` control whether simulated proofs are allowed. |
+| Ops health endpoint | `GET /ops/health?verify_storage=true` reports repository, storage, proof registry, revocation propagation, and privacy-budget checks, and can be protected with `WALLET_OPS_HEALTH_SHARED_SECRET`. |
+| Actionable audit events | Ops health appends `ops/health` audit events to each loaded wallet with per-check statuses. |
+| 211-AI ops UI | The Security screen runs `/ops/health`, shows overall status and per-check summaries, and refreshes wallet audit events after the check. |
+| Scheduled worker | `python -m wallet_interface.ops` runs bounded or watch-mode ops checks, emits JSONL, and can fail on warnings or errors for cron/sidecar integration. |
+| Deployment config | `wallet_interface/deploy/docker-compose.wallet.yml` runs API, UI, and ops worker services with durable volumes and production-mode proof settings, `wallet_interface/deploy/kubernetes/` provides the parallel namespace/config/API/UI/ops/ingress reference manifests, and `wallet_interface/deploy/cloudflare/` adds edge proxy plus scheduled ops-health Worker glue. |
+| Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
+
+Remaining work:
+
+- Replace the deterministic integration proof backend with the selected
+  production verifier service.
+- Add environment-specific secret management and alert routing.
+- Harden the Cloudflare reference path with environment-specific origin auth,
+  Access/Tunnel integration, and deployment secrets.
 
 ## Open Decisions
 

@@ -3,17 +3,19 @@
 from __future__ import annotations
 
 import base64
+import os
 from typing import Any, Dict, List, Sequence
 
 from .app_service import WalletInterfaceService
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+    from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
     FastAPI = None  # type: ignore[assignment]
     File = None  # type: ignore[assignment]
     Form = None  # type: ignore[assignment]
+    Header = None  # type: ignore[assignment]
     HTTPException = None  # type: ignore[assignment]
     UploadFile = object  # type: ignore[assignment,misc]
     BaseModel = object  # type: ignore[assignment,misc]
@@ -32,6 +34,34 @@ class CreateWalletRequest(BaseModel):
     owner_did: str
     controller_dids: List[str] = Field(default_factory=list)
     approval_threshold: int | None = None
+
+
+class WalletControllerRequest(BaseModel):
+    actor_did: str
+    controller_did: str
+    controller_key_hex: str | None = None
+    approval_id: str | None = None
+
+
+class WalletDeviceRequest(BaseModel):
+    actor_did: str
+    device_did: str
+    device_key_hex: str | None = None
+    approval_id: str | None = None
+
+
+class WalletRecoveryPolicyRequest(BaseModel):
+    actor_did: str
+    contact_dids: List[str] = Field(default_factory=list)
+    threshold: int = 1
+    approval_id: str | None = None
+
+
+class WalletControllerRecoveryRequest(BaseModel):
+    actor_did: str
+    controller_did: str
+    controller_key_hex: str | None = None
+    approval_id: str | None = None
 
 
 class AddLocationRequest(BaseModel):
@@ -125,6 +155,25 @@ class RevokeGrantRequest(BaseModel):
     actor_did: str
 
 
+class EmergencyRevokeRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    approval_id: str | None = None
+    rotate_keys: bool = True
+    reason: str | None = None
+
+
+class DelegateGrantRequest(BaseModel):
+    issuer_did: str
+    audience_did: str
+    resources: List[str] = Field(default_factory=list)
+    abilities: List[str] = Field(default_factory=list)
+    caveats: Dict[str, Any] = Field(default_factory=dict)
+    expires_at: str | None = None
+    issuer_key_hex: str | None = None
+    audience_key_hex: str | None = None
+
+
 class ExportGrantRequest(BaseModel):
     issuer_did: str
     audience_did: str
@@ -177,7 +226,13 @@ class AnalyzeRecordRequest(BaseModel):
 class DecryptRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
-    invocation_token: str
+    grant_id: str | None = None
+    invocation_token: str | None = None
+
+
+class RotateRecordKeyRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
 
 
 class RepairStorageRequest(BaseModel):
@@ -203,6 +258,7 @@ class AnalyticsTemplateRequest(BaseModel):
     min_cohort_size: int = 10
     epsilon_budget: float = 1.0
     created_by: str
+    status: str = "approved"
     expires_at: str | None = None
 
 
@@ -210,6 +266,10 @@ class AnalyticsConsentFromTemplateRequest(BaseModel):
     actor_did: str
     template_id: str
     expires_at: str | None = None
+
+
+class AnalyticsConsentRevokeRequest(BaseModel):
+    actor_did: str
 
 
 class AnalyticsContributionRequest(BaseModel):
@@ -227,10 +287,33 @@ class PrivateAggregateCountRequest(BaseModel):
     actor_did: str = "did:service:211-ai-api"
 
 
+class PrivateAggregateCohortCountRequest(BaseModel):
+    group_by: List[str] = Field(default_factory=list)
+    epsilon: float | None = None
+    min_cohort_size: int | None = None
+    budget_key: str | None = None
+    budget_limit: float | None = None
+    actor_did: str = "did:service:211-ai-api"
+
+
 class DerivedServiceMatchRequest(BaseModel):
     need_terms: Sequence[str] = Field(default_factory=list)
     location_claim: Dict[str, Any] | None = None
     limit: int = 10
+
+
+def _ops_health_shared_secret() -> str:
+    return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
+
+
+def _extract_bearer_token(authorization: str | None) -> str:
+    raw = str(authorization or "").strip()
+    if not raw:
+        return ""
+    scheme, _, token = raw.partition(" ")
+    if scheme.lower() != "bearer":
+        return ""
+    return token.strip()
 
 
 def create_app(*, service: WalletInterfaceService | None = None):
@@ -249,6 +332,22 @@ def create_app(*, service: WalletInterfaceService | None = None):
     @app.get("/health")
     def health() -> Dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/ops/health")
+    def ops_health(
+        verify_storage: bool = False,
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if expected_secret:
+            supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+            if supplied_secret != expected_secret:
+                raise HTTPException(status_code=401, detail="ops health authorization required")
+        try:
+            return app_service.ops_health(verify_storage=verify_storage)
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
 
     @app.get("/wallets/snapshots")
     def list_wallet_snapshots() -> Dict[str, Any]:
@@ -278,6 +377,95 @@ def create_app(*, service: WalletInterfaceService | None = None):
             approval_threshold=request.approval_threshold,
         )
         return wallet.to_dict()
+
+    @app.get("/wallets/{wallet_id}")
+    def get_wallet(wallet_id: str) -> Dict[str, Any]:
+        try:
+            return app_service.get_wallet(wallet_id).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/controllers")
+    def add_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.add_controller(
+                wallet_id,
+                actor_did=request.actor_did,
+                controller_did=request.controller_did,
+                controller_secret=_key_from_optional_hex(request.controller_key_hex),
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/controllers/remove")
+    def remove_wallet_controller(wallet_id: str, request: WalletControllerRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.remove_controller(
+                wallet_id,
+                actor_did=request.actor_did,
+                controller_did=request.controller_did,
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/devices")
+    def add_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.add_device(
+                wallet_id,
+                actor_did=request.actor_did,
+                device_did=request.device_did,
+                device_secret=_key_from_optional_hex(request.device_key_hex),
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/devices/revoke")
+    def revoke_wallet_device(wallet_id: str, request: WalletDeviceRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.revoke_device(
+                wallet_id,
+                actor_did=request.actor_did,
+                device_did=request.device_did,
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/recovery-policy")
+    def set_wallet_recovery_policy(wallet_id: str, request: WalletRecoveryPolicyRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.set_recovery_policy(
+                wallet_id,
+                actor_did=request.actor_did,
+                contact_dids=request.contact_dids,
+                threshold=request.threshold,
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/controllers/recover")
+    def recover_wallet_controller(wallet_id: str, request: WalletControllerRecoveryRequest) -> Dict[str, Any]:
+        try:
+            wallet = app_service.recover_controller(
+                wallet_id,
+                actor_did=request.actor_did,
+                controller_did=request.controller_did,
+                controller_secret=_key_from_optional_hex(request.controller_key_hex),
+                approval_id=request.approval_id,
+            )
+            return wallet.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/wallets/{wallet_id}/snapshot")
     def save_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
@@ -477,6 +665,25 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/records/{record_id}/decrypt-invocations")
+    def issue_decrypt_invocation(
+        wallet_id: str,
+        record_id: str,
+        request: AnalysisInvocationRequest,
+    ) -> Dict[str, Any]:
+        try:
+            invocation = app_service.issue_record_decrypt_invocation(
+                wallet_id,
+                record_id,
+                grant_id=request.grant_id,
+                actor_did=request.actor_did,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+                expires_at=request.expires_at,
+            )
+            return {"invocation": invocation.to_dict(), "token": invocation_to_token(invocation)}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/access-requests")
     def request_access(wallet_id: str, request: AccessRequestCreateRequest) -> Dict[str, Any]:
         try:
@@ -622,6 +829,43 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/emergency-revoke")
+    def emergency_revoke(wallet_id: str, request: EmergencyRevokeRequest) -> Dict[str, Any]:
+        try:
+            return app_service.emergency_revoke(
+                wallet_id,
+                actor_did=request.actor_did,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+                approval_id=request.approval_id,
+                rotate_keys=request.rotate_keys,
+                reason=request.reason,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/grants/{parent_grant_id}/delegate")
+    def delegate_grant(
+        wallet_id: str,
+        parent_grant_id: str,
+        request: DelegateGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            grant = app_service.delegate_grant(
+                wallet_id,
+                parent_grant_id=parent_grant_id,
+                issuer_did=request.issuer_did,
+                audience_did=request.audience_did,
+                resources=request.resources,
+                abilities=request.abilities,
+                caveats=request.caveats,
+                expires_at=request.expires_at,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+            )
+            return grant.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/wallets/{wallet_id}/grant-receipts")
     def list_grant_receipts(
         wallet_id: str,
@@ -729,13 +973,23 @@ def create_app(*, service: WalletInterfaceService | None = None):
         request: DecryptRecordRequest,
     ) -> Dict[str, Any]:
         try:
-            plaintext = app_service.decrypt_record_with_invocation(
-                wallet_id,
-                record_id,
-                actor_did=request.actor_did,
-                invocation=invocation_from_token(request.invocation_token),
-                actor_secret=_key_from_optional_hex(request.actor_key_hex),
-            )
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            if request.invocation_token:
+                plaintext = app_service.decrypt_record_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=actor_secret,
+                )
+            else:
+                plaintext = app_service.decrypt_record_for_delegate(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                )
             return {
                 "size_bytes": len(plaintext),
                 "text": plaintext.decode("utf-8", errors="replace"),
@@ -774,10 +1028,43 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/records/{record_id}/rotate-key")
+    def rotate_record_key(
+        wallet_id: str,
+        record_id: str,
+        request: RotateRecordKeyRequest,
+    ) -> Dict[str, Any]:
+        try:
+            version = app_service.rotate_record_key(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+            )
+            return version.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.get("/wallets/{wallet_id}/records/{record_id}/storage")
     def verify_record_storage(wallet_id: str, record_id: str) -> Dict[str, Any]:
         try:
             report = app_service.verify_record_storage(wallet_id, record_id)
+            return report.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/storage")
+    def verify_wallet_storage(wallet_id: str) -> Dict[str, Any]:
+        try:
+            report = app_service.verify_wallet_storage(wallet_id)
+            return report.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/storage/repair")
+    def repair_wallet_storage(wallet_id: str, request: RepairStorageRequest) -> Dict[str, Any]:
+        try:
+            report = app_service.repair_wallet_storage(wallet_id, actor_did=request.actor_did)
             return report.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -852,6 +1139,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 min_cohort_size=request.min_cohort_size,
                 epsilon_budget=request.epsilon_budget,
                 created_by=request.created_by,
+                status=request.status,
                 expires_at=request.expires_at,
             )
             return template.to_dict()
@@ -859,8 +1147,25 @@ def create_app(*, service: WalletInterfaceService | None = None):
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get("/analytics/templates")
-    def list_analytics_templates() -> Dict[str, Any]:
-        return {"templates": [template.to_dict() for template in app_service.list_analytics_templates()]}
+    def list_analytics_templates(include_inactive: bool = False) -> Dict[str, Any]:
+        return {
+            "templates": [
+                template.to_dict()
+                for template in app_service.list_analytics_templates(include_inactive=include_inactive)
+            ]
+        }
+
+    @app.get("/wallets/{wallet_id}/analytics/consents")
+    def list_analytics_consents(wallet_id: str, status: str = "all") -> Dict[str, Any]:
+        try:
+            return {
+                "consents": [
+                    consent.to_dict()
+                    for consent in app_service.list_analytics_consents(wallet_id, status=status)
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/wallets/{wallet_id}/analytics/consents/from-template")
     def create_analytics_consent_from_template(
@@ -873,6 +1178,22 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 template_id=request.template_id,
                 expires_at=request.expires_at,
+            )
+            return consent.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/analytics/consents/{consent_id}/revoke")
+    def revoke_analytics_consent(
+        wallet_id: str,
+        consent_id: str,
+        request: AnalyticsConsentRevokeRequest,
+    ) -> Dict[str, Any]:
+        try:
+            consent = app_service.revoke_analytics_consent(
+                wallet_id,
+                consent_id,
+                actor_did=request.actor_did,
             )
             return consent.to_dict()
         except Exception as exc:
@@ -905,6 +1226,25 @@ def create_app(*, service: WalletInterfaceService | None = None):
         try:
             result = app_service.run_private_aggregate_count(
                 template_id,
+                epsilon=request.epsilon,
+                min_cohort_size=request.min_cohort_size,
+                budget_key=request.budget_key,
+                budget_limit=request.budget_limit,
+                actor_did=request.actor_did,
+            )
+            return app_service.summarize_aggregate_result(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/analytics/{template_id}/count-by-fields")
+    def run_private_aggregate_count_by_fields(
+        template_id: str,
+        request: PrivateAggregateCohortCountRequest,
+    ) -> Dict[str, Any]:
+        try:
+            result = app_service.run_private_aggregate_count_by_fields(
+                template_id,
+                group_by=request.group_by,
                 epsilon=request.epsilon,
                 min_cohort_size=request.min_cohort_size,
                 budget_key=request.budget_key,

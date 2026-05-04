@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-ops
+  namespace: wallet-interface
+  labels:
+    app.kubernetes.io/name: wallet-ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: wallet-ops
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: wallet-ops
+    spec:
+      containers:
+        - name: wallet-ops
+          image: wallet-interface-api:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - >
+              python -m wallet_interface.ops
+              --watch
+              --interval-seconds "${WALLET_OPS_INTERVAL_SECONDS}"
+              --fail-on-error
+              --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
+          envFrom:
+            - configMapRef:
+                name: wallet-interface-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: wallet-state
+              mountPath: /var/lib/211-ai
+            - name: wallet-logs
+              mountPath: /var/log/211-ai
+      volumes:
+        - name: wallet-state
+          persistentVolumeClaim:
+            claimName: wallet-state-pvc
+        - name: wallet-logs
+          emptyDir: {}

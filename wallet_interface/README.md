@@ -113,8 +113,17 @@ coarse-location grant/invocation workflows for delegated service matching,
 location-region proof grant/proof workflows,
 encrypted text document creation, analysis grant/invocation workflows,
 encrypted export grant/invocation/bundle workflows, encrypted storage health
-verification/repair, wallet-backed service matching from coarse location claims,
-proof receipt listing for proof-center views, and wallet audit timelines. The
+verification/repair, wallet-level storage replica summaries and repair, record
+key rotation, wallet governance reads, controller/device administration,
+attenuated delegated grants, emergency
+wallet-wide revocation, wallet-backed service matching from coarse location
+claims, proof receipt listing for proof-center views, and wallet audit
+timelines. Controller, device, and emergency revocation changes use the same
+`wallet/admin` threshold approval path as other sensitive wallet operations.
+Delegated grants must chain from an active parent grant and cannot exceed the
+parent's resources, abilities, purpose, expiration, or delegation depth. The
+emergency revocation route revokes active grants and attempts to rotate current
+record keys so revoked delegates cannot receive future encrypted versions. The
 route handlers call `WalletInterfaceService` and return sanitized aggregate
 summaries, derived artifacts, or encrypted export manifests for UI/API clients.
 `POST /exports/verify` validates an export bundle receipt by recomputing its
@@ -160,11 +169,38 @@ snapshot stores wallet manifests, grants, audit events, and encrypted blob
 references; plaintext document bytes remain only in the configured encrypted
 blob store.
 
+The Security screen wraps these APIs for wallet operators: snapshot save/load,
+encrypted storage verification/repair, ops health, controller/device governance,
+recovery policy, controller recovery, and emergency revoke.
+
+Ops health can also run outside the API as a bounded cron task or long-running
+sidecar:
+
+```bash
+python -m wallet_interface.ops --max-runs 1 --fail-on-error
+python -m wallet_interface.ops --watch --interval-seconds 300 --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
+```
+
+Reference Docker and Compose assets are in `wallet_interface/deploy/`. The
+operator runbook is `docs/WALLET_OPERATIONS_RUNBOOK.md`.
+
 Repository API endpoints:
 
 - `GET /wallets/snapshots`
 - `POST /wallets/snapshots/save-all`
 - `POST /wallets/snapshots/load-all`
+- `GET /wallets/{wallet_id}`
+- `POST /wallets/{wallet_id}/controllers`
+- `POST /wallets/{wallet_id}/controllers/remove`
+- `POST /wallets/{wallet_id}/controllers/recover`
+- `POST /wallets/{wallet_id}/devices`
+- `POST /wallets/{wallet_id}/devices/revoke`
+- `POST /wallets/{wallet_id}/recovery-policy`
+- `POST /wallets/{wallet_id}/emergency-revoke`
+- `POST /wallets/{wallet_id}/grants/{parent_grant_id}/delegate`
+- `GET /wallets/{wallet_id}/storage`
+- `POST /wallets/{wallet_id}/storage/repair`
+- `GET /ops/health`
 - `GET /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot/load`

@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   Bell,
@@ -16,8 +16,13 @@ import {
   Menu,
   MessageSquare,
   RefreshCw,
+  Search,
   ShieldCheck,
+  Smartphone,
+  Sparkles,
   Upload,
+  UserMinus,
+  UserPlus,
   UsersRound,
   Wrench
 } from "lucide-react";
@@ -25,9 +30,11 @@ import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../comp
 import {
   CheckInChannel,
   AuditEvent,
+  AnalyticsStudy,
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
+  DecryptedRecordView,
   DerivedArtifactView,
   EasyBotCheckStatus,
   ExportBundleView,
@@ -52,27 +59,56 @@ import {
   serviceMatches
 } from "../services/mockAbbyService";
 import { abilitiesForDisclosureScopes, capabilitySummary, nonGrantedCapabilities } from "../services/capabilities";
+import { answer211InfoQuestion, get211InfoRuntimeStatus, search211Info } from "../services/graphRagService";
+import type { GraphRagRuntimeStatus } from "../services/graphRagService";
+import type { GraphRagAnswer, SearchResult } from "../lib/graphrag";
 import {
   approveAccessRequest,
   approveThresholdApproval,
+  addWalletController,
+  addWalletDevice,
   addBinaryDocument,
   addTextDocument,
   analyzeRecordWithGrant,
   createLocationRegionProof,
+  createWalletAnalyticsConsent,
   createVerifiedExportBundleView,
+  delegateGrant,
+  decryptRecordWithGrant,
+  emergencyRevoke,
   importExportBundleView,
+  issueRecordDecryptInvocation,
+  loadOpsHealth,
   listWalletSnapshots,
   loadExportBundleView,
   loadWalletSnapshot,
   loadWalletAccessState,
+  loadWalletDetails,
   listWalletAuditEvents,
+  listAnalyticsTemplates,
+  listWalletAnalyticsConsents,
   listWalletDocuments,
   listWalletProofReceipts,
   rejectAccessRequest,
   repairRecordStorage,
+  repairWalletStorage,
+  recoverWalletController,
+  removeWalletController,
+  requestWalletAdminApproval,
+  rotateRecordKey,
+  revokeWalletAnalyticsConsent,
+  revokeWalletDevice,
   revokeAccessRequest,
   saveWalletSnapshot,
+  setWalletRecoveryPolicy,
   verifyWalletSnapshot,
+  verifyWalletStorage,
+  EmergencyRevokeReport,
+  OpsHealthReport,
+  WalletDetails,
+  WalletAnalyticsConsent,
+  WalletAdminOperation,
+  WalletStorageReportView,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -544,7 +580,12 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen
+            apiConfig={walletApiConfig}
+            optedIn={analyticsOptIn}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            setOptedIn={setAnalyticsOptIn}
+          />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -562,7 +603,11 @@ export function App() {
           />
         ) : null}
         {activeRoute === "security" ? (
-          <SecurityScreen apiConfig={walletApiConfig} onSnapshotLoaded={refreshWalletAfterSnapshotLoad} />
+          <SecurityScreen
+            apiConfig={walletApiConfig}
+            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+          />
         ) : null}
         {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
       </main>
@@ -1266,6 +1311,7 @@ function UploadsScreen({
   setUploads: (uploads: UploadItem[]) => void;
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
+  const [rotatingUploadIds, setRotatingUploadIds] = useState<string[]>([]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -1329,6 +1375,17 @@ function UploadsScreen({
     }
   }
 
+  async function rotateUploadKey(upload: UploadItem) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    setRotatingUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    try {
+      await rotateRecordKey(apiConfig, upload.recordId);
+      await refreshWalletAuditEvents();
+    } finally {
+      setRotatingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -1369,6 +1426,16 @@ function UploadsScreen({
               </div>
             </div>
             <div className="row-actions list-item-action">
+              {upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={rotatingUploadIds.includes(upload.id)}
+                  onClick={() => rotateUploadKey(upload)}
+                  variant="secondary"
+                >
+                  <KeyRound aria-hidden="true" size={18} />
+                  {rotatingUploadIds.includes(upload.id) ? "Rotating" : "Rotate key"}
+                </Button>
+              ) : null}
               {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
                 <Button
                   disabled={repairingUploadIds.includes(upload.id)}
@@ -1395,8 +1462,185 @@ function UploadsScreen({
   );
 }
 
+type GraphRagUiStatus = "idle" | "loading" | "ready" | "error";
+
+const defaultServiceGraphQuery = "emergency food, shelter, benefits, and crisis support";
+
+function graphRagDocumentTitle(result: SearchResult): string {
+  const document = result.document;
+  return document.provider_name || document.program_name || document.title || result.docId;
+}
+
+function graphRagDocumentDetails(result: SearchResult): string {
+  const document = result.document;
+  const details = [
+    document.program_name && document.program_name !== document.provider_name ? document.program_name : "",
+    document.categories,
+    [document.city, document.state].filter(Boolean).join(", "),
+    document.host
+  ].filter(Boolean);
+  return details.length ? details.join(" · ") : document.doc_type;
+}
+
+function shortCid(cid: string): string {
+  return cid.length > 18 ? `${cid.slice(0, 18)}...` : cid;
+}
+
+function graphRagStatusTone(ready: boolean): string {
+  return ready ? "success" : "warning";
+}
+
+function graphRagBackendSummary(status: GraphRagRuntimeStatus): string {
+  const capabilities = status.backend.capabilities;
+  if (!capabilities) {
+    return status.backend.error || "Backend detection unavailable";
+  }
+  return [
+    capabilities.webgpu ? "WebGPU" : "",
+    capabilities.webnn ? "WebNN detection" : "",
+    capabilities.wasm ? "WASM" : "",
+    capabilities.simd ? "SIMD" : "",
+    capabilities.threads ? "threads" : "",
+  ].filter(Boolean).join(" · ") || "JavaScript fallback";
+}
+
 function SocialServicesScreen() {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
+  const [query, setQuery] = useState(defaultServiceGraphQuery);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [answer, setAnswer] = useState<GraphRagAnswer | null>(null);
+  const [searchStatus, setSearchStatus] = useState<GraphRagUiStatus>("idle");
+  const [answerStatus, setAnswerStatus] = useState<GraphRagUiStatus>("idle");
+  const [answerMode, setAnswerMode] = useState<"summary" | "model" | "">("");
+  const [useHybridSearch, setUseHybridSearch] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const searchRequestIdRef = useRef(0);
+  const answerRequestIdRef = useRef(0);
+  const [runtimeStatus, setRuntimeStatus] = useState<GraphRagRuntimeStatus | null>(null);
+  const [runtimeStatusLoading, setRuntimeStatusLoading] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRuntimeStatus() {
+      setRuntimeStatusLoading(true);
+      try {
+        const nextStatus = await get211InfoRuntimeStatus();
+        if (!cancelled) {
+          setRuntimeStatus(nextStatus);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.warn("211 GraphRAG runtime status failed", error);
+        }
+      } finally {
+        if (!cancelled) {
+          setRuntimeStatusLoading(false);
+        }
+      }
+    }
+
+    void loadRuntimeStatus();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function refreshRuntimeStatus() {
+    setRuntimeStatusLoading(true);
+    try {
+      setRuntimeStatus(await get211InfoRuntimeStatus());
+    } catch (error) {
+      console.warn("211 GraphRAG runtime status refresh failed", error);
+    } finally {
+      setRuntimeStatusLoading(false);
+    }
+  }
+
+  async function runGraphSearchFor(nextQuery: string) {
+    const trimmedQuery = nextQuery.trim();
+    const requestId = searchRequestIdRef.current + 1;
+    searchRequestIdRef.current = requestId;
+    answerRequestIdRef.current += 1;
+
+    if (!trimmedQuery) {
+      setErrorMessage("Enter a service need before searching the local 211 corpus.");
+      setSearchStatus("error");
+      return;
+    }
+
+    setErrorMessage("");
+    setSearchStatus("loading");
+    setAnswer(null);
+    setAnswerStatus("idle");
+    setAnswerMode("");
+
+    try {
+      const nextResults = await search211Info(trimmedQuery, 6, { useEmbedding: useHybridSearch });
+      if (searchRequestIdRef.current !== requestId) {
+        return;
+      }
+      setResults(nextResults);
+      setSearchStatus("ready");
+    } catch (error) {
+      if (searchRequestIdRef.current !== requestId) {
+        return;
+      }
+      console.error("211 GraphRAG search failed", error);
+      setErrorMessage(error instanceof Error ? error.message : "The local 211 corpus search failed.");
+      setSearchStatus("error");
+    }
+  }
+
+  function runGraphSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSelectedCategory("");
+    void runGraphSearchFor(query);
+  }
+
+  async function buildAnswer(useLocalModel: boolean) {
+    const trimmedQuery = query.trim();
+    const requestId = answerRequestIdRef.current + 1;
+    answerRequestIdRef.current = requestId;
+
+    if (!trimmedQuery) {
+      setErrorMessage("Enter a service need before building a cited answer.");
+      setAnswerStatus("error");
+      return;
+    }
+
+    setErrorMessage("");
+    setAnswerStatus("loading");
+    setAnswerMode(useLocalModel ? "model" : "summary");
+
+    try {
+      const nextAnswer = await answer211InfoQuestion(trimmedQuery, {
+        useLocalModel,
+        useEmbedding: useHybridSearch,
+        maxTokens: 220
+      });
+      if (answerRequestIdRef.current !== requestId) {
+        return;
+      }
+      setAnswer(nextAnswer);
+      setResults(nextAnswer.evidence.results);
+      setSearchStatus("ready");
+      setAnswerStatus("ready");
+    } catch (error) {
+      if (answerRequestIdRef.current !== requestId) {
+        return;
+      }
+      console.error("211 GraphRAG answer failed", error);
+      setErrorMessage(error instanceof Error ? error.message : "The local 211 GraphRAG answer failed.");
+      setAnswerStatus("error");
+    } finally {
+      if (answerRequestIdRef.current === requestId) {
+        setAnswerMode("");
+      }
+    }
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -1405,12 +1649,210 @@ function SocialServicesScreen() {
       </div>
       <div className="category-grid">
         {categories.map((category) => (
-          <button className="category-tile" key={category} type="button">
+          <button
+            aria-pressed={selectedCategory === category}
+            className="category-tile"
+            key={category}
+            onClick={() => {
+              setSelectedCategory(category);
+              setQuery(category);
+              void runGraphSearchFor(category);
+            }}
+            type="button"
+          >
             <HeartHandshake aria-hidden="true" size={22} />
             <span>{category}</span>
           </button>
         ))}
       </div>
+      <Section
+        actions={
+          <Badge tone={results.length > 0 ? "success" : "neutral"}>
+            {results.length > 0 ? `${results.length} local matches` : "Local corpus"}
+          </Badge>
+        }
+        eyebrow="Browser GraphRAG"
+        title="Search the scraped 211 corpus"
+      >
+        <div className="graphrag-panel">
+          <form className="graphrag-search-form" onSubmit={runGraphSearch}>
+            <Field
+              help="Searches the local 211 browser package with BM25, graph neighborhoods, and embeddings when available."
+              label="Service need"
+            >
+              <input
+                onChange={(event) => {
+                  setQuery(event.target.value);
+                  setSelectedCategory("");
+                }}
+                placeholder="food pantry near Beaverton, rental assistance, detox support"
+                value={query}
+              />
+            </Field>
+            <div className="graphrag-search-actions">
+              <Button loading={searchStatus === "loading"} loadingLabel="Searching" type="submit">
+                <Search aria-hidden="true" size={18} />
+                Search corpus
+              </Button>
+              <Button
+                disabled={answerStatus === "loading"}
+                loading={answerStatus === "loading" && answerMode === "summary"}
+                loadingLabel="Building answer"
+                onClick={() => void buildAnswer(false)}
+                variant="secondary"
+              >
+                Build cited answer
+              </Button>
+              <Button
+                disabled={answerStatus === "loading"}
+                loading={answerStatus === "loading" && answerMode === "model"}
+                loadingLabel="Running model"
+                onClick={() => void buildAnswer(true)}
+                variant="secondary"
+              >
+                <Sparkles aria-hidden="true" size={18} />
+                Try local model
+              </Button>
+            </div>
+            <label className="graphrag-option">
+              <input
+                checked={useHybridSearch}
+                onChange={(event) => setUseHybridSearch(event.target.checked)}
+                type="checkbox"
+              />
+              <span>
+                <strong>Use BGE-small hybrid vector search</strong>
+                <small>Downloads the browser embedding model on first use; leave off for faster BM25 and graph search.</small>
+              </span>
+            </label>
+            <div className="graphrag-runtime-panel" aria-label="GraphRAG runtime status">
+              <div className="graphrag-runtime-heading">
+                <div>
+                  <strong>Runtime status</strong>
+                  <small>
+                    {runtimeStatus
+                      ? `Corpus base: ${runtimeStatus.corpusBaseUrl}`
+                      : runtimeStatusLoading
+                        ? "Checking corpus, workers, and browser backend..."
+                        : "Runtime status has not loaded yet."}
+                  </small>
+                </div>
+                <Button
+                  loading={runtimeStatusLoading}
+                  loadingLabel="Checking"
+                  onClick={() => void refreshRuntimeStatus()}
+                  variant="secondary"
+                >
+                  <RefreshCw aria-hidden="true" size={16} />
+                  Refresh status
+                </Button>
+              </div>
+              {runtimeStatus ? (
+                <div className="graphrag-runtime-grid">
+                  <article>
+                    <Badge tone={graphRagStatusTone(runtimeStatus.corpus.available)}>
+                      {runtimeStatus.corpus.available ? "Corpus ready" : "Corpus unavailable"}
+                    </Badge>
+                    <strong>{runtimeStatus.corpus.documentCount.toLocaleString()} documents</strong>
+                    <small>
+                      {runtimeStatus.corpus.embeddingCount.toLocaleString()} vectors · {runtimeStatus.corpus.embeddingDimension}d ·{" "}
+                      {runtimeStatus.corpus.graphNeighborhoodShardCount} graph shards
+                    </small>
+                  </article>
+                  <article>
+                    <Badge tone={graphRagStatusTone(runtimeStatus.retrievalWorker.ready)}>
+                      {runtimeStatus.retrievalWorker.ready ? "Search worker ready" : "Search fallback"}
+                    </Badge>
+                    <strong>{runtimeStatus.retrievalWorker.hasWorker ? "Worker available" : "Main thread only"}</strong>
+                    <small>BM25 and graph retrieval stay off the UI thread when this is ready.</small>
+                  </article>
+                  <article>
+                    <Badge tone={graphRagStatusTone(runtimeStatus.embeddingWorker.hasWorker)}>
+                      {runtimeStatus.embeddingWorker.hasWorker ? "Embedding worker available" : "Embedding unavailable"}
+                    </Badge>
+                    <strong>{runtimeStatus.embeddingWorker.modelName}</strong>
+                    <small>
+                      {runtimeStatus.embeddingWorker.isInitialized
+                        ? "Model initialized for hybrid search."
+                        : "Model loads only if hybrid vector search is enabled."}
+                    </small>
+                  </article>
+                  <article>
+                    <Badge tone={runtimeStatus.backend.available ? "success" : "warning"}>
+                      {runtimeStatus.backend.recommendedBackend}
+                    </Badge>
+                    <strong>{graphRagBackendSummary(runtimeStatus)}</strong>
+                    <small>
+                      {runtimeStatus.backend.crossOriginIsolated
+                        ? "Cross-origin isolation is enabled."
+                        : "WASM thread acceleration may be unavailable without cross-origin isolation."}
+                    </small>
+                  </article>
+                </div>
+              ) : null}
+            </div>
+          </form>
+
+          {errorMessage ? <StatusBanner tone="danger">{errorMessage}</StatusBanner> : null}
+          {searchStatus === "idle" ? (
+            <StatusBanner tone="info">
+              Choose a category or search directly. Default searches use the local BM25 and graph indexes without downloading model weights.
+            </StatusBanner>
+          ) : null}
+          {searchStatus === "ready" && results.length === 0 ? (
+            <StatusBanner tone="warning">
+              No local 211 matches were found for this query. Try a broader need or contact 211 directly.
+            </StatusBanner>
+          ) : null}
+
+          {answer ? (
+            <article className="graphrag-answer-card" aria-live="polite">
+              <div className="graphrag-answer-heading">
+                <div>
+                  <p className="eyebrow">Cited answer</p>
+                  <h3>{answer.usedLocalModel ? "Local model answer" : "Evidence summary"}</h3>
+                </div>
+                <Badge tone={answer.usedLocalModel ? "success" : "neutral"}>
+                  {answer.evidence.nodes.length} graph nodes
+                </Badge>
+              </div>
+              <p className="graphrag-answer-text">{answer.answer}</p>
+            </article>
+          ) : null}
+
+          {results.length > 0 ? (
+            <div className="list-stack graphrag-result-list">
+              {results.map((result, index) => (
+                <article className="list-item graphrag-result-item" key={result.docId}>
+                  <div className="graphrag-result-body">
+                    <div className="graphrag-result-title-row">
+                      <span className="graphrag-rank">{index + 1}</span>
+                      <div>
+                        <h3>{graphRagDocumentTitle(result)}</h3>
+                        <p>{graphRagDocumentDetails(result)}</p>
+                      </div>
+                    </div>
+                    <p className="graphrag-snippet">{result.snippet || result.document.text.slice(0, 280)}</p>
+                    <small className="graphrag-cid-row">
+                      CID {shortCid(result.contentCid)} · score {result.score.toFixed(2)}
+                    </small>
+                  </div>
+                  <div className="graphrag-result-actions">
+                    <Badge tone={result.document.doc_type === "service" ? "success" : "neutral"}>
+                      {result.document.doc_type}
+                    </Badge>
+                    {result.document.source_url ? (
+                      <a className="graphrag-source-link" href={result.document.source_url} rel="noreferrer" target="_blank">
+                        Source
+                      </a>
+                    ) : null}
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      </Section>
       <Section title="Government services liaison">
         <div className="liaison-panel">
           <MessageSquare aria-hidden="true" size={28} />
@@ -1946,11 +2388,74 @@ function RecipientAccessScreen({
   const [derivedArtifactsByReceiptId, setDerivedArtifactsByReceiptId] = useState<Record<string, DerivedArtifactView>>(
     {}
   );
+  const [decryptedRecordsByReceiptId, setDecryptedRecordsByReceiptId] = useState<Record<string, DecryptedRecordView>>(
+    {}
+  );
   const [analyzingReceiptIds, setAnalyzingReceiptIds] = useState<string[]>([]);
+  const [decryptingReceiptIds, setDecryptingReceiptIds] = useState<string[]>([]);
+  const [delegatingReceiptIds, setDelegatingReceiptIds] = useState<string[]>([]);
+  const [delegationDrafts, setDelegationDrafts] = useState<
+    Record<string, { audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
+  >({});
+  const [delegationMessages, setDelegationMessages] = useState<Record<string, string>>({});
 
   function hasThresholdApproval(request: WalletAccessRequest) {
     if (!request.approvalRequired) return true;
     return (request.approvalCount ?? 0) >= (request.approvalThreshold ?? 1);
+  }
+
+  function delegationAbilityOptions(receipt: WalletGrantReceipt) {
+    const abilities = receipt.abilities.includes("*") ? ["record/analyze", "record/decrypt"] : receipt.abilities;
+    return ["record/analyze", "record/decrypt"].filter((ability) => abilities.includes(ability));
+  }
+
+  function receiptHasAbility(receipt: WalletGrantReceipt, ability: string) {
+    return receipt.abilities.includes("*") || receipt.abilities.includes(ability);
+  }
+
+  function canDelegateReceipt(receipt: WalletGrantReceipt, abilityOptions: string[]) {
+    const hasShare = receipt.abilities.some(
+      (ability) => ability === "*" || ability === "record/share" || ability === "document/share"
+    );
+    return (
+      Boolean(apiConfig?.actorDid) &&
+      apiConfig?.actorDid === receipt.audienceDid &&
+      receipt.status === "active" &&
+      hasShare &&
+      abilityOptions.length > 0 &&
+      receipt.resources.length > 0
+    );
+  }
+
+  function delegationDraftFor(receipt: WalletGrantReceipt, abilityOptions: string[]) {
+    const draft = delegationDrafts[receipt.id];
+    const fallbackAbility = abilityOptions[0] ?? "record/analyze";
+    if (!draft) {
+      return {
+        audienceDid: "",
+        audienceKeyHex: "",
+        purpose: receipt.purpose,
+        ability: fallbackAbility
+      };
+    }
+    return {
+      ...draft,
+      ability: abilityOptions.includes(draft.ability) ? draft.ability : fallbackAbility
+    };
+  }
+
+  function updateDelegationDraft(
+    receipt: WalletGrantReceipt,
+    abilityOptions: string[],
+    patch: Partial<{ audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
+  ) {
+    setDelegationDrafts({
+      ...delegationDrafts,
+      [receipt.id]: {
+        ...delegationDraftFor(receipt, abilityOptions),
+        ...patch
+      }
+    });
   }
 
   async function recordControllerApproval(requestId: string) {
@@ -2056,7 +2561,7 @@ function RecipientAccessScreen({
   }
 
   async function analyzeReceipt(receipt: WalletGrantReceipt) {
-    if (!receipt.recordId || receipt.status !== "active" || !receipt.abilities.includes("record/analyze")) return;
+    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/analyze")) return;
     setAnalyzingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
     try {
       const artifact =
@@ -2093,6 +2598,96 @@ function RecipientAccessScreen({
       });
     } finally {
       setAnalyzingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
+    }
+  }
+
+  async function viewReceipt(receipt: WalletGrantReceipt) {
+    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/decrypt")) return;
+    const recordId = receipt.recordId;
+    setDecryptingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
+    try {
+      const decrypted =
+        apiConfig?.actorDid
+          ? await (async () => {
+              let invocationToken: string | undefined;
+              if (apiConfig.audienceKeyHex || apiConfig.issuerKeyHex) {
+                try {
+                  invocationToken = await issueRecordDecryptInvocation(apiConfig, {
+                    grantId: receipt.grantId,
+                    recordId
+                  });
+                } catch {
+                  invocationToken = undefined;
+                }
+              }
+              return decryptRecordWithGrant(apiConfig, {
+                grantId: invocationToken ? undefined : receipt.grantId,
+                invocationToken,
+                recordId
+              });
+            })()
+          : {
+              recordId,
+              text: "Local demo decrypted document preview.",
+              sizeBytes: "Local demo decrypted document preview.".length
+            };
+      setDecryptedRecordsByReceiptId({
+        ...decryptedRecordsByReceiptId,
+        [receipt.id]: decrypted
+      });
+      await refreshWalletAuditEvents();
+    } catch {
+      setDecryptedRecordsByReceiptId({
+        ...decryptedRecordsByReceiptId,
+        [receipt.id]: {
+          recordId,
+          text: "Document view unavailable.",
+          sizeBytes: 0
+        }
+      });
+    } finally {
+      setDecryptingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
+    }
+  }
+
+  async function delegateReceipt(event: FormEvent<HTMLFormElement>, receipt: WalletGrantReceipt) {
+    event.preventDefault();
+    const abilityOptions = delegationAbilityOptions(receipt);
+    const draft = delegationDraftFor(receipt, abilityOptions);
+    if (!apiConfig?.actorDid || !draft.audienceDid.trim() || !canDelegateReceipt(receipt, abilityOptions)) return;
+    setDelegatingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
+    setDelegationMessages((messages) => ({ ...messages, [receipt.id]: "" }));
+    try {
+      await delegateGrant(apiConfig, {
+        parentGrantId: receipt.grantId,
+        audienceDid: draft.audienceDid.trim(),
+        audienceKeyHex: draft.audienceKeyHex.trim() || undefined,
+        resources: receipt.resources,
+        abilities: [draft.ability],
+        purpose: draft.purpose.trim() || receipt.purpose
+      });
+      setDelegationDrafts({
+        ...delegationDrafts,
+        [receipt.id]: {
+          audienceDid: "",
+          audienceKeyHex: "",
+          purpose: receipt.purpose,
+          ability: abilityOptions[0] ?? "record/analyze"
+        }
+      });
+      setDelegationMessages((messages) => ({
+        ...messages,
+        [receipt.id]: `Delegated to ${draft.audienceDid.trim()}.`
+      }));
+      await refreshWalletAccessState();
+      await refreshWalletAuditEvents();
+    } catch {
+      setDelegationMessages((messages) => ({
+        ...messages,
+        [receipt.id]: "Delegation failed."
+      }));
+    } finally {
+      setDelegatingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
     }
   }
 
@@ -2212,8 +2807,15 @@ function RecipientAccessScreen({
         <div className="list-stack">
           {grantReceipts.map((receipt) => {
             const canAnalyze =
-              receipt.status === "active" && receipt.abilities.includes("record/analyze") && Boolean(receipt.recordId);
+              receipt.status === "active" && receiptHasAbility(receipt, "record/analyze") && Boolean(receipt.recordId);
+            const canView =
+              receipt.status === "active" && receiptHasAbility(receipt, "record/decrypt") && Boolean(receipt.recordId);
             const artifact = derivedArtifactsByReceiptId[receipt.id];
+            const decryptedRecord = decryptedRecordsByReceiptId[receipt.id];
+            const delegationOptions = delegationAbilityOptions(receipt);
+            const canDelegate = canDelegateReceipt(receipt, delegationOptions);
+            const delegationDraft = delegationDraftFor(receipt, delegationOptions);
+            const delegationMessage = delegationMessages[receipt.id];
             return (
             <article
                 aria-labelledby={`grant-receipt-${receipt.id}`}
@@ -2267,6 +2869,66 @@ function RecipientAccessScreen({
                   </div>
                 </div>
               </div>
+              {canDelegate ? (
+                <form className="form-grid" onSubmit={(event) => delegateReceipt(event, receipt)}>
+                  <Field label="Delegate DID" required>
+                    <input
+                      onChange={(event) =>
+                        updateDelegationDraft(receipt, delegationOptions, { audienceDid: event.target.value })
+                      }
+                      placeholder="did:key:case-worker"
+                      value={delegationDraft.audienceDid}
+                    />
+                  </Field>
+                  <Field label="Delegated purpose">
+                    <input
+                      onChange={(event) =>
+                        updateDelegationDraft(receipt, delegationOptions, { purpose: event.target.value })
+                      }
+                      placeholder={receipt.purpose}
+                      value={delegationDraft.purpose}
+                    />
+                  </Field>
+                  <Field label="Delegated ability">
+                    <select
+                      onChange={(event) =>
+                        updateDelegationDraft(receipt, delegationOptions, { ability: event.target.value })
+                      }
+                      value={delegationDraft.ability}
+                    >
+                      {delegationOptions.map((ability) => (
+                        <option key={ability} value={ability}>
+                          {ability}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Delegate key hex">
+                    <input
+                      onChange={(event) =>
+                        updateDelegationDraft(receipt, delegationOptions, { audienceKeyHex: event.target.value })
+                      }
+                      placeholder="optional"
+                      value={delegationDraft.audienceKeyHex}
+                    />
+                  </Field>
+                  <div className="row-actions full-span">
+                    <Button
+                      disabled={!delegationDraft.audienceDid.trim() || delegatingReceiptIds.includes(receipt.id)}
+                      type="submit"
+                      variant="secondary"
+                    >
+                      <UserPlus size={18} />
+                      {delegatingReceiptIds.includes(receipt.id) ? "Delegating" : "Delegate access"}
+                    </Button>
+                  </div>
+                </form>
+              ) : null}
+              {delegationMessage ? (
+                <StatusBanner tone={delegationMessage.includes("failed") ? "warning" : "success"}>
+                  {delegationMessage}
+                </StatusBanner>
+              ) : null}
               {artifact ? (
                 <div className="disclosure-package">
                   <div className="disclosure-row">
@@ -2283,16 +2945,40 @@ function RecipientAccessScreen({
                   </div>
                 </div>
               ) : null}
-              {canAnalyze ? (
+              {decryptedRecord ? (
+                <div className="disclosure-package">
+                  <div className="disclosure-row">
+                    <strong>Document view</strong>
+                    <span className="document-preview-text">{decryptedRecord.text}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Plaintext size</strong>
+                    <span>{decryptedRecord.sizeBytes} bytes</span>
+                  </div>
+                </div>
+              ) : null}
+              {canAnalyze || canView ? (
                 <div className="row-actions">
-                  <Button
-                    disabled={analyzingReceiptIds.includes(receipt.id)}
-                    onClick={() => analyzeReceipt(receipt)}
-                    variant="secondary"
-                  >
-                    <ShieldCheck size={18} />
-                    {analyzingReceiptIds.includes(receipt.id) ? "Analyzing" : "Analyze safely"}
-                  </Button>
+                  {canAnalyze ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(receipt.id)}
+                      onClick={() => analyzeReceipt(receipt)}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(receipt.id) ? "Analyzing" : "Analyze safely"}
+                    </Button>
+                  ) : null}
+                  {canView ? (
+                    <Button
+                      disabled={decryptingReceiptIds.includes(receipt.id)}
+                      onClick={() => viewReceipt(receipt)}
+                      variant="secondary"
+                    >
+                      <LockKeyhole size={18} />
+                      {decryptingReceiptIds.includes(receipt.id) ? "Opening" : "View document"}
+                    </Button>
+                  ) : null}
                 </div>
               ) : null}
               <small>{receipt.audienceDid}</small>
@@ -2393,14 +3079,95 @@ function BenefitsProtectionScreen({
 }
 
 function AnalyticsScreen({
+  apiConfig,
   optedIn,
+  refreshWalletAuditEvents,
   setOptedIn
 }: {
+  apiConfig?: WalletApiConfig;
   optedIn: Record<string, boolean>;
+  refreshWalletAuditEvents: () => Promise<void>;
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
+  const [apiStudies, setApiStudies] = useState<AnalyticsStudy[]>([]);
+  const [apiConsents, setApiConsents] = useState<WalletAnalyticsConsent[]>([]);
+  const [expirationByStudy, setExpirationByStudy] = useState<Record<string, string>>({});
+  const [busyStudyId, setBusyStudyId] = useState<string | null>(null);
+  const [analyticsStatus, setAnalyticsStatus] = useState<{
+    tone: "info" | "success" | "warning" | "danger";
+    text: string;
+  } | null>(null);
+
+  const activeConsentsByTemplate = useMemo(() => {
+    const entries = apiConsents
+      .filter((consent) => consent.status === "active")
+      .map((consent) => [consent.templateId, consent] as const);
+    return new Map(entries);
+  }, [apiConsents]);
+  const studies = apiConfig && apiStudies.length ? apiStudies : analyticsStudies;
+
+  async function refreshAnalyticsState() {
+    if (!apiConfig) return;
+    const [templates, consents] = await Promise.all([
+      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl, includeInactive: true }),
+      listWalletAnalyticsConsents(apiConfig)
+    ]);
+    setApiStudies(templates.length ? templates : analyticsStudies);
+    setApiConsents(consents);
+    setExpirationByStudy((current) => {
+      const next = { ...current };
+      for (const consent of consents) {
+        if (consent.status === "active" && consent.expiresAtRaw) {
+          next[consent.templateId] = isoToDateInputValue(consent.expiresAtRaw);
+        }
+      }
+      return next;
+    });
+  }
+
+  useEffect(() => {
+    if (!apiConfig) return;
+    refreshAnalyticsState().catch(() => {
+      setApiStudies([]);
+      setApiConsents([]);
+      setAnalyticsStatus({ tone: "warning", text: "Wallet analytics state could not be loaded." });
+    });
+  }, [apiConfig]);
+
   function toggleStudy(studyId: string) {
     setOptedIn({ ...optedIn, [studyId]: !optedIn[studyId] });
+  }
+
+  async function createConsent(study: AnalyticsStudy) {
+    if (!apiConfig || !isStudyConsentable(study.status)) return;
+    setBusyStudyId(study.id);
+    setAnalyticsStatus(null);
+    try {
+      await createWalletAnalyticsConsent(apiConfig, study.id, dateInputValueToIso(expirationByStudy[study.id]));
+      await refreshAnalyticsState();
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus({ tone: "success", text: "Analytics consent saved." });
+    } catch (error) {
+      setAnalyticsStatus({ tone: "danger", text: error instanceof Error ? error.message : "Consent request failed." });
+    } finally {
+      setBusyStudyId(null);
+    }
+  }
+
+  async function withdrawConsent(study: AnalyticsStudy, consent?: WalletAnalyticsConsent) {
+    if (!apiConfig || !consent) return;
+    setBusyStudyId(study.id);
+    setAnalyticsStatus(null);
+    try {
+      await revokeWalletAnalyticsConsent(apiConfig, consent.id);
+      await refreshAnalyticsState();
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus({ tone: "success", text: "Analytics consent withdrawn." });
+    } catch (error) {
+      setAnalyticsStatus({ tone: "danger", text: error instanceof Error ? error.message : "Withdrawal request failed." });
+    } finally {
+      setBusyStudyId(null);
+    }
   }
 
   return (
@@ -2412,20 +3179,24 @@ function AnalyticsScreen({
       <StatusBanner tone="info">
         Only derived fields are used. Exact counts stay hidden until privacy thresholds and budget checks pass.
       </StatusBanner>
+      {analyticsStatus ? <StatusBanner tone={analyticsStatus.tone}>{analyticsStatus.text}</StatusBanner> : null}
       <div className="analytics-grid">
-        {analyticsStudies.map((study) => {
-          const selected = Boolean(optedIn[study.id]);
+        {studies.map((study) => {
+          const activeConsent = activeConsentsByTemplate.get(study.id);
+          const selected = apiConfig ? Boolean(activeConsent) : Boolean(optedIn[study.id]);
           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
           const titleId = `analytics-title-${study.id}`;
+          const consentable = isStudyConsentable(study.status);
+          const busy = busyStudyId === study.id;
           return (
             <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
               <div className="scope-header">
                 <div>
                   <h3 id={titleId}>{study.title}</h3>
-                  <p>{study.purpose}</p>
-                </div>
-                <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
-                  {selected ? "Consented" : study.status}
+	                  <p>{study.purpose}</p>
+	                </div>
+                <Badge tone={selected ? "success" : analyticsStatusTone(study.status)}>
+                  {selected ? "consented" : analyticsStatusLabel(study.status)}
                 </Badge>
               </div>
               <div className="privacy-metrics">
@@ -2451,39 +3222,124 @@ function AnalyticsScreen({
                     {study.status === "paused" ? "paused" : "bounded contribution"}
                   </Badge>
                 </div>
-                <div className="disclosure-package">
-                  <div className="disclosure-row">
-                    <strong>Ability</strong>
-                    <span>analytics/contribute</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Fields</strong>
-                    <span>{study.fields.join(", ")}</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Not granted</strong>
-                    <span>{nonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
-                  </div>
-                </div>
+	                <div className="disclosure-package">
+	                  <div className="disclosure-row">
+	                    <strong>Ability</strong>
+	                    <span>analytics/contribute</span>
+	                  </div>
+	                  <div className="disclosure-row">
+	                    <strong>Fields used</strong>
+	                    <span>{study.fields.join(", ")}</span>
+	                  </div>
+                    <div className="disclosure-row">
+                      <strong>Template status</strong>
+                      <span>{analyticsStatusLabel(study.status)}</span>
+                    </div>
+                    <div className="disclosure-row">
+                      <strong>Consent expiration</strong>
+                      <span>{activeConsent?.expiresAt ?? "not set"}</span>
+                    </div>
+	                  <div className="disclosure-row">
+	                    <strong>Not granted</strong>
+	                    <span>{nonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
+	                  </div>
+	                </div>
+	              </div>
+              <div className="analytics-consent-controls">
+                <Field label="Consent expiration" help="Optional end date">
+                  <input
+                    disabled={Boolean(apiConfig && selected)}
+                    onChange={(event) =>
+                      setExpirationByStudy({ ...expirationByStudy, [study.id]: event.target.value })
+                    }
+                    type="date"
+                    value={expirationByStudy[study.id] ?? ""}
+                  />
+                </Field>
               </div>
-              <label className="consent-box">
-                <input
-                  checked={selected}
-                  disabled={study.status === "paused"}
-                  onChange={() => toggleStudy(study.id)}
-                  type="checkbox"
-                />
-                <span>
-                  <strong>Allow this study to use the listed derived fields.</strong>
-                  <small>Precise location, raw documents, names, and contact details are excluded.</small>
-                </span>
-              </label>
+	              <label className="consent-box">
+	                <input
+	                  checked={selected}
+	                  disabled={busy || !consentable}
+	                  onChange={(event) => {
+                      if (!apiConfig) {
+                        toggleStudy(study.id);
+                        return;
+                      }
+                      if (event.target.checked) {
+                        void createConsent(study);
+                      } else {
+                        void withdrawConsent(study, activeConsent);
+                      }
+                    }}
+	                  type="checkbox"
+	                />
+	                <span>
+	                  <strong>Allow this study to use the listed derived fields.</strong>
+	                  <small>
+                      {selected
+                        ? `Consent ${activeConsent?.id ?? "saved"} is active.`
+                        : "Precise location, raw documents, names, and contact details are excluded."}
+                    </small>
+	                </span>
+	              </label>
+              {apiConfig ? (
+                <div className="row-actions analytics-actions">
+                  {selected ? (
+                    <Button
+                      disabled={busy}
+                      loading={busy}
+                      loadingLabel="Withdrawing"
+                      onClick={() => void withdrawConsent(study, activeConsent)}
+                      variant="danger"
+                    >
+                      <UserMinus size={18} /> Withdraw consent
+                    </Button>
+                  ) : (
+                    <Button
+                      disabled={busy || !consentable}
+                      loading={busy}
+                      loadingLabel="Saving"
+                      onClick={() => void createConsent(study)}
+                    >
+                      <ShieldCheck size={18} /> Save consent
+                    </Button>
+                  )}
+                </div>
+              ) : null}
             </article>
           );
         })}
       </div>
     </div>
   );
+}
+
+function analyticsStatusLabel(status: string): string {
+  if (status === "active") return "approved";
+  if (status === "available") return "approved";
+  return status;
+}
+
+function analyticsStatusTone(status: string): "neutral" | "success" | "warning" | "danger" {
+  if (status === "approved" || status === "active" || status === "available") return "success";
+  if (status === "paused" || status === "draft") return "warning";
+  if (status === "retired") return "danger";
+  return "neutral";
+}
+
+function isStudyConsentable(status: string): boolean {
+  return status === "approved" || status === "active" || status === "available" || status === "consented";
+}
+
+function dateInputValueToIso(value?: string): string | undefined {
+  if (!value) return undefined;
+  return `${value}T23:59:59+00:00`;
+}
+
+function isoToDateInputValue(value: string): string {
+  const match = value.match(/^\d{4}-\d{2}-\d{2}/);
+  return match ? match[0] : "";
 }
 
 function ProofCenterScreen({
@@ -2874,17 +3730,57 @@ function shortHash(value?: string): string {
 
 function SecurityScreen({
   apiConfig,
-  onSnapshotLoaded
+  onSnapshotLoaded,
+  refreshWalletAuditEvents
 }: {
   apiConfig?: WalletApiConfig;
   onSnapshotLoaded: () => Promise<void> | void;
+  refreshWalletAuditEvents: () => Promise<void>;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
     "idle"
   );
   const [snapshotReport, setSnapshotReport] = useState<WalletSnapshotVerification | null>(null);
+  const [storageStatus, setStorageStatus] = useState<"idle" | "checking" | "verified" | "repairing" | "repaired" | "failed">("idle");
+  const [walletStorageReport, setWalletStorageReport] = useState<WalletStorageReportView | null>(null);
+  const [opsStatus, setOpsStatus] = useState<"idle" | "checking" | "checked" | "failed">("idle");
+  const [opsHealthReport, setOpsHealthReport] = useState<OpsHealthReport | null>(null);
+  const [walletDetails, setWalletDetails] = useState<WalletDetails | null>(null);
+  const [controllerDid, setControllerDid] = useState("");
+  const [controllerApprovalId, setControllerApprovalId] = useState("");
+  const [deviceDid, setDeviceDid] = useState("");
+  const [deviceApprovalId, setDeviceApprovalId] = useState("");
+  const [recoveryContactDids, setRecoveryContactDids] = useState("");
+  const [recoveryThreshold, setRecoveryThreshold] = useState(1);
+  const [recoveryPolicyApprovalId, setRecoveryPolicyApprovalId] = useState("");
+  const [recoveryActorDid, setRecoveryActorDid] = useState("");
+  const [recoveredControllerDid, setRecoveredControllerDid] = useState("");
+  const [recoveryControllerApprovalId, setRecoveryControllerApprovalId] = useState("");
+  const [emergencyApprovalId, setEmergencyApprovalId] = useState("");
+  const [emergencyReason, setEmergencyReason] = useState("suspected compromise");
+  const [emergencyRotateKeys, setEmergencyRotateKeys] = useState(true);
+  const [emergencyReport, setEmergencyReport] = useState<EmergencyRevokeReport | null>(null);
+  const [governanceStatus, setGovernanceStatus] = useState<"idle" | "saving" | "requested" | "saved" | "failed">(
+    "idle"
+  );
+  const [governanceMessage, setGovernanceMessage] = useState("");
   const hasCurrentSnapshot = Boolean(apiConfig && snapshotIds.includes(apiConfig.walletId));
+  const governanceThreshold = walletDetails?.governance_policy?.threshold ?? 1;
+  const governanceApprovals =
+    walletDetails?.governance_policy?.approver_dids ?? walletDetails?.controller_dids ?? [];
+  const recoveryPolicy = walletDetails?.governance_policy?.recovery_policy;
+  const recoveryContacts = recoveryPolicy?.contact_dids ?? [];
+  const opsCheckSummary = opsHealthReport
+    ? opsHealthReport.checks.map((check) => `${check.name}: ${check.status}`).join(", ")
+    : "Not checked";
+  const storageProviderSummary =
+    walletStorageReport && Object.keys(walletStorageReport.storage_types).length
+      ? Object.entries(walletStorageReport.storage_types)
+          .map(([storageType, count]) => `${storageType}: ${count}`)
+          .join(", ")
+      : "Not checked";
+  const emergencyRotationErrors = Object.entries(emergencyReport?.rotation_errors ?? {});
 
   async function refreshSnapshotState(): Promise<string[]> {
     if (!apiConfig) return [];
@@ -2898,20 +3794,35 @@ function SecurityScreen({
     return ids;
   }
 
+  async function refreshWalletDetails() {
+    if (!apiConfig) {
+      setWalletDetails(null);
+      return;
+    }
+    setWalletDetails(await loadWalletDetails(apiConfig));
+  }
+
   useEffect(() => {
     if (!apiConfig) return;
     let cancelled = false;
-    refreshSnapshotState()
+    Promise.all([refreshSnapshotState(), refreshWalletDetails()])
       .then(() => undefined)
       .catch(() => {
         if (!cancelled) {
           setSnapshotReport(null);
+          setWalletDetails(null);
         }
       })
     return () => {
       cancelled = true;
     };
   }, [apiConfig]);
+
+  useEffect(() => {
+    if (apiConfig?.actorDid && !recoveryActorDid) {
+      setRecoveryActorDid(apiConfig.actorDid);
+    }
+  }, [apiConfig?.actorDid, recoveryActorDid]);
 
   async function saveSnapshot() {
     if (!apiConfig) return;
@@ -2932,9 +3843,223 @@ function SecurityScreen({
       await loadWalletSnapshot(apiConfig);
       setSnapshotReport(await verifyWalletSnapshot(apiConfig));
       await onSnapshotLoaded();
+      await refreshWalletDetails();
       setSnapshotStatus("loaded");
     } catch {
       setSnapshotStatus("failed");
+    }
+  }
+
+  async function checkWalletStorage() {
+    if (!apiConfig) return;
+    setStorageStatus("checking");
+    try {
+      const report = await verifyWalletStorage(apiConfig);
+      setWalletStorageReport(report);
+      setStorageStatus("verified");
+      await refreshWalletAuditEvents();
+    } catch {
+      setWalletStorageReport(null);
+      setStorageStatus("failed");
+    }
+  }
+
+  async function repairWalletStorageReplicas() {
+    if (!apiConfig?.actorDid) return;
+    setStorageStatus("repairing");
+    try {
+      const report = await repairWalletStorage(apiConfig);
+      setWalletStorageReport(report);
+      setStorageStatus("repaired");
+      await refreshWalletAuditEvents();
+    } catch {
+      setStorageStatus("failed");
+    }
+  }
+
+  async function checkOpsHealth() {
+    if (!apiConfig) return;
+    setOpsStatus("checking");
+    try {
+      const report = await loadOpsHealth(apiConfig, true);
+      setOpsHealthReport(report);
+      setOpsStatus("checked");
+      await refreshWalletAuditEvents();
+    } catch {
+      setOpsHealthReport(null);
+      setOpsStatus("failed");
+    }
+  }
+
+  async function requestGovernanceApproval(operation: WalletAdminOperation, requestedBy?: string) {
+    if (!apiConfig) return;
+    setGovernanceStatus("saving");
+    try {
+      const approval = await requestWalletAdminApproval(apiConfig, operation, requestedBy);
+      if (operation.startsWith("wallet/controller")) {
+        if (operation === "wallet/controller_recover") {
+          setRecoveryControllerApprovalId(approval.approval_id);
+        } else {
+          setControllerApprovalId(approval.approval_id);
+        }
+      } else if (operation.startsWith("wallet/device")) {
+        setDeviceApprovalId(approval.approval_id);
+      } else if (operation === "wallet/recovery_policy_set") {
+        setRecoveryPolicyApprovalId(approval.approval_id);
+      } else {
+        setEmergencyApprovalId(approval.approval_id);
+      }
+      setGovernanceMessage(`Approval ${approval.approval_id}`);
+      setGovernanceStatus("requested");
+    } catch {
+      setGovernanceMessage("Wallet approval request failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyRecoveryPolicy(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig) return;
+    const contactDids = parseRecordIds(recoveryContactDids);
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await setWalletRecoveryPolicy(apiConfig, {
+        approvalId: recoveryPolicyApprovalId.trim() || undefined,
+        contactDids,
+        threshold: recoveryThreshold
+      });
+      setWalletDetails(wallet);
+      setGovernanceMessage("Recovery policy updated.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Recovery policy update failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function requestRecoveryControllerApproval() {
+    if (!apiConfig || !recoveryActorDid.trim()) return;
+    await requestGovernanceApproval("wallet/controller_recover", recoveryActorDid.trim());
+  }
+
+  async function applyControllerRecovery(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig || !recoveryActorDid.trim() || !recoveredControllerDid.trim()) return;
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await recoverWalletController(apiConfig, {
+        actorDid: recoveryActorDid.trim(),
+        approvalId: recoveryControllerApprovalId.trim() || undefined,
+        controllerDid: recoveredControllerDid.trim()
+      });
+      setWalletDetails(wallet);
+      setRecoveredControllerDid("");
+      setRecoveryControllerApprovalId("");
+      setGovernanceMessage("Controller recovered.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Controller recovery failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function recordGovernanceApproval(approvalId: string) {
+    if (!apiConfig || !approvalId.trim()) return;
+    setGovernanceStatus("saving");
+    try {
+      await approveThresholdApproval(apiConfig, approvalId.trim());
+      setGovernanceMessage("Approval recorded.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Approval failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyControllerAdd(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig || !controllerDid.trim()) return;
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await addWalletController(apiConfig, controllerDid.trim(), controllerApprovalId.trim() || undefined);
+      setWalletDetails(wallet);
+      setControllerDid("");
+      setControllerApprovalId("");
+      setGovernanceMessage("Controller updated.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Controller update failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyControllerRemove(controller: string) {
+    if (!apiConfig) return;
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await removeWalletController(apiConfig, controller, controllerApprovalId.trim() || undefined);
+      setWalletDetails(wallet);
+      setControllerApprovalId("");
+      setGovernanceMessage("Controller removed.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Controller removal failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyDeviceAdd(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig || !deviceDid.trim()) return;
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await addWalletDevice(apiConfig, deviceDid.trim(), deviceApprovalId.trim() || undefined);
+      setWalletDetails(wallet);
+      setDeviceDid("");
+      setDeviceApprovalId("");
+      setGovernanceMessage("Device updated.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Device update failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyDeviceRevoke(device: string) {
+    if (!apiConfig) return;
+    setGovernanceStatus("saving");
+    try {
+      const wallet = await revokeWalletDevice(apiConfig, device, deviceApprovalId.trim() || undefined);
+      setWalletDetails(wallet);
+      setDeviceApprovalId("");
+      setGovernanceMessage("Device revoked.");
+      setGovernanceStatus("saved");
+    } catch {
+      setGovernanceMessage("Device revocation failed.");
+      setGovernanceStatus("failed");
+    }
+  }
+
+  async function applyEmergencyRevoke(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig) return;
+    setGovernanceStatus("saving");
+    try {
+      const report = await emergencyRevoke(apiConfig, {
+        approvalId: emergencyApprovalId.trim() || undefined,
+        reason: emergencyReason.trim() || undefined,
+        rotateKeys: emergencyRotateKeys
+      });
+      setEmergencyReport(report);
+      setEmergencyApprovalId("");
+      setGovernanceMessage(
+        `Emergency revoke completed: ${report.revoked_grant_count} grants revoked, ${report.rotated_record_count} records rotated.`
+      );
+      setGovernanceStatus("saved");
+      await refreshWalletDetails();
+    } catch {
+      setGovernanceMessage("Emergency revoke failed.");
+      setGovernanceStatus("failed");
     }
   }
 
@@ -2950,6 +4075,26 @@ function SecurityScreen({
       {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet snapshot saved.</StatusBanner> : null}
       {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet snapshot loaded.</StatusBanner> : null}
       {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet snapshot action failed.</StatusBanner> : null}
+      {storageStatus === "verified" && walletStorageReport ? (
+        <StatusBanner tone={walletStorageReport.ok ? "success" : "warning"}>
+          {walletStorageReport.ok ? "Encrypted storage replicas verified." : "Encrypted storage needs repair."}
+        </StatusBanner>
+      ) : null}
+      {storageStatus === "repaired" && walletStorageReport ? (
+        <StatusBanner tone={walletStorageReport.ok ? "success" : "warning"}>
+          {walletStorageReport.ok ? "Encrypted storage replicas repaired." : "Encrypted storage repair incomplete."}
+        </StatusBanner>
+      ) : null}
+      {storageStatus === "failed" ? <StatusBanner tone="warning">Wallet storage verification failed.</StatusBanner> : null}
+      {opsStatus === "checked" && opsHealthReport ? (
+        <StatusBanner tone={opsHealthReport.status === "error" ? "warning" : "success"}>
+          Operations health: {opsHealthReport.status}.
+        </StatusBanner>
+      ) : null}
+      {opsStatus === "failed" ? <StatusBanner tone="warning">Operations health check failed.</StatusBanner> : null}
+      {governanceStatus === "requested" ? <StatusBanner tone="info">{governanceMessage}</StatusBanner> : null}
+      {governanceStatus === "saved" ? <StatusBanner tone="success">{governanceMessage}</StatusBanner> : null}
+      {governanceStatus === "failed" ? <StatusBanner tone="warning">{governanceMessage}</StatusBanner> : null}
       <Section
         title="Wallet persistence"
         actions={
@@ -2976,8 +4121,34 @@ function SecurityScreen({
             <span>{snapshotReport ? (snapshotReport.valid ? "verified" : "failed") : "not checked"}</span>
           </div>
           <div className="disclosure-row">
+            <strong>Encrypted storage</strong>
+            <span>
+              {walletStorageReport
+                ? walletStorageReport.ok
+                  ? "verified"
+                  : `${walletStorageReport.failed_replica_count} failed replicas`
+                : "not checked"}
+            </span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Replicas</strong>
+            <span>{walletStorageReport ? `${walletStorageReport.replica_count} across ${walletStorageReport.record_count} records` : "Not checked"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Providers</strong>
+            <span>{storageProviderSummary}</span>
+          </div>
+          <div className="disclosure-row">
             <strong>Snapshot hash</strong>
             <span>{snapshotReport?.computed_hash ? <code>{shortHash(snapshotReport.computed_hash)}</code> : "Unavailable"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Ops health</strong>
+            <span>{opsHealthReport ? opsHealthReport.status : "not checked"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Ops checks</strong>
+            <span>{opsCheckSummary}</span>
           </div>
         </div>
         <div className="row-actions">
@@ -2991,19 +4162,391 @@ function SecurityScreen({
           >
             <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load snapshot"}
           </Button>
+          <Button
+            disabled={!apiConfig || storageStatus === "checking" || storageStatus === "repairing"}
+            onClick={checkWalletStorage}
+            variant="secondary"
+          >
+            <Wrench size={18} /> {storageStatus === "checking" ? "Checking" : "Check storage"}
+          </Button>
+          <Button
+            disabled={!apiConfig?.actorDid || storageStatus === "checking" || storageStatus === "repairing"}
+            onClick={repairWalletStorageReplicas}
+            variant="secondary"
+          >
+            <RefreshCw size={18} /> {storageStatus === "repairing" ? "Repairing" : "Repair storage"}
+          </Button>
+          <Button disabled={!apiConfig || opsStatus === "checking"} onClick={checkOpsHealth} variant="secondary">
+            <ShieldCheck size={18} /> {opsStatus === "checking" ? "Checking" : "Run ops health"}
+          </Button>
         </div>
       </Section>
-      <div className="tool-grid">
-        <button className="tool-tile" type="button">
-          <LockKeyhole size={24} /> Session timeout
-        </button>
-        <button className="tool-tile" type="button">
-          <KeyRound size={24} /> Recovery settings
-        </button>
-        <button className="tool-tile" type="button">
-          <ShieldCheck size={24} /> CAPTCHA settings
-        </button>
-      </div>
+      <Section
+        title="Wallet governance"
+        actions={
+          <Badge tone={governanceThreshold > 1 ? "warning" : "success"}>
+            {governanceThreshold > 1 ? `${governanceThreshold} approvals` : "single approval"}
+          </Badge>
+        }
+      >
+        <div className="disclosure-package">
+          <div className="disclosure-row">
+            <strong>Owner</strong>
+            <span>{walletDetails?.owner_did ?? "Unavailable"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Current actor</strong>
+            <span>{apiConfig?.actorDid ?? "Not configured"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Approvers</strong>
+            <span>{governanceApprovals.length ? governanceApprovals.join(", ") : "Unavailable"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Manifest</strong>
+            <span>{walletDetails?.manifest_head ? <code>{shortHash(walletDetails.manifest_head)}</code> : "Unavailable"}</span>
+          </div>
+        </div>
+        <form className="form-grid" onSubmit={applyControllerAdd}>
+          <Field label="Controller DID" required>
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setControllerDid(event.target.value)}
+              placeholder="did:key:new-controller"
+              value={controllerDid}
+            />
+          </Field>
+          <Field label="Wallet admin approval ID">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setControllerApprovalId(event.target.value)}
+              placeholder="approval-..."
+              value={controllerApprovalId}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button
+              disabled={!apiConfig || !controllerDid.trim() || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/controller_add")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request add approval
+            </Button>
+            <Button
+              disabled={!apiConfig || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/controller_remove")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request remove approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !controllerApprovalId.trim() || governanceStatus === "saving"}
+              onClick={() => recordGovernanceApproval(controllerApprovalId)}
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Record approval
+            </Button>
+            <Button disabled={!apiConfig || !controllerDid.trim() || governanceStatus === "saving"} type="submit">
+              <UserPlus size={18} /> Add controller
+            </Button>
+          </div>
+        </form>
+        <div className="list-stack">
+          {(walletDetails?.controller_dids ?? []).map((controller) => (
+            <article className="list-item" key={controller}>
+              <div>
+                <h3>{controller === walletDetails?.owner_did ? "Owner controller" : "Controller"}</h3>
+                <p>{controller}</p>
+                <div className="badge-row">
+                  <Badge tone={governanceApprovals.includes(controller) ? "success" : "neutral"}>
+                    {governanceApprovals.includes(controller) ? "approver" : "controller"}
+                  </Badge>
+                </div>
+              </div>
+              {controller !== walletDetails?.owner_did ? (
+                <div className="row-actions">
+                  <Button
+                    disabled={!apiConfig || governanceStatus === "saving"}
+                    onClick={() => applyControllerRemove(controller)}
+                    variant="danger"
+                  >
+                    <UserMinus size={18} /> Remove
+                  </Button>
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </Section>
+      <Section
+        title="Recovery policy"
+        actions={
+          <Badge tone={recoveryPolicy?.status === "active" ? "success" : "warning"}>
+            {recoveryPolicy?.status === "active" ? `${recoveryPolicy.threshold} recovery approvals` : "not active"}
+          </Badge>
+        }
+      >
+        <div className="disclosure-package">
+          <div className="disclosure-row">
+            <strong>Contacts</strong>
+            <span>{recoveryContacts.length ? recoveryContacts.join(", ") : "Unavailable"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Threshold</strong>
+            <span>{recoveryPolicy?.threshold ?? "Unavailable"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Status</strong>
+            <span>{recoveryPolicy?.status ?? "Unavailable"}</span>
+          </div>
+        </div>
+        <form className="form-grid" onSubmit={applyRecoveryPolicy}>
+          <Field label="Recovery contact DIDs" required>
+            <textarea
+              disabled={!apiConfig}
+              onChange={(event) => setRecoveryContactDids(event.target.value)}
+              placeholder="did:key:recovery-a, did:key:recovery-b"
+              rows={3}
+              value={recoveryContactDids}
+            />
+          </Field>
+          <Field label="Recovery threshold" required>
+            <input
+              disabled={!apiConfig}
+              min={1}
+              onChange={(event) => setRecoveryThreshold(Number(event.target.value))}
+              type="number"
+              value={recoveryThreshold}
+            />
+          </Field>
+          <Field label="Wallet admin approval ID">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setRecoveryPolicyApprovalId(event.target.value)}
+              placeholder="approval-..."
+              value={recoveryPolicyApprovalId}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button
+              disabled={!apiConfig || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/recovery_policy_set")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request policy approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !recoveryPolicyApprovalId.trim() || governanceStatus === "saving"}
+              onClick={() => recordGovernanceApproval(recoveryPolicyApprovalId)}
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Record approval
+            </Button>
+            <Button disabled={!apiConfig || governanceStatus === "saving"} type="submit">
+              <UsersRound size={18} /> Save recovery policy
+            </Button>
+          </div>
+        </form>
+        <form className="form-grid" onSubmit={applyControllerRecovery}>
+          <Field label="Recovery actor DID" required>
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setRecoveryActorDid(event.target.value)}
+              placeholder="did:key:recovery-a"
+              value={recoveryActorDid}
+            />
+          </Field>
+          <Field label="Recovered controller DID" required>
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setRecoveredControllerDid(event.target.value)}
+              placeholder="did:key:recovered-controller"
+              value={recoveredControllerDid}
+            />
+          </Field>
+          <Field label="Recovery approval ID">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setRecoveryControllerApprovalId(event.target.value)}
+              placeholder="approval-..."
+              value={recoveryControllerApprovalId}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button
+              disabled={!apiConfig || !recoveryActorDid.trim() || governanceStatus === "saving"}
+              onClick={requestRecoveryControllerApproval}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request recovery approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !recoveryControllerApprovalId.trim() || governanceStatus === "saving"}
+              onClick={() => recordGovernanceApproval(recoveryControllerApprovalId)}
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Record approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !recoveryActorDid.trim() || !recoveredControllerDid.trim() || governanceStatus === "saving"}
+              type="submit"
+            >
+              <UserPlus size={18} /> Recover controller
+            </Button>
+          </div>
+        </form>
+      </Section>
+      <Section title="Trusted devices">
+        <form className="form-grid" onSubmit={applyDeviceAdd}>
+          <Field label="Device DID" required>
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setDeviceDid(event.target.value)}
+              placeholder="did:key:phone-or-tablet"
+              value={deviceDid}
+            />
+          </Field>
+          <Field label="Wallet admin approval ID">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setDeviceApprovalId(event.target.value)}
+              placeholder="approval-..."
+              value={deviceApprovalId}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button
+              disabled={!apiConfig || !deviceDid.trim() || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/device_add")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request add approval
+            </Button>
+            <Button
+              disabled={!apiConfig || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/device_revoke")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request revoke approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !deviceApprovalId.trim() || governanceStatus === "saving"}
+              onClick={() => recordGovernanceApproval(deviceApprovalId)}
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Record approval
+            </Button>
+            <Button disabled={!apiConfig || !deviceDid.trim() || governanceStatus === "saving"} type="submit">
+              <Smartphone size={18} /> Add device
+            </Button>
+          </div>
+        </form>
+        <div className="list-stack">
+          {(walletDetails?.device_dids ?? []).map((device) => (
+            <article className="list-item" key={device}>
+              <div>
+                <h3>{device === walletDetails?.owner_did ? "Primary device" : "Trusted device"}</h3>
+                <p>{device}</p>
+                <div className="badge-row">
+                  <Badge tone="success">active</Badge>
+                </div>
+              </div>
+              {device !== walletDetails?.owner_did ? (
+                <div className="row-actions">
+                  <Button
+                    disabled={!apiConfig || governanceStatus === "saving"}
+                    onClick={() => applyDeviceRevoke(device)}
+                    variant="danger"
+                  >
+                    <UserMinus size={18} /> Revoke
+                  </Button>
+                </div>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </Section>
+      <Section
+        title="Emergency revoke"
+        actions={
+          <Badge tone={emergencyReport ? (emergencyRotationErrors.length ? "warning" : "success") : "danger"}>
+            {emergencyReport ? "completed" : "wallet-wide"}
+          </Badge>
+        }
+      >
+        <form className="form-grid" onSubmit={applyEmergencyRevoke}>
+          <Field label="Incident reason">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setEmergencyReason(event.target.value)}
+              placeholder="suspected compromise"
+              value={emergencyReason}
+            />
+          </Field>
+          <Field label="Wallet admin approval ID">
+            <input
+              disabled={!apiConfig}
+              onChange={(event) => setEmergencyApprovalId(event.target.value)}
+              placeholder="approval-..."
+              value={emergencyApprovalId}
+            />
+          </Field>
+          <label className="consent-box full-span">
+            <input
+              checked={emergencyRotateKeys}
+              disabled={!apiConfig}
+              onChange={(event) => setEmergencyRotateKeys(event.target.checked)}
+              type="checkbox"
+            />
+            <span>
+              <strong>Rotate record keys</strong>
+            </span>
+          </label>
+          <div className="row-actions full-span">
+            <Button
+              disabled={!apiConfig || governanceStatus === "saving"}
+              onClick={() => requestGovernanceApproval("wallet/emergency_revoke")}
+              variant="secondary"
+            >
+              <ShieldCheck size={18} /> Request emergency approval
+            </Button>
+            <Button
+              disabled={!apiConfig || !emergencyApprovalId.trim() || governanceStatus === "saving"}
+              onClick={() => recordGovernanceApproval(emergencyApprovalId)}
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Record approval
+            </Button>
+            <Button disabled={!apiConfig || governanceStatus === "saving"} type="submit" variant="danger">
+              <LockKeyhole size={18} /> Revoke access
+            </Button>
+          </div>
+        </form>
+        {emergencyReport ? (
+          <div className="disclosure-package" aria-live="polite">
+            <div className="disclosure-row">
+              <strong>Revoked grants</strong>
+              <span>{emergencyReport.revoked_grant_count}</span>
+            </div>
+            <div className="disclosure-row">
+              <strong>Rotated records</strong>
+              <span>{emergencyReport.rotated_record_count}</span>
+            </div>
+            <div className="disclosure-row">
+              <strong>Key rotation errors</strong>
+              <span>
+                {emergencyRotationErrors.length
+                  ? emergencyRotationErrors.map(([recordId, error]) => `${recordId}: ${error}`).join(", ")
+                  : "None"}
+              </span>
+            </div>
+            <div className="disclosure-row">
+              <strong>Reason</strong>
+              <span>{emergencyReport.reason || "Not recorded"}</span>
+            </div>
+          </div>
+        ) : null}
+      </Section>
     </div>
   );
 }
