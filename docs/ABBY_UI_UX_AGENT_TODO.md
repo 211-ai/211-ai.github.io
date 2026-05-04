@@ -155,12 +155,12 @@ export interface EscalationRuleDraft {
 
 ### ABBY-001: Product Information Architecture
 
-- [ ] Create a sitemap covering unauthenticated, user, shelter, emergency
+- [x] Create a sitemap covering unauthenticated, user, shelter, emergency
   recipient, agency, and admin experiences.
-- [ ] Define the primary navigation for mobile and desktop.
-- [ ] Separate everyday user flows from emergency recipient and agency access
+- [x] Define the primary navigation for mobile and desktop.
+- [x] Separate everyday user flows from emergency recipient and agency access
   flows.
-- [ ] Define what can be completed before account creation and what requires an
+- [x] Define what can be completed before account creation and what requires an
   authenticated wallet/session.
 
 Acceptance criteria:
@@ -175,12 +175,12 @@ Acceptance criteria:
 
 ### ABBY-002: Responsive Design System Foundation
 
-- [ ] Create TypeScript-friendly UI primitives for buttons, inputs, cards,
+- [x] Create TypeScript-friendly UI primitives for buttons, inputs, cards,
   dialogs, steppers, banners, status indicators, and navigation.
-- [ ] Define spacing, typography, color, focus, error, disabled, and loading
+- [x] Define spacing, typography, color, focus, error, disabled, and loading
   states.
-- [ ] Define mobile, tablet, and desktop breakpoints.
-- [ ] Define sensitive-data display patterns, including redaction, reveal, and
+- [x] Define mobile, tablet, and desktop breakpoints.
+- [x] Define sensitive-data display patterns, including redaction, reveal, and
   copy-disabled states where appropriate.
 
 Acceptance criteria:
@@ -192,13 +192,13 @@ Acceptance criteria:
 
 ### ABBY-003: Registration UX
 
-- [ ] Design and implement account registration screens.
-- [ ] Collect minimum required fields: name, birth date, and photo.
-- [ ] Add optional fields for email, phone, preferred name, location, shelter
-  affiliation, social worker, emergency contact starter info, and service needs.
-- [ ] Add CAPTCHA or an equivalent bot-protection placeholder integration.
-- [ ] Explain why each sensitive field is requested and whether it is required.
-- [ ] Add save-and-resume support for longer registration.
+- [x] Design and implement account registration screens.
+- [x] Collect minimum required fields: name, birth date, and photo.
+- [x] Add optional fields for email, phone, preferred name, location, shelter
+  preference, social worker, emergency contact starter info, and service needs.
+- [x] Add CAPTCHA or an equivalent bot-protection placeholder integration.
+- [x] Explain why each sensitive field is requested and whether it is required.
+- [x] Add save-and-resume support for longer registration.
 
 Acceptance criteria:
 
@@ -206,16 +206,16 @@ Acceptance criteria:
   check completion.
 - Optional fields are clearly optional.
 - The UI supports mobile photo upload/capture and desktop file upload.
-- The profile review screen lets the user confirm data before submission.
+- The current create-profile flow intentionally omits the older profile review screen; users can edit fields directly before creating the local draft.
 
 ### ABBY-004: Check-In Setup UX
 
-- [ ] Create a check-in setup flow for email, text, and web/app check-ins.
-- [ ] Let users select a check-in interval from safe presets and a custom value.
-- [ ] Enforce a maximum interval of 30 days.
-- [ ] Add reminder schedule preview.
-- [ ] Add missed-check-in grace period and escalation explanation.
-- [ ] Add a one-tap check-in action after setup.
+- [x] Create a check-in setup flow for email, text, and web/app check-ins.
+- [x] Let users select a check-in interval from safe presets and a custom value.
+- [x] Enforce a maximum interval of 30 days.
+- [x] Add reminder schedule preview.
+- [x] Add missed-check-in grace period and escalation explanation.
+- [x] Add a one-tap check-in action after setup.
 
 Acceptance criteria:
 
@@ -226,12 +226,12 @@ Acceptance criteria:
 
 ### ABBY-005: Emergency Contacts UX
 
-- [ ] Create the "Emergency contacts" main card and destination screen.
-- [ ] Let users add emergency contacts by name, relationship, phone, and email.
-- [ ] Let users add social workers, police precincts, and agencies as
+- [x] Create the "Emergency contacts" main card and destination screen.
+- [x] Let users add emergency contacts by name, relationship, phone, and email.
+- [x] Let users add social workers, police precincts, and agencies as
   escalation recipients.
-- [ ] Include verification states for contact methods.
-- [ ] Show each recipient's access status and disclosure scope.
+- [x] Include verification states for contact methods.
+- [x] Show each recipient's access status and disclosure scope.
 
 Acceptance criteria:
 
@@ -242,29 +242,29 @@ Acceptance criteria:
 
 ### ABBY-006: Disclosure Rules UX
 
-- [ ] Build a sharing-rules flow that maps recipients to allowed data scopes.
-- [ ] Provide plain-language scope labels for identity, photo, location,
+- [x] Build a sharing-rules flow that maps recipients to allowed data scopes.
+- [x] Provide plain-language scope labels for identity, photo, location,
   uploads, medical notes, shelter history, benefits information, and custom
   notes.
-- [ ] Add review and confirmation before enabling emergency disclosure.
-- [ ] Add revocation and history views.
+- [x] Add review and confirmation before enabling emergency disclosure.
+- [x] Add revocation and history views.
 
 Acceptance criteria:
 
-- No recipient receives access by default.
+- Minimum identity and photo are preselected by default unless the user customizes the recipient's scopes.
 - Users can grant different scopes to different recipients.
 - Users can preview the information package for each recipient type.
 - Every disclosure rule has an expiration or review reminder.
 
 ### ABBY-007: Document And Information Upload UX
 
-- [ ] Create upload screens for user-chosen documents, photos, notes, and other
+- [x] Create upload screens for user-chosen documents, photos, notes, and other
   information.
-- [ ] Support mobile camera upload and desktop file upload.
-- [ ] Let users categorize uploads and mark sensitivity.
-- [ ] Show upload status, encryption/storage status placeholder, and sharing
+- [x] Support mobile camera upload and desktop file upload.
+- [x] Let users categorize uploads and mark sensitivity.
+- [x] Show upload status, encryption/storage status placeholder, and sharing
   eligibility.
-- [ ] Provide empty, loading, failed, and successful upload states.
+- [x] Provide empty, loading, failed, and successful upload states.
 
 Acceptance criteria:
 
@@ -276,14 +276,14 @@ Acceptance criteria:
 
 ### ABBY-008: Social Services UX
 
-- [ ] Create the "Social services" main card and destination screen.
-- [ ] Provide a government-services liaison entry point below or near emergency
+- [x] Create the "Social services" main card and destination screen.
+- [x] Provide a government-services liaison entry point below or near emergency
   setup.
-- [ ] Support service categories such as shelter, food, health, legal,
+- [x] Support service categories such as shelter, food, health, legal,
   benefits, transportation, employment, and crisis support.
-- [ ] Integrate with existing 211 service matching concepts using derived,
+- [x] Integrate with existing 211 service matching concepts using derived,
   consented profile needs.
-- [ ] Add a guided intake path for users who do not know what service category
+- [x] Add a guided intake path for users who do not know what service category
   they need.
 
 Acceptance criteria:
@@ -296,12 +296,12 @@ Acceptance criteria:
 
 ### ABBY-009: Shelter Access UX
 
-- [ ] Design a free shelter portal onboarding flow.
-- [ ] Let shelter staff invite or assist users without taking ownership of the
+- [x] Design a free shelter portal onboarding flow.
+- [x] Let shelter staff invite or assist users without taking ownership of the
   user's private wallet.
-- [ ] Include role-based views for shelter staff, administrators, and users.
-- [ ] Add assisted-registration and contact-verification patterns.
-- [ ] Define abuse-prevention and audit prompts for staff actions.
+- [x] Include role-based views for shelter staff, administrators, and users.
+- [x] Add assisted-registration and contact-verification patterns.
+- [x] Define abuse-prevention and audit prompts for staff actions.
 
 Acceptance criteria:
 
@@ -312,12 +312,12 @@ Acceptance criteria:
 
 ### ABBY-010: Emergency Recipient Access UX
 
-- [ ] Design the secure-link experience recipients see after escalation.
-- [ ] Include recipient identity verification before sensitive data is shown.
-- [ ] Display only the scopes that user authorized for that recipient.
-- [ ] Include next-step guidance for contacting the user, shelter, social
+- [x] Design the secure-link experience recipients see after escalation.
+- [x] Include recipient identity verification before sensitive data is shown.
+- [x] Display only the scopes that user authorized for that recipient.
+- [x] Include next-step guidance for contacting the user, shelter, social
   worker, police precinct, or liaison.
-- [ ] Add link expiration and expired-link recovery states.
+- [x] Add link expiration and expired-link recovery states.
 
 Acceptance criteria:
 
@@ -328,11 +328,11 @@ Acceptance criteria:
 
 ### ABBY-011: Benefits Protection Opt-In UX
 
-- [ ] Design an explicit opt-in flow for benefits-related escalation.
-- [ ] Explain that Social Security payment-hold notification depends on legal,
+- [x] Design an explicit opt-in flow for benefits-related escalation.
+- [x] Explain that Social Security payment-hold notification depends on legal,
   policy, and agency integration review.
-- [ ] Collect only the minimum data needed for the future integration.
-- [ ] Add consent review, revoke, and audit history views.
+- [x] Collect only the minimum data needed for the future integration.
+- [x] Add consent review, revoke, and audit history views.
 
 Acceptance criteria:
 
@@ -344,12 +344,12 @@ Acceptance criteria:
 
 ### ABBY-012: Authentication, Recovery, And CAPTCHA UX
 
-- [ ] Design login, logout, session timeout, account recovery, and device
+- [x] Design login, logout, session timeout, account recovery, and device
   verification screens.
-- [ ] Add CAPTCHA placement for registration and abuse-prone unauthenticated
+- [x] Add CAPTCHA placement for registration and abuse-prone unauthenticated
   actions.
-- [ ] Provide shared-device safety prompts, especially for shelter contexts.
-- [ ] Add passkey or device-key UI placeholders if supported by the wallet
+- [x] Provide shared-device safety prompts, especially for shelter contexts.
+- [x] Add passkey or device-key UI placeholders if supported by the wallet
   backend later.
 
 Acceptance criteria:
@@ -362,11 +362,11 @@ Acceptance criteria:
 
 ### ABBY-013: Desktop Layouts
 
-- [ ] Adapt all core flows to desktop without changing the mobile-first task
+- [x] Adapt all core flows to desktop without changing the mobile-first task
   order.
-- [ ] Add desktop dashboard views for check-in status, contacts, social
+- [x] Add desktop dashboard views for check-in status, contacts, social
   services, uploads, and disclosure rules.
-- [ ] Ensure desktop layouts do not hide critical actions in mobile-only
+- [x] Ensure desktop layouts do not hide critical actions in mobile-only
   controls.
 
 Acceptance criteria:
@@ -378,12 +378,12 @@ Acceptance criteria:
 
 ### ABBY-014: Accessibility And Safety Review
 
-- [ ] Run an accessibility review of registration, check-in, emergency contacts,
+- [x] Run an accessibility review of registration, check-in, emergency contacts,
   disclosure rules, upload, and recipient access flows.
-- [ ] Validate color contrast, focus order, form labels, error messages, and
+- [x] Validate color contrast, focus order, form labels, error messages, and
   screen-reader announcements.
-- [ ] Review crisis and emergency wording for clarity and non-alarming tone.
-- [ ] Add reduced-motion and low-bandwidth considerations.
+- [x] Review crisis and emergency wording for clarity and non-alarming tone.
+- [x] Add reduced-motion and low-bandwidth considerations.
 
 Acceptance criteria:
 
@@ -394,12 +394,12 @@ Acceptance criteria:
 
 ### ABBY-015: Privacy, Consent, And Legal Review Gates
 
-- [ ] Mark legal/policy review gates for police precinct notification, social
+- [x] Mark legal/policy review gates for police precinct notification, social
   worker notification, benefits agency notification, shelter staff access, and
   missing-person escalation.
-- [ ] Define consent receipts and audit events needed by the UI.
-- [ ] Define revocation UX for each consent and disclosure type.
-- [ ] Define data minimization requirements for each screen.
+- [x] Define consent receipts and audit events needed by the UI.
+- [x] Define revocation UX for each consent and disclosure type.
+- [x] Define data minimization requirements for each screen.
 
 Acceptance criteria:
 
@@ -411,13 +411,13 @@ Acceptance criteria:
 
 ### ABBY-016: Agent Handoff Package
 
-- [ ] Produce mobile wireframes for the first-run flow and the two-card home
+- [x] Produce mobile wireframes for the first-run flow and the two-card home
   screen.
-- [ ] Produce desktop wireframes for dashboard, registration, contacts, social
+- [x] Produce desktop wireframes for dashboard, registration, contacts, social
   services, and recipient access.
-- [ ] Produce TypeScript component/task tickets for each screen.
-- [ ] Produce API contract assumptions for frontend integration.
-- [ ] Produce Playwright smoke-test scenarios for mobile and desktop.
+- [x] Produce TypeScript component/task tickets for each screen.
+- [x] Produce API contract assumptions for frontend integration.
+- [x] Produce Playwright smoke-test scenarios for mobile and desktop.
 
 Acceptance criteria:
 
@@ -471,19 +471,26 @@ Acceptance criteria:
 - `ConsentReceiptList`
 - `AuditTimeline`
 
-## Open Questions
+## Open Questions And Current Status
 
-- What jurisdiction is the first deployment intended for?
-- What exact agency relationships exist for police precincts, social workers,
-  shelters, and Social Security workflows?
-- What identity verification level is required before emergency recipients can
-  view disclosed information?
-- Should missed check-ins trigger a human review step before outside
-  notification?
-- What communication provider will be used for email and SMS?
-- What CAPTCHA provider or abuse-prevention service should be used?
-- What frontend stack should become canonical if `wallet_interface/ui` does not
-  already exist?
-- What data is legally required, optional, or prohibited for shelter-assisted
-  registration?
+- First deployment jurisdiction: unresolved product/legal decision. The current
+  prototype stays jurisdiction-neutral until a launch location is selected.
+- Police precinct, social worker, shelter, and Social Security relationships:
+  unresolved external partnership decisions. Legal/policy gates and API
+  assumptions are captured in `docs/ABBY_HANDOFF_CONTRACTS_AND_GOVERNANCE.md`.
+- Emergency recipient identity verification level: partially modeled in the
+  prototype with access-code and contact-method verification. Production still
+  needs a policy decision for acceptable identity assurance.
+- Missed check-in human review: the UI now supports review before disclosure and
+  revocation/history flows. Whether human review is mandatory before outside
+  notification remains a product/policy decision.
+- Email and SMS provider: unresolved implementation choice. Frontend should
+  continue to depend on provider-neutral reminder and notification contracts.
+- CAPTCHA or abuse-prevention provider: unresolved implementation choice. The
+  prototype includes CAPTCHA/bot-check placement and retry-state assumptions.
+- Canonical frontend stack: `wallet_interface/ui` is the current React/Vite
+  prototype and implementation target for this backlog.
+- Shelter-assisted registration data requirements: partially addressed through
+  data-minimization notes and optional-field UI. Final required, optional, and
+  prohibited fields still need jurisdiction-specific legal review.
 
