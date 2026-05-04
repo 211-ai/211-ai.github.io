@@ -10,8 +10,6 @@ export type RouteId =
   | "recipient-access"
   | "benefits-protection"
   | "analytics"
-  | "proof-center"
-  | "exports"
   | "security"
   | "audit";
 
@@ -38,6 +36,8 @@ export type DisclosureDataScope =
   | "benefits_information"
   | "custom";
 
+export type ContactMethodVerificationStatus = "missing" | "unverified" | "verified";
+
 export type EasyBotCheckStatus = "pending" | "passed" | "failed";
 
 export interface RegistrationProfileDraft {
@@ -49,7 +49,9 @@ export interface RegistrationProfileDraft {
   phone: string;
   email: string;
   currentLocation: string;
-  shelterAffiliation: string;
+  preferredShelter: string;
+  socialWorker: string;
+  emergencyContactStarter: string;
   serviceNeeds: string[];
   preferredCheckInChannels: CheckInChannel[];
   easyBotCheckStatus: EasyBotCheckStatus;
@@ -74,17 +76,25 @@ export interface DisclosureRecipientDraft {
   agencyName: string;
   precinctName: string;
   verified: boolean;
+  emailVerificationStatus?: ContactMethodVerificationStatus;
+  phoneVerificationStatus?: ContactMethodVerificationStatus;
   allowedScopes: DisclosureDataScope[];
+  sharingRuleCustomized?: boolean;
+  emergencyDisclosureEnabled?: boolean;
+  sharingReviewConfirmedAt?: string;
+  revokedAt?: string;
+  sharingHistory?: string[];
 }
 
 export interface UploadItem {
   id: string;
   fileName: string;
   machineSummary: string;
+  summaryStatus?: "generating" | "generated" | "fallback" | "failed";
   category: string;
   sensitivity: "low" | "moderate" | "high" | "restricted";
   status: "stored" | "encrypting" | "failed";
-  shared: boolean;
+  sharingEligible: boolean;
 }
 
 export interface ServiceMatch {
@@ -121,8 +131,9 @@ export interface WalletAccessRequest {
   resourceLabel: string;
   abilities: string[];
   purpose: string;
-  status: "pending" | "approved" | "rejected" | "revoked";
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
+  expiresAt?: string;
   approvalRequired?: boolean;
   approvalThreshold?: number;
   approvalCount?: number;
@@ -141,17 +152,6 @@ export interface WalletGrantReceipt {
   status: "active" | "revoked";
   createdAt: string;
   expiresAt?: string;
-}
-
-export interface ProofReceiptView {
-  id: string;
-  proofType: string;
-  claim: string;
-  verifier: string;
-  publicInputs: Record<string, string>;
-  witnessLabel: string;
-  simulated: boolean;
-  createdAt: string;
 }
 
 export interface ExportBundleView {

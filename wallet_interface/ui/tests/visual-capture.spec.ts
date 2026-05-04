@@ -55,7 +55,7 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "Required fields should be obvious without feeling punitive.",
       "Optional sensitive fields should feel clearly optional.",
-      "The CAPTCHA placeholder and profile review should be visible and understandable."
+      "The bot-check controls and optional photo preview disclosure should be visible and understandable."
     ]
   },
   {
@@ -65,13 +65,14 @@ const captureScenarios: CaptureScenario[] = [
     state: "filled form",
     goals: [
       "Filled required and optional fields should remain readable.",
-      "The review panel should summarize entered information clearly.",
-      "The submit action should visually communicate whether the profile is complete."
+      "The photo preview should stay hidden until requested.",
+      "Identity details should read as a separate group from later fill-in fields."
     ],
     prepare: async (page) => {
       const screen = page.locator(".screen");
       await page.getByLabel(/Legal or full name/i).fill("Abby Example");
       await page.getByLabel(/Preferred name/i).fill("Abby");
+      await page.getByLabel(/Pronouns/i).fill("they/them");
       await page.getByLabel(/Birth date/i).fill("1990-01-01");
       await page.getByLabel(/Photo or photo ID/i).setInputFiles({
         name: "abby-profile.png",
@@ -133,13 +134,13 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "The add-recipient form should be easy to complete on mobile.",
       "Contact method fields should fit and remain labeled.",
-      "Recipient type selection should clearly support social workers and agencies."
+      "Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government liaisons, and benefits agencies."
     ],
     prepare: async (page) => {
       await page.getByLabel(/Name or agency/i).fill("Morgan Caseworker");
       await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
-      await page.getByLabel(/Phone/i).fill("(503) 555-0188");
-      await page.getByLabel(/Email/i).fill("morgan@example.org");
+      await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
+      await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
       await page.getByLabel(/Type/i).selectOption("social_worker");
     }
   },
@@ -149,7 +150,7 @@ const captureScenarios: CaptureScenario[] = [
     title: "Disclosure rules",
     state: "default",
     goals: [
-      "No recipient should appear to receive access by default.",
+      "Minimum identity and Photo defaults should be clear and removable.",
       "Scope labels should be understandable to non-technical users.",
       "The page should make different recipient scopes visually comparable."
     ]
@@ -198,8 +199,9 @@ const captureScenarios: CaptureScenario[] = [
       "The workflow should still feel usable on a shared device."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Confirm user is present/i).check();
-      await page.getByLabel(/Clear browser data/i).check();
+      const checklist = page.locator(".checklist input");
+      await checklist.nth(0).check();
+      await checklist.nth(1).check();
     }
   },
   {
@@ -227,32 +229,6 @@ const captureScenarios: CaptureScenario[] = [
       await page.getByLabel(/Access code/i).fill("123456");
       await page.getByLabel(/Recipient phone or email/i).fill("maya@example.org");
       await page.getByRole("button", { name: /Verify and view/i }).click();
-    }
-  },
-  {
-    id: "recipient-access-active-grant",
-    path: "/#/recipient-access",
-    title: "Emergency recipient access with active grant",
-    state: "active grant visible",
-    goals: [
-      "Active grants should be visually distinct from pending requests.",
-      "Revocation should be available without exposing unrelated private wallet data.",
-      "The screen should make it clear which organization currently has access."
-    ]
-  },
-  {
-    id: "recipient-access-grant-revoked",
-    path: "/#/recipient-access",
-    title: "Emergency recipient access after revocation",
-    state: "active grant revoked",
-    goals: [
-      "Revoked grants should no longer look active.",
-      "The revoked state should remain auditable and understandable.",
-      "The UI should not imply the recipient still has decrypt or analyze access."
-    ],
-    prepare: async (page) => {
-      const legalAidRequest = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
-      await legalAidRequest.getByRole("button", { name: /Revoke/i }).click();
     }
   },
   {
@@ -307,19 +283,60 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
-    id: "proof-center",
-    path: "/#/proof-center",
-    title: "Proof center",
-    state: "public proof receipts",
+    id: "security",
+    path: "/#/security",
+    title: "Security settings",
+    state: "default",
     goals: [
-      "Public proof inputs should be easy to inspect.",
-      "Precise coordinates, raw documents, and private source data should not appear.",
-      "Simulated proof receipts should be clearly distinguishable from verified receipts."
+      "Security preferences should read as saved settings, not temporary reveal controls.",
+      "Shared-device guidance should be visible without exposing sensitive data.",
+      "CAPTCHA preference copy should make prototype limits clear."
+    ]
+  },
+  {
+    id: "security-customized",
+    path: "/#/security",
+    title: "Security settings customized",
+    state: "recovery on and public-form bot checks off",
+    goals: [
+      "Changed settings should have clear checked and unchecked states.",
+      "The layout should remain easy to scan on mobile.",
+      "The page should not imply local-only preferences are production enforcement."
+    ],
+    prepare: async (page) => {
+      await page.getByLabel(/Send recovery reminder prompts/i).check();
+      await page.getByLabel(/Require bot checks on public forms/i).uncheck();
+    }
+  },
+  {
+    id: "audit",
+    path: "/#/audit",
+    title: "Audit history",
+    state: "default",
+    goals: [
+      "Consent and access history should be easy to scan.",
+      "Audit entries should show actor and timestamp clearly.",
+      "The screen should not expose more sensitive detail than needed."
     ]
   }
 ];
 
 const artifactRoot = path.resolve(process.cwd(), "artifacts/ui-screenshots/latest");
+const routeReadyHeadings: Record<string, RegExp> = {
+  "/": /Your safety plan/i,
+  "/#/analytics": /Share patterns, not personal records/i,
+  "/#/benefits-protection": /Optional agency notification/i,
+  "/#/check-in": /Set your schedule/i,
+  "/#/contacts": /People and services/i,
+  "/#/recipient-access": /Access requests/i,
+  "/#/register": /Create your Abby profile/i,
+  "/#/security": /Account safety/i,
+  "/#/sharing-rules": /Choose what each person can see/i,
+  "/#/shelter": /Assisted access/i,
+  "/#/social-services": /Find support/i,
+  "/#/uploads": /Document and information vault/i,
+  "/#/audit": /Consent and access history/i
+};
 
 function projectSlug(projectName: string): CaptureViewport {
   return projectName.toLowerCase().includes("mobile") ? "mobile" : "desktop";
@@ -342,15 +359,30 @@ function buildPrompt(route: CaptureScenario, viewport: CaptureViewport) {
   ].join("\n");
 }
 
-async function resetMobileNavigation(page: Page, routeId: string) {
-  if (routeId === "mobile-navigation-open") return;
-  const mobileNavigation = page.locator("#mobile-navigation");
-  if (await mobileNavigation.isVisible().catch(() => false)) {
-    await page.getByRole("button", { name: /Close menu/i }).click();
+async function openCaptureScenario(page: Page, scenarioPath: string) {
+  if (scenarioPath === "/#/shelter") {
+    await verifyShelterStaffForCapture(page);
+    return;
   }
+  await page.goto(scenarioPath);
+  await expect(page.locator(".screen")).toBeVisible();
+  await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+}
+
+async function verifyShelterStaffForCapture(page: Page) {
+  await page.goto("/#/register");
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible();
+  await page.getByLabel(/I am shelter staff/i).check();
+  await page.locator("select").first().selectOption("Rose City Shelter");
+  await page.getByLabel(/Shelter staff PIN/i).fill("1234");
+  await page.getByRole("button", { name: /Verify shelter staff/i }).click();
+  await expect(page.getByText(/verified_staff/i)).toBeVisible();
+  await page.goto("/#/shelter");
+  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
 }
 
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {
+  test.setTimeout(90000);
   const viewport = projectSlug(testInfo.project.name);
   const viewportDir = path.join(artifactRoot, viewport);
   await fs.rm(viewportDir, { force: true, recursive: true });
@@ -362,9 +394,7 @@ test("capture Abby UI screenshots for multimodal UX review", async ({ page }, te
     if (!scenarioMatchesViewport(route, viewport)) {
       continue;
     }
-    await page.goto(route.path);
-    await resetMobileNavigation(page, route.id);
-    await expect(page.locator(".screen")).toBeVisible();
+    await openCaptureScenario(page, route.path);
     if (route.prepare) {
       await route.prepare(page);
     }
