@@ -137,31 +137,4 @@ export interface WalletAccessRequest {
   approvalRequired?: boolean;
   approvalThreshold?: number;
   approvalCount?: number;
-  grantStatus?: "active" | "revoked";
-}
-
-export interface WalletGrantReceipt {
-  id: string;
-  grantId: string;
-  audienceName: string;
-  audienceDid: string;
-  resourceLabel: string;
-  abilities: string[];
-  purpose: string;
-  receiptHash: string;
-  status: "active" | "revoked";
-  createdAt: string;
-  expiresAt?: string;
-}
-
-export interface ExportBundleView {
-  id: string;
-  bundleId: string;
-  bundleHash: string;
-  audienceName: string;
-  recordCount: number;
-  proofCount: number;
-  storageOk: boolean;
-  imported: boolean;
-  createdAt: string;
 }
