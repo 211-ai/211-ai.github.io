@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 from ipfs_datasets_py.wallet.crypto import random_key
-from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 
 
 def _client() -> TestClient:
@@ -82,6 +82,149 @@ def test_wallet_api_private_analytics_flow() -> None:
     assert result["count"] is None
     assert result["noisy_count"] is not None
     assert result["privacy_budget_spent"] == 0.25
+
+
+def test_wallet_api_multi_dimensional_analytics_suppresses_sparse_cells() -> None:
+    client = _client()
+    response = client.post(
+        "/analytics/templates",
+        json={
+            "template_id": "api_multi_sparse_v1",
+            "title": "Sparse service gaps",
+            "purpose": "County and need planning",
+            "allowed_record_types": ["location", "need"],
+            "allowed_derived_fields": ["county", "need_category"],
+            "min_cohort_size": 2,
+            "epsilon_budget": 0.5,
+            "created_by": "did:key:analyst",
+        },
+    )
+    assert response.status_code == 200
+    rows = [
+        ("did:key:api-cohort-owner1", {"county": "Multnomah", "need_category": "housing"}),
+        ("did:key:api-cohort-owner2", {"county": "Multnomah", "need_category": "housing"}),
+        ("did:key:api-cohort-owner3", {"county": "Lane", "need_category": "food"}),
+        ("did:key:api-cohort-owner4", {"county": "Lane", "need_category": "food"}),
+        ("did:key:api-cohort-owner5", {"county": "Clackamas", "need_category": "rare-need"}),
+    ]
+
+    for owner, fields in rows:
+        wallet = client.post("/wallets", json={"owner_did": owner}).json()
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/analytics/consents/from-template",
+            json={"actor_did": owner, "template_id": "api_multi_sparse_v1"},
+        )
+        assert response.status_code == 200
+        consent = response.json()
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/analytics/contributions",
+            json={
+                "actor_did": owner,
+                "consent_id": consent["consent_id"],
+                "template_id": "api_multi_sparse_v1",
+                "fields": fields,
+            },
+        )
+        assert response.status_code == 200
+
+    response = client.post(
+        "/analytics/api_multi_sparse_v1/count-by-fields",
+        json={"group_by": ["county", "need_category"], "min_cohort_size": 2},
+    )
+    assert response.status_code == 200
+    result = response.json()
+    serialized = json.dumps(result)
+
+    assert result["metric"] == "count_by_fields"
+    assert result["released"] is True
+    assert result["suppressed"] is True
+    assert result["count"] == 4
+    assert result["group_by"] == ["county", "need_category"]
+    assert result["suppressed_cohort_count"] == 1
+    assert len(result["cohorts"]) == 2
+    assert "rare-need" not in serialized
+    assert "Clackamas" not in serialized
+
+
+def test_wallet_api_draft_analytics_template_is_not_consentable() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        "/analytics/templates",
+        json={
+            "template_id": "draft_housing_gap_v1",
+            "title": "Draft housing service gaps",
+            "purpose": "Template review",
+            "allowed_record_types": ["location"],
+            "allowed_derived_fields": ["county"],
+            "min_cohort_size": 2,
+            "epsilon_budget": 0.5,
+            "created_by": "did:key:analyst",
+            "status": "draft",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "draft"
+
+    response = client.get("/analytics/templates")
+    assert response.status_code == 200
+    assert response.json()["templates"] == []
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/analytics/consents/from-template",
+        json={"actor_did": "did:key:owner", "template_id": "draft_housing_gap_v1"},
+    )
+    assert response.status_code == 400
+    assert "not active" in response.json()["detail"]
+
+
+def test_wallet_api_lists_and_revokes_analytics_consent() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    response = client.post(
+        "/analytics/templates",
+        json={
+            "template_id": "consent_controls_v1",
+            "title": "Consent controls",
+            "purpose": "UI consent controls",
+            "allowed_record_types": ["location", "need"],
+            "allowed_derived_fields": ["county", "need_category"],
+            "min_cohort_size": 2,
+            "epsilon_budget": 0.5,
+            "created_by": "did:key:analyst",
+        },
+    )
+    assert response.status_code == 200
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/analytics/consents/from-template",
+        json={
+            "actor_did": "did:key:owner",
+            "template_id": "consent_controls_v1",
+            "expires_at": "2026-06-30T00:00:00+00:00",
+        },
+    )
+    assert response.status_code == 200
+    consent = response.json()
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/analytics/consents")
+    assert response.status_code == 200
+    listed = response.json()["consents"]
+    assert listed[0]["consent_id"] == consent["consent_id"]
+    assert listed[0]["expires_at"] == "2026-06-30T00:00:00+00:00"
+    assert listed[0]["allowed_derived_fields"] == ["county", "need_category"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/analytics/consents/{consent['consent_id']}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "revoked"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/analytics/consents?status=active")
+    assert response.status_code == 200
+    assert response.json()["consents"] == []
 
 
 def test_wallet_api_matches_services_from_wallet_location_and_audit() -> None:
@@ -201,6 +344,7 @@ def test_wallet_api_delegate_creates_location_region_proof() -> None:
     assert proof["public_inputs"]["region_policy_hash"]
     assert "lat" not in str(proof["public_inputs"]).lower()
     assert "lon" not in str(proof["public_inputs"]).lower()
+    assert "witness" not in str(proof["public_inputs"]).lower()
 
     actions = [event["action"] for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]]
     assert "proof/create" in actions
@@ -257,6 +401,9 @@ def test_wallet_api_production_proof_mode_accepts_configured_backend() -> None:
     assert proof["proof_system"] == "deterministic-test-proof"
     assert proof["verification_status"] == "verified"
     assert proof["proof_artifact_ref"].startswith("deterministic-proof://")
+    assert "lat" not in str(proof["public_inputs"]).lower()
+    assert "lon" not in str(proof["public_inputs"]).lower()
+    assert "witness" not in str(proof["public_inputs"]).lower()
     serialized = json.dumps(proof)
     assert "45.515232" not in serialized
     assert "-122.678385" not in serialized
@@ -389,6 +536,138 @@ def test_wallet_api_binary_document_upload_lists_record_and_storage() -> None:
     assert response.json()["ok"] is True
 
 
+def test_wallet_api_rotates_document_key() -> None:
+    service = WalletInterfaceService(services=[])
+    client = _client_with_service(service)
+    owner_key = random_key()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key.hex(),
+            "filename": "rotation.txt",
+            "text": "api rotation plaintext",
+        },
+    ).json()
+    old_version_id = service.wallet_service.records[record["record_id"]].current_version_id
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/rotate-key",
+        json={"actor_did": "did:key:owner", "actor_key_hex": owner_key.hex()},
+    )
+
+    assert response.status_code == 200
+    rotated = response.json()
+    assert rotated["version_id"] != old_version_id
+    assert rotated["record_id"] == record["record_id"]
+    plaintext = service.wallet_service.decrypt_record(
+        wallet["wallet_id"],
+        record["record_id"],
+        actor_did="did:key:owner",
+        actor_secret=owner_key,
+    )
+    assert plaintext == b"api rotation plaintext"
+
+
+def test_wallet_api_delegates_grant_with_attenuation() -> None:
+    service = WalletInterfaceService(services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "delegation.txt",
+            "text": "api delegated analysis content",
+        },
+    ).json()
+    resource = resource_for_record(wallet["wallet_id"], record["record_id"])
+    parent = service.wallet_service.create_grant(
+        wallet_id=wallet["wallet_id"],
+        issuer_did="did:key:owner",
+        audience_did="did:key:advocate",
+        resources=[resource],
+        abilities=["record/analyze", "record/share"],
+        caveats={"purpose": "case_review", "max_delegation_depth": 1},
+    )
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{parent.grant_id}/delegate",
+        json={
+            "issuer_did": "did:key:advocate",
+            "audience_did": "did:key:case-manager",
+            "resources": [resource],
+            "abilities": ["record/analyze"],
+            "caveats": {"purpose": "case_review"},
+        },
+    )
+
+    assert response.status_code == 200
+    child = response.json()
+    assert child["proof_chain"] == [parent.grant_id]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analyze",
+        json={
+            "actor_did": "did:key:case-manager",
+            "grant_id": child["grant_id"],
+            "max_chars": 30,
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["artifact_type"] == "summary"
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{parent.grant_id}/delegate",
+        json={
+            "issuer_did": "did:key:advocate",
+            "audience_did": "did:key:case-manager",
+            "resources": [resource],
+            "abilities": ["record/decrypt"],
+            "caveats": {"purpose": "case_review"},
+        },
+    )
+    assert response.status_code == 400
+    assert "exceeds parent" in response.json()["detail"]
+
+
+def test_wallet_api_emergency_revoke_revokes_grants_and_rotates_records() -> None:
+    service = WalletInterfaceService(services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "emergency.txt",
+            "text": "api emergency revoke content",
+        },
+    ).json()
+    old_version_id = service.wallet_service.records[record["record_id"]].current_version_id
+    grant = service.wallet_service.create_grant(
+        wallet_id=wallet["wallet_id"],
+        issuer_did="did:key:owner",
+        audience_did="did:key:advocate",
+        resources=[resource_for_record(wallet["wallet_id"], record["record_id"])],
+        abilities=["record/analyze"],
+        caveats={"purpose": "case_review"},
+    )
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/emergency-revoke",
+        json={"actor_did": "did:key:owner", "reason": "lost_device"},
+    )
+
+    assert response.status_code == 200
+    report = response.json()
+    assert report["revoked_grant_ids"] == [grant.grant_id]
+    assert report["rotated_record_ids"] == [record["record_id"]]
+    assert report["rotation_errors"] == {}
+    assert service.wallet_service.grants[grant.grant_id].status == "revoked"
+    assert service.wallet_service.records[record["record_id"]].current_version_id != old_version_id
+
+
 def test_wallet_api_access_request_review_flow() -> None:
     client = _client()
     owner_key = random_key().hex()
@@ -493,7 +772,32 @@ def test_wallet_api_access_request_can_delegate_document_view() -> None:
         json={
             "actor_did": "did:key:delegate",
             "actor_key_hex": delegate_key,
-            "invocation_token": approved["invocation_token"],
+            "grant_id": approved["grant_id"],
+        },
+    )
+    assert response.status_code == 200
+    decrypted = response.json()
+    assert decrypted["text"] == "Delegate may view this identity document."
+    assert decrypted["size_bytes"] == len("Delegate may view this identity document.")
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt-invocations",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": approved["grant_id"],
+        },
+    )
+    assert response.status_code == 200
+    decrypt_invocation_token = response.json()["token"]
+    assert decrypt_invocation_token.startswith("wallet-ucan-v1.")
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": decrypt_invocation_token,
         },
     )
     assert response.status_code == 200
@@ -708,6 +1012,154 @@ def test_wallet_api_decrypt_access_request_respects_threshold_approval() -> None
     assert approved_access["invocation_token"].startswith("wallet-ucan-v1.")
 
 
+def test_wallet_api_wallet_admin_controller_and_device_routes() -> None:
+    client = _client()
+    wallet = client.post(
+        "/wallets",
+        json={
+            "owner_did": "did:key:owner",
+            "controller_dids": ["did:key:owner", "did:key:second-controller"],
+            "approval_threshold": 2,
+        },
+    ).json()
+    response = client.get(f"/wallets/{wallet['wallet_id']}")
+    assert response.status_code == 200
+    assert response.json()["governance_policy"]["threshold"] == 2
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/controllers",
+        json={"actor_did": "did:key:owner", "controller_did": "did:key:new-controller"},
+    )
+    assert response.status_code == 400
+    assert "approval_id is required" in response.json()["detail"]
+
+    approval = client.post(
+        f"/wallets/{wallet['wallet_id']}/approvals",
+        json={
+            "requested_by": "did:key:owner",
+            "operation": "wallet/controller_add",
+            "resources": [resource_for_wallet(wallet["wallet_id"])],
+            "abilities": ["wallet/admin"],
+        },
+    ).json()
+    for approver in ["did:key:owner", "did:key:second-controller"]:
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/approvals/{approval['approval_id']}/approve",
+            json={"approver_did": approver},
+        )
+        assert response.status_code == 200
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/controllers",
+        json={
+            "actor_did": "did:key:owner",
+            "controller_did": "did:key:new-controller",
+            "approval_id": approval["approval_id"],
+        },
+    )
+    assert response.status_code == 200
+    updated = response.json()
+    assert "did:key:new-controller" in updated["controller_dids"]
+    assert "did:key:new-controller" in updated["governance_policy"]["approver_dids"]
+
+    device_wallet = client.post("/wallets", json={"owner_did": "did:key:device-owner"}).json()
+    response = client.post(
+        f"/wallets/{device_wallet['wallet_id']}/devices",
+        json={"actor_did": "did:key:device-owner", "device_did": "did:key:phone"},
+    )
+    assert response.status_code == 200
+    assert "did:key:phone" in response.json()["device_dids"]
+    response = client.post(
+        f"/wallets/{device_wallet['wallet_id']}/devices/revoke",
+        json={"actor_did": "did:key:device-owner", "device_did": "did:key:phone"},
+    )
+    assert response.status_code == 200
+    assert "did:key:phone" not in response.json()["device_dids"]
+
+
+def test_wallet_api_recovery_policy_and_controller_recovery() -> None:
+    client = _client()
+    wallet = client.post(
+        "/wallets",
+        json={
+            "owner_did": "did:key:owner",
+            "controller_dids": ["did:key:owner", "did:key:second-controller"],
+            "approval_threshold": 2,
+        },
+    ).json()
+    wallet_resource = resource_for_wallet(wallet["wallet_id"])
+    recovery_contacts = ["did:key:recovery-a", "did:key:recovery-b"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/recovery-policy",
+        json={
+            "actor_did": "did:key:owner",
+            "contact_dids": recovery_contacts,
+            "threshold": 2,
+        },
+    )
+    assert response.status_code == 400
+    assert "approval_id is required" in response.json()["detail"]
+
+    approval = client.post(
+        f"/wallets/{wallet['wallet_id']}/approvals",
+        json={
+            "requested_by": "did:key:owner",
+            "operation": "wallet/recovery_policy_set",
+            "resources": [wallet_resource],
+            "abilities": ["wallet/admin"],
+        },
+    ).json()
+    for approver in ["did:key:owner", "did:key:second-controller"]:
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/approvals/{approval['approval_id']}/approve",
+            json={"approver_did": approver},
+        )
+        assert response.status_code == 200
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/recovery-policy",
+        json={
+            "actor_did": "did:key:owner",
+            "contact_dids": recovery_contacts,
+            "threshold": 2,
+            "approval_id": approval["approval_id"],
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["governance_policy"]["recovery_policy"]["contact_dids"] == recovery_contacts
+
+    recovery_approval = client.post(
+        f"/wallets/{wallet['wallet_id']}/approvals",
+        json={
+            "requested_by": recovery_contacts[0],
+            "operation": "wallet/controller_recover",
+            "resources": [wallet_resource],
+            "abilities": ["wallet/admin"],
+        },
+    ).json()
+    assert recovery_approval["threshold"] == 2
+    assert recovery_approval["approver_dids"] == recovery_contacts
+
+    for approver in recovery_contacts:
+        response = client.post(
+            f"/wallets/{wallet['wallet_id']}/approvals/{recovery_approval['approval_id']}/approve",
+            json={"approver_did": approver},
+        )
+        assert response.status_code == 200
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/controllers/recover",
+        json={
+            "actor_did": recovery_contacts[0],
+            "controller_did": "did:key:recovered-controller",
+            "approval_id": recovery_approval["approval_id"],
+        },
+    )
+    assert response.status_code == 200
+    assert "did:key:recovered-controller" in response.json()["controller_dids"]
+
+
 def test_wallet_api_storage_health_and_repair() -> None:
     client = _client()
     wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
@@ -728,6 +1180,24 @@ def test_wallet_api_storage_health_and_repair() -> None:
     assert report["ok"] is True
     assert report["payload"][0]["role"] == "primary"
 
+    response = client.get(f"/wallets/{wallet['wallet_id']}/storage")
+    assert response.status_code == 200
+    wallet_report = response.json()
+    assert wallet_report["ok"] is True
+    assert wallet_report["record_count"] == 1
+    assert wallet_report["replica_count"] == 2
+    assert wallet_report["storage_types"] == {"memory": 2}
+    assert wallet_report["reports"][0]["record_id"] == record["record_id"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/storage/repair",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    wallet_repair = response.json()
+    assert wallet_repair["ok"] is True
+    assert wallet_repair["repaired_replica_count"] == 0
+
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/storage/repair",
         json={"actor_did": "did:key:owner"},
@@ -738,7 +1208,85 @@ def test_wallet_api_storage_health_and_repair() -> None:
 
     response = client.get(f"/wallets/{wallet['wallet_id']}/audit")
     actions = [event["action"] for event in response.json()["events"]]
+    assert "storage/verify_wallet" in actions
+    assert "storage/repair_wallet" in actions
     assert "storage/repair" in actions
+
+
+def test_wallet_api_ops_health_reports_repository_storage_and_audits(tmp_path) -> None:
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "ops-health.txt",
+            "text": "ops health document",
+        },
+    )
+    assert response.status_code == 200
+
+    response = client.get("/ops/health", params={"verify_storage": "true"})
+    assert response.status_code == 200
+    report = response.json()
+    checks = {check["name"]: check for check in report["checks"]}
+
+    assert report["status"] in {"ok", "warning"}
+    assert checks["repository"]["status"] == "ok"
+    assert checks["storage_availability"]["status"] == "ok"
+    assert checks["storage_availability"]["details"]["verified"] is True
+    assert checks["revocation_propagation"]["status"] == "ok"
+    assert checks["privacy_budget"]["status"] == "ok"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/audit")
+    actions = [event["action"] for event in response.json()["events"]]
+    assert "ops/health" in actions
+
+    restored = WalletInterfaceService(
+        repository_root=tmp_path / "wallet-repository",
+        auto_load_repository=True,
+    )
+    restored_actions = [
+        event.action for event in restored.wallet_service.get_audit_log(wallet["wallet_id"])
+    ]
+    assert "ops/health" in restored_actions
+
+
+def test_wallet_api_ops_health_requires_shared_secret_when_configured(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "top-secret")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
+    client = _client_with_service(service)
+
+    unauthorized = client.get("/ops/health")
+    assert unauthorized.status_code == 401
+    assert "authorization required" in unauthorized.json()["detail"]
+
+    wrong_secret = client.get(
+        "/ops/health",
+        headers={"authorization": "Bearer wrong-secret"},
+    )
+    assert wrong_secret.status_code == 401
+
+    authorized = client.get(
+        "/ops/health",
+        headers={"authorization": "Bearer top-secret"},
+    )
+    assert authorized.status_code == 200
+    assert authorized.json()["status"] in {"ok", "warning"}
+
+
+def test_wallet_api_ops_health_accepts_shared_secret_header(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "edge-secret")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository")
+    client = _client_with_service(service)
+
+    response = client.get(
+        "/ops/health",
+        headers={"x-wallet-ops-shared-secret": "edge-secret"},
+    )
+    assert response.status_code == 200
+    assert response.json()["check_count"] >= 1
 
 
 def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:

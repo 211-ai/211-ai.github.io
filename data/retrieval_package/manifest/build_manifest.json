@@ -1,88 +1,89 @@
 {
   "warehouse_path": "data/live/state/etl_warehouse.duckdb",
-  "document_count": 22640,
+  "document_count": 22638,
   "page_document_count": 11787,
-  "service_document_count": 10853,
-  "bm25_term_count": 3265286,
-  "embedding_count": 22640,
+  "service_document_count": 10851,
+  "bm25_term_count": 3191432,
+  "embedding_count": 22638,
   "embedding_model": "BAAI/bge-small-en-v1.5",
-  "graph_node_count": 48864,
-  "graph_edge_count": 649052,
+  "pdf_extraction_enabled": true,
+  "graph_node_count": 48851,
+  "graph_edge_count": 648958,
   "graph_community_count": 41,
-  "document_community_count": 22640,
+  "document_community_count": 22638,
   "artifacts": [
     {
       "artifact_name": "documents",
       "artifact_kind": "parquet",
       "artifact_path": "content/documents.parquet",
-      "artifact_cid": "bafkreidlmwgvo4at63gy6vrodyqacsxuginnibd7ju4yq266xoczf7sdc4",
-      "row_count": 22640,
-      "size_bytes": 53962711
+      "artifact_cid": "bafkreiftumcbulec7o2237hzalz3w24jxpxgusjnbakehyi6mv2sigcutm",
+      "row_count": 22638,
+      "size_bytes": 38224321
     },
     {
       "artifact_name": "bm25_documents",
       "artifact_kind": "parquet",
       "artifact_path": "retrieval/bm25_documents.parquet",
-      "artifact_cid": "bafkreiegt44c2mnmz7pvdavt5emvid2pmxikdpd2lqr6ccx5ohi2qjagy4",
-      "row_count": 22640,
-      "size_bytes": 3054366
+      "artifact_cid": "bafkreiemi2wgl3zlaj3dtdqceqmav4zgrxsilvd23yphjqkjlagzwoz5zi",
+      "row_count": 22638,
+      "size_bytes": 3054183
     },
     {
       "artifact_name": "bm25_terms",
       "artifact_kind": "parquet",
       "artifact_path": "retrieval/bm25_terms.parquet",
-      "artifact_cid": "bafkreib2reyrhsudr3jromllirkcgwxmlwzma2l4nqicgfwqoeqzhizfyu",
-      "row_count": 3265286,
-      "size_bytes": 19784980
+      "artifact_cid": "bafkreid54uzymr5pzk67l3p5gyycmylwxxcq4xa7rppxde4ssk4korcuvm",
+      "row_count": 3191432,
+      "size_bytes": 19469149
     },
     {
       "artifact_name": "vector_embeddings",
       "artifact_kind": "parquet",
       "artifact_path": "retrieval/vector_embeddings.parquet",
-      "artifact_cid": "bafkreidzkwtgvxmtvmr2hpujhvyj4vuvtedezldwxvtemhpmue42u64mn4",
-      "row_count": 22640,
-      "size_bytes": 56747440
+      "artifact_cid": "bafkreidfw7yp22rs34lpd43rfoe7mjskbzfvb2feyv65hiyoh4n2gc4lvm",
+      "row_count": 22638,
+      "size_bytes": 56737982
     },
     {
       "artifact_name": "knowledge_graph_nodes",
       "artifact_kind": "parquet",
       "artifact_path": "graph/knowledge_graph_nodes.parquet",
-      "artifact_cid": "bafkreihwbsub3yp3xh7v62lkp6rlwwzjrail34b5uqcozjxwlvuvbiks5i",
-      "row_count": 48864,
-      "size_bytes": 7999207
+      "artifact_cid": "bafkreidzogghs7o3iqp7opk5o6nh6f4kidr2w7s4vszvywfkxjxtptf65q",
+      "row_count": 48851,
+      "size_bytes": 7997020
     },
     {
       "artifact_name": "knowledge_graph_edges",
       "artifact_kind": "parquet",
       "artifact_path": "graph/knowledge_graph_edges.parquet",
-      "artifact_cid": "bafkreibikneyyfplcnc7jd3z7jwa6n7y6zf2y6jmz3vu4omytp3srfssby",
-      "row_count": 649052,
-      "size_bytes": 59685224
+      "artifact_cid": "bafkreihyfji4dkmea4kqqshm52g3mwl4i6j6aqqfkdwj6lm6ckbgm2acna",
+      "row_count": 648958,
+      "size_bytes": 59676221
     },
     {
       "artifact_name": "graph_node_metrics",
       "artifact_kind": "parquet",
       "artifact_path": "graph/graph_node_metrics.parquet",
-      "artifact_cid": "bafkreic36qn474loa4cf5meueolctzvn5zbfuhcqjhnax4oguu2o2xspka",
-      "row_count": 48864,
-      "size_bytes": 4381383
+      "artifact_cid": "bafkreig3fqsddusskkphyj657ctdjrdlbl47qzydg4zz23ocdre2cmqwtm",
+      "row_count": 48851,
+      "size_bytes": 4378879
     },
     {
       "artifact_name": "graph_communities",
       "artifact_kind": "parquet",
       "artifact_path": "graph/graph_communities.parquet",
-      "artifact_cid": "bafkreidgnkc63hunofk2gdqml4ek7disg4dqotrzzddh6s7tlbs2perik4",
+      "artifact_cid": "bafkreibxl6k3nifti77r4p5jlfcx7ysbjpr7zf3cvkqocymxch5lqd22cq",
       "row_count": 41,
-      "size_bytes": 23168
+      "size_bytes": 23147
     },
     {
       "artifact_name": "document_communities",
       "artifact_kind": "parquet",
       "artifact_path": "graph/document_communities.parquet",
-      "artifact_cid": "bafkreihs36yxhbkwlkngybasnaycc2jekxiiso4dxhkudnz2ymmnx7a5zy",
-      "row_count": 22640,
-      "size_bytes": 3048757
+      "artifact_cid": "bafkreif2wn3bhsnku5vifwu6a3rjrbvj6tgkt7wguhvbmrc3zvgc2k47ki",
+      "row_count": 22638,
+      "size_bytes": 3048410
     }
   ],
-  "build_manifest_cid": "bafkreifgjbpyynwyebcdfvc2bozwusbhza42xw6w4kutguicfscqovm67a"
+  "build_manifest_cid": "bafkreihcclqadxrfhx256soxaqdqvc66ejhsuy3krj5bf446zq2miaox4i"
 }

@@ -7,11 +7,12 @@ import pytest
 
 from wallet_interface import ServiceRecord, WalletInterfaceService, match_services
 from ipfs_datasets_py.wallet.crypto import random_key
-from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record
+from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record, resource_for_wallet
 
 
 OWNER = "did:key:owner"
 ADVOCATE = "did:key:advocate"
+CASE_MANAGER = "did:key:case-manager"
 SECOND_CONTROLLER = "did:key:second-controller"
 
 
@@ -224,6 +225,125 @@ def test_wallet_interface_analysis_invocation_flow(tmp_path):
     assert "invocation/verify" in actions
 
 
+def test_wallet_interface_rotates_document_key_and_preserves_delegate_decrypt_grant(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    owner_secret = b"o" * 32
+    delegate_secret = b"d" * 32
+    source = tmp_path / "rotate-key.txt"
+    source.write_text("rotate key through interface", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER, actor_secret=owner_secret)
+    grant = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[resource_for_record(wallet.wallet_id, record.record_id)],
+        abilities=["record/decrypt"],
+        issuer_secret=owner_secret,
+        audience_secret=delegate_secret,
+    )
+    old_version_id = record.current_version_id
+
+    new_version = app.rotate_record_key(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=OWNER,
+        actor_secret=owner_secret,
+    )
+    plaintext = app.wallet_service.decrypt_record(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=ADVOCATE,
+        grant_id=grant.grant_id,
+        actor_secret=delegate_secret,
+    )
+    actions = [event["action"] for event in app.audit_timeline(wallet.wallet_id)]
+
+    assert new_version.version_id != old_version_id
+    assert plaintext == b"rotate key through interface"
+    assert "record/key_rotate" in actions
+
+
+def test_wallet_interface_delegates_grant_with_bounded_chain(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "delegation.txt"
+    source.write_text("delegated analysis content", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    resource = resource_for_record(wallet.wallet_id, record.record_id)
+    parent = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[resource],
+        abilities=["record/analyze", "record/share"],
+        caveats={"purpose": "case_review", "max_delegation_depth": 1},
+    )
+
+    child = app.delegate_grant(
+        wallet.wallet_id,
+        parent_grant_id=parent.grant_id,
+        issuer_did=ADVOCATE,
+        audience_did=CASE_MANAGER,
+        resources=[resource],
+        abilities=["record/analyze"],
+        caveats={"purpose": "case_review"},
+    )
+    artifact = app.analyze_record_for_delegate(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=CASE_MANAGER,
+        grant_id=child.grant_id,
+    )
+
+    assert child.proof_chain == [parent.grant_id]
+    assert artifact.source_record_ids == [record.record_id]
+    with pytest.raises(Exception, match="exceeds parent"):
+        app.delegate_grant(
+            wallet.wallet_id,
+            parent_grant_id=parent.grant_id,
+            issuer_did=ADVOCATE,
+            audience_did=CASE_MANAGER,
+            resources=[resource],
+            abilities=["record/decrypt"],
+            caveats={"purpose": "case_review"},
+        )
+
+    app.revoke_grant(wallet.wallet_id, parent.grant_id, actor_did=OWNER)
+
+    assert app.wallet_service.grants[child.grant_id].status == "revoked"
+
+
+def test_wallet_interface_emergency_revoke_revokes_and_rotates(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "emergency.txt"
+    source.write_text("interface emergency content", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    old_version_id = record.current_version_id
+    grant = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[resource_for_record(wallet.wallet_id, record.record_id)],
+        abilities=["record/analyze"],
+        caveats={"purpose": "case_review"},
+    )
+
+    report = app.emergency_revoke(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        reason="lost_device",
+    )
+    actions = [event["action"] for event in app.audit_timeline(wallet.wallet_id)]
+
+    assert report["revoked_grant_ids"] == [grant.grant_id]
+    assert report["rotated_record_ids"] == [record.record_id]
+    assert app.wallet_service.grants[grant.grant_id].status == "revoked"
+    assert app.wallet_service.records[record.record_id].current_version_id != old_version_id
+    assert "wallet/emergency_revoke" in actions
+
+
 def test_wallet_interface_access_request_review_flow(tmp_path):
     app = WalletInterfaceService(services=_services())
     wallet = app.create_wallet(OWNER)
@@ -407,6 +527,59 @@ def test_wallet_interface_decrypt_access_request_respects_threshold_approval(tmp
     assert approved_access.status == "approved"
 
 
+def test_wallet_interface_wallet_admin_controls_respect_threshold_approval(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(
+        OWNER,
+        controller_dids=[OWNER, SECOND_CONTROLLER],
+        approval_threshold=2,
+    )
+    new_controller = "did:key:new-controller"
+
+    assert app.get_wallet(wallet.wallet_id).wallet_id == wallet.wallet_id
+    with pytest.raises(Exception, match="approval_id is required"):
+        app.add_controller(
+            wallet.wallet_id,
+            actor_did=OWNER,
+            controller_did=new_controller,
+        )
+
+    approval = app.request_threshold_approval(
+        wallet.wallet_id,
+        requested_by=OWNER,
+        operation="wallet/controller_add",
+        resources=[resource_for_wallet(wallet.wallet_id)],
+        abilities=["wallet/admin"],
+    )
+    app.approve_threshold_approval(wallet.wallet_id, approval_id=approval.approval_id, approver_did=OWNER)
+    app.approve_threshold_approval(
+        wallet.wallet_id,
+        approval_id=approval.approval_id,
+        approver_did=SECOND_CONTROLLER,
+    )
+    updated = app.add_controller(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        controller_did=new_controller,
+        approval_id=approval.approval_id,
+    )
+
+    assert new_controller in updated.controller_dids
+    assert new_controller in updated.governance_policy["approver_dids"]
+
+    device_wallet = app.create_wallet("did:key:device-owner")
+    device = "did:key:case-worker-device"
+    updated = app.add_device(device_wallet.wallet_id, actor_did="did:key:device-owner", device_did=device)
+    updated = app.revoke_device(device_wallet.wallet_id, actor_did="did:key:device-owner", device_did=device)
+    actions = [event["action"] for event in app.audit_timeline(wallet.wallet_id)]
+    device_actions = [event["action"] for event in app.audit_timeline(device_wallet.wallet_id)]
+
+    assert device not in updated.device_dids
+    assert "wallet/controller_add" in actions
+    assert "wallet/device_add" in device_actions
+    assert "wallet/device_revoke" in device_actions
+
+
 def test_wallet_interface_exposes_storage_health(tmp_path):
     app = WalletInterfaceService(services=_services())
     wallet = app.create_wallet(OWNER)
@@ -415,9 +588,17 @@ def test_wallet_interface_exposes_storage_health(tmp_path):
     record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
 
     report = app.verify_record_storage(wallet.wallet_id, record.record_id)
+    wallet_report = app.verify_wallet_storage(wallet.wallet_id)
+    wallet_repair = app.repair_wallet_storage(wallet.wallet_id, actor_did=OWNER)
     repair = app.repair_record_storage(wallet.wallet_id, record.record_id, actor_did=OWNER)
 
     assert report.ok is True
+    assert wallet_report.ok is True
+    assert wallet_report.record_count == 1
+    assert wallet_report.replica_count == 2
+    assert wallet_report.storage_types == {"memory": 2}
+    assert wallet_repair.ok is True
+    assert wallet_repair.repaired_replica_count == 0
     assert report.payload[0].role == "primary"
     assert repair.ok is True
     assert app.audit_timeline(wallet.wallet_id)[-1]["action"] == "storage/repair"
@@ -539,6 +720,59 @@ def test_wallet_interface_auto_persists_and_loads_repository_snapshots(tmp_path)
 
     assert [item.record_id for item in records] == [record.record_id]
     assert plaintext.decode("utf-8") == "automatic repository persistence"
+
+
+def test_wallet_interface_auto_persists_analytics_ledger(tmp_path):
+    repository_root = tmp_path / "wallet-repository"
+    app = WalletInterfaceService(
+        services=_services(),
+        repository_root=repository_root,
+    )
+    wallet1 = app.create_wallet("did:key:owner1")
+    wallet2 = app.create_wallet("did:key:owner2")
+    template_id = "auto_repository_analytics_v1"
+    app.create_analytics_template(
+        template_id=template_id,
+        title="Repository analytics",
+        purpose="Durable analytics state",
+        allowed_record_types=["location", "need"],
+        allowed_derived_fields=["county", "need_category"],
+        min_cohort_size=2,
+        epsilon_budget=0.5,
+        created_by="did:key:analyst",
+    )
+    for wallet, owner in [(wallet1, "did:key:owner1"), (wallet2, "did:key:owner2")]:
+        consent = app.create_analytics_consent_from_template(
+            wallet.wallet_id,
+            actor_did=owner,
+            template_id=template_id,
+        )
+        app.contribute_analytics_facts(
+            wallet.wallet_id,
+            actor_did=owner,
+            consent_id=consent.consent_id,
+            template_id=template_id,
+            fields={"county": "Multnomah", "need_category": "housing"},
+        )
+    result = app.run_private_aggregate_count_by_fields(
+        template_id,
+        group_by=["county", "need_category"],
+        epsilon=0.25,
+    )
+
+    restored = WalletInterfaceService(
+        services=_services(),
+        repository_root=repository_root,
+    )
+
+    assert (repository_root / "analytics-ledger.json").exists()
+    assert restored.list_analytics_templates()[0].template_id == template_id
+    assert len(restored.wallet_service.analytics_consents) == 2
+    assert len(restored.wallet_service.analytics_contributions) == 2
+    assert restored.wallet_service.aggregate_results[result.result_id].group_by == ["county", "need_category"]
+    assert restored.wallet_service.analytics_query_budget_spent[
+        f"template:{template_id}:group:county,need_category"
+    ] == 0.25
 
 
 def test_wallet_interface_can_disable_auto_repository_persistence(tmp_path):

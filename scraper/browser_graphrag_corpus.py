@@ -15,6 +15,9 @@ import pandas as pd
 
 DEFAULT_PACKAGE_DIR = Path("data/retrieval_package")
 DEFAULT_OUTPUT_DIR = Path("wallet_interface/ui/public/corpus/211-info/current")
+DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL = {
+    "BAAI/bge-small-en-v1.5": "Xenova/bge-small-en-v1.5",
+}
 
 
 def _bootstrap_local_ipfs_datasets() -> None:
@@ -237,7 +240,7 @@ def write_embeddings(
         "count": len(vectors),
         "dimension": dimension,
         "embeddingModel": model_name,
-        "browserEmbeddingModel": "",
+        "browserEmbeddingModel": DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL.get(model_name, ""),
         "binary": output_path.name,
         "doc_ids": doc_ids,
         "source_content_cids": content_cids,

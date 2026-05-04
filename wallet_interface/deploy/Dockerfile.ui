@@ -1,0 +1,17 @@
+FROM node:20-alpine AS build
+
+WORKDIR /app/wallet_interface/ui
+
+COPY wallet_interface/ui/package.json wallet_interface/ui/package-lock.json ./
+RUN npm ci
+
+COPY wallet_interface/ui ./
+RUN npm run build
+
+FROM nginx:1.27-alpine
+
+COPY wallet_interface/deploy/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/wallet_interface/ui/dist /usr/share/nginx/html
+
+EXPOSE 8080
+
