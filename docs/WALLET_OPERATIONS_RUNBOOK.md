@@ -13,6 +13,9 @@ Required environment:
   replicas.
 - `WALLET_PROOF_MODE=production`.
 - `WALLET_PROOF_BACKEND` points to the active verifier backend.
+- When using the HTTP verifier adapter, set `WALLET_PROOF_SERVICE_URL`,
+  `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`, and verifier auth
+  credentials.
 - `WALLET_AUTO_LOAD_REPOSITORY=true`.
 - `WALLET_AUTO_PERSIST=true`.
 
@@ -27,8 +30,21 @@ python -m wallet_interface.ops --max-runs 1 --fail-on-error
 ```
 
 The ops-health report checks repository state, encrypted storage availability,
-proof mode, revocation propagation, and privacy-budget ledger readability. Each
-run writes an `ops/health` audit event for every loaded wallet.
+proof mode, external verifier health when configured, revocation propagation,
+and privacy-budget ledger readability. Each run writes an `ops/health` audit
+event for every loaded wallet.
+
+Optional alert routing:
+
+- `WALLET_OPS_ALERT_WEBHOOK_URL`
+- `WALLET_OPS_ALERT_ON=warning|error`
+- `WALLET_OPS_ALERT_BEARER_TOKEN`
+- `WALLET_OPS_ALERT_HEADER_NAME`
+- `WALLET_OPS_ALERT_HEADER_VALUE`
+
+When configured, `python -m wallet_interface.ops` sends a JSON webhook for each
+matching report. This is the reference integration point for Slack, PagerDuty,
+incident routers, or internal alert collectors.
 
 ## Lost Key Or Device
 
@@ -75,6 +91,14 @@ If the user lost controller authority, use configured recovery contacts:
 4. Existing proof receipts remain auditable by receipt hash and verifier
    metadata; do not expose witness data while debugging.
 
+If using the HTTP verifier adapter:
+
+5. Check connectivity and credentials for `WALLET_PROOF_SERVICE_URL`.
+6. Confirm the verifier returns the expected `verifier_id`, `proof_system`, and
+   circuit metadata for location-region proofs.
+7. Treat `/ops/health` `proof_registry=error` as a production outage for new
+   proof creation.
+
 ## Storage Outage
 
 1. Run `/ops/health?verify_storage=true`.
@@ -112,13 +136,16 @@ python -m wallet_interface.ops \
   --watch \
   --interval-seconds 300 \
   --fail-on-error \
+  --alert-webhook-url https://ops.example.com/hooks/211-wallet \
+  --alert-on error \
+  --alert-bearer-token "${WALLET_OPS_ALERT_BEARER_TOKEN}" \
   --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
 ```
 
 For cron, prefer a bounded run:
 
 ```bash
-*/5 * * * * cd /srv/211-AI && python -m wallet_interface.ops --max-runs 1 --fail-on-error --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
+*/5 * * * * cd /srv/211-AI && python -m wallet_interface.ops --max-runs 1 --fail-on-error --alert-webhook-url https://ops.example.com/hooks/211-wallet --alert-on error --alert-bearer-token "${WALLET_OPS_ALERT_BEARER_TOKEN}" --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
 ```
 
 ## Kubernetes Reference

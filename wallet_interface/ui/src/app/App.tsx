@@ -71,6 +71,7 @@ import {
   addTextDocument,
   analyzeRecordWithGrant,
   createLocationRegionProof,
+  createRecordGrant,
   createWalletAnalyticsConsent,
   createVerifiedExportBundleView,
   delegateGrant,
@@ -84,6 +85,7 @@ import {
   loadWalletSnapshot,
   loadWalletAccessState,
   loadWalletDetails,
+  listThresholdApprovals,
   listWalletAuditEvents,
   listAnalyticsTemplates,
   listWalletAnalyticsConsents,
@@ -94,6 +96,7 @@ import {
   repairWalletStorage,
   recoverWalletController,
   removeWalletController,
+  requestRecordGrantApproval,
   requestWalletAdminApproval,
   rotateRecordKey,
   revokeWalletAnalyticsConsent,
@@ -105,6 +108,7 @@ import {
   verifyWalletStorage,
   EmergencyRevokeReport,
   OpsHealthReport,
+  ThresholdApprovalResponse,
   WalletDetails,
   WalletAnalyticsConsent,
   WalletAdminOperation,
@@ -546,6 +550,7 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            refreshWalletAccessState={refreshWalletAccessState}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             uploads={uploads}
             setUploads={setUploads}
@@ -640,7 +645,9 @@ function readUrlWalletApiConfig(): WalletApiConfig | undefined {
   return {
     apiBaseUrl,
     walletId,
-    actorDid: params.get("actorDid") ?? undefined
+    actorDid: params.get("actorDid") ?? undefined,
+    issuerKeyHex: params.get("issuerKeyHex") ?? undefined,
+    audienceKeyHex: params.get("audienceKeyHex") ?? undefined
   };
 }
 
@@ -1299,19 +1306,84 @@ function SharingRulesScreen({
   );
 }
 
+type UploadSharePermission = "analyze" | "view" | "analyze_view" | "analyze_view_share";
+
+interface UploadShareDraft {
+  audienceDid: string;
+  audienceKeyHex: string;
+  permission: UploadSharePermission;
+  purpose: string;
+  expiresAt: string;
+  approvalId: string;
+  requirePresence: boolean;
+}
+
+function defaultUploadShareDraft(): UploadShareDraft {
+  return {
+    audienceDid: "",
+    audienceKeyHex: "",
+    permission: "analyze",
+    purpose: "service_matching",
+    expiresAt: "",
+    approvalId: "",
+    requirePresence: false
+  };
+}
+
+function uploadShareAbilities(permission: UploadSharePermission): string[] {
+  if (permission === "view") return ["record/decrypt"];
+  if (permission === "analyze_view") return ["record/analyze", "record/decrypt"];
+  if (permission === "analyze_view_share") return ["record/analyze", "record/decrypt", "record/share"];
+  return ["record/analyze"];
+}
+
+function uploadShareNeedsApproval(permission: UploadSharePermission) {
+  return uploadShareAbilities(permission).some((ability) => ability === "record/decrypt" || ability === "record/share");
+}
+
+function uploadShareCanRequirePresence(permission: UploadSharePermission) {
+  return uploadShareAbilities(permission).includes("record/decrypt");
+}
+
+function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
+  return Boolean(receipt.caveats?.user_presence_required || receipt.caveats?.require_user_presence);
+}
+
 function UploadsScreen({
   apiConfig,
+  refreshWalletAccessState,
   refreshWalletAuditEvents,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
+  refreshWalletAccessState: () => Promise<void>;
   refreshWalletAuditEvents: () => Promise<void>;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
   const [rotatingUploadIds, setRotatingUploadIds] = useState<string[]>([]);
+  const [viewingUploadIds, setViewingUploadIds] = useState<string[]>([]);
+  const [decryptedUploadsById, setDecryptedUploadsById] = useState<Record<string, DecryptedRecordView>>({});
+  const [shareDraftsById, setShareDraftsById] = useState<Record<string, UploadShareDraft>>({});
+  const [sharingUploadIds, setSharingUploadIds] = useState<string[]>([]);
+  const [requestingShareApprovalIds, setRequestingShareApprovalIds] = useState<string[]>([]);
+  const [shareMessagesById, setShareMessagesById] = useState<Record<string, string>>({});
+
+  function shareDraftFor(upload: UploadItem) {
+    return shareDraftsById[upload.id] ?? defaultUploadShareDraft();
+  }
+
+  function updateShareDraft(upload: UploadItem, patch: Partial<UploadShareDraft>) {
+    setShareDraftsById((drafts) => ({
+      ...drafts,
+      [upload.id]: {
+        ...(drafts[upload.id] ?? defaultUploadShareDraft()),
+        ...patch
+      }
+    }));
+  }
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -1386,6 +1458,98 @@ function UploadsScreen({
     }
   }
 
+  async function viewUpload(upload: UploadItem) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    setViewingUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    try {
+      const decrypted = await decryptRecordWithGrant(apiConfig, { recordId: upload.recordId });
+      setDecryptedUploadsById({
+        ...decryptedUploadsById,
+        [upload.id]: decrypted
+      });
+      await refreshWalletAuditEvents();
+    } catch {
+      setDecryptedUploadsById({
+        ...decryptedUploadsById,
+        [upload.id]: {
+          recordId: upload.recordId,
+          text: "Document view unavailable.",
+          sizeBytes: 0
+        }
+      });
+    } finally {
+      setViewingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function shareUpload(event: FormEvent<HTMLFormElement>, upload: UploadItem) {
+    event.preventDefault();
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    const draft = shareDraftFor(upload);
+    const audienceDid = draft.audienceDid.trim();
+    if (!audienceDid) return;
+    setSharingUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    setShareMessagesById({ ...shareMessagesById, [upload.id]: "" });
+    try {
+      const grant = await createRecordGrant(apiConfig, {
+        recordId: upload.recordId,
+        audienceDid,
+        audienceKeyHex: draft.audienceKeyHex.trim() || undefined,
+        abilities: uploadShareAbilities(draft.permission),
+        purpose: draft.purpose.trim() || "service_matching",
+        expiresAt: dateInputValueToIso(draft.expiresAt),
+        approvalId: draft.approvalId.trim() || undefined,
+        maxDelegationDepth: draft.permission === "analyze_view_share" ? 1 : undefined,
+        userPresenceRequired: uploadShareCanRequirePresence(draft.permission) ? draft.requirePresence : false
+      });
+      setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: true } : item)));
+      setShareDraftsById({
+        ...shareDraftsById,
+        [upload.id]: defaultUploadShareDraft()
+      });
+      setShareMessagesById({
+        ...shareMessagesById,
+        [upload.id]: `Shared with ${audienceDid}: ${grant.abilities.join(", ")}.`
+      });
+      await refreshWalletAccessState();
+      await refreshWalletAuditEvents();
+    } catch {
+      setShareMessagesById({
+        ...shareMessagesById,
+        [upload.id]: "Document share failed. Check the DID, key, or required approval."
+      });
+    } finally {
+      setSharingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function requestShareApproval(upload: UploadItem) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    const draft = shareDraftFor(upload);
+    const abilities = uploadShareAbilities(draft.permission);
+    setRequestingShareApprovalIds((uploadIds) =>
+      uploadIds.includes(upload.id) ? uploadIds : [...uploadIds, upload.id]
+    );
+    setShareMessagesById((messages) => ({ ...messages, [upload.id]: "" }));
+    try {
+      const approval = await requestRecordGrantApproval(apiConfig, {
+        recordId: upload.recordId,
+        abilities,
+        requestedBy: apiConfig.actorDid,
+        expiresAt: dateInputValueToIso(draft.expiresAt)
+      });
+      updateShareDraft(upload, { approvalId: approval.approval_id });
+      setShareMessagesById((messages) => ({
+        ...messages,
+        [upload.id]: `Approval ${approval.approval_id} requested.`
+      }));
+    } catch {
+      setShareMessagesById((messages) => ({ ...messages, [upload.id]: "Approval request failed." }));
+    } finally {
+      setRequestingShareApprovalIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -1408,55 +1572,186 @@ function UploadsScreen({
         </label>
       </Section>
       <div className="list-stack">
-        {uploads.map((upload) => (
-          <article className="list-item upload-list-item" key={upload.id}>
-            <div>
-              <h3>{upload.fileName}</h3>
-              <p>{upload.category}</p>
-              <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
-              <div className="badge-row">
-                <Badge tone="success">{upload.status}</Badge>
-                <Badge tone="warning">{upload.sensitivity}</Badge>
-                {upload.storageOk !== undefined ? (
-                  <Badge tone={upload.storageOk ? "success" : "warning"}>
-                    {upload.storageOk ? "storage verified" : "storage needs repair"}
-                  </Badge>
-                ) : null}
-                <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
+        {uploads.map((upload) => {
+          const decryptedUpload = decryptedUploadsById[upload.id];
+          const shareDraft = shareDraftFor(upload);
+          const shareFormOpen = Boolean(shareDraftsById[upload.id]);
+          const shareMessage = shareMessagesById[upload.id];
+          const shareApprovalRequired = uploadShareNeedsApproval(shareDraft.permission);
+          const sharePresenceAvailable = uploadShareCanRequirePresence(shareDraft.permission);
+          return (
+            <article className="list-item upload-list-item" key={upload.id}>
+              <div className="upload-list-main">
+                <div>
+                  <h3>{upload.fileName}</h3>
+                  <p>{upload.category}</p>
+                  <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
+                  <div className="badge-row">
+                    <Badge tone="success">{upload.status}</Badge>
+                    <Badge tone="warning">{upload.sensitivity}</Badge>
+                    {upload.storageOk !== undefined ? (
+                      <Badge tone={upload.storageOk ? "success" : "warning"}>
+                        {upload.storageOk ? "storage verified" : "storage needs repair"}
+                      </Badge>
+                    ) : null}
+                    <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
+                  </div>
+                </div>
+                <div className="row-actions list-item-action">
+                  {upload.recordId && apiConfig?.actorDid ? (
+                    <Button
+                      onClick={() => updateShareDraft(upload, {})}
+                      variant="secondary"
+                    >
+                      <UserPlus aria-hidden="true" size={18} />
+                      Share document
+                    </Button>
+                  ) : null}
+                  {upload.recordId && apiConfig?.actorDid ? (
+                    <Button
+                      disabled={viewingUploadIds.includes(upload.id)}
+                      onClick={() => viewUpload(upload)}
+                      variant="secondary"
+                    >
+                      <LockKeyhole aria-hidden="true" size={18} />
+                      {viewingUploadIds.includes(upload.id) ? "Opening" : "View document"}
+                    </Button>
+                  ) : null}
+                  {upload.recordId && apiConfig?.actorDid ? (
+                    <Button
+                      disabled={rotatingUploadIds.includes(upload.id)}
+                      onClick={() => rotateUploadKey(upload)}
+                      variant="secondary"
+                    >
+                      <KeyRound aria-hidden="true" size={18} />
+                      {rotatingUploadIds.includes(upload.id) ? "Rotating" : "Rotate key"}
+                    </Button>
+                  ) : null}
+                  {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
+                    <Button
+                      disabled={repairingUploadIds.includes(upload.id)}
+                      onClick={() => repairUploadStorage(upload)}
+                      variant="secondary"
+                    >
+                      <Wrench aria-hidden="true" size={18} />
+                      {repairingUploadIds.includes(upload.id) ? "Repairing" : "Repair storage"}
+                    </Button>
+                  ) : null}
+                  <Button
+                    onClick={() =>
+                      setUploads(
+                        uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item))
+                      )
+                    }
+                    variant="secondary"
+                  >
+                    {upload.shared ? "Mark private" : "Mark eligible"}
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="row-actions list-item-action">
-              {upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={rotatingUploadIds.includes(upload.id)}
-                  onClick={() => rotateUploadKey(upload)}
-                  variant="secondary"
-                >
-                  <KeyRound aria-hidden="true" size={18} />
-                  {rotatingUploadIds.includes(upload.id) ? "Rotating" : "Rotate key"}
-                </Button>
+              {shareFormOpen ? (
+                <form className="form-grid" onSubmit={(event) => shareUpload(event, upload)}>
+                  <Field label="Recipient DID" required>
+                    <input
+                      onChange={(event) => updateShareDraft(upload, { audienceDid: event.target.value })}
+                      placeholder="did:key:case-worker"
+                      value={shareDraft.audienceDid}
+                    />
+                  </Field>
+                  <Field label="Permission">
+                    <select
+                      onChange={(event) =>
+                        updateShareDraft(upload, { permission: event.target.value as UploadSharePermission })
+                      }
+                      value={shareDraft.permission}
+                    >
+                      <option value="analyze">Analyze only</option>
+                      <option value="view">View document</option>
+                      <option value="analyze_view">Analyze and view</option>
+                      <option value="analyze_view_share">Analyze, view, and delegate</option>
+                    </select>
+                  </Field>
+                  <Field label="Purpose">
+                    <input
+                      onChange={(event) => updateShareDraft(upload, { purpose: event.target.value })}
+                      placeholder="service_matching"
+                      value={shareDraft.purpose}
+                    />
+                  </Field>
+                  <Field label="Expires">
+                    <input
+                      onChange={(event) => updateShareDraft(upload, { expiresAt: event.target.value })}
+                      type="date"
+                      value={shareDraft.expiresAt}
+                    />
+                  </Field>
+                  <Field label="Recipient key hex">
+                    <input
+                      onChange={(event) => updateShareDraft(upload, { audienceKeyHex: event.target.value })}
+                      placeholder="optional"
+                      value={shareDraft.audienceKeyHex}
+                    />
+                  </Field>
+                  <Field label="Approval ID">
+                    <input
+                      onChange={(event) => updateShareDraft(upload, { approvalId: event.target.value })}
+                      placeholder="optional for multi-sig"
+                      value={shareDraft.approvalId}
+                    />
+                  </Field>
+                  {sharePresenceAvailable ? (
+                    <label className="captcha-box full-span">
+                      <input
+                        checked={shareDraft.requirePresence}
+                        onChange={(event) => updateShareDraft(upload, { requirePresence: event.target.checked })}
+                        type="checkbox"
+                      />
+                      <span>Require recipient presence before viewing</span>
+                    </label>
+                  ) : null}
+                  <div className="row-actions full-span">
+                    {shareApprovalRequired ? (
+                      <Button
+                        disabled={requestingShareApprovalIds.includes(upload.id)}
+                        onClick={() => requestShareApproval(upload)}
+                        type="button"
+                        variant="secondary"
+                      >
+                        <ShieldCheck aria-hidden="true" size={18} />
+                        {requestingShareApprovalIds.includes(upload.id) ? "Requesting" : "Request approval"}
+                      </Button>
+                    ) : null}
+                    <Button
+                      disabled={!shareDraft.audienceDid.trim() || sharingUploadIds.includes(upload.id)}
+                      type="submit"
+                      variant="secondary"
+                    >
+                      <ShieldCheck aria-hidden="true" size={18} />
+                      {sharingUploadIds.includes(upload.id) ? "Sharing" : "Create grant"}
+                    </Button>
+                  </div>
+                </form>
               ) : null}
-              {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={repairingUploadIds.includes(upload.id)}
-                  onClick={() => repairUploadStorage(upload)}
-                  variant="secondary"
-                >
-                  <Wrench aria-hidden="true" size={18} />
-                  {repairingUploadIds.includes(upload.id) ? "Repairing" : "Repair storage"}
-                </Button>
+              {shareMessage ? (
+                <StatusBanner tone={shareMessage.includes("failed") ? "warning" : "success"}>
+                  {shareMessage}
+                </StatusBanner>
               ) : null}
-              <Button
-                onClick={() =>
-                  setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item)))
-                }
-                variant="secondary"
-              >
-                {upload.shared ? "Mark private" : "Mark eligible"}
-              </Button>
-            </div>
-          </article>
-        ))}
+              {decryptedUpload ? (
+                <div className="disclosure-package">
+                  <div className="disclosure-row">
+                    <strong>Document view</strong>
+                    <span className="document-preview-text">{decryptedUpload.text}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Plaintext size</strong>
+                    <span>{decryptedUpload.sizeBytes} bytes</span>
+                  </div>
+                </div>
+              ) : null}
+            </article>
+          );
+        })}
       </div>
     </div>
   );
@@ -2614,7 +2909,8 @@ function RecipientAccessScreen({
                 try {
                   invocationToken = await issueRecordDecryptInvocation(apiConfig, {
                     grantId: receipt.grantId,
-                    recordId
+                    recordId,
+                    userPresent: receiptRequiresUserPresence(receipt)
                   });
                 } catch {
                   invocationToken = undefined;
@@ -3728,6 +4024,42 @@ function shortHash(value?: string): string {
   return value.length > 24 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
 }
 
+function thresholdApprovalCount(approval: ThresholdApprovalResponse): number {
+  const approvers = new Set(approval.approver_dids ?? []);
+  return Object.keys(approval.approvals ?? {}).filter((did) => approvers.size === 0 || approvers.has(did)).length;
+}
+
+function thresholdApprovalTone(status: string): "neutral" | "success" | "warning" {
+  if (status === "approved") return "success";
+  if (status === "pending") return "warning";
+  return "neutral";
+}
+
+function thresholdApprovalDateLabel(value?: string): string {
+  if (!value) return "Unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function opsHealthTone(status?: string): string {
+  if (status === "error") return "warning";
+  if (status === "warning") return "info";
+  if (status === "ok") return "success";
+  return "neutral";
+}
+
+function stringDetail(details: Record<string, unknown> | undefined, key: string): string | null {
+  const value = details?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function objectDetail(details: Record<string, unknown> | undefined, key: string): Record<string, unknown> | null {
+  const value = details?.[key];
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
 function SecurityScreen({
   apiConfig,
   onSnapshotLoaded,
@@ -3747,6 +4079,10 @@ function SecurityScreen({
   const [opsStatus, setOpsStatus] = useState<"idle" | "checking" | "checked" | "failed">("idle");
   const [opsHealthReport, setOpsHealthReport] = useState<OpsHealthReport | null>(null);
   const [walletDetails, setWalletDetails] = useState<WalletDetails | null>(null);
+  const [thresholdApprovals, setThresholdApprovals] = useState<ThresholdApprovalResponse[]>([]);
+  const [approvalQueueStatus, setApprovalQueueStatus] = useState<
+    "idle" | "loading" | "loaded" | "approving" | "failed"
+  >("idle");
   const [controllerDid, setControllerDid] = useState("");
   const [controllerApprovalId, setControllerApprovalId] = useState("");
   const [deviceDid, setDeviceDid] = useState("");
@@ -3771,9 +4107,19 @@ function SecurityScreen({
     walletDetails?.governance_policy?.approver_dids ?? walletDetails?.controller_dids ?? [];
   const recoveryPolicy = walletDetails?.governance_policy?.recovery_policy;
   const recoveryContacts = recoveryPolicy?.contact_dids ?? [];
+  const pendingThresholdApprovals = thresholdApprovals.filter((approval) => approval.status === "pending");
   const opsCheckSummary = opsHealthReport
     ? opsHealthReport.checks.map((check) => `${check.name}: ${check.status}`).join(", ")
     : "Not checked";
+  const proofRegistryCheck = opsHealthReport?.checks.find((check) => check.name === "proof_registry") ?? null;
+  const proofRegistryDetails = proofRegistryCheck?.details;
+  const proofBackendHealth = objectDetail(proofRegistryDetails, "backend_health");
+  const proofBackendVerifier = [stringDetail(proofRegistryDetails, "verifier_id"), stringDetail(proofRegistryDetails, "proof_system")]
+    .filter(Boolean)
+    .join(" / ");
+  const proofBackendMode = stringDetail(proofRegistryDetails, "backend_mode");
+  const proofBackendHealthStatus = stringDetail(proofBackendHealth ?? undefined, "status");
+  const proofBackendHealthError = stringDetail(proofBackendHealth ?? undefined, "error");
   const storageProviderSummary =
     walletStorageReport && Object.keys(walletStorageReport.storage_types).length
       ? Object.entries(walletStorageReport.storage_types)
@@ -3802,15 +4148,33 @@ function SecurityScreen({
     setWalletDetails(await loadWalletDetails(apiConfig));
   }
 
+  async function refreshThresholdApprovalQueue() {
+    if (!apiConfig) {
+      setThresholdApprovals([]);
+      setApprovalQueueStatus("idle");
+      return;
+    }
+    setApprovalQueueStatus("loading");
+    try {
+      const approvals = await listThresholdApprovals(apiConfig, "all");
+      setThresholdApprovals(approvals);
+      setApprovalQueueStatus("loaded");
+    } catch {
+      setThresholdApprovals([]);
+      setApprovalQueueStatus("failed");
+    }
+  }
+
   useEffect(() => {
     if (!apiConfig) return;
     let cancelled = false;
-    Promise.all([refreshSnapshotState(), refreshWalletDetails()])
+    Promise.all([refreshSnapshotState(), refreshWalletDetails(), refreshThresholdApprovalQueue()])
       .then(() => undefined)
       .catch(() => {
         if (!cancelled) {
           setSnapshotReport(null);
           setWalletDetails(null);
+          setThresholdApprovals([]);
         }
       })
     return () => {
@@ -3911,6 +4275,7 @@ function SecurityScreen({
       }
       setGovernanceMessage(`Approval ${approval.approval_id}`);
       setGovernanceStatus("requested");
+      await refreshThresholdApprovalQueue();
     } catch {
       setGovernanceMessage("Wallet approval request failed.");
       setGovernanceStatus("failed");
@@ -3966,13 +4331,19 @@ function SecurityScreen({
   async function recordGovernanceApproval(approvalId: string) {
     if (!apiConfig || !approvalId.trim()) return;
     setGovernanceStatus("saving");
+    setApprovalQueueStatus("approving");
     try {
-      await approveThresholdApproval(apiConfig, approvalId.trim());
+      const approval = await approveThresholdApproval(apiConfig, approvalId.trim());
+      setThresholdApprovals((approvals) =>
+        approvals.map((item) => (item.approval_id === approval.approval_id ? approval : item))
+      );
+      await refreshThresholdApprovalQueue();
       setGovernanceMessage("Approval recorded.");
       setGovernanceStatus("saved");
     } catch {
       setGovernanceMessage("Approval failed.");
       setGovernanceStatus("failed");
+      setApprovalQueueStatus("failed");
     }
   }
 
@@ -4150,7 +4521,51 @@ function SecurityScreen({
             <strong>Ops checks</strong>
             <span>{opsCheckSummary}</span>
           </div>
+          <div className="disclosure-row">
+            <strong>Proof backend</strong>
+            <span>{proofBackendVerifier || proofBackendMode || "Not checked"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Proof backend health</strong>
+            <span>
+              {proofRegistryCheck ? (
+                <>
+                  <Badge tone={opsHealthTone(proofRegistryCheck.status)}>{proofRegistryCheck.status}</Badge>
+                  {proofBackendHealthStatus ? ` ${proofBackendHealthStatus}` : ""}
+                  {proofBackendHealthError ? ` (${proofBackendHealthError})` : ""}
+                </>
+              ) : (
+                "Not checked"
+              )}
+            </span>
+          </div>
         </div>
+        {opsHealthReport ? (
+          <div className="disclosure-package" aria-live="polite">
+            {opsHealthReport.checks.map((check) => {
+              const verifierLabel =
+                check.name === "proof_registry"
+                  ? [stringDetail(check.details, "verifier_id"), stringDetail(check.details, "proof_system")]
+                      .filter(Boolean)
+                      .join(" / ")
+                  : null;
+              const health = objectDetail(check.details, "backend_health");
+              const healthStatus = stringDetail(health ?? undefined, "status");
+              const healthError = stringDetail(health ?? undefined, "error");
+              return (
+                <div className="disclosure-row" key={check.name}>
+                  <strong>{check.name}</strong>
+                  <span>
+                    <Badge tone={opsHealthTone(check.status)}>{check.status}</Badge> {check.summary}
+                    {verifierLabel ? ` (${verifierLabel})` : ""}
+                    {healthStatus ? ` [${healthStatus}]` : ""}
+                    {healthError ? ` ${healthError}` : ""}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
         <div className="row-actions">
           <Button disabled={!apiConfig || snapshotStatus === "saving" || snapshotStatus === "loading"} onClick={saveSnapshot}>
             <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save snapshot"}
@@ -4179,6 +4594,82 @@ function SecurityScreen({
           <Button disabled={!apiConfig || opsStatus === "checking"} onClick={checkOpsHealth} variant="secondary">
             <ShieldCheck size={18} /> {opsStatus === "checking" ? "Checking" : "Run ops health"}
           </Button>
+        </div>
+      </Section>
+      <Section
+        title="Approval queue"
+        actions={
+          <Badge tone={pendingThresholdApprovals.length ? "warning" : "success"}>
+            {pendingThresholdApprovals.length ? `${pendingThresholdApprovals.length} pending` : "clear"}
+          </Badge>
+        }
+      >
+        {approvalQueueStatus === "failed" ? (
+          <StatusBanner tone="warning">Approval queue unavailable.</StatusBanner>
+        ) : null}
+        <div className="row-actions">
+          <Button
+            disabled={!apiConfig || approvalQueueStatus === "loading" || approvalQueueStatus === "approving"}
+            onClick={refreshThresholdApprovalQueue}
+            variant="secondary"
+          >
+            <RefreshCw size={18} /> {approvalQueueStatus === "loading" ? "Loading" : "Refresh approvals"}
+          </Button>
+        </div>
+        <div className="list-stack">
+          {thresholdApprovals.length ? (
+            thresholdApprovals.map((approval) => {
+              const approvedCount = thresholdApprovalCount(approval);
+              const actorDid = apiConfig?.actorDid ?? "";
+              const actorRecorded = Boolean(actorDid && approval.approvals?.[actorDid]);
+              const canRecord = Boolean(apiConfig?.actorDid && approval.status === "pending" && !actorRecorded);
+              return (
+                <article className="list-item" key={approval.approval_id}>
+                  <div>
+                    <div className="scope-header">
+                      <div>
+                        <h3>{approval.operation}</h3>
+                        <p>{approval.requested_by}</p>
+                      </div>
+                      <Badge tone={thresholdApprovalTone(approval.status)}>{approval.status}</Badge>
+                    </div>
+                    <div className="badge-row">
+                      <Badge>{shortHash(approval.approval_id)}</Badge>
+                      <Badge tone={approvedCount >= approval.threshold ? "success" : "warning"}>
+                        {approvedCount}/{approval.threshold} approvals
+                      </Badge>
+                      <Badge>{thresholdApprovalDateLabel(approval.created_at)}</Badge>
+                    </div>
+                    <div className="disclosure-package">
+                      <div className="disclosure-row">
+                        <strong>Abilities</strong>
+                        <span>{approval.abilities.join(", ")}</span>
+                      </div>
+                      <div className="disclosure-row">
+                        <strong>Resources</strong>
+                        <span>{approval.resources.join(", ")}</span>
+                      </div>
+                      <div className="disclosure-row">
+                        <strong>Approvers</strong>
+                        <span>{approval.approver_dids?.join(", ") || "Wallet controllers"}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row-actions">
+                    <Button
+                      disabled={!canRecord || approvalQueueStatus === "approving" || governanceStatus === "saving"}
+                      onClick={() => recordGovernanceApproval(approval.approval_id)}
+                      variant="secondary"
+                    >
+                      <KeyRound size={18} /> {actorRecorded ? "Recorded" : "Record approval"}
+                    </Button>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <small>No threshold approvals are waiting on this wallet.</small>
+          )}
         </div>
       </Section>
       <Section

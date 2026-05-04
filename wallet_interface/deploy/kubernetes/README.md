@@ -30,8 +30,16 @@ Before production use:
 
 - Replace `wallet-interface-api:latest` and `wallet-interface-ui:latest` with
   registry-published image references.
-- Replace the deterministic proof backend with the production verifier.
+- Replace the deterministic proof backend with the production verifier by
+  setting `WALLET_PROOF_BACKEND=http-location-region` plus
+  `WALLET_PROOF_SERVICE_URL`, `WALLET_PROOF_VERIFIER_ID`,
+  `WALLET_PROOF_SYSTEM`, and verifier auth secrets.
 - Move `WALLET_STORAGE_CONFIG` and any provider credentials into a real Secret
   or external secret manager.
+- Set `WALLET_OPS_HEALTH_SHARED_SECRET` for the API and any edge caller, and
+  set `WALLET_OPS_ALERT_WEBHOOK_URL` if ops-health alerts should route to an
+  incident system.
+- Set `WALLET_OPS_ALERT_BEARER_TOKEN` or a custom
+  `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE` pair if the
+  alert receiver requires webhook authentication.
 - Change the ingress host and storage class to the target cluster settings.
-

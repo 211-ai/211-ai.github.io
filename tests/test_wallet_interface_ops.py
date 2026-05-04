@@ -70,3 +70,74 @@ def test_ops_health_cli_writes_jsonl_file(tmp_path) -> None:
     report = json.loads(output_path.read_text(encoding="utf-8"))
     assert report["check_count"] >= 5
 
+
+def test_ops_health_worker_sends_webhook_alert_for_error_status() -> None:
+    service = WalletInterfaceService()
+    service.wallet_service.analytics_query_budget_spent["bad-budget"] = -0.5
+    output = StringIO()
+    sent: list[tuple[str, dict[str, object], dict[str, str]]] = []
+
+    result = WalletOpsHealthWorker(
+        service=service,
+        verify_storage=False,
+        max_runs=1,
+        output=output,
+        alert_webhook_url="https://ops.example.test/hooks/wallet",
+        alert_on="error",
+        alert_sender=lambda url, payload, headers: sent.append((url, payload, headers)),
+    ).run()
+
+    assert result.alert_count == 1
+    assert len(sent) == 1
+    url, payload, headers = sent[0]
+    assert url == "https://ops.example.test/hooks/wallet"
+    assert payload["status"] == "error"
+    assert payload["source"] == "wallet_interface.ops"
+    assert headers == {}
+    assert any(check["name"] == "privacy_budget" for check in payload["checks"])
+
+
+def test_ops_health_worker_does_not_send_webhook_alert_below_threshold() -> None:
+    service = WalletInterfaceService()
+    output = StringIO()
+    sent: list[tuple[str, dict[str, object], dict[str, str]]] = []
+
+    result = WalletOpsHealthWorker(
+        service=service,
+        verify_storage=False,
+        max_runs=1,
+        output=output,
+        alert_webhook_url="https://ops.example.test/hooks/wallet",
+        alert_on="error",
+        alert_sender=lambda url, payload, headers: sent.append((url, payload, headers)),
+    ).run()
+
+    report = json.loads(output.getvalue())
+    assert report["status"] == "warning"
+    assert result.alert_count == 0
+    assert sent == []
+
+
+def test_ops_health_worker_reads_alert_auth_headers_from_env(monkeypatch) -> None:
+    service = WalletInterfaceService()
+    service.wallet_service.analytics_query_budget_spent["bad-budget"] = -0.5
+    output = StringIO()
+    sent: list[tuple[str, dict[str, object], dict[str, str]]] = []
+    monkeypatch.setenv("WALLET_OPS_ALERT_BEARER_TOKEN", "alert-token")
+    monkeypatch.setenv("WALLET_OPS_ALERT_HEADER_NAME", "x-wallet-alert-key")
+    monkeypatch.setenv("WALLET_OPS_ALERT_HEADER_VALUE", "shared-header")
+
+    WalletOpsHealthWorker(
+        service=service,
+        verify_storage=False,
+        max_runs=1,
+        output=output,
+        alert_webhook_url="https://ops.example.test/hooks/wallet",
+        alert_on="error",
+        alert_sender=lambda url, payload, headers: sent.append((url, payload, headers)),
+    ).run()
+
+    assert len(sent) == 1
+    _, _, headers = sent[0]
+    assert headers["authorization"] == "Bearer alert-token"
+    assert headers["x-wallet-alert-key"] == "shared-header"

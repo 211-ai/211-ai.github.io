@@ -34,6 +34,13 @@ Worker-specific vars:
 - `OPS_HEALTH_SHARED_SECRET`: bearer secret for scheduled ops checks
 - `OPS_HEALTH_VERIFY_STORAGE`: optional, defaults to `true`
 
+Optional origin auth adaptation:
+
+- if the origin sits behind Cloudflare Access, tunnel auth, or another edge
+  identity layer, add the required outbound headers in `src/index.ts`
+- keep `OPS_HEALTH_SHARED_SECRET` even in that case so `/ops/health` stays
+  independently protected at the application layer
+
 Origin API env:
 
 - `WALLET_OPS_HEALTH_SHARED_SECRET`: should match
