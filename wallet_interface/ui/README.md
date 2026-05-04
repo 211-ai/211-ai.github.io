@@ -20,6 +20,17 @@ access-request and receipt state for demos and tests.
 The uploads screen also uses the same API config to list encrypted document
 records and add files through the multipart wallet document endpoint, with a
 text-document fallback for simpler local API deployments.
+API-backed uploads expose owner document viewing through the wallet decrypt
+endpoint; plaintext is shown only after the connected wallet actor requests it.
+Owners can also create record-scoped grants from an uploaded document for
+analysis, document viewing, or bounded re-delegation. View and delegation
+grants can request a record-scoped multi-sig approval inline, then reuse the
+returned approval ID when creating the grant. Document-view grants can also
+require recipient presence, which the recipient access flow satisfies through a
+signed invocation before decrypting.
+The Security screen lists threshold approvals for the wallet so controllers can
+review pending record-grant and wallet-governance approvals without copying IDs
+between screens.
 API-loaded documents show encrypted storage health by calling each record's
 storage verification endpoint. If a stored record reports a storage problem,
 the uploads screen can call the wallet storage repair endpoint for that record.
@@ -33,6 +44,9 @@ expose a separate document-view action that decrypts only after the recipient
 invokes that specific grant. Active receipts held by the current actor that
 include `record/share` or `document/share` can also create attenuated delegated
 grants for another DID through the wallet API.
+The API client also exposes redacted document analysis and vector-profile calls
+that return safe derived output alongside encrypted artifact metadata, matching
+the wallet package's `redacted_derived_only` and `vector_profile` output caveats.
 When connected to the wallet API, the audit screen loads the wallet audit
 timeline so grant, invocation, analysis, repair, and revocation events remain
 traceable with actor, resource, decision, and grant metadata.

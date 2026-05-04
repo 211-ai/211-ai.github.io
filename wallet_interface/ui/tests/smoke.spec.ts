@@ -364,6 +364,9 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
   let emergencyRequests = 0;
   let storageRequests = 0;
   let storageRepairRequests = 0;
+  let approvalListRequests = 0;
+  let approvalRecordRequests = 0;
+  let ownerApprovalRecorded = false;
   await page.route("**/wallets/**", async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
@@ -387,6 +390,61 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
           manifest_head: "manifest1234567890abcdefmanifest1234567890abcdef",
           created_at: "2026-05-03T18:00:00Z",
           updated_at: "2026-05-03T18:01:00Z"
+        }
+      });
+      return;
+    }
+    if (path === "/wallets/wallet-demo/approvals" && route.request().method() === "GET") {
+      approvalListRequests += 1;
+      await route.fulfill({
+        json: {
+          approvals: [
+            {
+              approval_id: "approval-record-share",
+              wallet_id: "wallet-demo",
+              operation: "grant/create",
+              requested_by: "did:key:owner",
+              resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+              abilities: ["record/analyze", "record/decrypt"],
+              threshold: 2,
+              approver_dids: ["did:key:owner", "did:key:case-manager"],
+              approvals: ownerApprovalRecorded
+                ? {
+                    "did:key:case-manager": "2026-05-03T18:02:30Z",
+                    "did:key:owner": "2026-05-03T18:03:00Z"
+                  }
+                : {
+                    "did:key:case-manager": "2026-05-03T18:02:30Z"
+                  },
+              status: ownerApprovalRecorded ? "approved" : "pending",
+              created_at: "2026-05-03T18:02:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path === "/wallets/wallet-demo/approvals/approval-record-share/approve") {
+      approvalRecordRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({ approver_did: "did:key:owner" });
+      ownerApprovalRecorded = true;
+      await route.fulfill({
+        json: {
+          approval_id: "approval-record-share",
+          wallet_id: "wallet-demo",
+          operation: "grant/create",
+          requested_by: "did:key:owner",
+          resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+          abilities: ["record/analyze", "record/decrypt"],
+          threshold: 2,
+          approver_dids: ["did:key:owner", "did:key:case-manager"],
+          approvals: {
+            "did:key:case-manager": "2026-05-03T18:02:30Z",
+            "did:key:owner": "2026-05-03T18:03:00Z"
+          },
+          status: "approved",
+          created_at: "2026-05-03T18:02:00Z"
         }
       });
       return;
@@ -510,6 +568,14 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
 
   await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
   await expect(page.getByText(/no snapshot/i)).toBeVisible();
+  const approvalQueue = page.locator("section").filter({ hasText: "Approval queue" });
+  await expect(approvalQueue.getByText(/approval-record-share/i)).toBeVisible();
+  await expect(approvalQueue.getByText(/record\/decrypt/i)).toBeVisible();
+  await expect(approvalQueue.getByText(/1\/2 approvals/i)).toBeVisible();
+  await approvalQueue.getByRole("button", { name: /Record approval/i }).click();
+  await expect(page.getByText(/Approval recorded/i)).toBeVisible();
+  await expect(approvalQueue.getByText(/2\/2 approvals/i)).toBeVisible();
+  await expect(approvalQueue.getByText(/approved/i)).toBeVisible();
   await expect(page.getByRole("heading", { name: /Wallet governance/i })).toBeVisible();
   await expect(page.getByText("did:key:case-manager", { exact: true })).toBeVisible();
   await expect(page.getByText("did:key:phone", { exact: true })).toBeVisible();
@@ -539,12 +605,19 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
   expect(emergencyRequests).toBe(1);
   expect(storageRequests).toBe(1);
   expect(storageRepairRequests).toBe(1);
+  expect(approvalListRequests).toBeGreaterThanOrEqual(2);
+  expect(approvalRecordRequests).toBe(1);
 });
 
 test("uploads can repair API-backed document storage", async ({ page }) => {
+  let decryptRequests = 0;
   let repairRequests = 0;
   let rotationRequests = 0;
+  let shareRequests = 0;
+  let approvalRequests = 0;
+  const documentPlaintext = "Owner can preview this benefits letter.";
   const auditEvents: Array<Record<string, unknown>> = [];
+  const receipts: Array<Record<string, unknown>> = [];
   await page.route("**/wallets/**", async (route) => {
     const url = new URL(route.request().url());
     const path = url.pathname;
@@ -553,7 +626,7 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
       return;
     }
     if (path.endsWith("/grant-receipts")) {
-      await route.fulfill({ json: { receipts: [] } });
+      await route.fulfill({ json: { receipts } });
       return;
     }
     if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
@@ -569,6 +642,100 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
               created_at: "2026-05-03T18:00:00Z"
             }
           ]
+        }
+      });
+      return;
+    }
+    if (path === "/wallets/wallet-demo/approvals") {
+      approvalRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        abilities: ["record/analyze", "record/decrypt"],
+        operation: "grant/create",
+        requested_by: "did:key:owner",
+        resources: ["wallet://wallet-demo/records/rec-benefits-letter"]
+      });
+      await route.fulfill({
+        json: {
+          approval_id: "approval-owner-share",
+          wallet_id: "wallet-demo",
+          operation: "grant/create",
+          requested_by: "did:key:owner",
+          threshold: 2,
+          approvals: {},
+          status: "pending",
+          resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+          abilities: ["record/analyze", "record/decrypt"],
+          created_at: "2026-05-03T18:02:40Z"
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/grants")) {
+      shareRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        issuer_did: "did:key:owner",
+        audience_did: "did:key:case-worker",
+        abilities: ["record/analyze", "record/decrypt"],
+        purpose: "benefits_application",
+        approval_id: "approval-owner-share",
+        user_presence_required: true
+      });
+      receipts.push({
+        receipt_id: "receipt-owner-share",
+        grant_id: "grant-owner-share",
+        audience_did: "did:key:case-worker",
+        resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+        abilities: ["record/analyze", "record/decrypt"],
+        purpose: "benefits_application",
+        caveats: { purpose: "benefits_application", user_presence_required: true },
+        receipt_hash: "receipt-hash-owner-share",
+        status: "active",
+        created_at: "2026-05-03T18:02:45Z"
+      });
+      auditEvents.push({
+        event_id: "audit-grant-create",
+        created_at: "2026-05-03T18:02:45Z",
+        actor_did: "did:key:owner",
+        action: "grant/create",
+        resource: "wallet://wallet-demo/records/rec-benefits-letter",
+        decision: "allow",
+        grant_id: "grant-owner-share"
+      });
+      await route.fulfill({
+        json: {
+          grant_id: "grant-owner-share",
+          issuer_did: "did:key:owner",
+          audience_did: "did:key:case-worker",
+          resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+          abilities: ["record/analyze", "record/decrypt"],
+          caveats: { purpose: "benefits_application", user_presence_required: true },
+          proof_chain: [],
+          status: "active",
+          created_at: "2026-05-03T18:02:45Z"
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/decrypt")) {
+      decryptRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({ actor_did: "did:key:owner" });
+      auditEvents.push({
+        event_id: "audit-record-decrypt",
+        created_at: "2026-05-03T18:02:30Z",
+        actor_did: "did:key:owner",
+        action: "record/decrypt",
+        resource: "wallet://wallet-demo/records/rec-benefits-letter",
+        decision: "allow",
+        grant_id: null
+      });
+      await route.fulfill({
+        json: {
+          record_id: "rec-benefits-letter",
+          text: documentPlaintext,
+          size_bytes: documentPlaintext.length
         }
       });
       return;
@@ -630,6 +797,20 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
   );
   const upload = page.locator(".upload-list-item").filter({ hasText: "Benefits letter" });
   await expect(upload.getByText(/storage needs repair/i)).toBeVisible();
+  await upload.getByRole("button", { name: /View document/i }).click();
+  await expect(upload.getByText(documentPlaintext)).toBeVisible();
+  await expect(upload.getByText(`${documentPlaintext.length} bytes`)).toBeVisible();
+  await upload.getByRole("button", { name: /Share document/i }).click();
+  await upload.getByLabel(/Recipient DID/i).fill("did:key:case-worker");
+  await upload.getByLabel(/Permission/i).selectOption("analyze_view");
+  await upload.getByLabel(/Purpose/i).fill("benefits_application");
+  await upload.getByLabel(/Require recipient presence before viewing/i).check();
+  await upload.getByRole("button", { name: /Request approval/i }).click();
+  await expect(upload.getByText(/Approval approval-owner-share requested/i)).toBeVisible();
+  await expect(upload.getByLabel(/Approval ID/i)).toHaveValue("approval-owner-share");
+  await upload.getByRole("button", { name: /Create grant/i }).click();
+  await expect(upload.getByText(/Shared with did:key:case-worker/i)).toBeVisible();
+  await expect(upload.locator(".badge-row").getByText("Shared", { exact: true })).toBeVisible();
   await upload.getByRole("button", { name: /Repair storage/i }).click();
   await expect(upload.getByText(/storage verified/i)).toBeVisible();
   await expect(upload.getByRole("button", { name: /Repair storage/i })).toHaveCount(0);
@@ -641,13 +822,20 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
   const keyRotateEvent = page.getByRole("article").filter({ hasText: "record/key_rotate" });
   await expect(storageRepairEvent.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i)).toBeVisible();
   await expect(keyRotateEvent.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i)).toBeVisible();
+  await expect(page.getByText(/record\/decrypt/i)).toBeVisible();
+  await expect(page.getByText(/grant\/create/i)).toBeVisible();
+  await expect(page.getByText(/grant-owner-share/i)).toBeVisible();
+  expect(decryptRequests).toBe(1);
   expect(repairRequests).toBe(1);
   expect(rotationRequests).toBe(1);
+  expect(shareRequests).toBe(1);
+  expect(approvalRequests).toBe(1);
 });
 
 test("recipient receipt can create an encrypted derived analysis artifact", async ({ page }) => {
   let analysisRequests = 0;
   let decryptRequests = 0;
+  let decryptInvocationRequests = 0;
   let delegationRequests = 0;
   const documentPlaintext = "Delegate may view this identity document.";
   const receipts: Array<Record<string, unknown>> = [
@@ -658,6 +846,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
       abilities: ["record/analyze", "record/decrypt", "record/share"],
       purpose: "service_matching",
+      caveats: { purpose: "service_matching", user_presence_required: true },
       receipt_hash: "receipt-hash-analysis",
       status: "active",
       created_at: "2026-05-03T18:00:00Z"
@@ -761,12 +950,41 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       });
       return;
     }
+    if (path.endsWith("/records/rec-benefits-letter/decrypt-invocations")) {
+      decryptInvocationRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        user_present: true
+      });
+      await route.fulfill({
+        json: {
+          invocation: {
+            invocation_id: "invocation-presence",
+            grant_id: "grant-analysis",
+            audience_did: "did:key:delegate",
+            resource: "wallet://wallet-demo/records/rec-benefits-letter",
+            ability: "record/decrypt",
+            caveats: { purpose: "service_matching", user_present: true },
+            issued_at: "2026-05-03T18:02:20Z",
+            expires_at: null,
+            nonce: "nonce-presence",
+            signature: "sig-presence"
+          },
+          token: "wallet-ucan-v1.presence"
+        }
+      });
+      return;
+    }
     if (path.endsWith("/records/rec-benefits-letter/decrypt")) {
       decryptRequests += 1;
       expect(route.request().method()).toBe("POST");
       expect(await route.request().postDataJSON()).toMatchObject({
         actor_did: "did:key:delegate",
-        grant_id: "grant-analysis"
+        actor_key_hex: "delegate-key",
+        invocation_token: "wallet-ucan-v1.presence"
       });
       auditEvents.push({
         event_id: "audit-record-decrypt",
@@ -794,7 +1012,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   });
 
   await page.goto(
-    "/?walletApiBaseUrl=http%3A%2F%2F127.0.0.1%3A5174&walletId=wallet-demo&actorDid=did%3Akey%3Adelegate#/recipient-access"
+    "/?walletApiBaseUrl=http%3A%2F%2F127.0.0.1%3A5174&walletId=wallet-demo&actorDid=did%3Akey%3Adelegate&audienceKeyHex=delegate-key#/recipient-access"
   );
   const receipt = page.getByRole("article", { name: /delegate/i }).filter({ hasText: "Receipt hash" });
   await receipt.getByRole("button", { name: /Analyze safely/i }).click();
@@ -818,6 +1036,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   await expect(page.getByText(/grant-child/i)).toBeVisible();
   expect(analysisRequests).toBe(1);
   expect(decryptRequests).toBe(1);
+  expect(decryptInvocationRequests).toBe(1);
   expect(delegationRequests).toBe(1);
 });
 
