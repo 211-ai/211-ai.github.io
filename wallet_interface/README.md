@@ -124,6 +124,51 @@ the expected `wallet_export_v1` type and required bundle sections.
 `POST /exports/storage` reports encrypted blob availability for records
 referenced by a verified export bundle.
 
+## Wallet Storage Configuration
+
+`WalletInterfaceService` builds the core `ipfs_datasets_py.wallet` storage
+adapter from `storage_config` or environment variables. The default is in-memory
+encrypted blob storage for tests and demos.
+
+Programmatic example:
+
+```python
+app = WalletInterfaceService(
+    storage_config={
+        "primary": {"type": "local", "root": "/var/lib/211-ai/wallet-blobs"},
+        "mirrors": [{"type": "s3", "bucket": "encrypted-wallet-backup"}],
+    }
+)
+```
+
+Environment options:
+
+- `WALLET_STORAGE_CONFIG`: JSON string or object config for the core wallet
+  storage factory.
+- `WALLET_STORAGE_TYPE`: `memory`, `local`, `ipfs`, `s3`, or `filecoin`.
+- `WALLET_STORAGE_ROOT`: local filesystem root for `local`.
+- `WALLET_STORAGE_BUCKET` and `WALLET_STORAGE_PREFIX`: S3 target settings.
+- `WALLET_STORAGE_MIRRORS`: JSON list of mirror backend configs.
+- `WALLET_REPOSITORY_ROOT`: local JSON snapshot directory for wallet metadata.
+- `WALLET_AUTO_LOAD_REPOSITORY`: load all snapshots at service startup
+  (default `true` when a repository root is configured).
+- `WALLET_AUTO_PERSIST`: save a wallet snapshot after state-changing wallet
+  operations (default `true` when a repository root is configured).
+
+Encrypted blob storage and wallet metadata are separate. The repository
+snapshot stores wallet manifests, grants, audit events, and encrypted blob
+references; plaintext document bytes remain only in the configured encrypted
+blob store.
+
+Repository API endpoints:
+
+- `GET /wallets/snapshots`
+- `POST /wallets/snapshots/save-all`
+- `POST /wallets/snapshots/load-all`
+- `GET /wallets/{wallet_id}/snapshot`
+- `POST /wallets/{wallet_id}/snapshot`
+- `POST /wallets/{wallet_id}/snapshot/load`
+
 ## UI Export Wiring
 
 The React UI keeps static demo export cards when no backend is configured. To

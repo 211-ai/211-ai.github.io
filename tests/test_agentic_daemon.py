@@ -4,12 +4,15 @@ import json
 from datetime import datetime, timedelta, timezone
 
 import duckdb
+from requests import exceptions as requests_exceptions
 
-from scraper.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, CrawlState, FetchResult
+from scraper.agentic_daemon import AgenticCrawlerDaemon, CrawlItem, CrawlState, FetchResult, WebArchivingAdapter
 from scraper.agentic_daemon import (
     choose_result_display_name,
     extract_address,
     extract_result_page_services,
+    is_junk_failed_url,
+    is_probably_retryable_error,
     normalize_provider_name,
     split_provider_program_names,
 )
@@ -19,6 +22,7 @@ from scraper.duckdb_state import DuckDBCrawlStore, pattern_prefix_for_url, score
 from scraper.duckdb_etl import DuckDBETLWarehouse
 from scraper.export_canonical_services import export_canonical_services
 from scraper.reextract_warehouse import reextract_warehouse
+from scraper.retry_failed_pages import classify_failed_urls, enqueue_retryable_failed_urls
 from scraper.supervisor import SelfHealingSupervisor, SupervisorConfig
 
 
@@ -76,6 +80,16 @@ def test_crawl_state_round_trip(tmp_path):
     assert loaded.processed_pages == 2
 
 
+def test_crawl_state_load_handles_empty_or_invalid_json(tmp_path):
+    empty = tmp_path / "empty.json"
+    empty.write_text("", encoding="utf-8")
+    invalid = tmp_path / "invalid.json"
+    invalid.write_text("{", encoding="utf-8")
+
+    assert CrawlState.load(empty).processed_pages == 0
+    assert CrawlState.load(invalid).processed_pages == 0
+
+
 def test_agentic_daemon_processes_stub_fetch(tmp_path):
     cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "processed", request_delay=0)
     daemon = AgenticCrawlerDaemon(
@@ -98,6 +112,34 @@ def test_agentic_daemon_processes_stub_fetch(tmp_path):
     assert (tmp_path / "state" / "agentic_daemon_state.duckdb").exists()
 
 
+def test_web_archiving_adapter_retries_timeouts_with_longer_timeout(monkeypatch, tmp_path):
+    cfg = Config(raw_dir=tmp_path / "raw", processed_dir=tmp_path / "processed", timeout=30)
+    adapter = WebArchivingAdapter(cfg, archive_dir=tmp_path / "archive")
+
+    class FakeResponse:
+        url = "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision"
+        text = "<html><head><title>Example</title></head><body><main>Service details address phone</main></body></html>"
+
+        def raise_for_status(self):
+            return None
+
+    calls: list[int] = []
+
+    def fake_get(url: str, timeout: int):
+        calls.append(int(timeout))
+        if len(calls) == 1:
+            raise requests_exceptions.Timeout("timed out")
+        return FakeResponse()
+
+    monkeypatch.setattr(adapter._session, "get", fake_get)
+
+    result = adapter.fetch("https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision")
+
+    assert result.success is True
+    assert calls == [30, 90]
+    assert result.metadata["timeout_seconds"] == 90
+
+
 def test_duckdb_store_migrates_json_state(tmp_path):
     state_path = tmp_path / "state" / "agentic_daemon_state.json"
     db_path = tmp_path / "state" / "agentic_daemon_state.duckdb"
@@ -114,6 +156,15 @@ def test_duckdb_store_migrates_json_state(tmp_path):
     assert store.queue_count() == 1
     assert store.seen_count() == 1
     assert store.failed_count() == 1
+
+
+def test_mark_seen_clears_previous_failure(tmp_path):
+    store = DuckDBCrawlStore(tmp_path / "state.duckdb")
+    store.mark_failed("https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision", error="timeout")
+
+    store.mark_seen("https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision")
+
+    assert store.failed_count() == 0
 
 
 def test_duckdb_store_migrates_legacy_queue_without_priority_column(tmp_path):
@@ -178,6 +229,64 @@ def test_duckdb_store_records_pattern_yield_stats(tmp_path):
     assert stats[0]["attempts"] == 3
     assert stats[0]["successes"] == 1
     assert stats[0]["fetch_failures"] == 1
+
+
+def test_failed_url_classification_filters_junk_and_retries_timeouts():
+    classified = classify_failed_urls(
+        [
+            {
+                "url": "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision",
+                "failures": 2,
+                "last_error": "Read timed out. (read timeout=30)",
+            },
+            {
+                "url": "https://gethelp.211info.org/cdn-cgi/l/email-protection",
+                "failures": 30,
+                "last_error": "404 Client Error",
+            },
+            {
+                "url": "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision-homeless-women/animal-adoption",
+                "failures": 1,
+                "last_error": "404 Client Error",
+            },
+        ]
+    )
+
+    assert len(classified["retryable"]) == 1
+    assert classified["retryable"][0]["url"].endswith("general-clothing-provision")
+    assert len(classified["permanent"]) == 2
+
+
+def test_retry_helpers_identify_expected_urls_and_errors():
+    assert is_probably_retryable_error("HTTPSConnectionPool: Read timed out. (read timeout=30)")
+    assert not is_probably_retryable_error("404 Client Error: Not Found")
+    assert is_junk_failed_url("https://gethelp.211info.org/cdn-cgi/l/email-protection")
+    assert is_junk_failed_url(
+        "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision-homeless-women/animal-adoption"
+    )
+    assert not is_junk_failed_url(
+        "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision-homeless-women/"
+    )
+
+
+def test_enqueue_retryable_failed_urls_only_requeues_recoverable_entries(tmp_path):
+    store = DuckDBCrawlStore(tmp_path / "state.duckdb")
+    store.mark_failed(
+        "https://gethelp.211info.org/get-help/basic-needs/general-clothing-provision",
+        error="Read timed out. (read timeout=30)",
+    )
+    store.mark_failed(
+        "https://gethelp.211info.org/cdn-cgi/l/email-protection",
+        error="404 Client Error",
+    )
+
+    result = enqueue_retryable_failed_urls(state_db_path=tmp_path / "state.duckdb", limit=10, max_failures=3)
+
+    assert result["retryable_total"] == 1
+    assert result["enqueued"] == 1
+    preview = store.queue_preview(limit=10)
+    assert len(preview) == 1
+    assert preview[0].kind == "retry_failed"
 
 
 def test_queue_pattern_frontier_view_joins_queue_and_pattern_stats(tmp_path):

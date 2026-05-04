@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
 from wallet_interface import ServiceRecord, WalletInterfaceService, match_services
+from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record
 
 
@@ -419,6 +421,147 @@ def test_wallet_interface_exposes_storage_health(tmp_path):
     assert report.payload[0].role == "primary"
     assert repair.ok is True
     assert app.audit_timeline(wallet.wallet_id)[-1]["action"] == "storage/repair"
+
+
+def test_wallet_interface_uses_configured_local_wallet_storage(tmp_path):
+    app = WalletInterfaceService(
+        services=_services(),
+        storage_config={"type": "local", "root": tmp_path / "wallet-blobs"},
+    )
+    wallet = app.create_wallet(OWNER)
+
+    record = app.add_text_document(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        filename="configured-storage.txt",
+        text="encrypted local storage config",
+    )
+    version = app.wallet_service.versions[record.current_version_id]
+
+    assert version.encrypted_payload_ref.storage_type == "local"
+    assert version.encrypted_payload_ref.uri.startswith("local://")
+    assert Path(version.encrypted_payload_ref.uri.removeprefix("local://")).exists()
+    assert app.verify_record_storage(wallet.wallet_id, record.record_id).ok is True
+
+
+def test_wallet_interface_reads_wallet_storage_env_config(tmp_path, monkeypatch):
+    monkeypatch.setenv("WALLET_STORAGE_TYPE", "local")
+    monkeypatch.setenv("WALLET_STORAGE_ROOT", str(tmp_path / "env-wallet-blobs"))
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+
+    record = app.add_text_document(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        filename="env-storage.txt",
+        text="encrypted env storage config",
+    )
+    version = app.wallet_service.versions[record.current_version_id]
+
+    assert version.encrypted_payload_ref.storage_type == "local"
+    assert Path(version.encrypted_payload_ref.uri.removeprefix("local://")).exists()
+
+
+def test_wallet_interface_repository_round_trips_wallet_snapshot(tmp_path):
+    owner_secret = random_key()
+    storage_config = {"type": "local", "root": tmp_path / "wallet-blobs"}
+    app = WalletInterfaceService(
+        services=_services(),
+        storage_config=storage_config,
+        repository_root=tmp_path / "wallet-repository",
+    )
+    wallet = app.create_wallet(OWNER)
+    record = app.add_text_document(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        actor_secret=owner_secret,
+        filename="repository.txt",
+        text="repository persisted plaintext",
+    )
+
+    path = app.save_wallet_snapshot(wallet.wallet_id)
+    report = app.verify_wallet_snapshot(wallet.wallet_id)
+
+    restored = WalletInterfaceService(
+        services=_services(),
+        storage_config=storage_config,
+        repository_root=tmp_path / "wallet-repository",
+    )
+    restored.load_wallet_snapshot(wallet.wallet_id)
+    records = restored.list_records(wallet.wallet_id, data_type="document")
+    plaintext = restored.wallet_service.decrypt_record(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=OWNER,
+        actor_secret=owner_secret,
+    )
+
+    assert path.exists()
+    assert report["valid"] is True
+    assert report["snapshot_hash"] == report["computed_hash"]
+    assert app.list_wallet_snapshots() == [wallet.wallet_id]
+    assert [item.record_id for item in records] == [record.record_id]
+    assert plaintext.decode("utf-8") == "repository persisted plaintext"
+
+
+def test_wallet_interface_auto_persists_and_loads_repository_snapshots(tmp_path):
+    owner_secret = random_key()
+    storage_config = {"type": "local", "root": tmp_path / "wallet-blobs"}
+    repository_root = tmp_path / "wallet-repository"
+    app = WalletInterfaceService(
+        services=_services(),
+        storage_config=storage_config,
+        repository_root=repository_root,
+    )
+    wallet = app.create_wallet(OWNER)
+    record = app.add_text_document(
+        wallet.wallet_id,
+        actor_did=OWNER,
+        actor_secret=owner_secret,
+        filename="auto-repository.txt",
+        text="automatic repository persistence",
+    )
+
+    assert app.list_wallet_snapshots() == [wallet.wallet_id]
+
+    restored = WalletInterfaceService(
+        services=_services(),
+        storage_config=storage_config,
+        repository_root=repository_root,
+    )
+    records = restored.list_records(wallet.wallet_id, data_type="document")
+    plaintext = restored.wallet_service.decrypt_record(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=OWNER,
+        actor_secret=owner_secret,
+    )
+
+    assert [item.record_id for item in records] == [record.record_id]
+    assert plaintext.decode("utf-8") == "automatic repository persistence"
+
+
+def test_wallet_interface_can_disable_auto_repository_persistence(tmp_path):
+    app = WalletInterfaceService(
+        services=_services(),
+        repository_root=tmp_path / "wallet-repository",
+        auto_persist=False,
+    )
+    wallet = app.create_wallet(OWNER)
+
+    assert app.list_wallet_snapshots() == []
+    assert not (tmp_path / "wallet-repository" / f"{wallet.wallet_id}.json").exists()
+
+
+def test_wallet_interface_reads_repository_root_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("WALLET_REPOSITORY_ROOT", str(tmp_path / "wallet-repository"))
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+
+    path = app.save_wallet_snapshot(wallet.wallet_id)
+
+    assert path.exists()
+    assert app.list_wallet_snapshots() == [wallet.wallet_id]
 
 
 def test_wallet_interface_private_analytics_count_release():

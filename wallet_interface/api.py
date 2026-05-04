@@ -8,11 +8,14 @@ from typing import Any, Dict, List, Sequence
 from .app_service import WalletInterfaceService
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import FastAPI, HTTPException
+    from fastapi import FastAPI, File, Form, HTTPException, UploadFile
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
     FastAPI = None  # type: ignore[assignment]
+    File = None  # type: ignore[assignment]
+    Form = None  # type: ignore[assignment]
     HTTPException = None  # type: ignore[assignment]
+    UploadFile = object  # type: ignore[assignment,misc]
     BaseModel = object  # type: ignore[assignment,misc]
 
     def Field(default: Any = None, **_: Any) -> Any:  # type: ignore[no-redef]
@@ -247,6 +250,26 @@ def create_app(*, service: WalletInterfaceService | None = None):
     def health() -> Dict[str, str]:
         return {"status": "ok"}
 
+    @app.get("/wallets/snapshots")
+    def list_wallet_snapshots() -> Dict[str, Any]:
+        return {"wallet_ids": app_service.list_wallet_snapshots()}
+
+    @app.post("/wallets/snapshots/save-all")
+    def save_all_wallet_snapshots() -> Dict[str, Any]:
+        try:
+            paths = app_service.save_all_wallet_snapshots()
+            return {"paths": [str(path) for path in paths], "count": len(paths)}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/snapshots/load-all")
+    def load_all_wallet_snapshots() -> Dict[str, Any]:
+        try:
+            wallet_ids = app_service.load_all_wallet_snapshots()
+            return {"wallet_ids": wallet_ids, "count": len(wallet_ids)}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets")
     def create_wallet(request: CreateWalletRequest) -> Dict[str, Any]:
         wallet = app_service.create_wallet(
@@ -255,6 +278,29 @@ def create_app(*, service: WalletInterfaceService | None = None):
             approval_threshold=request.approval_threshold,
         )
         return wallet.to_dict()
+
+    @app.post("/wallets/{wallet_id}/snapshot")
+    def save_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+        try:
+            path = app_service.save_wallet_snapshot(wallet_id)
+            return {"wallet_id": wallet_id, "path": str(path)}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/snapshot")
+    def verify_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+        try:
+            return app_service.verify_wallet_snapshot(wallet_id)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/snapshot/load")
+    def load_wallet_snapshot(wallet_id: str) -> Dict[str, Any]:
+        try:
+            app_service.load_wallet_snapshot(wallet_id)
+            return {"wallet_id": wallet_id, "loaded": True}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.post("/wallets/{wallet_id}/locations")
     def add_location(wallet_id: str, request: AddLocationRequest) -> Dict[str, Any]:
@@ -357,6 +403,38 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 metadata=metadata,
             )
             return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/documents")
+    async def add_binary_document(
+        wallet_id: str,
+        actor_did: str = Form(...),
+        key_hex: str | None = Form(default=None),
+        title: str | None = Form(default=None),
+        file: UploadFile = File(...),
+    ) -> Dict[str, Any]:
+        try:
+            metadata = {"title": title} if title else {}
+            data = await file.read()
+            record = app_service.add_binary_document(
+                wallet_id,
+                actor_did=actor_did,
+                actor_secret=_key_from_optional_hex(key_hex),
+                data=data,
+                filename=file.filename or "document.bin",
+                content_type=file.content_type,
+                metadata=metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/records")
+    def list_records(wallet_id: str, data_type: str | None = None) -> Dict[str, Any]:
+        try:
+            records = app_service.list_records(wallet_id, data_type=data_type)
+            return {"records": [record.to_dict() for record in records]}
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

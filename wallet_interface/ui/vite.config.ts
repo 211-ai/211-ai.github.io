@@ -6,6 +6,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    strictPort: false
+    strictPort: false,
+    headers: {
+      "Cross-Origin-Embedder-Policy": "require-corp",
+      "Cross-Origin-Opener-Policy": "same-origin"
+    }
+  },
+  worker: {
+    format: "es"
+  },
+  optimizeDeps: {
+    exclude: ["@xenova/transformers", "onnxruntime-web"]
   }
 });

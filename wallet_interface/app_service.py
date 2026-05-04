@@ -2,16 +2,99 @@
 
 from __future__ import annotations
 
+import json
+import os
 from pathlib import Path
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Mapping, Sequence
 
 from ._vendor import ensure_ipfs_datasets_py_path
 from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
 
 ensure_ipfs_datasets_py_path()
 
-from ipfs_datasets_py.wallet import WalletService  # noqa: E402
+from ipfs_datasets_py.wallet import (  # noqa: E402
+    DeterministicLocationRegionProofBackend,
+    LocalWalletRepository,
+    ProofBackend,
+    SimulatedProofBackend,
+    WalletService,
+    create_encrypted_blob_store,
+)
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record  # noqa: E402
+
+
+def _storage_config_from_env() -> str | Dict[str, Any] | None:
+    """Read wallet encrypted storage config from environment variables."""
+
+    raw_config = os.getenv("WALLET_STORAGE_CONFIG")
+    if raw_config:
+        try:
+            parsed = json.loads(raw_config)
+        except json.JSONDecodeError as exc:
+            raise ValueError("WALLET_STORAGE_CONFIG must be valid JSON") from exc
+        if not isinstance(parsed, (str, dict)):
+            raise ValueError("WALLET_STORAGE_CONFIG must decode to a string or object")
+        return parsed
+
+    storage_type = os.getenv("WALLET_STORAGE_TYPE")
+    if not storage_type:
+        return None
+
+    config: Dict[str, Any] = {"type": storage_type}
+    if root := os.getenv("WALLET_STORAGE_ROOT"):
+        config["root"] = root
+    if bucket := os.getenv("WALLET_STORAGE_BUCKET"):
+        config["bucket"] = bucket
+    if prefix := os.getenv("WALLET_STORAGE_PREFIX"):
+        config["prefix"] = prefix
+    if pin := os.getenv("WALLET_STORAGE_PIN"):
+        config["pin"] = pin.lower() not in {"0", "false", "no"}
+    if mirrors := os.getenv("WALLET_STORAGE_MIRRORS"):
+        try:
+            parsed_mirrors = json.loads(mirrors)
+        except json.JSONDecodeError as exc:
+            raise ValueError("WALLET_STORAGE_MIRRORS must be valid JSON") from exc
+        if not isinstance(parsed_mirrors, list):
+            raise ValueError("WALLET_STORAGE_MIRRORS must decode to a list")
+        return {"primary": config, "mirrors": parsed_mirrors}
+    return config
+
+
+def _allow_simulated_proofs_from_env() -> bool:
+    """Read wallet proof mode from environment variables."""
+
+    explicit = os.getenv("WALLET_ALLOW_SIMULATED_PROOFS")
+    if explicit is not None:
+        return explicit.lower() not in {"0", "false", "no", "off"}
+
+    mode = os.getenv("WALLET_PROOF_MODE", "development").lower()
+    if mode in {"development", "dev", "test", "local"}:
+        return True
+    if mode in {"production", "prod"}:
+        return False
+    raise ValueError("WALLET_PROOF_MODE must be development or production")
+
+
+def _proof_backend_from_env() -> ProofBackend | None:
+    backend = os.getenv("WALLET_PROOF_BACKEND", "").strip().lower()
+    if not backend or backend in {"default", "simulated"}:
+        return None if not backend or backend == "default" else SimulatedProofBackend()
+    if backend in {"deterministic", "deterministic-location-region", "integration"}:
+        return DeterministicLocationRegionProofBackend()
+    raise ValueError(
+        "WALLET_PROOF_BACKEND must be default, simulated, or deterministic-location-region"
+    )
+
+
+def _repository_root_from_env() -> str | None:
+    return os.getenv("WALLET_REPOSITORY_ROOT")
+
+
+def _flag_from_env(name: str, *, default: bool) -> bool:
+    explicit = os.getenv(name)
+    if explicit is None:
+        return default
+    return explicit.lower() not in {"0", "false", "no", "off"}
 
 
 class WalletInterfaceService:
@@ -21,14 +104,121 @@ class WalletInterfaceService:
         self,
         *,
         wallet_service: WalletService | None = None,
+        storage_config: str | Mapping[str, Any] | None = None,
+        storage_backends: Mapping[str, object] | None = None,
+        proof_backend: ProofBackend | None = None,
+        allow_simulated_proofs: bool | None = None,
+        ipfs_backend: object | None = None,
+        s3_client: object | None = None,
+        filecoin_backend: object | None = None,
+        repository_root: str | Path | None = None,
+        auto_persist: bool | None = None,
+        auto_load_repository: bool | None = None,
         services: Sequence[ServiceRecord] | None = None,
     ) -> None:
-        self.wallet_service = wallet_service or WalletService()
+        if wallet_service is None:
+            storage = create_encrypted_blob_store(
+                storage_config if storage_config is not None else _storage_config_from_env(),
+                ipfs_backend=ipfs_backend,
+                s3_client=s3_client,
+                filecoin_backend=filecoin_backend,
+                backends=storage_backends,
+            )
+            wallet_service = WalletService(
+                storage_backend=storage,
+                proof_backend=proof_backend if proof_backend is not None else _proof_backend_from_env(),
+                allow_simulated_proofs=(
+                    _allow_simulated_proofs_from_env()
+                    if allow_simulated_proofs is None
+                    else allow_simulated_proofs
+                ),
+            )
+        self.wallet_service = wallet_service
+        resolved_repository_root = repository_root if repository_root is not None else _repository_root_from_env()
+        self.repository = LocalWalletRepository(resolved_repository_root) if resolved_repository_root else None
+        self.auto_persist = (
+            _flag_from_env("WALLET_AUTO_PERSIST", default=True)
+            if auto_persist is None
+            else auto_persist
+        )
+        should_auto_load = (
+            _flag_from_env("WALLET_AUTO_LOAD_REPOSITORY", default=True)
+            if auto_load_repository is None
+            else auto_load_repository
+        )
+        if self.repository is not None and should_auto_load:
+            self.repository.load_all(self.wallet_service)
         self.services = list(services or [])
 
     @classmethod
-    def from_services_jsonl(cls, path: str | Path, *, wallet_service: WalletService | None = None) -> "WalletInterfaceService":
-        return cls(wallet_service=wallet_service, services=load_services_jsonl(path))
+    def from_services_jsonl(
+        cls,
+        path: str | Path,
+        *,
+        wallet_service: WalletService | None = None,
+        storage_config: str | Mapping[str, Any] | None = None,
+        storage_backends: Mapping[str, object] | None = None,
+        proof_backend: ProofBackend | None = None,
+        allow_simulated_proofs: bool | None = None,
+        ipfs_backend: object | None = None,
+        s3_client: object | None = None,
+        filecoin_backend: object | None = None,
+        repository_root: str | Path | None = None,
+        auto_persist: bool | None = None,
+        auto_load_repository: bool | None = None,
+    ) -> "WalletInterfaceService":
+        return cls(
+            wallet_service=wallet_service,
+            storage_config=storage_config,
+            storage_backends=storage_backends,
+            proof_backend=proof_backend,
+            allow_simulated_proofs=allow_simulated_proofs,
+            ipfs_backend=ipfs_backend,
+            s3_client=s3_client,
+            filecoin_backend=filecoin_backend,
+            repository_root=repository_root,
+            auto_persist=auto_persist,
+            auto_load_repository=auto_load_repository,
+            services=load_services_jsonl(path),
+        )
+
+    def save_wallet_snapshot(self, wallet_id: str) -> Path:
+        if self.repository is None:
+            raise ValueError("Wallet repository is not configured")
+        return self.repository.save(self.wallet_service, wallet_id)
+
+    def load_wallet_snapshot(self, wallet_id: str) -> None:
+        if self.repository is None:
+            raise ValueError("Wallet repository is not configured")
+        self.repository.load(self.wallet_service, wallet_id)
+
+    def verify_wallet_snapshot(self, wallet_id: str) -> Dict[str, Any]:
+        if self.repository is None:
+            raise ValueError("Wallet repository is not configured")
+        return self.repository.verify(wallet_id)
+
+    def save_all_wallet_snapshots(self) -> list[Path]:
+        if self.repository is None:
+            raise ValueError("Wallet repository is not configured")
+        return self.repository.save_all(self.wallet_service)
+
+    def load_all_wallet_snapshots(self) -> list[str]:
+        if self.repository is None:
+            raise ValueError("Wallet repository is not configured")
+        return self.repository.load_all(self.wallet_service)
+
+    def list_wallet_snapshots(self) -> list[str]:
+        if self.repository is None:
+            return []
+        return self.repository.list_wallet_ids()
+
+    def _persist_wallet_if_configured(self, wallet_id: str) -> None:
+        if self.repository is not None and self.auto_persist:
+            self.repository.save(self.wallet_service, wallet_id)
+
+    def _persist_all_wallets_if_configured(self) -> None:
+        if self.repository is not None and self.auto_persist:
+            self.repository.save_all(self.wallet_service)
 
     def create_wallet(
         self,
@@ -46,14 +236,18 @@ class WalletInterfaceService:
                 "threshold": approval_threshold,
                 "approver_dids": controllers,
             }
-        return self.wallet_service.create_wallet(
+        wallet = self.wallet_service.create_wallet(
             owner_did=owner_did,
             controller_dids=list(controller_dids) if controller_dids is not None else None,
             governance_policy=governance_policy,
         )
+        self._persist_wallet_if_configured(wallet.wallet_id)
+        return wallet
 
     def add_location(self, wallet_id: str, *, actor_did: str, lat: float, lon: float):
-        return self.wallet_service.add_location(wallet_id, actor_did=actor_did, lat=lat, lon=lon)
+        record = self.wallet_service.add_location(wallet_id, actor_did=actor_did, lat=lat, lon=lon)
+        self._persist_wallet_if_configured(wallet_id)
+        return record
 
     def add_document(
         self,
@@ -64,13 +258,15 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         metadata: Dict[str, Any] | None = None,
     ):
-        return self.wallet_service.add_document(
+        record = self.wallet_service.add_document(
             wallet_id,
             path,
             actor_did=actor_did,
             actor_secret=actor_secret,
             metadata=metadata,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
 
     def add_text_document(
         self,
@@ -83,7 +279,7 @@ class WalletInterfaceService:
         metadata: Dict[str, Any] | None = None,
     ):
         private_metadata = {"filename": filename, **(metadata or {})}
-        return self.wallet_service.add_record(
+        record = self.wallet_service.add_record(
             wallet_id,
             data_type="document",
             plaintext=text.encode("utf-8"),
@@ -93,6 +289,48 @@ class WalletInterfaceService:
             sensitivity="restricted",
             public_descriptor="document",
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def add_binary_document(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        data: bytes,
+        actor_secret: bytes | None = None,
+        filename: str = "document.bin",
+        content_type: str | None = None,
+        metadata: Dict[str, Any] | None = None,
+    ):
+        private_metadata = {
+            "filename": filename,
+            "content_type": content_type or "application/octet-stream",
+            **(metadata or {}),
+        }
+        record = self.wallet_service.add_record(
+            wallet_id,
+            data_type="document",
+            plaintext=data,
+            actor_did=actor_did,
+            actor_secret=actor_secret,
+            private_metadata=private_metadata,
+            sensitivity="restricted",
+            public_descriptor="document",
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_records(self, wallet_id: str, *, data_type: str | None = None):
+        self.wallet_service._wallet(wallet_id)
+        records = [
+            record
+            for record in self.wallet_service.records.values()
+            if record.wallet_id == wallet_id
+        ]
+        if data_type is not None:
+            records = [record for record in records if record.data_type == data_type]
+        return sorted(records, key=lambda item: item.created_at)
 
     def create_record_analysis_grant(
         self,
@@ -106,7 +344,7 @@ class WalletInterfaceService:
         output_types: Sequence[str] = ("summary",),
         expires_at: str | None = None,
     ):
-        return self.wallet_service.create_grant(
+        grant = self.wallet_service.create_grant(
             wallet_id=wallet_id,
             issuer_did=issuer_did,
             audience_did=audience_did,
@@ -117,6 +355,8 @@ class WalletInterfaceService:
             issuer_secret=issuer_secret,
             audience_secret=audience_secret,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
 
     def analyze_record_for_delegate(
         self,
@@ -128,7 +368,7 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         max_chars: int = 200,
     ):
-        return self.wallet_service.analyze_record_summary(
+        artifact = self.wallet_service.analyze_record_summary(
             wallet_id,
             record_id,
             actor_did=actor_did,
@@ -136,6 +376,8 @@ class WalletInterfaceService:
             actor_secret=actor_secret,
             max_chars=max_chars,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return artifact
 
     def issue_record_analysis_invocation(
         self,
@@ -147,7 +389,7 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.issue_invocation(
+        invocation = self.wallet_service.issue_invocation(
             wallet_id,
             grant_id=grant_id,
             actor_did=actor_did,
@@ -157,6 +399,8 @@ class WalletInterfaceService:
             caveats={"purpose": "service_matching"},
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return invocation
 
     def request_record_access(
         self,
@@ -171,7 +415,7 @@ class WalletInterfaceService:
     ):
         if ability not in {"record/analyze", "record/decrypt"}:
             raise ValueError("record access ability must be record/analyze or record/decrypt")
-        return self.wallet_service.request_access(
+        request = self.wallet_service.request_access(
             wallet_id,
             requester_did=requester_did,
             audience_did=audience_did,
@@ -180,6 +424,8 @@ class WalletInterfaceService:
             purpose=purpose,
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return request
 
     def request_record_analysis_access(
         self,
@@ -243,7 +489,7 @@ class WalletInterfaceService:
         issue_invocation: bool = False,
         invocation_expires_at: str | None = None,
     ):
-        return self.wallet_service.approve_access_request(
+        request = self.wallet_service.approve_access_request(
             wallet_id,
             request_id=request_id,
             actor_did=actor_did,
@@ -253,6 +499,8 @@ class WalletInterfaceService:
             issue_invocation=issue_invocation,
             invocation_expires_at=invocation_expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return request
 
     def request_threshold_approval(
         self,
@@ -264,7 +512,7 @@ class WalletInterfaceService:
         abilities: Sequence[str],
         expires_at: str | None = None,
     ):
-        return self.wallet_service.request_approval(
+        approval = self.wallet_service.request_approval(
             wallet_id,
             requested_by=requested_by,
             operation=operation,
@@ -272,6 +520,8 @@ class WalletInterfaceService:
             abilities=list(abilities),
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return approval
 
     def approve_threshold_approval(
         self,
@@ -280,11 +530,13 @@ class WalletInterfaceService:
         approval_id: str,
         approver_did: str,
     ):
-        return self.wallet_service.approve_approval(
+        approval = self.wallet_service.approve_approval(
             wallet_id,
             approval_id=approval_id,
             approver_did=approver_did,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return approval
 
     def list_threshold_approvals(self, wallet_id: str, *, status: str | None = None):
         self.wallet_service._wallet(wallet_id)
@@ -305,12 +557,14 @@ class WalletInterfaceService:
         actor_did: str,
         reason: str | None = None,
     ):
-        return self.wallet_service.reject_access_request(
+        request = self.wallet_service.reject_access_request(
             wallet_id,
             request_id=request_id,
             actor_did=actor_did,
             reason=reason,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return request
 
     def revoke_access_request(
         self,
@@ -320,15 +574,19 @@ class WalletInterfaceService:
         actor_did: str,
         reason: str | None = None,
     ):
-        return self.wallet_service.revoke_access_request(
+        request = self.wallet_service.revoke_access_request(
             wallet_id,
             request_id=request_id,
             actor_did=actor_did,
             reason=reason,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return request
 
     def revoke_grant(self, wallet_id: str, grant_id: str, *, actor_did: str):
-        return self.wallet_service.revoke_grant(wallet_id, grant_id, actor_did=actor_did)
+        grant = self.wallet_service.revoke_grant(wallet_id, grant_id, actor_did=actor_did)
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
 
     def list_grant_receipts(
         self,
@@ -356,7 +614,7 @@ class WalletInterfaceService:
         expires_at: str | None = None,
         approval_id: str | None = None,
     ):
-        return self.wallet_service.create_grant(
+        grant = self.wallet_service.create_grant(
             wallet_id=wallet_id,
             issuer_did=issuer_did,
             audience_did=audience_did,
@@ -368,6 +626,8 @@ class WalletInterfaceService:
             expires_at=expires_at,
             approval_id=approval_id,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
 
     def create_export_bundle(
         self,
@@ -379,7 +639,7 @@ class WalletInterfaceService:
         include_proofs: bool = True,
         include_derived_artifacts: bool = True,
     ):
-        return self.wallet_service.create_export_bundle(
+        bundle = self.wallet_service.create_export_bundle(
             wallet_id,
             actor_did=actor_did,
             grant_id=grant_id,
@@ -387,6 +647,8 @@ class WalletInterfaceService:
             include_proofs=include_proofs,
             include_derived_artifacts=include_derived_artifacts,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return bundle
 
     def issue_export_invocation(
         self,
@@ -401,7 +663,7 @@ class WalletInterfaceService:
         caveats: Dict[str, Any] = {"purpose": "user_export"}
         if record_ids is not None:
             caveats["record_ids"] = list(record_ids)
-        return self.wallet_service.issue_invocation(
+        invocation = self.wallet_service.issue_invocation(
             wallet_id,
             grant_id=grant_id,
             actor_did=actor_did,
@@ -411,6 +673,8 @@ class WalletInterfaceService:
             caveats=caveats,
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return invocation
 
     def create_export_bundle_with_invocation(
         self,
@@ -423,7 +687,7 @@ class WalletInterfaceService:
         include_proofs: bool = True,
         include_derived_artifacts: bool = True,
     ):
-        return self.wallet_service.create_export_bundle_with_invocation(
+        bundle = self.wallet_service.create_export_bundle_with_invocation(
             wallet_id,
             actor_did=actor_did,
             invocation=invocation,
@@ -432,6 +696,8 @@ class WalletInterfaceService:
             include_proofs=include_proofs,
             include_derived_artifacts=include_derived_artifacts,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return bundle
 
     def verify_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
         bundle_hash = self.wallet_service.export_bundle_hash(bundle)
@@ -444,7 +710,11 @@ class WalletInterfaceService:
         }
 
     def import_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
-        return self.wallet_service.import_export_bundle(bundle)
+        result = self.wallet_service.import_export_bundle(bundle)
+        wallet_id = result.get("wallet_id")
+        if isinstance(wallet_id, str) and wallet_id:
+            self._persist_wallet_if_configured(wallet_id)
+        return result
 
     def verify_export_bundle_storage(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
         return self.wallet_service.verify_export_bundle_storage(bundle)
@@ -459,7 +729,7 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         max_chars: int = 200,
     ):
-        return self.wallet_service.analyze_record_summary_with_invocation(
+        artifact = self.wallet_service.analyze_record_summary_with_invocation(
             wallet_id,
             record_id,
             actor_did=actor_did,
@@ -467,6 +737,8 @@ class WalletInterfaceService:
             actor_secret=actor_secret,
             max_chars=max_chars,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return artifact
 
     def decrypt_record_with_invocation(
         self,
@@ -477,19 +749,23 @@ class WalletInterfaceService:
         invocation,
         actor_secret: bytes | None = None,
     ) -> bytes:
-        return self.wallet_service.decrypt_record_with_invocation(
+        plaintext = self.wallet_service.decrypt_record_with_invocation(
             wallet_id,
             record_id,
             actor_did=actor_did,
             invocation=invocation,
             actor_secret=actor_secret,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return plaintext
 
     def verify_record_storage(self, wallet_id: str, record_id: str):
         return self.wallet_service.verify_record_storage(wallet_id, record_id)
 
     def repair_record_storage(self, wallet_id: str, record_id: str, *, actor_did: str):
-        return self.wallet_service.repair_record_storage(wallet_id, record_id, actor_did=actor_did)
+        report = self.wallet_service.repair_record_storage(wallet_id, record_id, actor_did=actor_did)
+        self._persist_wallet_if_configured(wallet_id)
+        return report
 
     def audit_timeline(self, wallet_id: str) -> List[Dict[str, Any]]:
         return [
@@ -531,12 +807,14 @@ class WalletInterfaceService:
             actor_did=actor_did,
             grant_id=grant_id,
         )
-        return match_services(
+        matches = match_services(
             self.services,
             need_terms=need_terms,
             location_claim=claim.to_dict(),
             limit=limit,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return matches
 
     def create_coarse_location_grant(
         self,
@@ -549,7 +827,7 @@ class WalletInterfaceService:
         audience_secret: bytes | None = None,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.create_grant(
+        grant = self.wallet_service.create_grant(
             wallet_id=wallet_id,
             issuer_did=issuer_did,
             audience_did=audience_did,
@@ -560,6 +838,8 @@ class WalletInterfaceService:
             issuer_secret=issuer_secret,
             audience_secret=audience_secret,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
 
     def create_location_region_proof_grant(
         self,
@@ -570,7 +850,7 @@ class WalletInterfaceService:
         audience_did: str,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.create_grant(
+        grant = self.wallet_service.create_grant(
             wallet_id=wallet_id,
             issuer_did=issuer_did,
             audience_did=audience_did,
@@ -579,6 +859,8 @@ class WalletInterfaceService:
             caveats={"purpose": "service_matching", "proof_type": "location_region"},
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
 
     def create_location_region_proof(
         self,
@@ -589,13 +871,15 @@ class WalletInterfaceService:
         region_id: str,
         grant_id: str | None = None,
     ):
-        return self.wallet_service.create_location_region_proof(
+        proof = self.wallet_service.create_location_region_proof(
             wallet_id,
             location_record_id,
             actor_did=actor_did,
             region_id=region_id,
             grant_id=grant_id,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return proof
 
     def issue_coarse_location_invocation(
         self,
@@ -607,7 +891,7 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.issue_invocation(
+        invocation = self.wallet_service.issue_invocation(
             wallet_id,
             grant_id=grant_id,
             actor_did=actor_did,
@@ -617,6 +901,8 @@ class WalletInterfaceService:
             caveats={"purpose": "service_matching", "precision": "coarse"},
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return invocation
 
     def match_services_for_wallet_with_invocation(
         self,
@@ -636,12 +922,14 @@ class WalletInterfaceService:
             invocation=invocation,
             actor_secret=actor_secret,
         )
-        return match_services(
+        matches = match_services(
             self.services,
             need_terms=need_terms,
             location_claim=claim.to_dict(),
             limit=limit,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return matches
 
     def match_services_from_derived_facts(
         self,
@@ -670,7 +958,7 @@ class WalletInterfaceService:
         epsilon_budget: float = 1.0,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.create_analytics_consent(
+        consent = self.wallet_service.create_analytics_consent(
             wallet_id,
             actor_did=actor_did,
             template_id=template_id,
@@ -683,6 +971,8 @@ class WalletInterfaceService:
             },
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return consent
 
     def create_analytics_template(
         self,
@@ -697,7 +987,7 @@ class WalletInterfaceService:
         created_by: str,
         expires_at: str | None = None,
     ):
-        return self.wallet_service.create_analytics_template(
+        template = self.wallet_service.create_analytics_template(
             template_id=template_id,
             title=title,
             purpose=purpose,
@@ -711,6 +1001,8 @@ class WalletInterfaceService:
             created_by=created_by,
             expires_at=expires_at,
         )
+        self._persist_all_wallets_if_configured()
+        return template
 
     def list_analytics_templates(self):
         return self.wallet_service.list_analytics_templates()
@@ -724,7 +1016,7 @@ class WalletInterfaceService:
         expires_at: str | None = None,
     ):
         template = self.wallet_service.analytics_templates[template_id]
-        return self.wallet_service.create_analytics_consent(
+        consent = self.wallet_service.create_analytics_consent(
             wallet_id,
             actor_did=actor_did,
             template_id=template.template_id,
@@ -732,6 +1024,8 @@ class WalletInterfaceService:
             allowed_derived_fields=list(template.allowed_derived_fields),
             expires_at=expires_at,
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return consent
 
     def contribute_analytics_facts(
         self,
@@ -743,13 +1037,15 @@ class WalletInterfaceService:
         fields: Dict[str, Any],
     ):
         self._reject_precise_analytics_fields(fields)
-        return self.wallet_service.create_analytics_contribution(
+        contribution = self.wallet_service.create_analytics_contribution(
             wallet_id,
             actor_did=actor_did,
             consent_id=consent_id,
             template_id=template_id,
             fields=dict(fields),
         )
+        self._persist_wallet_if_configured(wallet_id)
+        return contribution
 
     def run_private_aggregate_count(
         self,
@@ -761,7 +1057,7 @@ class WalletInterfaceService:
         budget_limit: float | None = None,
         actor_did: str = "did:service:211-ai-analytics",
     ):
-        return self.wallet_service.run_aggregate_count(
+        result = self.wallet_service.run_aggregate_count(
             template_id,
             min_cohort_size=min_cohort_size,
             epsilon=epsilon,
@@ -769,6 +1065,8 @@ class WalletInterfaceService:
             budget_limit=budget_limit,
             actor_did=actor_did,
         )
+        self._persist_all_wallets_if_configured()
+        return result
 
     def summarize_aggregate_result(self, result) -> Dict[str, Any]:
         return {

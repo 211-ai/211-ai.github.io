@@ -17,11 +17,31 @@ VITE_DEMO_ACTOR_DID=did:key:owner
 
 When those variables are absent, the recipient-access screen uses local mock
 access-request and receipt state for demos and tests.
+The uploads screen also uses the same API config to list encrypted document
+records and add files through the multipart wallet document endpoint, with a
+text-document fallback for simpler local API deployments.
+API-loaded documents show encrypted storage health by calling each record's
+storage verification endpoint. If a stored record reports a storage problem,
+the uploads screen can call the wallet storage repair endpoint for that record.
+Active `record/analyze` receipts expose an analysis action that creates an
+encrypted, derived-only artifact; the UI shows artifact metadata and storage
+reference rather than raw document plaintext.
+When connected to the wallet API, the audit screen loads the wallet audit
+timeline so grant, invocation, analysis, repair, and revocation events remain
+traceable with actor, resource, decision, and grant metadata.
 
 Approving, rejecting, and revoking access requests call the wallet API when
 `VITE_DEMO_ACTOR_DID` is set. For demo wallets that need explicit key material
 to issue useful decrypt grants, also set `VITE_DEMO_ISSUER_KEY_HEX` and
 `VITE_DEMO_AUDIENCE_KEY_HEX`.
+The multi-sig approval button calls the wallet approval endpoint when the
+access-request review item includes an `approval_id`; otherwise it stays in the
+local demo path.
+For browser demos or smoke tests against a mock API, the same config can be
+placed in `localStorage` under `abby-wallet-api-config` with `apiBaseUrl`,
+`walletId`, and optional key/DID fields. Build-time env config takes precedence.
+Non-secret demo config can also be supplied as URL parameters:
+`walletApiBaseUrl`, `walletId`, and `actorDid`.
 
 ## Development
 

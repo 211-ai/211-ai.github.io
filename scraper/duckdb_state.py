@@ -19,8 +19,8 @@ class DuckDBCrawlStore:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._initialize()
 
-    def _connect(self):
-        return duckdb.connect(str(self.db_path))
+    def _connect(self, *, read_only: bool = False):
+        return duckdb.connect(str(self.db_path), read_only=read_only)
 
     def _initialize(self) -> None:
         with self._connect() as conn:
@@ -290,6 +290,7 @@ class DuckDBCrawlStore:
     def mark_seen(self, url: str) -> None:
         with self._connect() as conn:
             conn.execute("DELETE FROM queue WHERE url = ?", [url])
+            conn.execute("DELETE FROM failed_urls WHERE url = ?", [url])
             conn.execute(
                 "INSERT INTO seen_urls(url) VALUES (?) ON CONFLICT(url) DO NOTHING",
                 [url],
@@ -338,24 +339,24 @@ class DuckDBCrawlStore:
 
     def queue_count(self, *, include_active: bool = False) -> int:
         status_sql = "IN ('queued', 'active')" if include_active else "= 'queued'"
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             row = conn.execute(f"SELECT COUNT(*) FROM queue WHERE status {status_sql}").fetchone()
         return int(row[0]) if row else 0
 
     def seen_count(self) -> int:
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             row = conn.execute("SELECT COUNT(*) FROM seen_urls").fetchone()
         return int(row[0]) if row else 0
 
     def failed_count(self) -> int:
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             row = conn.execute("SELECT COUNT(*) FROM failed_urls").fetchone()
         return int(row[0]) if row else 0
 
     def queue_preview(self, *, limit: int = 50) -> list["CrawlItem"]:
         from .agentic_daemon import CrawlItem
 
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             rows = conn.execute(
                 """
                 SELECT url, depth, kind, metadata_json
@@ -377,12 +378,26 @@ class DuckDBCrawlStore:
         ]
 
     def failed_map(self) -> dict[str, int]:
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             rows = conn.execute("SELECT url, failures FROM failed_urls ORDER BY url").fetchall()
         return {str(url): int(failures) for url, failures in rows}
 
+    def failed_entries(self) -> list[dict[str, str | int]]:
+        with self._connect(read_only=True) as conn:
+            rows = conn.execute(
+                """
+                SELECT url, failures, COALESCE(last_error, '')
+                FROM failed_urls
+                ORDER BY failures DESC, url ASC
+                """
+            ).fetchall()
+        return [
+            {"url": str(url), "failures": int(failures), "last_error": str(last_error)}
+            for url, failures, last_error in rows
+        ]
+
     def pattern_yield_stats(self) -> list[dict[str, int | str | float]]:
-        with self._connect() as conn:
+        with self._connect(read_only=True) as conn:
             rows = conn.execute(
                 """
                 SELECT

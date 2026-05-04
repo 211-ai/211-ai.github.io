@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
+from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record
-from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
 
 
 def _client() -> TestClient:
@@ -22,6 +24,10 @@ def _client() -> TestClient:
             )
         ]
     )
+    return TestClient(create_app(service=service))
+
+
+def _client_with_service(service: WalletInterfaceService) -> TestClient:
     return TestClient(create_app(service=service))
 
 
@@ -188,7 +194,11 @@ def test_wallet_api_delegate_creates_location_region_proof() -> None:
     proof = response.json()
     assert proof["proof_type"] == "location_region"
     assert proof["is_simulated"] is True
-    assert proof["public_inputs"] == {"region_id": "multnomah_county", "claim": "location_in_region"}
+    assert proof["proof_system"] == "simulated"
+    assert proof["verification_status"] == "verified"
+    assert proof["public_inputs"]["region_id"] == "multnomah_county"
+    assert proof["public_inputs"]["claim"] == "location_in_region"
+    assert proof["public_inputs"]["region_policy_hash"]
     assert "lat" not in str(proof["public_inputs"]).lower()
     assert "lon" not in str(proof["public_inputs"]).lower()
 
@@ -201,6 +211,77 @@ def test_wallet_api_delegate_creates_location_region_proof() -> None:
     assert [item["proof_id"] for item in proofs] == [proof["proof_id"]]
     assert proofs[0]["public_inputs"] == proof["public_inputs"]
     assert proofs[0]["witness_record_ids"] == [location["record_id"]]
+
+
+def test_wallet_api_production_proof_mode_rejects_simulated_receipts() -> None:
+    client = _client_with_service(WalletInterfaceService(allow_simulated_proofs=False))
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 400
+    assert "Simulated proofs are disabled" in response.json()["detail"]
+    response = client.get(f"/wallets/{wallet['wallet_id']}/proofs")
+    assert response.status_code == 200
+    assert response.json()["proofs"] == []
+
+
+def test_wallet_api_production_proof_mode_accepts_configured_backend() -> None:
+    client = _client_with_service(
+        WalletInterfaceService(
+            proof_backend=DeterministicLocationRegionProofBackend(),
+            allow_simulated_proofs=False,
+        )
+    )
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 200
+    proof = response.json()
+    assert proof["is_simulated"] is False
+    assert proof["proof_system"] == "deterministic-test-proof"
+    assert proof["verification_status"] == "verified"
+    assert proof["proof_artifact_ref"].startswith("deterministic-proof://")
+    serialized = json.dumps(proof)
+    assert "45.515232" not in serialized
+    assert "-122.678385" not in serialized
+
+
+def test_wallet_api_env_selects_deterministic_proof_backend(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_PROOF_MODE", "production")
+    monkeypatch.setenv("WALLET_PROOF_BACKEND", "deterministic-location-region")
+    client = _client_with_service(WalletInterfaceService())
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/region-proofs",
+        json={"actor_did": "did:key:owner", "region_id": "multnomah_county"},
+    )
+
+    assert response.status_code == 200
+    proof = response.json()
+    assert proof["is_simulated"] is False
+    assert proof["proof_system"] == "deterministic-test-proof"
+    assert proof["circuit_id"] == "deterministic-location-region-v0.1"
 
 
 def test_wallet_api_document_analysis_invocation_flow() -> None:
@@ -221,6 +302,12 @@ def test_wallet_api_document_analysis_invocation_flow() -> None:
     )
     assert response.status_code == 200
     record = response.json()
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/records", params={"data_type": "document"})
+    assert response.status_code == 200
+    records = response.json()["records"]
+    assert [item["record_id"] for item in records] == [record["record_id"]]
+    assert records[0]["data_type"] == "document"
 
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-grants",
@@ -273,6 +360,33 @@ def test_wallet_api_document_analysis_invocation_flow() -> None:
     assert "invocation/issue" in actions
     assert "invocation/verify" in actions
     assert "record/analyze" in actions
+
+
+def test_wallet_api_binary_document_upload_lists_record_and_storage() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents",
+        data={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "title": "Binary identity scan",
+        },
+        files={"file": ("identity.bin", b"\x00\x01private document bytes", "application/octet-stream")},
+    )
+    assert response.status_code == 200
+    record = response.json()
+    assert record["data_type"] == "document"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/records", params={"data_type": "document"})
+    assert response.status_code == 200
+    assert [item["record_id"] for item in response.json()["records"]] == [record["record_id"]]
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/storage")
+    assert response.status_code == 200
+    assert response.json()["ok"] is True
 
 
 def test_wallet_api_access_request_review_flow() -> None:
@@ -625,6 +739,56 @@ def test_wallet_api_storage_health_and_repair() -> None:
     response = client.get(f"/wallets/{wallet['wallet_id']}/audit")
     actions = [event["action"] for event in response.json()["events"]]
     assert "storage/repair" in actions
+
+
+def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:
+    storage_config = {"type": "local", "root": tmp_path / "wallet-blobs"}
+    repository_root = tmp_path / "wallet-repository"
+    service = WalletInterfaceService(
+        services=[],
+        storage_config=storage_config,
+        repository_root=repository_root,
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "filename": "snapshot.txt",
+            "text": "snapshot round trip document",
+        },
+    ).json()
+
+    response = client.post(f"/wallets/{wallet['wallet_id']}/snapshot")
+
+    assert response.status_code == 200
+    assert Path(response.json()["path"]).exists()
+    response = client.get(f"/wallets/{wallet['wallet_id']}/snapshot")
+    assert response.status_code == 200
+    assert response.json()["valid"] is True
+    assert response.json()["snapshot_hash"] == response.json()["computed_hash"]
+    response = client.get("/wallets/snapshots")
+    assert response.status_code == 200
+    assert response.json()["wallet_ids"] == [wallet["wallet_id"]]
+    response = client.post("/wallets/snapshots/save-all")
+    assert response.status_code == 200
+    assert response.json()["count"] == 1
+
+    restored_service = WalletInterfaceService(
+        services=[],
+        storage_config=storage_config,
+        repository_root=repository_root,
+        auto_load_repository=False,
+    )
+    restored_client = _client_with_service(restored_service)
+    response = restored_client.post("/wallets/snapshots/load-all")
+
+    assert response.status_code == 200
+    assert response.json()["wallet_ids"] == [wallet["wallet_id"]]
+    response = restored_client.get(f"/wallets/{wallet['wallet_id']}/records", params={"data_type": "document"})
+    assert response.status_code == 200
+    assert [item["record_id"] for item in response.json()["records"]] == [record["record_id"]]
 
 
 def test_wallet_api_rejects_precise_analytics_fields() -> None:
