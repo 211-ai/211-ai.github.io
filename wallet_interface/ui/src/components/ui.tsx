@@ -134,7 +134,11 @@ export function Field({
         {required ? <RequiredMarker /> : null}
       </span>
       {fieldChildren}
-      {help ? <small id={helpId}>{help}</small> : null}
+      {help ? (
+        <small className="field-help-text" id={helpId}>
+          {help}
+        </small>
+      ) : null}
       {error ? (
         <small className="field-error-text" id={errorId} role="alert">
           {error}

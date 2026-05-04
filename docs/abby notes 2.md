@@ -35,7 +35,7 @@ The implementation agent should inspect the current React/TypeScript app before 
 
 1. Complete low-risk UX/copy/layout fixes that affect existing screens.
 2. Complete persistence and sharing-rule behavior.
-3. Complete upload summary and profile-photo preview behavior.
+3. Complete upload summary and photo/photo ID file detail behavior.
 4. Complete shelter staff/admin/client-account workflows.
 5. Complete bot-check status logic and shelter reporting lists.
 6. Complete welcoming visual treatment and animation polish.
@@ -150,7 +150,7 @@ Tasks:
 
 Acceptance criteria:
 
-- Sharing rules appear near the bottom of the home page.
+- Sharing choices appear near the bottom of the home page.
 - Stored upload count is visually informative and not button-like.
 - Primary home actions remain easy to scan.
 
@@ -265,33 +265,35 @@ Verification:
 - Test text upload, image upload, and unsupported file fallback.
 - Inspect uploads screenshot.
 
-### ABBY2-010: Profile Photo File Types And Optional Preview
+### ABBY2-010: Photo/Photo ID File Types And No Preview
 
 Source note: 21
+
+Notes 3 update: the current photo/photo ID field accepts image files and PDFs. It shows file details only, with no thumbnail or PDF preview.
 
 Tasks:
 
 - [x] Identify accepted profile-photo file types.
 - [x] Ensure profile photo/photo ID upload accepts image file types needed by the app, such as JPEG, PNG, and WebP.
-- [x] Do not accept PDF as a profile photo unless product requirements change, because a profile photo needs directly displayable image data for preview, recognition, and emergency recipient use.
-- [x] Add a concise UI note or final handoff explanation answering which photo file types are accepted and why PDF is not accepted for profile photo.
-- [x] Make thumbnail/preview UI optional.
-- [x] Add a "See preview" button or disclosure control.
-- [x] Keep preview hidden by default.
-- [x] When "See preview" is activated, reveal the preview without shifting the rest of the form in a jarring way.
-- [x] Add a way to hide the preview again if consistent with existing disclosure patterns.
+- [x] Accept PDF for the combined photo/photo ID field.
+- [x] Add a concise UI note or final handoff explanation answering which photo/photo ID file types are accepted.
+- [x] Do not show thumbnail or PDF preview UI for this registration field.
+- [x] Do not add a "See preview" button or disclosure control for this registration field.
+- [x] Show selected file name and type instead of a preview.
+- [x] Treat uploaded PDFs as identity documents, not profile photos for display.
+- [x] Keep unsupported file validation clear.
 
 Acceptance criteria:
 
-- Profile-photo preview is not shown by default.
-- A user can reveal the preview with "See preview".
+- No thumbnail or PDF preview is shown.
+- There is no preview reveal control for this registration field.
 - Accepted file types are clear.
-- PDF is not accepted as a profile-photo input.
+- PDF is accepted for the photo/photo ID input.
 
 Verification:
 
-- Inspect registration screenshot before and after preview interaction if visual tests support interaction states.
-- Manually test image upload and preview toggle.
+- Inspect registration screenshot and selected-file detail state.
+- Manually test image and PDF selection with no preview.
 
 ### ABBY2-011: Assisted Access Visibility Rules
 
@@ -477,7 +479,7 @@ Acceptance criteria:
 - User-submitted settings remain consistent across sessions.
 - Sensitive temporary reveal states do not persist accidentally.
 - Persistence behavior is predictable and documented in code or final handoff.
-- Prototype note: durable form controls auto-save to local app state when changed; transient reveal states such as photo preview visibility are not persisted.
+- Prototype note: durable form controls auto-save to local app state when changed; transient reveal states are not persisted.
 
 Verification:
 
@@ -553,7 +555,7 @@ Tasks:
 - [x] In the final response, answer these user questions:
   - What are the options in the contact type dropdown?
   - What photo file types are accepted?
-  - Why is PDF not accepted for profile photo?
+  - Why is no thumbnail preview shown for photo/photo ID files?
   - Is assisted access shown only for shelter staff?
 - [x] Note any production-security caveats, especially shelter PIN handling.
 
