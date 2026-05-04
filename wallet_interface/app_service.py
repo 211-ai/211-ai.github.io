@@ -28,6 +28,7 @@ from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
     resource_for_record,
     resource_for_wallet,
 )
+from .proof_backends import HttpLocationRegionProofBackend
 
 
 def _utc_now() -> str:
@@ -92,8 +93,26 @@ def _proof_backend_from_env() -> ProofBackend | None:
         return None if not backend or backend == "default" else SimulatedProofBackend()
     if backend in {"deterministic", "deterministic-location-region", "integration"}:
         return DeterministicLocationRegionProofBackend()
+    if backend in {"http", "http-location-region", "remote-http", "verifier-http"}:
+        verifier_headers: Dict[str, str] = {}
+        if header_name := str(os.getenv("WALLET_PROOF_HTTP_HEADER_NAME") or "").strip():
+            header_value = str(os.getenv("WALLET_PROOF_HTTP_HEADER_VALUE") or "").strip()
+            if not header_value:
+                raise ValueError("WALLET_PROOF_HTTP_HEADER_VALUE is required when header name is set")
+            verifier_headers[header_name] = header_value
+        return HttpLocationRegionProofBackend(
+            base_url=str(os.getenv("WALLET_PROOF_SERVICE_URL") or "").strip(),
+            verifier_id=str(os.getenv("WALLET_PROOF_VERIFIER_ID") or "remote-location-region-v1").strip(),
+            proof_system=str(os.getenv("WALLET_PROOF_SYSTEM") or "groth16").strip(),
+            circuit_id=str(os.getenv("WALLET_PROOF_CIRCUIT_ID") or "location-region").strip(),
+            prove_path=str(os.getenv("WALLET_PROOF_PROVE_PATH") or "/prove/location-region").strip(),
+            verify_path=str(os.getenv("WALLET_PROOF_VERIFY_PATH") or "/verify").strip(),
+            bearer_token=str(os.getenv("WALLET_PROOF_BEARER_TOKEN") or "").strip() or None,
+            extra_headers=verifier_headers,
+            timeout_seconds=float(str(os.getenv("WALLET_PROOF_TIMEOUT_SECONDS") or "30").strip()),
+        )
     raise ValueError(
-        "WALLET_PROOF_BACKEND must be default, simulated, or deterministic-location-region"
+        "WALLET_PROOF_BACKEND must be default, simulated, deterministic-location-region, or http-location-region"
     )
 
 
@@ -316,15 +335,42 @@ class WalletInterfaceService:
 
         proof_backend_name = self.wallet_service.proof_backend.__class__.__name__
         simulated_enabled = bool(self.wallet_service.allow_simulated_proofs)
+        proof_status = "warning" if simulated_enabled else "ok"
+        proof_summary = (
+            "Simulated proof receipts are enabled; configure a production proof backend before launch."
+            if simulated_enabled
+            else "Production proof mode rejects simulated proof receipts."
+        )
+        proof_health_details: Dict[str, Any] | None = None
+        if not simulated_enabled and hasattr(self.wallet_service.proof_backend, "healthcheck"):
+            try:
+                raw_health = getattr(self.wallet_service.proof_backend, "healthcheck")()
+                if isinstance(raw_health, Mapping):
+                    proof_health_details = dict(raw_health)
+                    if not bool(raw_health.get("ok", False)):
+                        proof_status = "error"
+                        proof_summary = "Configured proof backend health check failed."
+                    elif str(raw_health.get("status") or "").lower() not in {"", "ok", "healthy", "ready"}:
+                        proof_status = "warning"
+                        proof_summary = "Configured proof backend reported a non-ready health status."
+                else:
+                    proof_status = "error"
+                    proof_summary = "Configured proof backend health check returned an invalid payload."
+                    proof_health_details = {"ok": False, "details": raw_health}
+            except Exception as exc:  # pragma: no cover - backend/network specific failure path.
+                proof_status = "error"
+                proof_summary = "Configured proof backend health check raised an exception."
+                proof_health_details = {"ok": False, "error": str(exc)}
         add_check(
             "proof_registry",
-            "warning" if simulated_enabled else "ok",
-            (
-                "Simulated proof receipts are enabled; configure a production proof backend before launch."
-                if simulated_enabled
-                else "Production proof mode rejects simulated proof receipts."
-            ),
+            proof_status,
+            proof_summary,
             backend=proof_backend_name,
+            verifier_id=getattr(self.wallet_service.proof_backend, "verifier_id", None),
+            proof_system=getattr(self.wallet_service.proof_backend, "proof_system", None),
+            backend_mode=getattr(self.wallet_service.proof_backend, "mode", None),
+            is_simulated_backend=bool(getattr(self.wallet_service.proof_backend, "is_simulated", False)),
+            backend_health=proof_health_details,
             allow_simulated_proofs=simulated_enabled,
             env_vars=["WALLET_PROOF_MODE", "WALLET_PROOF_BACKEND", "WALLET_ALLOW_SIMULATED_PROOFS"],
         )
@@ -668,6 +714,68 @@ class WalletInterfaceService:
         self._persist_wallet_if_configured(wallet_id)
         return grant
 
+    def create_record_grant(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        abilities: Sequence[str],
+        purpose: str = "service_matching",
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        approval_id: str | None = None,
+        expires_at: str | None = None,
+        max_delegation_depth: int | None = None,
+        output_types: Sequence[str] | None = None,
+        user_presence_required: bool = False,
+        extra_caveats: Mapping[str, Any] | None = None,
+    ):
+        allowed_abilities = {"record/analyze", "record/decrypt", "record/share"}
+        normalized_abilities = []
+        for ability in abilities:
+            if ability not in allowed_abilities:
+                raise ValueError(f"record grants do not support ability: {ability}")
+            if ability not in normalized_abilities:
+                normalized_abilities.append(ability)
+        if not normalized_abilities:
+            raise ValueError("record grants require at least one ability")
+        if normalized_abilities == ["record/share"]:
+            raise ValueError("record/share must be paired with analyze or decrypt access")
+
+        caveats: Dict[str, Any] = dict(extra_caveats or {})
+        caveats["purpose"] = purpose or caveats.get("purpose") or "service_matching"
+        if output_types is not None:
+            caveats["output_types"] = list(output_types)
+        elif "output_types" not in caveats and "allowed_output_types" not in caveats:
+            default_output_types = []
+            if "record/analyze" in normalized_abilities:
+                default_output_types.append("summary")
+            if "record/decrypt" in normalized_abilities:
+                default_output_types.append("plaintext")
+            if default_output_types:
+                caveats["output_types"] = default_output_types
+        if user_presence_required:
+            caveats["user_presence_required"] = True
+        if max_delegation_depth is not None:
+            caveats["max_delegation_depth"] = max(0, int(max_delegation_depth))
+
+        grant = self.wallet_service.create_grant(
+            wallet_id=wallet_id,
+            issuer_did=issuer_did,
+            audience_did=audience_did,
+            resources=[resource_for_record(wallet_id, record_id)],
+            abilities=normalized_abilities,
+            caveats=caveats,
+            expires_at=expires_at,
+            approval_id=approval_id,
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return grant
+
     def analyze_record_for_delegate(
         self,
         wallet_id: str,
@@ -689,6 +797,127 @@ class WalletInterfaceService:
         self._persist_wallet_if_configured(wallet_id)
         return artifact
 
+    def analyze_record_redacted(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+        max_chars: int = 500,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.analyze_document_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+            max_chars=max_chars,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def analyze_record_redacted_with_invocation(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        invocation,
+        actor_secret: bytes | None = None,
+        max_chars: int = 500,
+    ) -> Dict[str, Any]:
+        self.wallet_service.verify_invocation(
+            wallet_id,
+            invocation,
+            actor_did=actor_did,
+            resource=resource_for_record(wallet_id, record_id),
+            ability="record/analyze",
+            actor_secret=actor_secret,
+        )
+        result = self.wallet_service.analyze_document_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=invocation.grant_id,
+            actor_secret=actor_secret,
+            max_chars=max_chars,
+            invocation_caveats=invocation.caveats,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def create_document_vector_profile(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+        chunk_size_words: int = 80,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.create_document_vector_profile(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+            chunk_size_words=chunk_size_words,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def create_document_vector_profile_with_invocation(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        invocation,
+        actor_secret: bytes | None = None,
+        chunk_size_words: int = 80,
+    ) -> Dict[str, Any]:
+        self.wallet_service.verify_invocation(
+            wallet_id,
+            invocation,
+            actor_did=actor_did,
+            resource=resource_for_record(wallet_id, record_id),
+            ability="record/analyze",
+            actor_secret=actor_secret,
+        )
+        result = self.wallet_service.create_document_vector_profile(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=invocation.grant_id,
+            actor_secret=actor_secret,
+            chunk_size_words=chunk_size_words,
+            invocation_caveats=invocation.caveats,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def analyze_records_redacted(
+        self,
+        wallet_id: str,
+        record_ids: Sequence[str],
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.analyze_documents_with_redaction(
+            wallet_id,
+            list(record_ids),
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
     def issue_record_analysis_invocation(
         self,
         wallet_id: str,
@@ -698,6 +927,9 @@ class WalletInterfaceService:
         actor_did: str,
         actor_secret: bytes | None = None,
         expires_at: str | None = None,
+        purpose: str | None = None,
+        output_types: Sequence[str] | None = None,
+        user_present: bool = False,
     ):
         invocation = self.wallet_service.issue_invocation(
             wallet_id,
@@ -706,7 +938,13 @@ class WalletInterfaceService:
             resource=resource_for_record(wallet_id, record_id),
             ability="record/analyze",
             actor_secret=actor_secret,
-            caveats={"purpose": "service_matching"},
+            caveats=self._invocation_caveats(
+                grant_id,
+                fallback_purpose="service_matching",
+                purpose=purpose,
+                output_types=output_types,
+                user_present=user_present,
+            ),
             expires_at=expires_at,
         )
         self._persist_wallet_if_configured(wallet_id)
@@ -721,6 +959,9 @@ class WalletInterfaceService:
         actor_did: str,
         actor_secret: bytes | None = None,
         expires_at: str | None = None,
+        purpose: str | None = None,
+        output_types: Sequence[str] | None = None,
+        user_present: bool = False,
     ):
         invocation = self.wallet_service.issue_invocation(
             wallet_id,
@@ -729,11 +970,37 @@ class WalletInterfaceService:
             resource=resource_for_record(wallet_id, record_id),
             ability="record/decrypt",
             actor_secret=actor_secret,
-            caveats={"purpose": "document_view"},
+            caveats=self._invocation_caveats(
+                grant_id,
+                fallback_purpose="document_view",
+                purpose=purpose,
+                output_types=output_types,
+                user_present=user_present,
+            ),
             expires_at=expires_at,
         )
         self._persist_wallet_if_configured(wallet_id)
         return invocation
+
+    def _invocation_caveats(
+        self,
+        grant_id: str,
+        *,
+        fallback_purpose: str,
+        purpose: str | None = None,
+        output_types: Sequence[str] | None = None,
+        user_present: bool = False,
+        extra: Mapping[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        grant = self.wallet_service.grants.get(grant_id)
+        caveats: Dict[str, Any] = dict(extra or {})
+        grant_purpose = grant.caveats.get("purpose") if grant is not None else None
+        caveats["purpose"] = purpose or (str(grant_purpose) if grant_purpose else fallback_purpose)
+        if output_types:
+            caveats["output_types"] = list(output_types)
+        if user_present:
+            caveats["user_present"] = True
+        return caveats
 
     def request_record_access(
         self,
@@ -996,6 +1263,7 @@ class WalletInterfaceService:
         purpose: str = "user_export",
         expires_at: str | None = None,
         approval_id: str | None = None,
+        output_types: Sequence[str] | None = None,
     ):
         grant = self.wallet_service.create_grant(
             wallet_id=wallet_id,
@@ -1003,7 +1271,11 @@ class WalletInterfaceService:
             audience_did=audience_did,
             resources=[resource_for_export(wallet_id)],
             abilities=["export/create"],
-            caveats={"purpose": purpose, "record_ids": list(record_ids)},
+            caveats={
+                "purpose": purpose,
+                "record_ids": list(record_ids),
+                "output_types": list(output_types) if output_types is not None else ["encrypted_export_bundle"],
+            },
             issuer_secret=issuer_secret,
             audience_secret=audience_secret,
             expires_at=expires_at,
@@ -1042,8 +1314,17 @@ class WalletInterfaceService:
         actor_secret: bytes | None = None,
         record_ids: Sequence[str] | None = None,
         expires_at: str | None = None,
+        purpose: str | None = None,
+        output_types: Sequence[str] | None = None,
+        user_present: bool = False,
     ):
-        caveats: Dict[str, Any] = {"purpose": "user_export"}
+        caveats = self._invocation_caveats(
+            grant_id,
+            fallback_purpose="user_export",
+            purpose=purpose,
+            output_types=output_types,
+            user_present=user_present,
+        )
         if record_ids is not None:
             caveats["record_ids"] = list(record_ids)
         invocation = self.wallet_service.issue_invocation(
@@ -1317,6 +1598,8 @@ class WalletInterfaceService:
         actor_did: str,
         actor_secret: bytes | None = None,
         expires_at: str | None = None,
+        purpose: str | None = None,
+        user_present: bool = False,
     ):
         invocation = self.wallet_service.issue_invocation(
             wallet_id,
@@ -1325,7 +1608,13 @@ class WalletInterfaceService:
             resource=resource_for_location(wallet_id, location_record_id),
             ability="location/read_coarse",
             actor_secret=actor_secret,
-            caveats={"purpose": "service_matching", "precision": "coarse"},
+            caveats=self._invocation_caveats(
+                grant_id,
+                fallback_purpose="service_matching",
+                purpose=purpose,
+                user_present=user_present,
+                extra={"precision": "coarse"},
+            ),
             expires_at=expires_at,
         )
         self._persist_wallet_if_configured(wallet_id)

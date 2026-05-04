@@ -509,6 +509,135 @@ def test_wallet_api_document_analysis_invocation_flow() -> None:
     assert "record/analyze" in actions
 
 
+def test_wallet_api_redacted_and_vector_document_analysis_outputs_are_safe() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "intake.txt",
+            "text": (
+                "Jane can be reached at jane@example.org or 503-555-1212. "
+                "SSN 123-45-6789. Needs rent, SNAP, and clinic help."
+            ),
+        },
+    ).json()
+    grant = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+            "abilities": ["record/analyze"],
+            "output_types": ["redacted_derived_only", "vector_profile"],
+        },
+    ).json()
+
+    redacted_invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
+        json={
+            "grant_id": grant["grant_id"],
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "output_types": ["redacted_derived_only"],
+        },
+    ).json()
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analyze/redacted",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": redacted_invocation["token"],
+        },
+    )
+    assert response.status_code == 200
+    redacted = response.json()
+    redacted_output = json.dumps(redacted["output"])
+    assert redacted["artifact"]["artifact_type"] == "redacted_document_analysis"
+    assert redacted["output"]["output_policy"] == "redacted_derived_only"
+    assert "jane@example.org" not in redacted_output
+    assert "503-555-1212" not in redacted_output
+    assert "123-45-6789" not in redacted_output
+    assert set(redacted["output"]["derived_facts"]["need_categories"]) >= {"housing", "food", "health"}
+
+    vector_invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
+        json={
+            "grant_id": grant["grant_id"],
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "output_types": ["vector_profile"],
+        },
+    ).json()
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/vector-profile",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": vector_invocation["token"],
+            "chunk_size_words": 8,
+        },
+    )
+    assert response.status_code == 200
+    vector = response.json()
+    vector_output = json.dumps(vector["output"])
+    assert vector["artifact"]["artifact_type"] == "redacted_document_vector_profile"
+    assert vector["output"]["output_policy"] == "encrypted_vector_profile"
+    assert "jane@example.org" not in vector_output
+    assert "503-555-1212" not in vector_output
+    assert vector["output"]["profile"]["profile_type"] == "redacted_lexical_hash_vector"
+
+    actions = [event["action"] for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]]
+    assert "record/analyze_redacted" in actions
+    assert "record/vector_profile" in actions
+
+
+def test_wallet_api_owner_can_create_cross_record_redacted_analysis() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    first = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "first.txt",
+            "text": "Email jane@example.org about rent assistance.",
+        },
+    ).json()
+    second = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "second.txt",
+            "text": "Call 503-555-1212 about SNAP and clinic referrals.",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/analyze/redacted",
+        json={
+            "actor_did": "did:key:owner",
+            "actor_key_hex": owner_key,
+            "record_ids": [first["record_id"], second["record_id"]],
+        },
+    )
+
+    assert response.status_code == 200
+    analysis = response.json()
+    serialized = json.dumps(analysis["output"])
+    assert analysis["artifact"]["artifact_type"] == "redacted_cross_document_analysis"
+    assert analysis["output"]["source_record_count"] == 2
+    assert "jane@example.org" not in serialized
+    assert "503-555-1212" not in serialized
+
+
 def test_wallet_api_binary_document_upload_lists_record_and_storage() -> None:
     client = _client()
     owner_key = random_key().hex()
@@ -534,6 +663,84 @@ def test_wallet_api_binary_document_upload_lists_record_and_storage() -> None:
     response = client.get(f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/storage")
     assert response.status_code == 200
     assert response.json()["ok"] is True
+
+
+def test_wallet_api_owner_can_decrypt_document_without_grant() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "owner-preview.txt",
+            "text": "Owner can preview this stored document.",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={"actor_did": "did:key:owner", "actor_key_hex": owner_key},
+    )
+
+    assert response.status_code == 200
+    decrypted = response.json()
+    assert decrypted["text"] == "Owner can preview this stored document."
+    assert decrypted["size_bytes"] == len("Owner can preview this stored document.")
+
+
+def test_wallet_api_owner_creates_record_view_grant() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "share.txt",
+            "text": "Owner shared this document directly.",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+            "abilities": ["record/analyze", "record/decrypt"],
+            "purpose": "benefits_application",
+        },
+    )
+    assert response.status_code == 200
+    grant = response.json()
+    assert grant["abilities"] == ["record/analyze", "record/decrypt"]
+    assert grant["caveats"]["purpose"] == "benefits_application"
+    assert set(grant["caveats"]["output_types"]) == {"summary", "plaintext"}
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/grant-receipts",
+        params={"audience_did": "did:key:delegate"},
+    )
+    assert response.status_code == 200
+    receipt = response.json()["receipts"][0]
+    assert receipt["grant_id"] == grant["grant_id"]
+    assert receipt["status"] == "active"
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["text"] == "Owner shared this document directly."
 
 
 def test_wallet_api_rotates_document_key() -> None:
@@ -804,6 +1011,87 @@ def test_wallet_api_access_request_can_delegate_document_view() -> None:
     decrypted = response.json()
     assert decrypted["text"] == "Delegate may view this identity document."
     assert decrypted["size_bytes"] == len("Delegate may view this identity document.")
+
+
+def test_wallet_api_decrypt_invocation_satisfies_user_presence_caveat() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "presence.txt",
+            "text": "User presence protected document.",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+            "abilities": ["record/decrypt"],
+            "purpose": "identity_verification",
+            "user_presence_required": True,
+        },
+    )
+    assert response.status_code == 200
+    grant = response.json()
+    assert grant["caveats"]["user_presence_required"] is True
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+        },
+    )
+    assert response.status_code == 400
+    assert "user presence" in response.json()["detail"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt-invocations",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+        },
+    )
+    assert response.status_code == 400
+    assert "user presence" in response.json()["detail"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt-invocations",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "grant_id": grant["grant_id"],
+            "purpose": "identity_verification",
+            "user_present": True,
+        },
+    )
+    assert response.status_code == 200
+    invocation = response.json()["invocation"]
+    invocation_token = response.json()["token"]
+    assert invocation["caveats"]["purpose"] == "identity_verification"
+    assert invocation["caveats"]["user_present"] is True
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/decrypt",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": invocation_token,
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["text"] == "User presence protected document."
 
 
 def test_wallet_api_revoked_access_blocks_invocation() -> None:
@@ -1420,6 +1708,7 @@ def test_wallet_api_export_bundle_uses_export_grant_without_plaintext() -> None:
             "record_ids": [document["record_id"], location["record_id"]],
         },
     ).json()
+    assert grant["caveats"]["output_types"] == ["encrypted_export_bundle"]
     invocation = client.post(
         f"/wallets/{wallet['wallet_id']}/exports/invocations",
         json={

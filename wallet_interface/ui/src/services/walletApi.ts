@@ -2,6 +2,7 @@ import {
   AuditEvent,
   AnalyticsStudy,
   DecryptedRecordView,
+  DerivedAnalysisResultView,
   DerivedArtifactView,
   ExportBundleView,
   ProofReceiptView,
@@ -38,6 +39,7 @@ interface GrantReceiptApiRecord {
   resources: string[];
   abilities: string[];
   purpose: string | null;
+  caveats?: Record<string, unknown>;
   receipt_hash: string;
   status: "active" | "revoked";
   created_at: string;
@@ -238,6 +240,11 @@ interface DerivedArtifactApiResponse {
   created_at: string;
 }
 
+interface DerivedAnalysisResultApiResponse {
+  artifact: DerivedArtifactApiResponse;
+  output: Record<string, unknown>;
+}
+
 interface DecryptedRecordApiResponse {
   record_id?: string;
   text: string;
@@ -327,14 +334,36 @@ export interface DelegatedGrantResponse {
   expires_at?: string | null;
 }
 
+export interface RecordGrantResponse {
+  grant_id: string;
+  issuer_did: string;
+  audience_did: string;
+  resources: string[];
+  abilities: string[];
+  caveats?: Record<string, unknown>;
+  status?: string;
+  created_at?: string;
+  expires_at?: string | null;
+}
+
 export interface ThresholdApprovalResponse {
   approval_id: string;
   wallet_id: string;
   operation: string;
   requested_by: string;
+  resources: string[];
+  abilities: string[];
   threshold: number;
+  approver_dids?: string[];
   approvals?: Record<string, string>;
   status: string;
+  created_at?: string;
+  expires_at?: string | null;
+  details?: Record<string, unknown>;
+}
+
+interface ThresholdApprovalListResponse {
+  approvals: ThresholdApprovalResponse[];
 }
 
 export type WalletAdminOperation =
@@ -652,6 +681,62 @@ export async function analyzeRecordWithGrant(
   return toDerivedArtifactView(artifact);
 }
 
+export async function analyzeRecordRedactedWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    invocationToken,
+    maxChars = 500
+  }: {
+    recordId: string;
+    grantId?: string;
+    invocationToken?: string;
+    maxChars?: number;
+  }
+): Promise<DerivedAnalysisResultView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/analyze/redacted`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<DerivedAnalysisResultApiResponse>(url, "Redacted record analysis", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined,
+    max_chars: maxChars
+  });
+  return toDerivedAnalysisResultView(result);
+}
+
+export async function createRecordVectorProfileWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    invocationToken,
+    chunkSizeWords = 80
+  }: {
+    recordId: string;
+    grantId?: string;
+    invocationToken?: string;
+    chunkSizeWords?: number;
+  }
+): Promise<DerivedAnalysisResultView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/vector-profile`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<DerivedAnalysisResultApiResponse>(url, "Record vector profile", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined,
+    chunk_size_words: chunkSizeWords
+  });
+  return toDerivedAnalysisResultView(result);
+}
+
 export async function decryptRecordWithGrant(
   config: WalletApiConfig,
   {
@@ -682,10 +767,12 @@ export async function issueRecordDecryptInvocation(
   config: WalletApiConfig,
   {
     recordId,
-    grantId
+    grantId,
+    userPresent = false
   }: {
     recordId: string;
     grantId: string;
+    userPresent?: boolean;
   }
 ): Promise<string> {
   const url = new URL(
@@ -695,9 +782,79 @@ export async function issueRecordDecryptInvocation(
   const response = await postJson<RecordInvocationApiResponse>(url, "Record decrypt invocation", {
     actor_did: requiredActorDid(config),
     actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
-    grant_id: grantId
+    grant_id: grantId,
+    user_present: userPresent
   });
   return response.token;
+}
+
+export async function createRecordGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    audienceDid,
+    audienceKeyHex,
+    abilities,
+    purpose,
+    expiresAt,
+    approvalId,
+    maxDelegationDepth,
+    userPresenceRequired,
+    outputTypes,
+    caveats
+  }: {
+    recordId: string;
+    audienceDid: string;
+    audienceKeyHex?: string;
+    abilities: string[];
+    purpose?: string;
+    expiresAt?: string;
+    approvalId?: string;
+    maxDelegationDepth?: number;
+    userPresenceRequired?: boolean;
+    outputTypes?: string[];
+    caveats?: Record<string, unknown>;
+  }
+): Promise<RecordGrantResponse> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/grants`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<RecordGrantResponse>(url, "Record grant", {
+    abilities,
+    approval_id: approvalId || undefined,
+    audience_did: audienceDid,
+    audience_key_hex: audienceKeyHex || undefined,
+    expires_at: expiresAt || undefined,
+    issuer_did: requiredActorDid(config),
+    issuer_key_hex: config.issuerKeyHex,
+    max_delegation_depth: maxDelegationDepth,
+    output_types: outputTypes?.length ? outputTypes : undefined,
+    purpose: purpose || "service_matching",
+    user_presence_required: userPresenceRequired || undefined,
+    caveats: caveats || undefined
+  });
+}
+
+export async function requestRecordGrantApproval(
+  config: WalletApiConfig,
+  {
+    recordId,
+    abilities,
+    requestedBy = requiredActorDid(config),
+    expiresAt
+  }: {
+    recordId: string;
+    abilities: string[];
+    requestedBy?: string;
+    expiresAt?: string;
+  }
+): Promise<ThresholdApprovalResponse> {
+  const url = new URL(`/wallets/${config.walletId}/approvals`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<ThresholdApprovalResponse>(url, "Record grant approval", {
+    abilities,
+    expires_at: expiresAt || undefined,
+    operation: "grant/create",
+    requested_by: requestedBy,
+    resources: [`wallet://${config.walletId}/records/${recordId}`]
+  });
 }
 
 export async function listAccessRequests({
@@ -762,14 +919,27 @@ export async function revokeAccessRequest(
   return toAccessRequestView(data);
 }
 
-export async function approveThresholdApproval(config: WalletApiConfig, approvalId: string): Promise<void> {
+export async function approveThresholdApproval(
+  config: WalletApiConfig,
+  approvalId: string
+): Promise<ThresholdApprovalResponse> {
   const url = new URL(
     `/wallets/${config.walletId}/approvals/${approvalId}/approve`,
     normalizedBaseUrl(config.apiBaseUrl)
   );
-  await postJson<Record<string, unknown>>(url, "Threshold approval", {
+  return postJson<ThresholdApprovalResponse>(url, "Threshold approval", {
     approver_did: requiredActorDid(config)
   });
+}
+
+export async function listThresholdApprovals(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  status = "all"
+): Promise<ThresholdApprovalResponse[]> {
+  const url = new URL(`/wallets/${config.walletId}/approvals`, normalizedBaseUrl(config.apiBaseUrl));
+  url.searchParams.set("status", status);
+  const data = await fetchJson<ThresholdApprovalListResponse>(url, "Threshold approvals");
+  return data.approvals;
 }
 
 export async function requestWalletAdminApproval(
@@ -1180,6 +1350,7 @@ function toGrantReceiptView(receipt: GrantReceiptApiRecord): WalletGrantReceipt 
     resourceLabel: labelFromResource(resource),
     abilities: receipt.abilities,
     purpose: receipt.purpose ?? "Shared wallet access",
+    caveats: receipt.caveats,
     receiptHash: receipt.receipt_hash,
     status: receipt.status,
     createdAt: formatTimestamp(receipt.created_at),
@@ -1199,6 +1370,13 @@ function toDerivedArtifactView(artifact: DerivedArtifactApiResponse): DerivedArt
       artifact.encrypted_payload_ref?.storage_type ??
       "encrypted derived artifact",
     createdAt: formatTimestamp(artifact.created_at)
+  };
+}
+
+function toDerivedAnalysisResultView(result: DerivedAnalysisResultApiResponse): DerivedAnalysisResultView {
+  return {
+    artifact: toDerivedArtifactView(result.artifact),
+    output: result.output
   };
 }
 

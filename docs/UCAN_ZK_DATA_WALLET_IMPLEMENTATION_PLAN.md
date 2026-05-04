@@ -35,6 +35,12 @@ Implemented foundations:
   encrypted replica health summaries/repair.
 - UCAN-style grants and invocations for decrypt, analyze, coarse-location,
   proof, service-match, and encrypted export flows.
+- Common wallet UCAN caveat enforcement for not-before, record IDs, data
+  types, output attenuation, user presence, purpose-bound invocations, and
+  delegated caveat preservation. Decrypt, summary, redacted analysis, vector
+  profile, and encrypted export operations assert concrete output types before
+  using delegated grants, and API invocation routes carry user-presence, purpose,
+  and output caveats into signed `wallet-ucan-v1` tokens.
 - Threshold approval support for high-impact capabilities such as
   `export/create`, with API and UI hooks for multi-controller approval.
 - Location records with precise encrypted coordinates, coarse claims, delegated
@@ -285,8 +291,9 @@ Common caveats:
 
 - Expiration and not-before.
 - Allowed record IDs and data types.
-- Allowed output types: plaintext, redacted fields, summary, eligibility facts,
-  geohash prefix, census tract, proof only, aggregate only.
+- Allowed output types: plaintext, summary, redacted derived output, vector
+  profile, encrypted export bundle, eligibility facts, geohash prefix, census
+  tract, proof only, aggregate only.
 - Purpose: service matching, emergency support, case work, legal help, research,
   operations analytics, user export.
 - Maximum delegation depth.
@@ -497,13 +504,13 @@ still need production hardening.
 | 0. Architecture and threat model | partial | formal ADRs, production proof decision, privacy review process |
 | 1. Generic data wallet core | MVP implemented | recovery, durable persistence, richer record schemas |
 | 2. Storage integration | MVP implemented | live IPFS/Filecoin/S3 deployment tests, replica policy UX |
-| 3. UCAN wallet authorization | MVP implemented | external UCAN token interop and formal caveat tests |
+| 3. UCAN wallet authorization | MVP implemented | external UCAN token interop and final production caveat profile |
 | 4. Location claims and service matching | MVP implemented | production polygon/distance proof backend |
-| 5. Proof system integration | dev simulated | production circuits, verifier registry, fail-closed runtime checks |
+| 5. Proof system integration | MVP implemented | reviewed production circuit artifacts and verifier deployment selection |
 | 6. Privacy-preserving analytics | MVP implemented | production DP randomness, durable budget ledger, review workflow |
-| 7. Document and derived analysis | partial | full PDF/OCR/GraphRAG wallet wrappers and redaction policy tests |
+| 7. Document and derived analysis | partial | full form/GraphRAG wrappers beyond the redacted text-extraction/analysis/vector-profile/cross-record paths |
 | 8. 211-AI product UI | MVP implemented | live session/auth, device keys, accessibility and usability pass |
-| 9. API, MCP, CLI, and operations | partial | MCP tools, background verifiers, runbooks, deployment persistence |
+| 9. API, MCP, CLI, and operations | partial | stable API/CLI/MCP reference docs and production rollout guidance |
 
 ### Phase 0: Architecture and Threat Model
 
@@ -575,6 +582,8 @@ Acceptance:
 - `record/analyze` does not imply `record/decrypt`.
 - `location/read_coarse` does not imply `location/read_precise`.
 - Delegation attenuation prevents re-sharing broader authority.
+- Record ID, not-before, data-type, output, and user-presence caveats fail
+  closed when a grant or delegated child exceeds the parent policy.
 - Expired and revoked grants fail.
 
 ### Phase 4: Location Claims and Service Matching
@@ -626,11 +635,13 @@ Current MVP status:
   exposes bounded encrypted export grant, invocation, and bundle commands for
   `export/create` capabilities. `export/create` is treated as a sensitive
   capability and participates in threshold approval before grant issuance when
-  wallet governance requires multi-controller review. Export bundles include a
-  deterministic `bundle_hash` and `bundle_id` so recipients can detect tampering
-  independent of JSON key order. Bundle receipt verification is exposed through
-  both CLI and the 211-AI API, and verified bundles can be imported as encrypted
-  descriptors without granting plaintext access. Import validates the expected
+  wallet governance requires multi-controller review. Export grants default to
+  the `encrypted_export_bundle` output type, and export creation checks that
+  caveat before building the bundle. Export bundles include a deterministic
+  `bundle_hash` and `bundle_id` so recipients can detect tampering independent
+  of JSON key order. Bundle receipt verification is exposed through both CLI and
+  the 211-AI API, and verified bundles can be imported as encrypted descriptors
+  without granting plaintext access. Import validates the expected
   bundle type and required record/version sections after hash verification.
   Storage availability checks report whether referenced encrypted blobs are
   locally retrievable without decrypting them.
@@ -665,6 +676,50 @@ Acceptance:
 - Released aggregate result includes privacy metadata and audit trail.
 
 ### Phase 7: Document and Derived Data Analysis
+
+Current MVP status:
+
+- `WalletService.analyze_document_with_redaction` now creates encrypted derived
+  artifacts for document analysis with a `redacted_derived_only` output policy.
+  The returned safe output masks common direct identifiers such as email
+  addresses, phone numbers, SSNs, and street addresses, emits derived need
+  categories, enforces matching output-type caveats on delegated grants, and
+  audits `record/analyze_redacted`.
+- `ipfs_datasets_py.mcp_server.tools.wallet_tools.wallet_analyze_document_redacted`
+  exposes that flow through MCP using the same wallet snapshot/blob persistence
+  path as the wallet CLI and other wallet MCP tools.
+- `WalletService.extract_document_text_with_redaction` now wraps the existing
+  `processors.multimedia.attachment_text_extractor` inside the wallet boundary
+  for text/PDF/image/OCR-capable records. Decrypted bytes are written only to a
+  short-lived service-local temporary file for extraction, returned text is
+  redacted before leaving the service, the redacted result is stored as an
+  encrypted `redacted_document_text_extraction` artifact, and delegated use must
+  carry the `redacted_extracted_text` output type. `wallet_extract_document_text_redacted`
+  exposes the same flow through MCP.
+- `WalletService.create_document_vector_profile` now creates encrypted
+  redacted document vector-profile artifacts for privacy-preserving retrieval
+  and analytics features. The returned profile contains only redaction counts,
+  category-level feature counts, document stats, and hashes of redacted
+  per-chunk feature signatures; arbitrary extracted tokens and plaintext stay
+  inside the encrypted artifact boundary. `wallet_create_document_vector_profile`
+  exposes the same flow through MCP.
+- `WalletService.analyze_documents_with_redaction` now performs cross-record
+  redacted analysis over an explicit authorized record set. It verifies
+  `record/analyze` for each document before decrypting inside the wallet service
+  boundary, returns aggregate-safe need categories/redaction counts/per-record
+  derived facts without document text, stores an encrypted
+  `redacted_cross_document_analysis` artifact, and audits
+  `record/analyze_redacted_batch`. `wallet_analyze_documents_redacted` exposes
+  the same flow through MCP.
+- `wallet_interface.api` exposes redacted analysis, vector profile, and
+  cross-record redacted analysis endpoints so the 211-AI project can call these
+  package capabilities without reaching into `WalletService` internals. UI API
+  client helpers return the encrypted artifact descriptor plus the redacted safe
+  output for future product flows.
+- Wallet and MCP tests assert that obvious sensitive fields are not present in
+  the returned redacted text extraction, redacted analysis, cross-record
+  analysis, or vector-profile output and that the encrypted derived artifact
+  descriptor is persisted.
 
 Deliverables:
 
@@ -705,6 +760,22 @@ Acceptance:
   verification, without receiving plaintext.
 
 ### Phase 9: API, MCP, CLI, and Operations
+
+Current MVP status:
+
+- `wallet_interface.api` now exposes the integrated wallet, proof, analytics,
+  export, storage-repair, recovery, and ops-health surface used by the 211-AI
+  UI.
+- `ipfs_datasets_py.wallet.cli` provides local wallet creation, record ingest,
+  bounded sharing, proof generation, export, analytics, approval, and audit
+  flows.
+- `ipfs_datasets_py.mcp_server.tools.wallet_tools` now adds hierarchical MCP
+  tools for wallet creation, encrypted document/location ingest, location-region
+  proof creation, record listing, analytics template/consent/contribution
+  workflows, and private aggregate counts.
+- Deployment and operator support now include the bounded/watch-mode ops worker,
+  authenticated webhook alerts, reference Docker/Compose/Kubernetes/Cloudflare
+  assets, and the wallet operations runbook.
 
 Deliverables:
 
@@ -806,6 +877,7 @@ Completion evidence:
 | UCAN token profile | `wallet-ucan-v1` invocation tokens are issued and accepted by `wallet_interface.api`, with issuer, audience, grant ID, wallet resource, ability, caveats, and expiration carried in signed wallet invocations. External `ucanto`/w3up compatibility remains a production-hardening target. |
 | Delegated request, approval, invocation, and revocation | `tests/test_wallet_interface_api.py` covers third-party access requests, owner approval, bounded invocation, listed revoked requests, and later invocation failure after revocation. |
 | Capability separation | `ipfs_datasets_py/tests/unit/test_data_wallet.py` covers `record/analyze` without decrypt, `record/decrypt` key wrapping, coarse/proven location grants, analytics consent/contribution controls, export grants, wrong-ability rejection, tampered invocation rejection, and revoked grant rejection. |
+| Caveat enforcement | Wallet service tests cover record-ID constrained wildcard grants, not-before caveats, concrete output-type checks for document/export operations, and delegated grants preserving parent record restrictions. API tests cover user-presence-required grants failing direct use and succeeding only through a signed invocation carrying `user_present`. |
 | Threshold approval references | Wallet unit tests and API tests cover sensitive decrypt and `export/create` grants requiring configured controller thresholds before issuance. |
 | Durable wallet state | Wallet snapshots persist access requests, grants, revocations, approvals, grant receipts, analytics state, proof receipts, exports, audit events, and encrypted record descriptors. The CLI repository persists snapshots for local operation; production database wiring remains Milestone E. |
 | 211-AI capability previews | `wallet_interface/ui` now previews abilities, records/resources, outputs, purpose, expiration/status, approval readiness, revocation state, and non-granted sensitive capabilities across sharing rules, recipient access, grant receipts, analytics, proof center, benefits, uploads, and exports. |
@@ -978,7 +1050,8 @@ Current implementation evidence:
 
 ### Milestone E: Deployment and Operations
 
-Status: complete for the initial production-ops path as of 2026-05-04.
+Status: implementation-complete for the in-repo production-ops path as of
+2026-05-04.
 Production persistence is available through `LocalWalletRepository` and
 environment-driven wallet storage/proof configuration. The API-level operations
 health report checks repository persistence, encrypted storage availability,
@@ -986,7 +1059,11 @@ proof mode, revocation propagation, and privacy-budget ledger readability, and
 writes durable `ops/health` audit events for wallet operators. The 211-AI
 Security screen can run the ops-health check and display per-check status. A
 bounded/watch-mode ops worker, reference Docker/Compose deployment, and operator
-runbook now cover the initial deployment and incident-response path.
+runbook now cover the initial deployment and incident-response path. The ops
+worker can emit authenticated webhook alerts, the deployment assets carry the
+alert and proof-service env surface, the HTTP proof backend can probe a remote
+verifier service, and the Security screen now surfaces verifier metadata and
+live proof-backend health.
 
 Scope:
 
@@ -1011,21 +1088,22 @@ Current implementation evidence:
 | --- | --- |
 | Durable state | `LocalWalletRepository` persists wallet snapshots plus the shared analytics ledger; `WalletInterfaceService` can auto-load and auto-persist through `WALLET_REPOSITORY_ROOT`. |
 | Storage configuration | `WalletInterfaceService` reads `WALLET_STORAGE_CONFIG`, `WALLET_STORAGE_TYPE`, and mirror-specific env vars to build local/IPFS/S3/Filecoin-backed encrypted storage. |
-| Proof configuration | `WALLET_PROOF_MODE`, `WALLET_PROOF_BACKEND`, and `WALLET_ALLOW_SIMULATED_PROOFS` control whether simulated proofs are allowed. |
-| Ops health endpoint | `GET /ops/health?verify_storage=true` reports repository, storage, proof registry, revocation propagation, and privacy-budget checks, and can be protected with `WALLET_OPS_HEALTH_SHARED_SECRET`. |
+| Proof configuration | `WALLET_PROOF_MODE`, `WALLET_PROOF_BACKEND`, and `WALLET_ALLOW_SIMULATED_PROOFS` control whether simulated proofs are allowed, and `http-location-region` now supports an external verifier service through `WALLET_PROOF_SERVICE_URL` plus verifier metadata/auth env vars. |
+| Ops health endpoint | `GET /ops/health?verify_storage=true` reports repository, storage, proof registry, revocation propagation, and privacy-budget checks, can be protected with `WALLET_OPS_HEALTH_SHARED_SECRET`, and actively probes the external HTTP verifier when that backend is configured. |
 | Actionable audit events | Ops health appends `ops/health` audit events to each loaded wallet with per-check statuses. |
-| 211-AI ops UI | The Security screen runs `/ops/health`, shows overall status and per-check summaries, and refreshes wallet audit events after the check. |
-| Scheduled worker | `python -m wallet_interface.ops` runs bounded or watch-mode ops checks, emits JSONL, and can fail on warnings or errors for cron/sidecar integration. |
+| 211-AI ops UI | The Security screen runs `/ops/health`, shows overall status, per-check summaries, proof verifier metadata, live verifier health, and refreshes wallet audit events after the check. |
+| Scheduled worker | `python -m wallet_interface.ops` runs bounded or watch-mode ops checks, emits JSONL, can fail on warnings or errors for cron/sidecar integration, and can POST warning/error alerts to an operator webhook with bearer or custom-header authentication. |
 | Deployment config | `wallet_interface/deploy/docker-compose.wallet.yml` runs API, UI, and ops worker services with durable volumes and production-mode proof settings, `wallet_interface/deploy/kubernetes/` provides the parallel namespace/config/API/UI/ops/ingress reference manifests, and `wallet_interface/deploy/cloudflare/` adds edge proxy plus scheduled ops-health Worker glue. |
 | Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
 
 Remaining work:
 
-- Replace the deterministic integration proof backend with the selected
-  production verifier service.
-- Add environment-specific secret management and alert routing.
+- Validate the external verifier service contract and provision its production
+  credentials in the target secret manager.
+- Add environment-specific secret management and production alert destination wiring.
 - Harden the Cloudflare reference path with environment-specific origin auth,
   Access/Tunnel integration, and deployment secrets.
+- Publish stable API/CLI/MCP reference docs for operators and integrators.
 
 ## Open Decisions
 

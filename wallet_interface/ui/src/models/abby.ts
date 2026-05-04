@@ -146,6 +146,7 @@ export interface WalletGrantReceipt {
   resourceLabel: string;
   abilities: string[];
   purpose: string;
+  caveats?: Record<string, unknown>;
   receiptHash: string;
   status: "active" | "revoked";
   createdAt: string;
@@ -159,6 +160,11 @@ export interface DerivedArtifactView {
   outputPolicy: string;
   encryptedPayloadRef: string;
   createdAt: string;
+}
+
+export interface DerivedAnalysisResultView {
+  artifact: DerivedArtifactView;
+  output: Record<string, unknown>;
 }
 
 export interface DecryptedRecordView {

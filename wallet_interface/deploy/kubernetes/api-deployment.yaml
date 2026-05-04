@@ -22,6 +22,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: wallet-interface-config
+            - secretRef:
+                name: wallet-interface-secrets
           ports:
             - containerPort: 8000
               name: http
@@ -51,4 +53,3 @@ spec:
         - name: wallet-state
           persistentVolumeClaim:
             claimName: wallet-state-pvc
-

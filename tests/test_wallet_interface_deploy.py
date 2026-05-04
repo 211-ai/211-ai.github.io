@@ -45,17 +45,39 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "wallet_interface.ops" in compose
     assert "wallet_interface/deploy/Dockerfile.api" in compose
     assert "wallet_interface/deploy/Dockerfile.ui" in compose
+    assert "WALLET_OPS_HEALTH_SHARED_SECRET" in compose
+    assert "WALLET_OPS_ALERT_WEBHOOK_URL" in compose
+    assert "WALLET_OPS_ALERT_ON" in compose
+    assert "WALLET_OPS_ALERT_BEARER_TOKEN" in compose
+    assert "WALLET_OPS_ALERT_HEADER_NAME" in compose
+    assert "WALLET_OPS_ALERT_HEADER_VALUE" in compose
+    assert "WALLET_PROOF_SERVICE_URL" in compose
+    assert "WALLET_PROOF_VERIFIER_ID" in compose
+    assert "WALLET_PROOF_BEARER_TOKEN" in compose
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     api_manifest = (K8S_ROOT / "api-deployment.yaml").read_text(encoding="utf-8")
     ops_manifest = (K8S_ROOT / "ops-deployment.yaml").read_text(encoding="utf-8")
     pvc_manifest = (K8S_ROOT / "pvc.yaml").read_text(encoding="utf-8")
+    config_map = (K8S_ROOT / "configmap.yaml").read_text(encoding="utf-8")
+    secrets = (K8S_ROOT / "secrets.example.yaml").read_text(encoding="utf-8")
 
     assert "wallet-state-pvc" in api_manifest
     assert "wallet-state-pvc" in ops_manifest
     assert "wallet_interface.ops" in ops_manifest
     assert "PersistentVolumeClaim" in pvc_manifest
+    assert "secretRef" in api_manifest
+    assert "secretRef" in ops_manifest
+    assert "WALLET_OPS_ALERT_ON" in config_map
+    assert "WALLET_OPS_HEALTH_SHARED_SECRET" in secrets
+    assert "WALLET_OPS_ALERT_WEBHOOK_URL" in secrets
+    assert "WALLET_OPS_ALERT_BEARER_TOKEN" in secrets
+    assert "WALLET_OPS_ALERT_HEADER_NAME" in secrets
+    assert "WALLET_OPS_ALERT_HEADER_VALUE" in secrets
+    assert "WALLET_PROOF_SERVICE_URL" in secrets
+    assert "WALLET_PROOF_VERIFIER_ID" in secrets
+    assert "WALLET_PROOF_BEARER_TOKEN" in secrets
 
 
 def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:
@@ -70,6 +92,7 @@ def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:
     assert '"/health"' in worker
     assert "x-wallet-ops-scheduled" in worker
     assert "wrangler deploy" in readme
+    assert "Cloudflare Access" in readme
 
 
 def test_wallet_kubernetes_manifests_validate_when_kubectl_available() -> None:

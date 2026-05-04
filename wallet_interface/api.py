@@ -83,6 +83,8 @@ class CoarseLocationInvocationRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
     expires_at: str | None = None
+    purpose: str | None = None
+    user_present: bool = False
 
 
 class LocationRegionProofGrantRequest(BaseModel):
@@ -113,11 +115,29 @@ class AnalysisGrantRequest(BaseModel):
     expires_at: str | None = None
 
 
+class RecordGrantRequest(BaseModel):
+    issuer_did: str
+    audience_did: str
+    abilities: List[str] = Field(default_factory=lambda: ["record/analyze"])
+    purpose: str = "service_matching"
+    output_types: List[str] = Field(default_factory=list)
+    user_presence_required: bool = False
+    caveats: Dict[str, Any] = Field(default_factory=dict)
+    issuer_key_hex: str | None = None
+    audience_key_hex: str | None = None
+    approval_id: str | None = None
+    expires_at: str | None = None
+    max_delegation_depth: int | None = None
+
+
 class AnalysisInvocationRequest(BaseModel):
     grant_id: str
     actor_did: str
     actor_key_hex: str | None = None
     expires_at: str | None = None
+    purpose: str | None = None
+    output_types: List[str] = Field(default_factory=list)
+    user_present: bool = False
 
 
 class AccessRequestCreateRequest(BaseModel):
@@ -183,6 +203,7 @@ class ExportGrantRequest(BaseModel):
     purpose: str = "user_export"
     expires_at: str | None = None
     approval_id: str | None = None
+    output_types: List[str] = Field(default_factory=list)
 
 
 class ExportBundleRequest(BaseModel):
@@ -213,6 +234,9 @@ class ExportInvocationRequest(BaseModel):
     actor_key_hex: str | None = None
     record_ids: List[str] = Field(default_factory=list)
     expires_at: str | None = None
+    purpose: str | None = None
+    output_types: List[str] = Field(default_factory=list)
+    user_present: bool = False
 
 
 class AnalyzeRecordRequest(BaseModel):
@@ -221,6 +245,29 @@ class AnalyzeRecordRequest(BaseModel):
     grant_id: str | None = None
     invocation_token: str | None = None
     max_chars: int = 200
+
+
+class RedactedAnalyzeRecordRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    max_chars: int = 500
+
+
+class VectorProfileRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    chunk_size_words: int = 80
+
+
+class RedactedAnalyzeRecordsRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    record_ids: List[str] = Field(default_factory=list)
 
 
 class DecryptRecordRequest(BaseModel):
@@ -537,6 +584,8 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 actor_secret=_key_from_optional_hex(request.actor_key_hex),
                 expires_at=request.expires_at,
+                purpose=request.purpose,
+                user_present=request.user_present,
             )
             return {"invocation": invocation.to_dict(), "token": invocation_to_token(invocation)}
         except Exception as exc:
@@ -646,6 +695,33 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/records/{record_id}/grants")
+    def create_record_grant(
+        wallet_id: str,
+        record_id: str,
+        request: RecordGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            grant = app_service.create_record_grant(
+                wallet_id,
+                record_id,
+                issuer_did=request.issuer_did,
+                audience_did=request.audience_did,
+                abilities=request.abilities,
+                purpose=request.purpose,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                approval_id=request.approval_id,
+                expires_at=request.expires_at,
+                max_delegation_depth=request.max_delegation_depth,
+                output_types=request.output_types or None,
+                user_presence_required=request.user_presence_required,
+                extra_caveats=request.caveats,
+            )
+            return grant.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/records/{record_id}/analysis-invocations")
     def issue_analysis_invocation(
         wallet_id: str,
@@ -660,6 +736,9 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 actor_secret=_key_from_optional_hex(request.actor_key_hex),
                 expires_at=request.expires_at,
+                purpose=request.purpose,
+                output_types=request.output_types or None,
+                user_present=request.user_present,
             )
             return {"invocation": invocation.to_dict(), "token": invocation_to_token(invocation)}
         except Exception as exc:
@@ -679,6 +758,9 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 actor_secret=_key_from_optional_hex(request.actor_key_hex),
                 expires_at=request.expires_at,
+                purpose=request.purpose,
+                output_types=request.output_types or None,
+                user_present=request.user_present,
             )
             return {"invocation": invocation.to_dict(), "token": invocation_to_token(invocation)}
         except Exception as exc:
@@ -898,6 +980,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 purpose=request.purpose,
                 expires_at=request.expires_at,
                 approval_id=request.approval_id,
+                output_types=request.output_types or None,
             )
             return grant.to_dict()
         except Exception as exc:
@@ -913,6 +996,9 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_secret=_key_from_optional_hex(request.actor_key_hex),
                 record_ids=request.record_ids or None,
                 expires_at=request.expires_at,
+                purpose=request.purpose,
+                output_types=request.output_types or None,
+                user_present=request.user_present,
             )
             return {
                 **invocation.to_dict(),
@@ -1025,6 +1111,85 @@ def create_app(*, service: WalletInterfaceService | None = None):
                     max_chars=request.max_chars,
                 )
             return artifact.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/{record_id}/analyze/redacted")
+    def analyze_record_redacted(
+        wallet_id: str,
+        record_id: str,
+        request: RedactedAnalyzeRecordRequest,
+    ) -> Dict[str, Any]:
+        try:
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            if request.invocation_token:
+                result = app_service.analyze_record_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=actor_secret,
+                    max_chars=request.max_chars,
+                )
+            else:
+                result = app_service.analyze_record_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=request.max_chars,
+                )
+            return _analysis_result_to_dict(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/{record_id}/vector-profile")
+    def create_document_vector_profile(
+        wallet_id: str,
+        record_id: str,
+        request: VectorProfileRequest,
+    ) -> Dict[str, Any]:
+        try:
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            if request.invocation_token:
+                result = app_service.create_document_vector_profile_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=actor_secret,
+                    chunk_size_words=request.chunk_size_words,
+                )
+            else:
+                result = app_service.create_document_vector_profile(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    chunk_size_words=request.chunk_size_words,
+                )
+            return _analysis_result_to_dict(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/analyze/redacted")
+    def analyze_records_redacted(
+        wallet_id: str,
+        request: RedactedAnalyzeRecordsRequest,
+    ) -> Dict[str, Any]:
+        try:
+            if not request.record_ids:
+                raise ValueError("redacted cross-record analysis requires at least one record_id")
+            result = app_service.analyze_records_redacted(
+                wallet_id,
+                request.record_ids,
+                actor_did=request.actor_did,
+                grant_id=request.grant_id,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+            )
+            return _analysis_result_to_dict(result)
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -1279,6 +1444,15 @@ def _match_to_dict(match) -> Dict[str, Any]:
         "service": match.service.__dict__,
         "score": match.score,
         "reasons": list(match.reasons),
+    }
+
+
+def _analysis_result_to_dict(result: Dict[str, Any]) -> Dict[str, Any]:
+    artifact = result["artifact"]
+    artifact_data = artifact.to_dict() if hasattr(artifact, "to_dict") else dict(artifact)
+    return {
+        "artifact": artifact_data,
+        "output": result["output"],
     }
 
 

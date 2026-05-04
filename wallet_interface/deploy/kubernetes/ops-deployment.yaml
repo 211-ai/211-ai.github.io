@@ -27,10 +27,13 @@ spec:
               --watch
               --interval-seconds "${WALLET_OPS_INTERVAL_SECONDS}"
               --fail-on-error
+              --alert-on "${WALLET_OPS_ALERT_ON}"
               --output-jsonl /var/log/211-ai/wallet-ops-health.jsonl
           envFrom:
             - configMapRef:
                 name: wallet-interface-config
+            - secretRef:
+                name: wallet-interface-secrets
           resources:
             requests:
               cpu: 100m

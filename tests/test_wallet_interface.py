@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from wallet_interface import ServiceRecord, WalletInterfaceService, match_services
+from wallet_interface.proof_backends import HttpLocationRegionProofBackend
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_location, resource_for_record, resource_for_wallet
 
@@ -143,6 +144,71 @@ def test_wallet_interface_matches_from_derived_facts():
     )
 
     assert matches[0].service.id == "food-1"
+
+
+def test_wallet_interface_ops_health_reports_ready_http_proof_backend() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        assert method == "POST"
+        assert url == "https://verifier.example.test/health"
+        assert payload["verifier_id"] == "verifier-http-v1"
+        assert timeout_seconds == 5.0
+        return {"ok": True, "status": "ready", "version": "2026.05.04"}
+
+    app = WalletInterfaceService(
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.example.test",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-region-v1",
+            timeout_seconds=5.0,
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+        services=_services(),
+    )
+
+    report = app.ops_health(verify_storage=False)
+    checks = {check["name"]: check for check in report["checks"]}
+
+    assert checks["proof_registry"]["status"] == "ok"
+    assert checks["proof_registry"]["details"]["verifier_id"] == "verifier-http-v1"
+    assert checks["proof_registry"]["details"]["backend_health"]["status"] == "ready"
+
+
+def test_wallet_interface_ops_health_reports_failed_http_proof_backend() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        return {"ok": False, "status": "down", "reason": "verifier unavailable"}
+
+    app = WalletInterfaceService(
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.example.test",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-region-v1",
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+        services=_services(),
+    )
+
+    report = app.ops_health(verify_storage=False)
+    checks = {check["name"]: check for check in report["checks"]}
+
+    assert report["status"] == "error"
+    assert checks["proof_registry"]["status"] == "error"
+    assert checks["proof_registry"]["details"]["backend_health"]["status"] == "down"
 
 
 def test_wallet_interface_document_analysis_grant_and_audit_timeline(tmp_path):
@@ -312,6 +378,180 @@ def test_wallet_interface_delegates_grant_with_bounded_chain(tmp_path):
     app.revoke_grant(wallet.wallet_id, parent.grant_id, actor_did=OWNER)
 
     assert app.wallet_service.grants[child.grant_id].status == "revoked"
+
+
+def test_wallet_interface_grant_record_id_caveat_limits_wildcard_resource(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    first_source = tmp_path / "allowed-record.txt"
+    second_source = tmp_path / "blocked-record.txt"
+    first_source.write_text("allowed record content", encoding="utf-8")
+    second_source.write_text("blocked record content", encoding="utf-8")
+    allowed_record = app.add_document(wallet.wallet_id, first_source, actor_did=OWNER)
+    blocked_record = app.add_document(wallet.wallet_id, second_source, actor_did=OWNER)
+    wildcard_resource = f"wallet://{wallet.wallet_id}/records/*"
+    grant = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[wildcard_resource],
+        abilities=["record/analyze"],
+        caveats={
+            "purpose": "case_review",
+            "record_ids": [allowed_record.record_id],
+            "data_types": ["document"],
+        },
+    )
+
+    artifact = app.analyze_record_for_delegate(
+        wallet.wallet_id,
+        allowed_record.record_id,
+        actor_did=ADVOCATE,
+        grant_id=grant.grant_id,
+    )
+
+    assert artifact.source_record_ids == [allowed_record.record_id]
+    with pytest.raises(Exception, match="record_ids"):
+        app.analyze_record_for_delegate(
+            wallet.wallet_id,
+            blocked_record.record_id,
+            actor_did=ADVOCATE,
+            grant_id=grant.grant_id,
+        )
+
+
+def test_wallet_interface_not_before_caveat_blocks_grant_use(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "future-grant.txt"
+    source.write_text("future caveat content", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    resource = resource_for_record(wallet.wallet_id, record.record_id)
+    grant = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[resource],
+        abilities=["record/analyze"],
+        caveats={"purpose": "case_review", "not_before": "2999-01-01T00:00:00+00:00"},
+    )
+
+    with pytest.raises(Exception, match="not valid before"):
+        app.analyze_record_for_delegate(
+            wallet.wallet_id,
+            record.record_id,
+            actor_did=ADVOCATE,
+            grant_id=grant.grant_id,
+        )
+    with pytest.raises(Exception, match="not valid before"):
+        app.wallet_service.issue_invocation(
+            wallet.wallet_id,
+            grant_id=grant.grant_id,
+            actor_did=ADVOCATE,
+            resource=resource,
+            ability="record/analyze",
+        )
+
+
+def test_wallet_interface_delegated_grant_must_preserve_parent_record_caveat(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "parent-caveat.txt"
+    source.write_text("parent caveat content", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    wildcard_resource = f"wallet://{wallet.wallet_id}/records/*"
+    parent = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[wildcard_resource],
+        abilities=["record/analyze", "record/share"],
+        caveats={"purpose": "case_review", "record_ids": [record.record_id]},
+    )
+
+    with pytest.raises(Exception, match="preserve parent record_ids"):
+        app.delegate_grant(
+            wallet.wallet_id,
+            parent_grant_id=parent.grant_id,
+            issuer_did=ADVOCATE,
+            audience_did=CASE_MANAGER,
+            resources=[wildcard_resource],
+            abilities=["record/analyze"],
+            caveats={"purpose": "case_review"},
+        )
+
+    child = app.delegate_grant(
+        wallet.wallet_id,
+        parent_grant_id=parent.grant_id,
+        issuer_did=ADVOCATE,
+        audience_did=CASE_MANAGER,
+        resources=[wildcard_resource],
+        abilities=["record/analyze"],
+        caveats={"purpose": "case_review", "record_ids": [record.record_id]},
+    )
+    artifact = app.analyze_record_for_delegate(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=CASE_MANAGER,
+        grant_id=child.grant_id,
+    )
+
+    assert artifact.source_record_ids == [record.record_id]
+
+
+def test_wallet_interface_output_type_caveat_limits_document_outputs(tmp_path):
+    app = WalletInterfaceService(services=_services())
+    wallet = app.create_wallet(OWNER)
+    source = tmp_path / "output-policy.txt"
+    source.write_text("Output policy separates summaries from plaintext.", encoding="utf-8")
+    record = app.add_document(wallet.wallet_id, source, actor_did=OWNER)
+    resource = resource_for_record(wallet.wallet_id, record.record_id)
+    summary_only = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=ADVOCATE,
+        resources=[resource],
+        abilities=["record/analyze", "record/decrypt"],
+        caveats={"purpose": "case_review", "output_types": ["summary"]},
+    )
+    plaintext_only = app.wallet_service.create_grant(
+        wallet_id=wallet.wallet_id,
+        issuer_did=OWNER,
+        audience_did=CASE_MANAGER,
+        resources=[resource],
+        abilities=["record/analyze", "record/decrypt"],
+        caveats={"purpose": "case_review", "output_types": ["plaintext"]},
+    )
+
+    artifact = app.analyze_record_for_delegate(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=ADVOCATE,
+        grant_id=summary_only.grant_id,
+    )
+    plaintext = app.wallet_service.decrypt_record(
+        wallet.wallet_id,
+        record.record_id,
+        actor_did=CASE_MANAGER,
+        grant_id=plaintext_only.grant_id,
+    )
+
+    assert artifact.artifact_type == "summary"
+    assert plaintext == source.read_bytes()
+    with pytest.raises(Exception, match="output_types"):
+        app.wallet_service.decrypt_record(
+            wallet.wallet_id,
+            record.record_id,
+            actor_did=ADVOCATE,
+            grant_id=summary_only.grant_id,
+        )
+    with pytest.raises(Exception, match="output_types"):
+        app.analyze_record_for_delegate(
+            wallet.wallet_id,
+            record.record_id,
+            actor_did=CASE_MANAGER,
+            grant_id=plaintext_only.grant_id,
+        )
 
 
 def test_wallet_interface_emergency_revoke_revokes_and_rotates(tmp_path):
@@ -885,6 +1125,7 @@ def test_wallet_interface_export_bundle_is_grant_scoped_and_encrypted(tmp_path):
         audience_did=ADVOCATE,
         record_ids=[document.record_id, location.record_id],
     )
+    assert grant.caveats["output_types"] == ["encrypted_export_bundle"]
     bundle = app.create_export_bundle(
         wallet.wallet_id,
         actor_did=ADVOCATE,

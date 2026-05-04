@@ -9,6 +9,23 @@ Build context is the repository root:
 docker compose -f wallet_interface/deploy/docker-compose.wallet.yml up --build
 ```
 
+When using the compose file for anything beyond local integration, export:
+
+```bash
+export WALLET_OPS_HEALTH_SHARED_SECRET=replace-me
+export WALLET_OPS_ALERT_WEBHOOK_URL=https://ops.example.com/hooks/211-wallet
+export WALLET_OPS_ALERT_ON=error
+export WALLET_OPS_ALERT_BEARER_TOKEN=replace-me
+export WALLET_OPS_ALERT_HEADER_NAME=x-wallet-alert-key
+export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
+export WALLET_PROOF_BACKEND=http-location-region
+export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
+export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
+export WALLET_PROOF_SYSTEM=groth16
+export WALLET_PROOF_CIRCUIT_ID=location-region-v1
+export WALLET_PROOF_BEARER_TOKEN=replace-me
+```
+
 Services:
 
 - `wallet-api`: runs `uvicorn wallet_interface.asgi:app` on port `8000`.
@@ -32,17 +49,36 @@ Required production environment:
   storage for production, for example local primary plus S3/IPFS/Filecoin
   mirrors.
 - `WALLET_PROOF_MODE=production`: disables simulated proof acceptance.
-- `WALLET_PROOF_BACKEND`: production verifier backend selection.
+- `WALLET_PROOF_BACKEND`: production verifier backend selection. Supported
+  values now include `http-location-region` for an external verifier service.
+- `WALLET_PROOF_SERVICE_URL`: required when
+  `WALLET_PROOF_BACKEND=http-location-region`.
+- `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`,
+  `WALLET_PROOF_CIRCUIT_ID`: verifier metadata for the HTTP backend.
+- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_VERIFY_PATH`: optional HTTP backend
+  endpoint overrides.
+- `WALLET_PROOF_BEARER_TOKEN`: optional bearer token for the proof service.
+- `WALLET_PROOF_HTTP_HEADER_NAME` / `WALLET_PROOF_HTTP_HEADER_VALUE`: optional
+  custom header pair for the proof service.
+- `WALLET_PROOF_TIMEOUT_SECONDS`: optional proof backend timeout.
 - `WALLET_AUTO_LOAD_REPOSITORY=true`: loads wallet snapshots on API/worker
   start.
 - `WALLET_AUTO_PERSIST=true`: persists snapshots after state-changing wallet
   operations, including ops-health audit events.
 - `WALLET_OPS_HEALTH_SHARED_SECRET`: when set, `/ops/health` requires either
   `Authorization: Bearer ...` or `X-Wallet-Ops-Shared-Secret`.
+- `WALLET_OPS_ALERT_WEBHOOK_URL`: optional webhook target for warning/error
+  ops-health alerts emitted by `python -m wallet_interface.ops`.
+- `WALLET_OPS_ALERT_ON`: optional minimum alert severity, `warning` or `error`.
+- `WALLET_OPS_ALERT_BEARER_TOKEN`: optional bearer token for the alert webhook.
+- `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE`: optional
+  custom header pair for receivers that do not use bearer auth.
 
-The included compose file uses local volumes and the deterministic
+The included compose file uses local volumes and defaults to the deterministic
 location-region proof backend as an integration-safe production-mode stand-in.
-Replace storage and proof settings before handling real user data.
+Switch `WALLET_PROOF_BACKEND` to `http-location-region` and provide the proof
+service vars before handling real user data. `GET /ops/health` will actively
+probe that verifier backend when configured.
 
 The Cloudflare Worker assets are reference glue only. They do not replace the
 Python API or local `wallet_interface.ops` worker; they front or trigger those
