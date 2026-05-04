@@ -737,6 +737,71 @@ export async function createRecordVectorProfileWithGrant(
   return toDerivedAnalysisResultView(result);
 }
 
+export async function extractRecordTextRedactedWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    invocationToken,
+    maxChars = 20_000,
+    maxBytes = 200_000,
+    useOcr = true
+  }: {
+    recordId: string;
+    grantId?: string;
+    invocationToken?: string;
+    maxChars?: number;
+    maxBytes?: number;
+    useOcr?: boolean;
+  }
+): Promise<DerivedAnalysisResultView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/extract-text/redacted`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<DerivedAnalysisResultApiResponse>(url, "Redacted text extraction", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined,
+    max_chars: maxChars,
+    max_bytes: maxBytes,
+    use_ocr: useOcr
+  });
+  return toDerivedAnalysisResultView(result);
+}
+
+export async function analyzeRecordFormRedactedWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    invocationToken,
+    maxFields = 100,
+    useOcr = false
+  }: {
+    recordId: string;
+    grantId?: string;
+    invocationToken?: string;
+    maxFields?: number;
+    useOcr?: boolean;
+  }
+): Promise<DerivedAnalysisResultView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/forms/analyze/redacted`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<DerivedAnalysisResultApiResponse>(url, "Redacted form analysis", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined,
+    max_fields: maxFields,
+    use_ocr: useOcr
+  });
+  return toDerivedAnalysisResultView(result);
+}
+
 export async function decryptRecordWithGrant(
   config: WalletApiConfig,
   {

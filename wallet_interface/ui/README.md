@@ -44,9 +44,11 @@ expose a separate document-view action that decrypts only after the recipient
 invokes that specific grant. Active receipts held by the current actor that
 include `record/share` or `document/share` can also create attenuated delegated
 grants for another DID through the wallet API.
-The API client also exposes redacted document analysis and vector-profile calls
-that return safe derived output alongside encrypted artifact metadata, matching
-the wallet package's `redacted_derived_only` and `vector_profile` output caveats.
+The API client also exposes redacted document text extraction, form analysis,
+document analysis, and vector-profile calls that return safe derived output
+alongside encrypted artifact metadata, matching the wallet package's
+`redacted_extracted_text`, `redacted_form_analysis`, `redacted_derived_only`,
+and `vector_profile` output caveats.
 When connected to the wallet API, the audit screen loads the wallet audit
 timeline so grant, invocation, analysis, repair, and revocation events remain
 traceable with actor, resource, decision, and grant metadata.
