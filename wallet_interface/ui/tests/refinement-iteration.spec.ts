@@ -34,9 +34,9 @@ const iterationScenarios: IterationScenario[] = [
     title: "Two-card home screen",
     state: "default",
     goals: [
-      "Emergency contacts must remain the first primary action.",
-      "Social services must remain the second primary action.",
-      "Next check-in information should be visible without crowding the primary actions."
+      "Contacts and Sharing should be the only overview actions.",
+      "The combined next check-in and Check in now action should stay in Quick actions.",
+      "Next check-in information should be visible without crowding the overview actions."
     ]
   },
   {
@@ -87,10 +87,10 @@ const iterationScenarios: IterationScenario[] = [
     goals: [
       "The form should be easy to complete on mobile.",
       "Contact method fields should remain labeled and fit their containers.",
-      "Recipient type selection should clearly support people, agencies, and social workers."
+      "Recipient type selection should clearly support people, shelters, government help, and benefits agencies."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Name or agency/i).fill("Morgan Caseworker");
+      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
       await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
       await page.getByLabel(/Phone/i).fill("(503) 555-0188");
       await page.getByLabel(/Email/i).fill("morgan@example.org");

@@ -10,7 +10,22 @@ const CAPABILITY_LABELS: Record<string, string> = {
   "location/read_precise": "precise location read",
   "metadata/read": "metadata read",
   "proof/verify": "proof verification",
+  "record/analyze": "safe file summary",
   "record/decrypt": "plaintext decrypt"
+};
+
+const PLAIN_CAPABILITY_LABELS: Record<string, string> = {
+  "analytics/contribute": "share group facts",
+  "analytics/query": "ask group questions",
+  "derived/read": "read safe facts",
+  "export/create": "make a full wallet export",
+  "grant/create": "share again with someone else",
+  "location/read_coarse": "read general location",
+  "location/read_precise": "read exact location",
+  "metadata/read": "read basic info",
+  "proof/verify": "check proof",
+  "record/analyze": "make a safe summary",
+  "record/decrypt": "open file contents"
 };
 
 const DEFAULT_SENSITIVE_ABILITIES = [
@@ -50,4 +65,20 @@ export function abilitiesForDisclosureScopes(scopes: DisclosureDataScope[]): str
 
 export function capabilitySummary(abilities: string[]): string {
   return abilities.map((ability) => CAPABILITY_LABELS[ability] ?? ability).join(", ");
+}
+
+export function plainCapabilityLabel(ability: string): string {
+  return PLAIN_CAPABILITY_LABELS[ability] ?? CAPABILITY_LABELS[ability] ?? ability;
+}
+
+export function plainCapabilitySummary(abilities: string[]): string {
+  return abilities.map(plainCapabilityLabel).join(", ");
+}
+
+export function plainNonGrantedCapabilities(
+  grantedAbilities: string[],
+  sensitiveAbilities = DEFAULT_SENSITIVE_ABILITIES
+): string[] {
+  const granted = new Set(grantedAbilities);
+  return sensitiveAbilities.filter((ability) => !granted.has(ability)).map(plainCapabilityLabel);
 }

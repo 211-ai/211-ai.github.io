@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import {
   Archive,
   Bell,
@@ -16,13 +16,8 @@ import {
   Menu,
   MessageSquare,
   RefreshCw,
-  Search,
   ShieldCheck,
-  Smartphone,
-  Sparkles,
   Upload,
-  UserMinus,
-  UserPlus,
   UsersRound,
   Wrench
 } from "lucide-react";
@@ -30,16 +25,15 @@ import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../comp
 import {
   CheckInChannel,
   AuditEvent,
-  AnalyticsStudy,
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
-  DecryptedRecordView,
   DerivedArtifactView,
   EasyBotCheckStatus,
   ExportBundleView,
   RegistrationProfileDraft,
   RouteId,
+  ShelterContactRequest,
   UploadItem,
   WalletAccessRequest,
   WalletGrantReceipt,
@@ -48,71 +42,47 @@ import {
 import {
   analyticsStudies,
   auditEvents,
+  defaultDisclosureScopes,
   defaultCheckInPolicy,
   emptyRegistrationProfile,
   exportBundles,
   initialRecipients,
   initialAccessRequests,
   initialGrantReceipts,
+  initialShelterContactRequests,
   initialUploads,
   proofReceipts,
   serviceMatches
 } from "../services/mockAbbyService";
-import { abilitiesForDisclosureScopes, capabilitySummary, nonGrantedCapabilities } from "../services/capabilities";
-import { answer211InfoQuestion, get211InfoRuntimeStatus, search211Info } from "../services/graphRagService";
-import type { GraphRagRuntimeStatus } from "../services/graphRagService";
-import type { GraphRagAnswer, SearchResult } from "../lib/graphrag";
+import {
+  abilitiesForDisclosureScopes,
+  capabilitySummary,
+  nonGrantedCapabilities,
+  plainCapabilityLabel,
+  plainCapabilitySummary,
+  plainNonGrantedCapabilities
+} from "../services/capabilities";
 import {
   approveAccessRequest,
   approveThresholdApproval,
-  addWalletController,
-  addWalletDevice,
   addBinaryDocument,
   addTextDocument,
   analyzeRecordWithGrant,
   createLocationRegionProof,
-  createRecordGrant,
-  createWalletAnalyticsConsent,
   createVerifiedExportBundleView,
-  delegateGrant,
-  decryptRecordWithGrant,
-  emergencyRevoke,
   importExportBundleView,
-  issueRecordDecryptInvocation,
-  loadOpsHealth,
   listWalletSnapshots,
   loadExportBundleView,
   loadWalletSnapshot,
   loadWalletAccessState,
-  loadWalletDetails,
-  listThresholdApprovals,
   listWalletAuditEvents,
-  listAnalyticsTemplates,
-  listWalletAnalyticsConsents,
   listWalletDocuments,
   listWalletProofReceipts,
   rejectAccessRequest,
   repairRecordStorage,
-  repairWalletStorage,
-  recoverWalletController,
-  removeWalletController,
-  requestRecordGrantApproval,
-  requestWalletAdminApproval,
-  rotateRecordKey,
-  revokeWalletAnalyticsConsent,
-  revokeWalletDevice,
   revokeAccessRequest,
   saveWalletSnapshot,
-  setWalletRecoveryPolicy,
   verifyWalletSnapshot,
-  verifyWalletStorage,
-  EmergencyRevokeReport,
-  OpsHealthReport,
-  ThresholdApprovalResponse,
-  WalletDetails,
-  WalletAnalyticsConsent,
-  WalletAdminOperation,
-  WalletStorageReportView,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -129,9 +99,9 @@ const routes: Array<{ id: RouteId; label: string; icon: typeof Home }> = [
 ];
 
 const secondaryRoutes: Array<{ id: RouteId; label: string; icon: typeof Home }> = [
-  { id: "recipient-access", label: "Recipient access", icon: KeyRound },
-  { id: "benefits-protection", label: "Benefits opt-in", icon: Landmark },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "recipient-access", label: "Who can see info", icon: KeyRound },
+  { id: "benefits-protection", label: "Benefits", icon: Landmark },
+  { id: "analytics", label: "Group facts", icon: BarChart3 },
   { id: "proof-center", label: "Proofs", icon: ShieldCheck },
   { id: "exports", label: "Exports", icon: LogOut },
   { id: "security", label: "Security", icon: LockKeyhole },
@@ -155,6 +125,33 @@ type ShelterStaffAccount = {
   verified: boolean;
   updatedAt: string;
 };
+
+const initialShelterStaffAccounts: ShelterStaffAccount[] = [
+  {
+    id: "staff-demo-downtown",
+    shelter: "Downtown Outreach Shelter",
+    displayName: "Jordan Lee",
+    email: "jordan@downtown.example",
+    verified: true,
+    updatedAt: "Today, 8:30 AM"
+  },
+  {
+    id: "staff-demo-rose",
+    shelter: "Rose City Shelter",
+    displayName: "Avery Patel",
+    email: "avery@rose.example",
+    verified: true,
+    updatedAt: "Today, 8:35 AM"
+  },
+  {
+    id: "staff-demo-harbor",
+    shelter: "Harbor Night Shelter",
+    displayName: "Riley Chen",
+    email: "riley@harbor.example",
+    verified: true,
+    updatedAt: "Today, 8:40 AM"
+  }
+];
 
 type ShelterUserAccount = {
   id: string;
@@ -196,20 +193,23 @@ const defaultManagedUserDraft = {
 
 const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: string }> = [
   { id: "identity_minimum", label: "Minimum identity", detail: "Name, birth date, and contact status" },
-  { id: "profile", label: "Profile", detail: "Basic profile details and service needs" },
-  { id: "photo", label: "Photo", detail: "The account photo selected during setup" },
-  { id: "current_location", label: "Current location", detail: "Most recent safe location or shelter" },
-  { id: "uploaded_documents", label: "Uploads", detail: "Documents the user explicitly includes" },
+  { id: "profile", label: "Profile", detail: "Basic profile details and help needs" },
+  { id: "photo", label: "Photo or ID file", detail: "The setup file you chose, like an image or PDF" },
+  { id: "current_location", label: "Current location", detail: "Most recent safe place or shelter" },
+  { id: "uploaded_documents", label: "Uploads", detail: "Files the person chooses to include" },
   { id: "missed_check_in", label: "Missed check-in", detail: "Whether a check-in was missed" },
   { id: "found_permanent_housing", label: "Found permanent housing", detail: "Whether stable housing was reported" },
-  { id: "medical_notes", label: "Medical notes", detail: "Sensitive health context" },
+  { id: "medical_notes", label: "Medical notes", detail: "Sensitive health notes" },
   { id: "shelter_history", label: "Shelter history", detail: "Shelter stays and staff contact details" },
-  { id: "benefits_information", label: "Benefits information", detail: "Benefits identifiers and status" },
+  { id: "benefits_information", label: "Benefits information", detail: "Benefits status and IDs" },
   { id: "custom", label: "Custom note", detail: "A user-written emergency note" }
 ];
 
 const APP_PERSIST_KEY = "abby-ui-state-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
+const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
+const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
+const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 
 const defaultShelterChecklist = {
   userPresent: false,
@@ -222,6 +222,7 @@ type PersistedAppState = {
   policy?: typeof defaultCheckInPolicy;
   recipients?: DisclosureRecipientDraft[];
   uploads?: UploadItem[];
+  shelterContactRequests?: ShelterContactRequest[];
   shelterStaffAccounts?: ShelterStaffAccount[];
   shelterUserAccounts?: ShelterUserAccount[];
   benefitsOptIn?: boolean;
@@ -239,6 +240,49 @@ function readPersistedAppState(): PersistedAppState {
   } catch {
     return {};
   }
+}
+
+function isAcceptedIdentityDocument(file: File): boolean {
+  const lowerName = file.name.toLowerCase();
+  return (
+    ID_DOCUMENT_ACCEPTED_TYPES.has(file.type) ||
+    ID_DOCUMENT_ACCEPTED_EXTENSIONS.some((extension) => lowerName.endsWith(extension))
+  );
+}
+
+function getIdentityDocumentFileDetail(file: File): string {
+  const lowerName = file.name.toLowerCase();
+  let fileType = "image";
+  if (file.type === "application/pdf" || lowerName.endsWith(".pdf")) {
+    fileType = "PDF";
+  } else if (file.type === "image/jpeg" || lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) {
+    fileType = "JPG";
+  } else if (file.type === "image/png" || lowerName.endsWith(".png")) {
+    fileType = "PNG";
+  } else if (file.type === "image/webp" || lowerName.endsWith(".webp")) {
+    fileType = "WebP";
+  }
+  return `${file.name} (${fileType})`;
+}
+
+function formatRecipientType(type: DisclosureRecipientType): string {
+  const labels: Record<DisclosureRecipientType, string> = {
+    benefits_agency: "Benefits agency",
+    emergency_contact: "Emergency contact",
+    government_liaison: "Government help",
+    police_precinct: "Police precinct",
+    shelter_staff: "Shelter staff",
+    social_worker: "Social worker"
+  };
+  return labels[type];
+}
+
+function formatAnalyticsField(field: string): string {
+  const labels: Record<string, string> = {
+    county: "county",
+    need_category: "need type"
+  };
+  return labels[field] ?? field.replace(/_/g, " ");
 }
 
 function toShortSummaryTitle(text: string): string {
@@ -304,8 +348,13 @@ export function App() {
     Array.isArray(persistedState.uploads) ? persistedState.uploads : initialUploads
   );
   const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
+  const [shelterContactRequests, setShelterContactRequests] = useState<ShelterContactRequest[]>(() =>
+    Array.isArray(persistedState.shelterContactRequests)
+      ? persistedState.shelterContactRequests
+      : initialShelterContactRequests
+  );
   const [shelterStaffAccounts, setShelterStaffAccounts] = useState<ShelterStaffAccount[]>(() =>
-    Array.isArray(persistedState.shelterStaffAccounts) ? persistedState.shelterStaffAccounts : []
+    Array.isArray(persistedState.shelterStaffAccounts) ? persistedState.shelterStaffAccounts : initialShelterStaffAccounts
   );
   const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(() =>
     Array.isArray(persistedState.shelterUserAccounts) ? persistedState.shelterUserAccounts : []
@@ -315,7 +364,7 @@ export function App() {
   const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
   const [recipientVerified, setRecipientVerified] = useState(false);
-  const [benefitsOptIn, setBenefitsOptIn] = useState(() => persistedState.benefitsOptIn ?? false);
+  const [benefitsOptIn, setBenefitsOptIn] = useState(() => persistedState.benefitsOptIn ?? true);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() =>
     persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"
       ? persistedState.analyticsOptIn
@@ -384,6 +433,7 @@ export function App() {
         policy,
         recipients,
         uploads,
+        shelterContactRequests,
         shelterStaffAccounts,
         shelterUserAccounts,
         benefitsOptIn,
@@ -397,6 +447,7 @@ export function App() {
     policy,
     profile,
     recipients,
+    shelterContactRequests,
     shelterChecklist,
     shelterStaffAccounts,
     shelterUserAccounts,
@@ -541,16 +592,23 @@ export function App() {
           />
         ) : null}
         {activeRoute === "check-in" ? (
-          <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} setPolicy={setPolicy} />
+          <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
         ) : null}
-        {activeRoute === "contacts" ? <ContactsScreen recipients={recipients} setRecipients={setRecipients} /> : null}
+        {activeRoute === "contacts" ? (
+          <ContactsScreen
+            contactRequests={shelterContactRequests}
+            profile={profile}
+            recipients={recipients}
+            setContactRequests={setShelterContactRequests}
+            setRecipients={setRecipients}
+          />
+        ) : null}
         {activeRoute === "sharing-rules" ? (
           <SharingRulesScreen recipients={recipients} setRecipients={setRecipients} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
-            refreshWalletAccessState={refreshWalletAccessState}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             uploads={uploads}
             setUploads={setUploads}
@@ -561,6 +619,10 @@ export function App() {
           <ShelterScreen
             checklist={shelterChecklist}
             setChecklist={setShelterChecklist}
+            contactRequests={shelterContactRequests}
+            recipients={recipients}
+            setContactRequests={setShelterContactRequests}
+            setRecipients={setRecipients}
             shelterStaffAccounts={shelterStaffAccounts}
             setShelterStaffAccounts={setShelterStaffAccounts}
             shelterUserAccounts={shelterUserAccounts}
@@ -585,12 +647,7 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen
-            apiConfig={walletApiConfig}
-            optedIn={analyticsOptIn}
-            refreshWalletAuditEvents={refreshWalletAuditEvents}
-            setOptedIn={setAnalyticsOptIn}
-          />
+          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -608,11 +665,7 @@ export function App() {
           />
         ) : null}
         {activeRoute === "security" ? (
-          <SecurityScreen
-            apiConfig={walletApiConfig}
-            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
-            refreshWalletAuditEvents={refreshWalletAuditEvents}
-          />
+          <SecurityScreen apiConfig={walletApiConfig} onSnapshotLoaded={refreshWalletAfterSnapshotLoad} />
         ) : null}
         {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
       </main>
@@ -645,9 +698,7 @@ function readUrlWalletApiConfig(): WalletApiConfig | undefined {
   return {
     apiBaseUrl,
     walletId,
-    actorDid: params.get("actorDid") ?? undefined,
-    issuerKeyHex: params.get("issuerKeyHex") ?? undefined,
-    audienceKeyHex: params.get("audienceKeyHex") ?? undefined
+    actorDid: params.get("actorDid") ?? undefined
   };
 }
 
@@ -706,44 +757,43 @@ function HomeScreen({
         <p className="eyebrow">Today</p>
         <h1>Your safety plan</h1>
       </div>
-      <div className="home-actions" aria-label="Primary actions">
+      <div className="home-actions" role="group" aria-label="Primary actions">
         <ActionCard
-          detail={`${recipients.length} recipients configured`}
+          detail={`${recipients.length} people or services set up`}
           icon={<ContactRound aria-hidden="true" size={28} />}
           onClick={() => navigate("contacts")}
-          title="Emergency contacts"
+          title="Contacts"
         />
         <ActionCard
-          detail="Find shelter, food, benefits, health, and legal help"
-          icon={<HeartHandshake aria-hidden="true" size={28} />}
-          onClick={() => navigate("social-services")}
-          title="Social services"
+          detail="Choose what people can see"
+          icon={<ShieldCheck aria-hidden="true" size={28} />}
+          onClick={() => navigate("sharing-rules")}
+          title="Sharing"
         />
       </div>
-      <button className="checkin-panel" onClick={() => navigate("check-in")}>
-        <div className="checkin-panel-icon"><CalendarCheck size={24} aria-hidden="true" /></div>
-        <div className="checkin-panel-text">
-          <span className="checkin-panel-label">Next check-in</span>
-          <span className="checkin-panel-value">{nextCheckIn}</span>
-        </div>
-        <span className="checkin-panel-cta">Check in now</span>
-      </button>
       <Section title="Quick actions">
         <div className="quick-actions">
-          <Button onClick={() => navigate("sharing-rules")} variant="secondary">
-            <ShieldCheck size={18} /> Review sharing
-          </Button>
+          <button className="checkin-panel" onClick={() => navigate("check-in")} type="button">
+            <div className="checkin-panel-icon">
+              <CalendarCheck size={24} aria-hidden="true" />
+            </div>
+            <div className="checkin-panel-text">
+              <span className="checkin-panel-label">Next check-in</span>
+              <span className="checkin-panel-value">{nextCheckIn}</span>
+            </div>
+            <span className="checkin-panel-cta">Check in now</span>
+          </button>
         </div>
       </Section>
       <div className="home-footer">
         <div className="home-footer-stat">
-          <small>Stored uploads</small>
+          <small>Saved files</small>
           <span>{uploads.length} file{uploads.length !== 1 ? "s" : ""}</span>
         </div>
         <div className="home-footer-divider" />
         <div className="home-footer-stat">
-          <small>Sharing rules</small>
-          <button className="home-footer-link" onClick={() => navigate("sharing-rules")}>Review due</button>
+          <small>Sharing choices</small>
+          <span>Ready to review</span>
         </div>
       </div>
     </div>
@@ -771,9 +821,8 @@ function RegistrationScreen({
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
 }) {
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
-  const [photoPreviewUrl, setPhotoPreviewUrl] = useState("");
-  const [photoPreviewLabel, setPhotoPreviewLabel] = useState("");
-  const [showPhotoPreview, setShowPhotoPreview] = useState(false);
+  const [photoFileDetail, setPhotoFileDetail] = useState("");
+  const [photoUploadError, setPhotoUploadError] = useState("");
   const [isShelterStaff, setIsShelterStaff] = useState(false);
   const [selectedShelter, setSelectedShelter] = useState("");
   const [shelterPin, setShelterPin] = useState("");
@@ -784,56 +833,24 @@ function RegistrationScreen({
 
   async function handleProfileUploadChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-    update({ photoAssetId: file?.name ?? "" });
 
     if (!file) {
-      setPhotoPreviewUrl("");
-      setPhotoPreviewLabel("");
-      setShowPhotoPreview(false);
+      update({ photoAssetId: "" });
+      setPhotoFileDetail("");
+      setPhotoUploadError("");
       return;
     }
 
-    setShowPhotoPreview(false);
-
-    try {
-      if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-        const { getDocument, GlobalWorkerOptions } = await import("pdfjs-dist");
-        GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
-
-        const bytes = await file.arrayBuffer();
-        const pdf = await getDocument({ data: bytes }).promise;
-        const firstPage = await pdf.getPage(1);
-        const viewport = firstPage.getViewport({ scale: 1.2 });
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-        if (!context) throw new Error("Canvas unavailable");
-
-        canvas.width = Math.ceil(viewport.width);
-        canvas.height = Math.ceil(viewport.height);
-        await firstPage.render({ canvas: canvas as HTMLCanvasElement, canvasContext: context, viewport }).promise;
-
-        setPhotoPreviewUrl(canvas.toDataURL("image/png"));
-        setPhotoPreviewLabel("PDF first page preview");
-        return;
-      }
-
-      if (file.type.startsWith("image/")) {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-          setPhotoPreviewUrl(String(fileReader.result || ""));
-          setPhotoPreviewLabel("Selected image preview");
-        };
-        fileReader.readAsDataURL(file);
-        return;
-      }
-    } catch {
-      setPhotoPreviewUrl("");
-      setPhotoPreviewLabel("Preview unavailable for this file.");
+    if (!isAcceptedIdentityDocument(file)) {
+      update({ photoAssetId: "" });
+      setPhotoFileDetail("");
+      setPhotoUploadError("We can't use this file. Use JPG, PNG, WebP, or PDF.");
       return;
     }
 
-    setPhotoPreviewUrl("");
-    setPhotoPreviewLabel("Preview unavailable for this file.");
+    update({ photoAssetId: file.name });
+    setPhotoFileDetail(getIdentityDocumentFileDetail(file));
+    setPhotoUploadError("");
   }
 
   function toggleNeed(need: string) {
@@ -850,52 +867,50 @@ function RegistrationScreen({
         <p className="eyebrow">Registration</p>
         <h1>Create your Abby profile</h1>
       </div>
-      <StatusBanner tone="info">Only name, birth date, photo, and bot check are required to start.</StatusBanner>
+      <StatusBanner tone="info">To start, add your name, birth date, photo or ID, and pass the person check.</StatusBanner>
       <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
-        <Field help="Used for emergency identity matching." label="Legal or full name" required>
+        <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
           <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
         </Field>
         <Field help="Shown in the app when provided." label="Preferred name">
           <input value={profile.preferredName} onChange={(event) => update({ preferredName: event.target.value })} />
         </Field>
-        <Field help="e.g. she/her, he/him, they/them — optional and not shared without permission." label="Pronouns">
-          <input value={profile.pronouns} onChange={(event) => update({ pronouns: event.target.value })} />
+        <Field help="Optional. You can use any words you want." label="Pronouns">
+          <input
+            placeholder="call me she/her, he/him, they/them"
+            value={profile.pronouns}
+            onChange={(event) => update({ pronouns: event.target.value })}
+          />
         </Field>
-        <Field help="Required to distinguish people with similar names." label="Birth date" required>
+        <Field help="This helps tell people with the same name apart." label="Birth date" required>
           <input
             type="date"
             value={profile.dateOfBirth}
             onChange={(event) => update({ dateOfBirth: event.target.value })}
           />
         </Field>
-        <Field help="Use camera on mobile, upload an image, or upload a PDF photo ID." label="Photo or photo ID" required>
+        <Field
+          error={photoUploadError}
+          help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
+          label="Photo or photo ID"
+          required
+        >
           <input
-            accept="image/*,.pdf,application/pdf"
-            capture="user"
+            accept={ID_DOCUMENT_ACCEPT_ATTR}
             type="file"
             onChange={handleProfileUploadChange}
           />
-          {photoPreviewUrl ? (
-            <div className="photo-preview-toggle">
-              <button className="preview-toggle-button" onClick={() => setShowPhotoPreview(!showPhotoPreview)} type="button">
-                {showPhotoPreview ? "Hide preview" : "See preview"}
-              </button>
-              {showPhotoPreview ? (
-                <div className="photo-preview-card">
-                  <small>{photoPreviewLabel}</small>
-                  <img alt="Profile upload preview" src={photoPreviewUrl} />
-                </div>
-              ) : null}
-            </div>
-          ) : photoPreviewLabel ? (
-            <small>{photoPreviewLabel}</small>
+          {photoFileDetail ? (
+            <small className="registration-file-detail" aria-live="polite">
+              Selected file: {photoFileDetail}
+            </small>
           ) : null}
         </Field>
         <hr className="form-divider full-span" />
-        <Field help="Used for text reminders if enabled." label="Phone">
+        <Field help="Used for text reminders." label="Phone">
           <input value={profile.phone} onChange={(event) => update({ phone: event.target.value })} />
         </Field>
-        <Field help="Used for email reminders if enabled." label="Email">
+        <Field help="Used for email reminders." label="Email">
           <input type="email" value={profile.email} onChange={(event) => update({ email: event.target.value })} />
         </Field>
         <Field help="Can be a neighborhood, shelter, or general area." label="Current safe location">
@@ -1044,21 +1059,71 @@ function RegistrationScreen({
 
 function CheckInScreen({
   policy,
+  profile,
   setPolicy,
   nextCheckIn
 }: {
   policy: typeof defaultCheckInPolicy;
+  profile: RegistrationProfileDraft;
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   nextCheckIn: string;
 }) {
+  const [checkInMessage, setCheckInMessage] = useState<{ tone: "success" | "warning"; text: string } | null>(null);
   const update = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
+  const channelLabels: Record<CheckInChannel, string> = {
+    sms: "Texting allowed",
+    email: "Email allowed",
+    web: "Web allowed"
+  };
+  const checkInMethodLabels: Record<CheckInChannel, string> = {
+    sms: "text",
+    email: "email",
+    web: "web"
+  };
+  const channelIsAllowed = (channel: CheckInChannel) => policy.reminderChannels.includes(channel);
   const toggleChannel = (channel: CheckInChannel) => {
     update({
       reminderChannels: policy.reminderChannels.includes(channel)
         ? policy.reminderChannels.filter((item) => item !== channel)
         : [...policy.reminderChannels, channel]
     });
+    setCheckInMessage(null);
   };
+
+  function checkInBy(channel: CheckInChannel) {
+    if (!channelIsAllowed(channel)) {
+      setCheckInMessage({
+        tone: "warning",
+        text:
+          channel === "web"
+            ? "Web check-in is off. Choose an allowed check-in method."
+            : `${channel === "sms" ? "Texting" : "Email"} is off. Choose an allowed check-in method.`
+      });
+      return;
+    }
+
+    if (channel === "sms" && !profile.phone.trim()) {
+      setCheckInMessage({
+        tone: "warning",
+        text: "Add a phone number to your account, or use another allowed check-in method."
+      });
+      return;
+    }
+
+    if (channel === "email" && !profile.email.trim()) {
+      setCheckInMessage({
+        tone: "warning",
+        text: "Add an email to your account, or use another allowed check-in method."
+      });
+      return;
+    }
+
+    update({ lastCheckInAt: new Date().toISOString() });
+    setCheckInMessage({
+      tone: "success",
+      text: `Checked in by ${channel === "sms" ? "text" : channel}.`
+    });
+  }
 
   return (
     <div className="screen">
@@ -1066,10 +1131,10 @@ function CheckInScreen({
         <p className="eyebrow">Check-in</p>
         <h1>Set your schedule</h1>
       </div>
-      <StatusBanner tone="warning">The maximum interval is 30 days before escalation.</StatusBanner>
+      <StatusBanner tone="warning">You can wait up to 30 days between check-ins. After that, Abby starts the next help step.</StatusBanner>
       <Section title="Reminder schedule">
         <div className="form-grid">
-          <Field help="Choose 1 to 30 days." label="Interval days" required>
+          <Field help="Choose 1 to 30 days." label="Days between check-ins" required>
             <input
               max={30}
               min={1}
@@ -1080,7 +1145,7 @@ function CheckInScreen({
               }
             />
           </Field>
-          <Field help="Time after a missed check-in before escalation starts." label="Grace period hours">
+          <Field help="Extra time after a missed check-in before Abby starts the next help step." label="Extra hours after a missed check-in">
             <input
               min={0}
               type="number"
@@ -1089,19 +1154,24 @@ function CheckInScreen({
             />
           </Field>
         </div>
-        <div className="chip-grid">
+        <p className="supporting-copy">You can check in by text, email, or web when that method is allowed.</p>
+        <div className="channel-controls" role="group" aria-label="Allowed check-in methods">
           {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => (
             <button
               aria-pressed={policy.reminderChannels.includes(channel)}
-              className="choice-chip"
+              className="choice-chip channel-toggle"
               key={channel}
               onClick={() => toggleChannel(channel)}
               type="button"
             >
-              {channel.toUpperCase()}
+              <span>{channelLabels[channel]}</span>
+              <small>{channelIsAllowed(channel) ? "On" : "Off"}</small>
             </button>
           ))}
         </div>
+        {!policy.reminderChannels.length ? (
+          <StatusBanner tone="warning">No check-in method is on. Turn on text, email, or web to check in.</StatusBanner>
+        ) : null}
         <div className="schedule-preview">
           <CalendarCheck aria-hidden="true" size={28} />
           <div>
@@ -1109,19 +1179,33 @@ function CheckInScreen({
             <strong>{nextCheckIn}</strong>
           </div>
         </div>
-        <Button onClick={() => update({ lastCheckInAt: new Date().toISOString() })}>
-          <Bell size={18} /> Check in now
-        </Button>
+        {checkInMessage ? <StatusBanner tone={checkInMessage.tone}>{checkInMessage.text}</StatusBanner> : null}
+        <div className="method-checkin-grid" role="group" aria-label="Check in now">
+          {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => {
+            const allowed = channelIsAllowed(channel);
+            return (
+              <Button key={channel} onClick={() => checkInBy(channel)} variant={allowed ? "primary" : "secondary"}>
+                <Bell size={18} /> Check in by {checkInMethodLabels[channel]}{allowed ? "" : " (off)"}
+              </Button>
+            );
+          })}
+        </div>
       </Section>
     </div>
   );
 }
 
 function ContactsScreen({
+  contactRequests,
+  profile,
   recipients,
+  setContactRequests,
   setRecipients
 }: {
+  contactRequests: ShelterContactRequest[];
+  profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
+  setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
   const [draft, setDraft] = useState({
@@ -1131,6 +1215,47 @@ function ContactsScreen({
     phone: "",
     type: "emergency_contact" as DisclosureRecipientType
   });
+  const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
+
+  const userName = profile.preferredName || profile.legalName || "Abby Example";
+  const userContact = profile.email || profile.phone || "abby@example.org";
+  const userContactKey = userContact.trim().toLowerCase();
+  const requestBelongsToCurrentUser = (request: ShelterContactRequest) =>
+    request.userName.trim().toLowerCase() === userName.trim().toLowerCase() ||
+    request.userContact.trim().toLowerCase() === userContactKey;
+  const userShelterRequests = contactRequests.filter(requestBelongsToCurrentUser);
+  const incomingShelterNudges = contactRequests.filter(
+    (request) =>
+      request.direction === "shelter_to_user" && request.status === "pending" && requestBelongsToCurrentUser(request)
+  );
+  const hasPendingRequestedShelter = contactRequests.some(
+    (request) =>
+      request.status === "pending" &&
+      request.shelterName === requestedShelter &&
+      requestBelongsToCurrentUser(request)
+  );
+
+  function addShelterRecipient(shelterName: string) {
+    if (recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName)) {
+      return;
+    }
+
+    setRecipients([
+      ...recipients,
+      {
+        id: `rec-${Date.now()}`,
+        type: "shelter_staff",
+        displayName: shelterName,
+        relationship: "Shelter",
+        email: "",
+        phone: "",
+        agencyName: shelterName,
+        precinctName: "",
+        verified: true,
+        allowedScopes: ["identity_minimum"]
+      }
+    ]);
+  }
 
   function addRecipient(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1143,29 +1268,72 @@ function ContactsScreen({
         agencyName: "",
         precinctName: "",
         verified: false,
-        allowedScopes: ["identity_minimum", "photo"]
+        allowedScopes: [...defaultDisclosureScopes]
       }
     ]);
     setDraft({ displayName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
+  }
+
+  function requestShelterContact(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (hasPendingRequestedShelter) return;
+
+    setContactRequests([
+      ...contactRequests,
+      {
+        id: `shelter-request-${Date.now()}`,
+        direction: "user_to_shelter",
+        status: "pending",
+        shelterName: requestedShelter,
+        userName,
+        userContact,
+        createdAt: new Date().toISOString()
+      }
+    ]);
+  }
+
+  function decideShelterNudge(requestId: string, status: "approved" | "denied") {
+    const request = contactRequests.find((item) => item.id === requestId);
+    if (!request) return;
+
+    if (status === "approved") {
+      addShelterRecipient(request.shelterName);
+    }
+
+    setContactRequests(
+      contactRequests.map((item) =>
+        item.id === requestId ? { ...item, status, decidedAt: new Date().toISOString() } : item
+      )
+    );
+  }
+
+  function cancelShelterRequest(requestId: string) {
+    setContactRequests(
+      contactRequests.map((item) =>
+        item.id === requestId && item.direction === "user_to_shelter" && item.status === "pending"
+          ? { ...item, status: "canceled", decidedAt: new Date().toISOString() }
+          : item
+      )
+    );
   }
 
   return (
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Emergency contacts</p>
-        <h1>People and agencies</h1>
+        <h1>People who can help</h1>
       </div>
       <div className="list-stack">
         {recipients.map((recipient) => (
           <article className="list-item recipient-list-item" key={recipient.id}>
             <div>
               <h3>{recipient.displayName}</h3>
-              <p>{recipient.relationship || recipient.agencyName || recipient.type.replace("_", " ")}</p>
+              <p>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</p>
               <div className="badge-row">
                 <Badge tone={recipient.verified ? "success" : "warning"}>
-                  {recipient.verified ? "Verified" : "Needs verification"}
+                  {recipient.verified ? "Verified" : "Needs a check"}
                 </Badge>
-                <Badge>{recipient.allowedScopes.length} scopes</Badge>
+                <Badge>{recipient.allowedScopes.length} items</Badge>
               </div>
             </div>
             <Button
@@ -1179,9 +1347,72 @@ function ContactsScreen({
           </article>
         ))}
       </div>
-      <Section title="Add recipient">
+      <Section title="Shelter requests">
+        <StatusBanner tone="info">
+          A shelter is added only after the other side says yes. This does not share extra details.
+        </StatusBanner>
+        <form className="form-grid" onSubmit={requestShelterContact}>
+          <Field label="Shelter">
+            <select value={requestedShelter} onChange={(event) => setRequestedShelter(event.target.value)}>
+              {shelterOptions.map((shelter) => (
+                <option key={shelter} value={shelter}>
+                  {shelter}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <div className="full-span centered-action">
+            <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
+              <MessageSquare size={18} /> Ask to add shelter
+            </Button>
+          </div>
+          {hasPendingRequestedShelter ? (
+            <small className="full-span pin-request-note">
+              A request is already waiting for this shelter and person.
+            </small>
+          ) : null}
+        </form>
+        <div className="list-stack">
+          {incomingShelterNudges.map((request) => (
+            <article className="list-item access-request-item" key={request.id}>
+              <div>
+                <h3>{request.shelterName}</h3>
+                <p>{request.staffName || "Shelter staff"} asked to be added to your contacts.</p>
+                <Badge>{request.status}</Badge>
+              </div>
+              <div className="row-actions">
+                <Button onClick={() => decideShelterNudge(request.id, "approved")} variant="secondary">
+                  Approve
+                </Button>
+                <Button onClick={() => decideShelterNudge(request.id, "denied")} variant="danger">
+                  Deny
+                </Button>
+              </div>
+            </article>
+          ))}
+          {userShelterRequests.map((request) => (
+            <article className="list-item" key={`status-${request.id}`}>
+              <div>
+                <h3>{request.shelterName}</h3>
+                <p>{request.direction === "user_to_shelter" ? "You asked this shelter." : "Shelter asked you."}</p>
+              </div>
+              <div className="row-actions">
+                <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
+                  {request.status}
+                </Badge>
+                {request.direction === "user_to_shelter" && request.status === "pending" ? (
+                  <Button onClick={() => cancelShelterRequest(request.id)} variant="secondary">
+                    Cancel
+                  </Button>
+                ) : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      </Section>
+      <Section title="Add person or group">
         <form className="form-grid" onSubmit={addRecipient}>
-          <Field label="Name or agency" required>
+          <Field label="Name or group" required>
             <input value={draft.displayName} onChange={(event) => setDraft({ ...draft, displayName: event.target.value })} />
           </Field>
           <Field label="Relationship or role">
@@ -1202,12 +1433,13 @@ function ContactsScreen({
               <option value="social_worker">Social worker</option>
               <option value="police_precinct">Police precinct</option>
               <option value="shelter_staff">Shelter staff</option>
-              <option value="government_liaison">Government liaison</option>
+              <option value="government_liaison">Government help</option>
+              <option value="benefits_agency">Benefits agency</option>
             </select>
           </Field>
-          <div className="full-span">
+          <div className="full-span centered-action">
             <Button type="submit">
-              <UsersRound size={18} /> Add recipient
+              <UsersRound size={18} /> Add person or group
             </Button>
           </div>
         </form>
@@ -1241,17 +1473,22 @@ function SharingRulesScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Sharing rules</p>
+        <p className="eyebrow">Sharing choices</p>
         <h1>Choose what each person can see</h1>
       </div>
-      <StatusBanner tone="info">No recipient receives new information unless a scope is selected here.</StatusBanner>
+      <StatusBanner tone="info">
+        These items start on. You can turn off any item before you save.
+      </StatusBanner>
+      <StatusBanner tone="warning">
+        A privacy and legal team must review this before real use.
+      </StatusBanner>
       <div className="list-stack">
         {recipients.map((recipient) => (
           <article className="scope-editor" key={recipient.id}>
             <div className="scope-header">
               <div>
                 <h3>{recipient.displayName}</h3>
-                <p>{recipient.type.replace("_", " ")}</p>
+                <p>{formatRecipientType(recipient.type)}</p>
               </div>
               <Badge>{recipient.allowedScopes.length} selected</Badge>
             </div>
@@ -1277,25 +1514,29 @@ function SharingRulesScreen({
             >
               <div className="scope-header">
                 <div>
-                  <h4>Capability preview</h4>
-                  <p>{recipient.allowedScopes.length} selected scopes</p>
+                  <h4>What this allows</h4>
+                  <p>{recipient.allowedScopes.length} selected items</p>
                 </div>
                 <Badge tone={recipient.allowedScopes.length > 0 ? "success" : "warning"}>
-                  {recipient.allowedScopes.length > 0 ? "bounded share" : "no access"}
+                  {recipient.allowedScopes.length > 0 ? "limited share" : "no access"}
                 </Badge>
               </div>
               <div className="disclosure-package">
                 <div className="disclosure-row">
-                  <strong>Abilities</strong>
-                  <span>{capabilitySummary(abilitiesForDisclosureScopes(recipient.allowedScopes))}</span>
+                  <strong>Can do</strong>
+                  <span>{plainCapabilitySummary(abilitiesForDisclosureScopes(recipient.allowedScopes))}</span>
                 </div>
                 <div className="disclosure-row">
-                  <strong>Scopes</strong>
-                  <span>{recipient.allowedScopes.join(", ") || "No scopes selected"}</span>
+                  <strong>Items</strong>
+                  <span>
+                    {recipient.allowedScopes
+                      .map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope)
+                      .join(", ") || "No items selected"}
+                  </span>
                 </div>
                 <div className="disclosure-row">
-                  <strong>Not granted</strong>
-                  <span>{nonGrantedCapabilities(abilitiesForDisclosureScopes(recipient.allowedScopes)).join(", ")}</span>
+                  <strong>Not allowed</strong>
+                  <span>{plainNonGrantedCapabilities(abilitiesForDisclosureScopes(recipient.allowedScopes)).join(", ")}</span>
                 </div>
               </div>
             </div>
@@ -1306,84 +1547,18 @@ function SharingRulesScreen({
   );
 }
 
-type UploadSharePermission = "analyze" | "view" | "analyze_view" | "analyze_view_share";
-
-interface UploadShareDraft {
-  audienceDid: string;
-  audienceKeyHex: string;
-  permission: UploadSharePermission;
-  purpose: string;
-  expiresAt: string;
-  approvalId: string;
-  requirePresence: boolean;
-}
-
-function defaultUploadShareDraft(): UploadShareDraft {
-  return {
-    audienceDid: "",
-    audienceKeyHex: "",
-    permission: "analyze",
-    purpose: "service_matching",
-    expiresAt: "",
-    approvalId: "",
-    requirePresence: false
-  };
-}
-
-function uploadShareAbilities(permission: UploadSharePermission): string[] {
-  if (permission === "view") return ["record/decrypt"];
-  if (permission === "analyze_view") return ["record/analyze", "record/decrypt"];
-  if (permission === "analyze_view_share") return ["record/analyze", "record/decrypt", "record/share"];
-  return ["record/analyze"];
-}
-
-function uploadShareNeedsApproval(permission: UploadSharePermission) {
-  return uploadShareAbilities(permission).some((ability) => ability === "record/decrypt" || ability === "record/share");
-}
-
-function uploadShareCanRequirePresence(permission: UploadSharePermission) {
-  return uploadShareAbilities(permission).includes("record/decrypt");
-}
-
-function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
-  return Boolean(receipt.caveats?.user_presence_required || receipt.caveats?.require_user_presence);
-}
-
 function UploadsScreen({
   apiConfig,
-  refreshWalletAccessState,
   refreshWalletAuditEvents,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
-  refreshWalletAccessState: () => Promise<void>;
   refreshWalletAuditEvents: () => Promise<void>;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
-  const [rotatingUploadIds, setRotatingUploadIds] = useState<string[]>([]);
-  const [viewingUploadIds, setViewingUploadIds] = useState<string[]>([]);
-  const [decryptedUploadsById, setDecryptedUploadsById] = useState<Record<string, DecryptedRecordView>>({});
-  const [shareDraftsById, setShareDraftsById] = useState<Record<string, UploadShareDraft>>({});
-  const [sharingUploadIds, setSharingUploadIds] = useState<string[]>([]);
-  const [requestingShareApprovalIds, setRequestingShareApprovalIds] = useState<string[]>([]);
-  const [shareMessagesById, setShareMessagesById] = useState<Record<string, string>>({});
-
-  function shareDraftFor(upload: UploadItem) {
-    return shareDraftsById[upload.id] ?? defaultUploadShareDraft();
-  }
-
-  function updateShareDraft(upload: UploadItem, patch: Partial<UploadShareDraft>) {
-    setShareDraftsById((drafts) => ({
-      ...drafts,
-      [upload.id]: {
-        ...(drafts[upload.id] ?? defaultUploadShareDraft()),
-        ...patch
-      }
-    }));
-  }
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -1447,120 +1622,17 @@ function UploadsScreen({
     }
   }
 
-  async function rotateUploadKey(upload: UploadItem) {
-    if (!apiConfig?.actorDid || !upload.recordId) return;
-    setRotatingUploadIds((uploadIds) => [...uploadIds, upload.id]);
-    try {
-      await rotateRecordKey(apiConfig, upload.recordId);
-      await refreshWalletAuditEvents();
-    } finally {
-      setRotatingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
-    }
-  }
-
-  async function viewUpload(upload: UploadItem) {
-    if (!apiConfig?.actorDid || !upload.recordId) return;
-    setViewingUploadIds((uploadIds) => [...uploadIds, upload.id]);
-    try {
-      const decrypted = await decryptRecordWithGrant(apiConfig, { recordId: upload.recordId });
-      setDecryptedUploadsById({
-        ...decryptedUploadsById,
-        [upload.id]: decrypted
-      });
-      await refreshWalletAuditEvents();
-    } catch {
-      setDecryptedUploadsById({
-        ...decryptedUploadsById,
-        [upload.id]: {
-          recordId: upload.recordId,
-          text: "Document view unavailable.",
-          sizeBytes: 0
-        }
-      });
-    } finally {
-      setViewingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
-    }
-  }
-
-  async function shareUpload(event: FormEvent<HTMLFormElement>, upload: UploadItem) {
-    event.preventDefault();
-    if (!apiConfig?.actorDid || !upload.recordId) return;
-    const draft = shareDraftFor(upload);
-    const audienceDid = draft.audienceDid.trim();
-    if (!audienceDid) return;
-    setSharingUploadIds((uploadIds) => [...uploadIds, upload.id]);
-    setShareMessagesById({ ...shareMessagesById, [upload.id]: "" });
-    try {
-      const grant = await createRecordGrant(apiConfig, {
-        recordId: upload.recordId,
-        audienceDid,
-        audienceKeyHex: draft.audienceKeyHex.trim() || undefined,
-        abilities: uploadShareAbilities(draft.permission),
-        purpose: draft.purpose.trim() || "service_matching",
-        expiresAt: dateInputValueToIso(draft.expiresAt),
-        approvalId: draft.approvalId.trim() || undefined,
-        maxDelegationDepth: draft.permission === "analyze_view_share" ? 1 : undefined,
-        userPresenceRequired: uploadShareCanRequirePresence(draft.permission) ? draft.requirePresence : false
-      });
-      setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: true } : item)));
-      setShareDraftsById({
-        ...shareDraftsById,
-        [upload.id]: defaultUploadShareDraft()
-      });
-      setShareMessagesById({
-        ...shareMessagesById,
-        [upload.id]: `Shared with ${audienceDid}: ${grant.abilities.join(", ")}.`
-      });
-      await refreshWalletAccessState();
-      await refreshWalletAuditEvents();
-    } catch {
-      setShareMessagesById({
-        ...shareMessagesById,
-        [upload.id]: "Document share failed. Check the DID, key, or required approval."
-      });
-    } finally {
-      setSharingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
-    }
-  }
-
-  async function requestShareApproval(upload: UploadItem) {
-    if (!apiConfig?.actorDid || !upload.recordId) return;
-    const draft = shareDraftFor(upload);
-    const abilities = uploadShareAbilities(draft.permission);
-    setRequestingShareApprovalIds((uploadIds) =>
-      uploadIds.includes(upload.id) ? uploadIds : [...uploadIds, upload.id]
-    );
-    setShareMessagesById((messages) => ({ ...messages, [upload.id]: "" }));
-    try {
-      const approval = await requestRecordGrantApproval(apiConfig, {
-        recordId: upload.recordId,
-        abilities,
-        requestedBy: apiConfig.actorDid,
-        expiresAt: dateInputValueToIso(draft.expiresAt)
-      });
-      updateShareDraft(upload, { approvalId: approval.approval_id });
-      setShareMessagesById((messages) => ({
-        ...messages,
-        [upload.id]: `Approval ${approval.approval_id} requested.`
-      }));
-    } catch {
-      setShareMessagesById((messages) => ({ ...messages, [upload.id]: "Approval request failed." }));
-    } finally {
-      setRequestingShareApprovalIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
-    }
-  }
-
   return (
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Uploads</p>
-        <h1>Document and information vault</h1>
+        <h1>Saved files and info</h1>
       </div>
       <Section title="Add information">
         <label className="upload-dropzone">
           <Upload aria-hidden="true" size={28} />
           <span>Choose a file or photo</span>
-          <small>Stored items stay private until added to a sharing rule.</small>
+          <small>Files stay private until you choose to share them.</small>
           <span className="upload-picker">
             <FileUp aria-hidden="true" size={18} /> Select file
           </span>
@@ -1572,370 +1644,51 @@ function UploadsScreen({
         </label>
       </Section>
       <div className="list-stack">
-        {uploads.map((upload) => {
-          const decryptedUpload = decryptedUploadsById[upload.id];
-          const shareDraft = shareDraftFor(upload);
-          const shareFormOpen = Boolean(shareDraftsById[upload.id]);
-          const shareMessage = shareMessagesById[upload.id];
-          const shareApprovalRequired = uploadShareNeedsApproval(shareDraft.permission);
-          const sharePresenceAvailable = uploadShareCanRequirePresence(shareDraft.permission);
-          return (
-            <article className="list-item upload-list-item" key={upload.id}>
-              <div className="upload-list-main">
-                <div>
-                  <h3>{upload.fileName}</h3>
-                  <p>{upload.category}</p>
-                  <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
-                  <div className="badge-row">
-                    <Badge tone="success">{upload.status}</Badge>
-                    <Badge tone="warning">{upload.sensitivity}</Badge>
-                    {upload.storageOk !== undefined ? (
-                      <Badge tone={upload.storageOk ? "success" : "warning"}>
-                        {upload.storageOk ? "storage verified" : "storage needs repair"}
-                      </Badge>
-                    ) : null}
-                    <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
-                  </div>
-                </div>
-                <div className="row-actions list-item-action">
-                  {upload.recordId && apiConfig?.actorDid ? (
-                    <Button
-                      onClick={() => updateShareDraft(upload, {})}
-                      variant="secondary"
-                    >
-                      <UserPlus aria-hidden="true" size={18} />
-                      Share document
-                    </Button>
-                  ) : null}
-                  {upload.recordId && apiConfig?.actorDid ? (
-                    <Button
-                      disabled={viewingUploadIds.includes(upload.id)}
-                      onClick={() => viewUpload(upload)}
-                      variant="secondary"
-                    >
-                      <LockKeyhole aria-hidden="true" size={18} />
-                      {viewingUploadIds.includes(upload.id) ? "Opening" : "View document"}
-                    </Button>
-                  ) : null}
-                  {upload.recordId && apiConfig?.actorDid ? (
-                    <Button
-                      disabled={rotatingUploadIds.includes(upload.id)}
-                      onClick={() => rotateUploadKey(upload)}
-                      variant="secondary"
-                    >
-                      <KeyRound aria-hidden="true" size={18} />
-                      {rotatingUploadIds.includes(upload.id) ? "Rotating" : "Rotate key"}
-                    </Button>
-                  ) : null}
-                  {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
-                    <Button
-                      disabled={repairingUploadIds.includes(upload.id)}
-                      onClick={() => repairUploadStorage(upload)}
-                      variant="secondary"
-                    >
-                      <Wrench aria-hidden="true" size={18} />
-                      {repairingUploadIds.includes(upload.id) ? "Repairing" : "Repair storage"}
-                    </Button>
-                  ) : null}
-                  <Button
-                    onClick={() =>
-                      setUploads(
-                        uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item))
-                      )
-                    }
-                    variant="secondary"
-                  >
-                    {upload.shared ? "Mark private" : "Mark eligible"}
-                  </Button>
-                </div>
+        {uploads.map((upload) => (
+          <article className="list-item upload-list-item" key={upload.id}>
+            <div>
+              <h3>{upload.fileName}</h3>
+              <p>{upload.category}</p>
+              <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
+              <div className="badge-row">
+                <Badge tone="success">{upload.status}</Badge>
+                {upload.storageOk !== undefined ? (
+                  <Badge tone={upload.storageOk ? "success" : "warning"}>
+                    {upload.storageOk ? "saved" : "save needs fix"}
+                  </Badge>
+                ) : null}
+                <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
               </div>
-              {shareFormOpen ? (
-                <form className="form-grid" onSubmit={(event) => shareUpload(event, upload)}>
-                  <Field label="Recipient DID" required>
-                    <input
-                      onChange={(event) => updateShareDraft(upload, { audienceDid: event.target.value })}
-                      placeholder="did:key:case-worker"
-                      value={shareDraft.audienceDid}
-                    />
-                  </Field>
-                  <Field label="Permission">
-                    <select
-                      onChange={(event) =>
-                        updateShareDraft(upload, { permission: event.target.value as UploadSharePermission })
-                      }
-                      value={shareDraft.permission}
-                    >
-                      <option value="analyze">Analyze only</option>
-                      <option value="view">View document</option>
-                      <option value="analyze_view">Analyze and view</option>
-                      <option value="analyze_view_share">Analyze, view, and delegate</option>
-                    </select>
-                  </Field>
-                  <Field label="Purpose">
-                    <input
-                      onChange={(event) => updateShareDraft(upload, { purpose: event.target.value })}
-                      placeholder="service_matching"
-                      value={shareDraft.purpose}
-                    />
-                  </Field>
-                  <Field label="Expires">
-                    <input
-                      onChange={(event) => updateShareDraft(upload, { expiresAt: event.target.value })}
-                      type="date"
-                      value={shareDraft.expiresAt}
-                    />
-                  </Field>
-                  <Field label="Recipient key hex">
-                    <input
-                      onChange={(event) => updateShareDraft(upload, { audienceKeyHex: event.target.value })}
-                      placeholder="optional"
-                      value={shareDraft.audienceKeyHex}
-                    />
-                  </Field>
-                  <Field label="Approval ID">
-                    <input
-                      onChange={(event) => updateShareDraft(upload, { approvalId: event.target.value })}
-                      placeholder="optional for multi-sig"
-                      value={shareDraft.approvalId}
-                    />
-                  </Field>
-                  {sharePresenceAvailable ? (
-                    <label className="captcha-box full-span">
-                      <input
-                        checked={shareDraft.requirePresence}
-                        onChange={(event) => updateShareDraft(upload, { requirePresence: event.target.checked })}
-                        type="checkbox"
-                      />
-                      <span>Require recipient presence before viewing</span>
-                    </label>
-                  ) : null}
-                  <div className="row-actions full-span">
-                    {shareApprovalRequired ? (
-                      <Button
-                        disabled={requestingShareApprovalIds.includes(upload.id)}
-                        onClick={() => requestShareApproval(upload)}
-                        type="button"
-                        variant="secondary"
-                      >
-                        <ShieldCheck aria-hidden="true" size={18} />
-                        {requestingShareApprovalIds.includes(upload.id) ? "Requesting" : "Request approval"}
-                      </Button>
-                    ) : null}
-                    <Button
-                      disabled={!shareDraft.audienceDid.trim() || sharingUploadIds.includes(upload.id)}
-                      type="submit"
-                      variant="secondary"
-                    >
-                      <ShieldCheck aria-hidden="true" size={18} />
-                      {sharingUploadIds.includes(upload.id) ? "Sharing" : "Create grant"}
-                    </Button>
-                  </div>
-                </form>
+            </div>
+            <div className="row-actions list-item-action">
+              {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={repairingUploadIds.includes(upload.id)}
+                  onClick={() => repairUploadStorage(upload)}
+                  variant="secondary"
+                >
+                  <Wrench aria-hidden="true" size={18} />
+                  {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
+                </Button>
               ) : null}
-              {shareMessage ? (
-                <StatusBanner tone={shareMessage.includes("failed") ? "warning" : "success"}>
-                  {shareMessage}
-                </StatusBanner>
-              ) : null}
-              {decryptedUpload ? (
-                <div className="disclosure-package">
-                  <div className="disclosure-row">
-                    <strong>Document view</strong>
-                    <span className="document-preview-text">{decryptedUpload.text}</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Plaintext size</strong>
-                    <span>{decryptedUpload.sizeBytes} bytes</span>
-                  </div>
-                </div>
-              ) : null}
-            </article>
-          );
-        })}
+              <Button
+                onClick={() =>
+                  setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item)))
+                }
+                variant="secondary"
+              >
+                {upload.shared ? "Make private" : "Allow sharing"}
+              </Button>
+            </div>
+          </article>
+        ))}
       </div>
     </div>
   );
 }
 
-type GraphRagUiStatus = "idle" | "loading" | "ready" | "error";
-
-const defaultServiceGraphQuery = "emergency food, shelter, benefits, and crisis support";
-
-function graphRagDocumentTitle(result: SearchResult): string {
-  const document = result.document;
-  return document.provider_name || document.program_name || document.title || result.docId;
-}
-
-function graphRagDocumentDetails(result: SearchResult): string {
-  const document = result.document;
-  const details = [
-    document.program_name && document.program_name !== document.provider_name ? document.program_name : "",
-    document.categories,
-    [document.city, document.state].filter(Boolean).join(", "),
-    document.host
-  ].filter(Boolean);
-  return details.length ? details.join(" · ") : document.doc_type;
-}
-
-function shortCid(cid: string): string {
-  return cid.length > 18 ? `${cid.slice(0, 18)}...` : cid;
-}
-
-function graphRagStatusTone(ready: boolean): string {
-  return ready ? "success" : "warning";
-}
-
-function graphRagBackendSummary(status: GraphRagRuntimeStatus): string {
-  const capabilities = status.backend.capabilities;
-  if (!capabilities) {
-    return status.backend.error || "Backend detection unavailable";
-  }
-  return [
-    capabilities.webgpu ? "WebGPU" : "",
-    capabilities.webnn ? "WebNN detection" : "",
-    capabilities.wasm ? "WASM" : "",
-    capabilities.simd ? "SIMD" : "",
-    capabilities.threads ? "threads" : "",
-  ].filter(Boolean).join(" · ") || "JavaScript fallback";
-}
-
 function SocialServicesScreen() {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
-  const [query, setQuery] = useState(defaultServiceGraphQuery);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
-  const [answer, setAnswer] = useState<GraphRagAnswer | null>(null);
-  const [searchStatus, setSearchStatus] = useState<GraphRagUiStatus>("idle");
-  const [answerStatus, setAnswerStatus] = useState<GraphRagUiStatus>("idle");
-  const [answerMode, setAnswerMode] = useState<"summary" | "model" | "">("");
-  const [useHybridSearch, setUseHybridSearch] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const searchRequestIdRef = useRef(0);
-  const answerRequestIdRef = useRef(0);
-  const [runtimeStatus, setRuntimeStatus] = useState<GraphRagRuntimeStatus | null>(null);
-  const [runtimeStatusLoading, setRuntimeStatusLoading] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadRuntimeStatus() {
-      setRuntimeStatusLoading(true);
-      try {
-        const nextStatus = await get211InfoRuntimeStatus();
-        if (!cancelled) {
-          setRuntimeStatus(nextStatus);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          console.warn("211 GraphRAG runtime status failed", error);
-        }
-      } finally {
-        if (!cancelled) {
-          setRuntimeStatusLoading(false);
-        }
-      }
-    }
-
-    void loadRuntimeStatus();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  async function refreshRuntimeStatus() {
-    setRuntimeStatusLoading(true);
-    try {
-      setRuntimeStatus(await get211InfoRuntimeStatus());
-    } catch (error) {
-      console.warn("211 GraphRAG runtime status refresh failed", error);
-    } finally {
-      setRuntimeStatusLoading(false);
-    }
-  }
-
-  async function runGraphSearchFor(nextQuery: string) {
-    const trimmedQuery = nextQuery.trim();
-    const requestId = searchRequestIdRef.current + 1;
-    searchRequestIdRef.current = requestId;
-    answerRequestIdRef.current += 1;
-
-    if (!trimmedQuery) {
-      setErrorMessage("Enter a service need before searching the local 211 corpus.");
-      setSearchStatus("error");
-      return;
-    }
-
-    setErrorMessage("");
-    setSearchStatus("loading");
-    setAnswer(null);
-    setAnswerStatus("idle");
-    setAnswerMode("");
-
-    try {
-      const nextResults = await search211Info(trimmedQuery, 6, { useEmbedding: useHybridSearch });
-      if (searchRequestIdRef.current !== requestId) {
-        return;
-      }
-      setResults(nextResults);
-      setSearchStatus("ready");
-    } catch (error) {
-      if (searchRequestIdRef.current !== requestId) {
-        return;
-      }
-      console.error("211 GraphRAG search failed", error);
-      setErrorMessage(error instanceof Error ? error.message : "The local 211 corpus search failed.");
-      setSearchStatus("error");
-    }
-  }
-
-  function runGraphSearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSelectedCategory("");
-    void runGraphSearchFor(query);
-  }
-
-  async function buildAnswer(useLocalModel: boolean) {
-    const trimmedQuery = query.trim();
-    const requestId = answerRequestIdRef.current + 1;
-    answerRequestIdRef.current = requestId;
-
-    if (!trimmedQuery) {
-      setErrorMessage("Enter a service need before building a cited answer.");
-      setAnswerStatus("error");
-      return;
-    }
-
-    setErrorMessage("");
-    setAnswerStatus("loading");
-    setAnswerMode(useLocalModel ? "model" : "summary");
-
-    try {
-      const nextAnswer = await answer211InfoQuestion(trimmedQuery, {
-        useLocalModel,
-        useEmbedding: useHybridSearch,
-        maxTokens: 220
-      });
-      if (answerRequestIdRef.current !== requestId) {
-        return;
-      }
-      setAnswer(nextAnswer);
-      setResults(nextAnswer.evidence.results);
-      setSearchStatus("ready");
-      setAnswerStatus("ready");
-    } catch (error) {
-      if (answerRequestIdRef.current !== requestId) {
-        return;
-      }
-      console.error("211 GraphRAG answer failed", error);
-      setErrorMessage(error instanceof Error ? error.message : "The local 211 GraphRAG answer failed.");
-      setAnswerStatus("error");
-    } finally {
-      if (answerRequestIdRef.current === requestId) {
-        setAnswerMode("");
-      }
-    }
-  }
-
   return (
     <div className="screen">
       <div className="page-title">
@@ -1944,215 +1697,17 @@ function SocialServicesScreen() {
       </div>
       <div className="category-grid">
         {categories.map((category) => (
-          <button
-            aria-pressed={selectedCategory === category}
-            className="category-tile"
-            key={category}
-            onClick={() => {
-              setSelectedCategory(category);
-              setQuery(category);
-              void runGraphSearchFor(category);
-            }}
-            type="button"
-          >
+          <button className="category-tile" key={category} type="button">
             <HeartHandshake aria-hidden="true" size={22} />
             <span>{category}</span>
           </button>
         ))}
       </div>
-      <Section
-        actions={
-          <Badge tone={results.length > 0 ? "success" : "neutral"}>
-            {results.length > 0 ? `${results.length} local matches` : "Local corpus"}
-          </Badge>
-        }
-        eyebrow="Browser GraphRAG"
-        title="Search the scraped 211 corpus"
-      >
-        <div className="graphrag-panel">
-          <form className="graphrag-search-form" onSubmit={runGraphSearch}>
-            <Field
-              help="Searches the local 211 browser package with BM25, graph neighborhoods, and embeddings when available."
-              label="Service need"
-            >
-              <input
-                onChange={(event) => {
-                  setQuery(event.target.value);
-                  setSelectedCategory("");
-                }}
-                placeholder="food pantry near Beaverton, rental assistance, detox support"
-                value={query}
-              />
-            </Field>
-            <div className="graphrag-search-actions">
-              <Button loading={searchStatus === "loading"} loadingLabel="Searching" type="submit">
-                <Search aria-hidden="true" size={18} />
-                Search corpus
-              </Button>
-              <Button
-                disabled={answerStatus === "loading"}
-                loading={answerStatus === "loading" && answerMode === "summary"}
-                loadingLabel="Building answer"
-                onClick={() => void buildAnswer(false)}
-                variant="secondary"
-              >
-                Build cited answer
-              </Button>
-              <Button
-                disabled={answerStatus === "loading"}
-                loading={answerStatus === "loading" && answerMode === "model"}
-                loadingLabel="Running model"
-                onClick={() => void buildAnswer(true)}
-                variant="secondary"
-              >
-                <Sparkles aria-hidden="true" size={18} />
-                Try local model
-              </Button>
-            </div>
-            <label className="graphrag-option">
-              <input
-                checked={useHybridSearch}
-                onChange={(event) => setUseHybridSearch(event.target.checked)}
-                type="checkbox"
-              />
-              <span>
-                <strong>Use BGE-small hybrid vector search</strong>
-                <small>Downloads the browser embedding model on first use; leave off for faster BM25 and graph search.</small>
-              </span>
-            </label>
-            <div className="graphrag-runtime-panel" aria-label="GraphRAG runtime status">
-              <div className="graphrag-runtime-heading">
-                <div>
-                  <strong>Runtime status</strong>
-                  <small>
-                    {runtimeStatus
-                      ? `Corpus base: ${runtimeStatus.corpusBaseUrl}`
-                      : runtimeStatusLoading
-                        ? "Checking corpus, workers, and browser backend..."
-                        : "Runtime status has not loaded yet."}
-                  </small>
-                </div>
-                <Button
-                  loading={runtimeStatusLoading}
-                  loadingLabel="Checking"
-                  onClick={() => void refreshRuntimeStatus()}
-                  variant="secondary"
-                >
-                  <RefreshCw aria-hidden="true" size={16} />
-                  Refresh status
-                </Button>
-              </div>
-              {runtimeStatus ? (
-                <div className="graphrag-runtime-grid">
-                  <article>
-                    <Badge tone={graphRagStatusTone(runtimeStatus.corpus.available)}>
-                      {runtimeStatus.corpus.available ? "Corpus ready" : "Corpus unavailable"}
-                    </Badge>
-                    <strong>{runtimeStatus.corpus.documentCount.toLocaleString()} documents</strong>
-                    <small>
-                      {runtimeStatus.corpus.embeddingCount.toLocaleString()} vectors · {runtimeStatus.corpus.embeddingDimension}d ·{" "}
-                      {runtimeStatus.corpus.graphNeighborhoodShardCount} graph shards
-                    </small>
-                  </article>
-                  <article>
-                    <Badge tone={graphRagStatusTone(runtimeStatus.retrievalWorker.ready)}>
-                      {runtimeStatus.retrievalWorker.ready ? "Search worker ready" : "Search fallback"}
-                    </Badge>
-                    <strong>{runtimeStatus.retrievalWorker.hasWorker ? "Worker available" : "Main thread only"}</strong>
-                    <small>BM25 and graph retrieval stay off the UI thread when this is ready.</small>
-                  </article>
-                  <article>
-                    <Badge tone={graphRagStatusTone(runtimeStatus.embeddingWorker.hasWorker)}>
-                      {runtimeStatus.embeddingWorker.hasWorker ? "Embedding worker available" : "Embedding unavailable"}
-                    </Badge>
-                    <strong>{runtimeStatus.embeddingWorker.modelName}</strong>
-                    <small>
-                      {runtimeStatus.embeddingWorker.isInitialized
-                        ? "Model initialized for hybrid search."
-                        : "Model loads only if hybrid vector search is enabled."}
-                    </small>
-                  </article>
-                  <article>
-                    <Badge tone={runtimeStatus.backend.available ? "success" : "warning"}>
-                      {runtimeStatus.backend.recommendedBackend}
-                    </Badge>
-                    <strong>{graphRagBackendSummary(runtimeStatus)}</strong>
-                    <small>
-                      {runtimeStatus.backend.crossOriginIsolated
-                        ? "Cross-origin isolation is enabled."
-                        : "WASM thread acceleration may be unavailable without cross-origin isolation."}
-                    </small>
-                  </article>
-                </div>
-              ) : null}
-            </div>
-          </form>
-
-          {errorMessage ? <StatusBanner tone="danger">{errorMessage}</StatusBanner> : null}
-          {searchStatus === "idle" ? (
-            <StatusBanner tone="info">
-              Choose a category or search directly. Default searches use the local BM25 and graph indexes without downloading model weights.
-            </StatusBanner>
-          ) : null}
-          {searchStatus === "ready" && results.length === 0 ? (
-            <StatusBanner tone="warning">
-              No local 211 matches were found for this query. Try a broader need or contact 211 directly.
-            </StatusBanner>
-          ) : null}
-
-          {answer ? (
-            <article className="graphrag-answer-card" aria-live="polite">
-              <div className="graphrag-answer-heading">
-                <div>
-                  <p className="eyebrow">Cited answer</p>
-                  <h3>{answer.usedLocalModel ? "Local model answer" : "Evidence summary"}</h3>
-                </div>
-                <Badge tone={answer.usedLocalModel ? "success" : "neutral"}>
-                  {answer.evidence.nodes.length} graph nodes
-                </Badge>
-              </div>
-              <p className="graphrag-answer-text">{answer.answer}</p>
-            </article>
-          ) : null}
-
-          {results.length > 0 ? (
-            <div className="list-stack graphrag-result-list">
-              {results.map((result, index) => (
-                <article className="list-item graphrag-result-item" key={result.docId}>
-                  <div className="graphrag-result-body">
-                    <div className="graphrag-result-title-row">
-                      <span className="graphrag-rank">{index + 1}</span>
-                      <div>
-                        <h3>{graphRagDocumentTitle(result)}</h3>
-                        <p>{graphRagDocumentDetails(result)}</p>
-                      </div>
-                    </div>
-                    <p className="graphrag-snippet">{result.snippet || result.document.text.slice(0, 280)}</p>
-                    <small className="graphrag-cid-row">
-                      CID {shortCid(result.contentCid)} · score {result.score.toFixed(2)}
-                    </small>
-                  </div>
-                  <div className="graphrag-result-actions">
-                    <Badge tone={result.document.doc_type === "service" ? "success" : "neutral"}>
-                      {result.document.doc_type}
-                    </Badge>
-                    {result.document.source_url ? (
-                      <a className="graphrag-source-link" href={result.document.source_url} rel="noreferrer" target="_blank">
-                        Source
-                      </a>
-                    ) : null}
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
-        </div>
-      </Section>
-      <Section title="Government services liaison">
+      <Section title="Government help">
         <div className="liaison-panel">
           <MessageSquare aria-hidden="true" size={28} />
           <div>
-            <h3>Request help navigating benefits, IDs, housing, or agency paperwork.</h3>
+            <h3>Get help with benefits, ID, housing, or forms.</h3>
             <p>Only the details you choose to share will be included in the request.</p>
           </div>
           <Button>Start request</Button>
@@ -2180,6 +1735,10 @@ function SocialServicesScreen() {
 function ShelterScreen({
   checklist,
   setChecklist,
+  contactRequests,
+  recipients,
+  setContactRequests,
+  setRecipients,
   shelterStaffAccounts,
   setShelterStaffAccounts,
   shelterUserAccounts,
@@ -2187,6 +1746,10 @@ function ShelterScreen({
 }: {
   checklist: typeof defaultShelterChecklist;
   setChecklist: (value: typeof defaultShelterChecklist) => void;
+  contactRequests: ShelterContactRequest[];
+  recipients: DisclosureRecipientDraft[];
+  setContactRequests: (requests: ShelterContactRequest[]) => void;
+  setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
   shelterStaffAccounts: ShelterStaffAccount[];
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
   shelterUserAccounts: ShelterUserAccount[];
@@ -2198,6 +1761,9 @@ function ShelterScreen({
   const [operatorStaffId, setOperatorStaffId] = useState("");
   const [userDraft, setUserDraft] = useState(defaultManagedUserDraft);
   const [staffDraft, setStaffDraft] = useState({ displayName: "", email: "" });
+  const [nudgeDraft, setNudgeDraft] = useState({ userName: "Abby Example", userContact: "abby@example.org" });
+  const [managedUserFileDetail, setManagedUserFileDetail] = useState("");
+  const [managedUserUploadError, setManagedUserUploadError] = useState("");
 
   const staffForShelter = shelterStaffAccounts.filter((account) => account.shelter === adminShelter);
   const verifiedStaffForOperatorShelter = shelterStaffAccounts.filter(
@@ -2205,6 +1771,7 @@ function ShelterScreen({
   );
   const selectedOperator = shelterStaffAccounts.find((account) => account.id === operatorStaffId && account.verified);
   const usersForOperatorShelter = shelterUserAccounts.filter((account) => account.shelter === operatorShelter);
+  const requestsForOperatorShelter = contactRequests.filter((request) => request.shelterName === operatorShelter);
   const oversightShelter = isShelterAdmin ? adminShelter : operatorShelter;
 
   function accountSortByHousingThenDate(a: ShelterUserAccount, b: ShelterUserAccount) {
@@ -2233,6 +1800,28 @@ function ShelterScreen({
         ? prev.serviceNeeds.filter((item) => item !== need)
         : [...prev.serviceNeeds, need]
     }));
+  }
+
+  function handleManagedUserUploadChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      setUserDraft({ ...userDraft, photoAssetId: "" });
+      setManagedUserFileDetail("");
+      setManagedUserUploadError("");
+      return;
+    }
+
+    if (!isAcceptedIdentityDocument(file)) {
+      setUserDraft({ ...userDraft, photoAssetId: "" });
+      setManagedUserFileDetail("");
+      setManagedUserUploadError("We can't use this file. Use JPG, PNG, WebP, or PDF.");
+      return;
+    }
+
+    setUserDraft({ ...userDraft, photoAssetId: file.name });
+    setManagedUserFileDetail(getIdentityDocumentFileDetail(file));
+    setManagedUserUploadError("");
   }
 
   function createManagedUserAccount(event: FormEvent<HTMLFormElement>) {
@@ -2265,6 +1854,8 @@ function ShelterScreen({
     };
     setShelterUserAccounts([...shelterUserAccounts, newUser]);
     setUserDraft(defaultManagedUserDraft);
+    setManagedUserFileDetail("");
+    setManagedUserUploadError("");
   }
 
   function createStaffAccount(event: FormEvent<HTMLFormElement>) {
@@ -2281,6 +1872,79 @@ function ShelterScreen({
     };
     setShelterStaffAccounts([...shelterStaffAccounts, newStaff]);
     setStaffDraft({ displayName: "", email: "" });
+  }
+
+  function shelterRecipientExists(shelterName: string) {
+    return recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName);
+  }
+
+  function addShelterRecipient(shelterName: string) {
+    if (shelterRecipientExists(shelterName)) return;
+
+    setRecipients([
+      ...recipients,
+      {
+        id: `rec-${Date.now()}`,
+        type: "shelter_staff",
+        displayName: shelterName,
+        relationship: "Shelter",
+        email: "",
+        phone: "",
+        agencyName: shelterName,
+        precinctName: "",
+        verified: true,
+        allowedScopes: ["identity_minimum"]
+      }
+    ]);
+  }
+
+  function hasPendingShelterNudge() {
+    const nudgeContactKey = nudgeDraft.userContact.trim().toLowerCase();
+    const nudgeNameKey = nudgeDraft.userName.trim().toLowerCase();
+    return contactRequests.some(
+      (request) =>
+        request.status === "pending" &&
+        request.shelterName === operatorShelter &&
+        (request.userContact.trim().toLowerCase() === nudgeContactKey ||
+          request.userName.trim().toLowerCase() === nudgeNameKey)
+    );
+  }
+
+  function sendShelterNudge(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selectedOperator || !nudgeDraft.userName.trim() || !nudgeDraft.userContact.trim() || hasPendingShelterNudge()) {
+      return;
+    }
+
+    setContactRequests([
+      ...contactRequests,
+      {
+        id: `shelter-request-${Date.now()}`,
+        direction: "shelter_to_user",
+        status: "pending",
+        shelterName: operatorShelter,
+        userName: nudgeDraft.userName.trim(),
+        userContact: nudgeDraft.userContact.trim(),
+        staffId: selectedOperator.id,
+        staffName: selectedOperator.displayName,
+        createdAt: new Date().toISOString()
+      }
+    ]);
+  }
+
+  function decideUserShelterRequest(requestId: string, status: "approved" | "denied") {
+    const request = contactRequests.find((item) => item.id === requestId);
+    if (!request) return;
+
+    if (status === "approved") {
+      addShelterRecipient(request.shelterName);
+    }
+
+    setContactRequests(
+      contactRequests.map((item) =>
+        item.id === requestId ? { ...item, status, decidedAt: new Date().toISOString() } : item
+      )
+    );
   }
 
   return (
@@ -2350,6 +2014,7 @@ function ShelterScreen({
                   </Field>
                   <Field label="Pronouns">
                     <input
+                      placeholder="call me she/her, he/him, they/them"
                       value={userDraft.pronouns}
                       onChange={(event) => setUserDraft({ ...userDraft, pronouns: event.target.value })}
                     />
@@ -2361,23 +2026,30 @@ function ShelterScreen({
                       onChange={(event) => setUserDraft({ ...userDraft, dateOfBirth: event.target.value })}
                     />
                   </Field>
-                  <Field label="Photo or photo ID" required>
+                  <Field
+                    error={managedUserUploadError}
+                    help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
+                    label="Photo or photo ID"
+                    required
+                  >
                     <input
-                      accept="image/*,.pdf,application/pdf"
-                      capture="user"
+                      accept={ID_DOCUMENT_ACCEPT_ATTR}
                       type="file"
-                      onChange={(event) =>
-                        setUserDraft({ ...userDraft, photoAssetId: event.target.files?.[0]?.name ?? "" })
-                      }
+                      onChange={handleManagedUserUploadChange}
                     />
+                    {managedUserFileDetail ? (
+                      <small className="registration-file-detail" aria-live="polite">
+                        Selected file: {managedUserFileDetail}
+                      </small>
+                    ) : null}
                   </Field>
-                  <Field label="Phone">
+                  <Field help="Used for text reminders." label="Phone">
                     <input
                       value={userDraft.phone}
                       onChange={(event) => setUserDraft({ ...userDraft, phone: event.target.value })}
                     />
                   </Field>
-                  <Field label="Email">
+                  <Field help="Used for email reminders." label="Email">
                     <input
                       type="email"
                       value={userDraft.email}
@@ -2492,6 +2164,70 @@ function ShelterScreen({
                     <Button type="submit">Create staff account</Button>
                   </div>
                 </form>
+              </Section>
+
+              <Section title="Contact list requests">
+                <StatusBanner tone="info">
+                  Send a request only. The person must approve before this shelter is added.
+                </StatusBanner>
+                <form className="form-grid" onSubmit={sendShelterNudge}>
+                  <Field label="Person name" required>
+                    <input
+                      value={nudgeDraft.userName}
+                      onChange={(event) => setNudgeDraft({ ...nudgeDraft, userName: event.target.value })}
+                    />
+                  </Field>
+                  <Field label="Phone or email" required>
+                    <input
+                      value={nudgeDraft.userContact}
+                      onChange={(event) => setNudgeDraft({ ...nudgeDraft, userContact: event.target.value })}
+                    />
+                  </Field>
+                  <div className="full-span centered-action">
+                    <Button disabled={hasPendingShelterNudge()} type="submit" variant="secondary">
+                      <MessageSquare size={18} /> Send contact request
+                    </Button>
+                  </div>
+                  {hasPendingShelterNudge() ? (
+                    <small className="full-span pin-request-note">
+                      A request is already waiting for this shelter and person.
+                    </small>
+                  ) : null}
+                </form>
+                <div className="list-stack">
+                  {requestsForOperatorShelter.length ? (
+                    requestsForOperatorShelter.map((request) => (
+                      <article className="list-item access-request-item" key={`shelter-contact-${request.id}`}>
+                        <div>
+                          <h3>{request.userName}</h3>
+                          <p>
+                            {request.direction === "user_to_shelter"
+                              ? `User asked to add ${request.shelterName}.`
+                              : `${request.shelterName} asked this user.`}
+                          </p>
+                          <div className="badge-row">
+                            <Badge>{request.userContact}</Badge>
+                            <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
+                              {request.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        {request.direction === "user_to_shelter" && request.status === "pending" ? (
+                          <div className="row-actions">
+                            <Button onClick={() => decideUserShelterRequest(request.id, "approved")} variant="secondary">
+                              Approve
+                            </Button>
+                            <Button onClick={() => decideUserShelterRequest(request.id, "denied")} variant="danger">
+                              Deny
+                            </Button>
+                          </div>
+                        ) : null}
+                      </article>
+                    ))
+                  ) : (
+                    <small>No contact list requests for this shelter yet.</small>
+                  )}
+                </div>
               </Section>
 
               <div className="list-stack">
@@ -2683,74 +2419,11 @@ function RecipientAccessScreen({
   const [derivedArtifactsByReceiptId, setDerivedArtifactsByReceiptId] = useState<Record<string, DerivedArtifactView>>(
     {}
   );
-  const [decryptedRecordsByReceiptId, setDecryptedRecordsByReceiptId] = useState<Record<string, DecryptedRecordView>>(
-    {}
-  );
   const [analyzingReceiptIds, setAnalyzingReceiptIds] = useState<string[]>([]);
-  const [decryptingReceiptIds, setDecryptingReceiptIds] = useState<string[]>([]);
-  const [delegatingReceiptIds, setDelegatingReceiptIds] = useState<string[]>([]);
-  const [delegationDrafts, setDelegationDrafts] = useState<
-    Record<string, { audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
-  >({});
-  const [delegationMessages, setDelegationMessages] = useState<Record<string, string>>({});
 
   function hasThresholdApproval(request: WalletAccessRequest) {
     if (!request.approvalRequired) return true;
     return (request.approvalCount ?? 0) >= (request.approvalThreshold ?? 1);
-  }
-
-  function delegationAbilityOptions(receipt: WalletGrantReceipt) {
-    const abilities = receipt.abilities.includes("*") ? ["record/analyze", "record/decrypt"] : receipt.abilities;
-    return ["record/analyze", "record/decrypt"].filter((ability) => abilities.includes(ability));
-  }
-
-  function receiptHasAbility(receipt: WalletGrantReceipt, ability: string) {
-    return receipt.abilities.includes("*") || receipt.abilities.includes(ability);
-  }
-
-  function canDelegateReceipt(receipt: WalletGrantReceipt, abilityOptions: string[]) {
-    const hasShare = receipt.abilities.some(
-      (ability) => ability === "*" || ability === "record/share" || ability === "document/share"
-    );
-    return (
-      Boolean(apiConfig?.actorDid) &&
-      apiConfig?.actorDid === receipt.audienceDid &&
-      receipt.status === "active" &&
-      hasShare &&
-      abilityOptions.length > 0 &&
-      receipt.resources.length > 0
-    );
-  }
-
-  function delegationDraftFor(receipt: WalletGrantReceipt, abilityOptions: string[]) {
-    const draft = delegationDrafts[receipt.id];
-    const fallbackAbility = abilityOptions[0] ?? "record/analyze";
-    if (!draft) {
-      return {
-        audienceDid: "",
-        audienceKeyHex: "",
-        purpose: receipt.purpose,
-        ability: fallbackAbility
-      };
-    }
-    return {
-      ...draft,
-      ability: abilityOptions.includes(draft.ability) ? draft.ability : fallbackAbility
-    };
-  }
-
-  function updateDelegationDraft(
-    receipt: WalletGrantReceipt,
-    abilityOptions: string[],
-    patch: Partial<{ audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
-  ) {
-    setDelegationDrafts({
-      ...delegationDrafts,
-      [receipt.id]: {
-        ...delegationDraftFor(receipt, abilityOptions),
-        ...patch
-      }
-    });
   }
 
   async function recordControllerApproval(requestId: string) {
@@ -2856,7 +2529,7 @@ function RecipientAccessScreen({
   }
 
   async function analyzeReceipt(receipt: WalletGrantReceipt) {
-    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/analyze")) return;
+    if (!receipt.recordId || receipt.status !== "active" || !receipt.abilities.includes("record/analyze")) return;
     setAnalyzingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
     try {
       const artifact =
@@ -2896,104 +2569,13 @@ function RecipientAccessScreen({
     }
   }
 
-  async function viewReceipt(receipt: WalletGrantReceipt) {
-    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/decrypt")) return;
-    const recordId = receipt.recordId;
-    setDecryptingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
-    try {
-      const decrypted =
-        apiConfig?.actorDid
-          ? await (async () => {
-              let invocationToken: string | undefined;
-              if (apiConfig.audienceKeyHex || apiConfig.issuerKeyHex) {
-                try {
-                  invocationToken = await issueRecordDecryptInvocation(apiConfig, {
-                    grantId: receipt.grantId,
-                    recordId,
-                    userPresent: receiptRequiresUserPresence(receipt)
-                  });
-                } catch {
-                  invocationToken = undefined;
-                }
-              }
-              return decryptRecordWithGrant(apiConfig, {
-                grantId: invocationToken ? undefined : receipt.grantId,
-                invocationToken,
-                recordId
-              });
-            })()
-          : {
-              recordId,
-              text: "Local demo decrypted document preview.",
-              sizeBytes: "Local demo decrypted document preview.".length
-            };
-      setDecryptedRecordsByReceiptId({
-        ...decryptedRecordsByReceiptId,
-        [receipt.id]: decrypted
-      });
-      await refreshWalletAuditEvents();
-    } catch {
-      setDecryptedRecordsByReceiptId({
-        ...decryptedRecordsByReceiptId,
-        [receipt.id]: {
-          recordId,
-          text: "Document view unavailable.",
-          sizeBytes: 0
-        }
-      });
-    } finally {
-      setDecryptingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
-    }
-  }
-
-  async function delegateReceipt(event: FormEvent<HTMLFormElement>, receipt: WalletGrantReceipt) {
-    event.preventDefault();
-    const abilityOptions = delegationAbilityOptions(receipt);
-    const draft = delegationDraftFor(receipt, abilityOptions);
-    if (!apiConfig?.actorDid || !draft.audienceDid.trim() || !canDelegateReceipt(receipt, abilityOptions)) return;
-    setDelegatingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
-    setDelegationMessages((messages) => ({ ...messages, [receipt.id]: "" }));
-    try {
-      await delegateGrant(apiConfig, {
-        parentGrantId: receipt.grantId,
-        audienceDid: draft.audienceDid.trim(),
-        audienceKeyHex: draft.audienceKeyHex.trim() || undefined,
-        resources: receipt.resources,
-        abilities: [draft.ability],
-        purpose: draft.purpose.trim() || receipt.purpose
-      });
-      setDelegationDrafts({
-        ...delegationDrafts,
-        [receipt.id]: {
-          audienceDid: "",
-          audienceKeyHex: "",
-          purpose: receipt.purpose,
-          ability: abilityOptions[0] ?? "record/analyze"
-        }
-      });
-      setDelegationMessages((messages) => ({
-        ...messages,
-        [receipt.id]: `Delegated to ${draft.audienceDid.trim()}.`
-      }));
-      await refreshWalletAccessState();
-      await refreshWalletAuditEvents();
-    } catch {
-      setDelegationMessages((messages) => ({
-        ...messages,
-        [receipt.id]: "Delegation failed."
-      }));
-    } finally {
-      setDelegatingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
-    }
-  }
-
   return (
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Secure access</p>
-        <h1>Access requests</h1>
+        <h1>Requests to see my info</h1>
       </div>
-      <Section title="Review requested access">
+      <Section title="Check who wants to see info">
         <div className="list-stack">
           {accessRequests.map((request) => {
             const isRevoked = request.status === "approved" && request.grantStatus === "revoked";
@@ -3018,7 +2600,7 @@ function RecipientAccessScreen({
                   </div>
                   <div className="badge-row">
                     {request.abilities.map((ability) => (
-                      <Badge key={ability}>{ability}</Badge>
+                      <Badge key={ability}>{plainCapabilityLabel(ability)}</Badge>
                     ))}
                     <Badge>{request.createdAt}</Badge>
                     {request.approvalRequired ? (
@@ -3032,11 +2614,11 @@ function RecipientAccessScreen({
                   </div>
                   {isRevoked ? (
                     <p className="revoked-note">
-                      Access was revoked. This recipient no longer has decrypt or analysis access.
+                      Access was turned off. This person cannot open or review this file now.
                     </p>
                   ) : null}
                   {request.approvalRequired && !hasThresholdApproval(request) ? (
-                    <p className="approval-note">Multi-sig approval is required before this access can be granted.</p>
+                    <p className="approval-note">Another approval is needed before this can be shared.</p>
                   ) : null}
                   <div
                     className="capability-preview"
@@ -3045,7 +2627,7 @@ function RecipientAccessScreen({
                   >
                     <div className="scope-header">
                       <div>
-                        <h4>Capability preview</h4>
+                        <h4>What this allows</h4>
                         <p>{request.resourceLabel} · {request.purpose}</p>
                       </div>
                       <Badge tone={hasThresholdApproval(request) ? "success" : "warning"}>
@@ -3054,16 +2636,16 @@ function RecipientAccessScreen({
                     </div>
                     <div className="disclosure-package">
                       <div className="disclosure-row">
-                        <strong>Abilities</strong>
-                        <span>{request.abilities.join(", ")}</span>
+                        <strong>Can do</strong>
+                        <span>{plainCapabilitySummary(request.abilities)}</span>
                       </div>
                       <div className="disclosure-row">
-                        <strong>Recipient DID</strong>
+                        <strong>Recipient code</strong>
                         <span>{request.audienceDid}</span>
                       </div>
                       <div className="disclosure-row">
-                        <strong>Not granted</strong>
-                        <span>{nonGrantedCapabilities(request.abilities).join(", ")}</span>
+                        <strong>Not allowed</strong>
+                        <span>{plainNonGrantedCapabilities(request.abilities).join(", ")}</span>
                       </div>
                     </div>
                   </div>
@@ -3099,19 +2681,12 @@ function RecipientAccessScreen({
           })}
         </div>
       </Section>
-      <Section title="Sharing receipts">
+      <Section title="Sharing history">
         <div className="list-stack">
           {grantReceipts.map((receipt) => {
             const canAnalyze =
-              receipt.status === "active" && receiptHasAbility(receipt, "record/analyze") && Boolean(receipt.recordId);
-            const canView =
-              receipt.status === "active" && receiptHasAbility(receipt, "record/decrypt") && Boolean(receipt.recordId);
+              receipt.status === "active" && receipt.abilities.includes("record/analyze") && Boolean(receipt.recordId);
             const artifact = derivedArtifactsByReceiptId[receipt.id];
-            const decryptedRecord = decryptedRecordsByReceiptId[receipt.id];
-            const delegationOptions = delegationAbilityOptions(receipt);
-            const canDelegate = canDelegateReceipt(receipt, delegationOptions);
-            const delegationDraft = delegationDraftFor(receipt, delegationOptions);
-            const delegationMessage = delegationMessages[receipt.id];
             return (
             <article
                 aria-labelledby={`grant-receipt-${receipt.id}`}
@@ -3127,13 +2702,13 @@ function RecipientAccessScreen({
               </div>
               <div className="badge-row">
                 {receipt.abilities.map((ability) => (
-                  <Badge key={ability}>{ability}</Badge>
+                  <Badge key={ability}>{plainCapabilityLabel(ability)}</Badge>
                 ))}
                 <Badge>{receipt.createdAt}</Badge>
                 {receipt.expiresAt ? <Badge>expires {receipt.expiresAt}</Badge> : null}
               </div>
               <div className="receipt-hash-row">
-                <span>Receipt hash</span>
+                <span>Share proof code</span>
                 <code>{receipt.receiptHash}</code>
               </div>
               <div
@@ -3143,7 +2718,7 @@ function RecipientAccessScreen({
               >
                 <div className="scope-header">
                   <div>
-                    <h4>Capability preview</h4>
+                    <h4>What this allows</h4>
                     <p>{receipt.resourceLabel} · {receipt.purpose}</p>
                   </div>
                   <Badge tone={receipt.status === "active" ? "success" : "warning"}>
@@ -3152,129 +2727,45 @@ function RecipientAccessScreen({
                 </div>
                 <div className="disclosure-package">
                   <div className="disclosure-row">
-                    <strong>Abilities</strong>
-                    <span>{receipt.abilities.join(", ")}</span>
+                    <strong>Can do</strong>
+                    <span>{plainCapabilitySummary(receipt.abilities)}</span>
                   </div>
                   <div className="disclosure-row">
-                    <strong>Recipient DID</strong>
+                    <strong>Recipient code</strong>
                     <span>{receipt.audienceDid}</span>
                   </div>
                   <div className="disclosure-row">
-                    <strong>Not granted</strong>
-                    <span>{nonGrantedCapabilities(receipt.abilities).join(", ")}</span>
+                    <strong>Not allowed</strong>
+                    <span>{plainNonGrantedCapabilities(receipt.abilities).join(", ")}</span>
                   </div>
                 </div>
               </div>
-              {canDelegate ? (
-                <form className="form-grid" onSubmit={(event) => delegateReceipt(event, receipt)}>
-                  <Field label="Delegate DID" required>
-                    <input
-                      onChange={(event) =>
-                        updateDelegationDraft(receipt, delegationOptions, { audienceDid: event.target.value })
-                      }
-                      placeholder="did:key:case-worker"
-                      value={delegationDraft.audienceDid}
-                    />
-                  </Field>
-                  <Field label="Delegated purpose">
-                    <input
-                      onChange={(event) =>
-                        updateDelegationDraft(receipt, delegationOptions, { purpose: event.target.value })
-                      }
-                      placeholder={receipt.purpose}
-                      value={delegationDraft.purpose}
-                    />
-                  </Field>
-                  <Field label="Delegated ability">
-                    <select
-                      onChange={(event) =>
-                        updateDelegationDraft(receipt, delegationOptions, { ability: event.target.value })
-                      }
-                      value={delegationDraft.ability}
-                    >
-                      {delegationOptions.map((ability) => (
-                        <option key={ability} value={ability}>
-                          {ability}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="Delegate key hex">
-                    <input
-                      onChange={(event) =>
-                        updateDelegationDraft(receipt, delegationOptions, { audienceKeyHex: event.target.value })
-                      }
-                      placeholder="optional"
-                      value={delegationDraft.audienceKeyHex}
-                    />
-                  </Field>
-                  <div className="row-actions full-span">
-                    <Button
-                      disabled={!delegationDraft.audienceDid.trim() || delegatingReceiptIds.includes(receipt.id)}
-                      type="submit"
-                      variant="secondary"
-                    >
-                      <UserPlus size={18} />
-                      {delegatingReceiptIds.includes(receipt.id) ? "Delegating" : "Delegate access"}
-                    </Button>
-                  </div>
-                </form>
-              ) : null}
-              {delegationMessage ? (
-                <StatusBanner tone={delegationMessage.includes("failed") ? "warning" : "success"}>
-                  {delegationMessage}
-                </StatusBanner>
-              ) : null}
               {artifact ? (
                 <div className="disclosure-package">
                   <div className="disclosure-row">
-                    <strong>Derived artifact</strong>
+                    <strong>Safe summary</strong>
                     <span>{artifact.artifactType} · {artifact.outputPolicy}</span>
                   </div>
                   <div className="disclosure-row">
-                    <strong>Encrypted result</strong>
+                    <strong>Locked result</strong>
                     <span>{artifact.encryptedPayloadRef}</span>
                   </div>
                   <div className="disclosure-row">
-                    <strong>Sources</strong>
+                    <strong>Files used</strong>
                     <span>{artifact.sourceRecordIds.join(", ") || "No source records"}</span>
                   </div>
                 </div>
               ) : null}
-              {decryptedRecord ? (
-                <div className="disclosure-package">
-                  <div className="disclosure-row">
-                    <strong>Document view</strong>
-                    <span className="document-preview-text">{decryptedRecord.text}</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Plaintext size</strong>
-                    <span>{decryptedRecord.sizeBytes} bytes</span>
-                  </div>
-                </div>
-              ) : null}
-              {canAnalyze || canView ? (
+              {canAnalyze ? (
                 <div className="row-actions">
-                  {canAnalyze ? (
-                    <Button
-                      disabled={analyzingReceiptIds.includes(receipt.id)}
-                      onClick={() => analyzeReceipt(receipt)}
-                      variant="secondary"
-                    >
-                      <ShieldCheck size={18} />
-                      {analyzingReceiptIds.includes(receipt.id) ? "Analyzing" : "Analyze safely"}
-                    </Button>
-                  ) : null}
-                  {canView ? (
-                    <Button
-                      disabled={decryptingReceiptIds.includes(receipt.id)}
-                      onClick={() => viewReceipt(receipt)}
-                      variant="secondary"
-                    >
-                      <LockKeyhole size={18} />
-                      {decryptingReceiptIds.includes(receipt.id) ? "Opening" : "View document"}
-                    </Button>
-                  ) : null}
+                  <Button
+                    disabled={analyzingReceiptIds.includes(receipt.id)}
+                    onClick={() => analyzeReceipt(receipt)}
+                    variant="secondary"
+                  >
+                    <ShieldCheck size={18} />
+                    {analyzingReceiptIds.includes(receipt.id) ? "Making summary" : "Make safe summary"}
+                  </Button>
                 </div>
               ) : null}
               <small>{receipt.audienceDid}</small>
@@ -3284,8 +2775,8 @@ function RecipientAccessScreen({
         </div>
       </Section>
       {!verified ? (
-        <Section title="Verify recipient">
-          <StatusBanner tone="warning">Sensitive information is hidden until recipient verification is complete.</StatusBanner>
+        <Section title="Check this person">
+          <StatusBanner tone="warning">We hide private information until this person is checked.</StatusBanner>
           <div className="form-grid">
             <Field label="Access code">
               <input placeholder="Enter code" />
@@ -3299,7 +2790,7 @@ function RecipientAccessScreen({
           </Button>
         </Section>
       ) : (
-        <Section title={`Authorized for ${recipient.displayName}`}>
+        <Section title={`Shared with ${recipient.displayName}`}>
           <div className="disclosure-package">
             {recipient.allowedScopes.map((scope) => (
               <div className="disclosure-row" key={scope}>
@@ -3308,7 +2799,7 @@ function RecipientAccessScreen({
               </div>
             ))}
           </div>
-          <Button variant="secondary">Contact liaison</Button>
+          <Button variant="secondary">Contact support</Button>
         </Section>
       )}
     </div>
@@ -3326,12 +2817,12 @@ function BenefitsProtectionScreen({
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Benefits protection</p>
-        <h1>Optional agency notification</h1>
+        <h1>Benefits notice</h1>
       </div>
       <StatusBanner tone="warning">
-        This can only request or notify through approved agency workflows. It does not guarantee agency action.
+        Abby can ask approved agencies for help. This does not promise benefits.
       </StatusBanner>
-      <Section title="Explicit opt-in">
+      <Section title="Benefits choice">
         <div
           className="capability-preview"
           role="group"
@@ -3339,35 +2830,35 @@ function BenefitsProtectionScreen({
         >
           <div className="scope-header">
             <div>
-              <h4>Capability preview</h4>
+              <h4>What this allows</h4>
               <p>missed check-in and benefits status only</p>
             </div>
-            <Badge tone={optedIn ? "success" : "neutral"}>{optedIn ? "ready to save" : "not enabled"}</Badge>
+            <Badge tone={optedIn ? "success" : "neutral"}>{optedIn ? "ready to save" : "off"}</Badge>
           </div>
           <div className="disclosure-package">
             <div className="disclosure-row">
-              <strong>Abilities</strong>
-              <span>{capabilitySummary(["metadata/read", "derived/read"])}</span>
+              <strong>Can do</strong>
+              <span>{plainCapabilitySummary(["metadata/read", "derived/read"])}</span>
             </div>
             <div className="disclosure-row">
-              <strong>Scope</strong>
-              <span>missed_check_in, benefits_information</span>
+              <strong>Items</strong>
+              <span>Missed check-in, Benefits information</span>
             </div>
             <div className="disclosure-row">
-              <strong>Not granted</strong>
-              <span>{nonGrantedCapabilities(["metadata/read", "derived/read"]).join(", ")}</span>
+              <strong>Not allowed</strong>
+              <span>{plainNonGrantedCapabilities(["metadata/read", "derived/read"]).join(", ")}</span>
             </div>
           </div>
         </div>
         <label className="consent-box">
           <input checked={optedIn} onChange={(event) => setOptedIn(event.target.checked)} type="checkbox" />
           <span>
-            <strong>Allow Abby to prepare a benefits-protection notification after missed check-ins.</strong>
-            <small>Legal and policy review must be completed before this can be sent in production.</small>
+            <strong>Allow Abby to prepare a benefits notice after missed check-ins.</strong>
+            <small>This starts on. You can turn it off. A privacy and legal team must review this before real use.</small>
           </span>
         </label>
-        <Button disabled={!optedIn}>
-          <Landmark size={18} /> Save opt-in
+        <Button>
+          <Landmark size={18} /> Save setting
         </Button>
       </Section>
     </div>
@@ -3375,133 +2866,55 @@ function BenefitsProtectionScreen({
 }
 
 function AnalyticsScreen({
-  apiConfig,
   optedIn,
-  refreshWalletAuditEvents,
   setOptedIn
 }: {
-  apiConfig?: WalletApiConfig;
   optedIn: Record<string, boolean>;
-  refreshWalletAuditEvents: () => Promise<void>;
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
-  const [apiStudies, setApiStudies] = useState<AnalyticsStudy[]>([]);
-  const [apiConsents, setApiConsents] = useState<WalletAnalyticsConsent[]>([]);
-  const [expirationByStudy, setExpirationByStudy] = useState<Record<string, string>>({});
-  const [busyStudyId, setBusyStudyId] = useState<string | null>(null);
-  const [analyticsStatus, setAnalyticsStatus] = useState<{
-    tone: "info" | "success" | "warning" | "danger";
-    text: string;
-  } | null>(null);
-
-  const activeConsentsByTemplate = useMemo(() => {
-    const entries = apiConsents
-      .filter((consent) => consent.status === "active")
-      .map((consent) => [consent.templateId, consent] as const);
-    return new Map(entries);
-  }, [apiConsents]);
-  const studies = apiConfig && apiStudies.length ? apiStudies : analyticsStudies;
-
-  async function refreshAnalyticsState() {
-    if (!apiConfig) return;
-    const [templates, consents] = await Promise.all([
-      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl, includeInactive: true }),
-      listWalletAnalyticsConsents(apiConfig)
-    ]);
-    setApiStudies(templates.length ? templates : analyticsStudies);
-    setApiConsents(consents);
-    setExpirationByStudy((current) => {
-      const next = { ...current };
-      for (const consent of consents) {
-        if (consent.status === "active" && consent.expiresAtRaw) {
-          next[consent.templateId] = isoToDateInputValue(consent.expiresAtRaw);
-        }
-      }
-      return next;
-    });
-  }
-
-  useEffect(() => {
-    if (!apiConfig) return;
-    refreshAnalyticsState().catch(() => {
-      setApiStudies([]);
-      setApiConsents([]);
-      setAnalyticsStatus({ tone: "warning", text: "Wallet analytics state could not be loaded." });
-    });
-  }, [apiConfig]);
-
   function toggleStudy(studyId: string) {
-    setOptedIn({ ...optedIn, [studyId]: !optedIn[studyId] });
+    setOptedIn({ ...optedIn, [studyId]: !isStudySelected(studyId) });
   }
 
-  async function createConsent(study: AnalyticsStudy) {
-    if (!apiConfig || !isStudyConsentable(study.status)) return;
-    setBusyStudyId(study.id);
-    setAnalyticsStatus(null);
-    try {
-      await createWalletAnalyticsConsent(apiConfig, study.id, dateInputValueToIso(expirationByStudy[study.id]));
-      await refreshAnalyticsState();
-      await refreshWalletAuditEvents().catch(() => undefined);
-      setAnalyticsStatus({ tone: "success", text: "Analytics consent saved." });
-    } catch (error) {
-      setAnalyticsStatus({ tone: "danger", text: error instanceof Error ? error.message : "Consent request failed." });
-    } finally {
-      setBusyStudyId(null);
-    }
-  }
-
-  async function withdrawConsent(study: AnalyticsStudy, consent?: WalletAnalyticsConsent) {
-    if (!apiConfig || !consent) return;
-    setBusyStudyId(study.id);
-    setAnalyticsStatus(null);
-    try {
-      await revokeWalletAnalyticsConsent(apiConfig, consent.id);
-      await refreshAnalyticsState();
-      await refreshWalletAuditEvents().catch(() => undefined);
-      setAnalyticsStatus({ tone: "success", text: "Analytics consent withdrawn." });
-    } catch (error) {
-      setAnalyticsStatus({ tone: "danger", text: error instanceof Error ? error.message : "Withdrawal request failed." });
-    } finally {
-      setBusyStudyId(null);
-    }
+  function isStudySelected(studyId: string) {
+    return optedIn[studyId] ?? true;
   }
 
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Analytics consent</p>
-        <h1>Share patterns, not personal records</h1>
+        <p className="eyebrow">Group facts choice</p>
+        <h1>Share group facts, not your name</h1>
       </div>
       <StatusBanner tone="info">
-        Only derived fields are used. Exact counts stay hidden until privacy thresholds and budget checks pass.
+        These choices start on. You can turn off any one. We use group facts, not names or contact details.
       </StatusBanner>
-      {analyticsStatus ? <StatusBanner tone={analyticsStatus.tone}>{analyticsStatus.text}</StatusBanner> : null}
+      <StatusBanner tone="warning">
+        A privacy and legal team must review this before real use.
+      </StatusBanner>
       <div className="analytics-grid">
-        {studies.map((study) => {
-          const activeConsent = activeConsentsByTemplate.get(study.id);
-          const selected = apiConfig ? Boolean(activeConsent) : Boolean(optedIn[study.id]);
+        {analyticsStudies.map((study) => {
+          const selected = isStudySelected(study.id);
           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
           const titleId = `analytics-title-${study.id}`;
-          const consentable = isStudyConsentable(study.status);
-          const busy = busyStudyId === study.id;
           return (
             <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
               <div className="scope-header">
                 <div>
                   <h3 id={titleId}>{study.title}</h3>
-	                  <p>{study.purpose}</p>
-	                </div>
-                <Badge tone={selected ? "success" : analyticsStatusTone(study.status)}>
-                  {selected ? "consented" : analyticsStatusLabel(study.status)}
+                  <p>{study.purpose}</p>
+                </div>
+                <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
+                  {study.status === "paused" ? "paused" : selected ? "on" : "off"}
                 </Badge>
               </div>
               <div className="privacy-metrics">
-                <StatusPanel label="Minimum cohort" value={String(study.minCohortSize)} tone="teal" />
-                <StatusPanel label="Budget left" value={budgetRemaining.toFixed(2)} tone="gold" />
+                <StatusPanel label="Group size" value={String(study.minCohortSize)} tone="teal" />
+                <StatusPanel label="Privacy left" value={budgetRemaining.toFixed(2)} tone="gold" />
               </div>
               <div className="badge-row">
                 {study.fields.map((field) => (
-                  <Badge key={field}>{field}</Badge>
+                  <Badge key={field}>{formatAnalyticsField(field)}</Badge>
                 ))}
               </div>
               <div
@@ -3511,131 +2924,45 @@ function AnalyticsScreen({
               >
                 <div className="scope-header">
                   <div>
-                    <h4>Capability preview</h4>
-                    <p>{study.fields.length} derived fields · minimum cohort {study.minCohortSize}</p>
+                    <h4>What this allows</h4>
+                    <p>{study.fields.length} safe details · group size {study.minCohortSize}</p>
                   </div>
                   <Badge tone={study.status === "paused" ? "warning" : "success"}>
-                    {study.status === "paused" ? "paused" : "bounded contribution"}
+                    {study.status === "paused" ? "paused" : "limited group share"}
                   </Badge>
                 </div>
-	                <div className="disclosure-package">
-	                  <div className="disclosure-row">
-	                    <strong>Ability</strong>
-	                    <span>analytics/contribute</span>
-	                  </div>
-	                  <div className="disclosure-row">
-	                    <strong>Fields used</strong>
-	                    <span>{study.fields.join(", ")}</span>
-	                  </div>
-                    <div className="disclosure-row">
-                      <strong>Template status</strong>
-                      <span>{analyticsStatusLabel(study.status)}</span>
-                    </div>
-                    <div className="disclosure-row">
-                      <strong>Consent expiration</strong>
-                      <span>{activeConsent?.expiresAt ?? "not set"}</span>
-                    </div>
-	                  <div className="disclosure-row">
-	                    <strong>Not granted</strong>
-	                    <span>{nonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
-	                  </div>
-	                </div>
-	              </div>
-              <div className="analytics-consent-controls">
-                <Field label="Consent expiration" help="Optional end date">
-                  <input
-                    disabled={Boolean(apiConfig && selected)}
-                    onChange={(event) =>
-                      setExpirationByStudy({ ...expirationByStudy, [study.id]: event.target.value })
-                    }
-                    type="date"
-                    value={expirationByStudy[study.id] ?? ""}
-                  />
-                </Field>
-              </div>
-	              <label className="consent-box">
-	                <input
-	                  checked={selected}
-	                  disabled={busy || !consentable}
-	                  onChange={(event) => {
-                      if (!apiConfig) {
-                        toggleStudy(study.id);
-                        return;
-                      }
-                      if (event.target.checked) {
-                        void createConsent(study);
-                      } else {
-                        void withdrawConsent(study, activeConsent);
-                      }
-                    }}
-	                  type="checkbox"
-	                />
-	                <span>
-	                  <strong>Allow this study to use the listed derived fields.</strong>
-	                  <small>
-                      {selected
-                        ? `Consent ${activeConsent?.id ?? "saved"} is active.`
-                        : "Precise location, raw documents, names, and contact details are excluded."}
-                    </small>
-	                </span>
-	              </label>
-              {apiConfig ? (
-                <div className="row-actions analytics-actions">
-                  {selected ? (
-                    <Button
-                      disabled={busy}
-                      loading={busy}
-                      loadingLabel="Withdrawing"
-                      onClick={() => void withdrawConsent(study, activeConsent)}
-                      variant="danger"
-                    >
-                      <UserMinus size={18} /> Withdraw consent
-                    </Button>
-                  ) : (
-                    <Button
-                      disabled={busy || !consentable}
-                      loading={busy}
-                      loadingLabel="Saving"
-                      onClick={() => void createConsent(study)}
-                    >
-                      <ShieldCheck size={18} /> Save consent
-                    </Button>
-                  )}
+                <div className="disclosure-package">
+                  <div className="disclosure-row">
+                    <strong>Can do</strong>
+                    <span>{plainCapabilitySummary(["analytics/contribute"])}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Safe details</strong>
+                    <span>{study.fields.map(formatAnalyticsField).join(", ")}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Not allowed</strong>
+                    <span>{plainNonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
+                  </div>
                 </div>
-              ) : null}
+              </div>
+              <label className="consent-box">
+                <input
+                  checked={selected}
+                  onChange={() => toggleStudy(study.id)}
+                  type="checkbox"
+                />
+                <span>
+                  <strong>Allow this choice to use the group facts listed above.</strong>
+                  <small>Exact location, files, names, and contact details are not used.</small>
+                </span>
+              </label>
             </article>
           );
         })}
       </div>
     </div>
   );
-}
-
-function analyticsStatusLabel(status: string): string {
-  if (status === "active") return "approved";
-  if (status === "available") return "approved";
-  return status;
-}
-
-function analyticsStatusTone(status: string): "neutral" | "success" | "warning" | "danger" {
-  if (status === "approved" || status === "active" || status === "available") return "success";
-  if (status === "paused" || status === "draft") return "warning";
-  if (status === "retired") return "danger";
-  return "neutral";
-}
-
-function isStudyConsentable(status: string): boolean {
-  return status === "approved" || status === "active" || status === "available" || status === "consented";
-}
-
-function dateInputValueToIso(value?: string): string | undefined {
-  if (!value) return undefined;
-  return `${value}T23:59:59+00:00`;
-}
-
-function isoToDateInputValue(value: string): string {
-  const match = value.match(/^\d{4}-\d{2}-\d{2}/);
-  return match ? match[0] : "";
 }
 
 function ProofCenterScreen({
@@ -3727,7 +3054,7 @@ function ProofCenterScreen({
                 <span>region_id, claim, region_policy_hash</span>
               </div>
               <div className="disclosure-row">
-                <strong>Not granted</strong>
+                <strong>Not allowed</strong>
                 <span>{nonGrantedCapabilities(["proof/verify", "location/prove_region"]).join(", ")}</span>
               </div>
             </div>
@@ -3771,7 +3098,7 @@ function ProofCenterScreen({
               >
                 <div className="scope-header">
                   <div>
-                    <h4>Capability preview</h4>
+                    <h4>What this allows</h4>
                     <p>{proof.proofType} · public inputs only</p>
                   </div>
                   <Badge tone={proof.simulated ? "warning" : "success"}>
@@ -3804,7 +3131,7 @@ function ProofCenterScreen({
                     <span>{Object.keys(proof.publicInputs).join(", ")}</span>
                   </div>
                   <div className="disclosure-row">
-                    <strong>Not granted</strong>
+                    <strong>Not allowed</strong>
                     <span>{nonGrantedCapabilities(["proof/verify"]).join(", ")}</span>
                   </div>
                 </div>
@@ -3893,7 +3220,7 @@ function ExportCenterScreen({
         Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal plaintext.
       </StatusBanner>
       {!apiConfig ? (
-        <StatusBanner tone="warning">Connect the wallet API environment to build live export bundles.</StatusBanner>
+        <StatusBanner tone="warning">Connect Abby before you make live export bundles.</StatusBanner>
       ) : null}
       {exportStatus === "created" ? <StatusBanner tone="success">Export bundle verified.</StatusBanner> : null}
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
@@ -3934,7 +3261,7 @@ function ExportCenterScreen({
           <div className="capability-preview full-span" role="group" aria-label="Export capability preview">
             <div className="scope-header">
               <div>
-                <h3>Capability preview</h3>
+                <h3>What this allows</h3>
                 <p>{audienceName.trim() || audienceDid.trim() || "Recipient"} · {purpose.trim() || "user_export"}</p>
               </div>
               <Badge tone={exportRecordIds.length > 0 ? "success" : "warning"}>
@@ -3955,7 +3282,7 @@ function ExportCenterScreen({
                 <span>Encrypted descriptors, proof receipts, derived artifacts, storage report</span>
               </div>
               <div className="disclosure-row">
-                <strong>Not granted</strong>
+                <strong>Not allowed</strong>
                 <span>{nonGrantedCapabilities(["export/create"]).join(", ")}</span>
               </div>
             </div>
@@ -4024,109 +3351,19 @@ function shortHash(value?: string): string {
   return value.length > 24 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
 }
 
-function thresholdApprovalCount(approval: ThresholdApprovalResponse): number {
-  const approvers = new Set(approval.approver_dids ?? []);
-  return Object.keys(approval.approvals ?? {}).filter((did) => approvers.size === 0 || approvers.has(did)).length;
-}
-
-function thresholdApprovalTone(status: string): "neutral" | "success" | "warning" {
-  if (status === "approved") return "success";
-  if (status === "pending") return "warning";
-  return "neutral";
-}
-
-function thresholdApprovalDateLabel(value?: string): string {
-  if (!value) return "Unavailable";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-}
-
-function opsHealthTone(status?: string): string {
-  if (status === "error") return "warning";
-  if (status === "warning") return "info";
-  if (status === "ok") return "success";
-  return "neutral";
-}
-
-function stringDetail(details: Record<string, unknown> | undefined, key: string): string | null {
-  const value = details?.[key];
-  return typeof value === "string" && value.trim() ? value.trim() : null;
-}
-
-function objectDetail(details: Record<string, unknown> | undefined, key: string): Record<string, unknown> | null {
-  const value = details?.[key];
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as Record<string, unknown>;
-}
-
 function SecurityScreen({
   apiConfig,
-  onSnapshotLoaded,
-  refreshWalletAuditEvents
+  onSnapshotLoaded
 }: {
   apiConfig?: WalletApiConfig;
   onSnapshotLoaded: () => Promise<void> | void;
-  refreshWalletAuditEvents: () => Promise<void>;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
     "idle"
   );
   const [snapshotReport, setSnapshotReport] = useState<WalletSnapshotVerification | null>(null);
-  const [storageStatus, setStorageStatus] = useState<"idle" | "checking" | "verified" | "repairing" | "repaired" | "failed">("idle");
-  const [walletStorageReport, setWalletStorageReport] = useState<WalletStorageReportView | null>(null);
-  const [opsStatus, setOpsStatus] = useState<"idle" | "checking" | "checked" | "failed">("idle");
-  const [opsHealthReport, setOpsHealthReport] = useState<OpsHealthReport | null>(null);
-  const [walletDetails, setWalletDetails] = useState<WalletDetails | null>(null);
-  const [thresholdApprovals, setThresholdApprovals] = useState<ThresholdApprovalResponse[]>([]);
-  const [approvalQueueStatus, setApprovalQueueStatus] = useState<
-    "idle" | "loading" | "loaded" | "approving" | "failed"
-  >("idle");
-  const [controllerDid, setControllerDid] = useState("");
-  const [controllerApprovalId, setControllerApprovalId] = useState("");
-  const [deviceDid, setDeviceDid] = useState("");
-  const [deviceApprovalId, setDeviceApprovalId] = useState("");
-  const [recoveryContactDids, setRecoveryContactDids] = useState("");
-  const [recoveryThreshold, setRecoveryThreshold] = useState(1);
-  const [recoveryPolicyApprovalId, setRecoveryPolicyApprovalId] = useState("");
-  const [recoveryActorDid, setRecoveryActorDid] = useState("");
-  const [recoveredControllerDid, setRecoveredControllerDid] = useState("");
-  const [recoveryControllerApprovalId, setRecoveryControllerApprovalId] = useState("");
-  const [emergencyApprovalId, setEmergencyApprovalId] = useState("");
-  const [emergencyReason, setEmergencyReason] = useState("suspected compromise");
-  const [emergencyRotateKeys, setEmergencyRotateKeys] = useState(true);
-  const [emergencyReport, setEmergencyReport] = useState<EmergencyRevokeReport | null>(null);
-  const [governanceStatus, setGovernanceStatus] = useState<"idle" | "saving" | "requested" | "saved" | "failed">(
-    "idle"
-  );
-  const [governanceMessage, setGovernanceMessage] = useState("");
   const hasCurrentSnapshot = Boolean(apiConfig && snapshotIds.includes(apiConfig.walletId));
-  const governanceThreshold = walletDetails?.governance_policy?.threshold ?? 1;
-  const governanceApprovals =
-    walletDetails?.governance_policy?.approver_dids ?? walletDetails?.controller_dids ?? [];
-  const recoveryPolicy = walletDetails?.governance_policy?.recovery_policy;
-  const recoveryContacts = recoveryPolicy?.contact_dids ?? [];
-  const pendingThresholdApprovals = thresholdApprovals.filter((approval) => approval.status === "pending");
-  const opsCheckSummary = opsHealthReport
-    ? opsHealthReport.checks.map((check) => `${check.name}: ${check.status}`).join(", ")
-    : "Not checked";
-  const proofRegistryCheck = opsHealthReport?.checks.find((check) => check.name === "proof_registry") ?? null;
-  const proofRegistryDetails = proofRegistryCheck?.details;
-  const proofBackendHealth = objectDetail(proofRegistryDetails, "backend_health");
-  const proofBackendVerifier = [stringDetail(proofRegistryDetails, "verifier_id"), stringDetail(proofRegistryDetails, "proof_system")]
-    .filter(Boolean)
-    .join(" / ");
-  const proofBackendMode = stringDetail(proofRegistryDetails, "backend_mode");
-  const proofBackendHealthStatus = stringDetail(proofBackendHealth ?? undefined, "status");
-  const proofBackendHealthError = stringDetail(proofBackendHealth ?? undefined, "error");
-  const storageProviderSummary =
-    walletStorageReport && Object.keys(walletStorageReport.storage_types).length
-      ? Object.entries(walletStorageReport.storage_types)
-          .map(([storageType, count]) => `${storageType}: ${count}`)
-          .join(", ")
-      : "Not checked";
-  const emergencyRotationErrors = Object.entries(emergencyReport?.rotation_errors ?? {});
 
   async function refreshSnapshotState(): Promise<string[]> {
     if (!apiConfig) return [];
@@ -4140,53 +3377,20 @@ function SecurityScreen({
     return ids;
   }
 
-  async function refreshWalletDetails() {
-    if (!apiConfig) {
-      setWalletDetails(null);
-      return;
-    }
-    setWalletDetails(await loadWalletDetails(apiConfig));
-  }
-
-  async function refreshThresholdApprovalQueue() {
-    if (!apiConfig) {
-      setThresholdApprovals([]);
-      setApprovalQueueStatus("idle");
-      return;
-    }
-    setApprovalQueueStatus("loading");
-    try {
-      const approvals = await listThresholdApprovals(apiConfig, "all");
-      setThresholdApprovals(approvals);
-      setApprovalQueueStatus("loaded");
-    } catch {
-      setThresholdApprovals([]);
-      setApprovalQueueStatus("failed");
-    }
-  }
-
   useEffect(() => {
     if (!apiConfig) return;
     let cancelled = false;
-    Promise.all([refreshSnapshotState(), refreshWalletDetails(), refreshThresholdApprovalQueue()])
+    refreshSnapshotState()
       .then(() => undefined)
       .catch(() => {
         if (!cancelled) {
           setSnapshotReport(null);
-          setWalletDetails(null);
-          setThresholdApprovals([]);
         }
       })
     return () => {
       cancelled = true;
     };
   }, [apiConfig]);
-
-  useEffect(() => {
-    if (apiConfig?.actorDid && !recoveryActorDid) {
-      setRecoveryActorDid(apiConfig.actorDid);
-    }
-  }, [apiConfig?.actorDid, recoveryActorDid]);
 
   async function saveSnapshot() {
     if (!apiConfig) return;
@@ -4207,230 +3411,9 @@ function SecurityScreen({
       await loadWalletSnapshot(apiConfig);
       setSnapshotReport(await verifyWalletSnapshot(apiConfig));
       await onSnapshotLoaded();
-      await refreshWalletDetails();
       setSnapshotStatus("loaded");
     } catch {
       setSnapshotStatus("failed");
-    }
-  }
-
-  async function checkWalletStorage() {
-    if (!apiConfig) return;
-    setStorageStatus("checking");
-    try {
-      const report = await verifyWalletStorage(apiConfig);
-      setWalletStorageReport(report);
-      setStorageStatus("verified");
-      await refreshWalletAuditEvents();
-    } catch {
-      setWalletStorageReport(null);
-      setStorageStatus("failed");
-    }
-  }
-
-  async function repairWalletStorageReplicas() {
-    if (!apiConfig?.actorDid) return;
-    setStorageStatus("repairing");
-    try {
-      const report = await repairWalletStorage(apiConfig);
-      setWalletStorageReport(report);
-      setStorageStatus("repaired");
-      await refreshWalletAuditEvents();
-    } catch {
-      setStorageStatus("failed");
-    }
-  }
-
-  async function checkOpsHealth() {
-    if (!apiConfig) return;
-    setOpsStatus("checking");
-    try {
-      const report = await loadOpsHealth(apiConfig, true);
-      setOpsHealthReport(report);
-      setOpsStatus("checked");
-      await refreshWalletAuditEvents();
-    } catch {
-      setOpsHealthReport(null);
-      setOpsStatus("failed");
-    }
-  }
-
-  async function requestGovernanceApproval(operation: WalletAdminOperation, requestedBy?: string) {
-    if (!apiConfig) return;
-    setGovernanceStatus("saving");
-    try {
-      const approval = await requestWalletAdminApproval(apiConfig, operation, requestedBy);
-      if (operation.startsWith("wallet/controller")) {
-        if (operation === "wallet/controller_recover") {
-          setRecoveryControllerApprovalId(approval.approval_id);
-        } else {
-          setControllerApprovalId(approval.approval_id);
-        }
-      } else if (operation.startsWith("wallet/device")) {
-        setDeviceApprovalId(approval.approval_id);
-      } else if (operation === "wallet/recovery_policy_set") {
-        setRecoveryPolicyApprovalId(approval.approval_id);
-      } else {
-        setEmergencyApprovalId(approval.approval_id);
-      }
-      setGovernanceMessage(`Approval ${approval.approval_id}`);
-      setGovernanceStatus("requested");
-      await refreshThresholdApprovalQueue();
-    } catch {
-      setGovernanceMessage("Wallet approval request failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function applyRecoveryPolicy(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!apiConfig) return;
-    const contactDids = parseRecordIds(recoveryContactDids);
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await setWalletRecoveryPolicy(apiConfig, {
-        approvalId: recoveryPolicyApprovalId.trim() || undefined,
-        contactDids,
-        threshold: recoveryThreshold
-      });
-      setWalletDetails(wallet);
-      setGovernanceMessage("Recovery policy updated.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Recovery policy update failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function requestRecoveryControllerApproval() {
-    if (!apiConfig || !recoveryActorDid.trim()) return;
-    await requestGovernanceApproval("wallet/controller_recover", recoveryActorDid.trim());
-  }
-
-  async function applyControllerRecovery(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!apiConfig || !recoveryActorDid.trim() || !recoveredControllerDid.trim()) return;
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await recoverWalletController(apiConfig, {
-        actorDid: recoveryActorDid.trim(),
-        approvalId: recoveryControllerApprovalId.trim() || undefined,
-        controllerDid: recoveredControllerDid.trim()
-      });
-      setWalletDetails(wallet);
-      setRecoveredControllerDid("");
-      setRecoveryControllerApprovalId("");
-      setGovernanceMessage("Controller recovered.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Controller recovery failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function recordGovernanceApproval(approvalId: string) {
-    if (!apiConfig || !approvalId.trim()) return;
-    setGovernanceStatus("saving");
-    setApprovalQueueStatus("approving");
-    try {
-      const approval = await approveThresholdApproval(apiConfig, approvalId.trim());
-      setThresholdApprovals((approvals) =>
-        approvals.map((item) => (item.approval_id === approval.approval_id ? approval : item))
-      );
-      await refreshThresholdApprovalQueue();
-      setGovernanceMessage("Approval recorded.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Approval failed.");
-      setGovernanceStatus("failed");
-      setApprovalQueueStatus("failed");
-    }
-  }
-
-  async function applyControllerAdd(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!apiConfig || !controllerDid.trim()) return;
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await addWalletController(apiConfig, controllerDid.trim(), controllerApprovalId.trim() || undefined);
-      setWalletDetails(wallet);
-      setControllerDid("");
-      setControllerApprovalId("");
-      setGovernanceMessage("Controller updated.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Controller update failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function applyControllerRemove(controller: string) {
-    if (!apiConfig) return;
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await removeWalletController(apiConfig, controller, controllerApprovalId.trim() || undefined);
-      setWalletDetails(wallet);
-      setControllerApprovalId("");
-      setGovernanceMessage("Controller removed.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Controller removal failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function applyDeviceAdd(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!apiConfig || !deviceDid.trim()) return;
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await addWalletDevice(apiConfig, deviceDid.trim(), deviceApprovalId.trim() || undefined);
-      setWalletDetails(wallet);
-      setDeviceDid("");
-      setDeviceApprovalId("");
-      setGovernanceMessage("Device updated.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Device update failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function applyDeviceRevoke(device: string) {
-    if (!apiConfig) return;
-    setGovernanceStatus("saving");
-    try {
-      const wallet = await revokeWalletDevice(apiConfig, device, deviceApprovalId.trim() || undefined);
-      setWalletDetails(wallet);
-      setDeviceApprovalId("");
-      setGovernanceMessage("Device revoked.");
-      setGovernanceStatus("saved");
-    } catch {
-      setGovernanceMessage("Device revocation failed.");
-      setGovernanceStatus("failed");
-    }
-  }
-
-  async function applyEmergencyRevoke(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!apiConfig) return;
-    setGovernanceStatus("saving");
-    try {
-      const report = await emergencyRevoke(apiConfig, {
-        approvalId: emergencyApprovalId.trim() || undefined,
-        reason: emergencyReason.trim() || undefined,
-        rotateKeys: emergencyRotateKeys
-      });
-      setEmergencyReport(report);
-      setEmergencyApprovalId("");
-      setGovernanceMessage(
-        `Emergency revoke completed: ${report.revoked_grant_count} grants revoked, ${report.rotated_record_count} records rotated.`
-      );
-      setGovernanceStatus("saved");
-      await refreshWalletDetails();
-    } catch {
-      setGovernanceMessage("Emergency revoke failed.");
-      setGovernanceStatus("failed");
     }
   }
 
@@ -4441,36 +3424,16 @@ function SecurityScreen({
         <h1>Account safety</h1>
       </div>
       {!apiConfig ? (
-        <StatusBanner tone="warning">Connect the wallet API environment to use persisted wallet snapshots.</StatusBanner>
+        <StatusBanner tone="warning">Connect Abby to save and load wallet backups.</StatusBanner>
       ) : null}
-      {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet snapshot saved.</StatusBanner> : null}
-      {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet snapshot loaded.</StatusBanner> : null}
-      {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet snapshot action failed.</StatusBanner> : null}
-      {storageStatus === "verified" && walletStorageReport ? (
-        <StatusBanner tone={walletStorageReport.ok ? "success" : "warning"}>
-          {walletStorageReport.ok ? "Encrypted storage replicas verified." : "Encrypted storage needs repair."}
-        </StatusBanner>
-      ) : null}
-      {storageStatus === "repaired" && walletStorageReport ? (
-        <StatusBanner tone={walletStorageReport.ok ? "success" : "warning"}>
-          {walletStorageReport.ok ? "Encrypted storage replicas repaired." : "Encrypted storage repair incomplete."}
-        </StatusBanner>
-      ) : null}
-      {storageStatus === "failed" ? <StatusBanner tone="warning">Wallet storage verification failed.</StatusBanner> : null}
-      {opsStatus === "checked" && opsHealthReport ? (
-        <StatusBanner tone={opsHealthReport.status === "error" ? "warning" : "success"}>
-          Operations health: {opsHealthReport.status}.
-        </StatusBanner>
-      ) : null}
-      {opsStatus === "failed" ? <StatusBanner tone="warning">Operations health check failed.</StatusBanner> : null}
-      {governanceStatus === "requested" ? <StatusBanner tone="info">{governanceMessage}</StatusBanner> : null}
-      {governanceStatus === "saved" ? <StatusBanner tone="success">{governanceMessage}</StatusBanner> : null}
-      {governanceStatus === "failed" ? <StatusBanner tone="warning">{governanceMessage}</StatusBanner> : null}
+      {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet backup saved.</StatusBanner> : null}
+      {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet backup loaded.</StatusBanner> : null}
+      {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet backup action failed.</StatusBanner> : null}
       <Section
-        title="Wallet persistence"
+        title="Wallet backups"
         actions={
           <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>
-            {hasCurrentSnapshot ? "snapshot ready" : "no snapshot"}
+            {hasCurrentSnapshot ? "backup ready" : "no backup"}
           </Badge>
         }
       >
@@ -4480,564 +3443,46 @@ function SecurityScreen({
             <span>{apiConfig?.walletId ?? "Not connected"}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Snapshots</strong>
+            <strong>Backups</strong>
             <span>{snapshotIds.length}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Repository</strong>
-            <span>{apiConfig ? "metadata snapshot store" : "API required"}</span>
+            <strong>Backup place</strong>
+            <span>{apiConfig ? "backup store" : "API required"}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Integrity</strong>
+            <strong>Backup check</strong>
             <span>{snapshotReport ? (snapshotReport.valid ? "verified" : "failed") : "not checked"}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Encrypted storage</strong>
-            <span>
-              {walletStorageReport
-                ? walletStorageReport.ok
-                  ? "verified"
-                  : `${walletStorageReport.failed_replica_count} failed replicas`
-                : "not checked"}
-            </span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Replicas</strong>
-            <span>{walletStorageReport ? `${walletStorageReport.replica_count} across ${walletStorageReport.record_count} records` : "Not checked"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Providers</strong>
-            <span>{storageProviderSummary}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Snapshot hash</strong>
+            <strong>Backup code</strong>
             <span>{snapshotReport?.computed_hash ? <code>{shortHash(snapshotReport.computed_hash)}</code> : "Unavailable"}</span>
           </div>
-          <div className="disclosure-row">
-            <strong>Ops health</strong>
-            <span>{opsHealthReport ? opsHealthReport.status : "not checked"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Ops checks</strong>
-            <span>{opsCheckSummary}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Proof backend</strong>
-            <span>{proofBackendVerifier || proofBackendMode || "Not checked"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Proof backend health</strong>
-            <span>
-              {proofRegistryCheck ? (
-                <>
-                  <Badge tone={opsHealthTone(proofRegistryCheck.status)}>{proofRegistryCheck.status}</Badge>
-                  {proofBackendHealthStatus ? ` ${proofBackendHealthStatus}` : ""}
-                  {proofBackendHealthError ? ` (${proofBackendHealthError})` : ""}
-                </>
-              ) : (
-                "Not checked"
-              )}
-            </span>
-          </div>
         </div>
-        {opsHealthReport ? (
-          <div className="disclosure-package" aria-live="polite">
-            {opsHealthReport.checks.map((check) => {
-              const verifierLabel =
-                check.name === "proof_registry"
-                  ? [stringDetail(check.details, "verifier_id"), stringDetail(check.details, "proof_system")]
-                      .filter(Boolean)
-                      .join(" / ")
-                  : null;
-              const health = objectDetail(check.details, "backend_health");
-              const healthStatus = stringDetail(health ?? undefined, "status");
-              const healthError = stringDetail(health ?? undefined, "error");
-              return (
-                <div className="disclosure-row" key={check.name}>
-                  <strong>{check.name}</strong>
-                  <span>
-                    <Badge tone={opsHealthTone(check.status)}>{check.status}</Badge> {check.summary}
-                    {verifierLabel ? ` (${verifierLabel})` : ""}
-                    {healthStatus ? ` [${healthStatus}]` : ""}
-                    {healthError ? ` ${healthError}` : ""}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
         <div className="row-actions">
           <Button disabled={!apiConfig || snapshotStatus === "saving" || snapshotStatus === "loading"} onClick={saveSnapshot}>
-            <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save snapshot"}
+            <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save backup"}
           </Button>
           <Button
             disabled={!apiConfig || !hasCurrentSnapshot || snapshotStatus === "saving" || snapshotStatus === "loading"}
             onClick={restoreSnapshot}
             variant="secondary"
           >
-            <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load snapshot"}
-          </Button>
-          <Button
-            disabled={!apiConfig || storageStatus === "checking" || storageStatus === "repairing"}
-            onClick={checkWalletStorage}
-            variant="secondary"
-          >
-            <Wrench size={18} /> {storageStatus === "checking" ? "Checking" : "Check storage"}
-          </Button>
-          <Button
-            disabled={!apiConfig?.actorDid || storageStatus === "checking" || storageStatus === "repairing"}
-            onClick={repairWalletStorageReplicas}
-            variant="secondary"
-          >
-            <RefreshCw size={18} /> {storageStatus === "repairing" ? "Repairing" : "Repair storage"}
-          </Button>
-          <Button disabled={!apiConfig || opsStatus === "checking"} onClick={checkOpsHealth} variant="secondary">
-            <ShieldCheck size={18} /> {opsStatus === "checking" ? "Checking" : "Run ops health"}
+            <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load backup"}
           </Button>
         </div>
       </Section>
-      <Section
-        title="Approval queue"
-        actions={
-          <Badge tone={pendingThresholdApprovals.length ? "warning" : "success"}>
-            {pendingThresholdApprovals.length ? `${pendingThresholdApprovals.length} pending` : "clear"}
-          </Badge>
-        }
-      >
-        {approvalQueueStatus === "failed" ? (
-          <StatusBanner tone="warning">Approval queue unavailable.</StatusBanner>
-        ) : null}
-        <div className="row-actions">
-          <Button
-            disabled={!apiConfig || approvalQueueStatus === "loading" || approvalQueueStatus === "approving"}
-            onClick={refreshThresholdApprovalQueue}
-            variant="secondary"
-          >
-            <RefreshCw size={18} /> {approvalQueueStatus === "loading" ? "Loading" : "Refresh approvals"}
-          </Button>
-        </div>
-        <div className="list-stack">
-          {thresholdApprovals.length ? (
-            thresholdApprovals.map((approval) => {
-              const approvedCount = thresholdApprovalCount(approval);
-              const actorDid = apiConfig?.actorDid ?? "";
-              const actorRecorded = Boolean(actorDid && approval.approvals?.[actorDid]);
-              const canRecord = Boolean(apiConfig?.actorDid && approval.status === "pending" && !actorRecorded);
-              return (
-                <article className="list-item" key={approval.approval_id}>
-                  <div>
-                    <div className="scope-header">
-                      <div>
-                        <h3>{approval.operation}</h3>
-                        <p>{approval.requested_by}</p>
-                      </div>
-                      <Badge tone={thresholdApprovalTone(approval.status)}>{approval.status}</Badge>
-                    </div>
-                    <div className="badge-row">
-                      <Badge>{shortHash(approval.approval_id)}</Badge>
-                      <Badge tone={approvedCount >= approval.threshold ? "success" : "warning"}>
-                        {approvedCount}/{approval.threshold} approvals
-                      </Badge>
-                      <Badge>{thresholdApprovalDateLabel(approval.created_at)}</Badge>
-                    </div>
-                    <div className="disclosure-package">
-                      <div className="disclosure-row">
-                        <strong>Abilities</strong>
-                        <span>{approval.abilities.join(", ")}</span>
-                      </div>
-                      <div className="disclosure-row">
-                        <strong>Resources</strong>
-                        <span>{approval.resources.join(", ")}</span>
-                      </div>
-                      <div className="disclosure-row">
-                        <strong>Approvers</strong>
-                        <span>{approval.approver_dids?.join(", ") || "Wallet controllers"}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row-actions">
-                    <Button
-                      disabled={!canRecord || approvalQueueStatus === "approving" || governanceStatus === "saving"}
-                      onClick={() => recordGovernanceApproval(approval.approval_id)}
-                      variant="secondary"
-                    >
-                      <KeyRound size={18} /> {actorRecorded ? "Recorded" : "Record approval"}
-                    </Button>
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <small>No threshold approvals are waiting on this wallet.</small>
-          )}
-        </div>
-      </Section>
-      <Section
-        title="Wallet governance"
-        actions={
-          <Badge tone={governanceThreshold > 1 ? "warning" : "success"}>
-            {governanceThreshold > 1 ? `${governanceThreshold} approvals` : "single approval"}
-          </Badge>
-        }
-      >
-        <div className="disclosure-package">
-          <div className="disclosure-row">
-            <strong>Owner</strong>
-            <span>{walletDetails?.owner_did ?? "Unavailable"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Current actor</strong>
-            <span>{apiConfig?.actorDid ?? "Not configured"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Approvers</strong>
-            <span>{governanceApprovals.length ? governanceApprovals.join(", ") : "Unavailable"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Manifest</strong>
-            <span>{walletDetails?.manifest_head ? <code>{shortHash(walletDetails.manifest_head)}</code> : "Unavailable"}</span>
-          </div>
-        </div>
-        <form className="form-grid" onSubmit={applyControllerAdd}>
-          <Field label="Controller DID" required>
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setControllerDid(event.target.value)}
-              placeholder="did:key:new-controller"
-              value={controllerDid}
-            />
-          </Field>
-          <Field label="Wallet admin approval ID">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setControllerApprovalId(event.target.value)}
-              placeholder="approval-..."
-              value={controllerApprovalId}
-            />
-          </Field>
-          <div className="row-actions full-span">
-            <Button
-              disabled={!apiConfig || !controllerDid.trim() || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/controller_add")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request add approval
-            </Button>
-            <Button
-              disabled={!apiConfig || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/controller_remove")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request remove approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !controllerApprovalId.trim() || governanceStatus === "saving"}
-              onClick={() => recordGovernanceApproval(controllerApprovalId)}
-              variant="secondary"
-            >
-              <KeyRound size={18} /> Record approval
-            </Button>
-            <Button disabled={!apiConfig || !controllerDid.trim() || governanceStatus === "saving"} type="submit">
-              <UserPlus size={18} /> Add controller
-            </Button>
-          </div>
-        </form>
-        <div className="list-stack">
-          {(walletDetails?.controller_dids ?? []).map((controller) => (
-            <article className="list-item" key={controller}>
-              <div>
-                <h3>{controller === walletDetails?.owner_did ? "Owner controller" : "Controller"}</h3>
-                <p>{controller}</p>
-                <div className="badge-row">
-                  <Badge tone={governanceApprovals.includes(controller) ? "success" : "neutral"}>
-                    {governanceApprovals.includes(controller) ? "approver" : "controller"}
-                  </Badge>
-                </div>
-              </div>
-              {controller !== walletDetails?.owner_did ? (
-                <div className="row-actions">
-                  <Button
-                    disabled={!apiConfig || governanceStatus === "saving"}
-                    onClick={() => applyControllerRemove(controller)}
-                    variant="danger"
-                  >
-                    <UserMinus size={18} /> Remove
-                  </Button>
-                </div>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      </Section>
-      <Section
-        title="Recovery policy"
-        actions={
-          <Badge tone={recoveryPolicy?.status === "active" ? "success" : "warning"}>
-            {recoveryPolicy?.status === "active" ? `${recoveryPolicy.threshold} recovery approvals` : "not active"}
-          </Badge>
-        }
-      >
-        <div className="disclosure-package">
-          <div className="disclosure-row">
-            <strong>Contacts</strong>
-            <span>{recoveryContacts.length ? recoveryContacts.join(", ") : "Unavailable"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Threshold</strong>
-            <span>{recoveryPolicy?.threshold ?? "Unavailable"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Status</strong>
-            <span>{recoveryPolicy?.status ?? "Unavailable"}</span>
-          </div>
-        </div>
-        <form className="form-grid" onSubmit={applyRecoveryPolicy}>
-          <Field label="Recovery contact DIDs" required>
-            <textarea
-              disabled={!apiConfig}
-              onChange={(event) => setRecoveryContactDids(event.target.value)}
-              placeholder="did:key:recovery-a, did:key:recovery-b"
-              rows={3}
-              value={recoveryContactDids}
-            />
-          </Field>
-          <Field label="Recovery threshold" required>
-            <input
-              disabled={!apiConfig}
-              min={1}
-              onChange={(event) => setRecoveryThreshold(Number(event.target.value))}
-              type="number"
-              value={recoveryThreshold}
-            />
-          </Field>
-          <Field label="Wallet admin approval ID">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setRecoveryPolicyApprovalId(event.target.value)}
-              placeholder="approval-..."
-              value={recoveryPolicyApprovalId}
-            />
-          </Field>
-          <div className="row-actions full-span">
-            <Button
-              disabled={!apiConfig || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/recovery_policy_set")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request policy approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !recoveryPolicyApprovalId.trim() || governanceStatus === "saving"}
-              onClick={() => recordGovernanceApproval(recoveryPolicyApprovalId)}
-              variant="secondary"
-            >
-              <KeyRound size={18} /> Record approval
-            </Button>
-            <Button disabled={!apiConfig || governanceStatus === "saving"} type="submit">
-              <UsersRound size={18} /> Save recovery policy
-            </Button>
-          </div>
-        </form>
-        <form className="form-grid" onSubmit={applyControllerRecovery}>
-          <Field label="Recovery actor DID" required>
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setRecoveryActorDid(event.target.value)}
-              placeholder="did:key:recovery-a"
-              value={recoveryActorDid}
-            />
-          </Field>
-          <Field label="Recovered controller DID" required>
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setRecoveredControllerDid(event.target.value)}
-              placeholder="did:key:recovered-controller"
-              value={recoveredControllerDid}
-            />
-          </Field>
-          <Field label="Recovery approval ID">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setRecoveryControllerApprovalId(event.target.value)}
-              placeholder="approval-..."
-              value={recoveryControllerApprovalId}
-            />
-          </Field>
-          <div className="row-actions full-span">
-            <Button
-              disabled={!apiConfig || !recoveryActorDid.trim() || governanceStatus === "saving"}
-              onClick={requestRecoveryControllerApproval}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request recovery approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !recoveryControllerApprovalId.trim() || governanceStatus === "saving"}
-              onClick={() => recordGovernanceApproval(recoveryControllerApprovalId)}
-              variant="secondary"
-            >
-              <KeyRound size={18} /> Record approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !recoveryActorDid.trim() || !recoveredControllerDid.trim() || governanceStatus === "saving"}
-              type="submit"
-            >
-              <UserPlus size={18} /> Recover controller
-            </Button>
-          </div>
-        </form>
-      </Section>
-      <Section title="Trusted devices">
-        <form className="form-grid" onSubmit={applyDeviceAdd}>
-          <Field label="Device DID" required>
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setDeviceDid(event.target.value)}
-              placeholder="did:key:phone-or-tablet"
-              value={deviceDid}
-            />
-          </Field>
-          <Field label="Wallet admin approval ID">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setDeviceApprovalId(event.target.value)}
-              placeholder="approval-..."
-              value={deviceApprovalId}
-            />
-          </Field>
-          <div className="row-actions full-span">
-            <Button
-              disabled={!apiConfig || !deviceDid.trim() || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/device_add")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request add approval
-            </Button>
-            <Button
-              disabled={!apiConfig || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/device_revoke")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request revoke approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !deviceApprovalId.trim() || governanceStatus === "saving"}
-              onClick={() => recordGovernanceApproval(deviceApprovalId)}
-              variant="secondary"
-            >
-              <KeyRound size={18} /> Record approval
-            </Button>
-            <Button disabled={!apiConfig || !deviceDid.trim() || governanceStatus === "saving"} type="submit">
-              <Smartphone size={18} /> Add device
-            </Button>
-          </div>
-        </form>
-        <div className="list-stack">
-          {(walletDetails?.device_dids ?? []).map((device) => (
-            <article className="list-item" key={device}>
-              <div>
-                <h3>{device === walletDetails?.owner_did ? "Primary device" : "Trusted device"}</h3>
-                <p>{device}</p>
-                <div className="badge-row">
-                  <Badge tone="success">active</Badge>
-                </div>
-              </div>
-              {device !== walletDetails?.owner_did ? (
-                <div className="row-actions">
-                  <Button
-                    disabled={!apiConfig || governanceStatus === "saving"}
-                    onClick={() => applyDeviceRevoke(device)}
-                    variant="danger"
-                  >
-                    <UserMinus size={18} /> Revoke
-                  </Button>
-                </div>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      </Section>
-      <Section
-        title="Emergency revoke"
-        actions={
-          <Badge tone={emergencyReport ? (emergencyRotationErrors.length ? "warning" : "success") : "danger"}>
-            {emergencyReport ? "completed" : "wallet-wide"}
-          </Badge>
-        }
-      >
-        <form className="form-grid" onSubmit={applyEmergencyRevoke}>
-          <Field label="Incident reason">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setEmergencyReason(event.target.value)}
-              placeholder="suspected compromise"
-              value={emergencyReason}
-            />
-          </Field>
-          <Field label="Wallet admin approval ID">
-            <input
-              disabled={!apiConfig}
-              onChange={(event) => setEmergencyApprovalId(event.target.value)}
-              placeholder="approval-..."
-              value={emergencyApprovalId}
-            />
-          </Field>
-          <label className="consent-box full-span">
-            <input
-              checked={emergencyRotateKeys}
-              disabled={!apiConfig}
-              onChange={(event) => setEmergencyRotateKeys(event.target.checked)}
-              type="checkbox"
-            />
-            <span>
-              <strong>Rotate record keys</strong>
-            </span>
-          </label>
-          <div className="row-actions full-span">
-            <Button
-              disabled={!apiConfig || governanceStatus === "saving"}
-              onClick={() => requestGovernanceApproval("wallet/emergency_revoke")}
-              variant="secondary"
-            >
-              <ShieldCheck size={18} /> Request emergency approval
-            </Button>
-            <Button
-              disabled={!apiConfig || !emergencyApprovalId.trim() || governanceStatus === "saving"}
-              onClick={() => recordGovernanceApproval(emergencyApprovalId)}
-              variant="secondary"
-            >
-              <KeyRound size={18} /> Record approval
-            </Button>
-            <Button disabled={!apiConfig || governanceStatus === "saving"} type="submit" variant="danger">
-              <LockKeyhole size={18} /> Revoke access
-            </Button>
-          </div>
-        </form>
-        {emergencyReport ? (
-          <div className="disclosure-package" aria-live="polite">
-            <div className="disclosure-row">
-              <strong>Revoked grants</strong>
-              <span>{emergencyReport.revoked_grant_count}</span>
-            </div>
-            <div className="disclosure-row">
-              <strong>Rotated records</strong>
-              <span>{emergencyReport.rotated_record_count}</span>
-            </div>
-            <div className="disclosure-row">
-              <strong>Key rotation errors</strong>
-              <span>
-                {emergencyRotationErrors.length
-                  ? emergencyRotationErrors.map(([recordId, error]) => `${recordId}: ${error}`).join(", ")
-                  : "None"}
-              </span>
-            </div>
-            <div className="disclosure-row">
-              <strong>Reason</strong>
-              <span>{emergencyReport.reason || "Not recorded"}</span>
-            </div>
-          </div>
-        ) : null}
-      </Section>
+      <div className="tool-grid">
+        <button className="tool-tile" type="button">
+          <LockKeyhole size={24} /> Session timeout
+        </button>
+        <button className="tool-tile" type="button">
+          <KeyRound size={24} /> Recovery settings
+        </button>
+        <button className="tool-tile" type="button">
+          <ShieldCheck size={24} /> Bot check settings
+        </button>
+      </div>
     </div>
   );
 }

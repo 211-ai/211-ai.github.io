@@ -77,6 +77,23 @@ export interface DisclosureRecipientDraft {
   allowedScopes: DisclosureDataScope[];
 }
 
+export type ShelterContactRequestDirection = "shelter_to_user" | "user_to_shelter";
+
+export type ShelterContactRequestStatus = "pending" | "approved" | "denied" | "canceled";
+
+export interface ShelterContactRequest {
+  id: string;
+  direction: ShelterContactRequestDirection;
+  status: ShelterContactRequestStatus;
+  shelterName: string;
+  userName: string;
+  userContact: string;
+  staffId?: string;
+  staffName?: string;
+  createdAt: string;
+  decidedAt?: string;
+}
+
 export interface UploadItem {
   id: string;
   recordId?: string;

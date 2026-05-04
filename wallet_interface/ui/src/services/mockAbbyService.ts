@@ -2,15 +2,31 @@ import {
   AuditEvent,
   AnalyticsStudy,
   CheckInPolicyDraft,
+  DisclosureDataScope,
   DisclosureRecipientDraft,
   ExportBundleView,
   ProofReceiptView,
   RegistrationProfileDraft,
   ServiceMatch,
+  ShelterContactRequest,
   UploadItem,
   WalletAccessRequest,
   WalletGrantReceipt
 } from "../models/abby";
+
+export const defaultDisclosureScopes: DisclosureDataScope[] = [
+  "identity_minimum",
+  "profile",
+  "photo",
+  "current_location",
+  "uploaded_documents",
+  "missed_check_in",
+  "found_permanent_housing",
+  "medical_notes",
+  "shelter_history",
+  "benefits_information",
+  "custom"
+];
 
 export const emptyRegistrationProfile: RegistrationProfileDraft = {
   legalName: "",
@@ -47,7 +63,7 @@ export const initialRecipients: DisclosureRecipientDraft[] = [
     agencyName: "",
     precinctName: "",
     verified: true,
-    allowedScopes: ["identity_minimum", "photo", "current_location"]
+    allowedScopes: [...defaultDisclosureScopes]
   },
   {
     id: "rec-2",
@@ -59,15 +75,38 @@ export const initialRecipients: DisclosureRecipientDraft[] = [
     agencyName: "Downtown Outreach",
     precinctName: "",
     verified: false,
-    allowedScopes: ["identity_minimum", "photo", "profile", "uploaded_documents"]
+    allowedScopes: [...defaultDisclosureScopes]
+  }
+];
+
+export const initialShelterContactRequests: ShelterContactRequest[] = [
+  {
+    id: "shelter-request-1",
+    direction: "shelter_to_user",
+    status: "pending",
+    shelterName: "Downtown Outreach Shelter",
+    userName: "Abby Example",
+    userContact: "abby@example.org",
+    staffId: "staff-demo-downtown",
+    staffName: "Jordan Lee",
+    createdAt: "Today, 8:45 AM"
+  },
+  {
+    id: "shelter-request-2",
+    direction: "user_to_shelter",
+    status: "pending",
+    shelterName: "Rose City Shelter",
+    userName: "Abby Example",
+    userContact: "abby@example.org",
+    createdAt: "Today, 9:05 AM"
   }
 ];
 
 export const initialUploads: UploadItem[] = [
   {
     id: "up-1",
-    fileName: "State ID photo",
-    machineSummary: "State Id Photo",
+    fileName: "State ID file",
+    machineSummary: "State Id File",
     category: "Identity",
     sensitivity: "high",
     status: "stored",
@@ -78,14 +117,14 @@ export const initialUploads: UploadItem[] = [
 export const serviceMatches: ServiceMatch[] = [
   {
     id: "svc-1",
-    name: "Emergency shelter intake",
+    name: "Emergency shelter sign-up",
     category: "Shelter",
     distance: "2.1 mi",
     availability: "Open tonight"
   },
   {
     id: "svc-2",
-    name: "Benefits navigation clinic",
+    name: "Benefits help clinic",
     category: "Benefits",
     distance: "Phone or walk-in",
     availability: "Weekdays"
@@ -124,7 +163,7 @@ export const analyticsStudies: AnalyticsStudy[] = [
   {
     id: "study-1",
     title: "Housing service gaps",
-    purpose: "Count county-level housing needs for planning and outreach.",
+    purpose: "Count where housing help is missing.",
     fields: ["county", "need_category"],
     minCohortSize: 10,
     epsilonBudget: 1,
@@ -134,7 +173,7 @@ export const analyticsStudies: AnalyticsStudy[] = [
   {
     id: "study-2",
     title: "Food access demand",
-    purpose: "Measure coarse regional food-support demand without raw location.",
+    purpose: "Count where food help is needed without exact locations.",
     fields: ["county", "need_category"],
     minCohortSize: 15,
     epsilonBudget: 1,
@@ -146,12 +185,12 @@ export const analyticsStudies: AnalyticsStudy[] = [
 export const initialAccessRequests: WalletAccessRequest[] = [
   {
     id: "access-1",
-    requesterName: "Benefits navigation clinic",
+    requesterName: "Benefits help clinic",
     requesterDid: "did:key:benefits-clinic",
     audienceDid: "did:key:benefits-clinic",
     resourceLabel: "Benefits letter",
     abilities: ["record/analyze"],
-    purpose: "Screen for SNAP, utility, and housing support",
+    purpose: "Check if you can get food, bill, or housing help",
     status: "pending",
     createdAt: "Today, 10:12 AM"
   },
@@ -160,9 +199,9 @@ export const initialAccessRequests: WalletAccessRequest[] = [
     requesterName: "Downtown Outreach",
     requesterDid: "did:key:outreach",
     audienceDid: "did:key:outreach",
-    resourceLabel: "State ID photo",
+    resourceLabel: "State ID file",
     abilities: ["record/decrypt"],
-    purpose: "Verify identity for shelter intake",
+    purpose: "Check your ID for shelter sign-up",
     status: "pending",
     createdAt: "Yesterday, 4:18 PM",
     approvalRequired: true,
@@ -176,7 +215,7 @@ export const initialAccessRequests: WalletAccessRequest[] = [
     audienceDid: "did:key:legal-aid",
     resourceLabel: "Housing notice",
     abilities: ["record/analyze"],
-    purpose: "Prepare appeal options",
+    purpose: "Help plan an appeal",
     status: "approved",
     createdAt: "Apr 30, 3:05 PM",
     grantStatus: "active"
@@ -193,7 +232,7 @@ export const initialGrantReceipts: WalletGrantReceipt[] = [
     recordId: "rec-housing-notice",
     resourceLabel: "Housing notice",
     abilities: ["record/analyze"],
-    purpose: "Prepare appeal options",
+    purpose: "Help plan an appeal",
     receiptHash: "8d2e31b4f7a9c6eab2d4f0c98a3e7b1f",
     status: "active",
     createdAt: "Apr 30, 3:05 PM",
@@ -254,7 +293,7 @@ export const exportBundles: ExportBundleView[] = [
     id: "export-2",
     bundleId: "export-3a41c9fe8420d718ce1490b4",
     bundleHash: "3a41c9fe8420d718ce1490b45820ad275b01365f1d51287b27b835e192fc0062",
-    audienceName: "Benefits navigation clinic",
+    audienceName: "Benefits help clinic",
     recordCount: 1,
     proofCount: 0,
     storageOk: false,
