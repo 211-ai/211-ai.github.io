@@ -2268,7 +2268,7 @@ function SocialServicesScreen({ profile }: { profile: RegistrationProfileDraft }
               <div>
                 <h3>{service.name}</h3>
                 <p>
-                  {service.category} ┬╖ {service.distance}
+                  {service.category} · {service.distance}
                 </p>
               </div>
               <Badge tone="success">{service.availability}</Badge>
@@ -3057,7 +3057,7 @@ function RecipientAccessScreen({
                 <div className="scope-header">
                   <div>
                     <h3>{request.requesterName}</h3>
-                    <p>{request.resourceLabel} ┬╖ {request.purpose}</p>
+                    <p>{request.resourceLabel} · {request.purpose}</p>
                   </div>
                   <Badge tone={request.status === "approved" ? "success" : request.status === "rejected" ? "warning" : "neutral"}>
                     {request.status}
@@ -3464,7 +3464,7 @@ function AuditScreen() {
             <div>
               <h3>{event.action}</h3>
               <p>
-                {event.actor} ┬╖ {event.timestamp}
+                {event.actor} · {event.timestamp}
               </p>
             </div>
           </article>
