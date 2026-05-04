@@ -899,6 +899,120 @@ class WalletInterfaceService:
         self._persist_wallet_if_configured(wallet_id)
         return result
 
+    def extract_record_text_redacted(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+        max_chars: int = 20_000,
+        max_bytes: int = 200_000,
+        use_ocr: bool = True,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.extract_document_text_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+            max_chars=max_chars,
+            max_bytes=max_bytes,
+            use_ocr=use_ocr,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def extract_record_text_redacted_with_invocation(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        invocation,
+        actor_secret: bytes | None = None,
+        max_chars: int = 20_000,
+        max_bytes: int = 200_000,
+        use_ocr: bool = True,
+    ) -> Dict[str, Any]:
+        self.wallet_service.verify_invocation(
+            wallet_id,
+            invocation,
+            actor_did=actor_did,
+            resource=resource_for_record(wallet_id, record_id),
+            ability="record/analyze",
+            actor_secret=actor_secret,
+        )
+        result = self.wallet_service.extract_document_text_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=invocation.grant_id,
+            actor_secret=actor_secret,
+            max_chars=max_chars,
+            max_bytes=max_bytes,
+            use_ocr=use_ocr,
+            invocation_caveats=invocation.caveats,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def analyze_record_form_redacted(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+        max_fields: int = 100,
+        use_ocr: bool = False,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.analyze_document_form_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+            max_fields=max_fields,
+            use_ocr=use_ocr,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
+    def analyze_record_form_redacted_with_invocation(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        invocation,
+        actor_secret: bytes | None = None,
+        max_fields: int = 100,
+        use_ocr: bool = False,
+    ) -> Dict[str, Any]:
+        self.wallet_service.verify_invocation(
+            wallet_id,
+            invocation,
+            actor_did=actor_did,
+            resource=resource_for_record(wallet_id, record_id),
+            ability="record/analyze",
+            actor_secret=actor_secret,
+        )
+        result = self.wallet_service.analyze_document_form_with_redaction(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=invocation.grant_id,
+            actor_secret=actor_secret,
+            max_fields=max_fields,
+            use_ocr=use_ocr,
+            invocation_caveats=invocation.caveats,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
     def analyze_records_redacted(
         self,
         wallet_id: str,

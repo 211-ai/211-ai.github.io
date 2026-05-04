@@ -263,6 +263,25 @@ class VectorProfileRequest(BaseModel):
     chunk_size_words: int = 80
 
 
+class RedactedTextExtractionRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    max_chars: int = 20_000
+    max_bytes: int = 200_000
+    use_ocr: bool = True
+
+
+class RedactedFormAnalysisRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    max_fields: int = 100
+    use_ocr: bool = False
+
+
 class RedactedAnalyzeRecordsRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -1169,6 +1188,72 @@ def create_app(*, service: WalletInterfaceService | None = None):
                     grant_id=request.grant_id,
                     actor_secret=actor_secret,
                     chunk_size_words=request.chunk_size_words,
+                )
+            return _analysis_result_to_dict(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/{record_id}/extract-text/redacted")
+    def extract_record_text_redacted(
+        wallet_id: str,
+        record_id: str,
+        request: RedactedTextExtractionRequest,
+    ) -> Dict[str, Any]:
+        try:
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            if request.invocation_token:
+                result = app_service.extract_record_text_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=actor_secret,
+                    max_chars=request.max_chars,
+                    max_bytes=request.max_bytes,
+                    use_ocr=request.use_ocr,
+                )
+            else:
+                result = app_service.extract_record_text_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=request.max_chars,
+                    max_bytes=request.max_bytes,
+                    use_ocr=request.use_ocr,
+                )
+            return _analysis_result_to_dict(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/{record_id}/forms/analyze/redacted")
+    def analyze_record_form_redacted(
+        wallet_id: str,
+        record_id: str,
+        request: RedactedFormAnalysisRequest,
+    ) -> Dict[str, Any]:
+        try:
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            if request.invocation_token:
+                result = app_service.analyze_record_form_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation_from_token(request.invocation_token),
+                    actor_secret=actor_secret,
+                    max_fields=request.max_fields,
+                    use_ocr=request.use_ocr,
+                )
+            else:
+                result = app_service.analyze_record_form_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_fields=request.max_fields,
+                    use_ocr=request.use_ocr,
                 )
             return _analysis_result_to_dict(result)
         except Exception as exc:
