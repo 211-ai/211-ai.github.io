@@ -638,6 +638,98 @@ def test_wallet_api_owner_can_create_cross_record_redacted_analysis() -> None:
     assert "503-555-1212" not in serialized
 
 
+def test_wallet_api_redacted_text_extraction_and_form_analysis_outputs_are_safe() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    delegate_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "intake-form.txt",
+            "text": (
+                "Full name: Jane Example\n"
+                "Email: jane@example.org\n"
+                "Phone: 503-555-1212\n"
+                "Rent assistance required: yes\n"
+                "SNAP enrollment: yes\n"
+            ),
+        },
+    ).json()
+    grant = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "issuer_key_hex": owner_key,
+            "audience_key_hex": delegate_key,
+            "abilities": ["record/analyze"],
+            "output_types": ["redacted_extracted_text", "redacted_form_analysis"],
+        },
+    ).json()
+
+    extraction_invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
+        json={
+            "grant_id": grant["grant_id"],
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "output_types": ["redacted_extracted_text"],
+        },
+    ).json()
+    extraction_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/extract-text/redacted",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": extraction_invocation["token"],
+        },
+    )
+    assert extraction_response.status_code == 200
+    extraction = extraction_response.json()
+    extraction_output = json.dumps(extraction["output"])
+    assert extraction["artifact"]["artifact_type"] == "redacted_document_text_extraction"
+    assert extraction["output"]["output_policy"] == "redacted_extracted_text"
+    assert "jane@example.org" not in extraction_output
+    assert "503-555-1212" not in extraction_output
+    assert "[REDACTED_EMAIL]" in extraction["output"]["text"]
+
+    form_invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
+        json={
+            "grant_id": grant["grant_id"],
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "output_types": ["redacted_form_analysis"],
+        },
+    ).json()
+    form_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/forms/analyze/redacted",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": form_invocation["token"],
+        },
+    )
+    assert form_response.status_code == 200
+    form = form_response.json()
+    form_output = json.dumps(form["output"])
+    assert form["artifact"]["artifact_type"] == "redacted_document_form_analysis"
+    assert form["output"]["output_policy"] == "redacted_form_analysis"
+    assert form["output"]["form"]["field_count"] >= 5
+    assert form["output"]["form"]["data_type_counts"]["email"] == 1
+    assert form["output"]["form"]["data_type_counts"]["phone"] == 1
+    assert "Jane Example" not in form_output
+    assert "jane@example.org" not in form_output
+    assert "503-555-1212" not in form_output
+
+    actions = [event["action"] for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]]
+    assert "record/extract_text_redacted" in actions
+    assert "record/analyze_form_redacted" in actions
+
+
 def test_wallet_api_binary_document_upload_lists_record_and_storage() -> None:
     client = _client()
     owner_key = random_key().hex()

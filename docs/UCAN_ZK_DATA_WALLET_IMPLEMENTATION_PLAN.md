@@ -719,11 +719,12 @@ Current MVP status:
   `redacted_cross_document_analysis` artifact, and audits
   `record/analyze_redacted_batch`. `wallet_analyze_documents_redacted` exposes
   the same flow through MCP.
-- `wallet_interface.api` exposes redacted analysis, vector profile, and
-  cross-record redacted analysis endpoints so the 211-AI project can call these
-  package capabilities without reaching into `WalletService` internals. UI API
-  client helpers return the encrypted artifact descriptor plus the redacted safe
-  output for future product flows.
+- `wallet_interface.api` exposes redacted text extraction, form analysis,
+  document analysis, vector profile, and cross-record redacted analysis
+  endpoints so the 211-AI project can call these package capabilities without
+  reaching into `WalletService` internals. UI API client helpers return the
+  encrypted artifact descriptor plus the redacted safe output for future product
+  flows.
 - Wallet and MCP tests assert that obvious sensitive fields are not present in
   the returned redacted text extraction, form analysis, redacted analysis,
   cross-record analysis, or vector-profile output and that the encrypted derived
