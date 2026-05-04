@@ -508,7 +508,7 @@ still need production hardening.
 | 4. Location claims and service matching | MVP implemented | production polygon/distance proof backend |
 | 5. Proof system integration | MVP implemented | reviewed production circuit artifacts and verifier deployment selection |
 | 6. Privacy-preserving analytics | MVP implemented | production DP randomness, durable budget ledger, review workflow |
-| 7. Document and derived analysis | partial | full GraphRAG wrappers beyond the redacted text-extraction/form-analysis/analysis/vector-profile/cross-record paths |
+| 7. Document and derived analysis | MVP implemented | production GraphRAG backend adapters and richer UI workflows |
 | 8. 211-AI product UI | MVP implemented | live session/auth, device keys, accessibility and usability pass |
 | 9. API, MCP, CLI, and operations | partial | stable API/CLI/MCP reference docs and production rollout guidance |
 
@@ -719,16 +719,25 @@ Current MVP status:
   `redacted_cross_document_analysis` artifact, and audits
   `record/analyze_redacted_batch`. `wallet_analyze_documents_redacted` exposes
   the same flow through MCP.
+- `WalletService.create_redacted_graphrag` now creates encrypted redacted
+  GraphRAG artifacts from authorized document records. It reuses the legacy
+  document-centric GraphRAG entity extractor inside the wallet boundary, then
+  collapses extracted entities to entity-type counts and graph edges over
+  record, need-category, redaction-type, and entity-type nodes without returning
+  entity strings or document text. Delegated use must carry the
+  `redacted_graphrag` output type. `wallet_create_redacted_graphrag` exposes the
+  same flow through MCP.
 - `wallet_interface.api` exposes redacted text extraction, form analysis,
-  document analysis, vector profile, and cross-record redacted analysis
-  endpoints so the 211-AI project can call these package capabilities without
-  reaching into `WalletService` internals. UI API client helpers return the
-  encrypted artifact descriptor plus the redacted safe output for future product
-  flows.
+  document analysis, vector profile, cross-record redacted analysis, and
+  redacted GraphRAG endpoints so the 211-AI project can call these package
+  capabilities without reaching into `WalletService` internals. The recipient UI now surfaces
+  redacted document analysis and vector-profile actions for active
+  `record/analyze` receipts when output caveats allow them, and displays the
+  encrypted artifact descriptor plus redacted safe output.
 - Wallet and MCP tests assert that obvious sensitive fields are not present in
   the returned redacted text extraction, form analysis, redacted analysis,
-  cross-record analysis, or vector-profile output and that the encrypted derived
-  artifact descriptor is persisted.
+  cross-record analysis, GraphRAG, or vector-profile output and that the
+  encrypted derived artifact descriptor is persisted.
 
 Deliverables:
 

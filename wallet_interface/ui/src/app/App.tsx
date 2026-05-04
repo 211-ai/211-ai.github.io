@@ -67,7 +67,9 @@ import {
   approveThresholdApproval,
   addBinaryDocument,
   addTextDocument,
+  analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createVerifiedExportBundleView,
   importExportBundleView,
@@ -2392,6 +2394,8 @@ function ShelterScreen({
   );
 }
 
+type RecipientAnalysisMode = "summary" | "redacted" | "vector";
+
 function RecipientAccessScreen({
   accessRequests,
   apiConfig,
@@ -2419,11 +2423,98 @@ function RecipientAccessScreen({
   const [derivedArtifactsByReceiptId, setDerivedArtifactsByReceiptId] = useState<Record<string, DerivedArtifactView>>(
     {}
   );
+  const [derivedOutputsByReceiptId, setDerivedOutputsByReceiptId] = useState<Record<string, string>>({});
+  const [decryptedRecordsByReceiptId, setDecryptedRecordsByReceiptId] = useState<Record<string, DecryptedRecordView>>(
+    {}
+  );
   const [analyzingReceiptIds, setAnalyzingReceiptIds] = useState<string[]>([]);
 
   function hasThresholdApproval(request: WalletAccessRequest) {
     if (!request.approvalRequired) return true;
     return (request.approvalCount ?? 0) >= (request.approvalThreshold ?? 1);
+  }
+
+  function delegationAbilityOptions(receipt: WalletGrantReceipt) {
+    const abilities = receipt.abilities.includes("*") ? ["record/analyze", "record/decrypt"] : receipt.abilities;
+    return ["record/analyze", "record/decrypt"].filter((ability) => abilities.includes(ability));
+  }
+
+  function receiptHasAbility(receipt: WalletGrantReceipt, ability: string) {
+    return receipt.abilities.includes("*") || receipt.abilities.includes(ability);
+  }
+
+  function receiptOutputTypes(receipt: WalletGrantReceipt) {
+    const rawOutputTypes = receipt.caveats?.output_types ?? receipt.caveats?.allowed_output_types;
+    if (!rawOutputTypes) return [];
+    if (Array.isArray(rawOutputTypes)) return rawOutputTypes.map(String);
+    return [String(rawOutputTypes)];
+  }
+
+  function receiptAllowsOutput(receipt: WalletGrantReceipt, outputType: string) {
+    const outputTypes = receiptOutputTypes(receipt);
+    return outputTypes.length === 0 || outputTypes.includes(outputType);
+  }
+
+  function analysisActionId(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
+    return `${receipt.id}:${mode}`;
+  }
+
+  function summarizeDerivedOutput(output: Record<string, unknown>) {
+    if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
+    const profile = output.profile;
+    if (profile && typeof profile === "object" && !Array.isArray(profile)) {
+      const profileRecord = profile as Record<string, unknown>;
+      const profileType = typeof profileRecord.profile_type === "string" ? profileRecord.profile_type : "vector profile";
+      const chunkCount = typeof profileRecord.chunk_count === "number" ? profileRecord.chunk_count : undefined;
+      return chunkCount === undefined ? profileType : `${profileType} · ${chunkCount} chunks`;
+    }
+    if (typeof output.output_policy === "string") return output.output_policy;
+    return "Safe derived output created.";
+  }
+
+  function canDelegateReceipt(receipt: WalletGrantReceipt, abilityOptions: string[]) {
+    const hasShare = receipt.abilities.some(
+      (ability) => ability === "*" || ability === "record/share" || ability === "document/share"
+    );
+    return (
+      Boolean(apiConfig?.actorDid) &&
+      apiConfig?.actorDid === receipt.audienceDid &&
+      receipt.status === "active" &&
+      hasShare &&
+      abilityOptions.length > 0 &&
+      receipt.resources.length > 0
+    );
+  }
+
+  function delegationDraftFor(receipt: WalletGrantReceipt, abilityOptions: string[]) {
+    const draft = delegationDrafts[receipt.id];
+    const fallbackAbility = abilityOptions[0] ?? "record/analyze";
+    if (!draft) {
+      return {
+        audienceDid: "",
+        audienceKeyHex: "",
+        purpose: receipt.purpose,
+        ability: fallbackAbility
+      };
+    }
+    return {
+      ...draft,
+      ability: abilityOptions.includes(draft.ability) ? draft.ability : fallbackAbility
+    };
+  }
+
+  function updateDelegationDraft(
+    receipt: WalletGrantReceipt,
+    abilityOptions: string[],
+    patch: Partial<{ audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
+  ) {
+    setDelegationDrafts({
+      ...delegationDrafts,
+      [receipt.id]: {
+        ...delegationDraftFor(receipt, abilityOptions),
+        ...patch
+      }
+    });
   }
 
   async function recordControllerApproval(requestId: string) {
@@ -2528,44 +2619,191 @@ function RecipientAccessScreen({
     }
   }
 
-  async function analyzeReceipt(receipt: WalletGrantReceipt) {
-    if (!receipt.recordId || receipt.status !== "active" || !receipt.abilities.includes("record/analyze")) return;
-    setAnalyzingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
+  async function analyzeReceipt(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode = "summary") {
+    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/analyze")) return;
+    const recordId = receipt.recordId;
+    const actionId = analysisActionId(receipt, mode);
+    setAnalyzingReceiptIds((receiptIds) => [...receiptIds, actionId]);
     try {
-      const artifact =
-        apiConfig?.actorDid
-          ? await analyzeRecordWithGrant(apiConfig, {
-              grantId: receipt.grantId,
-              recordId: receipt.recordId,
-              maxChars: 200
-            })
-          : {
-              id: `artifact-${receipt.id}`,
-              sourceRecordIds: [receipt.recordId],
+      let safeOutput = "";
+      const artifact = await (async () => {
+        if (!apiConfig?.actorDid) {
+          const localArtifacts: Record<RecipientAnalysisMode, DerivedArtifactView> = {
+	            summary: {
+	              id: `artifact-${receipt.id}`,
+	              sourceRecordIds: [recordId],
               artifactType: "summary",
               outputPolicy: "derived_only",
               encryptedPayloadRef: "local encrypted derived artifact",
               createdAt: "Just now"
-            };
-      setDerivedArtifactsByReceiptId({
-        ...derivedArtifactsByReceiptId,
+            },
+	            redacted: {
+	              id: `artifact-redacted-${receipt.id}`,
+	              sourceRecordIds: [recordId],
+              artifactType: "redacted_document_analysis",
+              outputPolicy: "redacted_derived_only",
+              encryptedPayloadRef: "local encrypted redacted artifact",
+              createdAt: "Just now"
+            },
+	            vector: {
+	              id: `artifact-vector-${receipt.id}`,
+	              sourceRecordIds: [recordId],
+              artifactType: "redacted_document_vector_profile",
+              outputPolicy: "encrypted_vector_profile",
+              encryptedPayloadRef: "local encrypted vector profile",
+              createdAt: "Just now"
+            }
+          };
+          safeOutput =
+            mode === "redacted"
+              ? "Local demo redacted derived output."
+              : mode === "vector"
+                ? "redacted_lexical_hash_vector · local chunks"
+                : "";
+          return localArtifacts[mode];
+        }
+        if (mode === "redacted") {
+          const result = await analyzeRecordRedactedWithGrant(apiConfig, {
+            grantId: receipt.grantId,
+            recordId,
+            maxChars: 500
+          });
+          safeOutput = summarizeDerivedOutput(result.output);
+          return result.artifact;
+        }
+        if (mode === "vector") {
+          const result = await createRecordVectorProfileWithGrant(apiConfig, {
+            grantId: receipt.grantId,
+            recordId,
+            chunkSizeWords: 80
+          });
+          safeOutput = summarizeDerivedOutput(result.output);
+          return result.artifact;
+        }
+	        return analyzeRecordWithGrant(apiConfig, {
+	          grantId: receipt.grantId,
+	          recordId,
+          maxChars: 200
+        });
+      })();
+      setDerivedArtifactsByReceiptId((artifacts) => ({
+        ...artifacts,
         [receipt.id]: artifact
-      });
+      }));
+      setDerivedOutputsByReceiptId((outputs) => ({
+        ...outputs,
+        [receipt.id]: safeOutput
+      }));
       await refreshWalletAuditEvents();
     } catch {
-      setDerivedArtifactsByReceiptId({
-        ...derivedArtifactsByReceiptId,
-        [receipt.id]: {
-          id: `artifact-error-${receipt.id}`,
-          sourceRecordIds: [receipt.recordId],
+      setDerivedArtifactsByReceiptId((artifacts) => ({
+        ...artifacts,
+	        [receipt.id]: {
+	          id: `artifact-error-${receipt.id}`,
+	          sourceRecordIds: [recordId],
           artifactType: "unavailable",
           outputPolicy: "derived_only",
           encryptedPayloadRef: "analysis unavailable",
           createdAt: "Just now"
         }
+      }));
+      setDerivedOutputsByReceiptId((outputs) => ({
+        ...outputs,
+        [receipt.id]: ""
+      }));
+    } finally {
+      setAnalyzingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== actionId));
+    }
+  }
+
+  async function viewReceipt(receipt: WalletGrantReceipt) {
+    if (!receipt.recordId || receipt.status !== "active" || !receiptHasAbility(receipt, "record/decrypt")) return;
+    const recordId = receipt.recordId;
+    setDecryptingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
+    try {
+      const decrypted =
+        apiConfig?.actorDid
+          ? await (async () => {
+              let invocationToken: string | undefined;
+              if (apiConfig.audienceKeyHex || apiConfig.issuerKeyHex) {
+                try {
+                  invocationToken = await issueRecordDecryptInvocation(apiConfig, {
+                    grantId: receipt.grantId,
+                    recordId,
+                    userPresent: receiptRequiresUserPresence(receipt)
+                  });
+                } catch {
+                  invocationToken = undefined;
+                }
+              }
+              return decryptRecordWithGrant(apiConfig, {
+                grantId: invocationToken ? undefined : receipt.grantId,
+                invocationToken,
+                recordId
+              });
+            })()
+          : {
+              recordId,
+              text: "Local demo decrypted document preview.",
+              sizeBytes: "Local demo decrypted document preview.".length
+            };
+      setDecryptedRecordsByReceiptId({
+        ...decryptedRecordsByReceiptId,
+        [receipt.id]: decrypted
+      });
+      await refreshWalletAuditEvents();
+    } catch {
+      setDecryptedRecordsByReceiptId({
+        ...decryptedRecordsByReceiptId,
+        [receipt.id]: {
+          recordId,
+          text: "Document view unavailable.",
+          sizeBytes: 0
+        }
       });
     } finally {
-      setAnalyzingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
+      setDecryptingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
+    }
+  }
+
+  async function delegateReceipt(event: FormEvent<HTMLFormElement>, receipt: WalletGrantReceipt) {
+    event.preventDefault();
+    const abilityOptions = delegationAbilityOptions(receipt);
+    const draft = delegationDraftFor(receipt, abilityOptions);
+    if (!apiConfig?.actorDid || !draft.audienceDid.trim() || !canDelegateReceipt(receipt, abilityOptions)) return;
+    setDelegatingReceiptIds((receiptIds) => [...receiptIds, receipt.id]);
+    setDelegationMessages((messages) => ({ ...messages, [receipt.id]: "" }));
+    try {
+      await delegateGrant(apiConfig, {
+        parentGrantId: receipt.grantId,
+        audienceDid: draft.audienceDid.trim(),
+        audienceKeyHex: draft.audienceKeyHex.trim() || undefined,
+        resources: receipt.resources,
+        abilities: [draft.ability],
+        purpose: draft.purpose.trim() || receipt.purpose
+      });
+      setDelegationDrafts({
+        ...delegationDrafts,
+        [receipt.id]: {
+          audienceDid: "",
+          audienceKeyHex: "",
+          purpose: receipt.purpose,
+          ability: abilityOptions[0] ?? "record/analyze"
+        }
+      });
+      setDelegationMessages((messages) => ({
+        ...messages,
+        [receipt.id]: `Delegated to ${draft.audienceDid.trim()}.`
+      }));
+      await refreshWalletAccessState();
+      await refreshWalletAuditEvents();
+    } catch {
+      setDelegationMessages((messages) => ({
+        ...messages,
+        [receipt.id]: "Delegation failed."
+      }));
+    } finally {
+      setDelegatingReceiptIds((receiptIds) => receiptIds.filter((id) => id !== receipt.id));
     }
   }
 
@@ -2685,8 +2923,18 @@ function RecipientAccessScreen({
         <div className="list-stack">
           {grantReceipts.map((receipt) => {
             const canAnalyze =
-              receipt.status === "active" && receipt.abilities.includes("record/analyze") && Boolean(receipt.recordId);
+              receipt.status === "active" && receiptHasAbility(receipt, "record/analyze") && Boolean(receipt.recordId);
+            const canAnalyzeRedacted = canAnalyze && receiptAllowsOutput(receipt, "redacted_derived_only");
+            const canCreateVectorProfile = canAnalyze && receiptAllowsOutput(receipt, "vector_profile");
+            const canView =
+              receipt.status === "active" && receiptHasAbility(receipt, "record/decrypt") && Boolean(receipt.recordId);
             const artifact = derivedArtifactsByReceiptId[receipt.id];
+            const safeOutput = derivedOutputsByReceiptId[receipt.id];
+            const decryptedRecord = decryptedRecordsByReceiptId[receipt.id];
+            const delegationOptions = delegationAbilityOptions(receipt);
+            const canDelegate = canDelegateReceipt(receipt, delegationOptions);
+            const delegationDraft = delegationDraftFor(receipt, delegationOptions);
+            const delegationMessage = delegationMessages[receipt.id];
             return (
             <article
                 aria-labelledby={`grant-receipt-${receipt.id}`}
@@ -2754,18 +3002,72 @@ function RecipientAccessScreen({
                     <strong>Files used</strong>
                     <span>{artifact.sourceRecordIds.join(", ") || "No source records"}</span>
                   </div>
+                  {safeOutput ? (
+                    <div className="disclosure-row">
+                      <strong>Safe output</strong>
+                      <span>{safeOutput}</span>
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
-              {canAnalyze ? (
+              {decryptedRecord ? (
+                <div className="disclosure-package">
+                  <div className="disclosure-row">
+                    <strong>Document view</strong>
+                    <span className="document-preview-text">{decryptedRecord.text}</span>
+                  </div>
+                  <div className="disclosure-row">
+                    <strong>Plaintext size</strong>
+                    <span>{decryptedRecord.sizeBytes} bytes</span>
+                  </div>
+                </div>
+              ) : null}
+              {canAnalyze || canAnalyzeRedacted || canCreateVectorProfile || canView ? (
                 <div className="row-actions">
-                  <Button
-                    disabled={analyzingReceiptIds.includes(receipt.id)}
-                    onClick={() => analyzeReceipt(receipt)}
-                    variant="secondary"
-                  >
-                    <ShieldCheck size={18} />
-                    {analyzingReceiptIds.includes(receipt.id) ? "Making summary" : "Make safe summary"}
-                  </Button>
+                  {canAnalyze ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "summary"))}
+                      onClick={() => analyzeReceipt(receipt, "summary")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "summary")) ? "Analyzing" : "Analyze safely"}
+                    </Button>
+                  ) : null}
+                  {canAnalyzeRedacted ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "redacted"))}
+                      onClick={() => analyzeReceipt(receipt, "redacted")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "redacted"))
+                        ? "Redacting"
+                        : "Redacted analysis"}
+                    </Button>
+                  ) : null}
+                  {canCreateVectorProfile ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "vector"))}
+                      onClick={() => analyzeReceipt(receipt, "vector")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "vector"))
+                        ? "Profiling"
+                        : "Vector profile"}
+                    </Button>
+                  ) : null}
+                  {canView ? (
+                    <Button
+                      disabled={decryptingReceiptIds.includes(receipt.id)}
+                      onClick={() => viewReceipt(receipt)}
+                      variant="secondary"
+                    >
+                      <LockKeyhole size={18} />
+                      {decryptingReceiptIds.includes(receipt.id) ? "Opening" : "View document"}
+                    </Button>
+                  ) : null}
                 </div>
               ) : null}
               <small>{receipt.audienceDid}</small>

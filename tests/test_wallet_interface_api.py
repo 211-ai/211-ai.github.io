@@ -638,6 +638,54 @@ def test_wallet_api_owner_can_create_cross_record_redacted_analysis() -> None:
     assert "503-555-1212" not in serialized
 
 
+def test_wallet_api_owner_can_create_redacted_graphrag() -> None:
+    client = _client()
+    owner_key = random_key().hex()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    first = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "first.txt",
+            "text": "Jane Example emailed jane@example.org about rent and utility assistance.",
+        },
+    ).json()
+    second = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={
+            "actor_did": "did:key:owner",
+            "key_hex": owner_key,
+            "filename": "second.txt",
+            "text": "Call 503-555-1212 about SNAP and medical clinic referrals.",
+        },
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/graphrag/redacted",
+        json={
+            "actor_did": "did:key:owner",
+            "actor_key_hex": owner_key,
+            "record_ids": [first["record_id"], second["record_id"]],
+        },
+    )
+
+    assert response.status_code == 200
+    graph = response.json()
+    serialized = json.dumps(graph["output"])
+    assert graph["artifact"]["artifact_type"] == "redacted_document_graphrag"
+    assert graph["output"]["output_policy"] == "redacted_graphrag"
+    assert graph["output"]["graph"]["graph_type"] == "redacted_category_entity_graph"
+    assert graph["output"]["graph"]["category_record_counts"]["housing"] == 1
+    assert graph["output"]["graph"]["category_record_counts"]["food"] == 1
+    assert graph["output"]["graph"]["category_record_counts"]["health"] == 1
+    assert "Jane Example" not in serialized
+    assert "jane@example.org" not in serialized
+    assert "503-555-1212" not in serialized
+    actions = [event["action"] for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]]
+    assert "record/graphrag_redacted" in actions
+
+
 def test_wallet_api_redacted_text_extraction_and_form_analysis_outputs_are_safe() -> None:
     client = _client()
     owner_key = random_key().hex()

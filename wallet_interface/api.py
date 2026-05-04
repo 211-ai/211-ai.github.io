@@ -289,6 +289,16 @@ class RedactedAnalyzeRecordsRequest(BaseModel):
     record_ids: List[str] = Field(default_factory=list)
 
 
+class RedactedGraphRAGRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    grant_id: str | None = None
+    record_ids: List[str] = Field(default_factory=list)
+    max_chars_per_record: int = 20_000
+    max_bytes_per_record: int = 200_000
+    use_ocr: bool = True
+
+
 class DecryptRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -1273,6 +1283,28 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 actor_did=request.actor_did,
                 grant_id=request.grant_id,
                 actor_secret=_key_from_optional_hex(request.actor_key_hex),
+            )
+            return _analysis_result_to_dict(result)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/graphrag/redacted")
+    def create_redacted_graphrag(
+        wallet_id: str,
+        request: RedactedGraphRAGRequest,
+    ) -> Dict[str, Any]:
+        try:
+            if not request.record_ids:
+                raise ValueError("redacted GraphRAG creation requires at least one record_id")
+            result = app_service.create_redacted_graphrag(
+                wallet_id,
+                request.record_ids,
+                actor_did=request.actor_did,
+                grant_id=request.grant_id,
+                actor_secret=_key_from_optional_hex(request.actor_key_hex),
+                max_chars_per_record=request.max_chars_per_record,
+                max_bytes_per_record=request.max_bytes_per_record,
+                use_ocr=request.use_ocr,
             )
             return _analysis_result_to_dict(result)
         except Exception as exc:

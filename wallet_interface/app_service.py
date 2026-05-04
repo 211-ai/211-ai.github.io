@@ -1032,6 +1032,31 @@ class WalletInterfaceService:
         self._persist_wallet_if_configured(wallet_id)
         return result
 
+    def create_redacted_graphrag(
+        self,
+        wallet_id: str,
+        record_ids: Sequence[str],
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+        max_chars_per_record: int = 20_000,
+        max_bytes_per_record: int = 200_000,
+        use_ocr: bool = True,
+    ) -> Dict[str, Any]:
+        result = self.wallet_service.create_redacted_graphrag(
+            wallet_id,
+            list(record_ids),
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+            max_chars_per_record=max_chars_per_record,
+            max_bytes_per_record=max_bytes_per_record,
+            use_ocr=use_ocr,
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return result
+
     def issue_record_analysis_invocation(
         self,
         wallet_id: str,

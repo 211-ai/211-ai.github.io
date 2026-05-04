@@ -802,6 +802,38 @@ export async function analyzeRecordFormRedactedWithGrant(
   return toDerivedAnalysisResultView(result);
 }
 
+export async function createRedactedGraphRAG(
+  config: WalletApiConfig,
+  {
+    recordIds,
+    grantId,
+    maxCharsPerRecord = 20_000,
+    maxBytesPerRecord = 200_000,
+    useOcr = true
+  }: {
+    recordIds: string[];
+    grantId?: string;
+    maxCharsPerRecord?: number;
+    maxBytesPerRecord?: number;
+    useOcr?: boolean;
+  }
+): Promise<DerivedAnalysisResultView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/graphrag/redacted`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<DerivedAnalysisResultApiResponse>(url, "Redacted GraphRAG", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId || undefined,
+    record_ids: recordIds,
+    max_chars_per_record: maxCharsPerRecord,
+    max_bytes_per_record: maxBytesPerRecord,
+    use_ocr: useOcr
+  });
+  return toDerivedAnalysisResultView(result);
+}
+
 export async function decryptRecordWithGrant(
   config: WalletApiConfig,
   {
