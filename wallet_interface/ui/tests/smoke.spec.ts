@@ -602,6 +602,26 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
 test("recipient receipt can create an encrypted derived analysis artifact", async ({ page }) => {
   test.setTimeout(60_000);
   let analysisRequests = 0;
+  let redactedAnalysisRequests = 0;
+  let vectorProfileRequests = 0;
+  let decryptRequests = 0;
+  let decryptInvocationRequests = 0;
+  let delegationRequests = 0;
+  const documentPlaintext = "Delegate may view this identity document.";
+  const receipts: Array<Record<string, unknown>> = [
+    {
+      receipt_id: "receipt-analysis",
+      grant_id: "grant-analysis",
+      audience_did: "did:key:delegate",
+      resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+      abilities: ["record/analyze", "record/decrypt", "record/share"],
+      purpose: "service_matching",
+      caveats: { purpose: "service_matching", user_presence_required: true },
+      receipt_hash: "receipt-hash-analysis",
+      status: "active",
+      created_at: "2026-05-03T18:00:00Z"
+    }
+  ];
   const auditEvents: Array<Record<string, unknown>> = [];
   await page.route("**/wallets/**", async (route) => {
     const url = new URL(route.request().url());
@@ -634,35 +654,154 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       await route.fulfill({ status: 404, json: { error: "unexpected record detail call" } });
       return;
     }
+    if (path.endsWith("/records/rec-benefits-letter/analyze/redacted")) {
+      redactedAnalysisRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        max_chars: 500
+      });
+      await route.fulfill({
+        json: {
+          artifact: {
+            artifact_id: "artifact-redacted-analysis",
+            source_record_ids: ["rec-benefits-letter"],
+            artifact_type: "redacted_document_analysis",
+            output_policy: "redacted_derived_only",
+            encrypted_payload_ref: {
+              uri: "mem://redacted-analysis",
+              storage_type: "memory",
+              digest: "sha256:redacted-analysis"
+            },
+            created_at: "2026-05-03T18:01:05Z"
+          },
+          output: {
+            summary: "Detected need categories across authorized text: housing, food.",
+            output_policy: "redacted_derived_only",
+            derived_facts: { need_categories: ["housing", "food"] }
+          }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/vector-profile")) {
+      vectorProfileRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        chunk_size_words: 80
+      });
+      await route.fulfill({
+        json: {
+          artifact: {
+            artifact_id: "artifact-vector-profile",
+            source_record_ids: ["rec-benefits-letter"],
+            artifact_type: "redacted_document_vector_profile",
+            output_policy: "encrypted_vector_profile",
+            encrypted_payload_ref: {
+              uri: "mem://vector-profile",
+              storage_type: "memory",
+              digest: "sha256:vector-profile"
+            },
+            created_at: "2026-05-03T18:01:10Z"
+          },
+          output: {
+            output_policy: "encrypted_vector_profile",
+            profile: {
+              profile_type: "redacted_lexical_hash_vector",
+              chunk_count: 2
+            }
+          }
+        }
+      });
+      return;
+    }
     if (path.endsWith("/records/rec-benefits-letter/analyze")) {
       analysisRequests += 1;
       expect(route.request().method()).toBe("POST");
       expect(await route.request().postDataJSON()).toMatchObject({
         actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
         grant_id: "grant-analysis",
-        max_chars: 200
+        max_chars: 500
+      });
+      await route.fulfill({
+        json: {
+          artifact: {
+            artifact_id: "artifact-redacted-analysis",
+            source_record_ids: ["rec-benefits-letter"],
+            artifact_type: "redacted_document_analysis",
+            output_policy: "redacted_derived_only",
+            encrypted_payload_ref: {
+              uri: "mem://redacted-analysis",
+              storage_type: "memory",
+              digest: "sha256:redacted-analysis"
+            },
+            created_at: "2026-05-03T18:01:05Z"
+          },
+          output: {
+            summary: "Detected need categories across authorized text: housing, food.",
+            output_policy: "redacted_derived_only",
+            derived_facts: { need_categories: ["housing", "food"] }
+          }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/decrypt-invocations")) {
+      decryptInvocationRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        user_present: true
+      });
+      await route.fulfill({
+        json: {
+          invocation: {
+            invocation_id: "invocation-presence",
+            grant_id: "grant-analysis",
+            audience_did: "did:key:delegate",
+            resource: "wallet://wallet-demo/records/rec-benefits-letter",
+            ability: "record/decrypt",
+            caveats: { purpose: "service_matching", user_present: true },
+            issued_at: "2026-05-03T18:02:20Z",
+            expires_at: null,
+            nonce: "nonce-presence",
+            signature: "sig-presence"
+          },
+          token: "wallet-ucan-v1.presence"
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/decrypt")) {
+      decryptRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        invocation_token: "wallet-ucan-v1.presence"
       });
       auditEvents.push({
-        event_id: "audit-record-analyze",
-        created_at: "2026-05-03T18:02:00Z",
+        event_id: "audit-record-decrypt",
+        created_at: "2026-05-03T18:02:30Z",
         actor_did: "did:key:delegate",
-        action: "record/analyze",
+        action: "record/decrypt",
         resource: "wallet://wallet-demo/records/rec-benefits-letter",
         decision: "allow",
         grant_id: "grant-analysis"
       });
       await route.fulfill({
         json: {
-          artifact_id: "artifact-analysis",
-          source_record_ids: ["rec-benefits-letter"],
-          artifact_type: "summary",
-          output_policy: "derived_only",
-          encrypted_payload_ref: {
-            uri: "mem://derived-artifact",
-            storage_type: "memory",
-            digest: "sha256:derived"
-          },
-          created_at: "2026-05-03T18:01:00Z"
+          record_id: "rec-benefits-letter",
+          text: documentPlaintext,
+          size_bytes: documentPlaintext.length
         }
       });
       return;
@@ -684,6 +823,20 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   await expect(receipt.getByText(/summary · derived_only/i)).toBeVisible();
   await expect(receipt.getByText(/mem:\/\/derived-artifact/i)).toBeVisible();
   await expect(receipt.getByText(/rec-benefits-letter/i)).toBeVisible();
+  await receipt.getByRole("button", { name: /Redacted analysis/i }).click();
+  await expect(receipt.getByText(/redacted_document_analysis · redacted_derived_only/i)).toBeVisible();
+  await expect(receipt.getByText(/Detected need categories across authorized text/i)).toBeVisible();
+  await receipt.getByRole("button", { name: /Vector profile/i }).click();
+  await expect(receipt.getByText(/redacted_document_vector_profile · encrypted_vector_profile/i)).toBeVisible();
+  await expect(receipt.getByText(/redacted_lexical_hash_vector · 2 chunks/i)).toBeVisible();
+  await receipt.getByRole("button", { name: /View document/i }).click();
+  await expect(receipt.getByText(documentPlaintext)).toBeVisible();
+  await expect(receipt.getByText(`${documentPlaintext.length} bytes`)).toBeVisible();
+  await receipt.getByLabel(/Delegate DID/i).fill("did:key:case-worker");
+  await receipt.getByLabel(/Delegated purpose/i).fill("warm_handoff");
+  await receipt.getByRole("button", { name: /Delegate access/i }).click();
+  await expect(receipt.getByText(/Delegated to did:key:case-worker/i)).toBeVisible();
+  await expect(page.getByRole("article", { name: /Case Worker/i }).filter({ hasText: "receipt-hash-child" })).toBeVisible();
   await page.evaluate(() => {
     window.location.hash = "#/audit";
   });
@@ -691,6 +844,11 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   await expect(page.getByText(/record\/analyze/i).first()).toBeVisible();
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
   expect(analysisRequests).toBe(1);
+  expect(redactedAnalysisRequests).toBe(1);
+  expect(vectorProfileRequests).toBe(1);
+  expect(decryptRequests).toBe(1);
+  expect(decryptInvocationRequests).toBe(1);
+  expect(delegationRequests).toBe(1);
 });
 
 test("audit screen loads wallet API event chain metadata", async ({ page }) => {
