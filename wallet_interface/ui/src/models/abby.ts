@@ -10,6 +10,8 @@ export type RouteId =
   | "recipient-access"
   | "benefits-protection"
   | "analytics"
+  | "proof-center"
+  | "exports"
   | "security"
   | "audit";
 
@@ -36,8 +38,6 @@ export type DisclosureDataScope =
   | "benefits_information"
   | "custom";
 
-export type ContactMethodVerificationStatus = "missing" | "unverified" | "verified";
-
 export type EasyBotCheckStatus = "pending" | "passed" | "failed";
 
 export interface RegistrationProfileDraft {
@@ -49,9 +49,7 @@ export interface RegistrationProfileDraft {
   phone: string;
   email: string;
   currentLocation: string;
-  preferredShelter: string;
-  socialWorker: string;
-  emergencyContactStarter: string;
+  shelterAffiliation: string;
   serviceNeeds: string[];
   preferredCheckInChannels: CheckInChannel[];
   easyBotCheckStatus: EasyBotCheckStatus;
@@ -76,25 +74,19 @@ export interface DisclosureRecipientDraft {
   agencyName: string;
   precinctName: string;
   verified: boolean;
-  emailVerificationStatus?: ContactMethodVerificationStatus;
-  phoneVerificationStatus?: ContactMethodVerificationStatus;
   allowedScopes: DisclosureDataScope[];
-  sharingRuleCustomized?: boolean;
-  emergencyDisclosureEnabled?: boolean;
-  sharingReviewConfirmedAt?: string;
-  revokedAt?: string;
-  sharingHistory?: string[];
 }
 
 export interface UploadItem {
   id: string;
+  recordId?: string;
   fileName: string;
   machineSummary: string;
-  summaryStatus?: "generating" | "generated" | "fallback" | "failed";
   category: string;
   sensitivity: "low" | "moderate" | "high" | "restricted";
   status: "stored" | "encrypting" | "failed";
-  sharingEligible: boolean;
+  storageOk?: boolean;
+  shared: boolean;
 }
 
 export interface ServiceMatch {
@@ -110,6 +102,9 @@ export interface AuditEvent {
   actor: string;
   action: string;
   timestamp: string;
+  resource?: string;
+  decision?: string;
+  grantId?: string;
 }
 
 export interface AnalyticsStudy {
@@ -131,10 +126,66 @@ export interface WalletAccessRequest {
   resourceLabel: string;
   abilities: string[];
   purpose: string;
-  status: "pending" | "approved" | "rejected";
+  status: "pending" | "approved" | "rejected" | "revoked";
   createdAt: string;
-  expiresAt?: string;
   approvalRequired?: boolean;
+  approvalId?: string;
+  approvalStatus?: "pending" | "approved" | "rejected" | string;
   approvalThreshold?: number;
   approvalCount?: number;
+  grantStatus?: "active" | "revoked";
+}
+
+export interface WalletGrantReceipt {
+  id: string;
+  grantId: string;
+  audienceName: string;
+  audienceDid: string;
+  resources: string[];
+  recordId?: string;
+  resourceLabel: string;
+  abilities: string[];
+  purpose: string;
+  receiptHash: string;
+  status: "active" | "revoked";
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface DerivedArtifactView {
+  id: string;
+  sourceRecordIds: string[];
+  artifactType: string;
+  outputPolicy: string;
+  encryptedPayloadRef: string;
+  createdAt: string;
+}
+
+export interface ProofReceiptView {
+  id: string;
+  proofType: string;
+  claim: string;
+  verifier: string;
+  proofSystem: string;
+  verificationStatus: string;
+  circuitId?: string;
+  verifierDigest?: string;
+  proofArtifactRef?: string;
+  publicInputs: Record<string, string>;
+  witnessLabel: string;
+  simulated: boolean;
+  createdAt: string;
+}
+
+export interface ExportBundleView {
+  id: string;
+  bundleId: string;
+  bundleHash: string;
+  audienceName: string;
+  bundle?: Record<string, unknown>;
+  recordCount: number;
+  proofCount: number;
+  storageOk: boolean;
+  imported: boolean;
+  createdAt: string;
 }

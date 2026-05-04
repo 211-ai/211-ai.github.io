@@ -818,3 +818,247 @@ _duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/
 2026-05-03 11:32:46 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
 2026-05-03 11:32:46 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
 2026-05-03 11:32:46 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 2401, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/supervisor.py", line 392, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/supervisor.py", line 388, in main
+    SelfHealingSupervisor(cfg).run_forever()
+  File "/home/barberb/211-AI/scraper/supervisor.py", line 178, in run_forever
+    state = CrawlState.load(self.config.state_path)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 101, in load
+    payload = json.loads(path.read_text(encoding="utf-8"))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/miniforge3/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/miniforge3/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/miniforge3/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2026-05-03 14:27:32 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 14:27:32 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 925, in <module>
+    main()
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 917, in main
+    result = daemon.run_once(seed_urls=seeds, max_pages=args.max_pages, max_workers=args.workers)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/agentic_daemon.py", line 406, in run_once
+    if delay > 0 and self.store.queue_count() and processed_this_run < max_pages:
+                     ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 341, in queue_count
+    with self._connect() as conn:
+         ^^^^^^^^^^^^^^^
+  File "/home/barberb/211-AI/scraper/duckdb_state.py", line 23, in _connect
+    return duckdb.connect(str(self.db_path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_duckdb.IOException: IO Error: Could not set lock on file "/home/barberb/211-AI/data/live/state/agentic_daemon_state.duckdb": Conflicting lock is held in /home/barberb/miniforge3/bin/python3.12 (PID 2952610) by user barberb. However, you would be able to open this database in read-only mode, e.g. by using the -readonly parameter in the CLI. See also https://duckdb.org/docs/stable/connect/concurrency
+2026-05-03 14:29:32 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 14:29:32 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 14:29:47 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 14:29:47 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 14:33:14 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 14:33:14 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 14:33:14 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 14:33:15 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 2202, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 14:38:46 [INFO] scraper.processor: Processed 96 raw → 96 normalised → 96 unique records
+2026-05-03 14:38:46 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (96 rows)
+2026-05-03 14:38:46 [INFO] scraper.processor: Exported 96 records to services_agentic.[jsonl|csv]
+2026-05-03 14:38:46 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 96, 'queue_remaining': 2100, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 14:44:56 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 14:44:56 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 14:44:56 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 14:44:56 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 2000, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 14:51:11 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 14:51:11 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 14:51:11 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 14:51:11 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1900, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 14:57:26 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 14:57:26 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 14:57:26 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 14:57:26 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 1800, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:03:43 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:03:43 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:03:43 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:03:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1700, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:09:55 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:09:55 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:09:55 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:09:56 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1600, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:16:05 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:16:05 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:16:05 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:16:05 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1500, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:22:24 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 15:22:24 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 15:22:24 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 15:22:25 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 1400, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:28:31 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 15:28:31 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 15:28:31 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 15:28:31 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 1300, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:34:41 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:34:41 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:34:41 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:34:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1200, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:40:58 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:40:58 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:40:58 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:40:58 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1100, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:47:05 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:47:05 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:47:05 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:47:05 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 1000, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:53:18 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:53:18 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:53:18 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:53:19 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 900, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 15:59:28 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 15:59:28 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 15:59:28 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 15:59:28 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 800, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:05:36 [INFO] scraper.processor: Processed 99 raw → 99 normalised → 99 unique records
+2026-05-03 16:05:36 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (99 rows)
+2026-05-03 16:05:36 [INFO] scraper.processor: Exported 99 records to services_agentic.[jsonl|csv]
+2026-05-03 16:05:37 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 99, 'queue_remaining': 700, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:11:47 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:11:47 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:11:47 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:11:47 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 600, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:17:59 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:17:59 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:17:59 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:17:59 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 500, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:24:13 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:24:13 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:24:13 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:24:13 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 400, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:30:29 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:30:29 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:30:29 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:30:30 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 300, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:36:43 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:36:43 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:36:43 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:36:43 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 200, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:42:59 [INFO] scraper.processor: Processed 100 raw → 100 normalised → 100 unique records
+2026-05-03 16:42:59 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (100 rows)
+2026-05-03 16:42:59 [INFO] scraper.processor: Exported 100 records to services_agentic.[jsonl|csv]
+2026-05-03 16:42:59 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 100, 'queue_remaining': 100, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:49:55 [INFO] scraper.processor: Processed 92 raw → 92 normalised → 85 unique records
+2026-05-03 16:49:55 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (85 rows)
+2026-05-03 16:49:55 [INFO] scraper.processor: Exported 85 records to services_agentic.[jsonl|csv]
+2026-05-03 16:49:55 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 92, 'queue_remaining': 61, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:57:08 [INFO] scraper.processor: Processed 125 raw → 125 normalised → 115 unique records
+2026-05-03 16:57:08 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (115 rows)
+2026-05-03 16:57:08 [INFO] scraper.processor: Exported 115 records to services_agentic.[jsonl|csv]
+2026-05-03 16:57:09 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 100, 'extracted_services': 125, 'queue_remaining': 10, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 16:59:41 [INFO] scraper.processor: Processed 8 raw → 8 normalised → 5 unique records
+2026-05-03 16:59:41 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (5 rows)
+2026-05-03 16:59:41 [INFO] scraper.processor: Exported 5 records to services_agentic.[jsonl|csv]
+2026-05-03 16:59:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 9, 'extracted_services': 8, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:01:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:04:01 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:06:12 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:08:23 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:10:34 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:12:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:15:18 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:15:18 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:15:31 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:17:44 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:19:57 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:22:09 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:24:22 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:26:34 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:28:47 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:31:18 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:31:18 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:31:34 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:33:50 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:36:07 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:38:23 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:40:40 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:43:18 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:43:18 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:43:40 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:46:04 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:48:27 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:50:49 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 17:53:48 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:53:48 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:54:17 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:54:17 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:58:00 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 17:58:00 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 17:58:31 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:11:04 [INFO] scraper.processor: Processed 1292 raw → 1292 normalised → 1285 unique records
+2026-05-03 18:11:04 [INFO] scraper.storage: Saved CSV → data/live/processed/services_agentic.csv (1285 rows)
+2026-05-03 18:11:04 [INFO] scraper.processor: Exported 1285 records to services_agentic.[jsonl|csv]
+2026-05-03 18:11:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 12, 'extracted_services': 1292, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:13:40 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:16:14 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:18:45 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:21:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 18:21:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 18:22:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:24:40 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:27:14 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:29:49 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:32:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 18:32:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 18:33:05 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:35:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:38:16 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:40:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:43:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 18:43:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 18:44:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:46:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:49:16 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:53:51 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:56:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 18:56:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 18:57:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 18:59:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:02:17 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:04:53 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:07:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 19:07:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 19:08:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:10:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:13:16 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:15:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:18:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 19:18:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 19:19:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:21:41 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:24:17 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:26:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:29:30 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 19:29:30 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 19:30:08 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:32:43 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:35:18 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:37:53 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:40:31 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 19:40:31 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 19:41:06 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:43:42 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:46:17 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:48:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:51:31 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 19:51:31 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback
+2026-05-03 19:52:07 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:54:42 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:57:17 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 19:59:52 [INFO] scraper.agentic_daemon: Agentic daemon pass complete: {'processed_pages': 0, 'extracted_services': 0, 'queue_remaining': 0, 'max_workers': 4, 'state_path': 'data/live/state/agentic_daemon_state.json', 'db_path': 'data/live/state/agentic_daemon_state.duckdb', 'etl_db_path': 'data/live/state/etl_warehouse.duckdb'}
+2026-05-03 20:02:31 [INFO] scraper.agentic_daemon: External ipfs_datasets tools disabled; using lightweight local fetch/archive
+2026-05-03 20:02:31 [INFO] scraper.agentic_daemon: External dataset tools disabled; using JSON snapshot fallback

@@ -1,4 +1,12 @@
-import { ExportBundleView, WalletAccessRequest, WalletGrantReceipt } from "../models/abby";
+import {
+  AuditEvent,
+  DerivedArtifactView,
+  ExportBundleView,
+  ProofReceiptView,
+  UploadItem,
+  WalletAccessRequest,
+  WalletGrantReceipt
+} from "../models/abby";
 
 interface AccessRequestApiRecord {
   request_id: string;
@@ -10,6 +18,8 @@ interface AccessRequestApiRecord {
   status: "pending" | "approved" | "rejected" | "revoked";
   created_at: string;
   approval_required?: boolean;
+  approval_id?: string | null;
+  approval_status?: string | null;
   approval_threshold?: number | null;
   approval_count?: number;
   grant_status?: "active" | "revoked" | null;
@@ -34,6 +44,92 @@ interface GrantReceiptApiRecord {
 
 interface GrantReceiptApiResponse {
   receipts: GrantReceiptApiRecord[];
+}
+
+interface AuditEventApiRecord {
+  event_id?: string;
+  created_at: string;
+  actor_did: string;
+  action: string;
+  resource: string;
+  decision: string;
+  grant_id?: string | null;
+}
+
+interface AuditEventApiResponse {
+  events: AuditEventApiRecord[];
+}
+
+interface WalletRecordApiRecord {
+  record_id: string;
+  data_type: string;
+  sensitivity: "low" | "moderate" | "high" | "restricted";
+  public_descriptor: string;
+  status: string;
+  created_at: string;
+}
+
+interface WalletRecordsApiResponse {
+  records: WalletRecordApiRecord[];
+}
+
+interface ProofReceiptApiRecord {
+  proof_id: string;
+  proof_type: string;
+  statement?: Record<string, unknown>;
+  verifier_id: string;
+  public_inputs: Record<string, unknown>;
+  proof_hash: string;
+  witness_record_ids: string[];
+  is_simulated: boolean;
+  proof_system?: string;
+  circuit_id?: string | null;
+  verifier_digest?: string | null;
+  proof_artifact_ref?: string | null;
+  verification_status?: string;
+  created_at: string;
+}
+
+interface ProofReceiptsApiResponse {
+  proofs: ProofReceiptApiRecord[];
+}
+
+interface RecordStorageApiResponse {
+  ok: boolean;
+}
+
+interface WalletSnapshotListApiResponse {
+  wallet_ids: string[];
+}
+
+interface WalletSnapshotMutationApiResponse {
+  wallet_id: string;
+  path?: string;
+  loaded?: boolean;
+}
+
+export interface WalletSnapshotVerification {
+  wallet_id: string;
+  path: string;
+  exists: boolean;
+  valid: boolean;
+  format?: string;
+  snapshot_hash?: string;
+  computed_hash?: string;
+  error?: string;
+}
+
+interface DerivedArtifactApiResponse {
+  artifact_id: string;
+  source_record_ids: string[];
+  artifact_type: string;
+  output_policy: string;
+  encrypted_payload_ref?: {
+    uri?: string;
+    storage_type?: string;
+    digest?: string;
+  };
+  created_at: string;
 }
 
 export interface ExportBundleApi {
@@ -114,6 +210,173 @@ export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBa
   return { accessRequests, grantReceipts };
 }
 
+export async function listWalletAuditEvents(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<AuditEvent[]> {
+  const url = new URL(`/wallets/${config.walletId}/audit`, normalizedBaseUrl(config.apiBaseUrl));
+  const data = await fetchJson<AuditEventApiResponse>(url, "Wallet audit");
+  return data.events.map(toAuditEventView);
+}
+
+export async function listWalletDocuments(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<UploadItem[]> {
+  const url = new URL(`/wallets/${config.walletId}/records`, normalizedBaseUrl(config.apiBaseUrl));
+  url.searchParams.set("data_type", "document");
+  const data = await fetchJson<WalletRecordsApiResponse>(url, "Wallet records");
+  return Promise.all(data.records.map((record) => toUploadItemViewWithStorage(config, record)));
+}
+
+export async function listWalletProofReceipts(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<ProofReceiptView[]> {
+  const url = new URL(`/wallets/${config.walletId}/proofs`, normalizedBaseUrl(config.apiBaseUrl));
+  const data = await fetchJson<ProofReceiptsApiResponse>(url, "Proof receipts");
+  return data.proofs.map(toProofReceiptView);
+}
+
+export async function createLocationRegionProof(
+  config: WalletApiConfig,
+  {
+    locationRecordId,
+    regionId,
+    grantId
+  }: {
+    locationRecordId: string;
+    regionId: string;
+    grantId?: string;
+  }
+): Promise<ProofReceiptView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/locations/${locationRecordId}/region-proofs`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const proof = await postJson<ProofReceiptApiRecord>(url, "Location region proof", {
+    actor_did: requiredActorDid(config),
+    grant_id: grantId || undefined,
+    region_id: regionId
+  });
+  return toProofReceiptView(proof);
+}
+
+export async function addTextDocument(
+  config: WalletApiConfig,
+  {
+    filename,
+    text,
+    title
+  }: {
+    filename: string;
+    text: string;
+    title?: string;
+  }
+): Promise<UploadItem> {
+  const url = new URL(`/wallets/${config.walletId}/documents/text`, normalizedBaseUrl(config.apiBaseUrl));
+  const record = await postJson<WalletRecordApiRecord>(url, "Document upload", {
+    actor_did: requiredActorDid(config),
+    key_hex: config.issuerKeyHex,
+    filename,
+    title,
+    text
+  });
+  return toUploadItemViewWithStorage(config, record);
+}
+
+export async function addBinaryDocument(
+  config: WalletApiConfig,
+  {
+    file,
+    title
+  }: {
+    file: File;
+    title?: string;
+  }
+): Promise<UploadItem> {
+  const url = new URL(`/wallets/${config.walletId}/documents`, normalizedBaseUrl(config.apiBaseUrl));
+  const form = new FormData();
+  form.set("actor_did", requiredActorDid(config));
+  if (config.issuerKeyHex) {
+    form.set("key_hex", config.issuerKeyHex);
+  }
+  if (title) {
+    form.set("title", title);
+  }
+  form.set("file", file, file.name);
+  const response = await fetch(url, {
+    body: form,
+    method: "POST"
+  });
+  if (!response.ok) {
+    throw new Error(`Document upload request failed with status ${response.status}`);
+  }
+  return toUploadItemViewWithStorage(config, (await response.json()) as WalletRecordApiRecord);
+}
+
+export async function verifyRecordStorage(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  recordId: string
+): Promise<boolean> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/storage`, normalizedBaseUrl(config.apiBaseUrl));
+  const report = await fetchJson<RecordStorageApiResponse>(url, "Record storage");
+  return report.ok;
+}
+
+export async function repairRecordStorage(config: WalletApiConfig, recordId: string): Promise<boolean> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/storage/repair`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const report = await postJson<RecordStorageApiResponse>(url, "Record storage repair", {
+    actor_did: requiredActorDid(config)
+  });
+  return report.ok;
+}
+
+export async function listWalletSnapshots(config: Pick<WalletApiConfig, "apiBaseUrl">): Promise<string[]> {
+  const url = new URL("/wallets/snapshots", normalizedBaseUrl(config.apiBaseUrl));
+  const data = await fetchJson<WalletSnapshotListApiResponse>(url, "Wallet snapshots");
+  return data.wallet_ids;
+}
+
+export async function saveWalletSnapshot(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletSnapshotMutationApiResponse> {
+  const url = new URL(`/wallets/${config.walletId}/snapshot`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletSnapshotMutationApiResponse>(url, "Wallet snapshot save", {});
+}
+
+export async function verifyWalletSnapshot(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletSnapshotVerification> {
+  const url = new URL(`/wallets/${config.walletId}/snapshot`, normalizedBaseUrl(config.apiBaseUrl));
+  return fetchJson<WalletSnapshotVerification>(url, "Wallet snapshot verification");
+}
+
+export async function loadWalletSnapshot(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">
+): Promise<WalletSnapshotMutationApiResponse> {
+  const url = new URL(`/wallets/${config.walletId}/snapshot/load`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletSnapshotMutationApiResponse>(url, "Wallet snapshot load", {});
+}
+
+export async function analyzeRecordWithGrant(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    maxChars = 200
+  }: {
+    recordId: string;
+    grantId: string;
+    maxChars?: number;
+  }
+): Promise<DerivedArtifactView> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/analyze`, normalizedBaseUrl(config.apiBaseUrl));
+  const artifact = await postJson<DerivedArtifactApiResponse>(url, "Record analysis", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex,
+    grant_id: grantId,
+    max_chars: maxChars
+  });
+  return toDerivedArtifactView(artifact);
+}
+
 export async function listAccessRequests({
   apiBaseUrl,
   walletId,
@@ -176,6 +439,16 @@ export async function revokeAccessRequest(
   return toAccessRequestView(data);
 }
 
+export async function approveThresholdApproval(config: WalletApiConfig, approvalId: string): Promise<void> {
+  const url = new URL(
+    `/wallets/${config.walletId}/approvals/${approvalId}/approve`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  await postJson<Record<string, unknown>>(url, "Threshold approval", {
+    approver_did: requiredActorDid(config)
+  });
+}
+
 export async function listGrantReceipts({
   apiBaseUrl,
   walletId,
@@ -216,6 +489,20 @@ export async function importExportBundle({
 }): Promise<ExportBundleImportResponse> {
   const url = new URL("/exports/import", normalizedBaseUrl(apiBaseUrl));
   return postJson<ExportBundleImportResponse>(url, "Export bundle import", { bundle });
+}
+
+export async function importExportBundleView({
+  apiBaseUrl,
+  bundleView
+}: {
+  apiBaseUrl: string;
+  bundleView: ExportBundleView;
+}): Promise<ExportBundleView> {
+  if (!bundleView.bundle) {
+    throw new Error("A complete export bundle is required for import");
+  }
+  await importExportBundle({ apiBaseUrl, bundle: bundleView.bundle });
+  return { ...bundleView, imported: true };
 }
 
 export async function verifyExportBundleStorage({
@@ -363,6 +650,7 @@ export async function loadExportBundleView({
     bundleId,
     bundleHash,
     audienceName: audienceName ?? labelFromDid(bundle.actor_did ?? bundle.wallet?.owner_did ?? "did:unknown:recipient"),
+    bundle,
     recordCount: storage.record_count || bundle.records?.length || 0,
     proofCount: bundle.proofs?.length ?? 0,
     storageOk: verification.valid && storage.ok,
@@ -384,6 +672,8 @@ function toAccessRequestView(request: AccessRequestApiRecord): WalletAccessReque
     status: request.status === "revoked" ? "approved" : request.status,
     createdAt: formatTimestamp(request.created_at),
     approvalRequired: request.approval_required,
+    approvalId: request.approval_id ?? undefined,
+    approvalStatus: request.approval_status ?? undefined,
     approvalThreshold: request.approval_threshold ?? undefined,
     approvalCount: request.approval_count,
     grantStatus
@@ -391,12 +681,15 @@ function toAccessRequestView(request: AccessRequestApiRecord): WalletAccessReque
 }
 
 function toGrantReceiptView(receipt: GrantReceiptApiRecord): WalletGrantReceipt {
+  const resource = receipt.resources[0] ?? "wallet resource";
   return {
     id: receipt.receipt_id,
     grantId: receipt.grant_id,
     audienceName: labelFromDid(receipt.audience_did),
     audienceDid: receipt.audience_did,
-    resourceLabel: labelFromResource(receipt.resources[0] ?? "wallet resource"),
+    resources: receipt.resources,
+    recordId: recordIdFromResource(resource),
+    resourceLabel: labelFromResource(resource),
     abilities: receipt.abilities,
     purpose: receipt.purpose ?? "Shared wallet access",
     receiptHash: receipt.receipt_hash,
@@ -404,6 +697,81 @@ function toGrantReceiptView(receipt: GrantReceiptApiRecord): WalletGrantReceipt 
     createdAt: formatTimestamp(receipt.created_at),
     expiresAt: receipt.expires_at ? formatTimestamp(receipt.expires_at) : undefined
   };
+}
+
+function toDerivedArtifactView(artifact: DerivedArtifactApiResponse): DerivedArtifactView {
+  return {
+    id: artifact.artifact_id,
+    sourceRecordIds: artifact.source_record_ids,
+    artifactType: artifact.artifact_type,
+    outputPolicy: artifact.output_policy,
+    encryptedPayloadRef:
+      artifact.encrypted_payload_ref?.uri ??
+      artifact.encrypted_payload_ref?.digest ??
+      artifact.encrypted_payload_ref?.storage_type ??
+      "encrypted derived artifact",
+    createdAt: formatTimestamp(artifact.created_at)
+  };
+}
+
+function toProofReceiptView(proof: ProofReceiptApiRecord): ProofReceiptView {
+  const claim = stringValue(proof.public_inputs.claim) || proof.proof_type;
+  return {
+    id: proof.proof_id,
+    proofType: proof.proof_type,
+    claim,
+    verifier: proof.verifier_id,
+    proofSystem: proof.proof_system ?? (proof.is_simulated ? "simulated" : "unknown"),
+    verificationStatus: proof.verification_status ?? "unknown",
+    circuitId: proof.circuit_id ?? undefined,
+    verifierDigest: proof.verifier_digest ?? undefined,
+    proofArtifactRef: proof.proof_artifact_ref ?? undefined,
+    publicInputs: Object.fromEntries(
+      Object.entries(proof.public_inputs).map(([key, value]) => [key, stringValue(value)])
+    ),
+    witnessLabel: proof.witness_record_ids.length
+      ? proof.witness_record_ids.map(labelFromResource).join(", ")
+      : "Wallet witness",
+    simulated: proof.is_simulated,
+    createdAt: formatTimestamp(proof.created_at)
+  };
+}
+
+function toAuditEventView(event: AuditEventApiRecord): AuditEvent {
+  return {
+    id: event.event_id ?? `${event.action}-${event.created_at}`,
+    actor: labelFromDid(event.actor_did),
+    action: event.action,
+    timestamp: formatTimestamp(event.created_at),
+    resource: event.resource,
+    decision: event.decision,
+    grantId: event.grant_id ?? undefined
+  };
+}
+
+function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
+  return {
+    id: record.record_id,
+    recordId: record.record_id,
+    fileName: labelFromResource(record.record_id),
+    machineSummary: `${record.data_type} record stored ${formatTimestamp(record.created_at)}`,
+    category: record.public_descriptor || record.data_type,
+    sensitivity: record.sensitivity,
+    status: record.status === "active" ? "stored" : "failed",
+    shared: false
+  };
+}
+
+async function toUploadItemViewWithStorage(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  record: WalletRecordApiRecord
+): Promise<UploadItem> {
+  const item = toUploadItemView(record);
+  try {
+    return { ...item, storageOk: await verifyRecordStorage(config, record.record_id) };
+  } catch {
+    return { ...item, storageOk: false };
+  }
 }
 
 async function fetchJson<T>(url: URL, label: string): Promise<T> {
@@ -450,10 +818,29 @@ function normalizedBaseUrl(apiBaseUrl: string): string {
   return apiBaseUrl.endsWith("/") ? apiBaseUrl : `${apiBaseUrl}/`;
 }
 
+function stringValue(value: unknown): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return JSON.stringify(value);
+}
+
 function labelFromResource(resource: string): string {
   const parts = resource.split("/").filter(Boolean);
   const last = parts[parts.length - 1] ?? resource;
   return last.replace(/^rec-/, "Record ");
+}
+
+function recordIdFromResource(resource: string): string | undefined {
+  const parts = resource.split("/").filter(Boolean);
+  const recordsIndex = parts.lastIndexOf("records");
+  return recordsIndex >= 0 ? parts[recordsIndex + 1] : undefined;
 }
 
 function labelFromDid(did: string): string {

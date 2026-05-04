@@ -24,6 +24,7 @@ from urllib.parse import unquote, urlparse
 
 import requests
 from bs4 import BeautifulSoup
+from requests import exceptions as requests_exceptions
 
 from .config import Config
 from .duckdb_etl import DuckDBETLWarehouse
@@ -98,7 +99,13 @@ class CrawlState:
     def load(cls, path: Path) -> "CrawlState":
         if not path.exists():
             return cls()
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            return cls()
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            return cls()
         return cls(
             queue=[CrawlItem(**item) for item in payload.get("queue", [])],
             seen_urls=set(payload.get("seen_urls", [])),
@@ -212,27 +219,36 @@ class WebArchivingAdapter:
 
     def _fetch_with_requests(self, url: str) -> FetchResult:
         try:
-            response = requests.get(url, headers=self._headers, timeout=self.cfg.timeout)
-            response.raise_for_status()
-            html = response.text
-            soup = BeautifulSoup(html, "lxml")
-            title = clean_text(soup.title.string) if soup.title else ""
-            for remove in soup.find_all(["script", "style", "nav", "footer", "header"]):
-                remove.decompose()
-            text = clean_text((soup.find("main") or soup.body or soup).get_text(separator=" "))
-            links = extract_links(html, response.url)
-            return FetchResult(
-                url=response.url,
-                title=title,
-                text=text,
-                html=html,
-                links=links,
-                metadata={"provider": "requests"},
-                success=True,
-                quality_score=1.0 if text else 0.4,
-            )
+            return self._request_with_timeout(url, timeout_seconds=int(self.cfg.timeout))
+        except requests_exceptions.Timeout:
+            retry_timeout = max(int(self.cfg.timeout) * 3, 90)
+            try:
+                return self._request_with_timeout(url, timeout_seconds=retry_timeout)
+            except Exception as exc:
+                return FetchResult(url=url, success=False, errors=[str(exc)], metadata={"provider": "requests"})
         except Exception as exc:
             return FetchResult(url=url, success=False, errors=[str(exc)], metadata={"provider": "requests"})
+
+    def _request_with_timeout(self, url: str, *, timeout_seconds: int) -> FetchResult:
+        response = self._session.get(url, timeout=timeout_seconds)
+        response.raise_for_status()
+        html = response.text
+        soup = BeautifulSoup(html, "lxml")
+        title = clean_text(soup.title.string) if soup.title else ""
+        for remove in soup.find_all(["script", "style", "nav", "footer", "header"]):
+            remove.decompose()
+        text = clean_text((soup.find("main") or soup.body or soup).get_text(separator=" "))
+        links = extract_links(html, response.url)
+        return FetchResult(
+            url=response.url,
+            title=title,
+            text=text,
+            html=html,
+            links=links,
+            metadata={"provider": "requests", "timeout_seconds": int(timeout_seconds)},
+            success=True,
+            quality_score=1.0 if text else 0.4,
+        )
 
 
 class DatasetSink:
@@ -503,6 +519,8 @@ class AgenticCrawlerDaemon:
         return not allowed_hosts or host in allowed_hosts
 
     def _is_blocked(self, url: str, strategy: dict[str, Any]) -> bool:
+        if is_junk_failed_url(url):
+            return True
         blocked = {str(item) for item in strategy.get("blocked_urls", [])}
         if url in blocked:
             return True
@@ -851,6 +869,49 @@ def split_provider_program_names(base_name: str, display_name: str) -> tuple[str
 def tokenize_nameish(text: str) -> list[str]:
     normalized = unquote(str(text or "")).replace("-", " ").replace("/", " ").replace("*", " ")
     return [token for token in re.findall(r"[A-Za-z0-9']+", normalized.upper()) if len(token) >= 2]
+
+
+def path_parts(url: str) -> list[str]:
+    return [part for part in urlparse(str(url or "")).path.split("/") if part]
+
+
+def is_probably_retryable_error(error: str) -> bool:
+    lowered = str(error or "").lower()
+    if not lowered:
+        return False
+    hard_fail_markers = ("404", "not found", "410", "gone")
+    if any(marker in lowered for marker in hard_fail_markers):
+        return False
+    retry_markers = (
+        "timed out",
+        "timeout",
+        "temporarily unavailable",
+        "too many requests",
+        "429",
+        "500",
+        "502",
+        "503",
+        "504",
+        "connection reset",
+        "connection aborted",
+        "remote disconnected",
+        "ssl",
+    )
+    return any(marker in lowered for marker in retry_markers)
+
+
+def is_junk_failed_url(url: str) -> bool:
+    lowered = str(url or "").lower()
+    if not lowered:
+        return True
+    if "/cdn-cgi/" in lowered or "resources@" in lowered:
+        return True
+    if "/blog" in lowered or "/update/" in lowered:
+        return True
+    parts = path_parts(lowered)
+    if len(parts) >= 4 and parts[:1] == ["get-help"]:
+        return True
+    return False
 
 
 def url_slug_tail(url: str) -> str:
