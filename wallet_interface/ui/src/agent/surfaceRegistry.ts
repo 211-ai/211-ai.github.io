@@ -1,10 +1,19 @@
 import type { RouteId } from "../models/abby";
 import type { AgentPermissionLevel, AgentToolDefinition } from "./types";
-import { hasPermissionLevel } from "./types";
+import {
+  hasPermissionLevel,
+  isAgentPermissionLevel,
+  isAgentToolDefinition,
+  isOneOf,
+  isRecord,
+  isRouteId,
+  isString
+} from "./types";
 import type { AgentCommandName } from "./commandSchemas";
-import { commandSchemas } from "./commandSchemas";
+import { commandSchemas, isAgentCommandName } from "./commandSchemas";
 
-export type SurfaceContextScope = "public" | "app_state" | "wallet_metadata" | "wallet_private";
+export const SURFACE_CONTEXT_SCOPES = ["public", "app_state", "wallet_metadata", "wallet_private"] as const;
+export type SurfaceContextScope = (typeof SURFACE_CONTEXT_SCOPES)[number];
 
 export interface SurfaceContextProviderDefinition {
   id: string;
@@ -313,6 +322,96 @@ export const agentToolDefinitions: AgentToolDefinition[] = Object.entries(toolPo
     auditEventType: policy.auditEventType
   };
 });
+
+export function isSurfaceContextScope(value: unknown): value is SurfaceContextScope {
+  return isOneOf(SURFACE_CONTEXT_SCOPES, value);
+}
+
+export function isSurfaceContextProviderDefinition(value: unknown): value is SurfaceContextProviderDefinition {
+  return (
+    isRecord(value) &&
+    isString(value.id) &&
+    isString(value.label) &&
+    isSurfaceContextScope(value.scope) &&
+    isAgentPermissionLevel(value.permissionLevel)
+  );
+}
+
+export function isAgentSurfaceDefinition(value: unknown): value is AgentSurfaceDefinition {
+  return (
+    isRecord(value) &&
+    isRouteId(value.route) &&
+    isString(value.label) &&
+    Array.isArray(value.contextProviders) &&
+    value.contextProviders.every(isSurfaceContextProviderDefinition) &&
+    Array.isArray(value.tools) &&
+    value.tools.every(isAgentCommandName)
+  );
+}
+
+export function isRegisteredAgentToolDefinition(value: unknown): value is AgentToolDefinition {
+  return isAgentToolDefinition(value) && isAgentCommandName(value.name);
+}
+
+export function validateSurfaceRegistry(): string[] {
+  const errors: string[] = [];
+  const seenRoutes = new Set<RouteId>();
+  const seenTools = new Set<AgentCommandName>();
+
+  for (const surface of agentSurfaces) {
+    if (!isAgentSurfaceDefinition(surface)) {
+      errors.push("Invalid agent surface definition.");
+      continue;
+    }
+    if (seenRoutes.has(surface.route)) {
+      errors.push(`Duplicate agent surface route: ${surface.route}`);
+    }
+    seenRoutes.add(surface.route);
+
+    for (const toolName of surface.tools) {
+      const tool = commandSchemas[toolName];
+      if (!tool) {
+        errors.push(`Surface ${surface.route} references unknown tool: ${toolName}`);
+      }
+      const definition = agentToolDefinitions.find((candidate) => candidate.name === toolName);
+      if (!definition) {
+        errors.push(`Surface ${surface.route} references tool without a definition: ${toolName}`);
+      } else if (!definition.surfaces.includes(surface.route)) {
+        errors.push(`Surface ${surface.route} registers tool ${toolName} but the tool does not allow that route.`);
+      }
+    }
+  }
+
+  for (const route of allRoutes) {
+    if (!seenRoutes.has(route)) {
+      errors.push(`Missing agent surface route: ${route}`);
+    }
+  }
+
+  for (const tool of agentToolDefinitions) {
+    if (!isRegisteredAgentToolDefinition(tool)) {
+      errors.push("Invalid agent tool definition.");
+      continue;
+    }
+    const commandName = tool.name as AgentCommandName;
+    seenTools.add(commandName);
+
+    for (const route of tool.surfaces) {
+      const surface = getSurfaceDefinition(route);
+      if (!surface.tools.includes(commandName)) {
+        errors.push(`Tool ${commandName} allows ${route} but is not registered on that surface.`);
+      }
+    }
+  }
+
+  for (const commandName of Object.keys(commandSchemas) as AgentCommandName[]) {
+    if (!seenTools.has(commandName)) {
+      errors.push(`Missing agent tool definition for command: ${commandName}`);
+    }
+  }
+
+  return errors;
+}
 
 export function getSurfaceDefinition(route: RouteId): AgentSurfaceDefinition {
   return agentSurfaces.find((surface) => surface.route === route) || agentSurfaces[0];

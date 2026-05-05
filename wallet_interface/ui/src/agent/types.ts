@@ -322,6 +322,18 @@ export function isAgentSchemaProperty(value: unknown): value is AgentSchemaPrope
   );
 }
 
+export function isAgentCommandSchema(value: unknown): value is AgentCommandSchema {
+  return (
+    isRecord(value) &&
+    isString(value.name) &&
+    isString(value.description) &&
+    isAgentSchemaProperty(value.inputSchema) &&
+    isAgentSchemaProperty(value.outputSchema) &&
+    typeof value.isInput === "function" &&
+    typeof value.isOutput === "function"
+  );
+}
+
 export function isEvidenceCitation(value: unknown): value is EvidenceCitation {
   return (
     isRecord(value) &&

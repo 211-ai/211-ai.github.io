@@ -1,6 +1,7 @@
 import type { RouteId } from "../models/abby";
 import type { AgentCommandSchema, AgentSchemaProperty, EvidenceBundle } from "./types";
 import {
+  isAgentCommandSchema,
   isBoolean,
   isEvidenceBundle,
   isNumber,
@@ -519,6 +520,29 @@ export const commandSchemas = {
     isOutput: isCommandOutput
   }
 } satisfies Record<AgentCommandName, AgentCommandSchema>;
+
+export function validateCommandSchemas(): string[] {
+  const errors: string[] = [];
+
+  for (const name of AGENT_COMMAND_NAMES) {
+    const schema = commandSchemas[name];
+    if (!isAgentCommandSchema(schema)) {
+      errors.push(`Invalid agent command schema: ${name}`);
+      continue;
+    }
+    if (schema.name !== name) {
+      errors.push(`Command schema key ${name} has mismatched name ${schema.name}.`);
+    }
+  }
+
+  for (const name of Object.keys(commandSchemas)) {
+    if (!isAgentCommandName(name)) {
+      errors.push(`Unexpected agent command schema: ${name}`);
+    }
+  }
+
+  return errors;
+}
 
 export function isAgentCommandName(value: unknown): value is AgentCommandName {
   return isString(value) && AGENT_COMMAND_NAMES.includes(value as AgentCommandName);
