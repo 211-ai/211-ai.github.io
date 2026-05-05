@@ -14,7 +14,7 @@ import type {
 } from "./types";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
-const configuredCorpusBaseUrl = import.meta.env.VITE_211_CORPUS_BASE_URL as string | undefined;
+const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
 const CORPUS_BASE_URL = stripTrailingSlash(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
 interface CorpusState {
@@ -203,7 +203,7 @@ function stripTrailingSlash(value: string): string {
 }
 
 function resolveDefaultCorpusBaseUrl(): string {
-  const baseUrl = String(import.meta.env.BASE_URL || "/");
+  const baseUrl = String(import.meta.env?.BASE_URL || "/");
   if (/^https?:\/\//i.test(baseUrl)) {
     return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
   }
