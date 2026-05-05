@@ -739,6 +739,15 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
   if (name === "create_service_plan" && isRecord(input)) {
     return `Create a private service follow-up plan for ${String(input.serviceId ?? "")}.`;
   }
+  if (name === "add_service_plan_checklist_item" && isRecord(input)) {
+    return `Add a checklist item to plan ${String(input.planId ?? "")}.`;
+  }
+  if (name === "set_service_plan_reminder" && isRecord(input)) {
+    return `Set a reminder for plan ${String(input.planId ?? "")}.`;
+  }
+  if (name === "record_service_interaction" && isRecord(input)) {
+    return `Record a service interaction for ${String(input.serviceId ?? "")}.`;
+  }
   if (name === "update_registration_draft") return "Update private registration profile fields.";
   if (name === "update_check_in_policy") return "Update check-in reminder and escalation settings.";
   if (name === "set_disclosure_scopes" && isRecord(input)) {

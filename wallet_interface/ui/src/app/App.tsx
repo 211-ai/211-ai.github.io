@@ -37,6 +37,9 @@ import {
   ExportBundleView,
   RegistrationProfileDraft,
   RouteId,
+  SavedService,
+  ServiceInteractionEvent,
+  ServicePlan,
   ShelterContactRequest,
   UploadItem,
   WalletAccessRequest,
@@ -247,6 +250,9 @@ export function App() {
   const [walletAuditEvents, setWalletAuditEvents] = useState<AuditEvent[]>(auditEvents);
   const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
+  const [savedServices, setSavedServices] = useState<SavedService[]>([]);
+  const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
+  const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(() => defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
@@ -310,6 +316,9 @@ export function App() {
         analyticsOptIn,
         walletProofReceipts,
         exportBundleViews,
+        savedServices,
+        servicePlans,
+        serviceInteractions,
         walletUnlocked: true,
         privateContextAllowed: false,
         permissionLevel: "wallet_write" as const
@@ -332,6 +341,9 @@ export function App() {
       setAnalyticsOptIn,
       setWalletProofReceipts,
       setExportBundleViews,
+      setSavedServices,
+      setServicePlans,
+      setServiceInteractions,
       walletApiConfig,
       refreshWalletAccessState,
       refreshWalletAuditEvents
@@ -344,6 +356,9 @@ export function App() {
       policy,
       profile,
       recipients,
+      savedServices,
+      serviceInteractions,
+      servicePlans,
       shelterContactRequests,
       shelterStaffAccounts,
       shelterUserAccounts,

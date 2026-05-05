@@ -68,6 +68,9 @@ export function useAgentChatService(
       setAnalyticsOptIn: (optedIn) => runtimeRef.current.setAnalyticsOptIn?.(optedIn),
       setWalletProofReceipts: (proofs) => runtimeRef.current.setWalletProofReceipts?.(proofs),
       setExportBundleViews: (bundles) => runtimeRef.current.setExportBundleViews?.(bundles),
+      setSavedServices: (services) => runtimeRef.current.setSavedServices?.(services),
+      setServicePlans: (plans) => runtimeRef.current.setServicePlans?.(plans),
+      setServiceInteractions: (interactions) => runtimeRef.current.setServiceInteractions?.(interactions),
       get walletApiConfig() {
         return runtimeRef.current.walletApiConfig;
       },
