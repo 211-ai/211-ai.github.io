@@ -31,6 +31,24 @@ def _client_with_service(service: WalletInterfaceService) -> TestClient:
     return TestClient(create_app(service=service))
 
 
+def test_wallet_api_cors_allows_configured_browser_origin(monkeypatch) -> None:
+    origin = "http://127.0.0.1:5185"
+    monkeypatch.setenv("WALLET_API_CORS_ORIGINS", origin)
+    client = _client()
+
+    response = client.options(
+        "/wallets",
+        headers={
+            "Access-Control-Request-Headers": "content-type",
+            "Access-Control-Request-Method": "POST",
+            "Origin": origin,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+
+
 def test_wallet_api_private_analytics_flow() -> None:
     client = _client()
     wallet_ids = []

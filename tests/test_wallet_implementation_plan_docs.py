@@ -31,7 +31,16 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "person-name strings" in text
     assert "wallet CLI subprocess flows" in text
     assert "MCP wallet tests cover the same share/export/import/revoke path" in text
+    assert "redacted analysis, form, extraction, vector-profile, GraphRAG, and analytics" in text
+    assert "analytics template/consent/contribution/private-count paths" in text
+    assert "manager dispatch" in text
     assert "hash/schema verification" in text
+    assert "API-backed export create/verify/import" in text
+    assert "delegated analysis artifacts including redacted analysis, extraction, form, vector profile, and GraphRAG" in text
+    assert "wallet_interface/ui/tests/fullstack-wallet.spec.ts" in text
+    assert "recipient delegated analysis workflows against the live API" in text
+    assert "recipient-access UI" in text
+    assert "live API browser blackbox" in text
 
 
 def test_ucan_zk_wallet_phase_table_tracks_gates_not_missing_mvp_work() -> None:

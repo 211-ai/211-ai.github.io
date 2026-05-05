@@ -85,6 +85,8 @@ IPFS_DATASETS_AUTO_INSTALL=false \
 IPFS_AUTO_INSTALL=false \
 IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
 python -m pytest tests/test_wallet_production_handoff_blackbox.py -q
+
+cd wallet_interface/ui && PLAYWRIGHT_PORT=5185 npm run test:fullstack
 ```
 
 This test starts a local HTTP verifier stub, runs
@@ -97,6 +99,11 @@ grant revocation, post-restart grant receipt/audit persistence, runs the wallet
 CLI through separate subprocesses for the same sharing/export/analytics
 persistence path, validates a completed signoff JSON packet, and verifies that a
 verifier returning witness data fails the release gate.
+The full-stack Playwright test starts a live wallet API with local durable
+storage, seeds wallet records over HTTP, and drives the 211-AI export UI through
+grant, invocation, encrypted bundle creation, verification, storage status,
+descriptor import, and audit confirmation from desktop and mobile browser
+projects.
 
 ## Lost Key Or Device
 

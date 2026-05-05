@@ -71,6 +71,7 @@ import {
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  createRedactedGraphRAG,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createVerifiedExportBundleView,
@@ -78,6 +79,7 @@ import {
   decryptRecordWithGrant,
   extractRecordTextRedactedWithGrant,
   importExportBundleView,
+  issueRecordAnalysisInvocation,
   issueRecordDecryptInvocation,
   listWalletSnapshots,
   loadExportBundleView,
@@ -2436,7 +2438,7 @@ function ShelterScreen({
   );
 }
 
-type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form";
+type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";
 
 function RecipientAccessScreen({
   accessRequests,
@@ -2511,6 +2513,15 @@ function RecipientAccessScreen({
     return `${receipt.id}:${mode}`;
   }
 
+  function outputTypeForAnalysisMode(mode: RecipientAnalysisMode) {
+    if (mode === "redacted") return "redacted_derived_only";
+    if (mode === "vector") return "vector_profile";
+    if (mode === "extract-text") return "redacted_extracted_text";
+    if (mode === "form") return "redacted_form_analysis";
+    if (mode === "graphrag") return "redacted_graphrag";
+    return "summary";
+  }
+
   function summarizeDerivedOutput(output: Record<string, unknown>) {
     if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
     if (typeof output.text === "string" && output.text.trim()) return output.text;
@@ -2540,6 +2551,15 @@ function RecipientAccessScreen({
       const formRecord = form as Record<string, unknown>;
       const fieldCount = typeof formRecord.field_count === "number" ? formRecord.field_count : undefined;
       if (fieldCount !== undefined) return `${fieldCount} redacted form fields`;
+    }
+    const graph = output.graph;
+    if (graph && typeof graph === "object" && !Array.isArray(graph)) {
+      const graphRecord = graph as Record<string, unknown>;
+      const graphType = typeof graphRecord.graph_type === "string" ? graphRecord.graph_type : "redacted graph";
+      const nodeCount = typeof graphRecord.node_count === "number" ? graphRecord.node_count : undefined;
+      const edgeCount = typeof graphRecord.edge_count === "number" ? graphRecord.edge_count : undefined;
+      if (nodeCount !== undefined && edgeCount !== undefined) return `${graphType} · ${nodeCount} nodes · ${edgeCount} edges`;
+      return graphType;
     }
     if (typeof output.output_policy === "string") return output.output_policy;
     return "Safe derived output created.";
@@ -2741,6 +2761,14 @@ function RecipientAccessScreen({
               outputPolicy: "redacted_form_analysis",
               encryptedPayloadRef: "local encrypted form analysis",
               createdAt: "Just now"
+            },
+            graphrag: {
+              id: `artifact-graphrag-${receipt.id}`,
+              sourceRecordIds: [recordId],
+              artifactType: "redacted_document_graphrag",
+              outputPolicy: "redacted_graphrag",
+              encryptedPayloadRef: "local encrypted GraphRAG",
+              createdAt: "Just now"
             }
           };
           safeOutput =
@@ -2752,12 +2780,23 @@ function RecipientAccessScreen({
                   ? "Local demo redacted extracted text."
                   : mode === "form"
                     ? "Local demo redacted form fields."
-                    : "";
+                    : mode === "graphrag"
+                      ? "redacted_category_entity_graph · local nodes"
+                      : "";
           return localArtifacts[mode];
         }
+        const invocationToken = receiptRequiresUserPresence(receipt)
+          ? await issueRecordAnalysisInvocation(apiConfig, {
+              grantId: receipt.grantId,
+              recordId,
+              outputTypes: [outputTypeForAnalysisMode(mode)],
+              userPresent: true
+            })
+          : undefined;
         if (mode === "redacted") {
           const result = await analyzeRecordRedactedWithGrant(apiConfig, {
             grantId: receipt.grantId,
+            invocationToken,
             recordId,
             maxChars: 500
           });
@@ -2767,6 +2806,7 @@ function RecipientAccessScreen({
         if (mode === "vector") {
           const result = await createRecordVectorProfileWithGrant(apiConfig, {
             grantId: receipt.grantId,
+            invocationToken,
             recordId,
             chunkSizeWords: 80
           });
@@ -2776,6 +2816,7 @@ function RecipientAccessScreen({
         if (mode === "extract-text") {
           const result = await extractRecordTextRedactedWithGrant(apiConfig, {
             grantId: receipt.grantId,
+            invocationToken,
             recordId,
             maxBytes: 200_000,
             maxChars: 20_000,
@@ -2787,6 +2828,7 @@ function RecipientAccessScreen({
         if (mode === "form") {
           const result = await analyzeRecordFormRedactedWithGrant(apiConfig, {
             grantId: receipt.grantId,
+            invocationToken,
             recordId,
             maxFields: 100,
             useOcr: false
@@ -2794,8 +2836,21 @@ function RecipientAccessScreen({
           safeOutput = summarizeDerivedOutput(result.output);
           return result.artifact;
         }
+        if (mode === "graphrag") {
+          const result = await createRedactedGraphRAG(apiConfig, {
+            grantId: receipt.grantId,
+            invocationToken,
+            recordIds: [recordId],
+            maxBytesPerRecord: 200_000,
+            maxCharsPerRecord: 20_000,
+            useOcr: true
+          });
+          safeOutput = summarizeDerivedOutput(result.output);
+          return result.artifact;
+        }
         return analyzeRecordWithGrant(apiConfig, {
           grantId: receipt.grantId,
+          invocationToken,
           recordId,
           maxChars: 200
         });
@@ -2809,7 +2864,8 @@ function RecipientAccessScreen({
         [receipt.id]: safeOutput
       }));
       await refreshWalletAuditEvents();
-    } catch {
+    } catch (error) {
+      console.warn("Recipient analysis unavailable", error);
       setDerivedArtifactsByReceiptId((artifacts) => ({
         ...artifacts,
         [receipt.id]: {
@@ -3042,6 +3098,7 @@ function RecipientAccessScreen({
             const canCreateVectorProfile = canAnalyze && receiptAllowsOutput(receipt, "vector_profile");
             const canExtractText = canAnalyze && receiptAllowsOutput(receipt, "redacted_extracted_text");
             const canAnalyzeForm = canAnalyze && receiptAllowsOutput(receipt, "redacted_form_analysis");
+            const canCreateGraphRAG = canAnalyze && receiptAllowsOutput(receipt, "redacted_graphrag");
             const canView =
               receipt.status === "active" && receiptHasAbility(receipt, "record/decrypt") && Boolean(receipt.recordId);
             const artifact = derivedArtifactsByReceiptId[receipt.id];
@@ -3138,7 +3195,13 @@ function RecipientAccessScreen({
                   </div>
                 </div>
               ) : null}
-              {canAnalyze || canAnalyzeRedacted || canCreateVectorProfile || canExtractText || canAnalyzeForm || canView ? (
+              {canAnalyze ||
+              canAnalyzeRedacted ||
+              canCreateVectorProfile ||
+              canExtractText ||
+              canAnalyzeForm ||
+              canCreateGraphRAG ||
+              canView ? (
                 <div className="row-actions">
                   {canAnalyze ? (
                     <Button
@@ -3198,6 +3261,18 @@ function RecipientAccessScreen({
                       {analyzingReceiptIds.includes(analysisActionId(receipt, "form"))
                         ? "Reading form"
                         : "Analyze form"}
+                    </Button>
+                  ) : null}
+                  {canCreateGraphRAG ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "graphrag"))}
+                      onClick={() => analyzeReceipt(receipt, "graphrag")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "graphrag"))
+                        ? "Building graph"
+                        : "Build GraphRAG"}
                     </Button>
                   ) : null}
                   {canView ? (

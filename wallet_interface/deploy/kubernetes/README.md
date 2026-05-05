@@ -51,6 +51,9 @@ Before production use:
 - Set `WALLET_OPS_ALERT_BEARER_TOKEN` or a custom
   `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE` pair if the
   alert receiver requires webhook authentication.
+- Set `WALLET_API_CORS_ORIGINS` to the deployed UI origin when API and UI are
+  served from different browser origins. Leave it empty when ingress routes both
+  behind the same origin.
 - Change the ingress host and storage class to the target cluster settings.
 - Run `python -m wallet_interface.ops --validate-production-readiness` and
   `python -m wallet_interface.ops --validate-target-signoff-packet` from the

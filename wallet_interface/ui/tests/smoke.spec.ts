@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Route } from "@playwright/test";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 
@@ -517,6 +517,154 @@ test("exports show receipt hashes and storage status", async ({ page }) => {
   await expect(benefitsExport.getByText(/storage missing/i)).toBeVisible();
 });
 
+test("configured exports create verify and import encrypted descriptors", async ({ page }) => {
+  const calls: string[] = [];
+  const bundle = {
+    actor_did: "did:key:dispatch-clinic",
+    bundle_id: "export-ui-live",
+    bundle_hash: "ui-live-hash",
+    bundle_type: "wallet_export_v1",
+    created_at: "2026-05-05T12:00:00Z",
+    records: [{ record_id: "rec-document-benefits", data_type: "document" }],
+    proofs: [{ proof_id: "proof-ui-live", proof_type: "location_region" }],
+    versions: [{ record_id: "rec-document-benefits", encrypted_payload_ref: { uri: "memory://payload" } }],
+    wallet: { wallet_id: "wallet-demo", owner_did: "did:key:owner" }
+  };
+
+  const handleWalletApiRoute = async (route: Route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/exports/grants")) {
+      calls.push("grant");
+      const request = route.request().postDataJSON();
+      expect(request.record_ids).toEqual(["rec-document-benefits", "rec-location-current"]);
+      await route.fulfill({
+        json: {
+          grant_id: "grant-ui-live",
+          audience_did: "did:key:dispatch-clinic",
+          resources: ["wallet://wallet-demo/exports"],
+          abilities: ["export/create"],
+          caveats: { output_types: ["encrypted_export_bundle"] },
+          status: "active"
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/exports/invocations")) {
+      calls.push("invocation");
+      const request = route.request().postDataJSON();
+      expect(request.grant_id).toBe("grant-ui-live");
+      await route.fulfill({
+        json: {
+          invocation_id: "invocation-ui-live",
+          grant_id: "grant-ui-live",
+          actor_did: "did:key:dispatch-clinic",
+          invocation_token: "wallet-ucan-v1.ui-live",
+          caveats: { output_types: ["encrypted_export_bundle"] }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/wallet-demo/exports")) {
+      calls.push("bundle");
+      const request = route.request().postDataJSON();
+      expect(request.invocation_token).toBe("wallet-ucan-v1.ui-live");
+      await route.fulfill({ json: bundle });
+      return;
+    }
+    if (path === "/exports/verify") {
+      calls.push("verify");
+      await route.fulfill({
+        json: {
+          valid: true,
+          hash_valid: true,
+          schema_valid: true,
+          bundle_id: bundle.bundle_id,
+          bundle_hash: bundle.bundle_hash,
+          computed_hash: bundle.bundle_hash
+        }
+      });
+      return;
+    }
+    if (path === "/exports/storage") {
+      calls.push("storage");
+      await route.fulfill({
+        json: {
+          bundle_id: bundle.bundle_id,
+          bundle_hash: bundle.bundle_hash,
+          wallet_id: "wallet-demo",
+          ok: true,
+          record_count: 1,
+          reports: []
+        }
+      });
+      return;
+    }
+    if (path === "/exports/import") {
+      calls.push("import");
+      const request = route.request().postDataJSON();
+      expect(request.bundle.bundle_id).toBe(bundle.bundle_id);
+      await route.fulfill({
+        json: {
+          wallet_id: "wallet-demo",
+          bundle_id: bundle.bundle_id,
+          bundle_hash: bundle.bundle_hash,
+          record_count: 1,
+          version_count: 1,
+          proof_count: 1,
+          derived_artifact_count: 0
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected export UI call", path } });
+  };
+
+  await page.route("**/wallets/**", handleWalletApiRoute);
+  await page.route("**/exports/**", handleWalletApiRoute);
+
+  await page.goto(
+    walletRoute("exports", "did:key:owner", {
+      audienceKeyHex: "22".repeat(32),
+      issuerKeyHex: "11".repeat(32)
+    })
+  );
+  await page.getByLabel(/Recipient DID/i).fill("did:key:dispatch-clinic");
+  await page.getByLabel(/Recipient label/i).fill("Dispatch Clinic");
+  await page.getByRole("button", { name: /Create bundle/i }).click();
+
+  await expect(page.getByText(/Export bundle verified/i)).toBeVisible();
+  const createdBundle = page.getByRole("article", { name: /Dispatch Clinic/i });
+  await expect(createdBundle.getByText(/storage verified/i)).toBeVisible();
+  await expect(createdBundle.getByText(/hash verified/i)).toBeVisible();
+  await expect(createdBundle.getByText(/schema verified/i)).toBeVisible();
+  await expect(createdBundle.getByText(/not imported/i)).toBeVisible();
+  await createdBundle.getByRole("button", { name: /Import descriptors/i }).click();
+  await expect(page.getByText(/Export descriptors imported/i)).toBeVisible();
+  await expect(createdBundle.getByText(/import verified/i)).toBeVisible();
+  expect(calls).toEqual(["grant", "invocation", "bundle", "verify", "storage", "import"]);
+});
+
 test("security screen saves and restores wallet snapshots", async ({ page }) => {
   let saved = false;
   let saveRequests = 0;
@@ -667,6 +815,8 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   let vectorProfileRequests = 0;
   let textExtractionRequests = 0;
   let formAnalysisRequests = 0;
+  let graphRagRequests = 0;
+  let analysisInvocationRequests = 0;
   let decryptRequests = 0;
   let decryptInvocationRequests = 0;
   let delegationRequests = 0;
@@ -697,6 +847,35 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       await route.fulfill({
         json: {
           receipts
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/analysis-invocations")) {
+      analysisInvocationRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      const request = await route.request().postDataJSON();
+      expect(request).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        user_present: true
+      });
+      await route.fulfill({
+        json: {
+          invocation: {
+            invocation_id: `invocation-analysis-${analysisInvocationRequests}`,
+            grant_id: "grant-analysis",
+            audience_did: "did:key:delegate",
+            resource: "wallet://wallet-demo/records/rec-benefits-letter",
+            ability: "record/analyze",
+            caveats: { output_types: request.output_types, purpose: "service_matching", user_present: true },
+            issued_at: "2026-05-03T18:01:00Z",
+            expires_at: null,
+            nonce: `nonce-analysis-${analysisInvocationRequests}`,
+            signature: `sig-analysis-${analysisInvocationRequests}`
+          },
+          token: `wallet-ucan-v1.analysis-${analysisInvocationRequests}`
         }
       });
       return;
@@ -886,6 +1065,48 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       });
       return;
     }
+    if (path.endsWith("/records/graphrag/redacted")) {
+      graphRagRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        actor_did: "did:key:delegate",
+        actor_key_hex: "delegate-key",
+        grant_id: "grant-analysis",
+        record_ids: ["rec-benefits-letter"],
+        max_chars_per_record: 20_000,
+        max_bytes_per_record: 200_000,
+        use_ocr: true
+      });
+      await route.fulfill({
+        json: {
+          artifact: {
+            artifact_id: "artifact-graphrag",
+            source_record_ids: ["rec-benefits-letter"],
+            artifact_type: "redacted_document_graphrag",
+            output_policy: "redacted_graphrag",
+            encrypted_payload_ref: {
+              uri: "mem://redacted-graphrag",
+              storage_type: "memory",
+              digest: "sha256:redacted-graphrag"
+            },
+            created_at: "2026-05-03T18:01:25Z"
+          },
+          output: {
+            output_policy: "redacted_graphrag",
+            graph: {
+              graph_type: "redacted_category_entity_graph",
+              node_count: 4,
+              edge_count: 3,
+              category_record_counts: { housing: 1, food: 1 },
+              redaction_counts: { email: 1, person: 1 }
+            },
+            source_record_ids: ["rec-benefits-letter"],
+            source_record_count: 1
+          }
+        }
+      });
+      return;
+    }
     if (path.endsWith("/records/rec-benefits-letter/analyze")) {
       analysisRequests += 1;
       expect(route.request().method()).toBe("POST");
@@ -1041,6 +1262,9 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   await receipt.getByRole("button", { name: /Analyze form/i }).click();
   await expect(receipt.getByText(/redacted_document_form_analysis · redacted_form_analysis/i)).toBeVisible();
   await expect(receipt.getByText(/2 redacted fields: Full name, Email/i)).toBeVisible();
+  await receipt.getByRole("button", { name: /Build GraphRAG/i }).click();
+  await expect(receipt.getByText(/redacted_document_graphrag · redacted_graphrag/i)).toBeVisible();
+  await expect(receipt.getByText(/redacted_category_entity_graph · 4 nodes · 3 edges/i)).toBeVisible();
   await receipt.getByRole("button", { name: /View document/i }).click();
   await expect(receipt.getByText(documentPlaintext)).toBeVisible();
   await expect(receipt.getByText(`${documentPlaintext.length} bytes`)).toBeVisible();
@@ -1060,6 +1284,8 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   expect(vectorProfileRequests).toBe(1);
   expect(textExtractionRequests).toBe(1);
   expect(formAnalysisRequests).toBe(1);
+  expect(graphRagRequests).toBe(1);
+  expect(analysisInvocationRequests).toBe(6);
   expect(decryptRequests).toBe(1);
   expect(decryptInvocationRequests).toBe(1);
   expect(delegationRequests).toBe(1);
