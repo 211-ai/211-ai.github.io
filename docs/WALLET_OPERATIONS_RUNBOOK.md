@@ -77,6 +77,22 @@ Secret management templates:
 - `wallet_interface/deploy/kubernetes/externalsecret.example.yaml` maps the
   same keys from an external secret manager through External Secrets Operator.
 
+CI blackbox staging harness:
+
+```bash
+PYTHONPATH=/path/to/211-AI/ipfs_datasets_py \
+IPFS_DATASETS_AUTO_INSTALL=false \
+IPFS_AUTO_INSTALL=false \
+IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
+python -m pytest tests/test_wallet_production_handoff_blackbox.py -q
+```
+
+This test starts a local HTTP verifier stub, runs
+`python -m wallet_interface.ops --validate-production-readiness` through a real
+subprocess with production-mode env vars, validates a completed signoff JSON
+packet, and verifies that a verifier returning witness data fails the release
+gate.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

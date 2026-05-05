@@ -457,6 +457,7 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "proof_verifier_service": "wallet-verifier.staging.svc",
             "proof_verifier_id": "verifier-http-v1",
             "proof_system": "groth16",
+            "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
         },
         "secret_manager_refs": {
             "ops_health_secret": "secret://staging/wallet/ops-health",

@@ -42,6 +42,7 @@ _SIGNOFF_REQUIRED_ENVIRONMENT_FIELDS = (
     "proof_verifier_service",
     "proof_verifier_id",
     "proof_system",
+    "retention_policy_version",
 )
 
 _SIGNOFF_REQUIRED_SECRET_REFS = (
@@ -971,11 +972,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--skip-proof-contract",
         action="store_true",
         help="Skip location-region verifier prove/verify during --validate-production-readiness.",
-    )
-    parser.add_argument(
-        "--skip-distance-proof-contract",
-        action="store_true",
-        help="Skip location-distance verifier prove/verify during --validate-production-readiness.",
     )
     parser.add_argument(
         "--skip-distance-proof-contract",

@@ -340,7 +340,8 @@ python -m pytest \
   ipfs_datasets_py/tests/unit/test_data_wallet.py \
   ipfs_datasets_py/tests/mcp/test_wallet_tools.py \
   ipfs_datasets_py/tests/mcp/unit/test_hierarchical_tool_manager.py \
-  tests/test_wallet_interface_api.py -q
+  tests/test_wallet_interface_api.py \
+  tests/test_wallet_production_handoff_blackbox.py -q
 
 python -m compileall -q wallet_interface ipfs_datasets_py/ipfs_datasets_py/wallet
 cd wallet_interface/ui && npm run build
