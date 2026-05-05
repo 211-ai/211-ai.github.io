@@ -124,7 +124,16 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "create_service_plan"
   ],
   shelter: [...commonReadTools, "search_211_services", "answer_211_question"],
-  "recipient-access": [...commonReadTools, "approve_access_request", "reject_access_request"],
+  "recipient-access": [
+    ...commonReadTools,
+    "record_controller_approval",
+    "approve_access_request",
+    "reject_access_request",
+    "revoke_access_request",
+    "analyze_granted_record",
+    "view_granted_record",
+    "delegate_grant"
+  ],
   "benefits-protection": [...commonReadTools, "search_211_services", "answer_211_question"],
   analytics: commonReadTools,
   "proof-center": [...commonReadTools, "create_location_region_proof"],
@@ -247,6 +256,16 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.disclosure_scopes.set"
   },
+  record_controller_approval: {
+    title: "Record controller approval",
+    permissionLevel: "wallet_write",
+    surfaces: ["recipient-access"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.access_request.controller_approval"
+  },
   approve_access_request: {
     title: "Approve access request",
     permissionLevel: "wallet_write",
@@ -266,6 +285,46 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.access_request.reject"
+  },
+  revoke_access_request: {
+    title: "Revoke access request",
+    permissionLevel: "wallet_write",
+    surfaces: ["recipient-access"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.access_request.revoke"
+  },
+  analyze_granted_record: {
+    title: "Analyze granted record",
+    permissionLevel: "wallet_write",
+    surfaces: ["recipient-access"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.grant_record.analyze"
+  },
+  view_granted_record: {
+    title: "View granted record",
+    permissionLevel: "wallet_write",
+    surfaces: ["recipient-access"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.grant_record.view"
+  },
+  delegate_grant: {
+    title: "Delegate grant",
+    permissionLevel: "wallet_write",
+    surfaces: ["recipient-access"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.grant.delegate"
   },
   create_location_region_proof: {
     title: "Create location proof",

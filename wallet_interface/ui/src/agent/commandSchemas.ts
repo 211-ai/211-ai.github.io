@@ -23,8 +23,13 @@ export const AGENT_COMMAND_NAMES = [
   "update_registration_draft",
   "update_check_in_policy",
   "set_disclosure_scopes",
+  "record_controller_approval",
   "approve_access_request",
   "reject_access_request",
+  "revoke_access_request",
+  "analyze_granted_record",
+  "view_granted_record",
+  "delegate_grant",
   "create_location_region_proof",
   "create_verified_export_bundle",
   "refresh_wallet_audit"
@@ -146,6 +151,49 @@ export interface SetDisclosureScopesCommandInput {
 export interface AccessRequestDecisionCommandInput {
   requestId: string;
   reason?: string;
+}
+
+export interface RecordControllerApprovalCommandInput {
+  requestId: string;
+}
+
+export interface RevokeAccessRequestCommandInput {
+  requestId: string;
+  reason?: string;
+}
+
+export const RECIPIENT_ANALYSIS_MODES = ["summary", "redacted", "vector", "extract-text", "form"] as const;
+export type RecipientAnalysisMode = (typeof RECIPIENT_ANALYSIS_MODES)[number];
+
+export interface AnalyzeGrantedRecordCommandInput {
+  grantId?: string;
+  receiptId?: string;
+  recordId?: string;
+  mode?: RecipientAnalysisMode;
+  maxChars?: number;
+  maxBytes?: number;
+  chunkSizeWords?: number;
+  maxFields?: number;
+  useOcr?: boolean;
+  userPresent?: boolean;
+}
+
+export interface ViewGrantedRecordCommandInput {
+  grantId?: string;
+  receiptId?: string;
+  recordId?: string;
+  userPresent?: boolean;
+}
+
+export interface DelegateGrantCommandInput {
+  grantId?: string;
+  receiptId?: string;
+  audienceDid: string;
+  audienceKeyHex?: string;
+  ability?: string;
+  purpose?: string;
+  expiresAt?: string;
+  resources?: string[];
 }
 
 export interface CreateLocationRegionProofCommandInput {
@@ -332,6 +380,68 @@ export function isAccessRequestDecisionCommandInput(value: unknown): value is Ac
   );
 }
 
+export function isRecordControllerApprovalCommandInput(value: unknown): value is RecordControllerApprovalCommandInput {
+  return isRecord(value) && isString(value.requestId) && value.requestId.trim().length > 0;
+}
+
+export function isRevokeAccessRequestCommandInput(value: unknown): value is RevokeAccessRequestCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.requestId) &&
+    value.requestId.trim().length > 0 &&
+    isOptional(value.reason, isString)
+  );
+}
+
+function hasGrantReference(value: Record<string, unknown>): boolean {
+  return (
+    (isString(value.grantId) && value.grantId.trim().length > 0) ||
+    (isString(value.receiptId) && value.receiptId.trim().length > 0)
+  );
+}
+
+function isRecipientAnalysisMode(value: unknown): value is RecipientAnalysisMode {
+  return value === undefined || isStringOneOf(RECIPIENT_ANALYSIS_MODES, value);
+}
+
+export function isAnalyzeGrantedRecordCommandInput(value: unknown): value is AnalyzeGrantedRecordCommandInput {
+  return (
+    isRecord(value) &&
+    hasGrantReference(value) &&
+    isOptional(value.recordId, isString) &&
+    isRecipientAnalysisMode(value.mode) &&
+    isOptionalLimitedNumber(value.maxChars, 1, 100_000) &&
+    isOptionalLimitedNumber(value.maxBytes, 1, 10_000_000) &&
+    isOptionalLimitedNumber(value.chunkSizeWords, 10, 2_000) &&
+    isOptionalLimitedNumber(value.maxFields, 1, 1_000) &&
+    isOptional(value.useOcr, isBoolean) &&
+    isOptional(value.userPresent, isBoolean)
+  );
+}
+
+export function isViewGrantedRecordCommandInput(value: unknown): value is ViewGrantedRecordCommandInput {
+  return (
+    isRecord(value) &&
+    hasGrantReference(value) &&
+    isOptional(value.recordId, isString) &&
+    isOptional(value.userPresent, isBoolean)
+  );
+}
+
+export function isDelegateGrantCommandInput(value: unknown): value is DelegateGrantCommandInput {
+  return (
+    isRecord(value) &&
+    hasGrantReference(value) &&
+    isString(value.audienceDid) &&
+    value.audienceDid.trim().length > 0 &&
+    isOptional(value.audienceKeyHex, isString) &&
+    isOptional(value.ability, isString) &&
+    isOptional(value.purpose, isString) &&
+    isOptional(value.expiresAt, isString) &&
+    isOptional(value.resources, isStringArray)
+  );
+}
+
 export function isCreateLocationRegionProofCommandInput(value: unknown): value is CreateLocationRegionProofCommandInput {
   return (
     isRecord(value) &&
@@ -471,6 +581,14 @@ export const commandSchemas = {
     isInput: isSetDisclosureScopesCommandInput,
     isOutput: isCommandOutput
   },
+  record_controller_approval: {
+    name: "record_controller_approval",
+    description: "Record one required controller approval toward an access request threshold.",
+    inputSchema: objectSchema({ requestId: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRecordControllerApprovalCommandInput,
+    isOutput: isCommandOutput
+  },
   approve_access_request: {
     name: "approve_access_request",
     description: "Approve a pending wallet access request.",
@@ -485,6 +603,63 @@ export const commandSchemas = {
     inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
     outputSchema: commandOutputSchema,
     isInput: isAccessRequestDecisionCommandInput,
+    isOutput: isCommandOutput
+  },
+  revoke_access_request: {
+    name: "revoke_access_request",
+    description: "Revoke an active wallet access grant created from an access request.",
+    inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRevokeAccessRequestCommandInput,
+    isOutput: isCommandOutput
+  },
+  analyze_granted_record: {
+    name: "analyze_granted_record",
+    description: "Create an allowed derived analysis artifact from a record covered by an active grant.",
+    inputSchema: objectSchema({
+      grantId: stringProperty,
+      receiptId: stringProperty,
+      recordId: stringProperty,
+      mode: { type: "string", enum: RECIPIENT_ANALYSIS_MODES },
+      maxChars: numberProperty,
+      maxBytes: numberProperty,
+      chunkSizeWords: numberProperty,
+      maxFields: numberProperty,
+      useOcr: booleanProperty,
+      userPresent: booleanProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isAnalyzeGrantedRecordCommandInput,
+    isOutput: isCommandOutput
+  },
+  view_granted_record: {
+    name: "view_granted_record",
+    description: "View plaintext for a record covered by an active grant with decrypt ability.",
+    inputSchema: objectSchema({
+      grantId: stringProperty,
+      receiptId: stringProperty,
+      recordId: stringProperty,
+      userPresent: booleanProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isViewGrantedRecordCommandInput,
+    isOutput: isCommandOutput
+  },
+  delegate_grant: {
+    name: "delegate_grant",
+    description: "Delegate one allowed ability from an active grant to another recipient DID.",
+    inputSchema: objectSchema({
+      grantId: stringProperty,
+      receiptId: stringProperty,
+      audienceDid: stringProperty,
+      audienceKeyHex: stringProperty,
+      ability: stringProperty,
+      purpose: stringProperty,
+      expiresAt: stringProperty,
+      resources: stringArrayProperty
+    }, ["audienceDid"]),
+    outputSchema: commandOutputSchema,
+    isInput: isDelegateGrantCommandInput,
     isOutput: isCommandOutput
   },
   create_location_region_proof: {

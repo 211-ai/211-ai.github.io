@@ -103,6 +103,24 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     };
   }
 
+  const accessRequestTool = planRecipientAccessRequestTool(lower, content);
+  if (accessRequestTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: accessRequestTool.title,
+      tools: withToolSurface(input.context, [accessRequestTool])
+    };
+  }
+
+  const grantTool = planRecipientGrantTool(lower, content);
+  if (grantTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: grantTool.title,
+      tools: withToolSurface(input.context, [grantTool])
+    };
+  }
+
   const serviceDetailId = parseServiceId(lower, content, input.context, "open");
   if (serviceDetailId) {
     return {
@@ -244,6 +262,77 @@ function withToolSurface(context: SurfaceContext, tools: AgentPlannedTool[]): Ag
   }
   const route = firstTool.name === "refresh_wallet_audit" ? "audit" : getToolDefinition(firstTool.name).surfaces[0];
   return [{ name: "navigate", input: { route }, title: getToolDefinition("navigate").title }, ...tools];
+}
+
+function planRecipientAccessRequestTool(lower: string, original: string): AgentPlannedTool | undefined {
+  const requestId = parseAccessRequestId(original);
+  if (!requestId || !/\b(access|request|approval|approve|reject|revoke)\b/.test(lower)) return undefined;
+
+  if (/\b(record|add|log)\b.*\b(controller\s+)?approval\b|\b(controller\s+)?approval\b.*\b(record|add|log)\b/.test(lower)) {
+    return tool("record_controller_approval", { requestId });
+  }
+  if (/\bapprove\b/.test(lower)) {
+    return tool("approve_access_request", { requestId });
+  }
+  if (/\b(reject|deny)\b/.test(lower)) {
+    return tool("reject_access_request", { requestId });
+  }
+  if (/\b(revoke|turn off|remove access)\b/.test(lower)) {
+    return tool("revoke_access_request", { requestId });
+  }
+  return undefined;
+}
+
+function planRecipientGrantTool(lower: string, original: string): AgentPlannedTool | undefined {
+  const grantReference = parseGrantReference(original);
+  if (!grantReference || !/\b(grant|receipt|record|document|file|delegate|analy[sz]e|view|open)\b/.test(lower)) {
+    return undefined;
+  }
+
+  if (/\bdelegate\b/.test(lower)) {
+    const audienceDid = parseDid(original);
+    if (!audienceDid) return undefined;
+    const ability = /\bdecrypt|view|open\b/.test(lower) ? "record/decrypt" : "record/analyze";
+    return tool("delegate_grant", { ...grantReference, audienceDid, ability });
+  }
+  if (/\b(analy[sz]e|summary|summarize|redact|vector|extract|form)\b/.test(lower)) {
+    return tool("analyze_granted_record", { ...grantReference, mode: parseAnalysisMode(lower) });
+  }
+  if (/\b(view|open|decrypt|read)\b/.test(lower)) {
+    return tool("view_granted_record", grantReference);
+  }
+  return undefined;
+}
+
+function tool(name: AgentCommandName, input: unknown): AgentPlannedTool {
+  return {
+    name,
+    input,
+    title: getToolDefinition(name).title
+  };
+}
+
+function parseAccessRequestId(original: string): string | undefined {
+  return original.match(/\baccess[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^access(?![-_:])/i, "access-");
+}
+
+function parseGrantReference(original: string): { grantId?: string; receiptId?: string } | undefined {
+  const receiptId = original.match(/\breceipt[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  if (receiptId) return { receiptId: receiptId.replace(/^receipt(?![-_:])/i, "receipt-") };
+  const grantId = original.match(/\bgrant[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  return grantId ? { grantId: grantId.replace(/^grant(?![-_:])/i, "grant-") } : undefined;
+}
+
+function parseDid(original: string): string | undefined {
+  return original.match(/\bdid:[a-zA-Z0-9._:%-]+:[^\s,;]+/i)?.[0];
+}
+
+function parseAnalysisMode(lower: string) {
+  if (/\bform\b/.test(lower)) return "form";
+  if (/\bextract|text\b/.test(lower)) return "extract-text";
+  if (/\bvector|profile\b/.test(lower)) return "vector";
+  if (/\bredact|redacted\b/.test(lower)) return "redacted";
+  return "summary";
 }
 
 function parseRouteTarget(lower: string): RouteId | undefined {
