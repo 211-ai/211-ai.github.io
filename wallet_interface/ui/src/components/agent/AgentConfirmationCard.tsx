@@ -214,7 +214,15 @@ function summarizeChange(confirmation: AgentConfirmationRequest, toolCall?: Agen
     return {
       before: "No new location-region proof is created.",
       after: `A proof will be created for ${readString(input.regionLabel, "the selected region")}.`,
-      details: summarizeNamedFields(input, ["verifier", "recordId"])
+      details: summarizeNamedFields(input, ["claim", "verifier", "witnessLabel", "recordId"])
+    };
+  }
+
+  if (toolName === "create_proof" && isRecord(input)) {
+    return {
+      before: "No proof request is staged.",
+      after: `A proof will be staged for ${readString(input.claim, "the selected claim")}.`,
+      details: summarizeNamedFields(input, ["claim", "verifier", "witnessLabel", "proofType", "recordId"])
     };
   }
 
