@@ -20,8 +20,10 @@ import {
   rejectAccessRequest as rejectWalletAccessRequest,
   type WalletApiConfig
 } from "../services/walletApi";
-import { answer211InfoQuestion, search211Info } from "../services/graphRagService";
-import type { SearchResult } from "../lib/graphrag";
+import {
+  answerServiceNavigationQuestion,
+  searchServiceNavigation,
+} from "../agent/serviceNavigationAgent";
 import { getRouteFromHash, setLocationRouteHash } from "./appState";
 import type {
   AccessRequestDecisionCommandInput,
@@ -212,29 +214,6 @@ function uniqueStrings(values: string[]): string[] {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
-function evidenceBundleFromResults(query: string, results: SearchResult[]): EvidenceBundle {
-  const generatedAt = new Date().toISOString();
-  return {
-    id: `evidence-${generatedAt}-${Math.random().toString(36).slice(2, 8)}`,
-    query,
-    generatedAt,
-    items: results.map((result) => ({
-      id: result.docId,
-      title: result.document.title || result.document.provider_name || result.docId,
-      source: result.document.source_url || result.document.host || "211 corpus",
-      snippet: result.snippet,
-      score: result.score,
-      citation: {
-        label: result.document.title || result.docId,
-        url: result.document.source_url || undefined,
-        contentCid: result.contentCid,
-        pageCid: result.pageCid,
-        docId: result.docId
-      }
-    }))
-  };
-}
-
 function surfaceContextFromState(state: AppActionState, input: ReadSurfaceContextCommandInput = {}): SurfaceContext {
   const route = input.route ?? state.activeRoute ?? getRouteFromHash();
   const includePrivateContext = Boolean(input.includePrivateContext && state.privateContextAllowed);
@@ -329,12 +308,10 @@ async function search211ServicesAction(
   _runtime: AppActionRuntime,
   input: Search211ServicesCommandInput
 ): Promise<AppActionResult> {
-  const query = [input.query, input.city, input.category].filter(Boolean).join(" ");
-  const results = await search211Info(query, input.limit ?? 8);
-  const evidenceBundle = evidenceBundleFromResults(input.query, results);
-  return success("search_211_services", `Found ${results.length} service records for "${input.query}".`, {
-    evidenceBundle,
-    recordIds: results.map((result) => result.docId)
+  const response = await searchServiceNavigation(input);
+  return success("search_211_services", response.summary, {
+    evidenceBundle: response.evidenceBundle,
+    recordIds: response.recordIds
   });
 }
 
@@ -342,11 +319,10 @@ async function answer211QuestionAction(
   _runtime: AppActionRuntime,
   input: Answer211QuestionCommandInput
 ): Promise<AppActionResult> {
-  const answer = await answer211InfoQuestion(input.question, { useLocalModel: input.useLocalModel });
-  const evidenceBundle = evidenceBundleFromResults(input.question, answer.evidence.results);
-  return success("answer_211_question", answer.answer, {
-    evidenceBundle,
-    recordIds: answer.evidence.results.map((result) => result.docId)
+  const response = await answerServiceNavigationQuestion(input);
+  return success("answer_211_question", response.answer, {
+    evidenceBundle: response.evidenceBundle,
+    recordIds: response.recordIds
   });
 }
 
