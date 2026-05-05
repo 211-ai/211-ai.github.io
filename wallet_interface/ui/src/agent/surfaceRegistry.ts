@@ -153,7 +153,13 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
   ],
   "benefits-protection": [...commonReadTools, "search_211_services", "answer_211_question"],
   analytics: commonReadTools,
-  "proof-center": [...commonReadTools, "create_location_region_proof"],
+  "proof-center": [
+    ...commonReadTools,
+    "create_proof",
+    "create_location_region_proof",
+    "explain_proof_receipt",
+    "verify_proof_status"
+  ],
   exports: [...commonReadTools, "create_verified_export_bundle"],
   security: commonReadTools,
   audit: [...commonReadTools, "refresh_wallet_audit"]
@@ -431,6 +437,34 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: true,
     auditEventType: "agent.proof.location_region.create"
+  },
+  create_proof: {
+    title: "Create proof",
+    permissionLevel: "wallet_write",
+    surfaces: ["proof-center"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: true,
+    auditEventType: "agent.proof.create"
+  },
+  explain_proof_receipt: {
+    title: "Explain proof receipt",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["proof-center"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  verify_proof_status: {
+    title: "Verify proof status",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["proof-center"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
   },
   create_verified_export_bundle: {
     title: "Create verified export bundle",
