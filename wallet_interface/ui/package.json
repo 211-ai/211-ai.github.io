@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "clean:visual-artifacts": "node -e \"const fs=require('fs'); const root='artifacts/ui-screenshots/latest'; fs.rmSync(root,{recursive:true,force:true}); fs.mkdirSync(root,{recursive:true})\"",
+    "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
     "pretest": "npm run clean:visual-artifacts",
     "test": "playwright test",
     "test:smoke": "playwright test tests/smoke.spec.ts",

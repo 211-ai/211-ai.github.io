@@ -64,7 +64,7 @@ Track guide:
 - Acceptance: High-value GUI actions can be invoked through shared typed operations that return action results and confirmation metadata.
 
 ## AGENT-013 GUI Action Convergence Tests
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P0
 - Track: platform
