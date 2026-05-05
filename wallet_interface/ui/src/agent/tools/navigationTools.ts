@@ -2,8 +2,9 @@ import type { RouteId } from "../../models/abby";
 import { appRoutes, getRouteFromHash, setLocationRouteHash } from "../../app/appState";
 import type { AppActionResult, AppActionRuntime, AppActionState } from "../../app/appActions";
 import type { NavigateCommandInput, ReadSurfaceContextCommandInput } from "../commandSchemas";
-import { getRouteLabel } from "../surfaceRegistry";
+import { getRouteLabel, listContextProvidersForSurface } from "../surfaceRegistry";
 import type { SurfaceContext } from "../types";
+import { hasPermissionLevel } from "../types";
 
 type RouteSummaryBuilder = (state: AppActionState) => string;
 
@@ -88,9 +89,7 @@ export function buildSafeSurfaceContext(
 ): SurfaceContext {
   const route = resolveSurfaceRoute(state, input);
   const walletUnlocked = state.walletUnlocked ?? true;
-  const includePrivateContext = Boolean(
-    input.includePrivateContext && state.privateContextAllowed && walletUnlocked
-  );
+  const includePrivateContext = canReadPrivateSurfaceContext(route, state, input, walletUnlocked);
   const visibleRecordIds = includePrivateContext ? getVisibleRecordIds(route, state) : undefined;
   const visibleServiceDocIds = getVisibleServiceDocIds(route);
 
@@ -288,6 +287,23 @@ function isServiceRoute(route: RouteId): boolean {
 
 function routeHasVisibleWalletRecords(route: RouteId): boolean {
   return route === "uploads";
+}
+
+function canReadPrivateSurfaceContext(
+  route: RouteId,
+  state: AppActionState,
+  input: ReadSurfaceContextCommandInput,
+  walletUnlocked: boolean
+): boolean {
+  if (!input.includePrivateContext || !state.privateContextAllowed || !walletUnlocked) {
+    return false;
+  }
+  if (!hasPermissionLevel(state.permissionLevel ?? "wallet_write", "wallet_private")) {
+    return false;
+  }
+  return listContextProvidersForSurface(route, "wallet_private").some(
+    (provider) => provider.permissionLevel === "wallet_private"
+  );
 }
 
 function pendingAccessRequestCount(state: AppActionState): number {
