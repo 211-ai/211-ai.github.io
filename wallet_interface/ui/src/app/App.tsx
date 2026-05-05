@@ -23,9 +23,9 @@ import {
 } from "lucide-react";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
-import type { AgentMessage } from "../agent/types";
+import type { AgentMessage, EvidenceBundle } from "../agent/types";
 import { getRouteLabel, listToolsForSurface } from "../agent/surfaceRegistry";
-import { answer211InfoQuestion } from "../services/graphRagService";
+import { answerServiceNavigationQuestion } from "../agent/serviceNavigationAgent";
 import {
   CheckInChannel,
   AuditEvent,
@@ -121,7 +121,8 @@ function createAgentMessage(
   sessionId: string,
   role: AgentMessage["role"],
   content: string,
-  status: AgentMessage["status"] = "complete"
+  status: AgentMessage["status"] = "complete",
+  extra: Partial<AgentMessage> = {}
 ): AgentMessage {
   const createdAt = new Date().toISOString();
   return {
@@ -130,7 +131,8 @@ function createAgentMessage(
     role,
     content,
     createdAt,
-    status
+    status,
+    ...extra
   };
 }
 
@@ -140,7 +142,20 @@ function isServiceNavigationQuestion(message: string): boolean {
   );
 }
 
-async function createReadOnlyAgentResponse(message: string, activeRoute: RouteId): Promise<string> {
+function upsertEvidenceBundles(current: EvidenceBundle[], incoming: EvidenceBundle[]): EvidenceBundle[] {
+  const byId = new Map(current.map((bundle) => [bundle.id, bundle]));
+  for (const bundle of incoming) {
+    byId.set(bundle.id, bundle);
+  }
+  return Array.from(byId.values());
+}
+
+interface ReadOnlyAgentResponse {
+  content: string;
+  evidenceBundles?: EvidenceBundle[];
+}
+
+async function createReadOnlyAgentResponse(message: string, activeRoute: RouteId): Promise<ReadOnlyAgentResponse> {
   const lowerMessage = message.toLowerCase();
   const routeLabel = getRouteLabel(activeRoute);
 
@@ -151,23 +166,36 @@ async function createReadOnlyAgentResponse(message: string, activeRoute: RouteId
     const toolSummary = availableReadTools.length
       ? ` Available read-only support here: ${availableReadTools.join(", ")}.`
       : "";
-    return `You are on ${routeLabel}.${toolSummary} I can explain the screen and answer public 211 service questions without changing wallet data.`;
+    return {
+      content: `You are on ${routeLabel}.${toolSummary} I can explain the screen and answer public 211 service questions without changing wallet data.`
+    };
   }
 
   if (/\b(go to|open|navigate|show me)\b/.test(lowerMessage)) {
-    return `This drawer is read-only in this slice, so I will not move you automatically. Use the navigation controls to open the screen you want, and I can stay open while you work.`;
+    return {
+      content:
+        "This drawer is read-only in this slice, so I will not move you automatically. Use the navigation controls to open the screen you want, and I can stay open while you work."
+    };
   }
 
   if (isServiceNavigationQuestion(message)) {
     try {
-      const answer = await answer211InfoQuestion(message, { useLocalModel: false });
-      return answer.answer;
+      const answer = await answerServiceNavigationQuestion({ question: message, useLocalModel: false });
+      return {
+        content: answer.answer,
+        evidenceBundles: [answer.evidenceBundle]
+      };
     } catch {
-      return "I could not read the local 211 corpus for that question. You can still ask about the current screen, or use the Services screen to browse public service information.";
+      return {
+        content:
+          "I could not read the local 211 corpus for that question. You can still ask about the current screen, or use the Services screen to browse public service information."
+      };
     }
   }
 
-  return `I can help with public 211 service questions and explain the current app screen. You are on ${routeLabel}. This read-only drawer will not change wallet records or app settings.`;
+  return {
+    content: `I can help with public 211 service questions and explain the current app screen. You are on ${routeLabel}. This read-only drawer will not change wallet records or app settings.`
+  };
 }
 
 const routeIcons: Record<RouteId, typeof Home> = {
@@ -311,6 +339,7 @@ export function App() {
       "I can answer public 211 service questions and explain the current screen. I will not change wallet data from this read-only chat."
     )
   ]);
+  const [agentEvidenceBundles, setAgentEvidenceBundles] = useState<EvidenceBundle[]>([]);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
 
   async function refreshWalletAccessState() {
@@ -445,7 +474,15 @@ export function App() {
 
     try {
       const response = await createReadOnlyAgentResponse(message, routeAtRequest);
-      setAgentMessages((current) => [...current, createAgentMessage(agentSessionId, "assistant", response)]);
+      if (response.evidenceBundles?.length) {
+        setAgentEvidenceBundles((current) => upsertEvidenceBundles(current, response.evidenceBundles ?? []));
+      }
+      setAgentMessages((current) => [
+        ...current,
+        createAgentMessage(agentSessionId, "assistant", response.content, "complete", {
+          evidenceBundleIds: response.evidenceBundles?.map((bundle) => bundle.id)
+        })
+      ]);
     } catch {
       setAgentMessages((current) => [
         ...current,
@@ -624,6 +661,7 @@ export function App() {
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
+        evidenceBundles={agentEvidenceBundles}
         messages={agentMessages}
         onClose={() => setAgentChatOpen(false)}
         onSend={sendAgentMessage}
