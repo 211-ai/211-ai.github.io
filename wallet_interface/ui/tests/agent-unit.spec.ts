@@ -29,6 +29,7 @@ import {
   buildServiceNavigationNextSteps,
   evidenceBundleFromResults,
 } from "../src/agent/serviceNavigationAgent";
+import { createAgentChatController } from "../src/agent/chatController";
 import type { AgentSurfaceApi } from "../src/agent/surfaceApi";
 import type {
   AgentMessage,
@@ -191,9 +192,17 @@ test.describe("agent unit contracts", () => {
       content: "Open the latest audit history",
       context: createSurfaceContext("home"),
     });
-    expect(auditTurn.tools.map((tool) => tool.name)).toEqual(["navigate", "refresh_wallet_audit"]);
+    expect(auditTurn.tools.map((tool) => tool.name)).toEqual(["navigate", "summarize_audit_events"]);
     expect(auditTurn.tools[0].input).toEqual({ route: "audit" });
     expect(auditTurn.tools[1].input).toEqual({ limit: 25 });
+
+    const auditRefreshTurn = planAgentTurn({
+      content: "Refresh audit activity",
+      context: createSurfaceContext("home"),
+    });
+    expect(auditRefreshTurn.tools.map((tool) => tool.name)).toEqual(["navigate", "refresh_wallet_audit"]);
+    expect(auditRefreshTurn.tools[0].input).toEqual({ route: "audit" });
+    expect(auditRefreshTurn.tools[1].input).toEqual({ limit: 25 });
 
     const saveTurn = planAgentTurn({
       content: "Save this service",
@@ -454,5 +463,23 @@ test.describe("agent unit contracts", () => {
       expect(tool.requiresPrivateContextOptIn).toBe(policy.requiresPrivateContextOptIn);
       expect(tool.permissionLevel as AgentPermissionLevel).toBeTruthy();
     }
+  });
+
+  test("caches chat snapshots until controller state changes", () => {
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home")),
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    const initial = controller.getSnapshot();
+    expect(controller.getSnapshot()).toBe(initial);
+
+    controller.setActiveRoute("exports");
+    const updated = controller.getSnapshot();
+
+    expect(updated).not.toBe(initial);
+    expect(updated.session.activeRoute).toBe("exports");
+    expect(controller.getSnapshot()).toBe(updated);
   });
 });

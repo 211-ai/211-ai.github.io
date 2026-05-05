@@ -883,6 +883,85 @@ assert path.is_dir()
     assert (repo_root / "docs" / "agent.md").read_text(encoding="utf-8") == "implemented in worktree"
 
 
+def test_daemon_relinks_shared_node_modules_before_validation(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    validate_worker = repo_root / "validate_node_modules.py"
+    shared_module = repo_root / "wallet_interface" / "ui" / "node_modules" / "@xenova" / "transformers"
+    repo_root.mkdir(parents=True)
+    shared_module.mkdir(parents=True)
+    (shared_module / "package.json").write_text('{"name":"@xenova/transformers"}\n', encoding="utf-8")
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python validate_node_modules.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text(
+        """
+from pathlib import Path
+import shutil
+
+node_modules = Path("wallet_interface/ui/node_modules")
+if node_modules.is_symlink():
+    node_modules.unlink()
+elif node_modules.exists():
+    shutil.rmtree(node_modules)
+node_modules.mkdir(parents=True)
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validate_worker.write_text(
+        """
+from pathlib import Path
+
+path = Path("wallet_interface/ui/node_modules/@xenova/transformers/package.json")
+assert path.exists()
+assert path.read_text(encoding="utf-8").strip() == '{"name":"@xenova/transformers"}'
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+
+    assert implementation["returncode"] == 0
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["commit_result"]["committed"] is True
+    assert implementation["merge_result"]["merged"] is True
+
+
 def test_daemon_replaces_preexisting_shared_node_modules_directory_with_symlink(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"

@@ -105,6 +105,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
   let lastError: AgentChatError | undefined;
   let retryRequest: RetryRequest | undefined;
   let progress: AgentChatProgressUpdate[] = [];
+  let cachedSnapshot: AgentChatSnapshot | undefined;
   let session: AgentSession = {
     id: sessionId,
     title: options.title ?? "Abby assistant",
@@ -151,6 +152,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
   }
 
   function emit() {
+    cachedSnapshot = undefined;
     for (const listener of listeners) {
       listener();
     }
@@ -522,7 +524,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
   }
 
   function getSnapshot(): AgentChatSnapshot {
-    return {
+    if (cachedSnapshot) return cachedSnapshot;
+    cachedSnapshot = {
       session,
       messages: session.messages,
       progress,
@@ -531,6 +534,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       lastError,
       canRetry: Boolean(retryRequest)
     };
+    return cachedSnapshot;
   }
 
   return {
