@@ -136,6 +136,12 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
   const securityTurn = planSecurityTurn(input.context, lower, content);
   if (securityTurn) return securityTurn;
 
+  const analyticsTurn = planAnalyticsTurn(input.context, lower, content);
+  if (analyticsTurn) return analyticsTurn;
+
+  const auditTurn = planAuditTurn(input.context, lower, content);
+  if (auditTurn) return auditTurn;
+
   const serviceDetailId = parseServiceId(lower, content, input.context, "open");
   if (serviceDetailId) {
     return {
@@ -414,6 +420,115 @@ function planSecurityTurn(context: SurfaceContext, lower: string, original: stri
   return undefined;
 }
 
+function planAnalyticsTurn(context: SurfaceContext, lower: string, original: string): AgentPlannedTurn | undefined {
+  if (!/\b(analytics|group facts|privacy budget|epsilon|cohort|study|consent)\b/.test(lower)) return undefined;
+
+  const studyId = parseStudyId(original);
+  if (/\b(privacy budget|epsilon|cohort|explain|what|how)\b/.test(lower)) {
+    return {
+      intentKind: "privacy_question",
+      summary: "Explain analytics privacy budget.",
+      tools: withToolSurface(context, [tool("explain_analytics_privacy_budget", studyId ? { studyId } : {})])
+    };
+  }
+
+  if (/\b(turn off|unselect|remove|disable|opt out)\b/.test(lower)) {
+    if (!studyId) {
+      return {
+        intentKind: "privacy_question",
+        summary: "Clarify analytics study selection.",
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "analytics" }, title: getToolDefinition("navigate").title }]),
+        response: "Which analytics study should I turn off? Send the study ID or title."
+      };
+    }
+    return {
+      intentKind: "privacy_question",
+      summary: "Unselect analytics study.",
+      tools: withToolSurface(context, [tool("unselect_analytics_study", { studyId })])
+    };
+  }
+
+  if (/\b(select|stage|turn on|enable|opt in|allow)\b/.test(lower) && !/\b(submit|confirm|final)\b/.test(lower)) {
+    if (!studyId) {
+      return {
+        intentKind: "privacy_question",
+        summary: "Clarify analytics study selection.",
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "analytics" }, title: getToolDefinition("navigate").title }]),
+        response: "Which analytics study should I stage for consent? Send the study ID or title."
+      };
+    }
+    return {
+      intentKind: "privacy_question",
+      summary: "Select analytics study.",
+      tools: withToolSurface(context, [tool("select_analytics_study", { studyId })])
+    };
+  }
+
+  if (/\b(submit|consent|confirm|final)\b/.test(lower)) {
+    if (!studyId) {
+      return {
+        intentKind: "privacy_question",
+        summary: "Clarify analytics consent.",
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "analytics" }, title: getToolDefinition("navigate").title }]),
+        response: "Which analytics study should I submit consent for? Send the study ID or title."
+      };
+    }
+    return {
+      intentKind: "privacy_question",
+      summary: "Submit analytics consent.",
+      tools: withToolSurface(context, [
+        tool("submit_analytics_consent", {
+          studyId,
+          expiresAt: parseNamedValue(original, "expires") ?? parseNamedValue(original, "expires at") ?? undefined,
+          stageOnly: /\bstage|prepare\b/.test(lower)
+        })
+      ])
+    };
+  }
+
+  return navigationTurn("analytics", "privacy_question");
+}
+
+function planAuditTurn(context: SurfaceContext, lower: string, original: string): AgentPlannedTurn | undefined {
+  if (!/\b(audit|history|activity log|event)\b/.test(lower)) return undefined;
+
+  const eventId = parseAuditEventId(original);
+  if (eventId && /\b(explain|what|show|details?|event)\b/.test(lower)) {
+    return {
+      intentKind: "wallet_action",
+      summary: "Explain audit event.",
+      tools: withToolSurface(context, [tool("explain_audit_event", { eventId })])
+    };
+  }
+
+  if (/\b(summarize|summary|overview|history)\b/.test(lower)) {
+    return {
+      intentKind: "wallet_action",
+      summary: "Summarize audit history.",
+      tools: withToolSurface(context, [tool("summarize_audit_events", buildAuditFilterInput(original))])
+    };
+  }
+
+  if (/\b(search|find|filter|look for|lookup)\b/.test(lower)) {
+    const input = buildAuditFilterInput(original, lower);
+    if (!hasAuditFilter(input)) {
+      return {
+        intentKind: "wallet_action",
+        summary: "Clarify audit search.",
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "audit" }, title: getToolDefinition("navigate").title }]),
+        response: "What audit event text, actor, action, resource, decision, or grant should I search for?"
+      };
+    }
+    return {
+      intentKind: "wallet_action",
+      summary: "Search audit events.",
+      tools: withToolSurface(context, [tool("search_audit_events", input)])
+    };
+  }
+
+  return undefined;
+}
+
 function planRecipientAccessRequestTool(lower: string, original: string): AgentPlannedTool | undefined {
   const requestId = parseAccessRequestId(original);
   if (!requestId || !/\b(access|request|approval|approve|reject|revoke)\b/.test(lower)) return undefined;
@@ -575,6 +690,41 @@ function parseProofReference(original: string): { proofId?: string; receiptId?: 
 
 function parseBundleId(original: string): string | undefined {
   return original.match(/\bexport[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^export(?![-_:])/i, "export-");
+}
+
+function parseStudyId(original: string): string | undefined {
+  const explicit = original.match(/\bstudy[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  if (explicit) return explicit.replace(/^study(?![-_:])/i, "study-");
+  return parseNamedValue(original, "study") ?? parseNamedValue(original, "analytics study");
+}
+
+function parseAuditEventId(original: string): string | undefined {
+  const explicit = original.match(/\b(?:aud|audit-event|audit)[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  if (!explicit) return undefined;
+  if (/^aud[-_:]/i.test(explicit)) return explicit;
+  return explicit.replace(/^audit(?:-event)?(?![-_:])/i, "aud-");
+}
+
+function buildAuditFilterInput(original: string, lower?: string): Record<string, unknown> {
+  const query =
+    parseNamedValue(original, "query") ??
+    parseNamedValue(original, "for") ??
+    (lower ? lower.replace(/\b(search|find|filter|look for|lookup|audit|events?|history|activity log)\b/g, " ").trim() : undefined);
+  return {
+    ...(query ? { query } : {}),
+    ...(parseNamedValue(original, "actor") ? { actor: parseNamedValue(original, "actor") } : {}),
+    ...(parseNamedValue(original, "action") ? { action: parseNamedValue(original, "action") } : {}),
+    ...(parseNamedValue(original, "resource") ? { resource: parseNamedValue(original, "resource") } : {}),
+    ...(parseNamedValue(original, "decision") ? { decision: parseNamedValue(original, "decision") } : {}),
+    ...(parseGrantReference(original)?.grantId ? { grantId: parseGrantReference(original)?.grantId } : {}),
+    limit: 25
+  };
+}
+
+function hasAuditFilter(input: Record<string, unknown>): boolean {
+  return ["query", "actor", "action", "resource", "decision", "grantId"].some(
+    (key) => typeof input[key] === "string" && String(input[key]).trim().length > 0
+  );
 }
 
 function parseRecordId(original: string): string | undefined {
