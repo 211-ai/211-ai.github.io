@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T22:57:20.264Z",
+  "generatedAt": "2026-05-04T19:41:07.715Z",
   "screenshots": [
     {
       "id": "home",
@@ -120,13 +120,13 @@
       "title": "Emergency contacts",
       "state": "default",
       "goals": [
-        "The add shelter or group area should be at the top of the screen.",
-        "The add person form should show sharing choices before saving.",
-        "Saved contacts should appear underneath the add controls and stay easy to scan."
+        "Recipients should be scannable with verification and scope status.",
+        "Adding a recipient should not require horizontal scrolling.",
+        "Removal controls should not visually dominate the emergency setup task."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts.\nViewport: mobile.\nState: default.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The add shelter or group area should be at the top of the screen.\n- The add person form should show sharing choices before saving.\n- Saved contacts should appear underneath the add controls and stay easy to scan."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts.\nViewport: mobile.\nState: default.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Recipients should be scannable with verification and scope status.\n- Adding a recipient should not require horizontal scrolling.\n- Removal controls should not visually dominate the emergency setup task."
     },
     {
       "id": "contacts-add-recipient-draft",
@@ -136,81 +136,39 @@
       "goals": [
         "The add-recipient form should be easy to complete on mobile.",
         "Contact method fields should fit and remain labeled.",
-        "The new-person sharing checkboxes should be visible and readable before save."
+        "Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts-add-recipient-draft.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts add-recipient form.\nViewport: mobile.\nState: draft recipient.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The add-recipient form should be easy to complete on mobile.\n- Contact method fields should fit and remain labeled.\n- The new-person sharing checkboxes should be visible and readable before save."
-    },
-    {
-      "id": "contacts-add-person-sharing-some-off",
-      "path": "/#/contacts",
-      "title": "Emergency contacts add-recipient form with sharing off",
-      "state": "draft recipient with medical and housing sharing off",
-      "goals": [
-        "Unchecked sharing choices should be visible without feeling scary.",
-        "The form should still fit cleanly on mobile after several fields are filled.",
-        "The user should be able to review choices before adding the person."
-      ],
-      "viewport": "mobile",
-      "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts-add-person-sharing-some-off.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts add-recipient form with sharing off.\nViewport: mobile.\nState: draft recipient with medical and housing sharing off.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Unchecked sharing choices should be visible without feeling scary.\n- The form should still fit cleanly on mobile after several fields are filled.\n- The user should be able to review choices before adding the person."
-    },
-    {
-      "id": "contacts-edit-sharing",
-      "path": "/#/contacts",
-      "title": "Emergency contacts edit sharing panel",
-      "state": "saved contact sharing editor open",
-      "goals": [
-        "A saved contact should open into an obvious sharing edit panel.",
-        "Checkboxes should have a clear group heading and readable labels.",
-        "Save and cancel actions should be reachable without horizontal scrolling."
-      ],
-      "viewport": "mobile",
-      "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts-edit-sharing.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts edit sharing panel.\nViewport: mobile.\nState: saved contact sharing editor open.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- A saved contact should open into an obvious sharing edit panel.\n- Checkboxes should have a clear group heading and readable labels.\n- Save and cancel actions should be reachable without horizontal scrolling."
-    },
-    {
-      "id": "contacts-edit-sharing-some-off",
-      "path": "/#/contacts",
-      "title": "Emergency contacts edit sharing panel with choices off",
-      "state": "saved contact medical and housing sharing off",
-      "goals": [
-        "Unchecked saved-contact sharing choices should be visually clear.",
-        "The selected-count badge should update near the panel heading.",
-        "The edit panel should remain compact enough for mobile review."
-      ],
-      "viewport": "mobile",
-      "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts-edit-sharing-some-off.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts edit sharing panel with choices off.\nViewport: mobile.\nState: saved contact medical and housing sharing off.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Unchecked saved-contact sharing choices should be visually clear.\n- The selected-count badge should update near the panel heading.\n- The edit panel should remain compact enough for mobile review."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts add-recipient form.\nViewport: mobile.\nState: draft recipient.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The add-recipient form should be easy to complete on mobile.\n- Contact method fields should fit and remain labeled.\n- Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies."
     },
     {
       "id": "sharing-rules",
       "path": "/#/sharing-rules",
-      "title": "Sharing compatibility route",
-      "state": "saved contact sharing editor open",
+      "title": "Sharing choices",
+      "state": "default",
       "goals": [
-        "The old Sharing route should lead to the combined contacts and sharing screen.",
-        "A saved contact should own its sharing-rule settings.",
-        "The capability preview should stay visible inside the contact edit panel."
+        "All sharing choices should start checked when no saved choice exists.",
+        "It should be clear that the user can turn off any item before saving.",
+        "Scope labels should be short, plain, and useful to screen-reader users."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\sharing-rules.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Sharing compatibility route.\nViewport: mobile.\nState: saved contact sharing editor open.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The old Sharing route should lead to the combined contacts and sharing screen.\n- A saved contact should own its sharing-rule settings.\n- The capability preview should stay visible inside the contact edit panel."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Sharing choices.\nViewport: mobile.\nState: default.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- All sharing choices should start checked when no saved choice exists.\n- It should be clear that the user can turn off any item before saving.\n- Scope labels should be short, plain, and useful to screen-reader users."
     },
     {
       "id": "sharing-rules-some-items-off",
       "path": "/#/sharing-rules",
-      "title": "Sharing compatibility route with items turned off",
-      "state": "saved contact medical and housing sharing off",
+      "title": "Sharing choices with items turned off",
+      "state": "medical and housing items off",
       "goals": [
         "Unchecked items should be visually clear but not alarming.",
         "The preview should update to plain item names after choices change.",
-        "The compatibility route should avoid a second conflicting sharing editor."
+        "The legal review note should remain visible after opt-out choices."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\sharing-rules-some-items-off.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Sharing compatibility route with items turned off.\nViewport: mobile.\nState: saved contact medical and housing sharing off.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Unchecked items should be visually clear but not alarming.\n- The preview should update to plain item names after choices change.\n- The compatibility route should avoid a second conflicting sharing editor."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Sharing choices with items turned off.\nViewport: mobile.\nState: medical and housing items off.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Unchecked items should be visually clear but not alarming.\n- The preview should update to plain item names after choices change.\n- The legal review note should remain visible after opt-out choices."
     },
     {
       "id": "contacts-shelter-nudge-approved",
@@ -219,12 +177,12 @@
       "state": "shelter nudge approved",
       "goals": [
         "Approving a shelter nudge should add the shelter without implying broad sharing.",
-        "The added shelter should be easy to find in the saved contacts list below the add controls.",
+        "The added shelter should be easy to find in the contact list.",
         "The request history should remain understandable after approval."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\contacts-shelter-nudge-approved.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts after shelter nudge approval.\nViewport: mobile.\nState: shelter nudge approved.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Approving a shelter nudge should add the shelter without implying broad sharing.\n- The added shelter should be easy to find in the saved contacts list below the add controls.\n- The request history should remain understandable after approval."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Emergency contacts after shelter nudge approval.\nViewport: mobile.\nState: shelter nudge approved.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- Approving a shelter nudge should add the shelter without implying broad sharing.\n- The added shelter should be easy to find in the contact list.\n- The request history should remain understandable after approval."
     },
     {
       "id": "uploads",
@@ -388,13 +346,12 @@
       "goals": [
         "The benefits checkbox should start checked unless the user saved it as off.",
         "The user should be able to turn it off in plain language.",
-        "The page should not describe benefits notices as missed-check-in triggered.",
         "Agency action should not be implied as guaranteed.",
         "Legal/policy review limitations should be visible without overwhelming the user."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\benefits-protection.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Benefits protection consent.\nViewport: mobile.\nState: default.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The benefits checkbox should start checked unless the user saved it as off.\n- The user should be able to turn it off in plain language.\n- The page should not describe benefits notices as missed-check-in triggered.\n- Agency action should not be implied as guaranteed.\n- Legal/policy review limitations should be visible without overwhelming the user."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Benefits protection consent.\nViewport: mobile.\nState: default.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The benefits checkbox should start checked unless the user saved it as off.\n- The user should be able to turn it off in plain language.\n- Agency action should not be implied as guaranteed.\n- Legal/policy review limitations should be visible without overwhelming the user."
     },
     {
       "id": "benefits-protection-enabled",
@@ -403,13 +360,12 @@
       "state": "checked",
       "goals": [
         "The checked consent state should be visually explicit.",
-        "Benefits notice copy should stay focused on benefits help, not missed check-ins.",
         "Legal and policy limitations should remain visible after consent is on.",
         "The save action should become available without implying guaranteed agency action."
       ],
       "viewport": "mobile",
       "screenshotPath": "artifacts\\ui-screenshots\\latest\\mobile\\benefits-protection-enabled.png",
-      "multimodalPrompt": "Review the Abby UI screenshot for: Benefits protection consent enabled.\nViewport: mobile.\nState: checked.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The checked consent state should be visually explicit.\n- Benefits notice copy should stay focused on benefits help, not missed check-ins.\n- Legal and policy limitations should remain visible after consent is on.\n- The save action should become available without implying guaranteed agency action."
+      "multimodalPrompt": "Review the Abby UI screenshot for: Benefits protection consent enabled.\nViewport: mobile.\nState: checked.\nPrioritize mobile/desktop usability, accessibility, safety, privacy clarity, visual hierarchy, and text fit.\nReturn concise findings grouped as: critical issues, UI/UX improvements, accessibility concerns, and suggested implementation changes.\nRoute-specific goals:\n- The checked consent state should be visually explicit.\n- Legal and policy limitations should remain visible after consent is on.\n- The save action should become available without implying guaranteed agency action."
     },
     {
       "id": "benefits-protection-off",
