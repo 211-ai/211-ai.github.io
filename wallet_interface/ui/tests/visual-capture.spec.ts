@@ -156,9 +156,9 @@ const captureScenarios: CaptureScenario[] = [
     title: "Emergency contacts",
     state: "default",
     goals: [
-      "Recipients should be scannable with verification and scope status.",
-      "Adding a recipient should not require horizontal scrolling.",
-      "Removal controls should not visually dominate the emergency setup task."
+      "The add shelter or group area should appear before saved contacts.",
+      "The add person form should show sharing choices before saving.",
+      "Saved contacts should appear underneath the add controls and stay easy to scan."
     ]
   },
   {
@@ -169,7 +169,7 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "The add-recipient form should be easy to complete on mobile.",
       "Contact method fields should fit and remain labeled.",
-      "Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies."
+      "The new-person sharing checkboxes should be visible and readable before save."
     ],
     prepare: async (page) => {
       await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
@@ -180,30 +180,92 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "contacts-add-person-sharing-some-off",
+    path: "/#/contacts",
+    title: "Emergency contacts add-recipient form with sharing off",
+    state: "draft recipient with medical and housing sharing off",
+    goals: [
+      "Unchecked sharing choices should be visible without feeling scary.",
+      "The form should still fit cleanly on mobile after several fields are filled.",
+      "The user should be able to review choices before adding the person."
+    ],
+    prepare: async (page) => {
+      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+      await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
+      await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
+      await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
+      await page.getByLabel(/Type/i).selectOption("social_worker");
+      await page.getByLabel(/Medical notes/i).uncheck();
+      await page.getByLabel(/Found permanent housing/i).uncheck();
+    }
+  },
+  {
+    id: "contacts-edit-sharing",
+    path: "/#/contacts",
+    title: "Emergency contacts edit sharing panel",
+    state: "saved contact sharing editor open",
+    goals: [
+      "A saved contact should open into an obvious sharing edit panel.",
+      "Checkboxes should have a clear group heading and readable labels.",
+      "Save and cancel actions should be reachable without horizontal scrolling."
+    ],
+    prepare: async (page) => {
+      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
+      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
+    }
+  },
+  {
+    id: "contacts-edit-sharing-some-off",
+    path: "/#/contacts",
+    title: "Emergency contacts edit sharing panel with choices off",
+    state: "saved contact medical and housing sharing off",
+    goals: [
+      "Unchecked saved-contact sharing choices should be visually clear.",
+      "The selected-count badge should update near the panel heading.",
+      "The edit panel should remain compact enough for mobile review."
+    ],
+    prepare: async (page) => {
+      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
+      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+      await editPanel.getByLabel(/Medical notes/i).uncheck();
+      await editPanel.getByLabel(/Found permanent housing/i).uncheck();
+      await expect(editPanel.getByText("9 selected", { exact: true })).toBeVisible();
+    }
+  },
+  {
     id: "sharing-rules",
     path: "/#/sharing-rules",
-    title: "Sharing choices",
+    title: "Sharing compatibility route",
     state: "default",
     goals: [
-      "All sharing choices should start checked when no saved choice exists.",
-      "It should be clear that the user can turn off any item before saving.",
-      "Scope labels should be short, plain, and useful to screen-reader users."
-    ]
+      "The old Sharing route should lead to the combined contacts and sharing screen.",
+      "A saved contact should open into an obvious sharing edit panel.",
+      "A saved contact should own its sharing-rule settings."
+    ],
+    prepare: async (page) => {
+      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
+      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
+    }
   },
   {
     id: "sharing-rules-some-items-off",
     path: "/#/sharing-rules",
-    title: "Sharing choices with items turned off",
+    title: "Sharing compatibility route with items turned off",
     state: "medical and housing items off",
     goals: [
       "Unchecked items should be visually clear but not alarming.",
       "The preview should update to plain item names after choices change.",
-      "The legal review note should remain visible after opt-out choices."
+      "The compatibility route should avoid a second conflicting sharing editor."
     ],
     prepare: async (page) => {
-      const recipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
-      await recipient.getByLabel(/Medical notes/i).uncheck();
-      await recipient.getByLabel(/Found permanent housing/i).uncheck();
+      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
+      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+      await editPanel.getByLabel(/Medical notes/i).uncheck();
+      await editPanel.getByLabel(/Found permanent housing/i).uncheck();
     }
   },
   {
@@ -541,7 +603,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/recipient-access": /Requests to see my info/i,
   "/#/register": /Create your Abby profile/i,
   "/#/security": /Account safety/i,
-  "/#/sharing-rules": /Choose what each person can see/i,
+  "/#/sharing-rules": /People who can help/i,
   "/#/shelter": /Assisted access/i,
   "/#/social-services": /Find support/i,
   "/#/uploads": /Saved files and info/i,
