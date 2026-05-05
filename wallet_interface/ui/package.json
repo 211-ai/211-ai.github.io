@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build --configLoader runner",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview --host 0.0.0.0 --configLoader runner",
     "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
     "pretest": "npm run clean:visual-artifacts",
-    "test": "playwright test",
+    "test": "node scripts/run_playwright_tests.cjs",
     "test:smoke": "playwright test tests/smoke.spec.ts",
     "pretest:visual": "npm run clean:visual-artifacts",
     "test:visual": "playwright test tests/visual-capture.spec.ts",
