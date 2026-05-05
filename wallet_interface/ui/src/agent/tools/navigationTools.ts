@@ -166,15 +166,18 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
       };
     case "recipient-access":
       return {
-        approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length
+        approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length,
+        visibleAccessRequestIds: state.accessRequests.map((request) => request.id)
       };
     case "proof-center":
       return {
-        verifiedProofCount: state.walletProofReceipts.filter((proof) => proof.verificationStatus === "verified").length
+        verifiedProofCount: state.walletProofReceipts.filter((proof) => proof.verificationStatus === "verified").length,
+        visibleProofReceiptIds: state.walletProofReceipts.map((proof) => proof.id)
       };
     case "exports":
       return {
-        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
+        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length,
+        visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
       };
     default:
       return {};
@@ -186,7 +189,7 @@ function isServiceRoute(route: RouteId): boolean {
 }
 
 function routeHasVisibleWalletRecords(route: RouteId): boolean {
-  return route === "uploads" || route === "proof-center" || route === "exports";
+  return route === "uploads";
 }
 
 function pendingAccessRequestCount(state: AppActionState): number {
