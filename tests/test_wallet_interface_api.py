@@ -613,7 +613,7 @@ def test_wallet_api_redacted_and_vector_document_analysis_outputs_are_safe() -> 
             "key_hex": owner_key,
             "filename": "intake.txt",
             "text": (
-                "Jane can be reached at jane@example.org or 503-555-1212. "
+                "Jane Example can be reached at jane@example.org or 503-555-1212. "
                 "SSN 123-45-6789. Needs rent, SNAP, and clinic help."
             ),
         },
@@ -655,6 +655,7 @@ def test_wallet_api_redacted_and_vector_document_analysis_outputs_are_safe() -> 
     assert "jane@example.org" not in redacted_output
     assert "503-555-1212" not in redacted_output
     assert "123-45-6789" not in redacted_output
+    assert "Jane Example" not in redacted_output
     assert set(redacted["output"]["derived_facts"]["need_categories"]) >= {"housing", "food", "health"}
 
     vector_invocation = client.post(

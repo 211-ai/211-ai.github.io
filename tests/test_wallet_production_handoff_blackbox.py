@@ -390,7 +390,10 @@ def test_wallet_api_blackbox_exercises_live_workflow_and_persistence(tmp_path: P
                 "actor_did": owner_did,
                 "filename": "blackbox-benefits.txt",
                 "title": "Blackbox Benefits Note",
-                "text": "Jane Example needs rent assistance. Email jane@example.org for SNAP follow up.",
+                "text": (
+                    "Jane Example needs rent assistance. Email jane@example.org "
+                    "or call 503-555-1212. SSN 123-45-6789. SNAP follow up."
+                ),
             },
         )
         assert status == 200
@@ -439,6 +442,8 @@ def test_wallet_api_blackbox_exercises_live_workflow_and_persistence(tmp_path: P
         rendered_analysis = json.dumps(redacted_analysis, sort_keys=True)
         assert redacted_analysis["output"]["output_policy"] == "redacted_derived_only"
         assert "jane@example.org" not in rendered_analysis
+        assert "503-555-1212" not in rendered_analysis
+        assert "123-45-6789" not in rendered_analysis
         assert "Jane Example" not in rendered_analysis
 
         status, template = _http_json(
