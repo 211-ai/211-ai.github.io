@@ -532,6 +532,11 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
   if (name === "create_location_region_proof" && isRecord(input)) {
     return `Create a location-region proof for ${String(input.regionLabel ?? "the selected region")}.`;
   }
+  if (name === "create_proof" && isRecord(input)) {
+    return `Stage proof "${String(input.claim ?? "")}" for verifier ${String(input.verifier ?? "")} using witness label ${String(
+      input.witnessLabel ?? ""
+    )}.`;
+  }
   if (name === "create_verified_export_bundle" && isRecord(input)) {
     return `Create an export bundle for ${String(input.audienceName ?? "the selected recipient")}.`;
   }

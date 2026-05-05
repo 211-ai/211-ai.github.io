@@ -13,7 +13,6 @@ import type {
 } from "../models/abby";
 import { auditEvents } from "../services/mockAbbyService";
 import {
-  createLocationRegionProof,
   createVerifiedExportBundleView,
   listWalletAuditEvents,
   type WalletApiConfig
@@ -44,6 +43,12 @@ import {
   revokeAccessRequestAction,
   viewGrantedRecordAction
 } from "../agent/tools/recipientAccessTools";
+import {
+  createLocationRegionProofAction,
+  createProofAction,
+  explainProofReceiptAction,
+  verifyProofStatusAction
+} from "../agent/tools/proofTools";
 import type {
   AccessRequestDecisionCommandInput,
   AddRecipientCommandInput,
@@ -51,6 +56,7 @@ import type {
   AnalyzeGrantedRecordCommandInput,
   Answer211QuestionCommandInput,
   CreateLocationRegionProofCommandInput,
+  CreateProofCommandInput,
   CreateServicePlanCommandInput,
   CreateVerifiedExportBundleCommandInput,
   DelegateGrantCommandInput,
@@ -64,6 +70,7 @@ import type {
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
   ShelterContactRequestDecisionCommandInput,
+  ProofReceiptReferenceCommandInput,
   UpdateCheckInPolicyCommandInput,
   UpdateRecipientScopesCommandInput,
   UpdateRegistrationDraftCommandInput,
@@ -252,6 +259,11 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   if (action === "create_location_region_proof" && isRecord(input)) {
     return `Create a location-region proof for ${String(input.regionLabel ?? "the selected region")}.`;
   }
+  if (action === "create_proof" && isRecord(input)) {
+    return `Stage proof "${String(input.claim ?? "")}" for verifier ${String(input.verifier ?? "")} using witness label ${String(
+      input.witnessLabel ?? ""
+    )}.`;
+  }
   if (action === "create_verified_export_bundle" && isRecord(input)) {
     return `Create an export bundle for ${String(input.audienceName ?? "the selected recipient")}.`;
   }
@@ -378,38 +390,6 @@ async function updateCheckInPolicyAction(
   });
 }
 
-async function createLocationRegionProofAction(
-  runtime: AppActionRuntime,
-  input: CreateLocationRegionProofCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("create_location_region_proof", input, options);
-  if (blocked) return blocked;
-  const setProofs = requireSetter("create_location_region_proof", runtime.setWalletProofReceipts, "Proof receipts");
-  if (typeof setProofs !== "function") return setProofs;
-  if (!runtime.walletApiConfig?.actorDid) {
-    return failure("create_location_region_proof", "wallet_api_required", "Connect a wallet API before creating proofs.");
-  }
-  try {
-    const state = runtime.getState();
-    const proof = await createLocationRegionProof(runtime.walletApiConfig, {
-      locationRecordId: input.recordId?.trim() || "rec-location-current",
-      regionId: input.regionLabel.trim()
-    });
-    setProofs([proof, ...state.walletProofReceipts.filter((item) => item.id !== proof.id)]);
-    await runtime.refreshWalletAuditEvents?.().catch(() => undefined);
-    return success("create_location_region_proof", `Created proof for ${input.regionLabel}.`, {
-      artifactId: proof.id,
-      confirmation: confirmationFor("create_location_region_proof", input)
-    });
-  } catch {
-    return failure("create_location_region_proof", "proof_creation_failed", "Proof creation failed.", {
-      retryable: true,
-      confirmation: confirmationFor("create_location_region_proof", input)
-    });
-  }
-}
-
 async function createVerifiedExportBundleAction(
   runtime: AppActionRuntime,
   input: CreateVerifiedExportBundleCommandInput,
@@ -508,7 +488,12 @@ export const appActionHandlers = {
     viewGrantedRecordAction(runtime, input, options),
   delegate_grant: (runtime, input: DelegateGrantCommandInput, options) =>
     delegateGrantAction(runtime, input, options),
-  create_location_region_proof: createLocationRegionProofAction,
+  create_proof: (runtime, input: CreateProofCommandInput, options) => createProofAction(runtime, input, options),
+  create_location_region_proof: (runtime, input: CreateLocationRegionProofCommandInput, options) =>
+    createLocationRegionProofAction(runtime, input, options),
+  explain_proof_receipt: (runtime, input: ProofReceiptReferenceCommandInput) =>
+    explainProofReceiptAction(runtime, input),
+  verify_proof_status: (runtime, input: ProofReceiptReferenceCommandInput) => verifyProofStatusAction(runtime, input),
   create_verified_export_bundle: createVerifiedExportBundleAction,
   refresh_wallet_audit: refreshWalletAuditAction
 } satisfies Record<AgentCommandName, AppActionHandler<never>>;
