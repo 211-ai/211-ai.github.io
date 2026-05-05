@@ -103,7 +103,11 @@ export function buildAgentConversationPrompt(input: AgentConversationPromptInput
   const safeContext = buildSafeSurfaceContext(input.surfaceContext, promptGuardOptions);
   const effectivePromptGuardOptions = {
     ...promptGuardOptions,
-    includePrivateWalletContext: safeContext.privateContextAllowed
+    includePrivateWalletContext: safeContext.privateContextAllowed,
+    includePreciseLocation: safeContext.privateContextAllowed && promptGuardOptions.includePreciseLocation,
+    includePrivateNotes: safeContext.privateContextAllowed && promptGuardOptions.includePrivateNotes,
+    includeDocumentContents: safeContext.privateContextAllowed && promptGuardOptions.includeDocumentContents,
+    includeProviderConversations: safeContext.privateContextAllowed && promptGuardOptions.includeProviderConversations
   };
   const history = compactAgentConversationHistory(input.session.messages, effectivePromptGuardOptions);
   const tools = buildRegisteredToolPromptSummaries(
