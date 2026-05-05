@@ -22,6 +22,14 @@ export const AGENT_COMMAND_NAMES = [
   "create_service_plan",
   "update_registration_draft",
   "update_check_in_policy",
+  "add_recipient",
+  "edit_recipient",
+  "remove_recipient",
+  "update_recipient_scopes",
+  "preview_sharing_capabilities",
+  "request_shelter_contact",
+  "approve_shelter_contact_request",
+  "deny_shelter_contact_request",
   "set_disclosure_scopes",
   "record_controller_approval",
   "approve_access_request",
@@ -89,6 +97,15 @@ const disclosureScopes = [
   "custom"
 ] as const;
 
+const disclosureRecipientTypes = [
+  "emergency_contact",
+  "police_precinct",
+  "social_worker",
+  "shelter_staff",
+  "government_liaison",
+  "benefits_agency"
+] as const;
+
 export interface NavigateCommandInput {
   route: RouteId;
 }
@@ -146,6 +163,58 @@ export interface UpdateCheckInPolicyCommandInput {
 export interface SetDisclosureScopesCommandInput {
   recipientId: string;
   allowedScopes: string[];
+}
+
+export interface AddRecipientCommandInput {
+  displayName: string;
+  type?: (typeof disclosureRecipientTypes)[number];
+  relationship?: string;
+  email?: string;
+  phone?: string;
+  agencyName?: string;
+  precinctName?: string;
+  verified?: boolean;
+  allowedScopes?: string[];
+}
+
+export interface EditRecipientCommandInput {
+  recipientId: string;
+  displayName?: string;
+  type?: (typeof disclosureRecipientTypes)[number];
+  relationship?: string;
+  email?: string;
+  phone?: string;
+  agencyName?: string;
+  precinctName?: string;
+  verified?: boolean;
+  allowedScopes?: string[];
+}
+
+export interface RemoveRecipientCommandInput {
+  recipientId: string;
+  reason?: string;
+}
+
+export interface UpdateRecipientScopesCommandInput {
+  recipientId: string;
+  allowedScopes: string[];
+  stageOnly?: boolean;
+}
+
+export interface PreviewSharingCapabilitiesCommandInput {
+  recipientId?: string;
+  allowedScopes?: string[];
+}
+
+export interface RequestShelterContactCommandInput {
+  shelterName: string;
+  userName?: string;
+  userContact?: string;
+}
+
+export interface ShelterContactRequestDecisionCommandInput {
+  requestId: string;
+  reason?: string;
 }
 
 export interface AccessRequestDecisionCommandInput {
@@ -282,6 +351,10 @@ function isDisclosureScopeArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => isStringOneOf(disclosureScopes, item));
 }
 
+function isDisclosureRecipientType(value: unknown): value is (typeof disclosureRecipientTypes)[number] {
+  return isStringOneOf(disclosureRecipientTypes, value);
+}
+
 export function isNavigateCommandInput(value: unknown): value is NavigateCommandInput {
   return isRecord(value) && isRouteId(value.route);
 }
@@ -368,6 +441,88 @@ export function isSetDisclosureScopesCommandInput(value: unknown): value is SetD
     isString(value.recipientId) &&
     value.recipientId.trim().length > 0 &&
     isDisclosureScopeArray(value.allowedScopes)
+  );
+}
+
+export function isAddRecipientCommandInput(value: unknown): value is AddRecipientCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.displayName) &&
+    value.displayName.trim().length > 0 &&
+    isOptional(value.type, isDisclosureRecipientType) &&
+    isOptional(value.relationship, isString) &&
+    isOptional(value.email, isString) &&
+    isOptional(value.phone, isString) &&
+    isOptional(value.agencyName, isString) &&
+    isOptional(value.precinctName, isString) &&
+    isOptional(value.verified, isBoolean) &&
+    isOptional(value.allowedScopes, isDisclosureScopeArray)
+  );
+}
+
+export function isEditRecipientCommandInput(value: unknown): value is EditRecipientCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.recipientId) &&
+    value.recipientId.trim().length > 0 &&
+    isOptional(value.displayName, isString) &&
+    isOptional(value.type, isDisclosureRecipientType) &&
+    isOptional(value.relationship, isString) &&
+    isOptional(value.email, isString) &&
+    isOptional(value.phone, isString) &&
+    isOptional(value.agencyName, isString) &&
+    isOptional(value.precinctName, isString) &&
+    isOptional(value.verified, isBoolean) &&
+    isOptional(value.allowedScopes, isDisclosureScopeArray)
+  );
+}
+
+export function isRemoveRecipientCommandInput(value: unknown): value is RemoveRecipientCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.recipientId) &&
+    value.recipientId.trim().length > 0 &&
+    isOptional(value.reason, isString)
+  );
+}
+
+export function isUpdateRecipientScopesCommandInput(value: unknown): value is UpdateRecipientScopesCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.recipientId) &&
+    value.recipientId.trim().length > 0 &&
+    isDisclosureScopeArray(value.allowedScopes) &&
+    isOptional(value.stageOnly, isBoolean)
+  );
+}
+
+export function isPreviewSharingCapabilitiesCommandInput(value: unknown): value is PreviewSharingCapabilitiesCommandInput {
+  return (
+    isRecord(value) &&
+    (value.recipientId === undefined || (isString(value.recipientId) && value.recipientId.trim().length > 0)) &&
+    isOptional(value.allowedScopes, isDisclosureScopeArray) &&
+    (value.recipientId !== undefined || value.allowedScopes !== undefined)
+  );
+}
+
+export function isRequestShelterContactCommandInput(value: unknown): value is RequestShelterContactCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.shelterName) &&
+    value.shelterName.trim().length > 0 &&
+    isOptional(value.userName, isString) &&
+    isOptional(value.userContact, isString)
+  );
+}
+
+export function isShelterContactRequestDecisionCommandInput(
+  value: unknown
+): value is ShelterContactRequestDecisionCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.requestId) &&
+    value.requestId.trim().length > 0 &&
+    isOptional(value.reason, isString)
   );
 }
 
@@ -568,6 +723,102 @@ export const commandSchemas = {
     }),
     outputSchema: commandOutputSchema,
     isInput: isUpdateCheckInPolicyCommandInput,
+    isOutput: isCommandOutput
+  },
+  add_recipient: {
+    name: "add_recipient",
+    description: "Add a contact or sharing recipient to the wallet draft.",
+    inputSchema: objectSchema({
+      displayName: stringProperty,
+      type: { type: "string", enum: disclosureRecipientTypes },
+      relationship: stringProperty,
+      email: stringProperty,
+      phone: stringProperty,
+      agencyName: stringProperty,
+      precinctName: stringProperty,
+      verified: booleanProperty,
+      allowedScopes: { type: "array", items: { type: "string", enum: disclosureScopes } }
+    }, ["displayName"]),
+    outputSchema: commandOutputSchema,
+    isInput: isAddRecipientCommandInput,
+    isOutput: isCommandOutput
+  },
+  edit_recipient: {
+    name: "edit_recipient",
+    description: "Edit saved contact recipient fields or sharing scopes.",
+    inputSchema: objectSchema({
+      recipientId: stringProperty,
+      displayName: stringProperty,
+      type: { type: "string", enum: disclosureRecipientTypes },
+      relationship: stringProperty,
+      email: stringProperty,
+      phone: stringProperty,
+      agencyName: stringProperty,
+      precinctName: stringProperty,
+      verified: booleanProperty,
+      allowedScopes: { type: "array", items: { type: "string", enum: disclosureScopes } }
+    }, ["recipientId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isEditRecipientCommandInput,
+    isOutput: isCommandOutput
+  },
+  remove_recipient: {
+    name: "remove_recipient",
+    description: "Remove a saved contact recipient after confirmation.",
+    inputSchema: objectSchema({ recipientId: stringProperty, reason: stringProperty }, ["recipientId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRemoveRecipientCommandInput,
+    isOutput: isCommandOutput
+  },
+  update_recipient_scopes: {
+    name: "update_recipient_scopes",
+    description: "Stage and apply updated sharing scopes for a recipient after confirmation.",
+    inputSchema: objectSchema({
+      recipientId: stringProperty,
+      allowedScopes: { type: "array", items: { type: "string", enum: disclosureScopes } },
+      stageOnly: booleanProperty
+    }, ["recipientId", "allowedScopes"]),
+    outputSchema: commandOutputSchema,
+    isInput: isUpdateRecipientScopesCommandInput,
+    isOutput: isCommandOutput
+  },
+  preview_sharing_capabilities: {
+    name: "preview_sharing_capabilities",
+    description: "Preview capabilities implied by disclosure scopes without changing wallet state.",
+    inputSchema: objectSchema({
+      recipientId: stringProperty,
+      allowedScopes: { type: "array", items: { type: "string", enum: disclosureScopes } }
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isPreviewSharingCapabilitiesCommandInput,
+    isOutput: isCommandOutput
+  },
+  request_shelter_contact: {
+    name: "request_shelter_contact",
+    description: "Stage a contact request from the user to a shelter.",
+    inputSchema: objectSchema({
+      shelterName: stringProperty,
+      userName: stringProperty,
+      userContact: stringProperty
+    }, ["shelterName"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRequestShelterContactCommandInput,
+    isOutput: isCommandOutput
+  },
+  approve_shelter_contact_request: {
+    name: "approve_shelter_contact_request",
+    description: "Approve a pending shelter contact request and add the shelter contact.",
+    inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isShelterContactRequestDecisionCommandInput,
+    isOutput: isCommandOutput
+  },
+  deny_shelter_contact_request: {
+    name: "deny_shelter_contact_request",
+    description: "Deny a pending shelter contact request.",
+    inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isShelterContactRequestDecisionCommandInput,
     isOutput: isCommandOutput
   },
   set_disclosure_scopes: {

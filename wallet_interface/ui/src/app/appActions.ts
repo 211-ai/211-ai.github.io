@@ -1,12 +1,12 @@
 import type {
   AuditEvent,
   CheckInPolicyDraft,
-  DisclosureDataScope,
   DisclosureRecipientDraft,
   ExportBundleView,
   ProofReceiptView,
   RegistrationProfileDraft,
   RouteId,
+  ShelterContactRequest,
   UploadItem,
   WalletAccessRequest,
   WalletGrantReceipt
@@ -24,6 +24,19 @@ import {
 } from "../agent/serviceNavigationAgent";
 import { navigateAction, readSurfaceContextAction } from "../agent/tools/navigationTools";
 import {
+  addRecipientAction,
+  approveShelterContactRequestAction,
+  denyShelterContactRequestAction,
+  editRecipientAction,
+  removeRecipientAction,
+  requestShelterContactAction
+} from "../agent/tools/contactTools";
+import {
+  previewSharingCapabilitiesAction,
+  setDisclosureScopesAction,
+  updateRecipientScopesAction
+} from "../agent/tools/sharingRuleTools";
+import {
   analyzeGrantedRecordAction,
   decideAccessRequestAction,
   delegateGrantAction,
@@ -33,6 +46,7 @@ import {
 } from "../agent/tools/recipientAccessTools";
 import type {
   AccessRequestDecisionCommandInput,
+  AddRecipientCommandInput,
   AgentCommandName,
   AnalyzeGrantedRecordCommandInput,
   Answer211QuestionCommandInput,
@@ -40,14 +54,18 @@ import type {
   CreateServicePlanCommandInput,
   CreateVerifiedExportBundleCommandInput,
   DelegateGrantCommandInput,
+  EditRecipientCommandInput,
   OpenServiceDetailCommandInput,
+  RemoveRecipientCommandInput,
+  RequestShelterContactCommandInput,
   RefreshWalletAuditCommandInput,
   RecordControllerApprovalCommandInput,
   RevokeAccessRequestCommandInput,
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
-  SetDisclosureScopesCommandInput,
+  ShelterContactRequestDecisionCommandInput,
   UpdateCheckInPolicyCommandInput,
+  UpdateRecipientScopesCommandInput,
   UpdateRegistrationDraftCommandInput,
   ViewGrantedRecordCommandInput
 } from "../agent/commandSchemas";
@@ -61,6 +79,7 @@ export interface AppActionState {
   profile: RegistrationProfileDraft;
   policy: CheckInPolicyDraft;
   recipients: DisclosureRecipientDraft[];
+  shelterContactRequests?: ShelterContactRequest[];
   uploads: UploadItem[];
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
@@ -79,6 +98,7 @@ export interface AppActionRuntime {
   setProfile?: (profile: RegistrationProfileDraft) => void;
   setPolicy?: (policy: CheckInPolicyDraft) => void;
   setRecipients?: (recipients: DisclosureRecipientDraft[]) => void;
+  setShelterContactRequests?: (requests: ShelterContactRequest[]) => void;
   setAccessRequests?: (requests: WalletAccessRequest[]) => void;
   setGrantReceipts?: (receipts: WalletGrantReceipt[]) => void;
   setWalletAuditEvents?: (events: AuditEvent[]) => void;
@@ -181,6 +201,28 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   if (action === "set_disclosure_scopes" && isRecord(input)) {
     return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
   }
+  if (action === "update_recipient_scopes" && isRecord(input)) {
+    return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
+  }
+  if ((action === "add_recipient" || action === "edit_recipient") && isRecord(input)) {
+    return `${action === "add_recipient" ? "Add" : "Edit"} recipient ${String(
+      input.displayName ?? input.recipientId ?? ""
+    )}.`;
+  }
+  if (action === "remove_recipient" && isRecord(input)) {
+    return `Remove recipient ${String(input.recipientId ?? "")}.`;
+  }
+  if (action === "request_shelter_contact" && isRecord(input)) {
+    return `Request shelter contact with ${String(input.shelterName ?? "")}.`;
+  }
+  if (
+    (action === "approve_shelter_contact_request" || action === "deny_shelter_contact_request") &&
+    isRecord(input)
+  ) {
+    return `${action === "approve_shelter_contact_request" ? "Approve" : "Deny"} shelter contact request ${String(
+      input.requestId ?? ""
+    )}.`;
+  }
   if (
     (action === "record_controller_approval" ||
       action === "approve_access_request" ||
@@ -237,10 +279,6 @@ function requireSetter<T>(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
 
 async function search211ServicesAction(
@@ -337,33 +375,6 @@ async function updateCheckInPolicyAction(
   });
   return success("update_check_in_policy", "Updated check-in policy.", {
     confirmation: confirmationFor("update_check_in_policy", input)
-  });
-}
-
-async function setDisclosureScopesAction(
-  runtime: AppActionRuntime,
-  input: SetDisclosureScopesCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("set_disclosure_scopes", input, options);
-  if (blocked) return blocked;
-  const setRecipients = requireSetter("set_disclosure_scopes", runtime.setRecipients, "Recipients");
-  if (typeof setRecipients !== "function") return setRecipients;
-  const state = runtime.getState();
-  const recipient = state.recipients.find((item) => item.id === input.recipientId);
-  if (!recipient) {
-    return failure("set_disclosure_scopes", "recipient_not_found", `Recipient ${input.recipientId} was not found.`);
-  }
-  setRecipients(
-    state.recipients.map((item) =>
-      item.id === input.recipientId
-        ? { ...item, allowedScopes: uniqueStrings(input.allowedScopes) as DisclosureDataScope[] }
-        : item
-    )
-  );
-  return success("set_disclosure_scopes", `Updated sharing scopes for ${recipient.displayName}.`, {
-    artifactId: input.recipientId,
-    confirmation: confirmationFor("set_disclosure_scopes", input)
   });
 }
 
@@ -469,6 +480,19 @@ export const appActionHandlers = {
   create_service_plan: createServicePlanAction,
   update_registration_draft: updateRegistrationDraftAction,
   update_check_in_policy: updateCheckInPolicyAction,
+  add_recipient: (runtime, input: AddRecipientCommandInput, options) => addRecipientAction(runtime, input, options),
+  edit_recipient: (runtime, input: EditRecipientCommandInput, options) => editRecipientAction(runtime, input, options),
+  remove_recipient: (runtime, input: RemoveRecipientCommandInput, options) =>
+    removeRecipientAction(runtime, input, options),
+  update_recipient_scopes: (runtime, input: UpdateRecipientScopesCommandInput, options) =>
+    updateRecipientScopesAction(runtime, input, options),
+  preview_sharing_capabilities: previewSharingCapabilitiesAction,
+  request_shelter_contact: (runtime, input: RequestShelterContactCommandInput, options) =>
+    requestShelterContactAction(runtime, input, options),
+  approve_shelter_contact_request: (runtime, input: ShelterContactRequestDecisionCommandInput, options) =>
+    approveShelterContactRequestAction(runtime, input, options),
+  deny_shelter_contact_request: (runtime, input: ShelterContactRequestDecisionCommandInput, options) =>
+    denyShelterContactRequestAction(runtime, input, options),
   set_disclosure_scopes: setDisclosureScopesAction,
   record_controller_approval: (runtime, input: RecordControllerApprovalCommandInput, options) =>
     recordControllerApprovalAction(runtime, input, options),

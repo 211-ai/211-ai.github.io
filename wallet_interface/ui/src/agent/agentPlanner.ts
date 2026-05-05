@@ -112,6 +112,15 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     };
   }
 
+  const contactTool = planContactTool(lower, content);
+  if (contactTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: contactTool.title,
+      tools: withToolSurface(input.context, [contactTool])
+    };
+  }
+
   const grantTool = planRecipientGrantTool(lower, content);
   if (grantTool) {
     return {
@@ -304,6 +313,55 @@ function planRecipientGrantTool(lower: string, original: string): AgentPlannedTo
   return undefined;
 }
 
+function planContactTool(lower: string, original: string): AgentPlannedTool | undefined {
+  if (/\b(preview|what.*allow|capabilities|scope preview)\b/.test(lower) && /\b(shar|scope|disclos)/.test(lower)) {
+    const recipientId = parseRecipientId(original);
+    const allowedScopes = parseDisclosureScopes(original);
+    if (recipientId || allowedScopes.length) {
+      return tool("preview_sharing_capabilities", {
+        ...(recipientId ? { recipientId } : {}),
+        ...(allowedScopes.length ? { allowedScopes } : {})
+      });
+    }
+  }
+
+  const recipientId = parseRecipientId(original);
+  if (recipientId && /\b(remove|delete)\b.*\b(recipient|contact)\b|\b(recipient|contact)\b.*\b(remove|delete)\b/.test(lower)) {
+    return tool("remove_recipient", { recipientId });
+  }
+
+  if (recipientId && /\b(update|set|change|stage)\b.*\b(shar|scope|disclos)/.test(lower)) {
+    const allowedScopes = parseDisclosureScopes(original);
+    if (allowedScopes.length) {
+      return tool("update_recipient_scopes", { recipientId, allowedScopes });
+    }
+  }
+
+  if (/\b(request|ask)\b.*\b(shelter contact|contact.*shelter)\b/.test(lower)) {
+    const shelterName = parseNamedValue(original, "shelter") ?? parseAfterPhrase(original, /(?:request|ask).*?(?:contact|shelter)\s+(?:with|at|for)?/i);
+    if (shelterName) return tool("request_shelter_contact", { shelterName });
+  }
+
+  const shelterRequestId = parseShelterRequestId(original);
+  if (shelterRequestId && /\b(approve|accept)\b.*\b(shelter|contact|request)\b/.test(lower)) {
+    return tool("approve_shelter_contact_request", { requestId: shelterRequestId });
+  }
+  if (shelterRequestId && /\b(deny|reject)\b.*\b(shelter|contact|request)\b/.test(lower)) {
+    return tool("deny_shelter_contact_request", { requestId: shelterRequestId });
+  }
+
+  const addName = parseAddRecipientName(original, lower);
+  if (addName) {
+    const allowedScopes = parseDisclosureScopes(original);
+    return tool("add_recipient", {
+      displayName: addName,
+      ...(allowedScopes.length ? { allowedScopes } : {})
+    });
+  }
+
+  return undefined;
+}
+
 function tool(name: AgentCommandName, input: unknown): AgentPlannedTool {
   return {
     name,
@@ -314,6 +372,50 @@ function tool(name: AgentCommandName, input: unknown): AgentPlannedTool {
 
 function parseAccessRequestId(original: string): string | undefined {
   return original.match(/\baccess[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^access(?![-_:])/i, "access-");
+}
+
+function parseRecipientId(original: string): string | undefined {
+  return original.match(/\brec[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^rec(?![-_:])/i, "rec-");
+}
+
+function parseShelterRequestId(original: string): string | undefined {
+  return original.match(/\bshelter-request[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+}
+
+function parseDisclosureScopes(original: string): string[] {
+  const normalized = original.toLowerCase().replace(/[\s-]+/g, "_");
+  return [
+    "identity_minimum",
+    "profile",
+    "photo",
+    "current_location",
+    "uploaded_documents",
+    "missed_check_in",
+    "found_permanent_housing",
+    "medical_notes",
+    "shelter_history",
+    "benefits_information",
+    "custom"
+  ].filter((scope) => normalized.includes(scope));
+}
+
+function parseAddRecipientName(original: string, lower: string): string | undefined {
+  if (!/\b(add|create)\b.*\b(recipient|contact|person)\b/.test(lower)) return undefined;
+  const match = original.match(/\b(?:add|create)\s+(?:a\s+|an\s+)?(?:recipient|contact|person)\s+(?:named\s+|called\s+)?(.+?)\s*$/i);
+  const name = match?.[1]?.replace(/\bwith\s+(?:scope|scopes|sharing)\b.*$/i, "").trim();
+  return name && name.length <= 80 ? name : undefined;
+}
+
+function parseNamedValue(original: string, label: string): string | undefined {
+  const match = original.match(new RegExp(`\\b${label}\\s*[:#-]\\s*([^,;]+)`, "i"));
+  return match?.[1]?.trim();
+}
+
+function parseAfterPhrase(original: string, prefix: RegExp): string | undefined {
+  const match = original.match(prefix);
+  if (match?.index === undefined) return undefined;
+  const value = original.slice(match.index + match[0].length).replace(/[.;]\s*$/, "").trim();
+  return value && value.length <= 100 ? value : undefined;
 }
 
 function parseGrantReference(original: string): { grantId?: string; receiptId?: string } | undefined {
