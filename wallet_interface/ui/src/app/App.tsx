@@ -600,17 +600,15 @@ export function App() {
         {activeRoute === "check-in" ? (
           <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
         ) : null}
-        {activeRoute === "contacts" ? (
+        {activeRoute === "contacts" || activeRoute === "sharing-rules" ? (
           <ContactsScreen
             contactRequests={shelterContactRequests}
             profile={profile}
             recipients={recipients}
+            sharingCompatibility={activeRoute === "sharing-rules"}
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
-        ) : null}
-        {activeRoute === "sharing-rules" ? (
-          <SharingRulesScreen recipients={recipients} setRecipients={setRecipients} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
@@ -704,7 +702,9 @@ function readUrlWalletApiConfig(): WalletApiConfig | undefined {
   return {
     apiBaseUrl,
     walletId,
-    actorDid: params.get("actorDid") ?? undefined
+    actorDid: params.get("actorDid") ?? undefined,
+    issuerKeyHex: params.get("issuerKeyHex") ?? undefined,
+    audienceKeyHex: params.get("audienceKeyHex") ?? undefined
   };
 }
 
@@ -1201,16 +1201,86 @@ function CheckInScreen({
   );
 }
 
+function toggleScopeSelection(scopes: DisclosureDataScope[], scope: DisclosureDataScope): DisclosureDataScope[] {
+  return scopes.includes(scope) ? scopes.filter((item) => item !== scope) : [...scopes, scope];
+}
+
+function SharingScopeChecklist({
+  label,
+  scopes,
+  onToggle,
+  help
+}: {
+  label: string;
+  scopes: DisclosureDataScope[];
+  onToggle: (scope: DisclosureDataScope) => void;
+  help?: string;
+}) {
+  return (
+    <fieldset className="scope-fieldset">
+      <legend>{label}</legend>
+      {help ? <p className="scope-help">{help}</p> : null}
+      <div className="scope-grid">
+        {disclosureScopes.map((scope) => (
+          <label className="scope-option" key={scope.id}>
+            <input checked={scopes.includes(scope.id)} onChange={() => onToggle(scope.id)} type="checkbox" />
+            <span>
+              <strong>{scope.label}</strong>
+              <small>{scope.detail}</small>
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function getDisclosureScopeLabels(scopes: DisclosureDataScope[]): string {
+  return scopes.map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope).join(", ");
+}
+
+function SharingCapabilityPreview({ recipientName, scopes }: { recipientName: string; scopes: DisclosureDataScope[] }) {
+  const abilities = abilitiesForDisclosureScopes(scopes);
+
+  return (
+    <div className="capability-preview" role="group" aria-label={`${recipientName} sharing capability preview`}>
+      <div className="scope-header">
+        <div>
+          <h4>What this allows</h4>
+          <p>{scopes.length} selected items</p>
+        </div>
+        <Badge tone={scopes.length > 0 ? "success" : "warning"}>{scopes.length > 0 ? "limited share" : "no access"}</Badge>
+      </div>
+      <div className="disclosure-package">
+        <div className="disclosure-row">
+          <strong>Can do</strong>
+          <span>{plainCapabilitySummary(abilities) || "No access selected"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Items</strong>
+          <span>{getDisclosureScopeLabels(scopes) || "No items selected"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Not allowed</strong>
+          <span>{plainNonGrantedCapabilities(abilities).join(", ")}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ContactsScreen({
   contactRequests,
   profile,
   recipients,
+  sharingCompatibility = false,
   setContactRequests,
   setRecipients
 }: {
   contactRequests: ShelterContactRequest[];
   profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
+  sharingCompatibility?: boolean;
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
@@ -1221,6 +1291,9 @@ function ContactsScreen({
     phone: "",
     type: "emergency_contact" as DisclosureRecipientType
   });
+  const [draftScopes, setDraftScopes] = useState<DisclosureDataScope[]>([...defaultDisclosureScopes]);
+  const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
+  const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
@@ -1240,6 +1313,7 @@ function ContactsScreen({
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
+  const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId);
 
   function addShelterRecipient(shelterName: string) {
     if (recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName)) {
@@ -1274,10 +1348,40 @@ function ContactsScreen({
         agencyName: "",
         precinctName: "",
         verified: false,
-        allowedScopes: [...defaultDisclosureScopes]
+        allowedScopes: [...draftScopes]
       }
     ]);
     setDraft({ displayName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
+    setDraftScopes([...defaultDisclosureScopes]);
+  }
+
+  function openRecipientEditor(recipient: DisclosureRecipientDraft) {
+    setEditingRecipientId(recipient.id);
+    setEditingScopes([...recipient.allowedScopes]);
+    window.setTimeout(() => document.getElementById(`recipient-edit-${recipient.id}`)?.focus(), 0);
+  }
+
+  function closeRecipientEditor(recipientId: string) {
+    setEditingRecipientId(null);
+    setEditingScopes([]);
+    window.setTimeout(() => document.getElementById(`recipient-open-${recipientId}`)?.focus(), 0);
+  }
+
+  function saveRecipientScopes(recipientId: string) {
+    setRecipients(
+      recipients.map((recipient) =>
+        recipient.id === recipientId ? { ...recipient, allowedScopes: [...editingScopes] } : recipient
+      )
+    );
+    closeRecipientEditor(recipientId);
+  }
+
+  function removeRecipient(recipientId: string) {
+    setRecipients(recipients.filter((item) => item.id !== recipientId));
+    if (editingRecipientId === recipientId) {
+      setEditingRecipientId(null);
+      setEditingScopes([]);
+    }
   }
 
   function requestShelterContact(event: FormEvent<HTMLFormElement>) {
@@ -1326,36 +1430,15 @@ function ContactsScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Emergency contacts</p>
+        <p className="eyebrow">{sharingCompatibility ? "Sharing choices" : "Emergency contacts"}</p>
         <h1>People who can help</h1>
       </div>
-      <div className="list-stack">
-        {recipients.map((recipient) => (
-          <article className="list-item recipient-list-item" key={recipient.id}>
-            <div>
-              <h3>{recipient.displayName}</h3>
-              <p>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</p>
-              <div className="badge-row">
-                <Badge tone={recipient.verified ? "success" : "warning"}>
-                  {recipient.verified ? "Verified" : "Needs a check"}
-                </Badge>
-                <Badge>{recipient.allowedScopes.length} items</Badge>
-              </div>
-            </div>
-            <Button
-              ariaLabel={`Remove ${recipient.displayName}`}
-              className="compact-list-action"
-              onClick={() => setRecipients(recipients.filter((item) => item.id !== recipient.id))}
-              variant="quiet"
-            >
-              Remove
-            </Button>
-          </article>
-        ))}
-      </div>
-      <Section title="Shelter requests">
+      <StatusBanner tone="info">
+        Sharing choices live with each saved contact. Open a contact below to change what they can see.
+      </StatusBanner>
+      <Section title="Add shelter or group">
         <StatusBanner tone="info">
-          A shelter is added only after the other side says yes. This does not share extra details.
+          A shelter is added only after the other side says yes. It starts with Minimum identity only.
         </StatusBanner>
         <form className="form-grid" onSubmit={requestShelterContact}>
           <Field label="Shelter">
@@ -1369,7 +1452,7 @@ function ContactsScreen({
           </Field>
           <div className="full-span centered-action">
             <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
-              <MessageSquare size={18} /> Ask to add shelter
+              <MessageSquare aria-hidden="true" size={18} /> Ask to add shelter
             </Button>
           </div>
           {hasPendingRequestedShelter ? (
@@ -1416,7 +1499,7 @@ function ContactsScreen({
           ))}
         </div>
       </Section>
-      <Section title="Add person or group">
+      <Section title="Add person">
         <form className="form-grid" onSubmit={addRecipient}>
           <Field label="Name or group" required>
             <input value={draft.displayName} onChange={(event) => setDraft({ ...draft, displayName: event.target.value })} />
@@ -1443,12 +1526,108 @@ function ContactsScreen({
               <option value="benefits_agency">Benefits agency</option>
             </select>
           </Field>
+          <SharingScopeChecklist
+            help="These start on. Turn off anything this person should not see."
+            label="Sharing choices for this person"
+            onToggle={(scope) => setDraftScopes(toggleScopeSelection(draftScopes, scope))}
+            scopes={draftScopes}
+          />
           <div className="full-span centered-action">
             <Button type="submit">
-              <UsersRound size={18} /> Add person or group
+              <UsersRound aria-hidden="true" size={18} /> Add person
             </Button>
           </div>
         </form>
+      </Section>
+      <Section title="Saved contacts">
+        {recipients.length === 0 ? (
+          <p className="empty-state">No saved contacts yet. Add a shelter, group, or person above.</p>
+        ) : (
+          <div className="list-stack">
+            {recipients.map((recipient) => {
+              const isEditing = editingRecipient?.id === recipient.id;
+
+              return (
+                <article className="list-item recipient-list-item" key={recipient.id}>
+                  <div className="recipient-row">
+                    <button
+                      aria-controls={`recipient-edit-${recipient.id}`}
+                      aria-expanded={isEditing}
+                      aria-label={`Edit sharing for ${recipient.displayName}`}
+                      className="recipient-open-button"
+                      id={`recipient-open-${recipient.id}`}
+                      onClick={() => openRecipientEditor(recipient)}
+                      type="button"
+                    >
+                      <span className="recipient-summary">
+                        <span className="recipient-name">{recipient.displayName}</span>
+                        <span className="recipient-details">
+                          <span>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</span>
+                          {recipient.email ? <span>{recipient.email}</span> : null}
+                          {recipient.phone ? <span>{recipient.phone}</span> : null}
+                        </span>
+                        <span className="badge-row" aria-label={`${recipient.displayName} status`}>
+                          <Badge tone={recipient.verified ? "success" : "warning"}>
+                            {recipient.verified ? "Verified" : "Needs a check"}
+                          </Badge>
+                          <Badge>{recipient.allowedScopes.length} items</Badge>
+                        </span>
+                      </span>
+                    </button>
+                    <div className="row-actions">
+                      <Button
+                        ariaControls={`recipient-edit-${recipient.id}`}
+                        ariaExpanded={isEditing}
+                        className="compact-list-action"
+                        onClick={() => openRecipientEditor(recipient)}
+                        variant="secondary"
+                      >
+                        Edit sharing
+                      </Button>
+                      <Button
+                        ariaLabel={`Remove ${recipient.displayName}`}
+                        className="compact-list-action"
+                        onClick={() => removeRecipient(recipient.id)}
+                        variant="quiet"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                  {isEditing ? (
+                    <div
+                      aria-labelledby={`recipient-edit-heading-${recipient.id}`}
+                      className="recipient-edit-panel"
+                      id={`recipient-edit-${recipient.id}`}
+                      role="region"
+                      tabIndex={-1}
+                    >
+                      <div className="scope-header">
+                        <div>
+                          <h3 id={`recipient-edit-heading-${recipient.id}`}>Edit sharing for {recipient.displayName}</h3>
+                          <p>Save only what this contact should see.</p>
+                        </div>
+                        <Badge>{editingScopes.length} selected</Badge>
+                      </div>
+                      <SharingScopeChecklist
+                        label={`Sharing choices for ${recipient.displayName}`}
+                        onToggle={(scope) => setEditingScopes(toggleScopeSelection(editingScopes, scope))}
+                        scopes={editingScopes}
+                      />
+                      <SharingCapabilityPreview recipientName={recipient.displayName} scopes={editingScopes} />
+                      <div className="row-actions">
+                        <Button onClick={() => saveRecipientScopes(recipient.id)}>Save sharing</Button>
+                        <Button onClick={() => closeRecipientEditor(recipient.id)} variant="secondary">
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+        )}
       </Section>
     </div>
   );
@@ -2705,7 +2884,7 @@ function RecipientAccessScreen({
 	        return analyzeRecordWithGrant(apiConfig, {
 	          grantId: receipt.grantId,
 	          recordId,
-          maxChars: 200
+          maxChars: 500
         });
       })();
       setDerivedArtifactsByReceiptId((artifacts) => ({
@@ -3053,7 +3232,7 @@ function RecipientAccessScreen({
                       variant="secondary"
                     >
                       <ShieldCheck size={18} />
-                      {analyzingReceiptIds.includes(analysisActionId(receipt, "summary")) ? "Analyzing" : "Analyze safely"}
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "summary")) ? "Making summary" : "Make safe summary"}
                     </Button>
                   ) : null}
                   {canAnalyzeRedacted ? (
@@ -3091,6 +3270,59 @@ function RecipientAccessScreen({
                     </Button>
                   ) : null}
                 </div>
+              ) : null}
+              {canDelegate ? (
+                <form className="delegation-form" onSubmit={(event) => delegateReceipt(event, receipt)}>
+                  <div className="form-grid">
+                    <Field label="Delegate DID" required>
+                      <input
+                        value={delegationDraft.audienceDid}
+                        onChange={(event) =>
+                          updateDelegationDraft(receipt, delegationOptions, { audienceDid: event.target.value })
+                        }
+                        placeholder="did:key:case-worker"
+                      />
+                    </Field>
+                    <Field label="Delegate key">
+                      <input
+                        value={delegationDraft.audienceKeyHex}
+                        onChange={(event) =>
+                          updateDelegationDraft(receipt, delegationOptions, { audienceKeyHex: event.target.value })
+                        }
+                        placeholder="Optional public key"
+                      />
+                    </Field>
+                    <Field label="Delegated purpose">
+                      <input
+                        value={delegationDraft.purpose}
+                        onChange={(event) =>
+                          updateDelegationDraft(receipt, delegationOptions, { purpose: event.target.value })
+                        }
+                      />
+                    </Field>
+                    <Field label="Delegated access">
+                      <select
+                        value={delegationDraft.ability}
+                        onChange={(event) =>
+                          updateDelegationDraft(receipt, delegationOptions, { ability: event.target.value })
+                        }
+                      >
+                        {delegationOptions.map((ability) => (
+                          <option key={ability} value={ability}>
+                            {plainCapabilityLabel(ability)}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  </div>
+                  <div className="row-actions">
+                    <Button disabled={delegatingReceiptIds.includes(receipt.id)} type="submit" variant="secondary">
+                      <ShieldCheck size={18} />
+                      {delegatingReceiptIds.includes(receipt.id) ? "Delegating" : "Delegate access"}
+                    </Button>
+                  </div>
+                  {delegationMessage ? <small className="pin-request-note">{delegationMessage}</small> : null}
+                </form>
               ) : null}
               <small>{receipt.audienceDid}</small>
             </article>
