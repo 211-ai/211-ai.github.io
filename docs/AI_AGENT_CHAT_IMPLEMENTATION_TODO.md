@@ -364,7 +364,7 @@ Track guide:
 - Acceptance: Unit tests cover schema validation, deterministic planner routing, permission gates, confirmation requirements, prompt redaction, and GraphRAG evidence-to-action mapping.
 
 ## AGENT-081 Agent Smoke Tests
-- Status: todo
+- Status: completed
 - Completion: artifact
 - Priority: P1
 - Track: ops

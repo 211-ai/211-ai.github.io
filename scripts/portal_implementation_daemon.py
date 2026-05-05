@@ -732,9 +732,10 @@ class PortalImplementationDaemon:
                     cwd=worktree_path,
                     timeout=self.implementation_timeout,
                     check=False,
-                )
+            )
             returncode = completed.returncode
             if returncode == 0:
+                self._prepare_worktree_for_validation(worktree_path)
                 validation_result = self._run_validation_commands(worktree_path, task, log_path)
                 if validation_result.get("passed", False):
                     commit_result = self._commit_worktree_changes(worktree_path, task, attempt)
@@ -815,6 +816,9 @@ class PortalImplementationDaemon:
                     target.unlink()
             target.parent.mkdir(parents=True, exist_ok=True)
             target.symlink_to(source, target_is_directory=source.is_dir())
+
+    def _prepare_worktree_for_validation(self, worktree_path: Path) -> None:
+        self._link_shared_worktree_paths(worktree_path)
 
     def _commit_worktree_changes(self, worktree_path: Path, task: PortalTask, attempt: int) -> dict[str, Any]:
         self._restore_ephemeral_worktree_paths_for_commit(worktree_path)
@@ -1506,6 +1510,7 @@ Rules:
 - Implement the expected outputs for this task.
 - Run the listed validation commands when practical.
 - The daemon will run the listed validation commands and will only commit and merge the worktree if they pass.
+- Leave generated artifacts and shared dependency paths alone; the daemon restores dist, screenshot artifacts, and linked node_modules before commit.
 - If validation cannot be run, record why in your final response.
 - Do not mark the backlog task completed manually unless the task explicitly asks for TODO metadata changes.
 - Final response should list changed files and validation results.
