@@ -38,7 +38,10 @@ export const AGENT_COMMAND_NAMES = [
   "analyze_granted_record",
   "view_granted_record",
   "delegate_grant",
+  "create_proof",
   "create_location_region_proof",
+  "explain_proof_receipt",
+  "verify_proof_status",
   "create_verified_export_bundle",
   "refresh_wallet_audit"
 ] as const;
@@ -268,7 +271,26 @@ export interface DelegateGrantCommandInput {
 export interface CreateLocationRegionProofCommandInput {
   verifier: string;
   regionLabel: string;
+  claim?: string;
+  witnessLabel?: string;
   recordId?: string;
+  grantId?: string;
+}
+
+export interface CreateProofCommandInput {
+  claim: string;
+  verifier: string;
+  witnessLabel: string;
+  proofType?: string;
+  regionLabel?: string;
+  recordId?: string;
+  grantId?: string;
+  publicInputs?: Record<string, string>;
+}
+
+export interface ProofReceiptReferenceCommandInput {
+  proofId?: string;
+  receiptId?: string;
 }
 
 export interface CreateVerifiedExportBundleCommandInput {
@@ -285,6 +307,10 @@ const stringProperty: AgentSchemaProperty = { type: "string" };
 const booleanProperty: AgentSchemaProperty = { type: "boolean" };
 const numberProperty: AgentSchemaProperty = { type: "number" };
 const stringArrayProperty: AgentSchemaProperty = { type: "array", items: stringProperty };
+const stringRecordProperty: AgentSchemaProperty = {
+  type: "object",
+  additionalProperties: true
+};
 
 const commandOutputSchema: AgentSchemaProperty = {
   type: "object",
@@ -341,6 +367,10 @@ function isStringOneOf<T extends readonly string[]>(values: T, value: unknown): 
 
 function isOptionalLimitedNumber(value: unknown, min: number, max: number): value is number | undefined {
   return value === undefined || (isNumber(value) && value >= min && value <= max);
+}
+
+function isStringRecord(value: unknown): value is Record<string, string> {
+  return isRecord(value) && Object.values(value).every(isString);
 }
 
 function isCheckInChannelArray(value: unknown): value is Array<"email" | "sms" | "web"> {
@@ -604,7 +634,35 @@ export function isCreateLocationRegionProofCommandInput(value: unknown): value i
     value.verifier.trim().length > 0 &&
     isString(value.regionLabel) &&
     value.regionLabel.trim().length > 0 &&
-    isOptional(value.recordId, isString)
+    isOptional(value.claim, isString) &&
+    isOptional(value.witnessLabel, isString) &&
+    isOptional(value.recordId, isString) &&
+    isOptional(value.grantId, isString)
+  );
+}
+
+export function isCreateProofCommandInput(value: unknown): value is CreateProofCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.claim) &&
+    value.claim.trim().length > 0 &&
+    isString(value.verifier) &&
+    value.verifier.trim().length > 0 &&
+    isString(value.witnessLabel) &&
+    value.witnessLabel.trim().length > 0 &&
+    isOptional(value.proofType, isString) &&
+    isOptional(value.regionLabel, isString) &&
+    isOptional(value.recordId, isString) &&
+    isOptional(value.grantId, isString) &&
+    isOptional(value.publicInputs, isStringRecord)
+  );
+}
+
+export function isProofReceiptReferenceCommandInput(value: unknown): value is ProofReceiptReferenceCommandInput {
+  return (
+    isRecord(value) &&
+    ((isString(value.proofId) && value.proofId.trim().length > 0) ||
+      (isString(value.receiptId) && value.receiptId.trim().length > 0))
   );
 }
 
@@ -919,10 +977,52 @@ export const commandSchemas = {
     inputSchema: objectSchema({
       verifier: stringProperty,
       regionLabel: stringProperty,
+      claim: stringProperty,
+      witnessLabel: stringProperty,
+      grantId: stringProperty,
       recordId: stringProperty
     }, ["verifier", "regionLabel"]),
     outputSchema: commandOutputSchema,
     isInput: isCreateLocationRegionProofCommandInput,
+    isOutput: isCommandOutput
+  },
+  create_proof: {
+    name: "create_proof",
+    description: "Stage proof creation from an explicit claim, verifier, and witness label.",
+    inputSchema: objectSchema({
+      claim: stringProperty,
+      verifier: stringProperty,
+      witnessLabel: stringProperty,
+      proofType: stringProperty,
+      regionLabel: stringProperty,
+      recordId: stringProperty,
+      grantId: stringProperty,
+      publicInputs: stringRecordProperty
+    }, ["claim", "verifier", "witnessLabel"]),
+    outputSchema: commandOutputSchema,
+    isInput: isCreateProofCommandInput,
+    isOutput: isCommandOutput
+  },
+  explain_proof_receipt: {
+    name: "explain_proof_receipt",
+    description: "Explain a proof receipt using only public receipt fields and wallet-safe metadata.",
+    inputSchema: objectSchema({
+      proofId: stringProperty,
+      receiptId: stringProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isProofReceiptReferenceCommandInput,
+    isOutput: isCommandOutput
+  },
+  verify_proof_status: {
+    name: "verify_proof_status",
+    description: "Report the current verification status for a proof receipt.",
+    inputSchema: objectSchema({
+      proofId: stringProperty,
+      receiptId: stringProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isProofReceiptReferenceCommandInput,
     isOutput: isCommandOutput
   },
   create_verified_export_bundle: {

@@ -187,6 +187,9 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     return navigationTurn("audit");
   }
 
+  const proofTurn = planProofTurn(input.context, lower, content);
+  if (proofTurn) return proofTurn;
+
   if (/\b(proof|proofs|verify|verification)\b/.test(lower)) {
     return navigationTurn("proof-center", "proof_request");
   }
@@ -271,6 +274,55 @@ function withToolSurface(context: SurfaceContext, tools: AgentPlannedTool[]): Ag
   }
   const route = firstTool.name === "refresh_wallet_audit" ? "audit" : getToolDefinition(firstTool.name).surfaces[0];
   return [{ name: "navigate", input: { route }, title: getToolDefinition("navigate").title }, ...tools];
+}
+
+function planProofTurn(context: SurfaceContext, lower: string, original: string): AgentPlannedTurn | undefined {
+  if (!/\b(proof|receipt|verification|verify)\b/.test(lower)) return undefined;
+
+  const proofReference = parseProofReference(original);
+  if (proofReference && /\b(explain|what|details?|receipt|mean|show)\b/.test(lower)) {
+    return {
+      intentKind: "proof_request",
+      summary: "Explain proof receipt.",
+      tools: withToolSurface(context, [tool("explain_proof_receipt", proofReference)])
+    };
+  }
+  if (proofReference && /\b(verify|status|check)\b/.test(lower)) {
+    return {
+      intentKind: "proof_request",
+      summary: "Verify proof status.",
+      tools: withToolSurface(context, [tool("verify_proof_status", proofReference)])
+    };
+  }
+  if (!/\b(create|stage|generate|prepare)\b/.test(lower)) return undefined;
+
+  const claim = parseNamedValue(original, "claim");
+  const verifier = parseNamedValue(original, "verifier");
+  const witnessLabel = parseNamedValue(original, "witness label") ?? parseNamedValue(original, "witness");
+  if (!claim || !verifier || !witnessLabel) {
+    return {
+      intentKind: "proof_request",
+      summary: "Clarify proof creation request.",
+      tools: withToolSurface(context, [{ name: "navigate", input: { route: "proof-center" }, title: getToolDefinition("navigate").title }]),
+      response: "To stage a proof, I need an explicit claim, verifier, and witness label."
+    };
+  }
+
+  return {
+    intentKind: "proof_request",
+    summary: "Stage proof creation.",
+    tools: withToolSurface(context, [
+      tool("create_proof", {
+        claim,
+        verifier,
+        witnessLabel,
+        proofType: parseNamedValue(original, "proof type") ?? undefined,
+        regionLabel: parseNamedValue(original, "region") ?? undefined,
+        recordId: parseRecordId(original) ?? undefined,
+        grantId: parseGrantReference(original)?.grantId
+      })
+    ])
+  };
 }
 
 function planRecipientAccessRequestTool(lower: string, original: string): AgentPlannedTool | undefined {
@@ -423,6 +475,17 @@ function parseGrantReference(original: string): { grantId?: string; receiptId?: 
   if (receiptId) return { receiptId: receiptId.replace(/^receipt(?![-_:])/i, "receipt-") };
   const grantId = original.match(/\bgrant[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
   return grantId ? { grantId: grantId.replace(/^grant(?![-_:])/i, "grant-") } : undefined;
+}
+
+function parseProofReference(original: string): { proofId?: string; receiptId?: string } | undefined {
+  const proofId = original.match(/\bproof[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  if (proofId) return { proofId: proofId.replace(/^proof(?![-_:])/i, "proof-") };
+  const receiptId = original.match(/\breceipt[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0];
+  return receiptId ? { receiptId: receiptId.replace(/^receipt(?![-_:])/i, "receipt-") } : undefined;
+}
+
+function parseRecordId(original: string): string | undefined {
+  return original.match(/\brec[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^rec(?![-_:])/i, "rec-");
 }
 
 function parseDid(original: string): string | undefined {

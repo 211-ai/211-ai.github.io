@@ -86,9 +86,28 @@ export const agentToolPermissionPolicies: Record<AgentCommandName, AgentToolPerm
   analyze_granted_record: shareOrDisclosePolicy("agent.grant_record.analyze"),
   view_granted_record: shareOrDisclosePolicy("agent.grant_record.view"),
   delegate_grant: shareOrDisclosePolicy("agent.grant.delegate"),
+  create_proof: shareOrDisclosePolicy("agent.proof.create", {
+    requiresPrivateContextOptIn: true
+  }),
   create_location_region_proof: shareOrDisclosePolicy("agent.proof.location_region.create", {
     requiresPrivateContextOptIn: true
   }),
+  explain_proof_receipt: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  verify_proof_status: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
   create_verified_export_bundle: shareOrDisclosePolicy("agent.export_bundle.create"),
   refresh_wallet_audit: {
     gate: "read_wallet_summary",
