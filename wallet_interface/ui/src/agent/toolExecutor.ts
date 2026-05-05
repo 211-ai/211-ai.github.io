@@ -481,6 +481,28 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
   if (name === "set_disclosure_scopes" && isRecord(input)) {
     return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
   }
+  if (name === "update_recipient_scopes" && isRecord(input)) {
+    return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
+  }
+  if ((name === "add_recipient" || name === "edit_recipient") && isRecord(input)) {
+    return `${name === "add_recipient" ? "Add" : "Edit"} recipient ${String(
+      input.displayName ?? input.recipientId ?? ""
+    )}.`;
+  }
+  if (name === "remove_recipient" && isRecord(input)) {
+    return `Remove recipient ${String(input.recipientId ?? "")}.`;
+  }
+  if (name === "request_shelter_contact" && isRecord(input)) {
+    return `Request shelter contact with ${String(input.shelterName ?? "")}.`;
+  }
+  if (
+    (name === "approve_shelter_contact_request" || name === "deny_shelter_contact_request") &&
+    isRecord(input)
+  ) {
+    return `${name === "approve_shelter_contact_request" ? "Approve" : "Deny"} shelter contact request ${String(
+      input.requestId ?? ""
+    )}.`;
+  }
   if (
     (name === "record_controller_approval" ||
       name === "approve_access_request" ||

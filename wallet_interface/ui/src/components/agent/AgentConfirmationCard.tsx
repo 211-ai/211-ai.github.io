@@ -135,11 +135,52 @@ function summarizeChange(confirmation: AgentConfirmationRequest, toolCall?: Agen
     };
   }
 
-  if (toolName === "set_disclosure_scopes" && isRecord(input)) {
+  if ((toolName === "set_disclosure_scopes" || toolName === "update_recipient_scopes") && isRecord(input)) {
     return {
       before: "The recipient keeps the current sharing scopes.",
       after: `Recipient ${readString(input.recipientId, "selected recipient")} will be limited to the selected scopes.`,
       details: Array.isArray(input.allowedScopes) ? [`Scopes: ${input.allowedScopes.map(formatValue).join(", ")}`] : []
+    };
+  }
+
+  if (toolName === "add_recipient" && isRecord(input)) {
+    return {
+      before: "This recipient is not saved in contacts.",
+      after: `${readString(input.displayName, "The recipient")} will be added with the selected sharing scopes.`,
+      details: Array.isArray(input.allowedScopes) ? [`Scopes: ${input.allowedScopes.map(formatValue).join(", ")}`] : []
+    };
+  }
+
+  if (toolName === "edit_recipient" && isRecord(input)) {
+    return {
+      before: "The recipient keeps the current contact and sharing details.",
+      after: `Recipient ${readString(input.recipientId, "selected recipient")} will be updated.`,
+      details: summarizeChangedFieldNames(input).filter((field) => field !== "recipientId")
+    };
+  }
+
+  if (toolName === "remove_recipient" && isRecord(input)) {
+    return {
+      before: "The recipient remains in contacts.",
+      after: `Recipient ${readString(input.recipientId, "selected recipient")} will be removed.`,
+      details: readString(input.reason) ? ["A reason will be recorded."] : []
+    };
+  }
+
+  if (toolName === "request_shelter_contact" && isRecord(input)) {
+    return {
+      before: "No new shelter contact request is created.",
+      after: `A contact request will be sent to ${readString(input.shelterName, "the selected shelter")}.`,
+      details: []
+    };
+  }
+
+  if (toolName === "approve_shelter_contact_request" || toolName === "deny_shelter_contact_request") {
+    const verb = toolName === "approve_shelter_contact_request" ? "approved" : "denied";
+    return {
+      before: "The shelter contact request remains pending.",
+      after: `Shelter contact request ${readString(isRecord(input) ? input.requestId : undefined, "selected request")} will be ${verb}.`,
+      details: isRecord(input) && readString(input.reason) ? ["A reason will be recorded."] : []
     };
   }
 
