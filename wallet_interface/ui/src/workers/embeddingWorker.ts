@@ -41,7 +41,7 @@ async function initialize(modelName = DEFAULT_EMBEDDING_MODEL): Promise<void> {
     configureTransformersRuntime();
     initializePromise = pipeline("feature-extraction", modelName, {
       quantized: true,
-    }).then((pipe) => {
+    }).then((pipe: any) => {
       extractor = pipe;
       currentModelName = modelName;
     });
