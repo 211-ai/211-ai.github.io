@@ -24,7 +24,7 @@ import {
   answerServiceNavigationQuestion,
   searchServiceNavigation,
 } from "../agent/serviceNavigationAgent";
-import { getRouteFromHash, setLocationRouteHash } from "./appState";
+import { navigateAction, readSurfaceContextAction } from "../agent/tools/navigationTools";
 import type {
   AccessRequestDecisionCommandInput,
   AgentCommandName,
@@ -32,9 +32,7 @@ import type {
   CreateLocationRegionProofCommandInput,
   CreateServicePlanCommandInput,
   CreateVerifiedExportBundleCommandInput,
-  NavigateCommandInput,
   OpenServiceDetailCommandInput,
-  ReadSurfaceContextCommandInput,
   RefreshWalletAuditCommandInput,
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
@@ -212,96 +210,6 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function uniqueStrings(values: string[]): string[] {
   return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
-}
-
-function surfaceContextFromState(state: AppActionState, input: ReadSurfaceContextCommandInput = {}): SurfaceContext {
-  const route = input.route ?? state.activeRoute ?? getRouteFromHash();
-  const includePrivateContext = Boolean(input.includePrivateContext && state.privateContextAllowed);
-  const visibleServiceDocIds = route === "social-services" ? [] : undefined;
-  const visibleRecordIds =
-    route === "uploads" || route === "proof-center" || route === "exports"
-      ? state.uploads.map((upload) => upload.recordId || upload.id)
-      : undefined;
-
-  return {
-    route,
-    routeLabel: getRouteLabel(route),
-    capturedAt: new Date().toISOString(),
-    visibleRecordIds,
-    visibleServiceDocIds,
-    walletUnlocked: state.walletUnlocked ?? true,
-    privateContextAllowed: state.privateContextAllowed ?? false,
-    permissionLevel: includePrivateContext ? "wallet_private" : "app_context",
-    summary: summarizeRouteState(route, state),
-    metadata: includePrivateContext
-      ? {
-          profile: {
-            preferredName: state.profile.preferredName,
-            currentLocation: state.profile.currentLocation,
-            serviceNeeds: state.profile.serviceNeeds,
-            preferredCheckInChannels: state.profile.preferredCheckInChannels
-          },
-          policy: state.policy,
-          recipients: state.recipients.map((recipient) => ({
-            id: recipient.id,
-            displayName: recipient.displayName,
-            type: recipient.type,
-            allowedScopes: recipient.allowedScopes
-          }))
-        }
-      : {
-          uploadCount: state.uploads.length,
-          recipientCount: state.recipients.length,
-          pendingAccessRequestCount: state.accessRequests.filter((request) => request.status === "pending").length
-        }
-  };
-}
-
-function summarizeRouteState(route: RouteId, state: AppActionState): string {
-  if (route === "register") {
-    const name = state.profile.preferredName || state.profile.legalName || "No name yet";
-    return `Registration draft for ${name}; ${state.profile.serviceNeeds.length} service needs selected.`;
-  }
-  if (route === "check-in") {
-    return `Check-in every ${state.policy.intervalDays} days through ${state.policy.reminderChannels.join(", ") || "no channels"}.`;
-  }
-  if (route === "sharing-rules" || route === "contacts") {
-    return `${state.recipients.length} recipients saved.`;
-  }
-  if (route === "recipient-access") {
-    return `${state.accessRequests.filter((request) => request.status === "pending").length} pending access requests.`;
-  }
-  if (route === "proof-center") {
-    return `${state.walletProofReceipts.length} proof receipts available.`;
-  }
-  if (route === "exports") {
-    return `${state.exportBundleViews.length} export bundles available.`;
-  }
-  if (route === "audit") {
-    return `${state.walletAuditEvents.length} audit events visible.`;
-  }
-  return `${getRouteLabel(route)} surface is active.`;
-}
-
-async function navigateAction(
-  runtime: AppActionRuntime,
-  input: NavigateCommandInput
-): Promise<AppActionResult> {
-  setLocationRouteHash(input.route);
-  runtime.setActiveRoute?.(input.route);
-  runtime.setMobileNavOpen?.(false);
-  return success("navigate", `Opened ${getRouteLabel(input.route)}.`, { route: input.route });
-}
-
-async function readSurfaceContextAction(
-  runtime: AppActionRuntime,
-  input: ReadSurfaceContextCommandInput
-): Promise<AppActionResult> {
-  const surfaceContext = surfaceContextFromState(runtime.getState(), input);
-  return success("read_surface_context", surfaceContext.summary || `Read ${surfaceContext.routeLabel}.`, {
-    route: surfaceContext.route,
-    surfaceContext
-  });
 }
 
 async function search211ServicesAction(
