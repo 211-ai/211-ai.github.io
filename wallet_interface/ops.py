@@ -8,11 +8,24 @@ import os
 import sys
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, IO, Sequence
+from typing import Any, Callable, IO, Mapping, Sequence
 from urllib import request as urllib_request
 
 from .app_service import WalletInterfaceService
+
+_PRODUCTION_PLACEHOLDER_MARKERS = (
+    "example.com",
+    "example.test",
+    "replace-",
+    "replace_me",
+    "replace-me",
+    "changeme",
+)
+
+_FALSE_VALUES = {"0", "false", "no", "off"}
+_TRUE_VALUES = {"1", "true", "yes", "on"}
 
 
 @dataclass
@@ -59,6 +72,307 @@ def _default_alert_sender(url: str, payload: dict[str, Any], headers: dict[str, 
     with urllib_request.urlopen(req, timeout=10) as response:
         if response.status >= 400:
             raise RuntimeError(f"alert webhook returned HTTP {response.status}")
+
+
+def _env(env: Mapping[str, str] | None, name: str) -> str:
+    source = env if env is not None else os.environ
+    return str(source.get(name) or "").strip()
+
+
+def _is_placeholder(value: str) -> bool:
+    lowered = value.strip().lower()
+    return not lowered or any(marker in lowered for marker in _PRODUCTION_PLACEHOLDER_MARKERS)
+
+
+def _bool_env(env: Mapping[str, str] | None, name: str) -> bool | None:
+    value = _env(env, name).lower()
+    if not value:
+        return None
+    if value in _TRUE_VALUES:
+        return True
+    if value in _FALSE_VALUES:
+        return False
+    return None
+
+
+def _report_status(checks: list[dict[str, Any]]) -> str:
+    if any(check["status"] == "error" for check in checks):
+        return "error"
+    if any(check["status"] == "warning" for check in checks):
+        return "warning"
+    return "ok"
+
+
+def validate_proof_contract(service: WalletInterfaceService | None = None) -> dict[str, Any]:
+    """Validate the configured external location proof verifier contract."""
+    resolved_service = service or WalletInterfaceService()
+    backend = resolved_service.wallet_service.proof_backend
+    generated_at = datetime.now(timezone.utc).isoformat()
+    if not hasattr(backend, "validate_contract"):
+        return {
+            "source": "wallet_interface.ops",
+            "generated_at": generated_at,
+            "status": "error",
+            "summary": "configured proof backend does not support external contract validation",
+            "backend": backend.__class__.__name__,
+            "verifier_id": getattr(backend, "verifier_id", None),
+            "proof_system": getattr(backend, "proof_system", None),
+            "checks": [
+                {
+                    "name": "backend",
+                    "status": "error",
+                    "summary": "set WALLET_PROOF_BACKEND=http-location-region for contract validation",
+                    "details": {"backend": backend.__class__.__name__},
+                }
+            ],
+        }
+    try:
+        validation = backend.validate_contract()
+    except Exception as exc:
+        return {
+            "source": "wallet_interface.ops",
+            "generated_at": generated_at,
+            "status": "error",
+            "summary": f"proof verifier contract validation failed: {exc}",
+            "backend": backend.__class__.__name__,
+            "checks": [
+                {
+                    "name": "contract",
+                    "status": "error",
+                    "summary": str(exc),
+                    "details": {"error": str(exc)},
+                }
+            ],
+        }
+    return {
+        "source": "wallet_interface.ops",
+        "generated_at": generated_at,
+        "status": validation.get("status", "error"),
+        "summary": "proof verifier contract validation completed",
+        **validation,
+    }
+
+
+def validate_production_readiness(
+    service: WalletInterfaceService | None = None,
+    *,
+    env: Mapping[str, str] | None = None,
+    repository_root: str | None = None,
+    verify_storage: bool = True,
+    run_proof_contract: bool = True,
+) -> dict[str, Any]:
+    """Validate the production wallet operations gate for a target environment.
+
+    The report intentionally records only whether secrets are configured, not
+    the secret values themselves.
+    """
+
+    generated_at = datetime.now(timezone.utc).isoformat()
+    checks: list[dict[str, Any]] = []
+
+    def add_check(name: str, status: str, summary: str, details: dict[str, Any] | None = None) -> None:
+        checks.append(
+            {
+                "name": name,
+                "status": status,
+                "summary": summary,
+                "details": details or {},
+            }
+        )
+
+    repository_value = str(repository_root or _env(env, "WALLET_REPOSITORY_ROOT")).strip()
+    storage_configured = bool(_env(env, "WALLET_STORAGE_CONFIG") or _env(env, "WALLET_STORAGE_TYPE"))
+    missing_persistence = [
+        name
+        for name, configured in {
+            "WALLET_REPOSITORY_ROOT": bool(repository_value),
+            "WALLET_STORAGE_CONFIG or WALLET_STORAGE_TYPE": storage_configured,
+        }.items()
+        if not configured
+    ]
+    placeholder_persistence = [
+        name
+        for name, value in {
+            "WALLET_REPOSITORY_ROOT": repository_value,
+            "WALLET_STORAGE_CONFIG": _env(env, "WALLET_STORAGE_CONFIG"),
+            "WALLET_STORAGE_ROOT": _env(env, "WALLET_STORAGE_ROOT"),
+            "WALLET_STORAGE_BUCKET": _env(env, "WALLET_STORAGE_BUCKET"),
+        }.items()
+        if value and _is_placeholder(value)
+    ]
+    add_check(
+        "persistence_environment",
+        "error" if missing_persistence or placeholder_persistence else "ok",
+        (
+            "Durable repository and encrypted storage env vars are configured."
+            if not missing_persistence and not placeholder_persistence
+            else "Durable repository or encrypted storage env vars are missing or still placeholders."
+        ),
+        {
+            "missing": missing_persistence,
+            "placeholder_vars": placeholder_persistence,
+            "auto_load_repository": _bool_env(env, "WALLET_AUTO_LOAD_REPOSITORY"),
+            "auto_persist": _bool_env(env, "WALLET_AUTO_PERSIST"),
+        },
+    )
+
+    proof_mode = _env(env, "WALLET_PROOF_MODE").lower()
+    proof_backend = _env(env, "WALLET_PROOF_BACKEND").lower()
+    allow_simulated = _bool_env(env, "WALLET_ALLOW_SIMULATED_PROOFS")
+    proof_required = {
+        "WALLET_PROOF_MODE": proof_mode,
+        "WALLET_PROOF_BACKEND": proof_backend,
+        "WALLET_PROOF_SERVICE_URL": _env(env, "WALLET_PROOF_SERVICE_URL"),
+        "WALLET_PROOF_VERIFIER_ID": _env(env, "WALLET_PROOF_VERIFIER_ID"),
+        "WALLET_PROOF_SYSTEM": _env(env, "WALLET_PROOF_SYSTEM"),
+        "WALLET_PROOF_CIRCUIT_ID": _env(env, "WALLET_PROOF_CIRCUIT_ID"),
+    }
+    proof_missing = [name for name, value in proof_required.items() if not value]
+    proof_placeholders = [name for name, value in proof_required.items() if value and _is_placeholder(value)]
+    proof_errors = list(proof_missing)
+    if proof_mode not in {"production", "prod"}:
+        proof_errors.append("WALLET_PROOF_MODE must be production")
+    if proof_backend not in {"http-location-region", "http", "remote-http", "verifier-http"}:
+        proof_errors.append("WALLET_PROOF_BACKEND must be http-location-region")
+    if allow_simulated is True:
+        proof_errors.append("WALLET_ALLOW_SIMULATED_PROOFS must not enable simulated proofs")
+    add_check(
+        "proof_environment",
+        "error" if proof_errors or proof_placeholders else "ok",
+        (
+            "Production proof mode and HTTP location-region verifier env vars are configured."
+            if not proof_errors and not proof_placeholders
+            else "Production proof env vars are incomplete, non-production, or placeholders."
+        ),
+        {
+            "missing_or_invalid": proof_errors,
+            "placeholder_vars": proof_placeholders,
+            "allow_simulated_proofs": allow_simulated,
+        },
+    )
+
+    proof_bearer_configured = bool(_env(env, "WALLET_PROOF_BEARER_TOKEN"))
+    proof_custom_header_configured = bool(
+        _env(env, "WALLET_PROOF_HTTP_HEADER_NAME") and _env(env, "WALLET_PROOF_HTTP_HEADER_VALUE")
+    )
+    proof_secret_placeholders = [
+        name
+        for name in ("WALLET_PROOF_BEARER_TOKEN", "WALLET_PROOF_HTTP_HEADER_VALUE")
+        if _env(env, name) and _is_placeholder(_env(env, name))
+    ]
+    add_check(
+        "proof_credentials",
+        "error" if (not proof_bearer_configured and not proof_custom_header_configured) or proof_secret_placeholders else "ok",
+        (
+            "External proof verifier credentials are configured."
+            if (proof_bearer_configured or proof_custom_header_configured) and not proof_secret_placeholders
+            else "External proof verifier credentials are missing or placeholders."
+        ),
+        {
+            "bearer_token_configured": proof_bearer_configured,
+            "custom_header_configured": proof_custom_header_configured,
+            "placeholder_vars": proof_secret_placeholders,
+        },
+    )
+
+    ops_secret = _env(env, "WALLET_OPS_HEALTH_SHARED_SECRET")
+    alert_url = _env(env, "WALLET_OPS_ALERT_WEBHOOK_URL")
+    alert_bearer_configured = bool(_env(env, "WALLET_OPS_ALERT_BEARER_TOKEN"))
+    alert_custom_header_configured = bool(
+        _env(env, "WALLET_OPS_ALERT_HEADER_NAME") and _env(env, "WALLET_OPS_ALERT_HEADER_VALUE")
+    )
+    ops_placeholders = [
+        name
+        for name in (
+            "WALLET_OPS_HEALTH_SHARED_SECRET",
+            "WALLET_OPS_ALERT_WEBHOOK_URL",
+            "WALLET_OPS_ALERT_BEARER_TOKEN",
+            "WALLET_OPS_ALERT_HEADER_VALUE",
+        )
+        if _env(env, name) and _is_placeholder(_env(env, name))
+    ]
+    ops_missing = []
+    if not ops_secret:
+        ops_missing.append("WALLET_OPS_HEALTH_SHARED_SECRET")
+    if not alert_url:
+        ops_missing.append("WALLET_OPS_ALERT_WEBHOOK_URL")
+    if not alert_bearer_configured and not alert_custom_header_configured:
+        ops_missing.append("WALLET_OPS_ALERT_BEARER_TOKEN or WALLET_OPS_ALERT_HEADER_NAME/VALUE")
+    add_check(
+        "ops_credentials",
+        "error" if ops_missing or ops_placeholders else "ok",
+        (
+            "Ops health auth and alert credentials are configured."
+            if not ops_missing and not ops_placeholders
+            else "Ops health auth or alert credentials are missing or placeholders."
+        ),
+        {
+            "missing": ops_missing,
+            "placeholder_vars": ops_placeholders,
+            "alert_bearer_token_configured": alert_bearer_configured,
+            "alert_custom_header_configured": alert_custom_header_configured,
+        },
+    )
+
+    resolved_service = service
+    if resolved_service is None:
+        try:
+            resolved_service = WalletInterfaceService(repository_root=repository_root)
+        except Exception as exc:
+            add_check(
+                "service_configuration",
+                "error",
+                f"WalletInterfaceService could not start from production env: {exc}",
+                {"error": str(exc)},
+            )
+
+    if resolved_service is not None:
+        try:
+            health = resolved_service.ops_health(verify_storage=verify_storage)
+            add_check(
+                "ops_health",
+                str(health.get("status", "error")),
+                "Ops health check completed.",
+                {
+                    "status": health.get("status"),
+                    "check_count": health.get("check_count"),
+                    "checks": [
+                        {
+                            "name": check.get("name"),
+                            "status": check.get("status"),
+                            "summary": check.get("summary"),
+                        }
+                        for check in health.get("checks", [])
+                        if isinstance(check, dict)
+                    ],
+                },
+            )
+        except Exception as exc:
+            add_check("ops_health", "error", f"Ops health check failed: {exc}", {"error": str(exc)})
+
+        if run_proof_contract:
+            contract = validate_proof_contract(resolved_service)
+            add_check(
+                "proof_contract",
+                str(contract.get("status", "error")),
+                str(contract.get("summary", "proof verifier contract validation completed")),
+                {
+                    "backend": contract.get("backend"),
+                    "verifier_id": contract.get("verifier_id"),
+                    "proof_system": contract.get("proof_system"),
+                    "checks": contract.get("checks", []),
+                    "receipt": contract.get("receipt"),
+                },
+            )
+
+    return {
+        "source": "wallet_interface.ops",
+        "generated_at": generated_at,
+        "status": _report_status(checks),
+        "summary": "production wallet readiness validation completed",
+        "check_count": len(checks),
+        "checks": checks,
+    }
 
 
 class WalletOpsHealthWorker:
@@ -237,6 +551,21 @@ def build_parser() -> argparse.ArgumentParser:
         "--alert-header-value",
         help="Custom header value for the alert webhook. Defaults to WALLET_OPS_ALERT_HEADER_VALUE.",
     )
+    parser.add_argument(
+        "--validate-proof-contract",
+        action="store_true",
+        help="Run health/prove/verify validation against the configured external proof verifier and exit.",
+    )
+    parser.add_argument(
+        "--validate-production-readiness",
+        action="store_true",
+        help="Run the production env, ops-health, and verifier-contract release gate and exit.",
+    )
+    parser.add_argument(
+        "--skip-proof-contract",
+        action="store_true",
+        help="Skip external verifier prove/verify during --validate-production-readiness.",
+    )
     return parser
 
 
@@ -259,7 +588,25 @@ def main(argv: Sequence[str] | None = None) -> int:
             alert_headers["authorization"] = f"Bearer {args.alert_bearer_token}"
         if args.alert_header_name and args.alert_header_value:
             alert_headers[args.alert_header_name] = args.alert_header_value
+        if args.validate_production_readiness:
+            report = validate_production_readiness(
+                repository_root=args.repository_root,
+                verify_storage=args.verify_storage,
+                run_proof_contract=not args.skip_proof_contract,
+            )
+            target_output = output or sys.stdout
+            target_output.write(json.dumps(report, sort_keys=True))
+            target_output.write("\n")
+            target_output.flush()
+            return 0 if report.get("status") == "ok" else 2
         service = WalletInterfaceService(repository_root=args.repository_root)
+        if args.validate_proof_contract:
+            report = validate_proof_contract(service)
+            target_output = output or sys.stdout
+            target_output.write(json.dumps(report, sort_keys=True))
+            target_output.write("\n")
+            target_output.flush()
+            return 0 if report.get("status") == "ok" else 2
         worker = WalletOpsHealthWorker(
             service=service,
             verify_storage=args.verify_storage,

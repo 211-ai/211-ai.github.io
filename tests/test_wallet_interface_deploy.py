@@ -10,6 +10,7 @@ import pytest
 DEPLOY_ROOT = Path(__file__).parent.parent / "wallet_interface" / "deploy"
 K8S_ROOT = DEPLOY_ROOT / "kubernetes"
 CLOUDFLARE_ROOT = DEPLOY_ROOT / "cloudflare"
+DOCS_ROOT = Path(__file__).parent.parent / "docs"
 
 
 def test_wallet_deploy_reference_files_exist() -> None:
@@ -17,6 +18,9 @@ def test_wallet_deploy_reference_files_exist() -> None:
         DEPLOY_ROOT / "Dockerfile.api",
         DEPLOY_ROOT / "Dockerfile.ui",
         DEPLOY_ROOT / "docker-compose.wallet.yml",
+        DEPLOY_ROOT / "env.production.example",
+        DOCS_ROOT / "WALLET_OPERATOR_INTEGRATOR_REFERENCE.md",
+        DOCS_ROOT / "WALLET_PROOF_VERIFIER_CONTRACT.md",
         DEPLOY_ROOT / "README.md",
         CLOUDFLARE_ROOT / "README.md",
         CLOUDFLARE_ROOT / "wrangler.toml",
@@ -24,6 +28,7 @@ def test_wallet_deploy_reference_files_exist() -> None:
         K8S_ROOT / "README.md",
         K8S_ROOT / "namespace.yaml",
         K8S_ROOT / "configmap.yaml",
+        K8S_ROOT / "externalsecret.example.yaml",
         K8S_ROOT / "pvc.yaml",
         K8S_ROOT / "api-deployment.yaml",
         K8S_ROOT / "ops-deployment.yaml",
@@ -54,6 +59,8 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "WALLET_PROOF_SERVICE_URL" in compose
     assert "WALLET_PROOF_VERIFIER_ID" in compose
     assert "WALLET_PROOF_BEARER_TOKEN" in compose
+    readme = (DEPLOY_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "--validate-proof-contract" in readme
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
@@ -62,6 +69,7 @@ def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     pvc_manifest = (K8S_ROOT / "pvc.yaml").read_text(encoding="utf-8")
     config_map = (K8S_ROOT / "configmap.yaml").read_text(encoding="utf-8")
     secrets = (K8S_ROOT / "secrets.example.yaml").read_text(encoding="utf-8")
+    external_secret = (K8S_ROOT / "externalsecret.example.yaml").read_text(encoding="utf-8")
 
     assert "wallet-state-pvc" in api_manifest
     assert "wallet-state-pvc" in ops_manifest
@@ -78,6 +86,10 @@ def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     assert "WALLET_PROOF_SERVICE_URL" in secrets
     assert "WALLET_PROOF_VERIFIER_ID" in secrets
     assert "WALLET_PROOF_BEARER_TOKEN" in secrets
+    assert "kind: ExternalSecret" in external_secret
+    assert "wallet-production-secrets" in external_secret
+    assert "WALLET_OPS_ALERT_WEBHOOK_URL" in external_secret
+    assert "WALLET_STORAGE_CONFIG" in external_secret
 
 
 def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:
@@ -88,6 +100,10 @@ def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:
     assert 'crons = ["*/5 * * * *"]' in wrangler
     assert "ORIGIN_API_BASE_URL" in worker
     assert "OPS_HEALTH_SHARED_SECRET" in worker
+    assert "CF_ACCESS_CLIENT_ID" in worker
+    assert "ORIGIN_AUTH_HEADER_NAME" in worker
+    assert "methodAllowed" in worker
+    assert "Method not allowed" in worker
     assert '"/ops/health"' in worker
     assert '"/health"' in worker
     assert "x-wallet-ops-scheduled" in worker
@@ -100,6 +116,8 @@ def test_wallet_kubernetes_manifests_validate_when_kubectl_available() -> None:
         pytest.skip("kubectl not available; skipping wallet Kubernetes manifest validation")
 
     for yaml_file in sorted(K8S_ROOT.glob("*.yaml")):
+        if yaml_file.name == "externalsecret.example.yaml":
+            continue
         result = subprocess.run(
             ["kubectl", "apply", "--dry-run=client", "--validate=false", "-f", str(yaml_file)],
             capture_output=True,

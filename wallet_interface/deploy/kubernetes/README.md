@@ -6,6 +6,8 @@ stack:
 - `namespace.yaml`: dedicated namespace.
 - `configmap.yaml`: non-secret wallet runtime configuration.
 - `secrets.example.yaml`: secret shape to replace per environment.
+- `externalsecret.example.yaml`: optional External Secrets Operator mapping for
+  environment-specific secret managers.
 - `pvc.yaml`: persistent storage for wallet snapshots and encrypted blob state.
 - `api-deployment.yaml`: FastAPI wallet API deployment.
 - `ops-deployment.yaml`: long-running ops-health worker.
@@ -35,7 +37,8 @@ Before production use:
   `WALLET_PROOF_SERVICE_URL`, `WALLET_PROOF_VERIFIER_ID`,
   `WALLET_PROOF_SYSTEM`, and verifier auth secrets.
 - Move `WALLET_STORAGE_CONFIG` and any provider credentials into a real Secret
-  or external secret manager.
+  or external secret manager. `externalsecret.example.yaml` provides the
+  expected key mapping when using External Secrets Operator.
 - Set `WALLET_OPS_HEALTH_SHARED_SECRET` for the API and any edge caller, and
   set `WALLET_OPS_ALERT_WEBHOOK_URL` if ops-health alerts should route to an
   incident system.

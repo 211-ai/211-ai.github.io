@@ -807,12 +807,14 @@ export async function createRedactedGraphRAG(
   {
     recordIds,
     grantId,
+    invocationToken,
     maxCharsPerRecord = 20_000,
     maxBytesPerRecord = 200_000,
     useOcr = true
   }: {
     recordIds: string[];
     grantId?: string;
+    invocationToken?: string;
     maxCharsPerRecord?: number;
     maxBytesPerRecord?: number;
     useOcr?: boolean;
@@ -826,6 +828,7 @@ export async function createRedactedGraphRAG(
     actor_did: requiredActorDid(config),
     actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
     grant_id: grantId || undefined,
+    invocation_token: invocationToken || undefined,
     record_ids: recordIds,
     max_chars_per_record: maxCharsPerRecord,
     max_bytes_per_record: maxBytesPerRecord,

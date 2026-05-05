@@ -29,6 +29,7 @@ import {
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
+  DecryptedRecordView,
   DerivedArtifactView,
   EasyBotCheckStatus,
   ExportBundleView,
@@ -68,13 +69,15 @@ import {
   approveThresholdApproval,
   addBinaryDocument,
   addTextDocument,
+  analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createVerifiedExportBundleView,
-  decryptRecordWithGrant,
   delegateGrant,
+  decryptRecordWithGrant,
+  extractRecordTextRedactedWithGrant,
   importExportBundleView,
   issueRecordDecryptInvocation,
   listWalletSnapshots,
@@ -2478,13 +2481,7 @@ function ShelterScreen({
   );
 }
 
-type RecipientAnalysisMode = "summary" | "redacted" | "vector";
-type DelegationDraft = {
-  audienceDid: string;
-  audienceKeyHex: string;
-  purpose: string;
-  ability: string;
-};
+type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form";
 
 function RecipientAccessScreen({
   accessRequests,
@@ -2520,7 +2517,9 @@ function RecipientAccessScreen({
   const [analyzingReceiptIds, setAnalyzingReceiptIds] = useState<string[]>([]);
   const [decryptingReceiptIds, setDecryptingReceiptIds] = useState<string[]>([]);
   const [delegatingReceiptIds, setDelegatingReceiptIds] = useState<string[]>([]);
-  const [delegationDrafts, setDelegationDrafts] = useState<Record<string, DelegationDraft>>({});
+  const [delegationDrafts, setDelegationDrafts] = useState<
+    Record<string, { audienceDid: string; audienceKeyHex: string; purpose: string; ability: string }>
+  >({});
   const [delegationMessages, setDelegationMessages] = useState<Record<string, string>>({});
 
   function hasThresholdApproval(request: WalletAccessRequest) {
@@ -2550,11 +2549,7 @@ function RecipientAccessScreen({
   }
 
   function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
-    return Boolean(
-      receipt.caveats?.user_presence_required ??
-        receipt.caveats?.requires_user_presence ??
-        receipt.caveats?.userPresent
-    );
+    return receipt.caveats?.user_presence_required === true || receipt.caveats?.require_user_presence === true;
   }
 
   function analysisActionId(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
@@ -2563,12 +2558,33 @@ function RecipientAccessScreen({
 
   function summarizeDerivedOutput(output: Record<string, unknown>) {
     if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
+    if (typeof output.text === "string" && output.text.trim()) return output.text;
     const profile = output.profile;
     if (profile && typeof profile === "object" && !Array.isArray(profile)) {
       const profileRecord = profile as Record<string, unknown>;
       const profileType = typeof profileRecord.profile_type === "string" ? profileRecord.profile_type : "vector profile";
       const chunkCount = typeof profileRecord.chunk_count === "number" ? profileRecord.chunk_count : undefined;
       return chunkCount === undefined ? profileType : `${profileType} · ${chunkCount} chunks`;
+    }
+    const fields = output.fields;
+    if (Array.isArray(fields)) {
+      const fieldLabels = fields
+        .map((field) => {
+          if (!field || typeof field !== "object" || Array.isArray(field)) return "";
+          const fieldRecord = field as Record<string, unknown>;
+          return String(fieldRecord.label ?? fieldRecord.name ?? "").trim();
+        })
+        .filter(Boolean)
+        .slice(0, 3);
+      return fieldLabels.length > 0
+        ? `${fields.length} redacted fields: ${fieldLabels.join(", ")}`
+        : `${fields.length} redacted fields`;
+    }
+    const form = output.form;
+    if (form && typeof form === "object" && !Array.isArray(form)) {
+      const formRecord = form as Record<string, unknown>;
+      const fieldCount = typeof formRecord.field_count === "number" ? formRecord.field_count : undefined;
+      if (fieldCount !== undefined) return `${fieldCount} redacted form fields`;
     }
     if (typeof output.output_policy === "string") return output.output_policy;
     return "Safe derived output created.";
@@ -2731,28 +2747,44 @@ function RecipientAccessScreen({
       const artifact = await (async () => {
         if (!apiConfig?.actorDid) {
           const localArtifacts: Record<RecipientAnalysisMode, DerivedArtifactView> = {
-	            summary: {
-	              id: `artifact-${receipt.id}`,
-	              sourceRecordIds: [recordId],
+            summary: {
+              id: `artifact-${receipt.id}`,
+              sourceRecordIds: [recordId],
               artifactType: "summary",
               outputPolicy: "derived_only",
               encryptedPayloadRef: "local encrypted derived artifact",
               createdAt: "Just now"
             },
-	            redacted: {
-	              id: `artifact-redacted-${receipt.id}`,
-	              sourceRecordIds: [recordId],
+            redacted: {
+              id: `artifact-redacted-${receipt.id}`,
+              sourceRecordIds: [recordId],
               artifactType: "redacted_document_analysis",
               outputPolicy: "redacted_derived_only",
               encryptedPayloadRef: "local encrypted redacted artifact",
               createdAt: "Just now"
             },
-	            vector: {
-	              id: `artifact-vector-${receipt.id}`,
-	              sourceRecordIds: [recordId],
+            vector: {
+              id: `artifact-vector-${receipt.id}`,
+              sourceRecordIds: [recordId],
               artifactType: "redacted_document_vector_profile",
               outputPolicy: "encrypted_vector_profile",
               encryptedPayloadRef: "local encrypted vector profile",
+              createdAt: "Just now"
+            },
+            "extract-text": {
+              id: `artifact-text-${receipt.id}`,
+              sourceRecordIds: [recordId],
+              artifactType: "redacted_document_text_extraction",
+              outputPolicy: "redacted_extracted_text",
+              encryptedPayloadRef: "local encrypted extracted text",
+              createdAt: "Just now"
+            },
+            form: {
+              id: `artifact-form-${receipt.id}`,
+              sourceRecordIds: [recordId],
+              artifactType: "redacted_document_form_analysis",
+              outputPolicy: "redacted_form_analysis",
+              encryptedPayloadRef: "local encrypted form analysis",
               createdAt: "Just now"
             }
           };
@@ -2761,7 +2793,11 @@ function RecipientAccessScreen({
               ? "Local demo redacted derived output."
               : mode === "vector"
                 ? "redacted_lexical_hash_vector · local chunks"
-                : "";
+                : mode === "extract-text"
+                  ? "Local demo redacted extracted text."
+                  : mode === "form"
+                    ? "Local demo redacted form fields."
+                    : "";
           return localArtifacts[mode];
         }
         if (mode === "redacted") {
@@ -2782,10 +2818,31 @@ function RecipientAccessScreen({
           safeOutput = summarizeDerivedOutput(result.output);
           return result.artifact;
         }
-	        return analyzeRecordWithGrant(apiConfig, {
-	          grantId: receipt.grantId,
-	          recordId,
-          maxChars: 500
+        if (mode === "extract-text") {
+          const result = await extractRecordTextRedactedWithGrant(apiConfig, {
+            grantId: receipt.grantId,
+            recordId,
+            maxBytes: 200_000,
+            maxChars: 20_000,
+            useOcr: true
+          });
+          safeOutput = summarizeDerivedOutput(result.output);
+          return result.artifact;
+        }
+        if (mode === "form") {
+          const result = await analyzeRecordFormRedactedWithGrant(apiConfig, {
+            grantId: receipt.grantId,
+            recordId,
+            maxFields: 100,
+            useOcr: false
+          });
+          safeOutput = summarizeDerivedOutput(result.output);
+          return result.artifact;
+        }
+        return analyzeRecordWithGrant(apiConfig, {
+          grantId: receipt.grantId,
+          recordId,
+          maxChars: 200
         });
       })();
       setDerivedArtifactsByReceiptId((artifacts) => ({
@@ -2800,9 +2857,9 @@ function RecipientAccessScreen({
     } catch {
       setDerivedArtifactsByReceiptId((artifacts) => ({
         ...artifacts,
-	        [receipt.id]: {
-	          id: `artifact-error-${receipt.id}`,
-	          sourceRecordIds: [recordId],
+        [receipt.id]: {
+          id: `artifact-error-${receipt.id}`,
+          sourceRecordIds: [recordId],
           artifactType: "unavailable",
           outputPolicy: "derived_only",
           encryptedPayloadRef: "analysis unavailable",
@@ -3028,6 +3085,8 @@ function RecipientAccessScreen({
               receipt.status === "active" && receiptHasAbility(receipt, "record/analyze") && Boolean(receipt.recordId);
             const canAnalyzeRedacted = canAnalyze && receiptAllowsOutput(receipt, "redacted_derived_only");
             const canCreateVectorProfile = canAnalyze && receiptAllowsOutput(receipt, "vector_profile");
+            const canExtractText = canAnalyze && receiptAllowsOutput(receipt, "redacted_extracted_text");
+            const canAnalyzeForm = canAnalyze && receiptAllowsOutput(receipt, "redacted_form_analysis");
             const canView =
               receipt.status === "active" && receiptHasAbility(receipt, "record/decrypt") && Boolean(receipt.recordId);
             const artifact = derivedArtifactsByReceiptId[receipt.id];
@@ -3124,7 +3183,7 @@ function RecipientAccessScreen({
                   </div>
                 </div>
               ) : null}
-              {canAnalyze || canAnalyzeRedacted || canCreateVectorProfile || canView ? (
+              {canAnalyze || canAnalyzeRedacted || canCreateVectorProfile || canExtractText || canAnalyzeForm || canView ? (
                 <div className="row-actions">
                   {canAnalyze ? (
                     <Button
@@ -3133,7 +3192,9 @@ function RecipientAccessScreen({
                       variant="secondary"
                     >
                       <ShieldCheck size={18} />
-                      {analyzingReceiptIds.includes(analysisActionId(receipt, "summary")) ? "Making summary" : "Make safe summary"}
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "summary"))
+                        ? "Making summary"
+                        : "Make safe summary"}
                     </Button>
                   ) : null}
                   {canAnalyzeRedacted ? (
@@ -3160,6 +3221,30 @@ function RecipientAccessScreen({
                         : "Vector profile"}
                     </Button>
                   ) : null}
+                  {canExtractText ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "extract-text"))}
+                      onClick={() => analyzeReceipt(receipt, "extract-text")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "extract-text"))
+                        ? "Extracting"
+                        : "Extract text"}
+                    </Button>
+                  ) : null}
+                  {canAnalyzeForm ? (
+                    <Button
+                      disabled={analyzingReceiptIds.includes(analysisActionId(receipt, "form"))}
+                      onClick={() => analyzeReceipt(receipt, "form")}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} />
+                      {analyzingReceiptIds.includes(analysisActionId(receipt, "form"))
+                        ? "Reading form"
+                        : "Analyze form"}
+                    </Button>
+                  ) : null}
                   {canView ? (
                     <Button
                       disabled={decryptingReceiptIds.includes(receipt.id)}
@@ -3175,38 +3260,38 @@ function RecipientAccessScreen({
               {canDelegate ? (
                 <form className="delegation-form" onSubmit={(event) => delegateReceipt(event, receipt)}>
                   <div className="form-grid">
-                    <Field label="Delegate DID" required>
+                    <Field label="Delegate DID">
                       <input
-                        value={delegationDraft.audienceDid}
                         onChange={(event) =>
                           updateDelegationDraft(receipt, delegationOptions, { audienceDid: event.target.value })
                         }
                         placeholder="did:key:case-worker"
+                        value={delegationDraft.audienceDid}
                       />
                     </Field>
                     <Field label="Delegate key">
                       <input
-                        value={delegationDraft.audienceKeyHex}
                         onChange={(event) =>
                           updateDelegationDraft(receipt, delegationOptions, { audienceKeyHex: event.target.value })
                         }
-                        placeholder="Optional public key"
+                        placeholder="optional public key"
+                        value={delegationDraft.audienceKeyHex}
                       />
                     </Field>
                     <Field label="Delegated purpose">
                       <input
-                        value={delegationDraft.purpose}
                         onChange={(event) =>
                           updateDelegationDraft(receipt, delegationOptions, { purpose: event.target.value })
                         }
+                        value={delegationDraft.purpose}
                       />
                     </Field>
-                    <Field label="Delegated access">
+                    <Field label="Delegated ability">
                       <select
-                        value={delegationDraft.ability}
                         onChange={(event) =>
                           updateDelegationDraft(receipt, delegationOptions, { ability: event.target.value })
                         }
+                        value={delegationDraft.ability}
                       >
                         {delegationOptions.map((ability) => (
                           <option key={ability} value={ability}>
@@ -3217,13 +3302,22 @@ function RecipientAccessScreen({
                     </Field>
                   </div>
                   <div className="row-actions">
-                    <Button disabled={delegatingReceiptIds.includes(receipt.id)} type="submit" variant="secondary">
-                      <ShieldCheck size={18} />
-                      {delegatingReceiptIds.includes(receipt.id) ? "Delegating" : "Delegate access"}
+                    <Button
+                      disabled={!delegationDraft.audienceDid.trim()}
+                      loading={delegatingReceiptIds.includes(receipt.id)}
+                      loadingLabel="Delegating"
+                      type="submit"
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} /> Delegate access
                     </Button>
                   </div>
-                  {delegationMessage ? <small className="pin-request-note">{delegationMessage}</small> : null}
                 </form>
+              ) : null}
+              {delegationMessage ? (
+                <p className="delegation-message" role="status">
+                  {delegationMessage}
+                </p>
               ) : null}
               <small>{receipt.audienceDid}</small>
             </article>
