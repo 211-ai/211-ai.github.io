@@ -426,7 +426,25 @@ class PortalImplementationDaemon:
         }
 
     def _run_implementation(self, task: PortalTask, state: PortalTaskState) -> dict[str, Any]:
-        lock_path = self.state_path.parent / "implementation.lock"
+        inflight = self._find_live_inflight_implementation()
+        if inflight is not None:
+            result = {
+                "skipped": True,
+                "reason": "inflight_process",
+                "task_id": str(inflight.get("task_id") or task.task_id),
+                "attempt": int(inflight.get("attempt") or 0),
+                "worktree_path": str(inflight.get("worktree_path") or ""),
+            }
+            self._record_event("implementation_skipped", result)
+            return result
+
+        lock_path = self._implementation_lock_path()
+        if lock_path.exists():
+            try:
+                lock_path.unlink()
+            except OSError:
+                self._record_event("implementation_skipped", {"task_id": task.task_id, "reason": "lock_exists"})
+                return {"skipped": True, "reason": "lock_exists"}
         try:
             lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
         except FileExistsError:
@@ -886,6 +904,67 @@ class PortalImplementationDaemon:
         }
         self._record_event("cleanup_finished", result)
         return result
+
+    def _implementation_lock_path(self) -> Path:
+        return self.state_path.parent / "implementation.lock"
+
+    def _find_live_inflight_implementation(self) -> dict[str, Any] | None:
+        inflight_events = self._inflight_implementation_events()
+        for event in reversed(inflight_events):
+            if self._implementation_process_active(event):
+                return event
+        return None
+
+    def _inflight_implementation_events(self) -> list[dict[str, Any]]:
+        if not self.events_path.exists():
+            return []
+
+        inflight: dict[tuple[str, int], dict[str, Any]] = {}
+        for raw_line in self.events_path.read_text(encoding="utf-8").splitlines():
+            raw_line = raw_line.strip()
+            if not raw_line:
+                continue
+            try:
+                event = json.loads(raw_line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(event, dict):
+                continue
+            event_type = str(event.get("type") or "")
+            task_id = str(event.get("task_id") or "")
+            attempt = int(event.get("attempt") or 0)
+            if not task_id or attempt <= 0:
+                continue
+            key = (task_id, attempt)
+            if event_type == "implementation_started":
+                inflight[key] = event
+            elif event_type == "implementation_finished":
+                inflight.pop(key, None)
+
+        return list(inflight.values())
+
+    def _implementation_process_active(self, event: dict[str, Any]) -> bool:
+        worktree_path = str(event.get("worktree_path") or "")
+        command = event.get("command") or []
+        process_lines = self._list_process_commands()
+        if worktree_path:
+            return any(worktree_path in line for line in process_lines)
+        if isinstance(command, list):
+            command_text = " ".join(str(item) for item in command if item)
+            if command_text:
+                return any(command_text in line for line in process_lines)
+        return False
+
+    def _list_process_commands(self) -> list[str]:
+        result = subprocess.run(
+            ["ps", "-eo", "args="],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return []
+        return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
     def _repo_merge_lock_path(self) -> Path:
         git_common_dir = self._run_git(["rev-parse", "--git-common-dir"], cwd=self.repo_root).stdout.strip()
