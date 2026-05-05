@@ -194,7 +194,8 @@ function privateSurfaceMetadata(route: RouteId, state: AppActionState): Record<s
       sensitivity: upload.sensitivity,
       status: upload.status,
       shared: upload.shared
-    }))
+    })),
+    ...privateRouteMetadata(route, state)
   };
 }
 
@@ -227,8 +228,7 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
     case "recipient-access":
       return {
         approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length,
-        rejectedAccessRequestCount: state.accessRequests.filter((request) => request.status === "rejected").length,
-        visibleAccessRequestIds: state.accessRequests.map((request) => request.id)
+        rejectedAccessRequestCount: state.accessRequests.filter((request) => request.status === "rejected").length
       };
     case "analytics":
       return {
@@ -237,12 +237,29 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
     case "proof-center":
       return {
         verifiedProofCount: state.walletProofReceipts.filter((proof) => proof.verificationStatus === "verified").length,
-        simulatedProofCount: state.walletProofReceipts.filter((proof) => proof.simulated).length,
+        simulatedProofCount: state.walletProofReceipts.filter((proof) => proof.simulated).length
+      };
+    case "exports":
+      return {
+        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
+      };
+    default:
+      return {};
+  }
+}
+
+function privateRouteMetadata(route: RouteId, state: AppActionState): Record<string, unknown> {
+  switch (route) {
+    case "recipient-access":
+      return {
+        visibleAccessRequestIds: state.accessRequests.map((request) => request.id)
+      };
+    case "proof-center":
+      return {
         visibleProofReceiptIds: state.walletProofReceipts.map((proof) => proof.id)
       };
     case "exports":
       return {
-        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length,
         visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
       };
     default:
