@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   Bell,
@@ -226,8 +226,9 @@ async function generateUploadSummary(file: File): Promise<string> {
 
 export function App() {
   const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
-  const agentSessionId = useMemo(() => `agent-session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, []);
   const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
+  const activeRouteRef = useRef(activeRoute);
+  activeRouteRef.current = activeRoute;
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -253,41 +254,6 @@ export function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
-  const agentRuntime: AppActionRuntime = {
-    getState: () => ({
-      activeRoute,
-      profile,
-      policy,
-      recipients,
-      uploads,
-      accessRequests,
-      grantReceipts,
-      walletAuditEvents,
-      walletProofReceipts,
-      exportBundleViews,
-      walletUnlocked: true,
-      privateContextAllowed: false,
-      permissionLevel: "app_context"
-    }),
-    setActiveRoute: navigate,
-    setMobileNavOpen,
-    setProfile,
-    setPolicy,
-    setRecipients,
-    setAccessRequests,
-    setGrantReceipts,
-    setWalletAuditEvents,
-    setWalletProofReceipts,
-    setExportBundleViews,
-    walletApiConfig,
-    refreshWalletAccessState,
-    refreshWalletAuditEvents
-  };
-  const agentChat = useAgentChatService(agentRuntime, {
-    sessionId: agentSessionId,
-    permissionLevel: "app_context",
-    privateContextAllowed: false
-  });
 
   async function refreshWalletAccessState() {
     if (!walletApiConfig) return;
@@ -326,6 +292,67 @@ export function App() {
       refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts))
     ]);
   }
+
+  const agentRuntime = useMemo<AppActionRuntime>(
+    () => ({
+      getState: () => ({
+        activeRoute: activeRouteRef.current,
+        profile,
+        policy,
+        recipients,
+        shelterContactRequests,
+        shelterStaffAccounts,
+        shelterUserAccounts,
+        uploads,
+        accessRequests,
+        grantReceipts,
+        walletAuditEvents,
+        analyticsOptIn,
+        walletProofReceipts,
+        exportBundleViews,
+        walletUnlocked: true,
+        privateContextAllowed: false,
+        permissionLevel: "wallet_write" as const
+      }),
+      setActiveRoute: (route: RouteId) => {
+        activeRouteRef.current = route;
+        setActiveRoute(route);
+      },
+      setMobileNavOpen,
+      setProfile,
+      setPolicy,
+      setRecipients,
+      setShelterContactRequests,
+      setShelterStaffAccounts,
+      setShelterUserAccounts,
+      setAccessRequests,
+      setGrantReceipts,
+      setWalletAuditEvents,
+      setAnalyticsOptIn,
+      setWalletProofReceipts,
+      setExportBundleViews,
+      walletApiConfig,
+      refreshWalletAccessState,
+      refreshWalletAuditEvents
+    }),
+    [
+      accessRequests,
+      exportBundleViews,
+      grantReceipts,
+      analyticsOptIn,
+      policy,
+      profile,
+      recipients,
+      shelterContactRequests,
+      shelterStaffAccounts,
+      shelterUserAccounts,
+      uploads,
+      walletApiConfig,
+      walletAuditEvents,
+      walletProofReceipts
+    ]
+  );
+  const agentChat = useAgentChatService(agentRuntime);
 
   useEffect(() => {
     const syncRouteFromHash = () => {
@@ -410,6 +437,7 @@ export function App() {
 
   function navigate(route: RouteId) {
     setLocationRouteHash(route);
+    activeRouteRef.current = route;
     setActiveRoute(route);
     setMobileNavOpen(false);
   }
