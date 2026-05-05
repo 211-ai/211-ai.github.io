@@ -3,9 +3,9 @@ import { runAppAction } from "../app/appActions";
 import type { AgentCommandName } from "./commandSchemas";
 import { commandSchemas, isAgentCommandName } from "./commandSchemas";
 import type { AgentToolCall, AgentToolResult, SurfaceContext } from "./types";
-import { hasPermissionLevel } from "./types";
-import { canUseToolOnSurface, getRouteLabel, getToolDefinition } from "./surfaceRegistry";
+import { getToolDefinition } from "./surfaceRegistry";
 import { buildSafeSurfaceContext } from "./tools/navigationTools";
+import { evaluateAgentToolPermissionPolicy, getAgentToolPermissionPolicy } from "./permissionPolicy";
 
 export interface SurfaceApiInvokeOptions extends AppActionOptions {
   sessionId?: string;
@@ -88,40 +88,21 @@ function validateSurfaceInvocation(
   const tool = getToolDefinition(name);
   const walletUnlocked = state.walletUnlocked ?? true;
   const privateContextAllowed = state.privateContextAllowed ?? false;
-
-  if (!canUseToolOnSurface(name, state.activeRoute, state.permissionLevel ?? "wallet_write") && name !== "navigate") {
+  const decision = evaluateAgentToolPermissionPolicy(name, {
+    route: state.activeRoute,
+    allowedSurfaces: tool.surfaces,
+    grantedPermissionLevel: state.permissionLevel ?? "wallet_write",
+    walletUnlocked,
+    privateContextAllowed,
+    userPresent: true,
+    toolTitle: tool.title
+  });
+  if (!decision.ok) {
     return {
       ok: false,
       action: name,
-      errorCode: "surface_not_allowed",
-      message: `${tool.title} cannot run from ${getRouteLabel(state.activeRoute)}.`
-    };
-  }
-
-  if (!hasPermissionLevel(state.permissionLevel ?? "wallet_write", tool.permissionLevel)) {
-    return {
-      ok: false,
-      action: name,
-      errorCode: "permission_denied",
-      message: `${tool.title} requires ${tool.permissionLevel} permission.`
-    };
-  }
-
-  if (tool.requiresWalletUnlock && !walletUnlocked) {
-    return {
-      ok: false,
-      action: name,
-      errorCode: "wallet_locked",
-      message: `${tool.title} requires an unlocked wallet.`
-    };
-  }
-
-  if (tool.requiresPrivateContextOptIn && !privateContextAllowed) {
-    return {
-      ok: false,
-      action: name,
-      errorCode: "private_context_required",
-      message: `${tool.title} requires private context permission.`
+      errorCode: decision.code,
+      message: decision.message
     };
   }
 
@@ -130,6 +111,7 @@ function validateSurfaceInvocation(
 
 function toAgentToolResult(toolCall: AgentToolCall, result: AppActionResult): AgentToolResult {
   const completedAt = new Date().toISOString();
+  const auditEventId = result.ok ? result.auditEventId ?? createRequiredAuditEventId(toolCall) : undefined;
   return result.ok
     ? {
         id: `tool-result-${toolCall.id}`,
@@ -139,7 +121,7 @@ function toAgentToolResult(toolCall: AgentToolCall, result: AppActionResult): Ag
         completedAt,
         output: result,
         evidenceBundleIds: result.evidenceBundle ? [result.evidenceBundle.id] : undefined,
-        auditEventId: result.auditEventId
+        auditEventId
       }
     : {
         id: `tool-result-${toolCall.id}`,
@@ -154,4 +136,11 @@ function toAgentToolResult(toolCall: AgentToolCall, result: AppActionResult): Ag
         },
         output: result
       };
+}
+
+function createRequiredAuditEventId(toolCall: AgentToolCall): string | undefined {
+  if (!isAgentCommandName(toolCall.name)) return undefined;
+  const policy = getAgentToolPermissionPolicy(toolCall.name);
+  if (!policy.requiresAudit) return undefined;
+  return `${policy.auditEventType ?? "agent.tool.audit"}:${toolCall.id}`;
 }
