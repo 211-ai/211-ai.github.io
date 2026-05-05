@@ -138,7 +138,10 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "answer_211_question",
     "open_service_detail",
     "save_service",
-    "create_service_plan"
+    "create_service_plan",
+    "add_service_plan_checklist_item",
+    "set_service_plan_reminder",
+    "record_service_interaction"
   ],
   shelter: [...commonReadTools, "search_211_services", "answer_211_question"],
   "recipient-access": [
@@ -260,6 +263,36 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: true,
     auditEventType: "agent.service_plan.create"
+  },
+  add_service_plan_checklist_item: {
+    title: "Add service plan checklist item",
+    permissionLevel: "wallet_write",
+    surfaces: ["social-services"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: true,
+    auditEventType: "agent.service_plan.checklist.add"
+  },
+  set_service_plan_reminder: {
+    title: "Set service plan reminder",
+    permissionLevel: "wallet_write",
+    surfaces: ["social-services"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: true,
+    auditEventType: "agent.service_plan.reminder.set"
+  },
+  record_service_interaction: {
+    title: "Record service interaction",
+    permissionLevel: "wallet_write",
+    surfaces: ["social-services"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: true,
+    auditEventType: "agent.service_interaction.record"
   },
   update_registration_draft: {
     title: "Update registration draft",

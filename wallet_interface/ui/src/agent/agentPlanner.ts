@@ -103,6 +103,24 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     };
   }
 
+  const servicePlanUpdateTool = planServicePlanUpdateTool(lower, content);
+  if (servicePlanUpdateTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: servicePlanUpdateTool.title,
+      tools: withToolSurface(input.context, [servicePlanUpdateTool])
+    };
+  }
+
+  const serviceInteractionTool = planServiceInteractionTool(lower, content, input.context);
+  if (serviceInteractionTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: serviceInteractionTool.title,
+      tools: withToolSurface(input.context, [serviceInteractionTool])
+    };
+  }
+
   const accessRequestTool = planRecipientAccessRequestTool(lower, content);
   if (accessRequestTool) {
     return {
@@ -799,6 +817,83 @@ function parseServiceId(
   }
 
   return undefined;
+}
+
+function planServicePlanUpdateTool(lower: string, original: string): AgentPlannedTool | undefined {
+  const planId = parsePlanId(original);
+  if (!planId) return undefined;
+
+  if (/\b(remind|reminder|follow.?up|appointment)\b/.test(lower)) {
+    const reminderAt = parseDateLikeText(original) || original;
+    return {
+      name: "set_service_plan_reminder",
+      input: { planId, reminderAt },
+      title: getToolDefinition("set_service_plan_reminder").title
+    };
+  }
+
+  if (/\b(checklist|step|document|question|ask|bring|need)\b/.test(lower)) {
+    const checklist = /\b(document|bring|need)\b/.test(lower)
+      ? "documents_needed"
+      : /\b(question|ask)\b/.test(lower)
+        ? "questions_to_ask"
+        : "steps";
+    return {
+      name: "add_service_plan_checklist_item",
+      input: { planId, checklist, item: parseChecklistItem(original) || original },
+      title: getToolDefinition("add_service_plan_checklist_item").title
+    };
+  }
+
+  return undefined;
+}
+
+function planServiceInteractionTool(
+  lower: string,
+  original: string,
+  context: SurfaceContext
+): AgentPlannedTool | undefined {
+  if (!/\b(record|log|note|save)\b/.test(lower) || !/\b(call|called|text|email|visit|appointment|interaction|contact)\b/.test(lower)) {
+    return undefined;
+  }
+  const serviceId = parseServiceId(lower, original, context, "save") || context.selectedServiceDocId || singleVisibleServiceId(context);
+  if (!serviceId) return undefined;
+  const interactionType = /\b(appointment|visit)\b/.test(lower)
+    ? "appointment"
+    : /\b(text|sms)\b/.test(lower)
+      ? "message"
+      : /\b(email)\b/.test(lower)
+        ? "email"
+        : "call";
+  return {
+    name: "record_service_interaction",
+    input: {
+      serviceId,
+      interactionType,
+      channel: interactionType === "message" ? "sms" : interactionType,
+      outcome: original
+    },
+    title: getToolDefinition("record_service_interaction").title
+  };
+}
+
+function parsePlanId(original: string): string | undefined {
+  const explicit = original.match(/\bplan(?:\s+(?:id|#))?\s*[:#-]?\s*([a-zA-Z0-9][a-zA-Z0-9._:-]{2,})\b/i);
+  return isServiceIdCandidate(explicit?.[1]) ? explicit[1] : undefined;
+}
+
+function parseChecklistItem(original: string): string | undefined {
+  const quoted = original.match(/"([^"]+)"/);
+  if (quoted?.[1]?.trim()) return quoted[1].trim();
+  const afterAdd = original.match(/\b(?:add|include|remember)\s+(.+?)(?:\s+(?:to|on|for)\s+plan\b|$)/i);
+  return afterAdd?.[1]?.trim();
+}
+
+function parseDateLikeText(original: string): string | undefined {
+  const quoted = original.match(/"([^"]+)"/);
+  if (quoted?.[1]?.trim()) return quoted[1].trim();
+  const after = original.match(/\b(?:for|at|on)\s+([A-Za-z0-9,:/\-\s]+)$/i);
+  return after?.[1]?.trim();
 }
 
 function isServiceIdCandidate(value: string | undefined): value is string {

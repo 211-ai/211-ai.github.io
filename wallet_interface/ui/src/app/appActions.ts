@@ -7,6 +7,9 @@ import type {
   ProofReceiptView,
   RegistrationProfileDraft,
   RouteId,
+  SavedService,
+  ServiceInteractionEvent,
+  ServicePlan,
   ShelterContactRequest,
   UploadItem,
   WalletAccessRequest,
@@ -67,8 +70,16 @@ import {
   searchAuditEventsAction,
   summarizeAuditEventsAction
 } from "../agent/tools/auditTools";
+import {
+  addServicePlanChecklistItemAction,
+  createServicePlanAction,
+  recordServiceInteractionAction,
+  saveServiceAction,
+  setServicePlanReminderAction
+} from "../agent/tools/servicePlanTools";
 import type {
   AccessRequestDecisionCommandInput,
+  AddServicePlanChecklistItemCommandInput,
   AddRecipientCommandInput,
   AgentCommandName,
   AnalyticsStudyReferenceCommandInput,
@@ -86,11 +97,13 @@ import type {
   RemoveRecipientCommandInput,
   RequestShelterContactCommandInput,
   RefreshWalletAuditCommandInput,
+  RecordServiceInteractionCommandInput,
   RecordControllerApprovalCommandInput,
   RestoreWalletSnapshotCommandInput,
   RevokeAccessRequestCommandInput,
   SaveWalletSnapshotCommandInput,
   SaveServiceCommandInput,
+  SetServicePlanReminderCommandInput,
   SearchAuditEventsCommandInput,
   Search211ServicesCommandInput,
   ShelterContactRequestDecisionCommandInput,
@@ -119,6 +132,9 @@ export interface AppActionState {
   analyticsOptIn?: Record<string, boolean>;
   walletProofReceipts: ProofReceiptView[];
   exportBundleViews: ExportBundleView[];
+  savedServices?: SavedService[];
+  servicePlans?: ServicePlan[];
+  serviceInteractions?: ServiceInteractionEvent[];
   walletUnlocked?: boolean;
   privateContextAllowed?: boolean;
   permissionLevel?: AgentPermissionLevel;
@@ -138,6 +154,9 @@ export interface AppActionRuntime {
   setAnalyticsOptIn?: (optedIn: Record<string, boolean>) => void;
   setWalletProofReceipts?: (proofs: ProofReceiptView[]) => void;
   setExportBundleViews?: (bundles: ExportBundleView[]) => void;
+  setSavedServices?: (services: SavedService[]) => void;
+  setServicePlans?: (plans: ServicePlan[]) => void;
+  setServiceInteractions?: (interactions: ServiceInteractionEvent[]) => void;
   walletApiConfig?: WalletApiConfig;
   refreshWalletAccessState?: () => Promise<void>;
   refreshWalletAuditEvents?: () => Promise<void>;
@@ -305,6 +324,15 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   if (action === "update_check_in_policy") return "Update check-in reminder and escalation settings.";
   if (action === "save_service") return "Save this service to the wallet-backed service list.";
   if (action === "create_service_plan") return "Create a private service follow-up plan.";
+  if (action === "add_service_plan_checklist_item" && isRecord(input)) {
+    return `Add a checklist item to plan ${String(input.planId ?? "")}.`;
+  }
+  if (action === "set_service_plan_reminder" && isRecord(input)) {
+    return `Set a reminder for plan ${String(input.planId ?? "")}.`;
+  }
+  if (action === "record_service_interaction" && isRecord(input)) {
+    return `Record a service interaction for ${String(input.serviceId ?? "")}.`;
+  }
   return getToolDefinition(action).title;
 }
 
@@ -360,40 +388,21 @@ async function openServiceDetailAction(
   });
 }
 
-async function saveServiceAction(
-  _runtime: AppActionRuntime,
-  input: SaveServiceCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("save_service", input, options);
-  if (blocked) return blocked;
-  return success("save_service", `Saved service ${input.serviceId}.`, {
-    artifactId: `saved-${input.serviceId}`,
-    confirmation: confirmationFor("save_service", input)
-  });
-}
-
-async function createServicePlanAction(
-  _runtime: AppActionRuntime,
-  input: CreateServicePlanCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("create_service_plan", input, options);
-  if (blocked) return blocked;
-  return success("create_service_plan", `Created a service plan for ${input.serviceId}.`, {
-    artifactId: `plan-${input.serviceId}-${Date.now()}`,
-    confirmation: confirmationFor("create_service_plan", input)
-  });
-}
-
 export const appActionHandlers = {
   navigate: navigateAction,
   read_surface_context: readSurfaceContextAction,
   search_211_services: search211ServicesAction,
   answer_211_question: answer211QuestionAction,
   open_service_detail: openServiceDetailAction,
-  save_service: saveServiceAction,
-  create_service_plan: createServicePlanAction,
+  save_service: (runtime, input: SaveServiceCommandInput, options) => saveServiceAction(runtime, input, options),
+  create_service_plan: (runtime, input: CreateServicePlanCommandInput, options) =>
+    createServicePlanAction(runtime, input, options),
+  add_service_plan_checklist_item: (runtime, input: AddServicePlanChecklistItemCommandInput, options) =>
+    addServicePlanChecklistItemAction(runtime, input, options),
+  set_service_plan_reminder: (runtime, input: SetServicePlanReminderCommandInput, options) =>
+    setServicePlanReminderAction(runtime, input, options),
+  record_service_interaction: (runtime, input: RecordServiceInteractionCommandInput, options) =>
+    recordServiceInteractionAction(runtime, input, options),
   update_registration_draft: updateRegistrationDraftAction,
   update_check_in_policy: updateCheckInPolicyAction,
   add_recipient: (runtime, input: AddRecipientCommandInput, options) => addRecipientAction(runtime, input, options),
