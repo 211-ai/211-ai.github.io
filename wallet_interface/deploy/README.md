@@ -26,12 +26,17 @@ export WALLET_OPS_ALERT_ON=error
 export WALLET_OPS_ALERT_BEARER_TOKEN=replace-me
 export WALLET_OPS_ALERT_HEADER_NAME=x-wallet-alert-key
 export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
+export WALLET_OPS_HEALTH_SECRET_REF=secret-manager://replace-me
+export WALLET_OPS_ALERT_SECRET_REF=secret-manager://replace-me
+export WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 export WALLET_PROOF_BACKEND=http-location-region
 export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
 export WALLET_PROOF_SYSTEM=groth16
 export WALLET_PROOF_CIRCUIT_ID=location-region-v1
+export WALLET_PROOF_DISTANCE_PROVE_PATH=/prove/location-distance
 export WALLET_PROOF_BEARER_TOKEN=replace-me
+export WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 ```
 
 Services:
@@ -64,8 +69,8 @@ Required production environment:
   `WALLET_PROOF_BACKEND=http-location-region`.
 - `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`,
   `WALLET_PROOF_CIRCUIT_ID`: verifier metadata for the HTTP backend.
-- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_VERIFY_PATH`: optional HTTP backend
-  endpoint overrides.
+- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`,
+  `WALLET_PROOF_VERIFY_PATH`: optional HTTP backend endpoint overrides.
 - `WALLET_PROOF_BEARER_TOKEN`: optional bearer token for the proof service.
 - `WALLET_PROOF_HTTP_HEADER_NAME` / `WALLET_PROOF_HTTP_HEADER_VALUE`: optional
   custom header pair for the proof service.
@@ -82,6 +87,10 @@ Required production environment:
 - `WALLET_OPS_ALERT_BEARER_TOKEN`: optional bearer token for the alert webhook.
 - `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE`: optional
   custom header pair for receivers that do not use bearer auth.
+- `WALLET_OPS_HEALTH_SECRET_REF`, `WALLET_OPS_ALERT_SECRET_REF`,
+  `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
+  `WALLET_STORAGE_CREDENTIAL_SECRET_REF`: non-secret secret-manager reference
+  paths required by the production readiness report and target signoff packet.
 
 The included compose file uses local volumes and defaults to the deterministic
 location-region proof backend as an integration-safe production-mode stand-in.
@@ -93,10 +102,17 @@ Before promoting a verifier-backed environment, run:
 
 ```bash
 python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-production-readiness --fail-on-error
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json \
+  --fail-on-error
 ```
 
 from the API/ops worker environment. This checks the external verifier health,
-prove, verify, and no-witness-leak contract using a synthetic witness.
+prove, verify, and no-witness-leak contract using synthetic witnesses, then
+checks the completed retention, credential-reference, staging-artifact, and
+organization-review packet.
 
 The Cloudflare Worker assets are reference glue only. They do not replace the
 Python API or local `wallet_interface.ops` worker; they front or trigger those

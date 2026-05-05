@@ -4,9 +4,13 @@ This contract defines the external verifier service expected by
 `wallet_interface.proof_backends.HttpLocationRegionProofBackend` when
 `WALLET_PROOF_BACKEND=http-location-region`.
 
-The HTTP backend is for `location_region` proofs only. It replaces simulated
-proof receipts in production mode and must never return private witness values
-in public inputs, receipts, logs, or errors.
+The HTTP backend replaces simulated proof receipts in production mode and must
+never return private witness values in public inputs, receipts, logs, or errors.
+The first production readiness gate validates `location_region`. The same
+backend also defines the next proof-family contract, `location_distance`,
+through `POST /prove/location-distance`; distance proof verifiers should pass
+`python -m wallet_interface.ops --validate-distance-proof-contract` before UI
+exposure.
 
 ## Configuration
 
@@ -25,6 +29,7 @@ Optional:
 
 ```bash
 WALLET_PROOF_PROVE_PATH=/prove/location-region
+WALLET_PROOF_DISTANCE_PROVE_PATH=/prove/location-distance
 WALLET_PROOF_VERIFY_PATH=/verify
 WALLET_PROOF_BEARER_TOKEN=...
 WALLET_PROOF_HTTP_HEADER_NAME=x-wallet-proof-key
@@ -81,7 +86,7 @@ Failure response:
 `GET /ops/health` reports `proof_registry=error` when this endpoint returns
 `ok=false`, a non-ready status, invalid JSON, or an HTTP error.
 
-## Prove Endpoint
+## Location-Region Prove Endpoint
 
 Default path: `POST /prove/location-region`
 
@@ -169,6 +174,85 @@ The wallet fills missing `wallet_id`, `proof_type`, `verifier_id`,
 `proof_system`, `circuit_id`, `is_simulated=false`, and `verifier_digest`
 defaults, but production verifiers should return them explicitly.
 
+## Location-Distance Prove Endpoint
+
+Default path: `POST /prove/location-distance`
+
+Request:
+
+```json
+{
+  "wallet_id": "wallet-123",
+  "proof_type": "location_distance",
+  "statement": {
+    "claim": "location_within_distance",
+    "target_id": "shelter-west",
+    "max_distance_km": 1.0,
+    "target_policy_hash": "...",
+    "witness_commitment": "..."
+  },
+  "public_inputs": {
+    "claim": "location_within_distance",
+    "target_id": "shelter-west",
+    "max_distance_km": 1.0,
+    "target_policy_hash": "..."
+  },
+  "witness": {
+    "lat": 45.5152,
+    "lon": -122.6784,
+    "target_lat": 45.516,
+    "target_lon": -122.679,
+    "max_distance_km": 1.0
+  },
+  "witness_record_ids": ["record-1"],
+  "verifier_id": "verifier-http-v1",
+  "proof_system": "groth16",
+  "circuit_id": "location-distance-v1"
+}
+```
+
+The verifier must prove the private wallet point is within `max_distance_km` of
+the target point. The wallet service pre-checks the distance before calling the
+verifier, but the verifier must not rely on that pre-check.
+
+Successful response:
+
+```json
+{
+  "receipt": {
+    "proof_id": "proof-http-distance-1",
+    "wallet_id": "wallet-123",
+    "proof_type": "location_distance",
+    "statement": {
+      "claim": "location_within_distance",
+      "target_id": "shelter-west",
+      "max_distance_km": 1.0,
+      "target_policy_hash": "...",
+      "witness_commitment": "..."
+    },
+    "verifier_id": "verifier-http-v1",
+    "public_inputs": {
+      "claim": "location_within_distance",
+      "target_id": "shelter-west",
+      "max_distance_km": 1.0,
+      "target_policy_hash": "..."
+    },
+    "proof_hash": "hex-or-content-hash",
+    "witness_record_ids": ["record-1"],
+    "is_simulated": false,
+    "proof_system": "groth16",
+    "circuit_id": "location-distance-v1",
+    "verifier_digest": "sha256(proof_system:verifier_id)",
+    "proof_artifact_ref": "ipfs://bafy... or https://verifier.example.com/proofs/proof-http-distance-1",
+    "verification_status": "verified",
+    "expires_at": null
+  }
+}
+```
+
+Do not include precise wallet coordinates, target coordinates, exact addresses,
+nonces, or witness objects in the returned receipt.
+
 ## Verify Endpoint
 
 Default path: `POST /verify`
@@ -232,15 +316,22 @@ ops worker:
 
 ```bash
 python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error
 python -m wallet_interface.ops --validate-production-readiness
 ```
 
-This performs a non-user staging contract check:
+The first command performs a non-user location-region staging contract check:
 
 - `POST /health`
 - `POST /prove/location-region` with a synthetic witness
 - `POST /verify` with the returned receipt
 - receipt/public-input scanning for leaked synthetic witness fields or values
+
+The distance command performs the same health/prove/verify/no-leak checks
+against `POST /prove/location-distance`. The production-readiness gate runs
+both verifier checks unless explicitly skipped, and also validates
+secret-manager references for proof, storage, ops-health, and alert
+credentials without printing secret values.
 
 Expected proof check:
 
@@ -270,6 +361,12 @@ Run a full location-region proof workflow in staging before production use:
    `proof_system=groth16`, the expected `verifier_id`, and no precise
    coordinates in `public_inputs`.
 5. Confirm `/ops/health` stays `ok` after proof creation.
+
+Before enabling location-distance proof UI in production, run the same workflow
+with a `location/prove_distance` grant and confirm the receipt has
+`proof_type=location_distance`, `is_simulated=false`, expected verifier
+metadata, and no precise wallet or target coordinates in `statement`,
+`public_inputs`, or logs.
 
 ## Security Requirements
 

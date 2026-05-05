@@ -13,6 +13,22 @@ in the organization's approved evidence system.
 Do not paste secret values into this document. Record secret-manager paths,
 configuration IDs, report artifact IDs, and reviewer names only.
 
+For CI or release gates, copy
+`docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json` into the target
+evidence repository, replace every placeholder with target evidence references,
+and validate it with:
+
+```bash
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json \
+  --fail-on-error
+```
+
+The JSON packet is the machine-readable completion record for retention,
+secret-manager references, staging readiness artifacts, analytics privacy
+review, organization review, and the launch decision. The Markdown checklist
+remains the human-readable reviewer guide.
+
 ## Environment Record
 
 | Field | Value |
@@ -72,7 +88,11 @@ curl -fsS \
   -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
   "${WALLET_API_ORIGIN}/ops/health?verify_storage=true"
 python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error
 python -m wallet_interface.ops --validate-production-readiness
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json \
+  --fail-on-error
 ```
 
 The readiness report must not include secret values. A report that passes only

@@ -523,6 +523,39 @@ export async function createLocationRegionProof(
   return toProofReceiptView(proof);
 }
 
+export async function createLocationDistanceProof(
+  config: WalletApiConfig,
+  {
+    locationRecordId,
+    targetId,
+    targetLat,
+    targetLon,
+    maxDistanceKm,
+    grantId
+  }: {
+    locationRecordId: string;
+    targetId: string;
+    targetLat: number;
+    targetLon: number;
+    maxDistanceKm: number;
+    grantId?: string;
+  }
+): Promise<ProofReceiptView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/locations/${locationRecordId}/distance-proofs`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const proof = await postJson<ProofReceiptApiRecord>(url, "Location distance proof", {
+    actor_did: requiredActorDid(config),
+    grant_id: grantId || undefined,
+    max_distance_km: maxDistanceKm,
+    target_id: targetId,
+    target_lat: targetLat,
+    target_lon: targetLon
+  });
+  return toProofReceiptView(proof);
+}
+
 export async function addTextDocument(
   config: WalletApiConfig,
   {

@@ -7,8 +7,10 @@ from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
     WalletOpsHealthWorker,
     main,
+    validate_distance_proof_contract,
     validate_production_readiness,
     validate_proof_contract,
+    validate_target_signoff_packet,
 )
 from wallet_interface.proof_backends import HttpLocationRegionProofBackend
 
@@ -206,11 +208,86 @@ def test_validate_proof_contract_reports_http_backend_success() -> None:
     }
 
 
+def test_validate_distance_proof_contract_reports_error_for_non_http_backend() -> None:
+    report = validate_distance_proof_contract(WalletInterfaceService())
+
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
+
+
+def test_validate_distance_proof_contract_reports_http_backend_success() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-distance"):
+            return {
+                "proof_id": "proof-distance-contract-ops",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_distance",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "proof-hash-distance-1",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-distance-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    service = WalletInterfaceService(
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.example.test",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-distance-v1",
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+    )
+
+    report = validate_distance_proof_contract(service)
+
+    assert report["status"] == "ok"
+    assert report["receipt"]["proof_id"] == "proof-distance-contract-ops"
+    assert {check["name"] for check in report["checks"]} == {
+        "health",
+        "prove",
+        "public_input_safety",
+        "verify",
+    }
+
+
+def test_ops_cli_accepts_distance_proof_contract_validation_flag(tmp_path) -> None:
+    output_path = tmp_path / "ops" / "distance-proof-contract.jsonl"
+
+    exit_code = main(
+        [
+            "--validate-distance-proof-contract",
+            "--output-jsonl",
+            str(output_path),
+        ]
+    )
+
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 2
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
+
+
 def test_validate_production_readiness_reports_missing_target_environment() -> None:
     report = validate_production_readiness(
         WalletInterfaceService(),
         env={},
         run_proof_contract=False,
+        run_distance_proof_contract=False,
         verify_storage=False,
     )
 
@@ -220,6 +297,7 @@ def test_validate_production_readiness_reports_missing_target_environment() -> N
     assert checks["proof_environment"]["status"] == "error"
     assert checks["proof_credentials"]["status"] == "error"
     assert checks["ops_credentials"]["status"] == "error"
+    assert checks["secret_manager_references"]["status"] == "error"
 
 
 def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_path) -> None:
@@ -241,6 +319,21 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
                 "verifier_id": "verifier-http-v1",
                 "public_inputs": payload["public_inputs"],
                 "proof_hash": "proof-hash-ready",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-region-v1",
+                "verification_status": "verified",
+            }
+        if url.endswith("/prove/location-distance"):
+            return {
+                "proof_id": "proof-distance-contract-ready",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_distance",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "proof-hash-distance-ready",
                 "witness_record_ids": payload["witness_record_ids"],
                 "is_simulated": False,
                 "proof_system": "groth16",
@@ -278,6 +371,10 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "WALLET_OPS_HEALTH_SHARED_SECRET": "ops-health-secret",
         "WALLET_OPS_ALERT_WEBHOOK_URL": "https://ops.staging.211.local/hooks/wallet",
         "WALLET_OPS_ALERT_BEARER_TOKEN": "ops-alert-token",
+        "WALLET_OPS_HEALTH_SECRET_REF": "secret://staging/wallet/ops-health",
+        "WALLET_OPS_ALERT_SECRET_REF": "secret://staging/wallet/ops-alert",
+        "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://staging/wallet/proof-verifier",
+        "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://staging/wallet/storage",
     }
 
     report = validate_production_readiness(
@@ -293,10 +390,161 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "proof_environment": "ok",
         "proof_credentials": "ok",
         "ops_credentials": "ok",
+        "secret_manager_references": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
+        "distance_proof_contract": "ok",
     }
     rendered = json.dumps(report)
     assert "proof-service-token" not in rendered
     assert "ops-alert-token" not in rendered
     assert "ops-health-secret" not in rendered
+
+
+def test_validate_target_signoff_packet_reports_incomplete_packet(tmp_path) -> None:
+    packet_path = tmp_path / "target-signoff.json"
+    packet_path.write_text("{}", encoding="utf-8")
+
+    report = validate_target_signoff_packet(packet_path)
+
+    checks = {check["name"]: check for check in report["checks"]}
+    assert report["status"] == "error"
+    assert checks["environment_record"]["status"] == "error"
+    assert checks["secret_manager_references"]["status"] == "error"
+    assert checks["staging_artifacts"]["status"] == "error"
+    assert checks["retention_mapping"]["status"] == "error"
+    assert checks["reviewer_signoff"]["status"] == "error"
+    assert checks["analytics_privacy_review"]["status"] == "error"
+    assert checks["launch_decision"]["status"] == "error"
+
+
+def test_ops_cli_accepts_target_signoff_packet_validation_flag(tmp_path) -> None:
+    packet_path = tmp_path / "target-signoff.json"
+    output_path = tmp_path / "ops" / "target-signoff-validation.jsonl"
+    packet_path.write_text("{}", encoding="utf-8")
+
+    exit_code = main(
+        [
+            "--validate-target-signoff-packet",
+            str(packet_path),
+            "--output-jsonl",
+            str(output_path),
+        ]
+    )
+
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 2
+    assert report["status"] == "error"
+    assert {check["name"] for check in report["checks"]} >= {
+        "environment_record",
+        "retention_mapping",
+        "reviewer_signoff",
+    }
+
+
+def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> None:
+    packet_path = tmp_path / "target-signoff.json"
+    packet = {
+        "environment": {
+            "environment_name": "staging-wallet",
+            "deployment_owner": "211-AI platform",
+            "review_date": "2026-05-05",
+            "wallet_api_origin": "https://wallet-api.staging.211.local",
+            "wallet_ui_origin": "https://wallet.staging.211.local",
+            "repository_configuration_id": "repo-policy-2026-05",
+            "encrypted_storage_configuration_id": "storage-policy-2026-05",
+            "proof_backend": "http-location-region",
+            "proof_verifier_service": "wallet-verifier.staging.svc",
+            "proof_verifier_id": "verifier-http-v1",
+            "proof_system": "groth16",
+        },
+        "secret_manager_refs": {
+            "ops_health_secret": "secret://staging/wallet/ops-health",
+            "alert_credentials": "secret://staging/wallet/ops-alert",
+            "proof_verifier_credentials": "secret://staging/wallet/proof-verifier",
+            "storage_credentials": "secret://staging/wallet/storage",
+        },
+        "artifact_refs": {
+            "readiness_report": "evidence://wallet/readiness/2026-05-05",
+            "ops_health_report": "evidence://wallet/ops-health/2026-05-05",
+            "proof_contract_report": "evidence://wallet/proof-contract/2026-05-05",
+            "distance_proof_contract_report": "evidence://wallet/distance-proof-contract/2026-05-05",
+        },
+        "retention_mapping": {
+            "policy_version": "wallet-retention-2026-05-05",
+            "repository_lifecycle": "managed backup 35d, purge SLA 30d",
+            "encrypted_storage_lifecycle": "primary plus S3 mirror lifecycle policy wallet-prod-v1",
+            "backup_purge_sla": "30 days",
+            "ipfs_pinning": "private pinset unpin on deletion ticket",
+            "filecoin_deal_expiration": "no live Filecoin deals for staging",
+            "log_retention": "90 days",
+            "alert_retention": "90 days",
+            "deletion_tombstone_retention": "7 years",
+        },
+        "reviewer_signoff": {
+            "security": {
+                "reviewer": "Security Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://security/WALLET-1",
+            },
+            "privacy": {
+                "reviewer": "Privacy Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://privacy/WALLET-1",
+            },
+            "legal_policy": {
+                "reviewer": "Legal Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://legal/WALLET-1",
+            },
+            "accessibility_usability": {
+                "reviewer": "Accessibility Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://a11y/WALLET-1",
+            },
+            "operations_on_call": {
+                "reviewer": "Ops Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://ops/WALLET-1",
+            },
+            "product_owner": {
+                "reviewer": "Product Reviewer",
+                "decision": "approved",
+                "date": "2026-05-05",
+                "evidence": "ticket://product/WALLET-1",
+            },
+        },
+        "analytics_privacy_review": {
+            "approved_templates": [
+                {
+                    "template_id": "needs_by_zip_v1",
+                    "reviewer": "Privacy Reviewer",
+                    "review_date": "2026-05-05",
+                    "min_cohort_size": 10,
+                    "epsilon_budget": 1.0,
+                    "allowed_dimensions": ["zip3", "need_category"],
+                    "retention_decision": "aggregate results retained for study window",
+                    "withdrawal_behavior": "future contributions blocked; released aggregate audit preserved",
+                }
+            ]
+        },
+        "launch_decision": {
+            "decision": "approved",
+            "approved_launch_window": "2026-05-08T18:00:00Z/2026-05-08T20:00:00Z",
+            "first_post_launch_readiness_run": "2026-05-08T21:00:00Z",
+            "first_post_launch_retention_audit": "2026-06-08",
+        },
+    }
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+
+    report = validate_target_signoff_packet(packet_path)
+
+    assert report["status"] == "ok"
+    assert {check["status"] for check in report["checks"]} == {"ok"}
+    rendered = json.dumps(report)
+    assert "secret://staging/wallet/proof-verifier" not in rendered

@@ -99,6 +99,23 @@ class LocationRegionProofRequest(BaseModel):
     grant_id: str | None = None
 
 
+class LocationDistanceProofGrantRequest(BaseModel):
+    issuer_did: str
+    audience_did: str
+    target_id: str
+    max_distance_km: float
+    expires_at: str | None = None
+
+
+class LocationDistanceProofRequest(BaseModel):
+    actor_did: str
+    target_id: str
+    target_lat: float
+    target_lon: float
+    max_distance_km: float
+    grant_id: str | None = None
+
+
 class AddTextDocumentRequest(BaseModel):
     actor_did: str
     text: str
@@ -245,6 +262,124 @@ class AnalyzeRecordRequest(BaseModel):
     grant_id: str | None = None
     invocation_token: str | None = None
     max_chars: int = 200
+
+
+class SavedServiceRequest(BaseModel):
+    actor_did: str
+    service_doc_id: str
+    source_content_cid: str
+    source_page_cid: str = ""
+    title: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    source_url: str = ""
+    label: str = ""
+    reason: str = ""
+    priority: str = "normal"
+    status: str = "saved"
+    private_notes_record_id: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SavedServiceUpdateRequest(BaseModel):
+    actor_did: str
+    source_content_cid: str | None = None
+    source_page_cid: str | None = None
+    title: str | None = None
+    provider_name: str | None = None
+    program_name: str | None = None
+    source_url: str | None = None
+    label: str | None = None
+    reason: str | None = None
+    priority: str | None = None
+    status: str | None = None
+    private_notes_record_id: str | None = None
+    metadata: Dict[str, Any] | None = None
+
+
+class ServicePlanRequest(BaseModel):
+    actor_did: str
+    service_doc_id: str
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    service_title: str = ""
+    provider_name: str = ""
+    goal: str = ""
+    steps: List[str] = Field(default_factory=list)
+    documents_needed: List[str] = Field(default_factory=list)
+    questions_to_ask: List[str] = Field(default_factory=list)
+    appointment_at: str = ""
+    reminder_at: str = ""
+    travel_target: str = ""
+    assigned_worker_recipient_id: str = ""
+    status: str = "active"
+    related_interaction_ids: List[str] = Field(default_factory=list)
+    private_notes_record_id: str = ""
+
+
+class ServicePlanUpdateRequest(BaseModel):
+    actor_did: str
+    source_content_cid: str | None = None
+    source_page_cid: str | None = None
+    service_title: str | None = None
+    provider_name: str | None = None
+    goal: str | None = None
+    steps: List[str] | None = None
+    documents_needed: List[str] | None = None
+    questions_to_ask: List[str] | None = None
+    appointment_at: str | None = None
+    reminder_at: str | None = None
+    travel_target: str | None = None
+    assigned_worker_recipient_id: str | None = None
+    status: str | None = None
+    related_interaction_ids: List[str] | None = None
+    private_notes_record_id: str | None = None
+
+
+class ServiceInteractionRequest(BaseModel):
+    actor_did: str
+    service_doc_id: str
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    interaction_type: str
+    channel: str = ""
+    counterparty_name: str = ""
+    counterparty_contact: str = ""
+    timestamp: str = ""
+    status: str = ""
+    outcome: str = ""
+    notes_record_id: str = ""
+    next_action: str = ""
+    next_follow_up_at: str = ""
+    source_action_url: str = ""
+    related_grant_ids: List[str] = Field(default_factory=list)
+    related_record_ids: List[str] = Field(default_factory=list)
+    privacy_level: str = "private"
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ServiceInteractionUpdateRequest(BaseModel):
+    actor_did: str
+    source_content_cid: str | None = None
+    source_page_cid: str | None = None
+    provider_name: str | None = None
+    program_name: str | None = None
+    channel: str | None = None
+    counterparty_name: str | None = None
+    counterparty_contact: str | None = None
+    timestamp: str | None = None
+    status: str | None = None
+    outcome: str | None = None
+    notes_record_id: str | None = None
+    next_action: str | None = None
+    next_follow_up_at: str | None = None
+    source_action_url: str | None = None
+    related_grant_ids: List[str] | None = None
+    related_record_ids: List[str] | None = None
+    privacy_level: str | None = None
+    metadata: Dict[str, Any] | None = None
 
 
 class RedactedAnalyzeRecordRequest(BaseModel):
@@ -657,6 +792,47 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/locations/{location_record_id}/distance-proof-grants")
+    def create_location_distance_proof_grant(
+        wallet_id: str,
+        location_record_id: str,
+        request: LocationDistanceProofGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            grant = app_service.create_location_distance_proof_grant(
+                wallet_id,
+                location_record_id,
+                issuer_did=request.issuer_did,
+                audience_did=request.audience_did,
+                target_id=request.target_id,
+                max_distance_km=request.max_distance_km,
+                expires_at=request.expires_at,
+            )
+            return grant.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/locations/{location_record_id}/distance-proofs")
+    def create_location_distance_proof(
+        wallet_id: str,
+        location_record_id: str,
+        request: LocationDistanceProofRequest,
+    ) -> Dict[str, Any]:
+        try:
+            proof = app_service.create_location_distance_proof(
+                wallet_id,
+                location_record_id,
+                actor_did=request.actor_did,
+                target_id=request.target_id,
+                target_lat=request.target_lat,
+                target_lon=request.target_lon,
+                max_distance_km=request.max_distance_km,
+                grant_id=request.grant_id,
+            )
+            return proof.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/documents/text")
     def add_text_document(wallet_id: str, request: AddTextDocumentRequest) -> Dict[str, Any]:
         try:
@@ -702,6 +878,226 @@ def create_app(*, service: WalletInterfaceService | None = None):
         try:
             records = app_service.list_records(wallet_id, data_type=data_type)
             return {"records": [record.to_dict() for record in records]}
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/portal/saved-services")
+    def list_saved_services(wallet_id: str, status: str | None = None) -> Dict[str, Any]:
+        try:
+            return {
+                "saved_services": [
+                    record.to_dict() for record in app_service.list_saved_services(wallet_id, status=status)
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/portal/saved-services")
+    def save_service(wallet_id: str, request: SavedServiceRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.save_service_for_wallet(
+                wallet_id,
+                actor_did=request.actor_did,
+                service_doc_id=request.service_doc_id,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                title=request.title,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                source_url=request.source_url,
+                label=request.label,
+                reason=request.reason,
+                priority=request.priority,
+                status=request.status,
+                private_notes_record_id=request.private_notes_record_id,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/portal/saved-services/{saved_service_id}")
+    def update_saved_service(wallet_id: str, saved_service_id: str, request: SavedServiceUpdateRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.update_saved_service(
+                wallet_id,
+                saved_service_id,
+                actor_did=request.actor_did,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                title=request.title,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                source_url=request.source_url,
+                label=request.label,
+                reason=request.reason,
+                priority=request.priority,
+                status=request.status,
+                private_notes_record_id=request.private_notes_record_id,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/portal/plans")
+    def list_service_plans(
+        wallet_id: str,
+        service_doc_id: str | None = None,
+        status: str | None = None,
+    ) -> Dict[str, Any]:
+        try:
+            return {
+                "plans": [
+                    record.to_dict()
+                    for record in app_service.list_service_plans(
+                        wallet_id,
+                        service_doc_id=service_doc_id,
+                        status=status,
+                    )
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/portal/plans")
+    def create_service_plan(wallet_id: str, request: ServicePlanRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.create_service_plan(
+                wallet_id,
+                actor_did=request.actor_did,
+                service_doc_id=request.service_doc_id,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                service_title=request.service_title,
+                provider_name=request.provider_name,
+                goal=request.goal,
+                steps=request.steps,
+                documents_needed=request.documents_needed,
+                questions_to_ask=request.questions_to_ask,
+                appointment_at=request.appointment_at,
+                reminder_at=request.reminder_at,
+                travel_target=request.travel_target,
+                assigned_worker_recipient_id=request.assigned_worker_recipient_id,
+                status=request.status,
+                related_interaction_ids=request.related_interaction_ids,
+                private_notes_record_id=request.private_notes_record_id,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/portal/plans/{plan_id}")
+    def update_service_plan(wallet_id: str, plan_id: str, request: ServicePlanUpdateRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.update_service_plan(
+                wallet_id,
+                plan_id,
+                actor_did=request.actor_did,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                service_title=request.service_title,
+                provider_name=request.provider_name,
+                goal=request.goal,
+                steps=request.steps,
+                documents_needed=request.documents_needed,
+                questions_to_ask=request.questions_to_ask,
+                appointment_at=request.appointment_at,
+                reminder_at=request.reminder_at,
+                travel_target=request.travel_target,
+                assigned_worker_recipient_id=request.assigned_worker_recipient_id,
+                status=request.status,
+                related_interaction_ids=request.related_interaction_ids,
+                private_notes_record_id=request.private_notes_record_id,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/portal/interactions")
+    def list_service_interactions(
+        wallet_id: str,
+        service_doc_id: str | None = None,
+        interaction_type: str | None = None,
+        status: str | None = None,
+    ) -> Dict[str, Any]:
+        try:
+            return {
+                "interactions": [
+                    record.to_dict()
+                    for record in app_service.list_service_interactions(
+                        wallet_id,
+                        service_doc_id=service_doc_id,
+                        interaction_type=interaction_type,
+                        status=status,
+                    )
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/portal/interactions")
+    def create_service_interaction(wallet_id: str, request: ServiceInteractionRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.create_service_interaction(
+                wallet_id,
+                actor_did=request.actor_did,
+                service_doc_id=request.service_doc_id,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                interaction_type=request.interaction_type,
+                channel=request.channel,
+                counterparty_name=request.counterparty_name,
+                counterparty_contact=request.counterparty_contact,
+                timestamp=request.timestamp,
+                status=request.status,
+                outcome=request.outcome,
+                notes_record_id=request.notes_record_id,
+                next_action=request.next_action,
+                next_follow_up_at=request.next_follow_up_at,
+                source_action_url=request.source_action_url,
+                related_grant_ids=request.related_grant_ids,
+                related_record_ids=request.related_record_ids,
+                privacy_level=request.privacy_level,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/portal/interactions/{interaction_id}")
+    def update_service_interaction(
+        wallet_id: str,
+        interaction_id: str,
+        request: ServiceInteractionUpdateRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.update_service_interaction(
+                wallet_id,
+                interaction_id,
+                actor_did=request.actor_did,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                channel=request.channel,
+                counterparty_name=request.counterparty_name,
+                counterparty_contact=request.counterparty_contact,
+                timestamp=request.timestamp,
+                status=request.status,
+                outcome=request.outcome,
+                notes_record_id=request.notes_record_id,
+                next_action=request.next_action,
+                next_follow_up_at=request.next_follow_up_at,
+                source_action_url=request.source_action_url,
+                related_grant_ids=request.related_grant_ids,
+                related_record_ids=request.related_record_ids,
+                privacy_level=request.privacy_level,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

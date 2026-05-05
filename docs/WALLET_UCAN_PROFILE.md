@@ -103,5 +103,24 @@ deterministic UCAN-compatible inspection envelope:
 
 This envelope is for verifier, audit, and adapter tests. It deliberately does
 not expose raw record payloads, document text, precise location, decrypted keys,
-or private metadata. Future `ucanto`/w3up fixtures should compare their decoded
-capabilities against this envelope rather than relying on product API internals.
+or private metadata.
+
+## Conformance Fixtures
+
+`wallet_ucan_conformance_fixture(invocation, grant=...)` packages the token,
+expected decoded UCAN fields, profile payload, and signature-payload hash into a
+stable adapter-test fixture. `validate_ucan_profile_payload(payload)` validates
+and normalizes an inspection envelope. `validate_wallet_ucan_conformance_fixture`
+validates the complete fixture, including token prefix, decoded token fields,
+expected UCAN fields, proof-chain grant ID, and signature-payload hash. External
+`ucanto`/w3up adapters can use these functions without depending on product API
+internals.
+
+Conforming adapters must preserve:
+
+- issuer DID and audience DID
+- the `with` resource and `can` ability
+- caveats in the capability `nb` field
+- nonce, issued-at, optional expiry, proof-chain grant ID, and signature
+- absence of raw wallet payloads, precise coordinates, decrypted keys, and
+  private metadata
