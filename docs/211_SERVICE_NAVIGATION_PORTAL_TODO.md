@@ -43,7 +43,7 @@ Priority guide:
 - Acceptance: Coverage and parser tests validate phone, address, hours, eligibility, and provenance extraction quality.
 
 ## PORTAL-012 Portal Package Publish And Audit
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: data
 - Depends on: PORTAL-010, PORTAL-011
@@ -52,7 +52,7 @@ Priority guide:
 - Acceptance: Portal package artifacts upload to Hugging Face with matching hashes and a recorded audit manifest.
 
 ## PORTAL-020 Service Detail Route
-- Status: todo
+- Status: completed
 - Priority: P1
 - Track: ui
 - Depends on: PORTAL-010
