@@ -14,6 +14,12 @@ export interface NavigationSurface {
   aliases: string[];
 }
 
+interface NavigationRouteMatch {
+  route: RouteId;
+  normalizedAlias: string;
+  score: number;
+}
+
 const extraRouteAliases = {
   home: ["dashboard", "start", "today", "safety plan"],
   register: ["registration", "profile", "intake"],
@@ -22,24 +28,15 @@ const extraRouteAliases = {
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
   uploads: ["documents", "files", "records"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
-  shelter: ["shelters", "beds"],
+  shelter: ["shelters", "shelter services", "beds"],
   "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
-  "benefits-protection": ["benefits", "public benefits"],
-  analytics: ["reports"],
+  "benefits-protection": ["benefits", "benefits protection", "public benefits"],
+  analytics: ["reports", "group facts"],
   "proof-center": ["proof center", "proofs", "proof", "verification", "verifications"],
   exports: ["export", "sharing bundle", "bundle", "download"],
-  security: ["wallet security", "privacy"],
-  audit: ["history", "wallet audit", "activity log"]
+  security: ["wallet security", "privacy", "security settings"],
+  audit: ["history", "wallet audit", "activity log", "audit log"]
 } satisfies Record<RouteId, readonly string[]>;
-
-export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => ({
-  route: route.id,
-  label: getRouteLabel(route.id),
-  aliases: buildRouteAliases(route.id, route.label)
-}));
-
-export const navigationRouteIds: RouteId[] = navigationSurfaces.map((surface) => surface.route);
-const navigationRouteIdSet = new Set<RouteId>(navigationRouteIds);
 
 const routeSummaries = {
   home: (state) =>
@@ -62,6 +59,15 @@ const routeSummaries = {
   security: () => "Security settings and wallet safety information are active.",
   audit: (state) => `${state.walletAuditEvents.length} audit events are visible.`
 } satisfies Record<RouteId, RouteSummaryBuilder>;
+
+export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => ({
+  route: route.id,
+  label: getRouteLabel(route.id),
+  aliases: buildRouteAliases(route.id, route.label)
+}));
+
+export const navigationRouteIds: RouteId[] = navigationSurfaces.map((surface) => surface.route);
+const navigationRouteIdSet = new Set<RouteId>(navigationRouteIds);
 
 export async function navigateAction(
   runtime: AppActionRuntime,
@@ -95,7 +101,7 @@ export async function readSurfaceContextAction(
   return {
     ok: true,
     action: "read_surface_context",
-    summary: surfaceContext.summary || `Read ${surfaceContext.routeLabel}.`,
+    summary: formatSurfaceContextSummary(surfaceContext),
     route: surfaceContext.route,
     surfaceContext
   };
@@ -129,8 +135,42 @@ export function summarizeRouteState(route: RouteId, state: AppActionState): stri
   return routeSummaries[route](state);
 }
 
+export function formatSurfaceContextSummary(surfaceContext: SurfaceContext): string {
+  const summary = surfaceContext.summary?.trim();
+  if (!summary) {
+    return `You are on ${surfaceContext.routeLabel}.`;
+  }
+  if (startsWithRouteLabel(summary, surfaceContext.routeLabel)) {
+    return summary;
+  }
+  return `${surfaceContext.routeLabel}: ${summary}`;
+}
+
 export function canNavigateToRoute(route: unknown): route is RouteId {
   return navigationRouteIdSet.has(route as RouteId);
+}
+
+export function validateNavigationRouteCoverage(): string[] {
+  const errors: string[] = [];
+  const routeSummaryIds = Object.keys(routeSummaries) as RouteId[];
+  const appRouteIdSet = new Set(appRoutes.map((route) => route.id));
+
+  for (const route of routeSummaryIds) {
+    if (!appRouteIdSet.has(route)) {
+      errors.push(`Route ${route} has a navigation summary but is not registered in appRoutes.`);
+    }
+    if (!navigationRouteIdSet.has(route)) {
+      errors.push(`Route ${route} is missing from navigation surfaces.`);
+    }
+  }
+
+  for (const route of navigationRouteIds) {
+    if (!routeSummaries[route]) {
+      errors.push(`Route ${route} has a navigation surface but no safe summary builder.`);
+    }
+  }
+
+  return errors;
 }
 
 export function resolveNavigationRoute(input: string): RouteId | undefined {
@@ -145,11 +185,12 @@ export function resolveNavigationRoute(input: string): RouteId | undefined {
     .flatMap((surface) =>
       surface.aliases.map((alias) => ({
         route: surface.route,
-        normalizedAlias: normalizeRouteText(alias)
+        normalizedAlias: normalizeRouteText(alias),
+        score: scoreRouteAliasMatch(surface, alias, normalized)
       }))
     )
-    .sort((left, right) => right.normalizedAlias.length - left.normalizedAlias.length)
-    .find((candidate) => includesNormalizedPhrase(normalized, candidate.normalizedAlias))?.route;
+    .filter((candidate) => candidate.score > 0)
+    .sort(compareRouteMatches)[0]?.route;
 }
 
 export async function summarizeCurrentScreenAction(runtime: AppActionRuntime): Promise<AppActionResult> {
@@ -180,6 +221,32 @@ function normalizeRouteText(value: string): string {
 function includesNormalizedPhrase(text: string, phrase: string): boolean {
   const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
   return new RegExp(`(^|\\W)${escaped}(?=\\W|$)`, "i").test(text);
+}
+
+function scoreRouteAliasMatch(surface: NavigationSurface, alias: string, normalizedInput: string): number {
+  const normalizedAlias = normalizeRouteText(alias);
+  if (!normalizedAlias || !includesNormalizedPhrase(normalizedInput, normalizedAlias)) {
+    return 0;
+  }
+
+  const isRouteIdAlias = normalizedAlias === normalizeRouteText(surface.route);
+  const isLabelAlias = normalizedAlias === normalizeRouteText(surface.label);
+  const routeWordCount = normalizedAlias.split(" ").length;
+  return normalizedAlias.length + routeWordCount * 4 + (isRouteIdAlias ? 12 : 0) + (isLabelAlias ? 8 : 0);
+}
+
+function compareRouteMatches(left: NavigationRouteMatch, right: NavigationRouteMatch): number {
+  if (left.score !== right.score) return right.score - left.score;
+  if (left.normalizedAlias.length !== right.normalizedAlias.length) {
+    return right.normalizedAlias.length - left.normalizedAlias.length;
+  }
+  return navigationRouteIds.indexOf(left.route) - navigationRouteIds.indexOf(right.route);
+}
+
+function startsWithRouteLabel(summary: string, routeLabel: string): boolean {
+  const normalizedSummary = normalizeRouteText(summary);
+  const normalizedLabel = normalizeRouteText(routeLabel);
+  return normalizedSummary === normalizedLabel || normalizedSummary.startsWith(`${normalizedLabel} `);
 }
 
 function getVisibleRecordIds(route: RouteId, state: AppActionState): string[] | undefined {
