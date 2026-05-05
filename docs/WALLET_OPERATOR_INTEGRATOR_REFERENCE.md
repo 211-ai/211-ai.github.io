@@ -37,6 +37,10 @@ WALLET_PROOF_VERIFIER_ID=verifier-http-v1
 WALLET_PROOF_SYSTEM=groth16
 WALLET_PROOF_CIRCUIT_ID=location-region-v1
 WALLET_OPS_HEALTH_SHARED_SECRET=replace-me
+WALLET_OPS_HEALTH_SECRET_REF=secret-manager://wallet/prod/ops-health
+WALLET_OPS_ALERT_SECRET_REF=secret-manager://wallet/prod/ops-alert
+WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/proof-verifier
+WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/storage
 ```
 
 Optional production settings:
@@ -44,8 +48,8 @@ Optional production settings:
 - `WALLET_STORAGE_ROOT`, `WALLET_STORAGE_BUCKET`, `WALLET_STORAGE_PREFIX`,
   `WALLET_STORAGE_PIN`, and `WALLET_STORAGE_MIRRORS` can build
   `WALLET_STORAGE_CONFIG` from individual environment variables.
-- `WALLET_PROOF_PROVE_PATH` and `WALLET_PROOF_VERIFY_PATH` override the HTTP
-  proof backend endpoints.
+- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`, and
+  `WALLET_PROOF_VERIFY_PATH` override the HTTP proof backend endpoints.
 - `WALLET_PROOF_BEARER_TOKEN` or
   `WALLET_PROOF_HTTP_HEADER_NAME` / `WALLET_PROOF_HTTP_HEADER_VALUE` add proof
   service authentication.
@@ -54,6 +58,10 @@ Optional production settings:
   `WALLET_OPS_ALERT_BEARER_TOKEN`, and
   `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE` configure
   worker alert delivery.
+- The `*_SECRET_REF` variables are not secrets. They are secret-manager paths
+  included in readiness and signoff evidence so operators can prove real
+  verifier, storage, ops-health, and alert credentials are provisioned without
+  printing credential values.
 
 Secret templates live at:
 
@@ -62,7 +70,14 @@ Secret templates live at:
 - `wallet_interface/deploy/kubernetes/externalsecret.example.yaml`
 
 The external location proof verifier contract is documented in
-`docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
+`docs/WALLET_PROOF_VERIFIER_CONTRACT.md`. Use
+`python -m wallet_interface.ops --validate-proof-contract` for
+`location_region` and
+`python -m wallet_interface.ops --validate-distance-proof-contract` before
+exposing live `location_distance` proof UI.
+Use `python -m wallet_interface.ops --validate-target-signoff-packet` against a
+completed `docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json` copy to
+validate retention, organization review, and staging evidence before launch.
 
 The wallet UCAN invocation profile and UCAN-compatible inspection envelope are
 documented in `docs/WALLET_UCAN_PROFILE.md`.
@@ -162,7 +177,10 @@ calling the wallet operation.
 | `POST` | `/wallets/{wallet_id}/records/graphrag/redacted` | `redacted_graphrag` | Redacted GraphRAG graph over explicit document records. |
 
 Redacted GraphRAG returns record/category/redaction/entity-type graph nodes and
-edges. Entity strings and document text are not returned.
+edges. Entity strings and document text are not returned. First production uses
+`wallet-local-redacted-graphrag-v1`: wallet-local execution, model-backed
+extraction disabled, encrypted artifact storage, and entity-type-count-only
+safe output.
 
 ### Location, Proofs, and Service Matching
 
@@ -172,6 +190,8 @@ edges. Entity strings and document text are not returned.
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/coarse-invocations` | Issue coarse-location invocation token. |
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/region-proof-grants` | Grant location-region proof creation. |
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | Create a proof receipt for service-area membership. |
+| `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/distance-proof-grants` | Grant location-distance proof creation for a target and threshold. |
+| `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/distance-proofs` | Create a proof receipt that a wallet location is within a target distance. |
 | `GET` | `/wallets/{wallet_id}/proofs` | List proof receipts for proof-center views. |
 | `POST` | `/wallets/{wallet_id}/services/match` | Match services using wallet coarse/proven data. |
 | `POST` | `/services/match-derived` | Match services from caller-provided derived/coarse facts. |
@@ -332,5 +352,8 @@ after deployment and confirm no check has `status=error`. When
 
 ```bash
 python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error
 python -m wallet_interface.ops --validate-production-readiness
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json
 ```

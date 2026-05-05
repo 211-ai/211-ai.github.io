@@ -1,7 +1,7 @@
 # Wallet Security Architecture ADR
 
-Status: accepted for integrated MVP; target-environment signoff required before
-production launch.
+Status: accepted for integrated implementation; target-environment signoff
+required before production launch.
 
 Date: 2026-05-05
 
@@ -37,17 +37,23 @@ workflows around that core.
 4. Fail closed for production proofs. Development may use simulated receipts
    only when simulated proofs are explicitly allowed. Production mode requires a
    non-simulated backend. The first supported production-style boundary is the
-   HTTP `location_region` verifier contract in
+   HTTP `location_region` verifier contract, with `location_distance` defined
+   as the next verifier family in
    `docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
 5. Treat derived analysis as sensitive. Redacted text, form analysis,
    redacted summaries, GraphRAG outputs, vector profiles, and exports must
    enforce concrete output-type caveats and store derived payloads encrypted.
+   First-production GraphRAG uses the wallet-local
+   `wallet-local-redacted-graphrag-v1` backend with model-backed extraction
+   disabled; model-backed or remote GraphRAG requires separate target review.
 6. Analytics must use approved templates, consent records, contribution
    nullifiers, cohort thresholds, DP metadata, query-budget ledgers, and audit
    events. New templates must pass privacy review before status `approved`.
 7. Production deployments must use durable wallet repositories, encrypted blob
    storage, ops-health auth, alert routing, and the production readiness gate:
-   `python -m wallet_interface.ops --validate-production-readiness`.
+   `python -m wallet_interface.ops --validate-production-readiness`. Target
+   launch also requires a validated JSON signoff packet from
+   `docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json`.
 
 ## Threat Model
 
@@ -58,7 +64,7 @@ workflows around that core.
 | `record/analyze` is treated like plaintext decrypt | Analyze, decrypt, export, location, proof, and analytics capabilities are tested separately. Derived analysis endpoints enforce concrete output policies. |
 | Revoked grants continue to unwrap data keys | Revocation blocks future invocations. Emergency revoke can revoke non-owner grants and rotate active record keys. Ops health checks for active wraps tied to revoked grants. |
 | Simulated proofs are accepted in production | Production proof mode disables simulated receipts and requires a non-simulated verifier backend. The readiness gate runs a health/prove/verify/no-leak contract check. |
-| Proof receipts leak witness data | Public inputs are constrained to claim, region IDs, policy hashes, verifier metadata, and receipt identifiers. Tests and contract validation scan for witness keys and synthetic witness values. |
+| Proof receipts leak witness data | Public inputs are constrained to claim, region or target IDs, thresholds, policy hashes, verifier metadata, and receipt identifiers. Tests plus `--validate-proof-contract` and `--validate-distance-proof-contract` scan for witness keys and synthetic wallet/target witness values. |
 | Aggregate analytics identifies rare users | Templates enforce allowed fields, minimum cohort sizes, sparse-cell suppression, DP count metadata, query-budget spend, nullifier duplicate prevention, consent status, and audit records. |
 | Operators lose state across restarts | `LocalWalletRepository` persists wallet snapshots and the analytics ledger. Production env requires repository and encrypted storage configuration. |
 | Ops endpoints leak operational state | `/ops/health` supports shared-secret auth, and edge/deployment references forward only health routes through controlled paths. |
@@ -89,12 +95,17 @@ Before target production launch or verifier credential rotation:
 ```bash
 pytest tests/test_wallet_interface_api.py tests/test_wallet_interface_ops.py tests/test_wallet_interface_proof_backends.py -q
 python -m wallet_interface.ops --validate-production-readiness
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json
 ```
 
 The readiness report must be `status=ok`. It fails when durable
 repository/storage env vars, proof mode, verifier credentials, ops-health auth,
-alert routing, ops health, or the external verifier contract are missing,
-unhealthy, simulated, or still set to placeholders.
+alert routing, secret-manager references, ops health, or the external region
+and distance verifier contracts are missing, unhealthy, simulated, or still set
+to placeholders. The signoff packet must validate security, privacy,
+legal/policy, accessibility/usability, operations/on-call, product-owner,
+analytics privacy, retention, and launch-decision evidence.
 
 ## Consequences
 

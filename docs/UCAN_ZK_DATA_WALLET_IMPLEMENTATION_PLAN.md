@@ -64,8 +64,13 @@ Implemented foundations:
 Remaining target-production gates:
 
 - Provision real external verifier credentials in the selected secret manager
-  and run `python -m wallet_interface.ops --validate-production-readiness` in
-  the target staging environment until the report is `status=ok`.
+  and expose only the corresponding secret-manager reference env vars
+  (`WALLET_OPS_HEALTH_SECRET_REF`, `WALLET_OPS_ALERT_SECRET_REF`,
+  `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
+  `WALLET_STORAGE_CREDENTIAL_SECRET_REF`) to the readiness report.
+- Run `python -m wallet_interface.ops --validate-production-readiness` in the
+  target staging environment until the report is `status=ok`; this now includes
+  external `location_region` and `location_distance` verifier contract checks.
 - Complete and archive a target-environment signoff packet using
   `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`, with retention mapping from
   `docs/WALLET_RETENTION_POLICY.md` and supporting evidence from
@@ -73,7 +78,10 @@ Remaining target-production gates:
   `docs/WALLET_PRODUCTION_DECISIONS_ADR.md`,
   `docs/WALLET_UCAN_PROFILE.md`,
   `docs/WALLET_OPERATIONS_RUNBOOK.md`, and
-  `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`.
+  `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`. Use
+  `docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json` for the
+  machine-readable packet and validate it with
+  `python -m wallet_interface.ops --validate-target-signoff-packet`.
 
 ## Design Principles
 
@@ -100,7 +108,9 @@ Use these existing `ipfs_datasets_py` pieces instead of rebuilding them in
   already exposes a pluggable IPFS backend with Kubo CLI and optional provider
   hooks.
 - General storage concepts: `ipfs_datasets_py/ipfs_datasets_py/storage/storage_engine.py`
-  has storage enums and manager concepts, but needs real wallet storage adapters.
+  has storage enums and manager concepts. The wallet package now supplies
+  wallet-specific encrypted local, IPFS, S3, Filecoin-style, and replicated
+  storage adapters over those concepts.
 - UCAN foundations:
   - `ipfs_datasets_py/ipfs_datasets_py/processors/auth/ucan.py` is a mock UCAN
     manager and key delegation demo.
@@ -114,8 +124,9 @@ Use these existing `ipfs_datasets_py` pieces instead of rebuilding them in
     abstractions, canonicalization, witness management, simulated and Groth16
     backends, and a UCAN/ZKP bridge.
   - `ipfs_datasets_py/ipfs_datasets_py/logic/zkp/ucan_zkp_bridge.py` already
-    models ZK proof evidence as a UCAN caveat, but it is simulation-oriented by
-    default and must be made production-safe for wallet use.
+    models ZK proof evidence as a UCAN caveat. The wallet boundary now adds
+    proof-mode configuration, non-simulated backend selection, verifier
+    metadata, public-input safety checks, and production fail-closed behavior.
   - `ipfs_datasets_py/ipfs_datasets_py/mcp_server/tools/pdf_tools/pdf_generate_zkp_certificate.py`
     demonstrates form-completion proofs without exposing private form values.
 - Documents and analysis:
@@ -124,8 +135,9 @@ Use these existing `ipfs_datasets_py` pieces instead of rebuilding them in
     `vector_stores/`, and `knowledge_graphs/`.
 - Location and spatial analysis:
   - `ipfs_datasets_py/ipfs_datasets_py/processors/domains/geospatial/geospatial_analysis.py`
-    provides reusable geospatial extraction/query logic, but it is currently
-    lightweight and should be wrapped by wallet-aware privacy controls.
+    provides reusable geospatial extraction/query logic. Wallet service
+    matching now wraps location use with coarse claims, proof receipts, UCAN
+    caveats, and audit controls.
 - Audit/provenance:
   - `ipfs_datasets_py/ipfs_datasets_py/audit/` and
     `ipfs_datasets_py/ipfs_datasets_py/analytics/data_provenance*.py` provide
@@ -382,11 +394,11 @@ identify people. The analytics layer must enforce:
 
 ### Implementation Modes
 
-- MVP mode: local derived facts plus simulated ZK in development, clearly marked
-  as non-production.
-- Production mode: enable Groth16 only when the Rust backend, proving keys, and
-  verifier registry are present. Fail closed if proof generation or verification
-  is unavailable.
+- Development mode: local derived facts plus simulated ZK in development,
+  clearly marked as non-production.
+- Production mode: enable only reviewed non-simulated verifier backends with
+  configured verifier credentials and registry metadata. Fail closed if proof
+  generation or verification is unavailable.
 - Future mode: evaluate MPC/PSI/FHE for analytics where ZK proofs alone are a
   poor fit.
 
@@ -497,18 +509,18 @@ abilities and caveats using `ipfs_datasets_py`.
 The phase list below is the implementation contract. Each phase has working
 package/API/UI coverage in this repository. Remaining gates are target
 environment, governance, or future-compatibility items rather than missing
-in-repo MVP functionality.
+in-repo functionality.
 
 | Phase | Status | Remaining Gate |
 | --- | --- | --- |
 | 0. Architecture and threat model | implementation complete | target signoff packet security/privacy/legal approval |
 | 1. Generic data wallet core | implementation complete | target retention-policy mapping and datastore lifecycle approval |
 | 2. Storage integration | implementation complete | target storage credentials and deployment verification |
-| 3. UCAN wallet authorization | implementation complete | `wallet-ucan-v1` profile documented; optional external `ucanto`/w3up interop fixtures after launch |
-| 4. Location claims and service matching | implementation complete | next proof family is `location_distance` through reviewed verifier contract |
+| 3. UCAN wallet authorization | implementation complete | `wallet-ucan-v1` profile and conformance fixtures documented; external byte-level `ucanto`/w3up adapter remains target-specific |
+| 4. Location claims and service matching | implementation complete | `location_distance` contract implemented; target verifier staging validation before live UI exposure |
 | 5. Proof system integration | implementation complete | real target verifier credentials and staging contract pass |
 | 6. Privacy-preserving analytics | implementation complete | organization privacy review for each approved template |
-| 7. Document and derived analysis | implementation complete | production model/backend selection for advanced GraphRAG usage |
+| 7. Document and derived analysis | implementation complete | first production uses `wallet-local-redacted-graphrag-v1`; model-backed GraphRAG requires separate target privacy/model review |
 | 8. 211-AI product UI | implementation complete | live auth/accessibility/usability approval in target signoff packet |
 | 9. API, MCP, CLI, and operations | implementation complete | target-environment secret provisioning and production-readiness report |
 
@@ -519,8 +531,7 @@ Deliverables:
 - Threat model covering documents, precise location, derived facts, analytics,
   third-party delegates, storage providers, and administrators.
 - UCAN interop decision: keep the documented `wallet-ucan-v1` profile for first
-  production, then add optional external `ucanto`/w3up adapter fixtures after
-  launch.
+  production, with conformance fixtures for external `ucanto`/w3up adapters.
 - ZK production decision: confirm Groth16 backend build, artifact management,
   verifier registry, and fail-closed behavior.
 - Analytics privacy policy: cohort thresholds, DP defaults, query budget model,
@@ -631,7 +642,7 @@ Acceptance:
 
 ### Phase 6: Privacy-Preserving Analytics
 
-Current MVP status:
+Current implementation status:
 
 - `ipfs_datasets_py.wallet` supports approved analytics templates, template
   status/expiry checks, consent constrained by template policy, per-template
@@ -640,7 +651,7 @@ Current MVP status:
   count/cohort suppression for private releases, and per-budget-key epsilon
   accounting. Aggregate query/release decisions are audited against consenting
   wallets without logging raw contribution fields.
-- `ipfs-datasets wallet` exposes an MVP analytics CLI flow for registering
+- `ipfs-datasets wallet` exposes an analytics CLI flow for registering
   templates, creating consent, submitting derived-field contributions, and
   running private aggregate counts across local wallet snapshots. It also
   exposes bounded encrypted export grant, invocation, and bundle commands for
@@ -665,9 +676,10 @@ Current MVP status:
   encrypted export grant/invocation/bundle workflows, encrypted storage health
   verification/repair, derived service matching, proof receipt listing for
   proof-center views, and audit timelines.
-- The current DP implementation is deterministic for local reproducible tests.
-  Production deployments must replace this with reviewed randomness, durable
-  analyst/study ledgers, and privacy review for each analytics template.
+- Differential privacy noise uses system randomness by default, with
+  deterministic test seeding available only for local reproducible tests.
+  Durable analyst/study ledgers and privacy review gates are implemented
+  through the repository analytics ledger and template status workflow.
 
 Deliverables:
 
@@ -688,7 +700,7 @@ Acceptance:
 
 ### Phase 7: Document and Derived Data Analysis
 
-Current MVP status:
+Current implementation status:
 
 - `WalletService.analyze_document_with_redaction` now creates encrypted derived
   artifacts for document analysis with a `redacted_derived_only` output policy.
@@ -738,6 +750,12 @@ Current MVP status:
   entity strings or document text. Delegated use must carry the
   `redacted_graphrag` output type. `wallet_create_redacted_graphrag` exposes the
   same flow through MCP.
+- The selected first-production GraphRAG backend is
+  `wallet-local-redacted-graphrag-v1`: wallet-local execution, no model-backed
+  entity extraction, legacy compatibility extractor over redacted text, and
+  entity-type-count-only output. Advanced model-backed GraphRAG remains blocked
+  until a separate target privacy/model review approves the model, prompt/data
+  handling policy, output contract, and retention mapping.
 - `wallet_interface.api` exposes redacted text extraction, form analysis,
   document analysis, vector profile, cross-record redacted analysis, and
   redacted GraphRAG endpoints so the 211-AI project can call these package
@@ -790,7 +808,7 @@ Acceptance:
 
 ### Phase 9: API, MCP, CLI, and Operations
 
-Current MVP status:
+Current implementation status:
 
 - `wallet_interface.api` now exposes the integrated wallet, proof, analytics,
   export, storage-repair, recovery, and ops-health surface used by the 211-AI
@@ -873,7 +891,7 @@ sharing, proof receipts, service matching, revocation, and audit.
 
 ### Milestone A: Production-Ready Sharing Semantics
 
-Status: MVP-complete as of 2026-05-03. The implementation now has bounded
+Status: implementation-complete as of 2026-05-03. The implementation now has bounded
 UCAN-style sharing flows, capability previews, revocation behavior, threshold
 approval references, and snapshot-backed durable wallet state. Remaining
 production hardening for external UCAN interoperability and production
@@ -882,15 +900,16 @@ above.
 
 Implemented scope:
 
-- Document the first-production `wallet-ucan-v1` token profile and keep
-  external `ucanto`/w3up compatibility as a post-launch adapter track.
-- Add conformance tests for delegation chains, caveat attenuation, expiry,
+- The first-production `wallet-ucan-v1` token profile and conformance fixtures
+  are documented, and external byte-level `ucanto`/w3up compatibility remains a
+  target-specific adapter track.
+- Conformance tests cover delegation chains, caveat attenuation, expiry,
   revocation, and threshold approval references.
-- Add capability previews in `211-AI` that show users exactly what the grant
+- Capability previews in `211-AI` show users exactly what the grant
   permits: records, outputs, purpose, expiration, re-delegation, and revocation
   limits.
-- Persist access requests, grants, revocations, approvals, and grant receipts in
-  a durable store.
+- Wallet snapshots persist access requests, grants, revocations, approvals, and
+  grant receipts in a durable store.
 
 Exit criteria:
 
@@ -904,16 +923,16 @@ Completion evidence:
 
 | Requirement | Evidence |
 | --- | --- |
-| UCAN token profile | `wallet-ucan-v1` invocation tokens are issued and accepted by `wallet_interface.api`, with issuer, audience, grant ID, wallet resource, ability, caveats, and expiration carried in signed wallet invocations. `docs/WALLET_UCAN_PROFILE.md` documents the profile, and wallet tests cover issuer-preserving tokens, the UCAN-compatible inspection envelope, legacy no-issuer token compatibility, and issuer mismatch rejection. External `ucanto`/w3up compatibility remains a post-launch adapter track. |
+| UCAN token profile | `wallet-ucan-v1` invocation tokens are issued and accepted by `wallet_interface.api`, with issuer, audience, grant ID, wallet resource, ability, caveats, and expiration carried in signed wallet invocations. `docs/WALLET_UCAN_PROFILE.md` documents the profile and conformance fixture contract, and wallet tests cover issuer-preserving tokens, the UCAN-compatible inspection envelope, complete conformance fixture validation, legacy no-issuer token compatibility, and issuer mismatch rejection. External byte-level `ucanto`/w3up compatibility remains a target-specific adapter track. |
 | Delegated request, approval, invocation, and revocation | `tests/test_wallet_interface_api.py` covers third-party access requests, owner approval, bounded invocation, listed revoked requests, and later invocation failure after revocation. |
 | Capability separation | `ipfs_datasets_py/tests/unit/test_data_wallet.py` covers `record/analyze` without decrypt, `record/decrypt` key wrapping, coarse/proven location grants, analytics consent/contribution controls, export grants, wrong-ability rejection, tampered invocation rejection, and revoked grant rejection. |
-| Caveat enforcement | Wallet service tests cover record-ID constrained wildcard grants, not-before caveats, concrete output-type checks for document/export operations, and delegated grants preserving parent record restrictions. API tests cover user-presence-required grants failing direct use and succeeding only through a signed invocation carrying `user_present`. |
+| Caveat enforcement | Wallet service tests cover record-ID constrained wildcard grants, not-before caveats, concrete output-type checks for document/export operations, delegated grants preserving parent record restrictions, and `location_distance` target/threshold caveat enforcement. API tests cover user-presence-required grants failing direct use and succeeding only through a signed invocation carrying `user_present`. |
 | Threshold approval references | Wallet unit tests and API tests cover sensitive decrypt and `export/create` grants requiring configured controller thresholds before issuance. |
-| Durable wallet state | Wallet snapshots persist access requests, grants, revocations, approvals, grant receipts, analytics state, proof receipts, exports, audit events, and encrypted record descriptors. The CLI repository persists snapshots for local operation; production database wiring remains Milestone E. |
+| Durable wallet state | Wallet snapshots persist access requests, grants, revocations, approvals, grant receipts, analytics state, proof receipts, exports, audit events, and encrypted record descriptors. The CLI repository persists snapshots for local operation; target production repository and storage configuration are covered by Milestone E and the readiness gate. |
 | 211-AI capability previews | `wallet_interface/ui` now previews abilities, records/resources, outputs, purpose, expiration/status, approval readiness, revocation state, and non-granted sensitive capabilities across sharing rules, recipient access, grant receipts, analytics, proof center, benefits, uploads, and exports. |
 | UI regression coverage | `wallet_interface/ui/tests/smoke.spec.ts` covers capability previews for analytics, benefits, sharing, proofs, exports, recipient access approval/revocation, upload repair, delegated analysis artifacts, and audit events. |
 
-Milestone A is therefore closed for the integrated MVP. Do not reopen it for
+Milestone A is therefore closed for the integrated implementation. Do not reopen it for
 production datastore, passkey recovery, real ZK circuits, or external UCAN
 interop; those are tracked by Milestones B, D, and E.
 
@@ -941,14 +960,14 @@ drop-in task, not a 211-AI product-flow blocker.
 
 Implemented scope:
 
-- Choose `location_region` as the first production proof-family boundary because
-  it maps directly to 211 service eligibility.
-- Define witness schema, public inputs, circuit artifact storage, verifier ID,
-  and proof receipt format.
-- Wire `wallet.proofs` to the existing `logic/zkp` verifier registry with a
+- `location_region` is the first production proof-family boundary because it
+  maps directly to 211 service eligibility.
+- Witness schema, public inputs, circuit artifact storage, verifier ID, and
+  proof receipt format are defined.
+- `wallet.proofs` is wired to the existing `logic/zkp` verifier registry with a
   production-mode fail-closed flag.
-- Keep simulated receipts available only under a development flag and label
-  them in the UI.
+- Simulated receipts remain available only under a development flag and are
+  labeled in the UI.
 
 Exit criteria:
 
@@ -957,18 +976,18 @@ Exit criteria:
 - Production mode refuses to accept a simulated proof.
 - Public proof inputs are safe to display in the Proof Center.
 
-Implementation contract:
+Implemented contract:
 
 | Layer | Work |
 | --- | --- |
-| `ipfs_datasets_py.wallet.proofs` | Add a proof backend interface with `prove_location_region(witness, public_inputs)`, `verify(receipt)`, `verifier_id`, and `mode` fields. Keep the current simulated helper as `SimulatedProofBackend`. |
-| Wallet service | Add `proof_backend` and `allow_simulated_proofs` configuration. In development mode, preserve current simulated receipts. In production mode, fail closed unless a non-simulated backend is configured and verification succeeds before the receipt is stored. |
-| Proof receipt schema | Extend receipts with `proof_system`, `circuit_id`, `verifier_digest`, `proof_artifact_ref`, and `verification_status`. Keep `statement`, `public_inputs`, `witness_record_ids`, `proof_hash`, and `is_simulated` for backward-compatible imports. |
-| Location witness schema | Decrypt precise coordinates only inside the wallet service, construct a witness containing lat/lon plus wallet-local nonce, and expose only `region_id`, `claim`, `region_policy_hash`, and optional coarse service area metadata as public inputs. |
-| Verifier registry | Add a registry keyed by `proof_type` and `verifier_id`. The default registered backends are `location_region:simulated-wallet-zkp-v0.1` for development and a production backend placeholder that must be explicitly configured. |
-| API | Add request flags or environment configuration that make simulated proofs visible as development artifacts. API responses must include `is_simulated`, `proof_system`, `verifier_id`, `verification_status`, and safe `public_inputs`. |
-| 211-AI UI | Label simulated receipts clearly, show production verification status, and never show private witness data. The Proof Center should display only public inputs, verifier ID, receipt hash, and which wallet record was used. |
-| Tests | Add unit tests for simulated dev success, production fail-closed without backend, production success with a fake non-simulated backend, verification failure rejection, receipt import compatibility, and API/UI display of safe public inputs only. |
+| `ipfs_datasets_py.wallet.proofs` | Provides a proof backend interface with `prove_location_region(witness, public_inputs)`, `verify(receipt)`, `verifier_id`, and `mode` fields. The development helper remains `SimulatedProofBackend`. |
+| Wallet service | Provides `proof_backend` and `allow_simulated_proofs` configuration. In development mode, simulated receipts remain available. In production mode, the service fails closed unless a non-simulated backend is configured and verification succeeds before the receipt is stored. |
+| Proof receipt schema | Includes `proof_system`, `circuit_id`, `verifier_digest`, `proof_artifact_ref`, and `verification_status`, while keeping `statement`, `public_inputs`, `witness_record_ids`, `proof_hash`, and `is_simulated` for backward-compatible imports. |
+| Location witness schema | Decrypts precise coordinates only inside the wallet service, constructs a witness containing lat/lon plus wallet-local nonce, and exposes only `region_id`, `claim`, `region_policy_hash`, and optional coarse service area metadata as public inputs. |
+| Verifier registry | Provides a registry keyed by `proof_type` and `verifier_id`. The default registered backends are `location_region:simulated-wallet-zkp-v0.1` for development and explicitly configured non-simulated backends for production-like environments. |
+| API | Uses request flags and environment configuration to make simulated proofs visible as development artifacts. API responses include `is_simulated`, `proof_system`, `verifier_id`, `verification_status`, and safe `public_inputs`. |
+| 211-AI UI | Labels simulated receipts clearly, shows production verification status, and never shows private witness data. The Proof Center displays only public inputs, verifier ID, receipt hash, and which wallet record was used. |
+| Tests | Cover simulated development success, production fail-closed without backend, production success with a fake non-simulated backend, verification failure rejection, receipt import compatibility, and API/UI display of safe public inputs only. |
 
 Completion evidence:
 
@@ -979,7 +998,7 @@ Completion evidence:
 | Non-simulated verification path | The deterministic location-region backend produces non-simulated receipts with verifier digest, circuit ID, artifact ref, and verification status, and `WalletService` verifies receipts before storage. |
 | Backward-compatible receipts | Wallet snapshot import accepts legacy proof receipts that do not yet contain the new verifier metadata fields. |
 | API proof mode | `WalletInterfaceService` supports explicit proof backend injection and env selection with `WALLET_PROOF_MODE=production` plus `WALLET_PROOF_BACKEND=deterministic-location-region`. |
-| 211-AI Proof Center | Proof Center loads API-backed proof receipts, labels simulated vs verified receipts, displays safe public inputs and verifier metadata, and can create `location/prove_region` receipts through the API. |
+| 211-AI Proof Center | Proof Center loads API-backed proof receipts, labels simulated vs verified receipts, displays safe public inputs and verifier metadata, and can create `location/prove_region` receipts through the API. A regression guard keeps `location_distance` out of the visible Proof Center until `--validate-distance-proof-contract` passes in target staging. |
 | Public-input safety | Wallet, API, and UI tests assert precise coordinates and witness keys are not present in displayed/public proof inputs. |
 
 Non-goals for this milestone:
@@ -1011,12 +1030,13 @@ expiration, and supports consent creation and withdrawal.
 
 Implemented scope:
 
-- Store analytics templates, consents, contributions, nullifiers, query-budget
-  spend, and aggregate releases durably.
-- Replace deterministic test DP noise with reviewed randomness.
-- Add analytics template review states: draft, approved, paused, retired.
-- Add UI copy and controls for consent expiration, withdrawal, and fields used.
-- Add sparse-cell suppression tests for multi-dimensional cohorts.
+- Analytics templates, consents, contributions, nullifiers, query-budget spend,
+  and aggregate releases persist durably.
+- Differential privacy count noise uses reviewed system randomness by default,
+  with deterministic noise limited to explicit test seeds.
+- Analytics template review states include draft, approved, paused, and retired.
+- UI controls cover consent expiration, withdrawal, and fields used.
+- Sparse-cell suppression tests cover multi-dimensional cohorts.
 
 Exit criteria:
 
@@ -1054,11 +1074,12 @@ screen can drive recovery-policy and controller-recovery actions.
 
 Implemented scope:
 
-- Add passkey/device-key abstraction for wallet controllers.
-- Implement key rotation and re-wrapping for active records.
-- Add recovery contacts or recovery policy, with threshold approval for root
+- Wallet controller and device authority provide the abstraction for live
+  passkey or device-key authentication.
+- Key rotation and re-wrapping are implemented for active records.
+- Recovery contacts and recovery policy support threshold approval for root
   authority changes.
-- Add emergency revoke for all active non-owner grants.
+- Emergency revoke covers all active non-owner grants.
 
 Exit criteria:
 
@@ -1099,12 +1120,14 @@ manager and running the documented staging proof workflow.
 
 Implemented scope:
 
-- Select production persistence for wallet metadata, audit events, revocation
-  state, privacy budgets, and encrypted blob references.
-- Add background jobs for storage availability, proof registry health,
+- Production persistence is selected and configurable for wallet metadata,
+  audit events, revocation state, privacy budgets, and encrypted blob
+  references.
+- Background ops checks cover storage availability, proof registry health,
   revocation propagation, and privacy-budget reconciliation.
-- Add deployment configuration for `wallet_interface.api` and `wallet_interface/ui`.
-- Add operator runbooks for lost keys, revoked grants, failed proof registry,
+- Deployment configuration covers `wallet_interface.api` and
+  `wallet_interface/ui`.
+- Operator runbooks cover lost keys, revoked grants, failed proof registry,
   storage outage, and privacy incident response.
 
 Exit criteria:
@@ -1130,7 +1153,7 @@ Current implementation evidence:
 | Secret and alert wiring | `wallet_interface/deploy/env.production.example`, `wallet_interface/deploy/kubernetes/secrets.example.yaml`, and `wallet_interface/deploy/kubernetes/externalsecret.example.yaml` define the production secret/env surface for ops-health auth, alert webhooks, proof-service credentials, storage config, and Cloudflare origin auth. |
 | Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
 | Operator/integrator reference | `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md` publishes the stable wallet API endpoint groups, CLI command list, MCP wallet tools, runtime env surface, privacy boundaries, and release checks. |
-| External verifier contract | `docs/WALLET_PROOF_VERIFIER_CONTRACT.md` defines the HTTP `location_region` proof verifier health/prove/verify contract, authentication headers, safe receipt fields, ops validation, and no-witness-leak requirements. `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` now runs the staging health/prove/verify/no-leak contract check against the configured HTTP verifier with a synthetic witness. |
+| External verifier contract | `docs/WALLET_PROOF_VERIFIER_CONTRACT.md` defines the HTTP `location_region` and `location_distance` proof verifier health/prove/verify contracts, authentication headers, safe receipt fields, ops validation, and no-witness-leak requirements. `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` and `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` run staging health/prove/verify/no-leak checks against the configured HTTP verifier with synthetic witnesses. |
 
 Target-environment handoff:
 
@@ -1144,18 +1167,26 @@ Target-environment handoff:
 - The in-repo gate for that handoff is
   `python -m wallet_interface.ops --validate-production-readiness`, which fails
   until durable repository/storage env vars, production proof mode, verifier
-  credentials, ops-health auth, alert routing, ops health, and the external
-  verifier health/prove/verify contract all pass without placeholder secrets.
+  credentials, secret-manager references, ops-health auth, alert routing, ops
+  health, and the external region and distance verifier health/prove/verify
+  contracts all pass without placeholder secrets.
+- The governance gate is a completed JSON packet copied from
+  `docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json` and validated by
+  `python -m wallet_interface.ops --validate-target-signoff-packet`. It records
+  retention mapping, staging artifacts, analytics privacy review, organization
+  reviewer decisions, launch timing, and post-launch audit timing without
+  storing secret values.
 
 ## Resolved Decisions
 
 | Decision | Resolution |
 | --- | --- |
 | Public wallet package | `ipfs_datasets_py.wallet` is canonical. The older package-level `data_wallet` and `document_wallet` names, plus `ipfs_datasets_py.wallet.document`, were removed after migration. |
-| First production UCAN encoding | Use signed `wallet-ucan-v1` invocation tokens for first production; `docs/WALLET_UCAN_PROFILE.md` defines the profile and UCAN-compatible inspection envelope. Add optional `ucanto`/w3up compatibility fixtures later. |
-| Next proof backend | Keep `location_region` as the first production verifier boundary; add `location_distance` next through the same HTTP verifier contract pattern, then polygon proofs after reviewed circuit/verifier artifacts are available. |
+| First production UCAN encoding | Use signed `wallet-ucan-v1` invocation tokens for first production; `docs/WALLET_UCAN_PROFILE.md` defines the profile, UCAN-compatible inspection envelope, and conformance fixtures for external adapters. |
+| Next proof backend | Keep `location_region` as the first production verifier boundary. `location_distance` now uses the same wallet proof receipt path and HTTP verifier contract pattern; run target verifier validation before live UI exposure. Add polygon proofs only after reviewed circuit/verifier artifacts are available. |
 | DP defaults for small regional cohorts | Keep default `min_cohort_size=10` and `epsilon_budget=1.0`; require explicit privacy review for lower thresholds, higher epsilon, new dimensions, joins, or rare-condition cohorts. |
 | Analytics execution model | Run first production analytics in the trusted wallet analytics service with template approval, nullifiers, k-thresholds, sparse-cell suppression, DP metadata, budget ledgers, and audit; evaluate MPC/TEE/FHE only for high-risk studies that need it. |
+| GraphRAG backend | Use `wallet-local-redacted-graphrag-v1` for first production. It runs inside the wallet service, disables model-backed extraction, stores encrypted artifacts, and returns only record/category/redaction/entity-type graph metadata. |
 | Passkey/device UX | Use passkeys as the preferred human authentication UX over wallet device keys when live auth is selected. Device DIDs, controllers, and recovery contacts remain the wallet authority model. |
 
 The binding rationale for these decisions is in

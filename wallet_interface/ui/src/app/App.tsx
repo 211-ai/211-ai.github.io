@@ -29,7 +29,6 @@ import {
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
-  DecryptedRecordView,
   DerivedArtifactView,
   EasyBotCheckStatus,
   ExportBundleView,

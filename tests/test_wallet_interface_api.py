@@ -357,6 +357,98 @@ def test_wallet_api_delegate_creates_location_region_proof() -> None:
     assert proofs[0]["witness_record_ids"] == [location["record_id"]]
 
 
+def test_wallet_api_delegate_creates_location_distance_proof() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/distance-proof-grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "target_id": "shelter-west",
+            "max_distance_km": 1.0,
+        },
+    )
+    assert response.status_code == 200
+    grant = response.json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/distance-proofs",
+        json={
+            "actor_did": "did:key:delegate",
+            "grant_id": grant["grant_id"],
+            "target_id": "shelter-west",
+            "target_lat": 45.516,
+            "target_lon": -122.679,
+            "max_distance_km": 1.0,
+        },
+    )
+    assert response.status_code == 200
+    proof = response.json()
+    assert proof["proof_type"] == "location_distance"
+    assert proof["is_simulated"] is True
+    assert proof["proof_system"] == "simulated"
+    assert proof["verification_status"] == "verified"
+    assert proof["public_inputs"]["claim"] == "location_within_distance"
+    assert proof["public_inputs"]["target_id"] == "shelter-west"
+    assert proof["public_inputs"]["max_distance_km"] == 1.0
+    assert proof["public_inputs"]["target_policy_hash"]
+    serialized = str(proof)
+    for secret in ("45.515232", "-122.678385", "45.516", "-122.679"):
+        assert secret not in serialized
+
+
+def test_wallet_api_location_distance_grant_enforces_target_and_threshold_caveats() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    location = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations",
+        json={"actor_did": "did:key:owner", "lat": 45.515232, "lon": -122.678385},
+    ).json()
+    grant = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/distance-proof-grants",
+        json={
+            "issuer_did": "did:key:owner",
+            "audience_did": "did:key:delegate",
+            "target_id": "shelter-west",
+            "max_distance_km": 1.0,
+        },
+    ).json()
+
+    wrong_target = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/distance-proofs",
+        json={
+            "actor_did": "did:key:delegate",
+            "grant_id": grant["grant_id"],
+            "target_id": "shelter-east",
+            "target_lat": 45.516,
+            "target_lon": -122.679,
+            "max_distance_km": 1.0,
+        },
+    )
+    assert wrong_target.status_code == 400
+    assert "target_id" in wrong_target.json()["detail"]
+
+    wider_threshold = client.post(
+        f"/wallets/{wallet['wallet_id']}/locations/{location['record_id']}/distance-proofs",
+        json={
+            "actor_did": "did:key:delegate",
+            "grant_id": grant["grant_id"],
+            "target_id": "shelter-west",
+            "target_lat": 45.516,
+            "target_lon": -122.679,
+            "max_distance_km": 2.0,
+        },
+    )
+    assert wider_threshold.status_code == 400
+    assert "max_distance_km" in wider_threshold.json()["detail"]
+
+
 def test_wallet_api_production_proof_mode_rejects_simulated_receipts() -> None:
     client = _client_with_service(WalletInterfaceService(allow_simulated_proofs=False))
     wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
@@ -1795,6 +1887,216 @@ def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:
     response = restored_client.get(f"/wallets/{wallet['wallet_id']}/records", params={"data_type": "document"})
     assert response.status_code == 200
     assert [item["record_id"] for item in response.json()["records"]] == [record["record_id"]]
+
+
+def test_wallet_api_portal_saved_services_plans_and_interactions_round_trip() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/saved-services",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:abc123",
+            "source_content_cid": "bafk-service",
+            "source_page_cid": "bafk-page",
+            "title": "Energy Assistance",
+            "provider_name": "Community Action",
+            "program_name": "Energy Assistance",
+            "source_url": "https://example.test/services/energy",
+            "label": "Call this week",
+            "reason": "Utility shutoff risk",
+            "priority": "high",
+            "status": "saved",
+        },
+    )
+    assert response.status_code == 200
+    saved = response.json()
+    assert saved["saved_service_id"].startswith("saved-service-")
+    assert saved["service_doc_id"] == "service:abc123"
+
+    response = client.patch(
+        f"/wallets/{wallet['wallet_id']}/portal/saved-services/{saved['saved_service_id']}",
+        json={
+            "actor_did": "did:key:owner",
+            "status": "contacted",
+            "private_notes_record_id": "record-private-notes-1",
+        },
+    )
+    assert response.status_code == 200
+    saved = response.json()
+    assert saved["status"] == "contacted"
+    assert saved["private_notes_record_id"] == "record-private-notes-1"
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:abc123",
+            "source_content_cid": "bafk-service",
+            "source_page_cid": "bafk-page",
+            "service_title": "Energy Assistance",
+            "provider_name": "Community Action",
+            "goal": "Avoid utility disconnection",
+            "steps": ["Call provider", "Gather bill", "Complete intake"],
+            "documents_needed": ["Photo ID", "Utility bill"],
+            "questions_to_ask": ["Do they cover reconnect fees?"],
+            "reminder_at": "2026-05-06T09:00:00+00:00",
+            "travel_target": "Phone call",
+            "status": "active",
+        },
+    )
+    assert response.status_code == 200
+    plan = response.json()
+    assert plan["plan_id"].startswith("service-plan-")
+    assert plan["steps"] == ["Call provider", "Gather bill", "Complete intake"]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:abc123",
+            "source_content_cid": "bafk-service",
+            "source_page_cid": "bafk-page",
+            "provider_name": "Community Action",
+            "program_name": "Energy Assistance",
+            "interaction_type": "called_provider",
+            "channel": "phone",
+            "counterparty_name": "Front Desk",
+            "counterparty_contact": "(503) 555-0100",
+            "status": "completed",
+            "outcome": "Left voicemail",
+            "next_action": "Try again tomorrow",
+            "next_follow_up_at": "2026-05-06T16:00:00+00:00",
+            "related_record_ids": [saved["private_notes_record_id"]],
+            "privacy_level": "restricted",
+        },
+    )
+    assert response.status_code == 200
+    interaction = response.json()
+    assert interaction["interaction_id"].startswith("interaction-")
+    assert interaction["privacy_level"] == "restricted"
+
+    response = client.patch(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}",
+        json={
+            "actor_did": "did:key:owner",
+            "status": "in_progress",
+            "related_interaction_ids": [interaction["interaction_id"]],
+        },
+    )
+    assert response.status_code == 200
+    updated_plan = response.json()
+    assert updated_plan["related_interaction_ids"] == [interaction["interaction_id"]]
+
+    response = client.patch(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions/{interaction['interaction_id']}",
+        json={
+            "actor_did": "did:key:owner",
+            "outcome": "Appointment scheduled",
+            "status": "scheduled",
+        },
+    )
+    assert response.status_code == 200
+    interaction = response.json()
+    assert interaction["status"] == "scheduled"
+    assert interaction["outcome"] == "Appointment scheduled"
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/portal/saved-services")
+    assert response.status_code == 200
+    assert [item["saved_service_id"] for item in response.json()["saved_services"]] == [saved["saved_service_id"]]
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        params={"service_doc_id": "service:abc123"},
+    )
+    assert response.status_code == 200
+    assert [item["plan_id"] for item in response.json()["plans"]] == [plan["plan_id"]]
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        params={"interaction_type": "called_provider"},
+    )
+    assert response.status_code == 200
+    assert [item["interaction_id"] for item in response.json()["interactions"]] == [interaction["interaction_id"]]
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/audit")
+    actions = [event["action"] for event in response.json()["events"]]
+    assert "service/save" in actions
+    assert "service/update" in actions
+    assert "service_plan/create" in actions
+    assert "service_plan/update" in actions
+    assert "interaction/create" in actions
+    assert "interaction/update" in actions
+
+
+def test_wallet_api_portal_state_persists_through_snapshot_load(tmp_path) -> None:
+    repository_root = tmp_path / "wallet-repository"
+    service = WalletInterfaceService(repository_root=repository_root, services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    saved = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/saved-services",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:persist-1",
+            "source_content_cid": "bafk-persist",
+            "title": "Shelter Intake",
+            "provider_name": "Shelter Network",
+            "status": "saved",
+        },
+    ).json()
+    plan = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:persist-1",
+            "service_title": "Shelter Intake",
+            "goal": "Complete shelter intake",
+            "steps": ["Call first", "Bring ID"],
+        },
+    ).json()
+    interaction = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:persist-1",
+            "interaction_type": "saved_service",
+            "status": "recorded",
+        },
+    ).json()
+
+    response = client.post(f"/wallets/{wallet['wallet_id']}/snapshot")
+    assert response.status_code == 200
+
+    restored_service = WalletInterfaceService(
+        repository_root=repository_root,
+        services=[],
+        auto_load_repository=False,
+    )
+    restored_client = _client_with_service(restored_service)
+    response = restored_client.post("/wallets/snapshots/load-all")
+    assert response.status_code == 200
+
+    response = restored_client.get(f"/wallets/{wallet['wallet_id']}/portal/saved-services")
+    assert response.status_code == 200
+    assert [item["saved_service_id"] for item in response.json()["saved_services"]] == [saved["saved_service_id"]]
+
+    response = restored_client.get(f"/wallets/{wallet['wallet_id']}/portal/plans")
+    assert response.status_code == 200
+    assert [item["plan_id"] for item in response.json()["plans"]] == [plan["plan_id"]]
+
+    response = restored_client.get(f"/wallets/{wallet['wallet_id']}/portal/interactions")
+    assert response.status_code == 200
+    assert [item["interaction_id"] for item in response.json()["interactions"]] == [interaction["interaction_id"]]
+
+    response = restored_client.get(f"/wallets/{wallet['wallet_id']}/audit")
+    assert response.status_code == 200
+    actions = [event["action"] for event in response.json()["events"]]
+    assert "service/save" in actions
+    assert "service_plan/create" in actions
+    assert "interaction/create" in actions
 
 
 def test_wallet_api_rejects_precise_analytics_fields() -> None:

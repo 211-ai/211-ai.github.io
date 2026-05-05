@@ -114,6 +114,77 @@ export interface ServiceMatch {
   availability: string;
 }
 
+export interface SavedService {
+  saved_service_id: string;
+  wallet_id: string;
+  service_doc_id: string;
+  source_content_cid: string;
+  source_page_cid: string;
+  title: string;
+  provider_name: string;
+  program_name: string;
+  source_url: string;
+  label: string;
+  reason: string;
+  priority: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  private_notes_record_id: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface ServicePlan {
+  plan_id: string;
+  wallet_id: string;
+  service_doc_id: string;
+  source_content_cid: string;
+  source_page_cid: string;
+  service_title: string;
+  provider_name: string;
+  goal: string;
+  steps: string[];
+  documents_needed: string[];
+  questions_to_ask: string[];
+  appointment_at: string;
+  reminder_at: string;
+  travel_target: string;
+  assigned_worker_recipient_id: string;
+  status: string;
+  related_interaction_ids: string[];
+  private_notes_record_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceInteractionEvent {
+  interaction_id: string;
+  wallet_id: string;
+  service_doc_id: string;
+  source_content_cid: string;
+  source_page_cid: string;
+  provider_name: string;
+  program_name: string;
+  interaction_type: string;
+  channel: string;
+  actor_did: string;
+  counterparty_name: string;
+  counterparty_contact: string;
+  timestamp: string;
+  status: string;
+  outcome: string;
+  notes_record_id: string;
+  next_action: string;
+  next_follow_up_at: string;
+  source_action_url: string;
+  related_grant_ids: string[];
+  related_record_ids: string[];
+  privacy_level: string;
+  created_at: string;
+  updated_at: string;
+  metadata: Record<string, unknown>;
+}
+
 export interface AuditEvent {
   id: string;
   actor: string;
