@@ -347,6 +347,12 @@ python -m compileall -q wallet_interface ipfs_datasets_py/ipfs_datasets_py/walle
 cd wallet_interface/ui && npm run build
 ```
 
+The blackbox suite runs the wallet API through `uvicorn` and covers production
+readiness, target signoff packet validation, external verifier no-witness-leak
+checks, UCAN delegate decrypt/export grants, signed invocations, encrypted
+export verification/import/storage checks, grant revocation, analytics, ops
+health, and repository reload after restart.
+
 Also run `GET /ops/health?verify_storage=true` against the target environment
 after deployment and confirm no check has `status=error`. When
 `WALLET_PROOF_BACKEND=http-location-region`, also run:

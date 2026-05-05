@@ -446,6 +446,231 @@ def test_wallet_api_blackbox_exercises_live_workflow_and_persistence(tmp_path: P
         assert "123-45-6789" not in rendered_analysis
         assert "Jane Example" not in rendered_analysis
 
+        owner_key_hex = "11" * 32
+        delegate_key_hex = "22" * 32
+        delegate_did = "did:key:blackbox-delegate"
+        status, shared_document = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/documents/text",
+            {
+                "actor_did": owner_did,
+                "key_hex": owner_key_hex,
+                "filename": "blackbox-shared-document.txt",
+                "title": "Blackbox Shared Document",
+                "text": "Delegate may view this document after explicit UCAN authorization.",
+            },
+        )
+        assert status == 200
+        shared_document_id = shared_document["record_id"]
+
+        status, denied_decrypt = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/decrypt",
+            {"actor_did": delegate_did, "actor_key_hex": delegate_key_hex},
+        )
+        assert status == 400
+        assert "grant" in denied_decrypt["detail"]
+
+        status, record_grant = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/grants",
+            {
+                "issuer_did": owner_did,
+                "audience_did": delegate_did,
+                "issuer_key_hex": owner_key_hex,
+                "audience_key_hex": delegate_key_hex,
+                "abilities": ["record/decrypt", "record/analyze"],
+                "purpose": "benefits_application",
+                "output_types": ["plaintext", "summary"],
+                "user_presence_required": True,
+            },
+        )
+        assert status == 200
+        assert record_grant["caveats"]["user_presence_required"] is True
+
+        status, receipts = _http_json(
+            "GET",
+            f"{api_url}/wallets/{wallet_id}/grant-receipts?audience_did={delegate_did}",
+        )
+        assert status == 200
+        assert any(
+            receipt["grant_id"] == record_grant["grant_id"] and receipt["status"] == "active"
+            for receipt in receipts["receipts"]
+        )
+
+        status, missing_presence = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/decrypt-invocations",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "grant_id": record_grant["grant_id"],
+                "purpose": "benefits_application",
+            },
+        )
+        assert status == 400
+        assert "user presence" in missing_presence["detail"]
+
+        status, decrypt_invocation = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/decrypt-invocations",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "grant_id": record_grant["grant_id"],
+                "purpose": "benefits_application",
+                "user_present": True,
+            },
+        )
+        assert status == 200
+        decrypt_token = decrypt_invocation["token"]
+        assert decrypt_token.startswith("wallet-ucan-v1.")
+
+        status, delegated_plaintext = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/decrypt",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "invocation_token": decrypt_token,
+            },
+        )
+        assert status == 200
+        assert delegated_plaintext["text"] == "Delegate may view this document after explicit UCAN authorization."
+
+        status, export_without_grant = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/exports",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "record_ids": [shared_document_id, location_id],
+            },
+        )
+        assert status == 400
+        assert "grant" in export_without_grant["detail"]
+
+        status, export_grant = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/exports/grants",
+            {
+                "issuer_did": owner_did,
+                "audience_did": delegate_did,
+                "issuer_key_hex": owner_key_hex,
+                "audience_key_hex": delegate_key_hex,
+                "record_ids": [shared_document_id, location_id],
+                "purpose": "benefits_portability",
+            },
+        )
+        assert status == 200
+        assert export_grant["caveats"]["output_types"] == ["encrypted_export_bundle"]
+
+        status, export_invocation = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/exports/invocations",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "grant_id": export_grant["grant_id"],
+                "record_ids": [shared_document_id],
+                "purpose": "benefits_portability",
+            },
+        )
+        assert status == 200
+        export_token = export_invocation["invocation_token"]
+        assert export_token.startswith("wallet-ucan-v1.")
+
+        status, bundle = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/exports",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "invocation_token": export_token,
+                "record_ids": [shared_document_id],
+            },
+        )
+        assert status == 200
+        assert bundle["bundle_type"] == "wallet_export_v1"
+        assert bundle["bundle_id"] == f"export-{bundle['bundle_hash'][:24]}"
+        assert [record["record_id"] for record in bundle["records"]] == [shared_document_id]
+        assert "controller_dids" not in bundle["wallet"]
+        assert "device_dids" not in bundle["wallet"]
+        rendered_bundle = json.dumps(bundle, sort_keys=True)
+        assert "Delegate may view this document" not in rendered_bundle
+        assert "45.515232" not in rendered_bundle
+        assert "-122.678385" not in rendered_bundle
+
+        status, verified_export = _http_json("POST", f"{api_url}/exports/verify", {"bundle": bundle})
+        assert status == 200
+        assert verified_export["valid"] is True
+        status, export_storage = _http_json("POST", f"{api_url}/exports/storage", {"bundle": bundle})
+        assert status == 200
+        assert export_storage["ok"] is True
+        assert export_storage["record_count"] == 1
+        status, imported_export = _http_json("POST", f"{api_url}/exports/import", {"bundle": bundle})
+        assert status == 200
+        assert imported_export["bundle_hash"] == bundle["bundle_hash"]
+        assert imported_export["record_count"] == 1
+
+        tampered_bundle = {**bundle, "records": []}
+        status, tampered_verification = _http_json(
+            "POST",
+            f"{api_url}/exports/verify",
+            {"bundle": tampered_bundle},
+        )
+        assert status == 200
+        assert tampered_verification["valid"] is False
+
+        status, revoked_export = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/grants/{export_grant['grant_id']}/revoke",
+            {"actor_did": owner_did},
+        )
+        assert status == 200
+        assert revoked_export["status"] == "revoked"
+        status, blocked_export = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/exports",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "invocation_token": export_token,
+                "record_ids": [shared_document_id],
+            },
+        )
+        assert status == 400
+        assert "not active" in blocked_export["detail"]
+
+        status, revoked_record_grant = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/grants/{record_grant['grant_id']}/revoke",
+            {"actor_did": owner_did},
+        )
+        assert status == 200
+        assert revoked_record_grant["status"] == "revoked"
+        status, blocked_decrypt = _http_json(
+            "POST",
+            f"{api_url}/wallets/{wallet_id}/records/{shared_document_id}/decrypt",
+            {
+                "actor_did": delegate_did,
+                "actor_key_hex": delegate_key_hex,
+                "invocation_token": decrypt_token,
+            },
+        )
+        assert status == 400
+        assert "not active" in blocked_decrypt["detail"]
+
+        status, audit = _http_json("GET", f"{api_url}/wallets/{wallet_id}/audit")
+        assert status == 200
+        actions = [event["action"] for event in audit["events"]]
+        assert "grant/create" in actions
+        assert "invocation/issue" in actions
+        assert "invocation/verify" in actions
+        assert "record/decrypt" in actions
+        assert "export/create" in actions
+        assert actions.count("grant/revoke") >= 2
+
         status, template = _http_json(
             "POST",
             f"{api_url}/analytics/templates",
@@ -516,7 +741,26 @@ def test_wallet_api_blackbox_exercises_live_workflow_and_persistence(tmp_path: P
         assert restored_wallet["wallet_id"] == wallet_id
         status, restored_records = _http_json("GET", f"{restarted_url}/wallets/{wallet_id}/records")
         assert status == 200
-        assert {record["record_id"] for record in restored_records["records"]} >= {document_id, location_id}
+        assert {record["record_id"] for record in restored_records["records"]} >= {
+            document_id,
+            location_id,
+            shared_document_id,
+        }
+        status, restored_receipts = _http_json(
+            "GET",
+            f"{restarted_url}/wallets/{wallet_id}/grant-receipts?audience_did={delegate_did}&status=revoked",
+        )
+        assert status == 200
+        assert {
+            receipt["grant_id"]
+            for receipt in restored_receipts["receipts"]
+            if receipt["status"] == "revoked"
+        } >= {record_grant["grant_id"], export_grant["grant_id"]}
+        status, restored_audit = _http_json("GET", f"{restarted_url}/wallets/{wallet_id}/audit")
+        assert status == 200
+        restored_actions = [event["action"] for event in restored_audit["events"]]
+        assert "export/create" in restored_actions
+        assert restored_actions.count("grant/revoke") >= 2
 
         prove_paths = [entry["path"] for entry in requests if entry["path"].startswith("/prove/")]
         assert "/prove/location-region" in prove_paths

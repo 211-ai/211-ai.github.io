@@ -91,9 +91,11 @@ This test starts a local HTTP verifier stub, runs
 `python -m wallet_interface.ops --validate-production-readiness` through a real
 subprocess with production-mode env vars, launches the wallet API with
 `uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops
-HTTP endpoints, verifies repository reload after API restart, validates a
-completed signoff JSON packet, and verifies that a verifier returning witness
-data fails the release gate.
+HTTP endpoints, exercises delegate UCAN decrypt/export grants, signed
+invocations, encrypted export verification/import/storage checks, grant
+revocation, post-restart grant receipt/audit persistence, validates a completed
+signoff JSON packet, and verifies that a verifier returning witness data fails
+the release gate.
 
 ## Lost Key Or Device
 
