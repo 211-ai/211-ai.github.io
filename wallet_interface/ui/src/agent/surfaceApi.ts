@@ -40,7 +40,7 @@ export async function invokeSurfaceAction(
   input: unknown,
   options: SurfaceApiInvokeOptions = {}
 ): Promise<AppActionResult> {
-  const validationFailure = validateSurfaceInvocation(runtime, name, input);
+  const validationFailure = validateSurfaceInvocation(runtime, name, input, options);
   if (validationFailure) return validationFailure;
   return runAppAction(runtime, name, input, options);
 }
@@ -72,7 +72,8 @@ export function buildSurfaceContext(runtime: AppActionRuntime, includePrivateCon
 function validateSurfaceInvocation(
   runtime: AppActionRuntime,
   name: AgentCommandName,
-  input: unknown
+  input: unknown,
+  options: SurfaceApiInvokeOptions
 ): AppActionResult | undefined {
   const schema = commandSchemas[name];
   if (!schema.isInput(input)) {
@@ -94,7 +95,7 @@ function validateSurfaceInvocation(
     grantedPermissionLevel: state.permissionLevel ?? "wallet_write",
     walletUnlocked,
     privateContextAllowed,
-    userPresent: true,
+    userPresent: options.userPresent ?? true,
     toolTitle: tool.title
   });
   if (!decision.ok) {

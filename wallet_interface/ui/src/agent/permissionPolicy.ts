@@ -64,8 +64,13 @@ export const agentToolPermissionPolicies: Record<AgentCommandName, AgentToolPerm
   update_registration_draft: writeWalletPolicy("agent.registration.update", { requiresPrivateContextOptIn: true }),
   update_check_in_policy: writeWalletPolicy("agent.check_in_policy.update"),
   set_disclosure_scopes: shareOrDisclosePolicy("agent.disclosure_scopes.set"),
+  record_controller_approval: shareOrDisclosePolicy("agent.access_request.controller_approval"),
   approve_access_request: shareOrDisclosePolicy("agent.access_request.approve"),
   reject_access_request: shareOrDisclosePolicy("agent.access_request.reject"),
+  revoke_access_request: shareOrDisclosePolicy("agent.access_request.revoke"),
+  analyze_granted_record: shareOrDisclosePolicy("agent.grant_record.analyze"),
+  view_granted_record: shareOrDisclosePolicy("agent.grant_record.view"),
+  delegate_grant: shareOrDisclosePolicy("agent.grant.delegate"),
   create_location_region_proof: shareOrDisclosePolicy("agent.proof.location_region.create", {
     requiresPrivateContextOptIn: true
   }),
