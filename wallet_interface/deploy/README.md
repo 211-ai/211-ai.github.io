@@ -31,6 +31,7 @@ export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
 export WALLET_PROOF_SYSTEM=groth16
 export WALLET_PROOF_CIRCUIT_ID=location-region-v1
+export WALLET_PROOF_DISTANCE_PROVE_PATH=/prove/location-distance
 export WALLET_PROOF_BEARER_TOKEN=replace-me
 ```
 
@@ -64,8 +65,8 @@ Required production environment:
   `WALLET_PROOF_BACKEND=http-location-region`.
 - `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`,
   `WALLET_PROOF_CIRCUIT_ID`: verifier metadata for the HTTP backend.
-- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_VERIFY_PATH`: optional HTTP backend
-  endpoint overrides.
+- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`,
+  `WALLET_PROOF_VERIFY_PATH`: optional HTTP backend endpoint overrides.
 - `WALLET_PROOF_BEARER_TOKEN`: optional bearer token for the proof service.
 - `WALLET_PROOF_HTTP_HEADER_NAME` / `WALLET_PROOF_HTTP_HEADER_VALUE`: optional
   custom header pair for the proof service.
