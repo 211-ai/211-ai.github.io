@@ -35,6 +35,7 @@ Track guide:
 
 ## AGENT-010 Shared Agent Type Contracts
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: platform
 - Depends on: AGENT-000
@@ -44,6 +45,7 @@ Track guide:
 
 ## AGENT-011 App State Extraction
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: platform
 - Depends on: AGENT-010
@@ -53,6 +55,7 @@ Track guide:
 
 ## AGENT-012 Shared App Action Facade
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: platform
 - Depends on: AGENT-011
@@ -62,6 +65,7 @@ Track guide:
 
 ## AGENT-013 GUI Action Convergence Tests
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: platform
 - Depends on: AGENT-012
@@ -71,6 +75,7 @@ Track guide:
 
 ## AGENT-020 Read-Only Chat Drawer Shell
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: ui
 - Depends on: AGENT-010
@@ -80,6 +85,7 @@ Track guide:
 
 ## AGENT-021 Mobile Chat Bottom Sheet
 - Status: todo
+- Completion: artifact
 - Priority: P2
 - Track: ui
 - Depends on: AGENT-020
@@ -89,6 +95,7 @@ Track guide:
 
 ## AGENT-022 Confirmation Card UI
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: ui
 - Depends on: AGENT-020, AGENT-012
@@ -98,6 +105,7 @@ Track guide:
 
 ## AGENT-030 Chat Controller Service
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: agent
 - Depends on: AGENT-010, AGENT-020
@@ -107,6 +115,7 @@ Track guide:
 
 ## AGENT-031 Abby Conversation Prompt Builder
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: agent
 - Depends on: AGENT-030
@@ -116,6 +125,7 @@ Track guide:
 
 ## AGENT-032 Deterministic Planner
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: agent
 - Depends on: AGENT-031, AGENT-012
@@ -125,6 +135,7 @@ Track guide:
 
 ## AGENT-033 Local LLM Tool Selection Adapter
 - Status: todo
+- Completion: artifact
 - Priority: P2
 - Track: agent
 - Depends on: AGENT-032
@@ -134,6 +145,7 @@ Track guide:
 
 ## AGENT-034 Tool Executor
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: agent
 - Depends on: AGENT-012, AGENT-032
@@ -143,6 +155,7 @@ Track guide:
 
 ## AGENT-035 Agent Session Memory
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: agent
 - Depends on: AGENT-030, AGENT-050
@@ -152,6 +165,7 @@ Track guide:
 
 ## AGENT-040 211 Service Navigation Agent
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: graphrag
 - Depends on: AGENT-030
@@ -161,6 +175,7 @@ Track guide:
 
 ## AGENT-041 Evidence-To-Action Mapper
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: graphrag
 - Depends on: AGENT-040, AGENT-034
@@ -170,6 +185,7 @@ Track guide:
 
 ## AGENT-042 Service Action Service
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: graphrag
 - Depends on: AGENT-041
@@ -179,6 +195,7 @@ Track guide:
 
 ## AGENT-043 Citation Rendering And Navigation
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: graphrag
 - Depends on: AGENT-020, AGENT-040
@@ -188,6 +205,7 @@ Track guide:
 
 ## AGENT-050 Prompt Redaction Guards
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: privacy
 - Depends on: AGENT-031
@@ -197,6 +215,7 @@ Track guide:
 
 ## AGENT-051 Permission Gate Matrix
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: privacy
 - Depends on: AGENT-034, AGENT-050
@@ -206,6 +225,7 @@ Track guide:
 
 ## AGENT-052 Private Context Consent UI
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: privacy
 - Depends on: AGENT-022, AGENT-051
@@ -215,6 +235,7 @@ Track guide:
 
 ## AGENT-053 Agent Privacy Tests
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: privacy
 - Depends on: AGENT-050, AGENT-051
@@ -224,6 +245,7 @@ Track guide:
 
 ## AGENT-060 Route Navigation Tools
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: agent
 - Depends on: AGENT-034
@@ -233,6 +255,7 @@ Track guide:
 
 ## AGENT-061 Registration And Check-In Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: agent
 - Depends on: AGENT-034, AGENT-051
@@ -242,6 +265,7 @@ Track guide:
 
 ## AGENT-062 Contacts And Sharing Rules Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -251,6 +275,7 @@ Track guide:
 
 ## AGENT-063 Upload Guidance Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -260,6 +285,7 @@ Track guide:
 
 ## AGENT-064 Shelter Tools
 - Status: todo
+- Completion: artifact
 - Priority: P2
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -269,6 +295,7 @@ Track guide:
 
 ## AGENT-065 Recipient Access Tools
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -278,6 +305,7 @@ Track guide:
 
 ## AGENT-066 Proof Center Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -287,6 +315,7 @@ Track guide:
 
 ## AGENT-067 Export And Security Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -296,6 +325,7 @@ Track guide:
 
 ## AGENT-068 Analytics And Audit Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: wallet
 - Depends on: AGENT-034, AGENT-051
@@ -305,6 +335,7 @@ Track guide:
 
 ## AGENT-070 Saved Service And Plan Tools
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: graphrag
 - Depends on: AGENT-041, AGENT-051
@@ -314,6 +345,7 @@ Track guide:
 
 ## AGENT-071 Service Detail Route Integration
 - Status: todo
+- Completion: artifact
 - Priority: P2
 - Track: graphrag
 - Depends on: AGENT-043
@@ -323,6 +355,7 @@ Track guide:
 
 ## AGENT-080 Agent Unit Tests
 - Status: todo
+- Completion: artifact
 - Priority: P0
 - Track: ops
 - Depends on: AGENT-034, AGENT-050, AGENT-051
@@ -332,6 +365,7 @@ Track guide:
 
 ## AGENT-081 Agent Smoke Tests
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: ops
 - Depends on: AGENT-020, AGENT-040, AGENT-060
@@ -341,6 +375,7 @@ Track guide:
 
 ## AGENT-082 Accessibility And Mobile Review
 - Status: todo
+- Completion: artifact
 - Priority: P2
 - Track: ops
 - Depends on: AGENT-021, AGENT-022
@@ -350,6 +385,7 @@ Track guide:
 
 ## AGENT-083 Agent Threat Model And Runbook
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: ops
 - Depends on: AGENT-051, AGENT-053
@@ -359,6 +395,7 @@ Track guide:
 
 ## AGENT-090 Production Readiness
 - Status: todo
+- Completion: artifact
 - Priority: P1
 - Track: ops
 - Depends on: AGENT-080, AGENT-081, AGENT-082, AGENT-083
