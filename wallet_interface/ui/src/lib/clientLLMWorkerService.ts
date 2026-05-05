@@ -15,6 +15,18 @@ interface LlmWorkerResponse {
   isInitialized?: boolean;
 }
 
+export interface ClientLlmTextGenerationResult {
+  ok: boolean;
+  text: string;
+  modelName?: string;
+  error?: string;
+}
+
+export interface ClientLlmStructuredTextResult extends ClientLlmTextGenerationResult {
+  json?: unknown;
+  parseError?: string;
+}
+
 class ClientLLMWorkerService {
   private worker: Worker | null = null;
   private isInitialized = false;
@@ -66,6 +78,42 @@ class ClientLLMWorkerService {
       throw new Error("LLM worker returned an empty response");
     }
     return result.text;
+  }
+
+  async tryGenerateText(prompt: string, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
+    try {
+      const text = await this.generateText(prompt, maxTokens);
+      return {
+        ok: true,
+        text,
+        modelName: this.currentModel
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        text: "",
+        modelName: this.currentModel,
+        error: error instanceof Error ? error.message : "LLM worker text generation failed"
+      };
+    }
+  }
+
+  async generateStructuredText(prompt: string, maxTokens = 180): Promise<ClientLlmStructuredTextResult> {
+    const result = await this.tryGenerateText(prompt, maxTokens);
+    if (!result.ok) return result;
+
+    const parsed = extractFirstJsonValue(result.text);
+    if (!parsed.ok) {
+      return {
+        ...result,
+        parseError: parsed.error
+      };
+    }
+
+    return {
+      ...result,
+      json: parsed.value
+    };
   }
 
   async getCapabilities(): Promise<LlmWorkerResponse> {
@@ -175,6 +223,61 @@ class ClientLLMWorkerService {
       worker.postMessage({ id, type, data });
     });
   }
+}
+
+function extractFirstJsonValue(text: string): { ok: true; value: unknown } | { ok: false; error: string } {
+  const trimmed = stripJsonFence(text.trim());
+  try {
+    return { ok: true, value: JSON.parse(trimmed) };
+  } catch {
+    const balanced = firstBalancedJsonValue(trimmed);
+    if (!balanced) {
+      return { ok: false, error: "No JSON object or array found in LLM response" };
+    }
+    try {
+      return { ok: true, value: JSON.parse(balanced) };
+    } catch {
+      return { ok: false, error: "LLM response JSON could not be parsed" };
+    }
+  }
+}
+
+function stripJsonFence(text: string): string {
+  const fence = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(text);
+  return fence?.[1] ?? text;
+}
+
+function firstBalancedJsonValue(text: string): string | undefined {
+  const start = text.search(/[\[{]/);
+  if (start < 0) return undefined;
+  const stack: string[] = [];
+  let inString = false;
+  let escaping = false;
+
+  for (let index = start; index < text.length; index += 1) {
+    const char = text[index];
+    if (inString) {
+      if (escaping) {
+        escaping = false;
+      } else if (char === "\\") {
+        escaping = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === "\"") {
+      inString = true;
+    } else if (char === "{" || char === "[") {
+      stack.push(char === "{" ? "}" : "]");
+    } else if (char === "}" || char === "]") {
+      if (stack.pop() !== char) return undefined;
+      if (stack.length === 0) return text.slice(start, index + 1);
+    }
+  }
+
+  return undefined;
 }
 
 export const clientLLMWorkerService = new ClientLLMWorkerService();
