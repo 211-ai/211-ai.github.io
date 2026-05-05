@@ -1,10 +1,19 @@
 import type { RouteId } from "../models/abby";
 import type { AgentPermissionLevel, AgentToolDefinition } from "./types";
-import { hasPermissionLevel } from "./types";
+import {
+  hasPermissionLevel,
+  isAgentPermissionLevel,
+  isAgentToolDefinition,
+  isOneOf,
+  isRecord,
+  isRouteId,
+  isString
+} from "./types";
 import type { AgentCommandName } from "./commandSchemas";
-import { commandSchemas } from "./commandSchemas";
+import { commandSchemas, isAgentCommandName } from "./commandSchemas";
 
-export type SurfaceContextScope = "public" | "app_state" | "wallet_metadata" | "wallet_private";
+export const SURFACE_CONTEXT_SCOPES = ["public", "app_state", "wallet_metadata", "wallet_private"] as const;
+export type SurfaceContextScope = (typeof SURFACE_CONTEXT_SCOPES)[number];
 
 export interface SurfaceContextProviderDefinition {
   id: string;
@@ -18,6 +27,40 @@ export interface AgentSurfaceDefinition {
   label: string;
   contextProviders: SurfaceContextProviderDefinition[];
   tools: AgentCommandName[];
+}
+
+export function isSurfaceContextScope(value: unknown): value is SurfaceContextScope {
+  return isOneOf(SURFACE_CONTEXT_SCOPES, value);
+}
+
+export function isSurfaceContextProviderDefinition(value: unknown): value is SurfaceContextProviderDefinition {
+  return (
+    isRecord(value) &&
+    isString(value.id) &&
+    isString(value.label) &&
+    isSurfaceContextScope(value.scope) &&
+    isAgentPermissionLevel(value.permissionLevel)
+  );
+}
+
+export function isAgentSurfaceDefinition(value: unknown): value is AgentSurfaceDefinition {
+  return (
+    isRecord(value) &&
+    isRouteId(value.route) &&
+    isString(value.label) &&
+    Array.isArray(value.contextProviders) &&
+    value.contextProviders.every(isSurfaceContextProviderDefinition) &&
+    Array.isArray(value.tools) &&
+    value.tools.every(isAgentCommandName)
+  );
+}
+
+export function isRegisteredAgentToolDefinition(value: unknown): value is AgentToolDefinition {
+  if (!isAgentToolDefinition(value) || !isAgentCommandName(value.name)) {
+    return false;
+  }
+  const schema = commandSchemas[value.name];
+  return value.inputSchema === schema.inputSchema && value.outputSchema === schema.outputSchema;
 }
 
 type ToolPolicy = Pick<
@@ -313,6 +356,14 @@ export const agentToolDefinitions: AgentToolDefinition[] = Object.entries(toolPo
     auditEventType: policy.auditEventType
   };
 });
+
+export function isAgentSurfaceRegistry(value: unknown): value is AgentSurfaceDefinition[] {
+  return Array.isArray(value) && value.every(isAgentSurfaceDefinition);
+}
+
+export function isAgentToolDefinitionRegistry(value: unknown): value is AgentToolDefinition[] {
+  return Array.isArray(value) && value.every(isRegisteredAgentToolDefinition);
+}
 
 export function getSurfaceDefinition(route: RouteId): AgentSurfaceDefinition {
   return agentSurfaces.find((surface) => surface.route === route) || agentSurfaces[0];

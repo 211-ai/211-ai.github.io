@@ -167,6 +167,44 @@ const stringProperty: AgentSchemaProperty = { type: "string" };
 const booleanProperty: AgentSchemaProperty = { type: "boolean" };
 const numberProperty: AgentSchemaProperty = { type: "number" };
 const stringArrayProperty: AgentSchemaProperty = { type: "array", items: stringProperty };
+const evidenceCitationSchema: AgentSchemaProperty = {
+  type: "object",
+  required: ["label"],
+  additionalProperties: false,
+  properties: {
+    label: stringProperty,
+    url: stringProperty,
+    contentCid: stringProperty,
+    pageCid: stringProperty,
+    docId: stringProperty
+  }
+};
+const evidenceItemSchema: AgentSchemaProperty = {
+  type: "object",
+  required: ["id", "title", "source", "snippet", "citation"],
+  additionalProperties: false,
+  properties: {
+    id: stringProperty,
+    title: stringProperty,
+    source: stringProperty,
+    snippet: stringProperty,
+    score: numberProperty,
+    citation: evidenceCitationSchema
+  }
+};
+const evidenceBundleSchema: AgentSchemaProperty = {
+  type: "object",
+  required: ["id", "query", "generatedAt", "items"],
+  additionalProperties: false,
+  properties: {
+    id: stringProperty,
+    query: stringProperty,
+    generatedAt: stringProperty,
+    items: { type: "array", items: evidenceItemSchema },
+    graphNodeIds: stringArrayProperty,
+    graphEdgeIds: stringArrayProperty
+  }
+};
 
 const commandOutputSchema: AgentSchemaProperty = {
   type: "object",
@@ -179,6 +217,7 @@ const commandOutputSchema: AgentSchemaProperty = {
     errorCode: stringProperty,
     message: stringProperty,
     retryable: booleanProperty,
+    evidenceBundle: evidenceBundleSchema,
     recordIds: stringArrayProperty,
     artifactId: stringProperty
   }
@@ -225,6 +264,10 @@ function isOptionalLimitedNumber(value: unknown, min: number, max: number): valu
   return value === undefined || (isNumber(value) && value >= min && value <= max);
 }
 
+function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: readonly string[]): boolean {
+  return Object.keys(value).every((key) => allowedKeys.includes(key));
+}
+
 function isCheckInChannelArray(value: unknown): value is Array<"email" | "sms" | "web"> {
   return Array.isArray(value) && value.every((item) => isStringOneOf(checkInChannels, item));
 }
@@ -234,12 +277,13 @@ function isDisclosureScopeArray(value: unknown): value is string[] {
 }
 
 export function isNavigateCommandInput(value: unknown): value is NavigateCommandInput {
-  return isRecord(value) && isRouteId(value.route);
+  return isRecord(value) && hasOnlyKeys(value, ["route"]) && isRouteId(value.route);
 }
 
 export function isReadSurfaceContextCommandInput(value: unknown): value is ReadSurfaceContextCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["route", "includePrivateContext"]) &&
     isOptional(value.route, isRouteId) &&
     isOptional(value.includePrivateContext, isBoolean)
   );
@@ -248,6 +292,7 @@ export function isReadSurfaceContextCommandInput(value: unknown): value is ReadS
 export function isSearch211ServicesCommandInput(value: unknown): value is Search211ServicesCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["query", "limit", "city", "category"]) &&
     isString(value.query) &&
     value.query.trim().length > 0 &&
     isOptionalLimitedNumber(value.limit, 1, 20) &&
@@ -259,6 +304,7 @@ export function isSearch211ServicesCommandInput(value: unknown): value is Search
 export function isAnswer211QuestionCommandInput(value: unknown): value is Answer211QuestionCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["question", "useLocalModel"]) &&
     isString(value.question) &&
     value.question.trim().length > 0 &&
     isOptional(value.useLocalModel, isBoolean)
@@ -266,12 +312,18 @@ export function isAnswer211QuestionCommandInput(value: unknown): value is Answer
 }
 
 export function isOpenServiceDetailCommandInput(value: unknown): value is OpenServiceDetailCommandInput {
-  return isRecord(value) && isString(value.docId) && value.docId.trim().length > 0;
+  return (
+    isRecord(value) &&
+    hasOnlyKeys(value, ["docId"]) &&
+    isString(value.docId) &&
+    value.docId.trim().length > 0
+  );
 }
 
 export function isSaveServiceCommandInput(value: unknown): value is SaveServiceCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["serviceId", "note"]) &&
     isString(value.serviceId) &&
     value.serviceId.trim().length > 0 &&
     isOptional(value.note, isString)
@@ -281,6 +333,7 @@ export function isSaveServiceCommandInput(value: unknown): value is SaveServiceC
 export function isCreateServicePlanCommandInput(value: unknown): value is CreateServicePlanCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["serviceId", "goal", "steps"]) &&
     isString(value.serviceId) &&
     value.serviceId.trim().length > 0 &&
     isString(value.goal) &&
@@ -292,6 +345,16 @@ export function isCreateServicePlanCommandInput(value: unknown): value is Create
 export function isUpdateRegistrationDraftCommandInput(value: unknown): value is UpdateRegistrationDraftCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, [
+      "preferredName",
+      "pronouns",
+      "phone",
+      "email",
+      "currentLocation",
+      "shelterAffiliation",
+      "serviceNeeds",
+      "preferredCheckInChannels"
+    ]) &&
     isOptional(value.preferredName, isString) &&
     isOptional(value.pronouns, isString) &&
     isOptional(value.phone, isString) &&
@@ -306,6 +369,7 @@ export function isUpdateRegistrationDraftCommandInput(value: unknown): value is 
 export function isUpdateCheckInPolicyCommandInput(value: unknown): value is UpdateCheckInPolicyCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["intervalDays", "reminderChannels", "gracePeriodHours", "escalationEnabled"]) &&
     isOptionalLimitedNumber(value.intervalDays, 1, 365) &&
     isOptional(value.reminderChannels, isCheckInChannelArray) &&
     isOptionalLimitedNumber(value.gracePeriodHours, 0, 168) &&
@@ -316,6 +380,7 @@ export function isUpdateCheckInPolicyCommandInput(value: unknown): value is Upda
 export function isSetDisclosureScopesCommandInput(value: unknown): value is SetDisclosureScopesCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["recipientId", "allowedScopes"]) &&
     isString(value.recipientId) &&
     value.recipientId.trim().length > 0 &&
     isDisclosureScopeArray(value.allowedScopes)
@@ -325,6 +390,7 @@ export function isSetDisclosureScopesCommandInput(value: unknown): value is SetD
 export function isAccessRequestDecisionCommandInput(value: unknown): value is AccessRequestDecisionCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["requestId", "reason"]) &&
     isString(value.requestId) &&
     value.requestId.trim().length > 0 &&
     isOptional(value.reason, isString)
@@ -334,6 +400,7 @@ export function isAccessRequestDecisionCommandInput(value: unknown): value is Ac
 export function isCreateLocationRegionProofCommandInput(value: unknown): value is CreateLocationRegionProofCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["verifier", "regionLabel", "recordId"]) &&
     isString(value.verifier) &&
     value.verifier.trim().length > 0 &&
     isString(value.regionLabel) &&
@@ -345,6 +412,7 @@ export function isCreateLocationRegionProofCommandInput(value: unknown): value i
 export function isCreateVerifiedExportBundleCommandInput(value: unknown): value is CreateVerifiedExportBundleCommandInput {
   return (
     isRecord(value) &&
+    hasOnlyKeys(value, ["audienceName", "recordIds", "proofIds"]) &&
     isString(value.audienceName) &&
     value.audienceName.trim().length > 0 &&
     isStringArray(value.recordIds) &&
@@ -354,7 +422,7 @@ export function isCreateVerifiedExportBundleCommandInput(value: unknown): value 
 }
 
 export function isRefreshWalletAuditCommandInput(value: unknown): value is RefreshWalletAuditCommandInput {
-  return isRecord(value) && isOptionalLimitedNumber(value.limit, 1, 100);
+  return isRecord(value) && hasOnlyKeys(value, ["limit"]) && isOptionalLimitedNumber(value.limit, 1, 100);
 }
 
 export const commandSchemas = {
