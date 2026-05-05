@@ -687,26 +687,6 @@ body.playful-pulse .decor-shape {
   padding: 0 6px;
 }
 
-.scope-fieldset {
-  border: 0;
-  display: grid;
-  gap: 10px;
-  grid-column: 1 / -1;
-  margin: 0;
-  min-width: 0;
-  padding: 0;
-}
-
-.scope-fieldset legend {
-  font-weight: 800;
-  padding: 0;
-}
-
-.scope-help {
-  color: #4b5563;
-  margin: 0;
-}
-
 .identity-fields {
   display: grid;
   gap: 14px;
@@ -975,32 +955,7 @@ body.playful-pulse .decor-shape {
 
 .recipient-list-item {
   align-items: stretch;
-  display: grid;
-}
-
-.recipient-row {
-  align-items: stretch;
-  display: grid;
-  gap: 12px;
-  min-width: 0;
-}
-
-.recipient-open-button {
-  background: transparent;
-  border: 0;
-  border-radius: 8px;
-  color: inherit;
-  cursor: pointer;
-  display: grid;
-  min-height: 44px;
-  min-width: 0;
-  padding: 0;
-  text-align: left;
-}
-
-.recipient-open-button:focus-visible {
-  outline: 3px solid #0f766e;
-  outline-offset: 4px;
+  flex-direction: column;
 }
 
 .recipient-summary {
@@ -1009,10 +964,7 @@ body.playful-pulse .decor-shape {
   min-width: 0;
 }
 
-.recipient-name {
-  color: #17202a;
-  font-size: 17px;
-  font-weight: 800;
+.recipient-summary h3 {
   overflow-wrap: anywhere;
 }
 
@@ -1049,20 +1001,6 @@ body.playful-pulse .decor-shape {
 
 .recipient-list-item .button {
   flex: 1 1 128px;
-}
-
-.recipient-edit-panel {
-  border-top: 1px solid #d8dee6;
-  display: grid;
-  gap: 14px;
-  margin-top: 14px;
-  min-width: 0;
-  padding-top: 14px;
-}
-
-.recipient-edit-panel:focus {
-  outline: 3px solid #0f766e;
-  outline-offset: 4px;
 }
 
 .access-request-item .row-actions {
@@ -1644,12 +1582,13 @@ body.playful-pulse .decor-shape {
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
-  .recipient-row {
+  .recipient-list-item {
     align-items: flex-start;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+    flex-direction: row;
   }
 
   .recipient-list-item .row-actions {
+    flex: 0 0 360px;
     justify-content: flex-end;
   }
 }

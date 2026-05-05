@@ -156,9 +156,9 @@ const captureScenarios: CaptureScenario[] = [
     title: "Emergency contacts",
     state: "default",
     goals: [
-      "The add shelter or group area should be at the top of the screen.",
-      "The add person form should show sharing choices before saving.",
-      "Saved contacts should appear underneath the add controls and stay easy to scan."
+      "Recipients should be scannable with verification and scope status.",
+      "Adding a recipient should not require horizontal scrolling.",
+      "Removal controls should not visually dominate the emergency setup task."
     ]
   },
   {
@@ -169,7 +169,7 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "The add-recipient form should be easy to complete on mobile.",
       "Contact method fields should fit and remain labeled.",
-      "The new-person sharing checkboxes should be visible and readable before save."
+      "Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies."
     ],
     prepare: async (page) => {
       await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
@@ -177,95 +177,33 @@ const captureScenarios: CaptureScenario[] = [
       await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
       await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
       await page.getByLabel(/Type/i).selectOption("social_worker");
-    }
-  },
-  {
-    id: "contacts-add-person-sharing-some-off",
-    path: "/#/contacts",
-    title: "Emergency contacts add-recipient form with sharing off",
-    state: "draft recipient with medical and housing sharing off",
-    goals: [
-      "Unchecked sharing choices should be visible without feeling scary.",
-      "The form should still fit cleanly on mobile after several fields are filled.",
-      "The user should be able to review choices before adding the person."
-    ],
-    prepare: async (page) => {
-      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
-      await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
-      await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
-      await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
-      await page.getByLabel(/Type/i).selectOption("social_worker");
-      await page.getByLabel(/Medical notes/i).uncheck();
-      await page.getByLabel(/Found permanent housing/i).uncheck();
-    }
-  },
-  {
-    id: "contacts-edit-sharing",
-    path: "/#/contacts",
-    title: "Emergency contacts edit sharing panel",
-    state: "saved contact sharing editor open",
-    goals: [
-      "A saved contact should open into an obvious sharing edit panel.",
-      "Checkboxes should have a clear group heading and readable labels.",
-      "Save and cancel actions should be reachable without horizontal scrolling."
-    ],
-    prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
-    }
-  },
-  {
-    id: "contacts-edit-sharing-some-off",
-    path: "/#/contacts",
-    title: "Emergency contacts edit sharing panel with choices off",
-    state: "saved contact medical and housing sharing off",
-    goals: [
-      "Unchecked saved-contact sharing choices should be visually clear.",
-      "The selected-count badge should update near the panel heading.",
-      "The edit panel should remain compact enough for mobile review."
-    ],
-    prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-      await editPanel.getByLabel(/Medical notes/i).uncheck();
-      await editPanel.getByLabel(/Found permanent housing/i).uncheck();
-      await expect(editPanel.getByText("9 selected", { exact: true })).toBeVisible();
     }
   },
   {
     id: "sharing-rules",
     path: "/#/sharing-rules",
-    title: "Sharing compatibility route",
-    state: "saved contact sharing editor open",
+    title: "Sharing choices",
+    state: "default",
     goals: [
-      "The old Sharing route should lead to the combined contacts and sharing screen.",
-      "A saved contact should own its sharing-rule settings.",
-      "The capability preview should stay visible inside the contact edit panel."
-    ],
-    prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
-    }
+      "All sharing choices should start checked when no saved choice exists.",
+      "It should be clear that the user can turn off any item before saving.",
+      "Scope labels should be short, plain, and useful to screen-reader users."
+    ]
   },
   {
     id: "sharing-rules-some-items-off",
     path: "/#/sharing-rules",
-    title: "Sharing compatibility route with items turned off",
-    state: "saved contact medical and housing sharing off",
+    title: "Sharing choices with items turned off",
+    state: "medical and housing items off",
     goals: [
       "Unchecked items should be visually clear but not alarming.",
       "The preview should update to plain item names after choices change.",
-      "The compatibility route should avoid a second conflicting sharing editor."
+      "The legal review note should remain visible after opt-out choices."
     ],
     prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-      await editPanel.getByLabel(/Medical notes/i).uncheck();
-      await editPanel.getByLabel(/Found permanent housing/i).uncheck();
+      const recipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
+      await recipient.getByLabel(/Medical notes/i).uncheck();
+      await recipient.getByLabel(/Found permanent housing/i).uncheck();
     }
   },
   {
@@ -275,7 +213,7 @@ const captureScenarios: CaptureScenario[] = [
     state: "shelter nudge approved",
     goals: [
       "Approving a shelter nudge should add the shelter without implying broad sharing.",
-      "The added shelter should be easy to find in the saved contacts list below the add controls.",
+      "The added shelter should be easy to find in the contact list.",
       "The request history should remain understandable after approval."
     ],
     prepare: async (page) => {
@@ -414,7 +352,8 @@ const captureScenarios: CaptureScenario[] = [
       "Capability language should stay understandable before sharing starts."
     ],
     prepare: async (page) => {
-      const request = await ensureDowntownApprovalReady(page);
+      const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
+      await request.getByRole("button", { name: /Record approval/i }).click();
       await expect(request.getByText(/2\/2 approvals/i)).toBeVisible();
     }
   },
@@ -429,7 +368,8 @@ const captureScenarios: CaptureScenario[] = [
       "Sharing history should show the approved grant clearly."
     ],
     prepare: async (page) => {
-      const request = await ensureDowntownApprovalReady(page);
+      const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
+      await request.getByRole("button", { name: /Record approval/i }).click();
       await request.getByRole("button", { name: /^Approve$/i }).click();
       await expect(page.getByRole("article", { name: /Downtown Outreach/i }).filter({ hasText: "Share proof code" })).toBeVisible();
     }
@@ -458,7 +398,6 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "The benefits checkbox should start checked unless the user saved it as off.",
       "The user should be able to turn it off in plain language.",
-      "The page should not describe benefits notices as missed-check-in triggered.",
       "Agency action should not be implied as guaranteed.",
       "Legal/policy review limitations should be visible without overwhelming the user."
     ]
@@ -470,7 +409,6 @@ const captureScenarios: CaptureScenario[] = [
     state: "checked",
     goals: [
       "The checked consent state should be visually explicit.",
-      "Benefits notice copy should stay focused on benefits help, not missed check-ins.",
       "Legal and policy limitations should remain visible after consent is on.",
       "The save action should become available without implying guaranteed agency action."
     ],
@@ -603,7 +541,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/recipient-access": /Requests to see my info/i,
   "/#/register": /Create your Abby profile/i,
   "/#/security": /Account safety/i,
-  "/#/sharing-rules": /People who can help/i,
+  "/#/sharing-rules": /Choose what each person can see/i,
   "/#/shelter": /Assisted access/i,
   "/#/social-services": /Find support/i,
   "/#/uploads": /Saved files and info/i,
@@ -632,56 +570,30 @@ function buildPrompt(route: CaptureScenario, viewport: CaptureViewport) {
 }
 
 async function openCaptureScenario(page: Page, scenarioPath: string) {
-  await page.goto(captureRouteUrl("/"), { waitUntil: "domcontentloaded" });
-  await page.evaluate(() => {
-    window.localStorage.removeItem("abby-ui-state-v1");
-    window.sessionStorage.clear();
-  });
-
   if (scenarioPath === "/#/shelter") {
     await verifyShelterStaffForCapture(page);
     return;
   }
-
-  await navigateCaptureRoute(page, scenarioPath);
-  await expect(page.locator(".screen")).toBeVisible({ timeout: 15000 });
-  await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible({ timeout: 15000 });
-}
-
-function captureRouteUrl(scenarioPath: string) {
-  const hash = scenarioPath === "/" ? "#/" : scenarioPath.slice(1);
-  return `/?capture=${encodeURIComponent(hash)}${hash}`;
-}
-
-async function navigateCaptureRoute(page: Page, scenarioPath: string) {
-  await page.goto(captureRouteUrl(scenarioPath), { waitUntil: "domcontentloaded" });
-}
-
-async function ensureDowntownApprovalReady(page: Page) {
-  const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
-  await expect(request).toBeVisible({ timeout: 15000 });
-  const recordApproval = request.getByRole("button", { name: /Record approval/i });
-  if ((await recordApproval.count()) > 0) {
-    await recordApproval.click();
-  }
-  await expect(request.getByText(/2\/2 approvals/i)).toBeVisible({ timeout: 10000 });
-  return request;
+  await page.goto(scenarioPath);
+  await page.reload();
+  await expect(page.locator(".screen")).toBeVisible();
+  await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
 }
 
 async function verifyShelterStaffForCapture(page: Page) {
-  await navigateCaptureRoute(page, "/#/register");
-  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 15000 });
+  await page.goto("/#/register");
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible();
   await page.getByLabel(/I am shelter staff/i).check();
   await page.locator("select").first().selectOption("Rose City Shelter");
   await page.getByLabel(/Shelter staff PIN/i).fill("1234");
   await page.getByRole("button", { name: /Verify shelter staff/i }).click();
   await expect(page.getByText(/Shelter staff verified/i)).toBeVisible();
-  await navigateCaptureRoute(page, "/#/shelter");
-  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 15000 });
+  await page.goto("/#/shelter");
+  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
 }
 
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {
-  test.setTimeout(360000);
+  test.setTimeout(240000);
   const viewport = projectSlug(testInfo.project.name);
   const viewportDir = path.join(artifactRoot, viewport);
   await fs.rm(viewportDir, { force: true, recursive: true });

@@ -1,20 +1,20 @@
 # Abby UI Refinement Backlog
 
-Generated: 2026-05-04T22:29:55.894044+00:00
+Generated: 2026-05-04T19:41:26.536184+00:00
 Source: `artifacts\ui-review\latest\review-results.json`
-Tasks: 75
+Tasks: 69
 
 ## Summary
 
 By status:
-- `blocked`: 75
+- `blocked`: 69
 
 By priority:
-- `P3`: 75
+- `P3`: 69
 
 By viewport:
-- `desktop`: 37
-- `mobile`: 38
+- `desktop`: 34
+- `mobile`: 35
 
 ## Tasks
 
@@ -180,61 +180,7 @@ By viewport:
 - Changes are checked against `artifacts\ui-screenshots\latest\desktop\contacts-add-recipient-draft.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
-## ABBY-UI-DESKTOP-CONTACTS-ADD-PERSON-SHARING-SOME-OFF-001: Emergency contacts add-recipient form with sharing off: Run multimodal review for desktop draft recipient with medical and housing sharing off Emergency contacts add-recipient form with sharing off
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `desktop`
-- State: `draft recipient with medical and housing sharing off`
-- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-add-person-sharing-some-off.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `desktop`.
-- The `draft recipient with medical and housing sharing off` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\desktop\contacts-add-person-sharing-some-off.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-DESKTOP-CONTACTS-EDIT-SHARING-001: Emergency contacts edit sharing panel: Run multimodal review for desktop saved contact sharing editor open Emergency contacts edit sharing panel
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `desktop`
-- State: `saved contact sharing editor open`
-- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `desktop`.
-- The `saved contact sharing editor open` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-DESKTOP-CONTACTS-EDIT-SHARING-SOME-OFF-001: Emergency contacts edit sharing panel with choices off: Run multimodal review for desktop saved contact medical and housing sharing off Emergency contacts edit sharing panel with choices off
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `desktop`
-- State: `saved contact medical and housing sharing off`
-- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing-some-off.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `desktop`.
-- The `saved contact medical and housing sharing off` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing-some-off.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-DESKTOP-SHARING-RULES-001: Sharing compatibility route: Run multimodal review for desktop saved contact sharing editor open Sharing compatibility route
+## ABBY-UI-DESKTOP-SHARING-RULES-001: Sharing choices: Run multimodal review for desktop default Sharing choices
 
 - Priority: `P3`
 - Status: `blocked`
@@ -242,17 +188,17 @@ By viewport:
 - Suggested agent: `review-agent`
 - Route: `/#/sharing-rules`
 - Viewport: `desktop`
-- State: `saved contact sharing editor open`
+- State: `default`
 - Screenshot: `artifacts\ui-screenshots\latest\desktop\sharing-rules.png`
 
 ### Acceptance Criteria
 
 - Updated `/#/sharing-rules` remains usable in `desktop`.
-- The `saved contact sharing editor open` UI state is preserved or improved.
+- The `default` UI state is preserved or improved.
 - Changes are checked against `artifacts\ui-screenshots\latest\desktop\sharing-rules.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
-## ABBY-UI-DESKTOP-SHARING-RULES-SOME-ITEMS-OFF-001: Sharing compatibility route with items turned off: Run multimodal review for desktop saved contact medical and housing sharing off Sharing compatibility route with items turned off
+## ABBY-UI-DESKTOP-SHARING-RULES-SOME-ITEMS-OFF-001: Sharing choices with items turned off: Run multimodal review for desktop medical and housing items off Sharing choices with items turned off
 
 - Priority: `P3`
 - Status: `blocked`
@@ -260,13 +206,13 @@ By viewport:
 - Suggested agent: `review-agent`
 - Route: `/#/sharing-rules`
 - Viewport: `desktop`
-- State: `saved contact medical and housing sharing off`
+- State: `medical and housing items off`
 - Screenshot: `artifacts\ui-screenshots\latest\desktop\sharing-rules-some-items-off.png`
 
 ### Acceptance Criteria
 
 - Updated `/#/sharing-rules` remains usable in `desktop`.
-- The `saved contact medical and housing sharing off` UI state is preserved or improved.
+- The `medical and housing items off` UI state is preserved or improved.
 - Changes are checked against `artifacts\ui-screenshots\latest\desktop\sharing-rules-some-items-off.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
@@ -864,61 +810,7 @@ By viewport:
 - Changes are checked against `artifacts\ui-screenshots\latest\mobile\contacts-add-recipient-draft.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
-## ABBY-UI-MOBILE-CONTACTS-ADD-PERSON-SHARING-SOME-OFF-001: Emergency contacts add-recipient form with sharing off: Run multimodal review for mobile draft recipient with medical and housing sharing off Emergency contacts add-recipient form with sharing off
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `mobile`
-- State: `draft recipient with medical and housing sharing off`
-- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-add-person-sharing-some-off.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `mobile`.
-- The `draft recipient with medical and housing sharing off` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\mobile\contacts-add-person-sharing-some-off.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-MOBILE-CONTACTS-EDIT-SHARING-001: Emergency contacts edit sharing panel: Run multimodal review for mobile saved contact sharing editor open Emergency contacts edit sharing panel
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `mobile`
-- State: `saved contact sharing editor open`
-- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `mobile`.
-- The `saved contact sharing editor open` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-MOBILE-CONTACTS-EDIT-SHARING-SOME-OFF-001: Emergency contacts edit sharing panel with choices off: Run multimodal review for mobile saved contact medical and housing sharing off Emergency contacts edit sharing panel with choices off
-
-- Priority: `P3`
-- Status: `blocked`
-- Category: `review_needed`
-- Suggested agent: `review-agent`
-- Route: `/#/contacts`
-- Viewport: `mobile`
-- State: `saved contact medical and housing sharing off`
-- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing-some-off.png`
-
-### Acceptance Criteria
-
-- Updated `/#/contacts` remains usable in `mobile`.
-- The `saved contact medical and housing sharing off` UI state is preserved or improved.
-- Changes are checked against `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing-some-off.png` and a regenerated screenshot.
-- No sensitive data is implied to be shared without explicit user action.
-
-## ABBY-UI-MOBILE-SHARING-RULES-001: Sharing compatibility route: Run multimodal review for mobile saved contact sharing editor open Sharing compatibility route
+## ABBY-UI-MOBILE-SHARING-RULES-001: Sharing choices: Run multimodal review for mobile default Sharing choices
 
 - Priority: `P3`
 - Status: `blocked`
@@ -926,17 +818,17 @@ By viewport:
 - Suggested agent: `review-agent`
 - Route: `/#/sharing-rules`
 - Viewport: `mobile`
-- State: `saved contact sharing editor open`
+- State: `default`
 - Screenshot: `artifacts\ui-screenshots\latest\mobile\sharing-rules.png`
 
 ### Acceptance Criteria
 
 - Updated `/#/sharing-rules` remains usable in `mobile`.
-- The `saved contact sharing editor open` UI state is preserved or improved.
+- The `default` UI state is preserved or improved.
 - Changes are checked against `artifacts\ui-screenshots\latest\mobile\sharing-rules.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
-## ABBY-UI-MOBILE-SHARING-RULES-SOME-ITEMS-OFF-001: Sharing compatibility route with items turned off: Run multimodal review for mobile saved contact medical and housing sharing off Sharing compatibility route with items turned off
+## ABBY-UI-MOBILE-SHARING-RULES-SOME-ITEMS-OFF-001: Sharing choices with items turned off: Run multimodal review for mobile medical and housing items off Sharing choices with items turned off
 
 - Priority: `P3`
 - Status: `blocked`
@@ -944,13 +836,13 @@ By viewport:
 - Suggested agent: `review-agent`
 - Route: `/#/sharing-rules`
 - Viewport: `mobile`
-- State: `saved contact medical and housing sharing off`
+- State: `medical and housing items off`
 - Screenshot: `artifacts\ui-screenshots\latest\mobile\sharing-rules-some-items-off.png`
 
 ### Acceptance Criteria
 
 - Updated `/#/sharing-rules` remains usable in `mobile`.
-- The `saved contact medical and housing sharing off` UI state is preserved or improved.
+- The `medical and housing items off` UI state is preserved or improved.
 - Changes are checked against `artifacts\ui-screenshots\latest\mobile\sharing-rules-some-items-off.png` and a regenerated screenshot.
 - No sensitive data is implied to be shared without explicit user action.
 
