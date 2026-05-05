@@ -30,6 +30,7 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "python -m wallet_interface.ops --validate-target-signoff-packet" in text
     assert "person-name strings" in text
     assert "wallet CLI subprocess flows" in text
+    assert "MCP wallet tests cover the same share/export/import/revoke path" in text
     assert "hash/schema verification" in text
 
 
