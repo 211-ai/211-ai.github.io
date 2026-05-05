@@ -112,8 +112,25 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
   home: commonReadTools,
   register: [...commonReadTools, "update_registration_draft"],
   "check-in": [...commonReadTools, "update_check_in_policy"],
-  contacts: [...commonReadTools],
-  "sharing-rules": [...commonReadTools, "set_disclosure_scopes"],
+  contacts: [
+    ...commonReadTools,
+    "add_recipient",
+    "edit_recipient",
+    "remove_recipient",
+    "preview_sharing_capabilities",
+    "request_shelter_contact",
+    "approve_shelter_contact_request",
+    "deny_shelter_contact_request"
+  ],
+  "sharing-rules": [
+    ...commonReadTools,
+    "add_recipient",
+    "edit_recipient",
+    "remove_recipient",
+    "update_recipient_scopes",
+    "preview_sharing_capabilities",
+    "set_disclosure_scopes"
+  ],
   uploads: [...commonReadTools],
   "social-services": [
     ...commonReadTools,
@@ -245,6 +262,85 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.check_in_policy.update"
+  },
+  add_recipient: {
+    title: "Add recipient",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts", "sharing-rules"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.recipient.add"
+  },
+  edit_recipient: {
+    title: "Edit recipient",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts", "sharing-rules"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.recipient.edit"
+  },
+  remove_recipient: {
+    title: "Remove recipient",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts", "sharing-rules"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.recipient.remove"
+  },
+  update_recipient_scopes: {
+    title: "Update recipient scopes",
+    permissionLevel: "wallet_write",
+    surfaces: ["sharing-rules"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.recipient_scopes.update"
+  },
+  preview_sharing_capabilities: {
+    title: "Preview sharing capabilities",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["contacts", "sharing-rules"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  request_shelter_contact: {
+    title: "Request shelter contact",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_contact.request"
+  },
+  approve_shelter_contact_request: {
+    title: "Approve shelter contact request",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_contact.approve"
+  },
+  deny_shelter_contact_request: {
+    title: "Deny shelter contact request",
+    permissionLevel: "wallet_write",
+    surfaces: ["contacts"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_contact.deny"
   },
   set_disclosure_scopes: {
     title: "Set disclosure scopes",
