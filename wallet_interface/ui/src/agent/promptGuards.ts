@@ -181,7 +181,14 @@ export function buildPromptSafeSurfaceContext(
 ): SafeSurfaceContext {
   const redactions: PromptRedaction[] = [];
   const includePrivateWalletContext = canIncludePrivateWalletContext(context, options);
-  const guardOptions = { ...options, includePrivateWalletContext };
+  const guardOptions = {
+    ...options,
+    includePrivateWalletContext,
+    includePreciseLocation: includePrivateWalletContext && options.includePreciseLocation,
+    includePrivateNotes: includePrivateWalletContext && options.includePrivateNotes,
+    includeDocumentContents: includePrivateWalletContext && options.includeDocumentContents,
+    includeProviderConversations: includePrivateWalletContext && options.includeProviderConversations
+  };
   const promptPermissionLevel = includePrivateWalletContext ? context.permissionLevel : capPermissionLevel(context.permissionLevel);
   const maxMetadataStringLength = options.maxMetadataStringLength ?? DEFAULT_MAX_METADATA_STRING_LENGTH;
 
