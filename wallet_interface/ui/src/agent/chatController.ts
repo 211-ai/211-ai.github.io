@@ -2,12 +2,12 @@ import type { AppActionResult } from "../app/appActions";
 import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";
+import { planAgentTurn, type AgentPlannedTool, type AgentPlannedTurn } from "./agentPlanner";
 import type { AgentSurfaceApi } from "./surfaceApi";
-import { canUseToolOnSurface, getRouteLabel, getToolDefinition } from "./surfaceRegistry";
+import { getToolDefinition } from "./surfaceRegistry";
 import type {
   AgentConfirmationRequest,
   AgentIntent,
-  AgentIntentKind,
   AgentMessage,
   AgentPermissionLevel,
   AgentPlan,
@@ -85,44 +85,10 @@ export interface AgentChatController {
   setActiveRoute: (route: RouteId) => void;
 }
 
-interface PlannedTool {
-  name: AgentCommandName;
-  input: unknown;
-  title: string;
-}
-
-interface PlannedTurn {
-  intentKind: AgentIntentKind;
-  summary: string;
-  tools: PlannedTool[];
-  response?: string;
-}
-
 interface RetryRequest {
   content?: string;
-  tool?: PlannedTool;
+  tool?: AgentPlannedTool;
 }
-
-const serviceQuestionPattern =
-  /\b(211|service|services|shelter|housing|food|pantry|benefits|legal|clinic|health|transport|crisis|near me|nearby)\b/i;
-
-const routeAliases: Array<{ route: RouteId; aliases: string[] }> = [
-  { route: "home", aliases: ["home", "today", "safety plan"] },
-  { route: "register", aliases: ["register", "registration", "profile"] },
-  { route: "check-in", aliases: ["check in", "check-in", "reminder", "reminders"] },
-  { route: "contacts", aliases: ["contacts", "people"] },
-  { route: "sharing-rules", aliases: ["sharing", "sharing rules", "disclosure"] },
-  { route: "uploads", aliases: ["uploads", "documents", "files"] },
-  { route: "social-services", aliases: ["social services", "services", "211"] },
-  { route: "shelter", aliases: ["shelter", "shelters"] },
-  { route: "recipient-access", aliases: ["recipient access", "access requests", "who can see"] },
-  { route: "benefits-protection", aliases: ["benefits", "benefits protection"] },
-  { route: "analytics", aliases: ["analytics", "group facts"] },
-  { route: "proof-center", aliases: ["proof center", "proofs", "proof"] },
-  { route: "exports", aliases: ["exports", "export", "sharing bundle"] },
-  { route: "security", aliases: ["security", "wallet security"] },
-  { route: "audit", aliases: ["audit", "history", "wallet audit"] }
-];
 
 export function createAgentChatController(options: AgentChatControllerOptions): AgentChatController {
   const now = options.now ?? (() => new Date().toISOString());
@@ -293,11 +259,19 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     });
 
     pushProgress("planning", "Planning next assistant action.");
-    const turn = planTurn(content, context);
+    const turn = planAgentTurn({
+      content,
+      context,
+      pendingConfirmations: session.confirmations.filter((confirmation) => confirmation.status === "pending")
+    });
+    if (turn.confirmationDecision) {
+      await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
+      return;
+    }
     await executeToolPlan(turn, context);
   }
 
-  async function executeToolPlan(turn: PlannedTurn, context: SurfaceContext) {
+  async function executeToolPlan(turn: AgentPlannedTurn, context: SurfaceContext) {
     const intent = createIntent(turn, context);
     const plan = createPlan(intent, turn);
     replaceSession({
@@ -377,6 +351,47 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       evidenceBundleIds: successfulResults.flatMap((result) => result.evidenceBundleIds ?? [])
     }));
     markPlanComplete(plan.id);
+  }
+
+  async function resolveConfirmationFromMessage(confirmationId: string, approved: boolean) {
+    const confirmation = session.confirmations.find((candidate) => candidate.id === confirmationId);
+    if (!confirmation || confirmation.status !== "pending") return;
+    if (!approved) {
+      denyConfirmation(confirmationId);
+      return;
+    }
+
+    const toolCall = session.toolCalls.find((candidate) => candidate.id === confirmation.toolCallId);
+    if (!toolCall) return;
+
+    replaceSession({
+      confirmations: updateConfirmation(session.confirmations, confirmationId, {
+        status: "approved",
+        resolvedAt: now()
+      }),
+      plans: session.plans.map((plan) =>
+        plan.steps.some((step) => step.confirmationId === confirmationId) ? { ...plan, status: "running", updatedAt: now() } : plan
+      )
+    });
+    pushProgress("running_tool", `Confirmed ${confirmation.title}.`, {
+      toolCallId: toolCall.id,
+      confirmationId
+    });
+
+    try {
+      const result = await executeToolCall(toolCall, true);
+      markConfirmationPlanStep(confirmationId, result.success ? "complete" : "failed");
+      appendMessage(createMessage(sessionId, "assistant", summarizeResults([result]), "complete", {
+        toolCallIds: [toolCall.id],
+        toolResultIds: [result.id],
+        evidenceBundleIds: result.evidenceBundleIds
+      }));
+      markPlanContainingConfirmation(confirmationId, result.success ? "complete" : "failed");
+    } catch (error) {
+      markConfirmationPlanStep(confirmationId, "failed");
+      markPlanContainingConfirmation(confirmationId, "failed");
+      throw error;
+    }
   }
 
   async function executeToolCall(toolCall: AgentToolCall, confirmed = false): Promise<AgentToolResult> {
@@ -523,7 +538,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
   };
 
-  function createIntent(turn: PlannedTurn, context: SurfaceContext): AgentIntent {
+  function createIntent(turn: AgentPlannedTurn, context: SurfaceContext): AgentIntent {
     return {
       id: createId("agent-intent"),
       kind: turn.intentKind,
@@ -535,7 +550,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     };
   }
 
-  function createPlan(intent: AgentIntent, turn: PlannedTurn): AgentPlan {
+  function createPlan(intent: AgentIntent, turn: AgentPlannedTurn): AgentPlan {
     const createdAt = now();
     return {
       id: createId("agent-plan"),
@@ -562,7 +577,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     };
   }
 
-  function createToolCall(tool: PlannedTool): AgentToolCall {
+  function createToolCall(tool: AgentPlannedTool): AgentToolCall {
     return {
       id: createId("agent-tool-call"),
       sessionId,
@@ -573,7 +588,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     };
   }
 
-  function createConfirmation(toolCall: AgentToolCall, tool: PlannedTool): AgentConfirmationRequest {
+  function createConfirmation(toolCall: AgentToolCall, tool: AgentPlannedTool): AgentConfirmationRequest {
     const definition = getToolDefinition(tool.name);
     return {
       id: createId("agent-confirmation"),
@@ -610,93 +625,6 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       )
     });
   }
-}
-
-function planTurn(content: string, context: SurfaceContext): PlannedTurn {
-  const lower = content.toLowerCase();
-  const routeTarget = parseRouteTarget(lower);
-  if (routeTarget && /\b(go|open|navigate|show|take me|switch)\b/.test(lower)) {
-    return {
-      intentKind: "app_navigation",
-      summary: `Navigate to ${getRouteLabel(routeTarget)}.`,
-      tools: [{ name: "navigate", input: { route: routeTarget }, title: "Navigate" }]
-    };
-  }
-
-  const saveServiceId = parseServiceId(lower, content, "save");
-  if (saveServiceId) {
-    return {
-      intentKind: "wallet_action",
-      summary: `Save service ${saveServiceId}.`,
-      tools: withServiceSurface(context, [{ name: "save_service", input: { serviceId: saveServiceId }, title: "Save service" }])
-    };
-  }
-
-  const servicePlanId = parseServiceId(lower, content, "plan");
-  if (servicePlanId) {
-    return {
-      intentKind: "wallet_action",
-      summary: `Create a service plan for ${servicePlanId}.`,
-      tools: withServiceSurface(context, [
-        {
-          name: "create_service_plan",
-          input: { serviceId: servicePlanId, goal: content.trim() },
-          title: "Create service plan"
-        }
-      ])
-    };
-  }
-
-  if (/\b(where am i|what screen|this screen|this page|what can i do here)\b/.test(lower)) {
-    return {
-      intentKind: "app_navigation",
-      summary: "Read current surface context.",
-      tools: [{ name: "read_surface_context", input: {}, title: "Read surface context" }]
-    };
-  }
-
-  if (serviceQuestionPattern.test(content)) {
-    const toolName: AgentCommandName = /\b(search|find|look for|nearby|near me)\b/.test(lower)
-      ? "search_211_services"
-      : "answer_211_question";
-    const input = toolName === "search_211_services" ? { query: content, limit: 8 } : { question: content, useLocalModel: false };
-    return {
-      intentKind: "service_navigation",
-      summary: toolName === "search_211_services" ? "Search 211 service records." : "Answer 211 service question.",
-      tools: withServiceSurface(context, [{ name: toolName, input, title: getToolDefinition(toolName).title }])
-    };
-  }
-
-  return {
-    intentKind: "general_question",
-    summary: "Respond from current app context.",
-    tools: [],
-    response: fallbackResponse(context)
-  };
-}
-
-function withServiceSurface(context: SurfaceContext, tools: PlannedTool[]): PlannedTool[] {
-  const firstTool = tools[0];
-  if (!firstTool || canUseToolOnSurface(firstTool.name, context.route, context.permissionLevel)) {
-    return tools;
-  }
-  return [{ name: "navigate", input: { route: "social-services" }, title: "Navigate" }, ...tools];
-}
-
-function parseRouteTarget(lower: string): RouteId | undefined {
-  for (const candidate of routeAliases) {
-    if (candidate.aliases.some((alias) => lower.includes(alias))) {
-      return candidate.route;
-    }
-  }
-  return undefined;
-}
-
-function parseServiceId(lower: string, original: string, mode: "save" | "plan"): string | undefined {
-  const verbPattern = mode === "save" ? "\\bsave\\b" : "\\b(plan|follow-up|follow up)\\b";
-  if (!new RegExp(verbPattern).test(lower) || !/\b(service|211)\b/.test(lower)) return undefined;
-  const explicit = original.match(/\b(?:service|211)\s+([a-zA-Z0-9._:-]{3,})\b/);
-  return explicit?.[1];
 }
 
 function updateToolCall(
