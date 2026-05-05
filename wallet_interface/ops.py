@@ -977,6 +977,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip location-distance verifier prove/verify during --validate-production-readiness.",
     )
+    parser.add_argument(
+        "--skip-distance-proof-contract",
+        action="store_true",
+        help="Skip location-distance verifier prove/verify during --validate-production-readiness.",
+    )
     return parser
 
 
