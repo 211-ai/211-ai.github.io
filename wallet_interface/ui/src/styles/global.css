@@ -1279,6 +1279,177 @@ body.playful-pulse .decor-shape {
   white-space: pre-wrap;
 }
 
+.agent-evidence-panel {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 10px;
+}
+
+.agent-evidence-panel-header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.agent-evidence-panel-header strong {
+  color: #17202a;
+  font-size: 13px;
+}
+
+.agent-evidence-panel-header span,
+.agent-evidence-overflow,
+.agent-evidence-graph-meta {
+  color: #5b6776;
+  font-size: 12px;
+}
+
+.agent-evidence-bundles,
+.agent-evidence-items,
+.agent-citation-link,
+.agent-citation-provenance {
+  display: grid;
+  gap: 8px;
+}
+
+.agent-evidence-bundle {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+}
+
+.agent-evidence-bundle summary {
+  align-items: center;
+  color: #17202a;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: space-between;
+  list-style: none;
+}
+
+.agent-evidence-bundle summary::-webkit-details-marker {
+  display: none;
+}
+
+.agent-evidence-bundle[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.agent-evidence-items {
+  margin-top: 8px;
+}
+
+.agent-evidence-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+}
+
+.agent-evidence-item p {
+  color: #3b4553;
+  font-size: 13px;
+}
+
+.agent-citation-primary {
+  align-items: start;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.agent-citation-label {
+  background: #e6f5f2;
+  border-radius: 6px;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 6px;
+}
+
+.agent-citation-title {
+  color: #17202a;
+  font-size: 13px;
+  font-weight: 800;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.agent-citation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.agent-citation-button,
+.agent-citation-source-link {
+  min-height: 32px;
+}
+
+.agent-citation-button {
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.agent-citation-source-link {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #aeb8c5;
+  border-radius: 8px;
+  color: #17202a;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 6px;
+  max-width: 100%;
+  padding: 6px 8px;
+  text-decoration: none;
+}
+
+.agent-citation-source-link span {
+  overflow-wrap: anywhere;
+}
+
+.agent-citation-source-static {
+  color: #5b6776;
+}
+
+.agent-citation-provenance div {
+  min-width: 0;
+}
+
+.agent-citation-provenance dt {
+  align-items: center;
+  color: #5b6776;
+  display: flex;
+  font-size: 11px;
+  font-weight: 800;
+  gap: 4px;
+  text-transform: uppercase;
+}
+
+.agent-citation-provenance dd {
+  color: #17202a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.agent-evidence-graph-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .agent-confirmation-card,
 .agent-tool-result-card {
   background: #ffffff;
