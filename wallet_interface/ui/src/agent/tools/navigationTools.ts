@@ -14,6 +14,24 @@ export interface NavigationSurface {
   aliases: string[];
 }
 
+const extraRouteAliases = {
+  home: ["dashboard", "start", "today", "safety plan"],
+  register: ["registration", "profile", "intake"],
+  "check-in": ["reminder", "reminders", "checkins"],
+  contacts: ["people", "recipients"],
+  "sharing-rules": ["sharing rules", "disclosure", "permissions"],
+  uploads: ["documents", "files", "records"],
+  "social-services": ["service", "services", "service navigator", "211", "211 services"],
+  shelter: ["shelters", "beds"],
+  "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
+  "benefits-protection": ["benefits", "public benefits"],
+  analytics: ["reports"],
+  "proof-center": ["proof center", "proofs", "proof", "verification", "verifications"],
+  exports: ["export", "sharing bundle", "bundle", "download"],
+  security: ["wallet security", "privacy"],
+  audit: ["history", "wallet audit", "activity log"]
+} satisfies Record<RouteId, readonly string[]>;
+
 export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => ({
   route: route.id,
   label: getRouteLabel(route.id),
@@ -118,9 +136,20 @@ export function canNavigateToRoute(route: unknown): route is RouteId {
 export function resolveNavigationRoute(input: string): RouteId | undefined {
   const normalized = normalizeRouteText(input);
   if (!normalized) return undefined;
-  return navigationSurfaces.find((surface) =>
+  const exactMatch = navigationSurfaces.find((surface) =>
     surface.aliases.some((alias) => normalizeRouteText(alias) === normalized)
   )?.route;
+  if (exactMatch) return exactMatch;
+
+  return navigationSurfaces
+    .flatMap((surface) =>
+      surface.aliases.map((alias) => ({
+        route: surface.route,
+        normalizedAlias: normalizeRouteText(alias)
+      }))
+    )
+    .sort((left, right) => right.normalizedAlias.length - left.normalizedAlias.length)
+    .find((candidate) => includesNormalizedPhrase(normalized, candidate.normalizedAlias))?.route;
 }
 
 export async function summarizeCurrentScreenAction(runtime: AppActionRuntime): Promise<AppActionResult> {
@@ -135,7 +164,8 @@ function buildRouteAliases(route: RouteId, appLabel: string): string[] {
     label,
     appLabel,
     appLabel.toLowerCase(),
-    label.toLowerCase()
+    label.toLowerCase(),
+    ...extraRouteAliases[route]
   ]);
 }
 
@@ -145,6 +175,11 @@ function normalizeRouteText(value: string): string {
     .toLowerCase()
     .replace(/[_-]+/g, " ")
     .replace(/\s+/g, " ");
+}
+
+function includesNormalizedPhrase(text: string, phrase: string): boolean {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  return new RegExp(`(^|\\W)${escaped}(?=\\W|$)`, "i").test(text);
 }
 
 function getVisibleRecordIds(route: RouteId, state: AppActionState): string[] | undefined {
