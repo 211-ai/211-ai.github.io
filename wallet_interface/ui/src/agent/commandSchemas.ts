@@ -517,7 +517,17 @@ export function isUpdateRegistrationDraftCommandInput(value: unknown): value is 
     isOptional(value.currentLocation, isString) &&
     isOptional(value.shelterAffiliation, isString) &&
     isOptional(value.serviceNeeds, isStringArray) &&
-    isOptional(value.preferredCheckInChannels, isCheckInChannelArray)
+    isOptional(value.preferredCheckInChannels, isCheckInChannelArray) &&
+    [
+      value.preferredName,
+      value.pronouns,
+      value.phone,
+      value.email,
+      value.currentLocation,
+      value.shelterAffiliation,
+      value.serviceNeeds,
+      value.preferredCheckInChannels
+    ].some((item) => item !== undefined)
   );
 }
 
@@ -527,7 +537,10 @@ export function isUpdateCheckInPolicyCommandInput(value: unknown): value is Upda
     isOptionalLimitedNumber(value.intervalDays, 1, 365) &&
     isOptional(value.reminderChannels, isCheckInChannelArray) &&
     isOptionalLimitedNumber(value.gracePeriodHours, 0, 168) &&
-    isOptional(value.escalationEnabled, isBoolean)
+    isOptional(value.escalationEnabled, isBoolean) &&
+    [value.intervalDays, value.reminderChannels, value.gracePeriodHours, value.escalationEnabled].some(
+      (item) => item !== undefined
+    )
   );
 }
 

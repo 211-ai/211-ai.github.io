@@ -18,6 +18,8 @@ import {
   searchServiceNavigation,
 } from "../agent/serviceNavigationAgent";
 import { navigateAction, readSurfaceContextAction } from "../agent/tools/navigationTools";
+import { updateRegistrationDraftAction } from "../agent/tools/registrationTools";
+import { updateCheckInPolicyAction } from "../agent/tools/checkInTools";
 import {
   addRecipientAction,
   approveShelterContactRequestAction,
@@ -95,9 +97,7 @@ import type {
   SubmitAnalyticsConsentCommandInput,
   SummarizeAuditEventsCommandInput,
   ProofReceiptReferenceCommandInput,
-  UpdateCheckInPolicyCommandInput,
   UpdateRecipientScopesCommandInput,
-  UpdateRegistrationDraftCommandInput,
   ViewGrantedRecordCommandInput
 } from "../agent/commandSchemas";
 import { commandSchemas } from "../agent/commandSchemas";
@@ -383,44 +383,6 @@ async function createServicePlanAction(
   return success("create_service_plan", `Created a service plan for ${input.serviceId}.`, {
     artifactId: `plan-${input.serviceId}-${Date.now()}`,
     confirmation: confirmationFor("create_service_plan", input)
-  });
-}
-
-async function updateRegistrationDraftAction(
-  runtime: AppActionRuntime,
-  input: UpdateRegistrationDraftCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("update_registration_draft", input, options);
-  if (blocked) return blocked;
-  const setProfile = requireSetter("update_registration_draft", runtime.setProfile, "Registration profile");
-  if (typeof setProfile !== "function") return setProfile;
-  const state = runtime.getState();
-  setProfile({ ...state.profile, ...input });
-  return success("update_registration_draft", "Updated registration draft fields.", {
-    confirmation: confirmationFor("update_registration_draft", input)
-  });
-}
-
-async function updateCheckInPolicyAction(
-  runtime: AppActionRuntime,
-  input: UpdateCheckInPolicyCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("update_check_in_policy", input, options);
-  if (blocked) return blocked;
-  const setPolicy = requireSetter("update_check_in_policy", runtime.setPolicy, "Check-in policy");
-  if (typeof setPolicy !== "function") return setPolicy;
-  const state = runtime.getState();
-  setPolicy({
-    ...state.policy,
-    ...input,
-    intervalDays: input.intervalDays === undefined ? state.policy.intervalDays : Math.max(1, Math.min(30, input.intervalDays)),
-    gracePeriodHours:
-      input.gracePeriodHours === undefined ? state.policy.gracePeriodHours : Math.max(0, input.gracePeriodHours)
-  });
-  return success("update_check_in_policy", "Updated check-in policy.", {
-    confirmation: confirmationFor("update_check_in_policy", input)
   });
 }
 
