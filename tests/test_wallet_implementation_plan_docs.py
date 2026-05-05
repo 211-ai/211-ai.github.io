@@ -29,6 +29,8 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "python -m wallet_interface.ops --validate-distance-proof-contract" in text
     assert "python -m wallet_interface.ops --validate-target-signoff-packet" in text
     assert "person-name strings" in text
+    assert "wallet CLI subprocess flows" in text
+    assert "hash/schema verification" in text
 
 
 def test_ucan_zk_wallet_phase_table_tracks_gates_not_missing_mvp_work() -> None:

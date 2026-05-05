@@ -662,8 +662,9 @@ Current implementation status:
   caveat before building the bundle. Export bundles include a deterministic
   `bundle_hash` and `bundle_id` so recipients can detect tampering independent
   of JSON key order. Bundle receipt verification is exposed through both CLI and
-  the 211-AI API, and verified bundles can be imported as encrypted descriptors
-  without granting plaintext access. Import validates the expected
+  the 211-AI API, validates both the deterministic hash and required encrypted
+  descriptor schema, and verified bundles can be imported as encrypted
+  descriptors without granting plaintext access. Import validates the expected
   bundle type and required record/version sections after hash verification.
   Storage availability checks report whether referenced encrypted blobs are
   locally retrievable without decrypting them.
@@ -1154,7 +1155,7 @@ Current implementation evidence:
 | Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
 | Operator/integrator reference | `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md` publishes the stable wallet API endpoint groups, CLI command list, MCP wallet tools, runtime env surface, privacy boundaries, and release checks. |
 | External verifier contract | `docs/WALLET_PROOF_VERIFIER_CONTRACT.md` defines the HTTP `location_region` and `location_distance` proof verifier health/prove/verify contracts, authentication headers, safe receipt fields, ops validation, and no-witness-leak requirements. `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` and `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` run staging health/prove/verify/no-leak checks against the configured HTTP verifier with synthetic witnesses. |
-| Blackbox staging harness | `tests/test_wallet_production_handoff_blackbox.py` starts a local HTTP verifier stub, runs the production-readiness CLI through a subprocess with production-mode env vars, launches the wallet API with `uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops HTTP endpoints, exercises delegate UCAN decrypt/export grants, signed invocations, encrypted export verification/import/storage checks, grant revocation, post-restart grant receipt/audit persistence, validates a completed signoff packet, confirms redacted analysis does not leak email, phone, SSN, precise coordinates, or person-name strings, and proves that a verifier leaking witness data fails the release gate. |
+| Blackbox staging harness | `tests/test_wallet_production_handoff_blackbox.py` starts a local HTTP verifier stub, runs the production-readiness CLI through a subprocess with production-mode env vars, launches the wallet API with `uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops HTTP endpoints, exercises delegate UCAN decrypt/export grants, signed invocations, encrypted export hash/schema verification/import/storage checks, grant revocation, post-restart grant receipt/audit persistence, runs matching wallet CLI subprocess flows for sharing, export, analytics, import merge, and revocation, validates a completed signoff packet, confirms redacted analysis does not leak email, phone, SSN, precise coordinates, or person-name strings, and proves that a verifier leaking witness data fails the release gate. |
 
 Target-environment handoff:
 

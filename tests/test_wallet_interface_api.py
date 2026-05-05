@@ -2215,6 +2215,8 @@ def test_wallet_api_export_bundle_uses_export_grant_without_plaintext() -> None:
     assert response.status_code == 200
     verified = response.json()
     assert verified["valid"] is True
+    assert verified["hash_valid"] is True
+    assert verified["schema_valid"] is True
     assert verified["computed_hash"] == bundle["bundle_hash"]
     response = client.post("/exports/import", json={"bundle": bundle})
     assert response.status_code == 200
@@ -2237,6 +2239,13 @@ def test_wallet_api_export_bundle_uses_export_grant_without_plaintext() -> None:
     verify = client.post("/exports/verify", json={"bundle": malformed}).json()
     malformed["bundle_hash"] = verify["computed_hash"]
     malformed["bundle_id"] = f"export-{malformed['bundle_hash'][:24]}"
+    response = client.post("/exports/verify", json={"bundle": malformed})
+    assert response.status_code == 200
+    malformed_verification = response.json()
+    assert malformed_verification["valid"] is False
+    assert malformed_verification["hash_valid"] is True
+    assert malformed_verification["schema_valid"] is False
+    assert "Unsupported" in malformed_verification["schema_error"]
     response = client.post("/exports/import", json={"bundle": malformed})
     assert response.status_code == 400
     assert "Unsupported" in response.json()["detail"]

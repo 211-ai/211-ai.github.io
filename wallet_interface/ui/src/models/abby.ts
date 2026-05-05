@@ -285,6 +285,10 @@ export interface ExportBundleView {
   bundle?: Record<string, unknown>;
   recordCount: number;
   proofCount: number;
+  verificationOk: boolean;
+  hashOk: boolean;
+  schemaOk: boolean;
+  schemaError?: string;
   storageOk: boolean;
   imported: boolean;
   createdAt: string;

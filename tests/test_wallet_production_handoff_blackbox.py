@@ -98,6 +98,32 @@ def _run_ops(args: list[str], *, env: dict[str, str]) -> subprocess.CompletedPro
     )
 
 
+def _run_wallet_cli(
+    args: list[str],
+    *,
+    tmp_path: Path,
+    env: dict[str, str],
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ipfs_datasets_py.wallet.cli",
+            "--wallet-dir",
+            str(tmp_path / "cli-wallets"),
+            "--blob-dir",
+            str(tmp_path / "cli-blobs"),
+            "--json",
+            *args,
+        ],
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
 def _free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.bind(("127.0.0.1", 0))
@@ -294,6 +320,11 @@ def _last_json_line(output: str) -> dict[str, Any]:
     return json.loads(lines[-1])
 
 
+def _json_stdout(result: subprocess.CompletedProcess[str]) -> dict[str, Any]:
+    assert result.returncode == 0, result.stderr or result.stdout
+    return json.loads(result.stdout)
+
+
 def test_production_handoff_blackbox_accepts_mocked_staging_environment(tmp_path: Path) -> None:
     server, thread, verifier_url, requests = _start_mock_verifier()
     try:
@@ -364,6 +395,342 @@ def test_production_handoff_blackbox_rejects_verifier_that_leaks_witness(tmp_pat
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+def test_wallet_cli_blackbox_exercises_subprocess_sharing_export_and_analytics(tmp_path: Path) -> None:
+    env = _target_env(tmp_path, "http://127.0.0.1:9")
+    owner_did = "did:key:cli-owner"
+    delegate_did = "did:key:cli-delegate"
+    analyst_did = "did:key:cli-analyst"
+    owner_key_hex = "33" * 32
+    delegate_key_hex = "44" * 32
+
+    created = _json_stdout(
+        _run_wallet_cli(["create", "--owner-did", owner_did], tmp_path=tmp_path, env=env)
+    )
+    wallet_id = created["wallet_id"]
+
+    plaintext = "CLI delegate may read this document after explicit authorization."
+    source_path = tmp_path / "cli-document.txt"
+    source_path.write_text(plaintext, encoding="utf-8")
+    added = _json_stdout(
+        _run_wallet_cli(
+            [
+                "add",
+                "--wallet-id",
+                wallet_id,
+                "--actor-did",
+                owner_did,
+                "--key-hex",
+                owner_key_hex,
+                "--path",
+                str(source_path),
+                "--title",
+                "CLI Blackbox Document",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    record_id = added["record_id"]
+
+    denied = _run_wallet_cli(
+        [
+            "decrypt",
+            "--wallet-id",
+            wallet_id,
+            "--record-id",
+            record_id,
+            "--actor-did",
+            delegate_did,
+            "--key-hex",
+            delegate_key_hex,
+            "--out",
+            str(tmp_path / "denied.txt"),
+        ],
+        tmp_path=tmp_path,
+        env=env,
+    )
+    assert denied.returncode == 1
+    assert "grant" in json.loads(denied.stdout)["error"]
+
+    share = _json_stdout(
+        _run_wallet_cli(
+            [
+                "share",
+                "--wallet-id",
+                wallet_id,
+                "--record-id",
+                record_id,
+                "--issuer-did",
+                owner_did,
+                "--audience-did",
+                delegate_did,
+                "--issuer-key-hex",
+                owner_key_hex,
+                "--recipient-key-hex",
+                delegate_key_hex,
+                "--can",
+                "record/decrypt",
+                "--output-type",
+                "plaintext",
+                "--purpose",
+                "benefits_application",
+                "--issue-invocation",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert share["invocation_token"].startswith("wallet-ucan-v1.")
+
+    delegated_out = tmp_path / "delegated.txt"
+    decrypted = _json_stdout(
+        _run_wallet_cli(
+            [
+                "decrypt-invocation",
+                "--wallet-id",
+                wallet_id,
+                "--record-id",
+                record_id,
+                "--actor-did",
+                delegate_did,
+                "--key-hex",
+                delegate_key_hex,
+                "--invocation-token",
+                share["invocation_token"],
+                "--out",
+                str(delegated_out),
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert decrypted["size_bytes"] == len(plaintext)
+    assert delegated_out.read_text(encoding="utf-8") == plaintext
+
+    receipts = _json_stdout(
+        _run_wallet_cli(
+            ["grant-receipts", "--wallet-id", wallet_id, "--audience-did", delegate_did],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert any(receipt["grant_id"] == share["grant_id"] for receipt in receipts["receipts"])
+
+    export_grant = _json_stdout(
+        _run_wallet_cli(
+            [
+                "export-grant",
+                "--wallet-id",
+                wallet_id,
+                "--record-id",
+                record_id,
+                "--issuer-did",
+                owner_did,
+                "--audience-did",
+                delegate_did,
+                "--issuer-key-hex",
+                owner_key_hex,
+                "--recipient-key-hex",
+                delegate_key_hex,
+                "--purpose",
+                "benefits_portability",
+                "--issue-invocation",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert export_grant["invocation_token"].startswith("wallet-ucan-v1.")
+
+    bundle_path = tmp_path / "cli-export.json"
+    exported = _json_stdout(
+        _run_wallet_cli(
+            [
+                "export-bundle",
+                "--wallet-id",
+                wallet_id,
+                "--actor-did",
+                delegate_did,
+                "--key-hex",
+                delegate_key_hex,
+                "--invocation-token",
+                export_grant["invocation_token"],
+                "--record-id",
+                record_id,
+                "--out",
+                str(bundle_path),
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert exported["record_count"] == 1
+    bundle = json.loads(bundle_path.read_text(encoding="utf-8"))
+    rendered_bundle = json.dumps(bundle, sort_keys=True)
+    assert plaintext not in rendered_bundle
+    assert bundle["bundle_id"] == f"export-{bundle['bundle_hash'][:24]}"
+
+    verified = _json_stdout(
+        _run_wallet_cli(["verify-export-bundle", "--path", str(bundle_path)], tmp_path=tmp_path, env=env)
+    )
+    assert verified["valid"] is True
+    assert verified["hash_valid"] is True
+    assert verified["schema_valid"] is True
+    imported = _json_stdout(
+        _run_wallet_cli(["import-export-bundle", "--path", str(bundle_path)], tmp_path=tmp_path, env=env)
+    )
+    assert imported["record_count"] == 1
+    storage = _json_stdout(
+        _run_wallet_cli(["export-bundle-storage", "--path", str(bundle_path)], tmp_path=tmp_path, env=env)
+    )
+    assert storage["ok"] is True
+
+    revoked = _json_stdout(
+        _run_wallet_cli(
+            [
+                "revoke",
+                "--wallet-id",
+                wallet_id,
+                "--actor-did",
+                owner_did,
+                "--grant-id",
+                share["grant_id"],
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert revoked["grant_status"] == "revoked"
+    blocked = _run_wallet_cli(
+        [
+            "decrypt-invocation",
+            "--wallet-id",
+            wallet_id,
+            "--record-id",
+            record_id,
+            "--actor-did",
+            delegate_did,
+            "--key-hex",
+            delegate_key_hex,
+            "--invocation-token",
+            share["invocation_token"],
+            "--out",
+            str(tmp_path / "blocked.txt"),
+        ],
+        tmp_path=tmp_path,
+        env=env,
+    )
+    assert blocked.returncode == 1
+    assert "not active" in json.loads(blocked.stdout)["error"]
+
+    revoked_receipts = _json_stdout(
+        _run_wallet_cli(
+            [
+                "grant-receipts",
+                "--wallet-id",
+                wallet_id,
+                "--audience-did",
+                delegate_did,
+                "--status",
+                "revoked",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert any(receipt["grant_id"] == share["grant_id"] for receipt in revoked_receipts["receipts"])
+
+    template = _json_stdout(
+        _run_wallet_cli(
+            [
+                "analytics-template",
+                "--wallet-id",
+                wallet_id,
+                "--template-id",
+                "cli_needs_v1",
+                "--title",
+                "CLI Needs",
+                "--purpose",
+                "CLI aggregate validation",
+                "--record-type",
+                "document",
+                "--derived-field",
+                "need_category",
+                "--min-cohort-size",
+                "1",
+                "--epsilon-budget",
+                "1.0",
+                "--created-by",
+                analyst_did,
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert template["status"] == "approved"
+
+    consent = _json_stdout(
+        _run_wallet_cli(
+            [
+                "analytics-consent",
+                "--wallet-id",
+                wallet_id,
+                "--actor-did",
+                owner_did,
+                "--template-id",
+                "cli_needs_v1",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    contribution = _json_stdout(
+        _run_wallet_cli(
+            [
+                "analytics-contribute",
+                "--wallet-id",
+                wallet_id,
+                "--actor-did",
+                owner_did,
+                "--consent-id",
+                consent["consent_id"],
+                "--template-id",
+                "cli_needs_v1",
+                "--field",
+                "need_category=housing",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert contribution["template_id"] == "cli_needs_v1"
+    aggregate = _json_stdout(
+        _run_wallet_cli(
+            [
+                "analytics-count",
+                "--wallet-id",
+                wallet_id,
+                "--template-id",
+                "cli_needs_v1",
+                "--epsilon",
+                "0.25",
+                "--min-cohort-size",
+                "1",
+            ],
+            tmp_path=tmp_path,
+            env=env,
+        )
+    )
+    assert aggregate["released"] is True
+    assert aggregate["privacy_budget_spent"] == 0.25
+
+    audit = _json_stdout(
+        _run_wallet_cli(["audit", "--wallet-id", wallet_id], tmp_path=tmp_path, env=env)
+    )
+    assert audit["event_count"] >= 10
+    assert audit["audit_head"]
 
 
 def test_wallet_api_blackbox_exercises_live_workflow_and_persistence(tmp_path: Path) -> None:

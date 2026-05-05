@@ -278,6 +278,9 @@ export interface ExportBundleApi {
 
 export interface ExportBundleVerifyResponse {
   valid: boolean;
+  hash_valid?: boolean;
+  schema_valid?: boolean;
+  schema_error?: string;
   bundle_id?: string;
   bundle_hash?: string;
   computed_hash: string;
@@ -1436,6 +1439,8 @@ export async function loadExportBundleView({
   ]);
   const bundleId = verification.bundle_id ?? bundle.bundle_id ?? "export-bundle";
   const bundleHash = verification.bundle_hash ?? bundle.bundle_hash ?? verification.computed_hash;
+  const hashOk = verification.hash_valid ?? verification.valid;
+  const schemaOk = verification.schema_valid ?? verification.valid;
   return {
     id: bundleId,
     bundleId,
@@ -1444,6 +1449,10 @@ export async function loadExportBundleView({
     bundle,
     recordCount: storage.record_count || bundle.records?.length || 0,
     proofCount: bundle.proofs?.length ?? 0,
+    verificationOk: verification.valid,
+    hashOk,
+    schemaOk,
+    schemaError: verification.schema_error,
     storageOk: verification.valid && storage.ok,
     imported,
     createdAt: formatTimestamp(bundle.created_at ?? new Date().toISOString())

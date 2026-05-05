@@ -350,8 +350,9 @@ cd wallet_interface/ui && npm run build
 The blackbox suite runs the wallet API through `uvicorn` and covers production
 readiness, target signoff packet validation, external verifier no-witness-leak
 checks, UCAN delegate decrypt/export grants, signed invocations, encrypted
-export verification/import/storage checks, grant revocation, analytics, ops
-health, and repository reload after restart.
+export hash/schema verification/import/storage checks, grant revocation,
+analytics, ops health, repository reload after restart, and matching wallet CLI
+subprocess flows for sharing, export, analytics, import merge, and revocation.
 
 Also run `GET /ops/health?verify_storage=true` against the target environment
 after deployment and confirm no check has `status=error`. When
