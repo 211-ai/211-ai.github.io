@@ -1279,6 +1279,146 @@ body.playful-pulse .decor-shape {
   white-space: pre-wrap;
 }
 
+.agent-confirmation-card,
+.agent-tool-result-card {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 10px;
+}
+
+.agent-confirmation-risk-high,
+.agent-confirmation-risk-restricted {
+  border-color: #f3b4ad;
+}
+
+.agent-confirmation-risk-moderate {
+  border-color: #f8d38a;
+}
+
+.agent-tool-result-success {
+  border-color: #b7ddc3;
+}
+
+.agent-tool-result-failed {
+  border-color: #f3b4ad;
+}
+
+.agent-card-header {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 30px minmax(0, 1fr);
+}
+
+.agent-card-header strong,
+.agent-card-header small {
+  display: block;
+}
+
+.agent-card-header small {
+  color: #5b6776;
+  font-size: 12px;
+}
+
+.agent-card-icon {
+  align-items: center;
+  background: #fff4df;
+  border-radius: 8px;
+  color: #744b00;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+}
+
+.agent-confirmation-risk-high .agent-card-icon,
+.agent-confirmation-risk-restricted .agent-card-icon,
+.agent-tool-result-failed .agent-card-icon {
+  background: #fff1f0;
+  color: #b42318;
+}
+
+.agent-tool-result-success .agent-card-icon {
+  background: #ecfdf3;
+  color: #166534;
+}
+
+.agent-card-summary {
+  color: #17202a;
+  font-size: 13px;
+}
+
+.agent-change-summary,
+.agent-result-summary {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.agent-change-summary div,
+.agent-result-summary div {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+}
+
+.agent-change-summary dt,
+.agent-result-summary dt {
+  color: #5b6776;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.agent-change-summary dd,
+.agent-result-summary dd {
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.agent-card-detail-list {
+  color: #3b4553;
+  display: grid;
+  font-size: 13px;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.agent-card-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agent-card-actions .button {
+  min-height: 40px;
+  padding: 8px 10px;
+}
+
+.agent-card-deadline,
+.agent-tool-result-footer {
+  color: #5b6776;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.agent-card-deadline span,
+.agent-tool-result-footer span {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
 .agent-typing {
   border-top: 1px solid #e5e7eb;
   color: #5b6776;

@@ -1,13 +1,35 @@
 import { useEffect, useRef } from "react";
 import { Bot, UserRound } from "lucide-react";
-import type { AgentMessage } from "../../agent/types";
+import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult } from "../../agent/types";
+import { AgentConfirmationCard } from "./AgentConfirmationCard";
+import { AgentToolResultCard } from "./AgentToolResultCard";
 
-export function AgentMessageList({ messages }: { messages: AgentMessage[] }) {
+export function AgentMessageList({
+  messages,
+  confirmations = [],
+  toolCalls = [],
+  toolResults = [],
+  responding = false,
+  onConfirm,
+  onCancel
+}: {
+  messages: AgentMessage[];
+  confirmations?: AgentConfirmationRequest[];
+  toolCalls?: AgentToolCall[];
+  toolResults?: AgentToolResult[];
+  responding?: boolean;
+  onConfirm?: (confirmationId: string) => void;
+  onCancel?: (confirmationId: string) => void;
+}) {
   const endRef = useRef<HTMLDivElement | null>(null);
+  const renderedConfirmationIds = new Set<string>();
+  const confirmationsById = new Map(confirmations.map((confirmation) => [confirmation.id, confirmation]));
+  const toolCallsById = new Map(toolCalls.map((toolCall) => [toolCall.id, toolCall]));
+  const toolResultsById = new Map(toolResults.map((result) => [result.id, result]));
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages]);
+  }, [confirmations, messages, toolResults]);
 
   return (
     <div aria-label="Assistant conversation" className="agent-message-list" role="log">
@@ -22,9 +44,47 @@ export function AgentMessageList({ messages }: { messages: AgentMessage[] }) {
               <span>{formatMessageTime(message.createdAt)}</span>
             </div>
             <p>{message.content}</p>
+            {getMessageConfirmationIds(message).map((confirmationId) => {
+              const confirmation = confirmationsById.get(confirmationId);
+              if (!confirmation) return null;
+              renderedConfirmationIds.add(confirmation.id);
+              return (
+                <AgentConfirmationCard
+                  confirmation={confirmation}
+                  disabled={responding || !onConfirm || !onCancel}
+                  key={confirmation.id}
+                  onCancel={onCancel ?? noopConfirmationHandler}
+                  onConfirm={onConfirm ?? noopConfirmationHandler}
+                  toolCall={toolCallsById.get(confirmation.toolCallId)}
+                />
+              );
+            })}
+            {(message.toolResultIds ?? []).map((toolResultId) => {
+              const result = toolResultsById.get(toolResultId);
+              if (!result) return null;
+              return (
+                <AgentToolResultCard
+                  key={result.id}
+                  result={result}
+                  toolCall={toolCallsById.get(result.toolCallId)}
+                />
+              );
+            })}
           </div>
         </article>
       ))}
+      {confirmations
+        .filter((confirmation) => confirmation.status === "pending" && !renderedConfirmationIds.has(confirmation.id))
+        .map((confirmation) => (
+          <AgentConfirmationCard
+            confirmation={confirmation}
+            disabled={responding || !onConfirm || !onCancel}
+            key={confirmation.id}
+            onCancel={onCancel ?? noopConfirmationHandler}
+            onConfirm={onConfirm ?? noopConfirmationHandler}
+            toolCall={toolCallsById.get(confirmation.toolCallId)}
+          />
+        ))}
       <div ref={endRef} />
     </div>
   );
@@ -34,4 +94,20 @@ function formatMessageTime(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+}
+
+function getMessageConfirmationIds(message: AgentMessage): string[] {
+  const ids = new Set<string>();
+  if (typeof message.metadata?.confirmationId === "string") {
+    ids.add(message.metadata.confirmationId);
+  }
+  for (const toolCallId of message.toolCallIds ?? []) {
+    const confirmationId = message.metadata?.[`${toolCallId}:confirmationId`];
+    if (typeof confirmationId === "string") ids.add(confirmationId);
+  }
+  return Array.from(ids);
+}
+
+function noopConfirmationHandler() {
+  return undefined;
 }
