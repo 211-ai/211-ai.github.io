@@ -130,6 +130,15 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     };
   }
 
+  const uploadTool = planUploadTool(lower, content);
+  if (uploadTool) {
+    return {
+      intentKind: "wallet_action",
+      summary: uploadTool.title,
+      tools: withToolSurface(input.context, [uploadTool])
+    };
+  }
+
   const serviceDetailId = parseServiceId(lower, content, input.context, "open");
   if (serviceDetailId) {
     return {
@@ -362,6 +371,47 @@ function planContactTool(lower: string, original: string): AgentPlannedTool | un
   return undefined;
 }
 
+function planUploadTool(lower: string, original: string): AgentPlannedTool | undefined {
+  if (!/\b(upload|uploads|file|files|document|documents|storage|save)\b/.test(lower)) return undefined;
+
+  const uploadId = parseUploadId(original);
+  const recordId = parseRecordId(original);
+
+  if (/\b(repair|fix|restore)\b.*\b(storage|save|upload|file|document)\b|\b(storage|save)\b.*\b(repair|fix|restore)\b/.test(lower)) {
+    if (uploadId || recordId) {
+      return tool("repair_upload_storage", {
+        ...(uploadId ? { uploadId } : {}),
+        ...(recordId ? { recordId } : {})
+      });
+    }
+  }
+
+  if (/\b(classify|categorize|label|identify)\b/.test(lower)) {
+    const fileName = parseNamedValue(original, "file") ?? parseNamedValue(original, "filename");
+    if (uploadId || recordId || fileName) {
+      return tool("classify_uploaded_document", {
+        ...(uploadId ? { uploadId } : {}),
+        ...(recordId ? { recordId } : {}),
+        ...(fileName ? { fileName } : {}),
+        userSelected: true
+      });
+    }
+  }
+
+  if (uploadId && /\b(share|allow sharing|make shareable|private|make private|stop sharing)\b/.test(lower)) {
+    return tool("toggle_upload_shared", {
+      uploadId,
+      shared: !/\b(private|stop sharing|do not share|don't share|dont share)\b/.test(lower)
+    });
+  }
+
+  if (/\b(what|which|help|guide|need|requirements?|should)\b/.test(lower)) {
+    return tool("summarize_upload_requirements", { goal: original });
+  }
+
+  return undefined;
+}
+
 function tool(name: AgentCommandName, input: unknown): AgentPlannedTool {
   return {
     name,
@@ -376,6 +426,14 @@ function parseAccessRequestId(original: string): string | undefined {
 
 function parseRecipientId(original: string): string | undefined {
   return original.match(/\brec[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^rec(?![-_:])/i, "rec-");
+}
+
+function parseUploadId(original: string): string | undefined {
+  return original.match(/\bup[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^up(?![-_:])/i, "up-");
+}
+
+function parseRecordId(original: string): string | undefined {
+  return original.match(/\brec(?:ord)?[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^record(?![-_:])/i, "rec-");
 }
 
 function parseShelterRequestId(original: string): string | undefined {
