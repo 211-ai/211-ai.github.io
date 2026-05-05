@@ -36,6 +36,10 @@ export const AGENT_COMMAND_NAMES = [
   "approve_user_shelter_request",
   "deny_user_shelter_request",
   "add_shelter_as_recipient",
+  "summarize_upload_requirements",
+  "classify_uploaded_document",
+  "repair_upload_storage",
+  "toggle_upload_shared",
   "set_disclosure_scopes",
   "record_controller_approval",
   "approve_access_request",
@@ -281,6 +285,47 @@ export interface AddShelterAsRecipientCommandInput {
   staffName?: string;
 }
 
+export const UPLOAD_DOCUMENT_CATEGORIES = [
+  "Identity",
+  "Benefits",
+  "Housing",
+  "Medical",
+  "Legal",
+  "Income",
+  "Contact",
+  "Other"
+] as const;
+export type UploadDocumentCategory = (typeof UPLOAD_DOCUMENT_CATEGORIES)[number];
+
+export const UPLOAD_DOCUMENT_SENSITIVITIES = ["low", "moderate", "high", "restricted"] as const;
+export type UploadDocumentSensitivity = (typeof UPLOAD_DOCUMENT_SENSITIVITIES)[number];
+
+export interface SummarizeUploadRequirementsCommandInput {
+  goal?: string;
+  documentType?: string;
+}
+
+export interface ClassifyUploadedDocumentCommandInput {
+  uploadId?: string;
+  recordId?: string;
+  fileName?: string;
+  mimeType?: string;
+  machineSummary?: string;
+  userSelected: boolean;
+  categoryHint?: UploadDocumentCategory;
+}
+
+export interface RepairUploadStorageCommandInput {
+  uploadId?: string;
+  recordId?: string;
+}
+
+export interface ToggleUploadSharedCommandInput {
+  uploadId: string;
+  shared: boolean;
+  reason?: string;
+}
+
 export interface AccessRequestDecisionCommandInput {
   requestId: string;
   reason?: string;
@@ -504,6 +549,10 @@ function isDisclosureRecipientType(value: unknown): value is (typeof disclosureR
 
 function isEasyBotCheckStatus(value: unknown): value is (typeof easyBotCheckStatuses)[number] {
   return isStringOneOf(easyBotCheckStatuses, value);
+}
+
+function isUploadDocumentCategory(value: unknown): value is UploadDocumentCategory {
+  return isStringOneOf(UPLOAD_DOCUMENT_CATEGORIES, value);
 }
 
 export function isNavigateCommandInput(value: unknown): value is NavigateCommandInput {
@@ -760,6 +809,47 @@ export function isAddShelterAsRecipientCommandInput(value: unknown): value is Ad
     isString(value.shelterName) &&
     value.shelterName.trim().length > 0 &&
     isOptional(value.staffName, isString)
+  );
+}
+
+export function isSummarizeUploadRequirementsCommandInput(
+  value: unknown
+): value is SummarizeUploadRequirementsCommandInput {
+  return isRecord(value) && isOptional(value.goal, isString) && isOptional(value.documentType, isString);
+}
+
+export function isClassifyUploadedDocumentCommandInput(
+  value: unknown
+): value is ClassifyUploadedDocumentCommandInput {
+  return (
+    isRecord(value) &&
+    value.userSelected === true &&
+    (value.uploadId === undefined || (isString(value.uploadId) && value.uploadId.trim().length > 0)) &&
+    (value.recordId === undefined || (isString(value.recordId) && value.recordId.trim().length > 0)) &&
+    (value.fileName === undefined || (isString(value.fileName) && value.fileName.trim().length > 0)) &&
+    isOptional(value.mimeType, isString) &&
+    isOptional(value.machineSummary, isString) &&
+    isOptional(value.categoryHint, isUploadDocumentCategory) &&
+    (value.uploadId !== undefined || value.recordId !== undefined || value.fileName !== undefined)
+  );
+}
+
+export function isRepairUploadStorageCommandInput(value: unknown): value is RepairUploadStorageCommandInput {
+  return (
+    isRecord(value) &&
+    (value.uploadId === undefined || (isString(value.uploadId) && value.uploadId.trim().length > 0)) &&
+    (value.recordId === undefined || (isString(value.recordId) && value.recordId.trim().length > 0)) &&
+    (value.uploadId !== undefined || value.recordId !== undefined)
+  );
+}
+
+export function isToggleUploadSharedCommandInput(value: unknown): value is ToggleUploadSharedCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.uploadId) &&
+    value.uploadId.trim().length > 0 &&
+    isBoolean(value.shared) &&
+    isOptional(value.reason, isString)
   );
 }
 
@@ -1241,6 +1331,56 @@ export const commandSchemas = {
     inputSchema: objectSchema({ shelterName: stringProperty, staffName: stringProperty }, ["shelterName"]),
     outputSchema: commandOutputSchema,
     isInput: isAddShelterAsRecipientCommandInput,
+    isOutput: isCommandOutput
+  },
+  summarize_upload_requirements: {
+    name: "summarize_upload_requirements",
+    description: "Guide a user through selecting documents to upload without reading local files.",
+    inputSchema: objectSchema({
+      goal: stringProperty,
+      documentType: stringProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isSummarizeUploadRequirementsCommandInput,
+    isOutput: isCommandOutput
+  },
+  classify_uploaded_document: {
+    name: "classify_uploaded_document",
+    description: "Classify metadata for a document after the user selected it through an upload event.",
+    inputSchema: objectSchema({
+      uploadId: stringProperty,
+      recordId: stringProperty,
+      fileName: stringProperty,
+      mimeType: stringProperty,
+      machineSummary: stringProperty,
+      userSelected: booleanProperty,
+      categoryHint: { type: "string", enum: UPLOAD_DOCUMENT_CATEGORIES }
+    }, ["userSelected"]),
+    outputSchema: commandOutputSchema,
+    isInput: isClassifyUploadedDocumentCommandInput,
+    isOutput: isCommandOutput
+  },
+  repair_upload_storage: {
+    name: "repair_upload_storage",
+    description: "Repair wallet storage for an already uploaded record.",
+    inputSchema: objectSchema({
+      uploadId: stringProperty,
+      recordId: stringProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isRepairUploadStorageCommandInput,
+    isOutput: isCommandOutput
+  },
+  toggle_upload_shared: {
+    name: "toggle_upload_shared",
+    description: "Change whether an uploaded document is marked as shareable after confirmation.",
+    inputSchema: objectSchema({
+      uploadId: stringProperty,
+      shared: booleanProperty,
+      reason: stringProperty
+    }, ["uploadId", "shared"]),
+    outputSchema: commandOutputSchema,
+    isInput: isToggleUploadSharedCommandInput,
     isOutput: isCommandOutput
   },
   set_disclosure_scopes: {

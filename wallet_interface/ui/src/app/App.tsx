@@ -325,6 +325,7 @@ export function App() {
       setShelterContactRequests,
       setShelterStaffAccounts,
       setShelterUserAccounts,
+      setUploads,
       setAccessRequests,
       setGrantReceipts,
       setWalletAuditEvents,
