@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Bot, ChevronDown, ChevronUp, MessageSquare, X } from "lucide-react";
-import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult } from "../../agent/types";
+import type {
+  AgentConfirmationRequest,
+  AgentMessage,
+  AgentToolCall,
+  AgentToolResult,
+  EvidenceBundle
+} from "../../agent/types";
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentMessageList } from "./AgentMessageList";
@@ -8,6 +14,7 @@ import { AgentMessageList } from "./AgentMessageList";
 export function AgentChatBottomSheet({
   activeRouteLabel,
   confirmations = [],
+  evidenceBundles = [],
   messages,
   open,
   responding = false,
@@ -16,11 +23,13 @@ export function AgentChatBottomSheet({
   onCancelConfirmation,
   onClose,
   onConfirmConfirmation,
+  onOpenServiceDetail,
   onSend,
   onToggle
 }: {
   activeRouteLabel: string;
   confirmations?: AgentConfirmationRequest[];
+  evidenceBundles?: EvidenceBundle[];
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
@@ -29,6 +38,7 @@ export function AgentChatBottomSheet({
   onCancelConfirmation?: (confirmationId: string) => void;
   onClose: () => void;
   onConfirmConfirmation?: (confirmationId: string) => void;
+  onOpenServiceDetail?: (docId: string) => void;
   onSend: (message: string) => void;
   onToggle: () => void;
 }) {
@@ -100,9 +110,11 @@ export function AgentChatBottomSheet({
           <div className="agent-chat-bottom-sheet-body" id="agent-chat-bottom-sheet-body">
             <AgentMessageList
               confirmations={confirmations}
+              evidenceBundles={evidenceBundles}
               messages={messages}
               onCancel={onCancelConfirmation}
               onConfirm={onConfirmConfirmation}
+              onOpenServiceDetail={onOpenServiceDetail}
               responding={responding}
               toolCalls={toolCalls}
               toolResults={toolResults}

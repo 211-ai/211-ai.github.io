@@ -1,25 +1,30 @@
 import { useEffect, useRef } from "react";
 import { Bot, UserRound } from "lucide-react";
-import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult } from "../../agent/types";
+import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult, EvidenceBundle } from "../../agent/types";
 import { AgentConfirmationCard } from "./AgentConfirmationCard";
+import { AgentEvidencePanel } from "./AgentEvidencePanel";
 import { AgentToolResultCard } from "./AgentToolResultCard";
 
 export function AgentMessageList({
   messages,
   confirmations = [],
+  evidenceBundles = [],
   toolCalls = [],
   toolResults = [],
   responding = false,
   onConfirm,
-  onCancel
+  onCancel,
+  onOpenServiceDetail
 }: {
   messages: AgentMessage[];
   confirmations?: AgentConfirmationRequest[];
+  evidenceBundles?: EvidenceBundle[];
   toolCalls?: AgentToolCall[];
   toolResults?: AgentToolResult[];
   responding?: boolean;
   onConfirm?: (confirmationId: string) => void;
   onCancel?: (confirmationId: string) => void;
+  onOpenServiceDetail?: (docId: string) => void;
 }) {
   const endRef = useRef<HTMLDivElement | null>(null);
   const renderedConfirmationIds = new Set<string>();
@@ -44,6 +49,11 @@ export function AgentMessageList({
               <span>{formatMessageTime(message.createdAt)}</span>
             </div>
             <p>{message.content}</p>
+            <AgentEvidencePanel
+              bundleIds={message.evidenceBundleIds}
+              bundles={evidenceBundles}
+              onOpenServiceDetail={onOpenServiceDetail}
+            />
             {getMessageConfirmationIds(message).map((confirmationId) => {
               const confirmation = confirmationsById.get(confirmationId);
               if (!confirmation) return null;
