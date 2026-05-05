@@ -1,11 +1,23 @@
 import type { RouteId } from "../../models/abby";
-import { getRouteFromHash, setLocationRouteHash } from "../../app/appState";
+import { appRoutes, getRouteFromHash, setLocationRouteHash } from "../../app/appState";
 import type { AppActionResult, AppActionRuntime, AppActionState } from "../../app/appActions";
 import type { NavigateCommandInput, ReadSurfaceContextCommandInput } from "../commandSchemas";
 import { getRouteLabel } from "../surfaceRegistry";
 import type { SurfaceContext } from "../types";
 
 type RouteSummaryBuilder = (state: AppActionState) => string;
+
+export interface NavigationSurface {
+  route: RouteId;
+  label: string;
+}
+
+export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => ({
+  route: route.id,
+  label: getRouteLabel(route.id)
+}));
+
+export const navigationRouteIds: RouteId[] = navigationSurfaces.map((surface) => surface.route);
 
 const routeSummaries = {
   home: (state) =>
@@ -65,7 +77,7 @@ export function buildSafeSurfaceContext(
   const route = input.route ?? state.activeRoute ?? getRouteFromHash();
   const includePrivateContext = Boolean(input.includePrivateContext && state.privateContextAllowed);
   const visibleRecordIds = getVisibleRecordIds(route, state);
-  const visibleServiceDocIds = route === "social-services" ? [] : undefined;
+  const visibleServiceDocIds = isServiceRoute(route) ? [] : undefined;
 
   return {
     route,
@@ -77,7 +89,7 @@ export function buildSafeSurfaceContext(
     privateContextAllowed: includePrivateContext,
     permissionLevel: includePrivateContext ? "wallet_private" : "app_context",
     summary: summarizeRouteState(route, state),
-    metadata: includePrivateContext ? privateSurfaceMetadata(state) : publicSurfaceMetadata(state)
+    metadata: includePrivateContext ? privateSurfaceMetadata(route, state) : publicSurfaceMetadata(route, state)
   };
 }
 
@@ -85,27 +97,34 @@ export function summarizeRouteState(route: RouteId, state: AppActionState): stri
   return routeSummaries[route](state);
 }
 
+export function canNavigateToRoute(route: RouteId): boolean {
+  return navigationRouteIds.includes(route);
+}
+
 function getVisibleRecordIds(route: RouteId, state: AppActionState): string[] | undefined {
-  if (route !== "uploads" && route !== "proof-center" && route !== "exports") {
+  if (!routeHasVisibleWalletRecords(route)) {
     return undefined;
   }
   return state.uploads.map((upload) => upload.recordId || upload.id);
 }
 
-function publicSurfaceMetadata(state: AppActionState): Record<string, unknown> {
+function publicSurfaceMetadata(route: RouteId, state: AppActionState): Record<string, unknown> {
   return {
+    route,
+    routeLabel: getRouteLabel(route),
     uploadCount: state.uploads.length,
     recipientCount: state.recipients.length,
     pendingAccessRequestCount: pendingAccessRequestCount(state),
     proofCount: state.walletProofReceipts.length,
     exportBundleCount: state.exportBundleViews.length,
-    auditEventCount: state.walletAuditEvents.length
+    auditEventCount: state.walletAuditEvents.length,
+    ...routePublicMetadata(route, state)
   };
 }
 
-function privateSurfaceMetadata(state: AppActionState): Record<string, unknown> {
+function privateSurfaceMetadata(route: RouteId, state: AppActionState): Record<string, unknown> {
   return {
-    ...publicSurfaceMetadata(state),
+    ...publicSurfaceMetadata(route, state),
     profile: {
       preferredName: state.profile.preferredName,
       currentLocation: state.profile.currentLocation,
@@ -120,6 +139,54 @@ function privateSurfaceMetadata(state: AppActionState): Record<string, unknown> 
       allowedScopes: recipient.allowedScopes
     }))
   };
+}
+
+function routePublicMetadata(route: RouteId, state: AppActionState): Record<string, unknown> {
+  switch (route) {
+    case "register":
+      return {
+        selectedServiceNeedCount: state.profile.serviceNeeds.length,
+        preferredCheckInChannelCount: state.profile.preferredCheckInChannels.length
+      };
+    case "check-in":
+      return {
+        intervalDays: state.policy.intervalDays,
+        reminderChannelCount: state.policy.reminderChannels.length,
+        escalationEnabled: state.policy.escalationEnabled
+      };
+    case "contacts":
+    case "sharing-rules":
+      return {
+        verifiedRecipientCount: state.recipients.filter((recipient) => recipient.verified).length
+      };
+    case "uploads":
+      return {
+        storedUploadCount: state.uploads.filter((upload) => upload.status === "stored").length,
+        sharedUploadCount: state.uploads.filter((upload) => upload.shared).length
+      };
+    case "recipient-access":
+      return {
+        approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length
+      };
+    case "proof-center":
+      return {
+        verifiedProofCount: state.walletProofReceipts.filter((proof) => proof.verificationStatus === "verified").length
+      };
+    case "exports":
+      return {
+        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
+      };
+    default:
+      return {};
+  }
+}
+
+function isServiceRoute(route: RouteId): boolean {
+  return route === "social-services" || route === "shelter" || route === "benefits-protection";
+}
+
+function routeHasVisibleWalletRecords(route: RouteId): boolean {
+  return route === "uploads" || route === "proof-center" || route === "exports";
 }
 
 function pendingAccessRequestCount(state: AppActionState): number {
