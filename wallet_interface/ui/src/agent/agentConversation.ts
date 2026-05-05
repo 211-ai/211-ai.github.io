@@ -1,7 +1,17 @@
 import { listToolsForSurface } from "./surfaceRegistry";
+import {
+  buildPromptSafeSurfaceContext,
+  compactPromptConversationHistory,
+  guardAgentToolDefinitions,
+  guardEvidenceBundles,
+  guardPromptText,
+  truncatePromptText,
+  type CompactedConversationMessage,
+  type PromptGuardAllowances,
+  type SafeSurfaceContext
+} from "./promptGuards";
 import type {
   AgentConfirmationRequest,
-  AgentMessage,
   AgentPermissionLevel,
   AgentSession,
   AgentSchemaProperty,
@@ -10,44 +20,18 @@ import type {
   EvidenceItem,
   SurfaceContext
 } from "./types";
-import { hasPermissionLevel, isRecord } from "./types";
+import { isRecord } from "./types";
 
 export interface AgentConversationHistoryOptions {
   maxMessages?: number;
   maxCharacters?: number;
 }
 
-export interface AgentConversationPromptOptions extends AgentConversationHistoryOptions {
+export interface AgentConversationPromptOptions extends AgentConversationHistoryOptions, PromptGuardAllowances {
   includePrivateContext?: boolean;
   maxEvidenceBundles?: number;
   maxEvidenceItemsPerBundle?: number;
   maxTools?: number;
-}
-
-export interface SafeSurfaceContext {
-  route: SurfaceContext["route"];
-  routeLabel: string;
-  capturedAt: string;
-  permissionLevel: AgentPermissionLevel;
-  walletUnlocked: boolean;
-  privateContextAllowed: boolean;
-  summary?: string;
-  selectedServiceDocId?: string;
-  selectedRecordId?: string;
-  selectedRecipientId?: string;
-  selectedAccessRequestId?: string;
-  selectedProofId?: string;
-  visibleRecordIds?: string[];
-  visibleServiceDocIds?: string[];
-  metadata?: Record<string, string | number | boolean | string[]>;
-  redactions: string[];
-}
-
-export interface CompactedConversationMessage {
-  role: AgentMessage["role"];
-  content: string;
-  createdAt: string;
-  status: AgentMessage["status"];
 }
 
 export interface AgentToolPromptSummary {
@@ -97,47 +81,44 @@ export interface AgentConversationPromptInput {
   options?: AgentConversationPromptOptions;
 }
 
-const DEFAULT_MAX_HISTORY_MESSAGES = 10;
-const DEFAULT_MAX_HISTORY_CHARACTERS = 6000;
 const DEFAULT_MAX_EVIDENCE_BUNDLES = 3;
 const DEFAULT_MAX_EVIDENCE_ITEMS_PER_BUNDLE = 5;
 const DEFAULT_MAX_TOOLS = 20;
 const MAX_TEXT_FIELD_LENGTH = 1200;
 const MAX_METADATA_STRING_LENGTH = 180;
-const MAX_ID_LIST_ITEMS = 12;
-
-const privateMetadataKeyPattern =
-  /(address|birth|document|email|grant|health|legal|location|medical|name|note|phone|photo|private|recipient|shelter|ssn)/i;
-
-const safeMetadataKeyPattern = /(count|enabled|status|selected|visible|unlocked|allowed|route|active|pending|total)$/i;
 
 export function buildAgentConversationPrompt(input: AgentConversationPromptInput): AgentConversationPrompt {
   const options = input.options ?? {};
-  const includePrivateContext = Boolean(
-    options.includePrivateContext &&
-      input.surfaceContext.privateContextAllowed &&
-      hasPermissionLevel(input.surfaceContext.permissionLevel, "wallet_private")
-  );
-  const safeContext = buildSafeSurfaceContext(input.surfaceContext, { includePrivateContext });
-  const history = compactAgentConversationHistory(input.session.messages, options);
+  const includePrivateContext = Boolean(options.includePrivateContext);
+  const promptGuardOptions = {
+    ...options,
+    includePrivateWalletContext: includePrivateContext,
+    maxTextLength: MAX_TEXT_FIELD_LENGTH,
+    maxMetadataStringLength: MAX_METADATA_STRING_LENGTH,
+    maxEvidenceBundles: options.maxEvidenceBundles ?? DEFAULT_MAX_EVIDENCE_BUNDLES,
+    maxEvidenceItemsPerBundle: options.maxEvidenceItemsPerBundle ?? DEFAULT_MAX_EVIDENCE_ITEMS_PER_BUNDLE,
+    maxTools: options.maxTools ?? DEFAULT_MAX_TOOLS
+  };
+  const safeContext = buildSafeSurfaceContext(input.surfaceContext, promptGuardOptions);
+  const effectivePromptGuardOptions = {
+    ...promptGuardOptions,
+    includePrivateWalletContext: safeContext.privateContextAllowed
+  };
+  const history = compactAgentConversationHistory(input.session.messages, effectivePromptGuardOptions);
   const tools = buildRegisteredToolPromptSummaries(
     input.tools ?? listToolsForSurface(input.surfaceContext.route, input.surfaceContext.permissionLevel),
     input.surfaceContext,
-    options
+    effectivePromptGuardOptions
   );
-  const evidenceBundles = limitEvidenceBundles(
-    input.evidenceBundles ?? input.session.evidenceBundles,
-    options.maxEvidenceBundles ?? DEFAULT_MAX_EVIDENCE_BUNDLES,
-    options.maxEvidenceItemsPerBundle ?? DEFAULT_MAX_EVIDENCE_ITEMS_PER_BUNDLE
-  );
+  const evidenceBundles = guardEvidenceBundles(input.evidenceBundles ?? input.session.evidenceBundles, effectivePromptGuardOptions);
   const pendingConfirmations = (
     input.pendingConfirmations ?? input.session.confirmations.filter((confirmation) => confirmation.status === "pending")
   ).filter((confirmation) => confirmation.status === "pending");
 
   const sections: AgentConversationPromptSections = {
-    roleAndPolicy: buildRoleAndPolicySection(includePrivateContext),
+    roleAndPolicy: buildRoleAndPolicySection(safeContext.privateContextAllowed),
     routeContext: buildRouteContextSection(safeContext),
-    userGoal: buildUserGoalSection(input.userGoal),
+    userGoal: buildUserGoalSection(input.userGoal, effectivePromptGuardOptions),
     history: buildHistorySection(history),
     tools: buildToolsSection(tools),
     evidence: buildEvidenceSection(evidenceBundles),
@@ -169,91 +150,50 @@ export function buildAgentConversationPrompt(input: AgentConversationPromptInput
 }
 
 export function compactAgentConversationHistory(
-  messages: AgentMessage[],
-  options: AgentConversationHistoryOptions = {}
+  messages: AgentSession["messages"],
+  options: AgentConversationHistoryOptions & PromptGuardAllowances & { includePrivateContext?: boolean } = {}
 ): CompactedConversationMessage[] {
-  const maxMessages = options.maxMessages ?? DEFAULT_MAX_HISTORY_MESSAGES;
-  const maxCharacters = options.maxCharacters ?? DEFAULT_MAX_HISTORY_CHARACTERS;
-  const completeMessages = messages.filter((message) => message.status !== "canceled");
-  const selected = completeMessages.slice(-maxMessages);
-  const compacted: CompactedConversationMessage[] = [];
-  let remainingCharacters = maxCharacters;
-
-  for (let index = selected.length - 1; index >= 0; index -= 1) {
-    const message = selected[index];
-    if (remainingCharacters <= 0) break;
-    const content = truncateText(message.content, Math.min(MAX_TEXT_FIELD_LENGTH, remainingCharacters));
-    remainingCharacters -= content.length;
-    compacted.unshift({
-      role: message.role,
-      content,
-      createdAt: message.createdAt,
-      status: message.status
-    });
-  }
-
-  return compacted;
+  return compactPromptConversationHistory(messages, {
+    ...options,
+    includePrivateWalletContext: options.includePrivateWalletContext ?? options.includePrivateContext,
+    maxTextLength: MAX_TEXT_FIELD_LENGTH
+  });
 }
 
 export function buildSafeSurfaceContext(
   context: SurfaceContext,
   options: { includePrivateContext?: boolean } = {}
 ): SafeSurfaceContext {
-  const includePrivateContext = Boolean(
-    options.includePrivateContext &&
-      context.privateContextAllowed &&
-      hasPermissionLevel(context.permissionLevel, "wallet_private")
-  );
-  const redactions: string[] = [];
-  const metadata = sanitizeMetadata(context.metadata, includePrivateContext, redactions);
-
-  if (!includePrivateContext && context.privateContextAllowed) {
-    redactions.push("private wallet context available but omitted from this prompt");
-  }
-
-  return {
-    route: context.route,
-    routeLabel: context.routeLabel,
-    capturedAt: context.capturedAt,
-    permissionLevel: context.permissionLevel,
-    walletUnlocked: context.walletUnlocked,
-    privateContextAllowed: includePrivateContext,
-    summary: context.summary ? truncateText(context.summary, MAX_METADATA_STRING_LENGTH) : undefined,
-    selectedServiceDocId: context.selectedServiceDocId,
-    selectedRecordId: context.selectedRecordId,
-    selectedRecipientId: context.selectedRecipientId,
-    selectedAccessRequestId: context.selectedAccessRequestId,
-    selectedProofId: context.selectedProofId,
-    visibleRecordIds: limitIdList(context.visibleRecordIds),
-    visibleServiceDocIds: limitIdList(context.visibleServiceDocIds),
-    metadata: Object.keys(metadata).length ? metadata : undefined,
-    redactions
-  };
+  return buildPromptSafeSurfaceContext(context, {
+    ...options,
+    includePrivateWalletContext: options.includePrivateContext,
+    maxTextLength: MAX_TEXT_FIELD_LENGTH,
+    maxMetadataStringLength: MAX_METADATA_STRING_LENGTH
+  });
 }
 
 export function buildRegisteredToolPromptSummaries(
   tools: AgentToolDefinition[],
   context: SurfaceContext,
-  options: Pick<AgentConversationPromptOptions, "maxTools"> = {}
+  options: Pick<AgentConversationPromptOptions, "includePrivateContext" | "includePrivateWalletContext" | "maxTools"> = {}
 ): AgentToolPromptSummary[] {
-  const maxTools = options.maxTools ?? DEFAULT_MAX_TOOLS;
-  return tools
-    .filter((tool) => tool.surfaces.includes(context.route))
-    .filter((tool) => hasPermissionLevel(context.permissionLevel, tool.permissionLevel))
-    .slice(0, maxTools)
-    .map((tool) => ({
-      name: tool.name,
-      title: tool.title,
-      description: tool.description,
-      permissionLevel: tool.permissionLevel,
-      surfaces: tool.surfaces,
-      requiresConfirmation: tool.requiresConfirmation,
-      requiresWalletUnlock: tool.requiresWalletUnlock,
-      requiresUserPresence: tool.requiresUserPresence,
-      requiresPrivateContextOptIn: tool.requiresPrivateContextOptIn,
-      auditEventType: tool.auditEventType,
-      inputSchema: compactSchema(tool.inputSchema)
-    }));
+  return guardAgentToolDefinitions(tools, context, {
+    ...options,
+    includePrivateWalletContext: options.includePrivateWalletContext ?? options.includePrivateContext,
+    maxTools: options.maxTools ?? DEFAULT_MAX_TOOLS
+  }).map((tool) => ({
+    name: tool.name,
+    title: tool.title,
+    description: tool.description,
+    permissionLevel: tool.permissionLevel,
+    surfaces: tool.surfaces,
+    requiresConfirmation: tool.requiresConfirmation,
+    requiresWalletUnlock: tool.requiresWalletUnlock,
+    requiresUserPresence: tool.requiresUserPresence,
+    requiresPrivateContextOptIn: tool.requiresPrivateContextOptIn,
+    auditEventType: tool.auditEventType,
+    inputSchema: compactSchema(tool.inputSchema)
+  }));
 }
 
 function buildRoleAndPolicySection(includePrivateContext: boolean): string {
@@ -295,8 +235,14 @@ function buildRouteContextSection(context: SafeSurfaceContext): string {
   ].join("\n");
 }
 
-function buildUserGoalSection(userGoal: string): string {
-  return ["## User goal", truncateText(userGoal.trim() || "No explicit user goal provided.", MAX_TEXT_FIELD_LENGTH)].join("\n");
+function buildUserGoalSection(userGoal: string, options: AgentConversationPromptOptions): string {
+  return [
+    "## User goal",
+    guardPromptText(userGoal.trim() || "No explicit user goal provided.", "userGoal", {
+      ...options,
+      maxTextLength: MAX_TEXT_FIELD_LENGTH
+    })
+  ].join("\n");
 }
 
 function buildHistorySection(history: CompactedConversationMessage[]): string {
@@ -310,7 +256,7 @@ function buildHistorySection(history: CompactedConversationMessage[]): string {
       [
         `### ${index + 1}. ${message.role} at ${message.createdAt}`,
         `Status: ${message.status}`,
-        truncateText(message.content, MAX_TEXT_FIELD_LENGTH)
+        truncatePromptText(message.content, MAX_TEXT_FIELD_LENGTH)
       ].join("\n")
     )
   ].join("\n");
@@ -409,72 +355,13 @@ function buildOutputFormatSection(): string {
   ].join("\n");
 }
 
-function limitEvidenceBundles(
-  bundles: EvidenceBundle[],
-  maxBundles: number,
-  maxItemsPerBundle: number
-): EvidenceBundle[] {
-  return bundles.slice(-maxBundles).map((bundle) => ({
-    ...bundle,
-    items: bundle.items.slice(0, maxItemsPerBundle).map((item) => ({
-      ...item,
-      snippet: truncateText(item.snippet, MAX_TEXT_FIELD_LENGTH)
-    }))
-  }));
-}
-
 function formatEvidenceItem(item: EvidenceItem): EvidenceItem {
   return {
     ...item,
-    title: truncateText(item.title, MAX_METADATA_STRING_LENGTH),
-    source: truncateText(item.source, MAX_METADATA_STRING_LENGTH),
-    snippet: truncateText(item.snippet, MAX_TEXT_FIELD_LENGTH)
+    title: truncatePromptText(item.title, MAX_METADATA_STRING_LENGTH),
+    source: truncatePromptText(item.source, MAX_METADATA_STRING_LENGTH),
+    snippet: truncatePromptText(item.snippet, MAX_TEXT_FIELD_LENGTH)
   };
-}
-
-function sanitizeMetadata(
-  metadata: SurfaceContext["metadata"],
-  includePrivateContext: boolean,
-  redactions: string[]
-): Record<string, string | number | boolean | string[]> {
-  if (!metadata) return {};
-
-  return Object.entries(metadata).reduce<Record<string, string | number | boolean | string[]>>((safe, [key, value]) => {
-    if (!includePrivateContext && privateMetadataKeyPattern.test(key) && !safeMetadataKeyPattern.test(key)) {
-      redactions.push(`metadata.${key}`);
-      return safe;
-    }
-
-    const sanitized = sanitizeMetadataValue(value);
-    if (sanitized === undefined) {
-      redactions.push(`metadata.${key}`);
-      return safe;
-    }
-
-    safe[key] = sanitized;
-    return safe;
-  }, {});
-}
-
-function sanitizeMetadataValue(value: unknown): string | number | boolean | string[] | undefined {
-  if (typeof value === "string") {
-    return truncateText(value, MAX_METADATA_STRING_LENGTH);
-  }
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return value;
-  }
-  if (typeof value === "boolean") {
-    return value;
-  }
-  if (Array.isArray(value) && value.every((item): item is string => typeof item === "string")) {
-    return limitIdList(value);
-  }
-  return undefined;
-}
-
-function limitIdList(values: string[] | undefined): string[] | undefined {
-  if (!values?.length) return undefined;
-  return values.slice(0, MAX_ID_LIST_ITEMS).map((value) => truncateText(value, MAX_METADATA_STRING_LENGTH));
 }
 
 function compactSchema(schema: AgentSchemaProperty): AgentSchemaProperty {
@@ -494,12 +381,6 @@ function compactSchema(schema: AgentSchemaProperty): AgentSchemaProperty {
   }
 
   return compacted;
-}
-
-function truncateText(value: string, maxLength: number): string {
-  const normalized = value.replace(/\s+/g, " ").trim();
-  if (normalized.length <= maxLength) return normalized;
-  return `${normalized.slice(0, Math.max(0, maxLength - 13)).trimEnd()} [truncated]`;
 }
 
 function jsonBlock(value: unknown): string {
