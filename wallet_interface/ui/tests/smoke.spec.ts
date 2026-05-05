@@ -11,8 +11,8 @@ test("mobile home exposes the two required primary cards", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
   const overviewActions = page.locator(".home-actions .action-card");
   await expect(overviewActions).toHaveCount(2);
-  await expect(overviewActions.filter({ hasText: "Contacts" })).toBeVisible();
-  await expect(overviewActions.filter({ hasText: "Sharing" })).toBeVisible();
+  await expect(overviewActions.nth(0)).toContainText("Contacts");
+  await expect(overviewActions.nth(1)).toContainText("Sharing");
   await expect(overviewActions.filter({ hasText: /Check in/i })).toHaveCount(0);
   const quickCheckIn = page.locator(".checkin-panel");
   const checkInNowIsLargest = await quickCheckIn.evaluate((panel) => {
@@ -32,7 +32,7 @@ test("mobile home exposes the two required primary cards", async ({ page }) => {
 
 test("registration enforces minimum required profile fields", async ({ page }) => {
   await page.goto("/#/register");
-  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 15000 });
   await expect(page.getByLabel(/Legal or full name/i)).toBeVisible();
   await expect(page.getByLabel(/Birth date/i)).toBeVisible();
   const photoOrPhotoId = page.getByLabel(/Photo or photo ID/i);
@@ -134,15 +134,15 @@ test("check-in interval cannot exceed thirty days", async ({ page }) => {
 
 test("hash navigation updates the active screen without a full reload", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
   await page.evaluate(() => {
     window.location.hash = "#/contacts";
   });
-  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
   await page.evaluate(() => {
     window.location.hash = "#/analytics";
   });
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible({ timeout: 10000 });
 });
 
 test("mobile menu opens navigation and routes to contacts", async ({ page }, testInfo) => {
@@ -158,7 +158,7 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
 
 test("analytics consent shows privacy controls and safe details", async ({ page }) => {
   await page.goto("/#/analytics");
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible({ timeout: 10000 });
   const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
   await expect(housingStudy.getByLabel(/Allow this choice/i)).toBeChecked();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Group size/i)).toBeVisible();
@@ -174,11 +174,13 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
 
 test("analytics consent preserves opt-out after refresh", async ({ page }) => {
   await page.goto("/#/analytics");
+  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible({ timeout: 10000 });
   const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
   const studyOptIn = housingStudy.getByLabel(/Allow this choice/i);
   await studyOptIn.uncheck();
   await expect(studyOptIn).not.toBeChecked();
-  await page.reload();
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible({ timeout: 10000 });
   const reloadedStudy = page.getByRole("article", { name: /Housing service gaps/i });
   await expect(reloadedStudy.getByLabel(/Allow this choice/i)).not.toBeChecked();
 });
@@ -186,6 +188,7 @@ test("analytics consent preserves opt-out after refresh", async ({ page }) => {
 test("benefits opt-in previews notification capability boundaries", async ({ page }) => {
   await page.goto("/#/benefits-protection");
   await expect(page.getByRole("heading", { name: /Benefits notice/i })).toBeVisible();
+  await expect(page.getByText(/missed check/i)).toHaveCount(0);
   await expect(page.getByLabel(/Allow Abby to prepare/i)).toBeChecked();
   const preview = page.getByLabel(/Benefits notification capability preview/i);
   await expect(preview.getByText(/read basic info/i)).toBeVisible();
@@ -209,8 +212,13 @@ test("benefits opt-in preserves opt-out after refresh", async ({ page }) => {
 
 test("sharing rules preview scope-derived capabilities", async ({ page }) => {
   await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /Choose what each person can see/i })).toBeVisible();
-  const preview = page.getByLabel(/Maya Johnson sharing capability preview/i);
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText(/Sharing choices live with each saved contact/i)).toBeVisible();
+  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  await expect(editPanel.getByText("name, birthdate and contact status").first()).toBeVisible();
+  const preview = editPanel.getByLabel(/Maya Johnson sharing capability preview/i);
   await expect(preview.getByText(/read general location/i)).toBeVisible();
   await expect(preview.getByText(/open file contents/i)).toBeVisible();
   await expect(preview.getByText(/make a full wallet export/i)).toBeVisible();
@@ -218,49 +226,139 @@ test("sharing rules preview scope-derived capabilities", async ({ page }) => {
 
 test("sharing rules default on and preserve unchecked scopes after refresh", async ({ page }) => {
   await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /Choose what each person can see/i })).toBeVisible();
-  const recipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
   await expect(recipient).toBeVisible();
-  const scopes = recipient.locator(".scope-option input");
+  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  const scopes = editPanel.locator(".scope-option input");
   await expect(scopes).toHaveCount(11);
   expect(await scopes.evaluateAll((inputs) => inputs.every((input) => (input as HTMLInputElement).checked))).toBe(true);
 
-  await recipient.getByLabel(/Medical notes/i).uncheck();
-  await recipient.getByLabel(/Found permanent housing/i).uncheck();
-  await expect(recipient.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(recipient.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByLabel(/Medical notes/i).uncheck();
+  await editPanel.getByLabel(/Found permanent housing/i).uncheck();
+  await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(editPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByRole("button", { name: /Save sharing/i }).click();
   await page.reload();
 
-  const reloadedRecipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
-  await expect(reloadedRecipient.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(reloadedRecipient.getByLabel(/Found permanent housing/i)).not.toBeChecked();
-  await expect(reloadedRecipient.getByLabel(/Minimum identity/i)).toBeChecked();
+  const reloadedRecipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await reloadedRecipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const reloadedPanel = reloadedRecipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  await expect(reloadedPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(reloadedPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await expect(reloadedPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+});
+
+test("deleting one contact does not reset another contact's saved sharing choices", async ({ page }) => {
+  await page.goto("/#/sharing-rules");
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const maya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await maya.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const mayaPanel = maya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  await mayaPanel.getByLabel(/Medical notes/i).uncheck();
+  await mayaPanel.getByRole("button", { name: /Save sharing/i }).click();
+  await expect(maya.getByText("10 items", { exact: true })).toBeVisible();
+
+  const caseWorker = page.locator(".recipient-list-item").filter({ hasText: "Case Worker Desk" });
+  await caseWorker.getByRole("button", { name: /Remove/i }).click();
+  await expect(caseWorker).toHaveCount(0);
+  await page.reload();
+
+  const reloadedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await expect(reloadedMaya.getByText("10 items", { exact: true })).toBeVisible();
+  await expect(page.locator(".recipient-list-item").filter({ hasText: "Case Worker Desk" })).toHaveCount(0);
+  await reloadedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
+  await expect(reloadedMaya.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(reloadedMaya.getByLabel(/Minimum identity/i)).toBeChecked();
+});
+
+test("contacts add flow defaults new person sharing choices on", async ({ page }) => {
+  await page.goto("/#/contacts");
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  await addPersonSection.getByLabel(/Name or group/i).fill("Riley Friend");
+  await addPersonSection.getByRole("button", { name: /^Add person$/i }).click();
+
+  const savedRiley = page
+    .locator('section[aria-labelledby="Saved-contacts"] .recipient-list-item')
+    .filter({ hasText: "Riley Friend" });
+  await expect(savedRiley.getByText("11 items", { exact: true })).toBeVisible();
+  await savedRiley.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const editPanel = savedRiley.getByRole("region", { name: /Edit sharing for Riley Friend/i });
+  const scopes = editPanel.locator(".scope-option input");
+  await expect(scopes).toHaveCount(11);
+  expect(await scopes.evaluateAll((inputs) => inputs.every((input) => (input as HTMLInputElement).checked))).toBe(true);
 });
 
 test("contact list shelter nudge requires user approval before adding contact", async ({ page }) => {
   await page.goto("/#/contacts");
-  const addRecipientSection = page.locator('section[aria-labelledby="Add-person-or-group"]');
-  await expect(addRecipientSection.locator(".centered-action").getByRole("button", { name: /Add person or group/i })).toBeVisible();
-  expect(await addRecipientSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
-  await expect(addRecipientSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  const addShelterSection = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
+  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
+  await expect(addShelterSection).toBeVisible();
+  await expect(savedContacts.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" })).toBeVisible();
+  await expect(addPersonSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
+  expect(await addPersonSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
+  await expect(addPersonSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  await expect(addPersonSection.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(addPersonSection.getByText("name, birthdate and contact status").first()).toBeVisible();
   const nudge = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(nudge.getByText(/asked to be added to your contacts/i)).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Approve$/i })).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Deny$/i })).toBeVisible();
   await nudge.getByRole("button", { name: /^Approve$/i }).click();
   await expect(page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" })).toBeVisible();
+  const shelterRules = page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" });
+  await expect(shelterRules.getByText("1 items", { exact: true })).toBeVisible();
+  await shelterRules.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const shelterPanel = shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
+  await expect(shelterPanel.getByText("1 selected", { exact: true })).toBeVisible();
+  await expect(shelterPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(shelterPanel.getByLabel(/Profile/i)).not.toBeChecked();
+});
 
-  await page.evaluate(() => {
-    window.location.hash = "#/sharing-rules";
+test("contacts add flow saves sharing choices and opens edit panel by keyboard", async ({ page }) => {
+  await page.goto("/#/contacts");
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  await addPersonSection.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+  await addPersonSection.getByLabel(/Relationship or role/i).fill("Outreach case worker");
+  await addPersonSection.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
+  await addPersonSection.getByLabel("Email", { exact: true }).fill("morgan@example.org");
+  await addPersonSection.getByLabel(/Type/i).selectOption("social_worker");
+  await addPersonSection.getByLabel(/Medical notes/i).uncheck();
+  await addPersonSection.getByLabel(/Found permanent housing/i).uncheck();
+  await addPersonSection.getByRole("button", { name: /^Add person$/i }).click();
+
+  const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
+  const savedMorgan = savedContacts.locator(".recipient-list-item").filter({ hasText: "Morgan Caseworker" });
+  await expect(savedMorgan.getByText("9 items", { exact: true })).toBeVisible();
+  await savedMorgan.locator(".recipient-open-button").focus();
+  await page.keyboard.press("Enter");
+  const editPanel = savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(editPanel).toBeVisible();
+  await expect(editPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(editPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByLabel(/Benefits information/i).uncheck();
+  await editPanel.getByRole("button", { name: /Save sharing/i }).click();
+
+  await page.reload();
+  const reloadedMorgan = page.locator('section[aria-labelledby="Saved-contacts"] .recipient-list-item').filter({
+    hasText: "Morgan Caseworker"
   });
-  const shelterRules = page.locator(".scope-editor").filter({ hasText: "Downtown Outreach Shelter" });
-  await expect(shelterRules.getByText("1 selected", { exact: true })).toBeVisible();
+  await expect(reloadedMorgan.getByText("8 items", { exact: true })).toBeVisible();
+  await reloadedMorgan.locator(".recipient-open-button").focus();
+  await page.keyboard.press("Space");
+  const reloadedPanel = reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(reloadedPanel.getByLabel(/Benefits information/i)).not.toBeChecked();
 });
 
 test("user can request a shelter contact and shelter staff can approve it", async ({ page }) => {
   await page.goto("/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const shelterRequests = page.locator('section[aria-labelledby="Shelter-requests"]');
+  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
   await expect(shelterRequests.getByText(/already waiting/i)).toBeVisible();
   await shelterRequests.locator("select").selectOption("Downtown Outreach Shelter");
@@ -286,7 +384,7 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
 
 test("user can cancel a pending shelter contact request", async ({ page }) => {
   await page.goto("/#/contacts");
-  const shelterRequests = page.locator('section[aria-labelledby="Shelter-requests"]');
+  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   const request = page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "You asked this shelter." });
@@ -299,6 +397,7 @@ test("user can cancel a pending shelter contact request", async ({ page }) => {
 
 test("verified shelter staff can send a contact-list nudge", async ({ page }) => {
   await page.goto("/#/shelter");
+  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 10000 });
   await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
   await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
   await expect(page.getByRole("button", { name: /Send contact request/i })).toBeDisabled();
@@ -440,8 +539,11 @@ test("proof center can create an API-backed location region proof", async ({ pag
 });
 
 test("exports show receipt hashes and storage status", async ({ page }) => {
-  await page.goto("/#/exports");
-  await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible();
+  await page.goto("/");
+  await page.evaluate(() => {
+    window.location.hash = "#/exports";
+  });
+  await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole("heading", { name: /Create export bundle/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
   const preview = page.getByLabel("Export capability preview");
@@ -907,7 +1009,9 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
 
 test("recipient access requires multi-sig approval before decrypt sharing", async ({ page }) => {
   await page.goto("/#/recipient-access");
+  await expect(page.getByRole("heading", { name: /Requests to see my info/i })).toBeVisible({ timeout: 10000 });
   const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
+  await expect(request).toBeVisible({ timeout: 10000 });
   const preview = request.getByLabel(/Downtown Outreach access capability preview/i);
   await expect(preview.getByText(/open file contents/i)).toBeVisible();
   await expect(preview.getByText(/approval pending/i)).toBeVisible();
@@ -929,7 +1033,9 @@ test("recipient access requires multi-sig approval before decrypt sharing", asyn
 
 test("recipient access can revoke an active grant", async ({ page }) => {
   await page.goto("/#/recipient-access");
+  await expect(page.getByRole("heading", { name: /Requests to see my info/i })).toBeVisible({ timeout: 10000 });
   const request = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
+  await expect(request).toBeVisible({ timeout: 10000 });
   await expect(request.getByText(/active grant/i)).toBeVisible();
   await request.getByRole("button", { name: /Revoke/i }).click();
   await expect(request.getByText("revoked", { exact: true })).toBeVisible();

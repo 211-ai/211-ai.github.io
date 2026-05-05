@@ -1,8 +1,8 @@
 # Abby UI Multimodal Review
 
-Generated: 2026-05-04T19:41:25.660094+00:00
+Generated: 2026-05-04T22:29:48.681347+00:00
 Dry run: True
-Entries: 69
+Entries: 75
 
 ## desktop · Two-card home screen
 
@@ -210,9 +210,9 @@ Goals:
 
 ### Goals
 
-- Recipients should be scannable with verification and scope status.
-- Adding a recipient should not require horizontal scrolling.
-- Removal controls should not visually dominate the emergency setup task.
+- The add shelter or group area should be at the top of the screen.
+- The add person form should show sharing choices before saving.
+- Saved contacts should appear underneath the add controls and stay easy to scan.
 
 ### Feedback
 
@@ -226,9 +226,9 @@ State: default
 Screenshot: artifacts\ui-screenshots\latest\desktop\contacts.png
 
 Goals:
-- Recipients should be scannable with verification and scope status.
-- Adding a recipient should not require horizontal scrolling.
-- Removal controls should not visually dominate the emergency setup task.
+- The add shelter or group area should be at the top of the screen.
+- The add person form should show sharing choices before saving.
+- Saved contacts should appear underneath the add controls and stay easy to scan.
 
 ## desktop · Emergency contacts add-recipient form
 
@@ -240,7 +240,7 @@ Goals:
 
 - The add-recipient form should be easy to complete on mobile.
 - Contact method fields should fit and remain labeled.
-- Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies.
+- The new-person sharing checkboxes should be visible and readable before save.
 
 ### Feedback
 
@@ -256,19 +256,19 @@ Screenshot: artifacts\ui-screenshots\latest\desktop\contacts-add-recipient-draft
 Goals:
 - The add-recipient form should be easy to complete on mobile.
 - Contact method fields should fit and remain labeled.
-- Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies.
+- The new-person sharing checkboxes should be visible and readable before save.
 
-## desktop · Sharing choices
+## desktop · Emergency contacts add-recipient form with sharing off
 
-- Route: `/#/sharing-rules`
-- Screenshot: `artifacts\ui-screenshots\latest\desktop\sharing-rules.png`
-- State: `default`
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-add-person-sharing-some-off.png`
+- State: `draft recipient with medical and housing sharing off`
 
 ### Goals
 
-- All sharing choices should start checked when no saved choice exists.
-- It should be clear that the user can turn off any item before saving.
-- Scope labels should be short, plain, and useful to screen-reader users.
+- Unchecked sharing choices should be visible without feeling scary.
+- The form should still fit cleanly on mobile after several fields are filled.
+- The user should be able to review choices before adding the person.
 
 ### Feedback
 
@@ -276,27 +276,111 @@ DRY RUN: router call skipped.
 
 This target is ready for multimodal review.
 
-Screen: Sharing choices
+Screen: Emergency contacts add-recipient form with sharing off
 Viewport: desktop
-State: default
+State: draft recipient with medical and housing sharing off
+Screenshot: artifacts\ui-screenshots\latest\desktop\contacts-add-person-sharing-some-off.png
+
+Goals:
+- Unchecked sharing choices should be visible without feeling scary.
+- The form should still fit cleanly on mobile after several fields are filled.
+- The user should be able to review choices before adding the person.
+
+## desktop · Emergency contacts edit sharing panel
+
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing.png`
+- State: `saved contact sharing editor open`
+
+### Goals
+
+- A saved contact should open into an obvious sharing edit panel.
+- Checkboxes should have a clear group heading and readable labels.
+- Save and cancel actions should be reachable without horizontal scrolling.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency contacts edit sharing panel
+Viewport: desktop
+State: saved contact sharing editor open
+Screenshot: artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing.png
+
+Goals:
+- A saved contact should open into an obvious sharing edit panel.
+- Checkboxes should have a clear group heading and readable labels.
+- Save and cancel actions should be reachable without horizontal scrolling.
+
+## desktop · Emergency contacts edit sharing panel with choices off
+
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing-some-off.png`
+- State: `saved contact medical and housing sharing off`
+
+### Goals
+
+- Unchecked saved-contact sharing choices should be visually clear.
+- The selected-count badge should update near the panel heading.
+- The edit panel should remain compact enough for mobile review.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency contacts edit sharing panel with choices off
+Viewport: desktop
+State: saved contact medical and housing sharing off
+Screenshot: artifacts\ui-screenshots\latest\desktop\contacts-edit-sharing-some-off.png
+
+Goals:
+- Unchecked saved-contact sharing choices should be visually clear.
+- The selected-count badge should update near the panel heading.
+- The edit panel should remain compact enough for mobile review.
+
+## desktop · Sharing compatibility route
+
+- Route: `/#/sharing-rules`
+- Screenshot: `artifacts\ui-screenshots\latest\desktop\sharing-rules.png`
+- State: `saved contact sharing editor open`
+
+### Goals
+
+- The old Sharing route should lead to the combined contacts and sharing screen.
+- A saved contact should own its sharing-rule settings.
+- The capability preview should stay visible inside the contact edit panel.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Sharing compatibility route
+Viewport: desktop
+State: saved contact sharing editor open
 Screenshot: artifacts\ui-screenshots\latest\desktop\sharing-rules.png
 
 Goals:
-- All sharing choices should start checked when no saved choice exists.
-- It should be clear that the user can turn off any item before saving.
-- Scope labels should be short, plain, and useful to screen-reader users.
+- The old Sharing route should lead to the combined contacts and sharing screen.
+- A saved contact should own its sharing-rule settings.
+- The capability preview should stay visible inside the contact edit panel.
 
-## desktop · Sharing choices with items turned off
+## desktop · Sharing compatibility route with items turned off
 
 - Route: `/#/sharing-rules`
 - Screenshot: `artifacts\ui-screenshots\latest\desktop\sharing-rules-some-items-off.png`
-- State: `medical and housing items off`
+- State: `saved contact medical and housing sharing off`
 
 ### Goals
 
 - Unchecked items should be visually clear but not alarming.
 - The preview should update to plain item names after choices change.
-- The legal review note should remain visible after opt-out choices.
+- The compatibility route should avoid a second conflicting sharing editor.
 
 ### Feedback
 
@@ -304,15 +388,15 @@ DRY RUN: router call skipped.
 
 This target is ready for multimodal review.
 
-Screen: Sharing choices with items turned off
+Screen: Sharing compatibility route with items turned off
 Viewport: desktop
-State: medical and housing items off
+State: saved contact medical and housing sharing off
 Screenshot: artifacts\ui-screenshots\latest\desktop\sharing-rules-some-items-off.png
 
 Goals:
 - Unchecked items should be visually clear but not alarming.
 - The preview should update to plain item names after choices change.
-- The legal review note should remain visible after opt-out choices.
+- The compatibility route should avoid a second conflicting sharing editor.
 
 ## desktop · Emergency contacts after shelter nudge approval
 
@@ -323,7 +407,7 @@ Goals:
 ### Goals
 
 - Approving a shelter nudge should add the shelter without implying broad sharing.
-- The added shelter should be easy to find in the contact list.
+- The added shelter should be easy to find in the saved contacts list below the add controls.
 - The request history should remain understandable after approval.
 
 ### Feedback
@@ -339,7 +423,7 @@ Screenshot: artifacts\ui-screenshots\latest\desktop\contacts-shelter-nudge-appro
 
 Goals:
 - Approving a shelter nudge should add the shelter without implying broad sharing.
-- The added shelter should be easy to find in the contact list.
+- The added shelter should be easy to find in the saved contacts list below the add controls.
 - The request history should remain understandable after approval.
 
 ## desktop · Saved files and info
@@ -660,6 +744,7 @@ Goals:
 
 - The benefits checkbox should start checked unless the user saved it as off.
 - The user should be able to turn it off in plain language.
+- The page should not describe benefits notices as missed-check-in triggered.
 - Agency action should not be implied as guaranteed.
 - Legal/policy review limitations should be visible without overwhelming the user.
 
@@ -677,6 +762,7 @@ Screenshot: artifacts\ui-screenshots\latest\desktop\benefits-protection.png
 Goals:
 - The benefits checkbox should start checked unless the user saved it as off.
 - The user should be able to turn it off in plain language.
+- The page should not describe benefits notices as missed-check-in triggered.
 - Agency action should not be implied as guaranteed.
 - Legal/policy review limitations should be visible without overwhelming the user.
 
@@ -689,6 +775,7 @@ Goals:
 ### Goals
 
 - The checked consent state should be visually explicit.
+- Benefits notice copy should stay focused on benefits help, not missed check-ins.
 - Legal and policy limitations should remain visible after consent is on.
 - The save action should become available without implying guaranteed agency action.
 
@@ -705,6 +792,7 @@ Screenshot: artifacts\ui-screenshots\latest\desktop\benefits-protection-enabled.
 
 Goals:
 - The checked consent state should be visually explicit.
+- Benefits notice copy should stay focused on benefits help, not missed check-ins.
 - Legal and policy limitations should remain visible after consent is on.
 - The save action should become available without implying guaranteed agency action.
 
@@ -1196,9 +1284,9 @@ Goals:
 
 ### Goals
 
-- Recipients should be scannable with verification and scope status.
-- Adding a recipient should not require horizontal scrolling.
-- Removal controls should not visually dominate the emergency setup task.
+- The add shelter or group area should be at the top of the screen.
+- The add person form should show sharing choices before saving.
+- Saved contacts should appear underneath the add controls and stay easy to scan.
 
 ### Feedback
 
@@ -1212,9 +1300,9 @@ State: default
 Screenshot: artifacts\ui-screenshots\latest\mobile\contacts.png
 
 Goals:
-- Recipients should be scannable with verification and scope status.
-- Adding a recipient should not require horizontal scrolling.
-- Removal controls should not visually dominate the emergency setup task.
+- The add shelter or group area should be at the top of the screen.
+- The add person form should show sharing choices before saving.
+- Saved contacts should appear underneath the add controls and stay easy to scan.
 
 ## mobile · Emergency contacts add-recipient form
 
@@ -1226,7 +1314,7 @@ Goals:
 
 - The add-recipient form should be easy to complete on mobile.
 - Contact method fields should fit and remain labeled.
-- Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies.
+- The new-person sharing checkboxes should be visible and readable before save.
 
 ### Feedback
 
@@ -1242,19 +1330,19 @@ Screenshot: artifacts\ui-screenshots\latest\mobile\contacts-add-recipient-draft.
 Goals:
 - The add-recipient form should be easy to complete on mobile.
 - Contact method fields should fit and remain labeled.
-- Recipient type selection should clearly support emergency contacts, social workers, police precincts, shelter staff, government help, and benefits agencies.
+- The new-person sharing checkboxes should be visible and readable before save.
 
-## mobile · Sharing choices
+## mobile · Emergency contacts add-recipient form with sharing off
 
-- Route: `/#/sharing-rules`
-- Screenshot: `artifacts\ui-screenshots\latest\mobile\sharing-rules.png`
-- State: `default`
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-add-person-sharing-some-off.png`
+- State: `draft recipient with medical and housing sharing off`
 
 ### Goals
 
-- All sharing choices should start checked when no saved choice exists.
-- It should be clear that the user can turn off any item before saving.
-- Scope labels should be short, plain, and useful to screen-reader users.
+- Unchecked sharing choices should be visible without feeling scary.
+- The form should still fit cleanly on mobile after several fields are filled.
+- The user should be able to review choices before adding the person.
 
 ### Feedback
 
@@ -1262,27 +1350,111 @@ DRY RUN: router call skipped.
 
 This target is ready for multimodal review.
 
-Screen: Sharing choices
+Screen: Emergency contacts add-recipient form with sharing off
 Viewport: mobile
-State: default
+State: draft recipient with medical and housing sharing off
+Screenshot: artifacts\ui-screenshots\latest\mobile\contacts-add-person-sharing-some-off.png
+
+Goals:
+- Unchecked sharing choices should be visible without feeling scary.
+- The form should still fit cleanly on mobile after several fields are filled.
+- The user should be able to review choices before adding the person.
+
+## mobile · Emergency contacts edit sharing panel
+
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing.png`
+- State: `saved contact sharing editor open`
+
+### Goals
+
+- A saved contact should open into an obvious sharing edit panel.
+- Checkboxes should have a clear group heading and readable labels.
+- Save and cancel actions should be reachable without horizontal scrolling.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency contacts edit sharing panel
+Viewport: mobile
+State: saved contact sharing editor open
+Screenshot: artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing.png
+
+Goals:
+- A saved contact should open into an obvious sharing edit panel.
+- Checkboxes should have a clear group heading and readable labels.
+- Save and cancel actions should be reachable without horizontal scrolling.
+
+## mobile · Emergency contacts edit sharing panel with choices off
+
+- Route: `/#/contacts`
+- Screenshot: `artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing-some-off.png`
+- State: `saved contact medical and housing sharing off`
+
+### Goals
+
+- Unchecked saved-contact sharing choices should be visually clear.
+- The selected-count badge should update near the panel heading.
+- The edit panel should remain compact enough for mobile review.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Emergency contacts edit sharing panel with choices off
+Viewport: mobile
+State: saved contact medical and housing sharing off
+Screenshot: artifacts\ui-screenshots\latest\mobile\contacts-edit-sharing-some-off.png
+
+Goals:
+- Unchecked saved-contact sharing choices should be visually clear.
+- The selected-count badge should update near the panel heading.
+- The edit panel should remain compact enough for mobile review.
+
+## mobile · Sharing compatibility route
+
+- Route: `/#/sharing-rules`
+- Screenshot: `artifacts\ui-screenshots\latest\mobile\sharing-rules.png`
+- State: `saved contact sharing editor open`
+
+### Goals
+
+- The old Sharing route should lead to the combined contacts and sharing screen.
+- A saved contact should own its sharing-rule settings.
+- The capability preview should stay visible inside the contact edit panel.
+
+### Feedback
+
+DRY RUN: router call skipped.
+
+This target is ready for multimodal review.
+
+Screen: Sharing compatibility route
+Viewport: mobile
+State: saved contact sharing editor open
 Screenshot: artifacts\ui-screenshots\latest\mobile\sharing-rules.png
 
 Goals:
-- All sharing choices should start checked when no saved choice exists.
-- It should be clear that the user can turn off any item before saving.
-- Scope labels should be short, plain, and useful to screen-reader users.
+- The old Sharing route should lead to the combined contacts and sharing screen.
+- A saved contact should own its sharing-rule settings.
+- The capability preview should stay visible inside the contact edit panel.
 
-## mobile · Sharing choices with items turned off
+## mobile · Sharing compatibility route with items turned off
 
 - Route: `/#/sharing-rules`
 - Screenshot: `artifacts\ui-screenshots\latest\mobile\sharing-rules-some-items-off.png`
-- State: `medical and housing items off`
+- State: `saved contact medical and housing sharing off`
 
 ### Goals
 
 - Unchecked items should be visually clear but not alarming.
 - The preview should update to plain item names after choices change.
-- The legal review note should remain visible after opt-out choices.
+- The compatibility route should avoid a second conflicting sharing editor.
 
 ### Feedback
 
@@ -1290,15 +1462,15 @@ DRY RUN: router call skipped.
 
 This target is ready for multimodal review.
 
-Screen: Sharing choices with items turned off
+Screen: Sharing compatibility route with items turned off
 Viewport: mobile
-State: medical and housing items off
+State: saved contact medical and housing sharing off
 Screenshot: artifacts\ui-screenshots\latest\mobile\sharing-rules-some-items-off.png
 
 Goals:
 - Unchecked items should be visually clear but not alarming.
 - The preview should update to plain item names after choices change.
-- The legal review note should remain visible after opt-out choices.
+- The compatibility route should avoid a second conflicting sharing editor.
 
 ## mobile · Emergency contacts after shelter nudge approval
 
@@ -1309,7 +1481,7 @@ Goals:
 ### Goals
 
 - Approving a shelter nudge should add the shelter without implying broad sharing.
-- The added shelter should be easy to find in the contact list.
+- The added shelter should be easy to find in the saved contacts list below the add controls.
 - The request history should remain understandable after approval.
 
 ### Feedback
@@ -1325,7 +1497,7 @@ Screenshot: artifacts\ui-screenshots\latest\mobile\contacts-shelter-nudge-approv
 
 Goals:
 - Approving a shelter nudge should add the shelter without implying broad sharing.
-- The added shelter should be easy to find in the contact list.
+- The added shelter should be easy to find in the saved contacts list below the add controls.
 - The request history should remain understandable after approval.
 
 ## mobile · Saved files and info
@@ -1646,6 +1818,7 @@ Goals:
 
 - The benefits checkbox should start checked unless the user saved it as off.
 - The user should be able to turn it off in plain language.
+- The page should not describe benefits notices as missed-check-in triggered.
 - Agency action should not be implied as guaranteed.
 - Legal/policy review limitations should be visible without overwhelming the user.
 
@@ -1663,6 +1836,7 @@ Screenshot: artifacts\ui-screenshots\latest\mobile\benefits-protection.png
 Goals:
 - The benefits checkbox should start checked unless the user saved it as off.
 - The user should be able to turn it off in plain language.
+- The page should not describe benefits notices as missed-check-in triggered.
 - Agency action should not be implied as guaranteed.
 - Legal/policy review limitations should be visible without overwhelming the user.
 
@@ -1675,6 +1849,7 @@ Goals:
 ### Goals
 
 - The checked consent state should be visually explicit.
+- Benefits notice copy should stay focused on benefits help, not missed check-ins.
 - Legal and policy limitations should remain visible after consent is on.
 - The save action should become available without implying guaranteed agency action.
 
@@ -1691,6 +1866,7 @@ Screenshot: artifacts\ui-screenshots\latest\mobile\benefits-protection-enabled.p
 
 Goals:
 - The checked consent state should be visually explicit.
+- Benefits notice copy should stay focused on benefits help, not missed check-ins.
 - Legal and policy limitations should remain visible after consent is on.
 - The save action should become available without implying guaranteed agency action.
 

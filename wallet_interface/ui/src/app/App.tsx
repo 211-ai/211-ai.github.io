@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type Dispatch, type FormEvent, type SetStateAction } from "react";
 import {
   Archive,
   Bell,
@@ -194,7 +194,7 @@ const defaultManagedUserDraft = {
 };
 
 const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: string }> = [
-  { id: "identity_minimum", label: "Minimum identity", detail: "Name, birth date, and contact status" },
+  { id: "identity_minimum", label: "Minimum identity", detail: "name, birthdate and contact status" },
   { id: "profile", label: "Profile", detail: "Basic profile details and help needs" },
   { id: "photo", label: "Photo or ID file", detail: "The setup file you chose, like an image or PDF" },
   { id: "current_location", label: "Current location", detail: "Most recent safe place or shelter" },
@@ -206,6 +206,8 @@ const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: 
   { id: "benefits_information", label: "Benefits information", detail: "Benefits status and IDs" },
   { id: "custom", label: "Custom note", detail: "A user-written emergency note" }
 ];
+
+const disclosureScopeIds = new Set<DisclosureDataScope>(disclosureScopes.map((scope) => scope.id));
 
 const APP_PERSIST_KEY = "abby-ui-state-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
@@ -231,6 +233,29 @@ type PersistedAppState = {
   analyticsOptIn?: Record<string, boolean>;
   shelterChecklist?: typeof defaultShelterChecklist;
 };
+
+function createClientId(prefix: string): string {
+  const cryptoApi = globalThis.crypto;
+  const randomId =
+    cryptoApi && "randomUUID" in cryptoApi
+      ? cryptoApi.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  return `${prefix}-${randomId}`;
+}
+
+function isDisclosureScope(scope: unknown): scope is DisclosureDataScope {
+  return typeof scope === "string" && disclosureScopeIds.has(scope as DisclosureDataScope);
+}
+
+function normalizeDisclosureRecipients(recipients: DisclosureRecipientDraft[]): DisclosureRecipientDraft[] {
+  return recipients.map((recipient) => ({
+    ...recipient,
+    id: recipient.id || createClientId("rec"),
+    allowedScopes: Array.isArray(recipient.allowedScopes)
+      ? recipient.allowedScopes.filter(isDisclosureScope)
+      : [...defaultDisclosureScopes]
+  }));
+}
 
 function readPersistedAppState(): PersistedAppState {
   if (typeof window === "undefined") return {};
@@ -344,7 +369,9 @@ export function App() {
     ...persistedState.policy
   }));
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() =>
-    Array.isArray(persistedState.recipients) ? persistedState.recipients : initialRecipients
+    Array.isArray(persistedState.recipients)
+      ? normalizeDisclosureRecipients(persistedState.recipients)
+      : normalizeDisclosureRecipients(initialRecipients)
   );
   const [uploads, setUploads] = useState<UploadItem[]>(() =>
     Array.isArray(persistedState.uploads) ? persistedState.uploads : initialUploads
@@ -596,17 +623,15 @@ export function App() {
         {activeRoute === "check-in" ? (
           <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
         ) : null}
-        {activeRoute === "contacts" ? (
+        {activeRoute === "contacts" || activeRoute === "sharing-rules" ? (
           <ContactsScreen
             contactRequests={shelterContactRequests}
             profile={profile}
             recipients={recipients}
+            sharingCompatibility={activeRoute === "sharing-rules"}
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
-        ) : null}
-        {activeRoute === "sharing-rules" ? (
-          <SharingRulesScreen recipients={recipients} setRecipients={setRecipients} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
@@ -767,7 +792,7 @@ function HomeScreen({
           title="Contacts"
         />
         <ActionCard
-          detail="Choose what people can see"
+          detail="Review what people can see"
           icon={<ShieldCheck aria-hidden="true" size={28} />}
           onClick={() => navigate("sharing-rules")}
           title="Sharing"
@@ -1197,18 +1222,90 @@ function CheckInScreen({
   );
 }
 
+function toggleScopeSelection(scopes: DisclosureDataScope[], scope: DisclosureDataScope): DisclosureDataScope[] {
+  return scopes.includes(scope) ? scopes.filter((item) => item !== scope) : [...scopes, scope];
+}
+
+function SharingScopeChecklist({
+  label,
+  scopes,
+  onToggle,
+  help
+}: {
+  label: string;
+  scopes: DisclosureDataScope[];
+  onToggle: (scope: DisclosureDataScope) => void;
+  help?: string;
+}) {
+  return (
+    <fieldset className="scope-fieldset">
+      <legend>{label}</legend>
+      {help ? <p className="scope-help">{help}</p> : null}
+      <div className="scope-grid">
+        {disclosureScopes.map((scope) => (
+          <label className="scope-option" key={scope.id}>
+            <input checked={scopes.includes(scope.id)} onChange={() => onToggle(scope.id)} type="checkbox" />
+            <span>
+              <strong>{scope.label}</strong>
+              <small>{scope.detail}</small>
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function getDisclosureScopeLabels(scopes: DisclosureDataScope[]): string {
+  return scopes.map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope).join(", ");
+}
+
+function SharingCapabilityPreview({ recipientName, scopes }: { recipientName: string; scopes: DisclosureDataScope[] }) {
+  const abilities = abilitiesForDisclosureScopes(scopes);
+
+  return (
+    <div className="capability-preview" role="group" aria-label={`${recipientName} sharing capability preview`}>
+      <div className="scope-header">
+        <div>
+          <h4>What this allows</h4>
+          <p>{scopes.length} selected items</p>
+        </div>
+        <Badge tone={scopes.length > 0 ? "success" : "warning"}>
+          {scopes.length > 0 ? "limited share" : "no access"}
+        </Badge>
+      </div>
+      <div className="disclosure-package">
+        <div className="disclosure-row">
+          <strong>Can do</strong>
+          <span>{plainCapabilitySummary(abilities) || "No access selected"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Items</strong>
+          <span>{getDisclosureScopeLabels(scopes) || "No items selected"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Not allowed</strong>
+          <span>{plainNonGrantedCapabilities(abilities).join(", ")}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ContactsScreen({
   contactRequests,
   profile,
   recipients,
+  sharingCompatibility = false,
   setContactRequests,
   setRecipients
 }: {
   contactRequests: ShelterContactRequest[];
   profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
-  setContactRequests: (requests: ShelterContactRequest[]) => void;
-  setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
+  sharingCompatibility?: boolean;
+  setContactRequests: Dispatch<SetStateAction<ShelterContactRequest[]>>;
+  setRecipients: Dispatch<SetStateAction<DisclosureRecipientDraft[]>>;
 }) {
   const [draft, setDraft] = useState({
     displayName: "",
@@ -1217,6 +1314,9 @@ function ContactsScreen({
     phone: "",
     type: "emergency_contact" as DisclosureRecipientType
   });
+  const [draftScopes, setDraftScopes] = useState<DisclosureDataScope[]>([...defaultDisclosureScopes]);
+  const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
+  const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
@@ -1236,54 +1336,91 @@ function ContactsScreen({
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
+  const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId);
 
   function addShelterRecipient(shelterName: string) {
-    if (recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName)) {
-      return;
-    }
-
-    setRecipients([
-      ...recipients,
-      {
-        id: `rec-${Date.now()}`,
-        type: "shelter_staff",
-        displayName: shelterName,
-        relationship: "Shelter",
-        email: "",
-        phone: "",
-        agencyName: shelterName,
-        precinctName: "",
-        verified: true,
-        allowedScopes: ["identity_minimum"]
+    setRecipients((currentRecipients) => {
+      if (
+        currentRecipients.some(
+          (recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName
+        )
+      ) {
+        return currentRecipients;
       }
-    ]);
+
+      return [
+        ...currentRecipients,
+        {
+          id: createClientId("rec"),
+          type: "shelter_staff",
+          displayName: shelterName,
+          relationship: "Shelter",
+          email: "",
+          phone: "",
+          agencyName: shelterName,
+          precinctName: "",
+          verified: true,
+          allowedScopes: ["identity_minimum"]
+        }
+      ];
+    });
   }
 
   function addRecipient(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!draft.displayName) return;
-    setRecipients([
-      ...recipients,
+    setRecipients((currentRecipients) => [
+      ...currentRecipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createClientId("rec"),
         ...draft,
         agencyName: "",
         precinctName: "",
         verified: false,
-        allowedScopes: [...defaultDisclosureScopes]
+        allowedScopes: [...draftScopes]
       }
     ]);
     setDraft({ displayName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
+    setDraftScopes([...defaultDisclosureScopes]);
+  }
+
+  function openRecipientEditor(recipient: DisclosureRecipientDraft) {
+    setEditingRecipientId(recipient.id);
+    setEditingScopes([...recipient.allowedScopes]);
+    window.setTimeout(() => document.getElementById(`recipient-edit-${recipient.id}`)?.focus(), 0);
+  }
+
+  function closeRecipientEditor(recipientId: string) {
+    setEditingRecipientId(null);
+    setEditingScopes([]);
+    window.setTimeout(() => document.getElementById(`recipient-open-${recipientId}`)?.focus(), 0);
+  }
+
+  function saveRecipientScopes(recipientId: string) {
+    setRecipients((currentRecipients) =>
+      currentRecipients.map((recipient) =>
+        recipient.id === recipientId ? { ...recipient, allowedScopes: [...editingScopes] } : recipient
+      )
+    );
+    closeRecipientEditor(recipientId);
+  }
+
+  function removeRecipient(recipientId: string) {
+    setRecipients((currentRecipients) => currentRecipients.filter((item) => item.id !== recipientId));
+    if (editingRecipientId === recipientId) {
+      setEditingRecipientId(null);
+      setEditingScopes([]);
+    }
   }
 
   function requestShelterContact(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (hasPendingRequestedShelter) return;
 
-    setContactRequests([
-      ...contactRequests,
+    setContactRequests((currentRequests) => [
+      ...currentRequests,
       {
-        id: `shelter-request-${Date.now()}`,
+        id: createClientId("shelter-request"),
         direction: "user_to_shelter",
         status: "pending",
         shelterName: requestedShelter,
@@ -1302,16 +1439,16 @@ function ContactsScreen({
       addShelterRecipient(request.shelterName);
     }
 
-    setContactRequests(
-      contactRequests.map((item) =>
+    setContactRequests((currentRequests) =>
+      currentRequests.map((item) =>
         item.id === requestId ? { ...item, status, decidedAt: new Date().toISOString() } : item
       )
     );
   }
 
   function cancelShelterRequest(requestId: string) {
-    setContactRequests(
-      contactRequests.map((item) =>
+    setContactRequests((currentRequests) =>
+      currentRequests.map((item) =>
         item.id === requestId && item.direction === "user_to_shelter" && item.status === "pending"
           ? { ...item, status: "canceled", decidedAt: new Date().toISOString() }
           : item
@@ -1322,36 +1459,15 @@ function ContactsScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Emergency contacts</p>
+        <p className="eyebrow">{sharingCompatibility ? "Sharing choices" : "Emergency contacts"}</p>
         <h1>People who can help</h1>
       </div>
-      <div className="list-stack">
-        {recipients.map((recipient) => (
-          <article className="list-item recipient-list-item" key={recipient.id}>
-            <div>
-              <h3>{recipient.displayName}</h3>
-              <p>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</p>
-              <div className="badge-row">
-                <Badge tone={recipient.verified ? "success" : "warning"}>
-                  {recipient.verified ? "Verified" : "Needs a check"}
-                </Badge>
-                <Badge>{recipient.allowedScopes.length} items</Badge>
-              </div>
-            </div>
-            <Button
-              ariaLabel={`Remove ${recipient.displayName}`}
-              className="compact-list-action"
-              onClick={() => setRecipients(recipients.filter((item) => item.id !== recipient.id))}
-              variant="quiet"
-            >
-              Remove
-            </Button>
-          </article>
-        ))}
-      </div>
-      <Section title="Shelter requests">
+      <StatusBanner tone="info">
+        Sharing choices live with each saved contact. Open a contact below to change what they can see.
+      </StatusBanner>
+      <Section title="Add shelter or group">
         <StatusBanner tone="info">
-          A shelter is added only after the other side says yes. This does not share extra details.
+          A shelter is added only after the other side says yes. It starts with Minimum identity only.
         </StatusBanner>
         <form className="form-grid" onSubmit={requestShelterContact}>
           <Field label="Shelter">
@@ -1365,7 +1481,7 @@ function ContactsScreen({
           </Field>
           <div className="full-span centered-action">
             <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
-              <MessageSquare size={18} /> Ask to add shelter
+              <MessageSquare aria-hidden="true" size={18} /> Ask to add shelter
             </Button>
           </div>
           {hasPendingRequestedShelter ? (
@@ -1412,7 +1528,7 @@ function ContactsScreen({
           ))}
         </div>
       </Section>
-      <Section title="Add person or group">
+      <Section title="Add person">
         <form className="form-grid" onSubmit={addRecipient}>
           <Field label="Name or group" required>
             <input value={draft.displayName} onChange={(event) => setDraft({ ...draft, displayName: event.target.value })} />
@@ -1439,112 +1555,109 @@ function ContactsScreen({
               <option value="benefits_agency">Benefits agency</option>
             </select>
           </Field>
+          <SharingScopeChecklist
+            help="These start on. Turn off anything this person should not see."
+            label="Sharing choices for this person"
+            onToggle={(scope) => setDraftScopes(toggleScopeSelection(draftScopes, scope))}
+            scopes={draftScopes}
+          />
           <div className="full-span centered-action">
             <Button type="submit">
-              <UsersRound size={18} /> Add person or group
+              <UsersRound aria-hidden="true" size={18} /> Add person
             </Button>
           </div>
         </form>
       </Section>
-    </div>
-  );
-}
+      <Section title="Saved contacts">
+        {recipients.length === 0 ? (
+          <p className="empty-state">No saved contacts yet. Add a shelter, group, or person above.</p>
+        ) : (
+          <div className="list-stack">
+            {recipients.map((recipient) => {
+              const isEditing = editingRecipient?.id === recipient.id;
 
-function SharingRulesScreen({
-  recipients,
-  setRecipients
-}: {
-  recipients: DisclosureRecipientDraft[];
-  setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
-}) {
-  function toggleScope(recipientId: string, scope: DisclosureDataScope) {
-    setRecipients(
-      recipients.map((recipient) =>
-        recipient.id === recipientId
-          ? {
-              ...recipient,
-              allowedScopes: recipient.allowedScopes.includes(scope)
-                ? recipient.allowedScopes.filter((item) => item !== scope)
-                : [...recipient.allowedScopes, scope]
-            }
-          : recipient
-      )
-    );
-  }
-
-  return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Sharing choices</p>
-        <h1>Choose what each person can see</h1>
-      </div>
-      <StatusBanner tone="info">
-        These items start on. You can turn off any item before you save.
-      </StatusBanner>
-      <StatusBanner tone="warning">
-        A privacy and legal team must review this before real use.
-      </StatusBanner>
-      <div className="list-stack">
-        {recipients.map((recipient) => (
-          <article className="scope-editor" key={recipient.id}>
-            <div className="scope-header">
-              <div>
-                <h3>{recipient.displayName}</h3>
-                <p>{formatRecipientType(recipient.type)}</p>
-              </div>
-              <Badge>{recipient.allowedScopes.length} selected</Badge>
-            </div>
-            <div className="scope-grid">
-              {disclosureScopes.map((scope) => (
-                <label className="scope-option" key={scope.id}>
-                  <input
-                    checked={recipient.allowedScopes.includes(scope.id)}
-                    onChange={() => toggleScope(recipient.id, scope.id)}
-                    type="checkbox"
-                  />
-                  <span>
-                    <strong>{scope.label}</strong>
-                    <small>{scope.detail}</small>
-                  </span>
-                </label>
-              ))}
-            </div>
-            <div
-              className="capability-preview"
-              role="group"
-              aria-label={`${recipient.displayName} sharing capability preview`}
-            >
-              <div className="scope-header">
-                <div>
-                  <h4>What this allows</h4>
-                  <p>{recipient.allowedScopes.length} selected items</p>
-                </div>
-                <Badge tone={recipient.allowedScopes.length > 0 ? "success" : "warning"}>
-                  {recipient.allowedScopes.length > 0 ? "limited share" : "no access"}
-                </Badge>
-              </div>
-              <div className="disclosure-package">
-                <div className="disclosure-row">
-                  <strong>Can do</strong>
-                  <span>{plainCapabilitySummary(abilitiesForDisclosureScopes(recipient.allowedScopes))}</span>
-                </div>
-                <div className="disclosure-row">
-                  <strong>Items</strong>
-                  <span>
-                    {recipient.allowedScopes
-                      .map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope)
-                      .join(", ") || "No items selected"}
-                  </span>
-                </div>
-                <div className="disclosure-row">
-                  <strong>Not allowed</strong>
-                  <span>{plainNonGrantedCapabilities(abilitiesForDisclosureScopes(recipient.allowedScopes)).join(", ")}</span>
-                </div>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+              return (
+                <article className="list-item recipient-list-item" key={recipient.id}>
+                  <div className="recipient-row">
+                    <button
+                      aria-controls={`recipient-edit-${recipient.id}`}
+                      aria-expanded={isEditing}
+                      aria-label={`Edit sharing for ${recipient.displayName}`}
+                      className="recipient-open-button"
+                      id={`recipient-open-${recipient.id}`}
+                      onClick={() => openRecipientEditor(recipient)}
+                      type="button"
+                    >
+                      <span className="recipient-summary">
+                        <span className="recipient-name">{recipient.displayName}</span>
+                        <span className="recipient-details">
+                          <span>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</span>
+                          {recipient.email ? <span>{recipient.email}</span> : null}
+                          {recipient.phone ? <span>{recipient.phone}</span> : null}
+                        </span>
+                        <span className="badge-row" aria-label={`${recipient.displayName} status`}>
+                          <Badge tone={recipient.verified ? "success" : "warning"}>
+                            {recipient.verified ? "Verified" : "Needs a check"}
+                          </Badge>
+                          <Badge>{recipient.allowedScopes.length} items</Badge>
+                        </span>
+                      </span>
+                    </button>
+                    <div className="row-actions">
+                      <Button
+                        ariaControls={`recipient-edit-${recipient.id}`}
+                        ariaExpanded={isEditing}
+                        className="compact-list-action"
+                        onClick={() => openRecipientEditor(recipient)}
+                        variant="secondary"
+                      >
+                        Edit sharing
+                      </Button>
+                      <Button
+                        ariaLabel={`Remove ${recipient.displayName}`}
+                        className="compact-list-action"
+                        onClick={() => removeRecipient(recipient.id)}
+                        variant="quiet"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                  {isEditing ? (
+                    <div
+                      aria-labelledby={`recipient-edit-heading-${recipient.id}`}
+                      className="recipient-edit-panel"
+                      id={`recipient-edit-${recipient.id}`}
+                      role="region"
+                      tabIndex={-1}
+                    >
+                      <div className="scope-header">
+                        <div>
+                          <h3 id={`recipient-edit-heading-${recipient.id}`}>Edit sharing for {recipient.displayName}</h3>
+                          <p>Save only what this contact should see.</p>
+                        </div>
+                        <Badge>{editingScopes.length} selected</Badge>
+                      </div>
+                      <SharingScopeChecklist
+                        label={`Sharing choices for ${recipient.displayName}`}
+                        onToggle={(scope) => setEditingScopes(toggleScopeSelection(editingScopes, scope))}
+                        scopes={editingScopes}
+                      />
+                      <SharingCapabilityPreview recipientName={recipient.displayName} scopes={editingScopes} />
+                      <div className="row-actions">
+                        <Button onClick={() => saveRecipientScopes(recipient.id)}>Save sharing</Button>
+                        <Button onClick={() => closeRecipientEditor(recipient.id)} variant="secondary">
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </Section>
     </div>
   );
 }
@@ -1750,8 +1863,8 @@ function ShelterScreen({
   setChecklist: (value: typeof defaultShelterChecklist) => void;
   contactRequests: ShelterContactRequest[];
   recipients: DisclosureRecipientDraft[];
-  setContactRequests: (requests: ShelterContactRequest[]) => void;
-  setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
+  setContactRequests: Dispatch<SetStateAction<ShelterContactRequest[]>>;
+  setRecipients: Dispatch<SetStateAction<DisclosureRecipientDraft[]>>;
   shelterStaffAccounts: ShelterStaffAccount[];
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
   shelterUserAccounts: ShelterUserAccount[];
@@ -1876,28 +1989,32 @@ function ShelterScreen({
     setStaffDraft({ displayName: "", email: "" });
   }
 
-  function shelterRecipientExists(shelterName: string) {
-    return recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName);
-  }
-
   function addShelterRecipient(shelterName: string) {
-    if (shelterRecipientExists(shelterName)) return;
-
-    setRecipients([
-      ...recipients,
-      {
-        id: `rec-${Date.now()}`,
-        type: "shelter_staff",
-        displayName: shelterName,
-        relationship: "Shelter",
-        email: "",
-        phone: "",
-        agencyName: shelterName,
-        precinctName: "",
-        verified: true,
-        allowedScopes: ["identity_minimum"]
+    setRecipients((currentRecipients) => {
+      if (
+        currentRecipients.some(
+          (recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName
+        )
+      ) {
+        return currentRecipients;
       }
-    ]);
+
+      return [
+        ...currentRecipients,
+        {
+          id: createClientId("rec"),
+          type: "shelter_staff",
+          displayName: shelterName,
+          relationship: "Shelter",
+          email: "",
+          phone: "",
+          agencyName: shelterName,
+          precinctName: "",
+          verified: true,
+          allowedScopes: ["identity_minimum"]
+        }
+      ];
+    });
   }
 
   function hasPendingShelterNudge() {
@@ -1918,10 +2035,10 @@ function ShelterScreen({
       return;
     }
 
-    setContactRequests([
-      ...contactRequests,
+    setContactRequests((currentRequests) => [
+      ...currentRequests,
       {
-        id: `shelter-request-${Date.now()}`,
+        id: createClientId("shelter-request"),
         direction: "shelter_to_user",
         status: "pending",
         shelterName: operatorShelter,
@@ -3133,7 +3250,7 @@ function BenefitsProtectionScreen({
           <div className="scope-header">
             <div>
               <h4>What this allows</h4>
-              <p>missed check-in and benefits status only</p>
+              <p>benefits status and notice details only</p>
             </div>
             <Badge tone={optedIn ? "success" : "neutral"}>{optedIn ? "ready to save" : "off"}</Badge>
           </div>
@@ -3144,7 +3261,7 @@ function BenefitsProtectionScreen({
             </div>
             <div className="disclosure-row">
               <strong>Items</strong>
-              <span>Missed check-in, Benefits information</span>
+              <span>Benefits information, Notice request</span>
             </div>
             <div className="disclosure-row">
               <strong>Not allowed</strong>
@@ -3155,7 +3272,7 @@ function BenefitsProtectionScreen({
         <label className="consent-box">
           <input checked={optedIn} onChange={(event) => setOptedIn(event.target.checked)} type="checkbox" />
           <span>
-            <strong>Allow Abby to prepare a benefits notice after missed check-ins.</strong>
+            <strong>Allow Abby to prepare a benefits notice for agency help.</strong>
             <small>This starts on. You can turn it off. A privacy and legal team must review this before real use.</small>
           </span>
         </label>
