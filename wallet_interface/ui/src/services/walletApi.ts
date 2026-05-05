@@ -6,6 +6,9 @@ import {
   DerivedArtifactView,
   ExportBundleView,
   ProofReceiptView,
+  SavedService,
+  ServiceInteractionEvent,
+  ServicePlan,
   UploadItem,
   WalletAccessRequest,
   WalletGrantReceipt
@@ -75,6 +78,18 @@ interface WalletRecordApiRecord {
 
 interface WalletRecordsApiResponse {
   records: WalletRecordApiRecord[];
+}
+
+interface SavedServicesApiResponse {
+  saved_services: SavedService[];
+}
+
+interface ServicePlansApiResponse {
+  plans: ServicePlan[];
+}
+
+interface ServiceInteractionsApiResponse {
+  interactions: ServiceInteractionEvent[];
 }
 
 interface ProofReceiptApiRecord {
@@ -557,6 +572,212 @@ export async function createLocationDistanceProof(
     target_lon: targetLon
   });
   return toProofReceiptView(proof);
+}
+
+export async function listWalletSavedServices(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  status?: string
+): Promise<SavedService[]> {
+  const url = new URL(`/wallets/${config.walletId}/portal/saved-services`, normalizedBaseUrl(config.apiBaseUrl));
+  if (status) url.searchParams.set("status", status);
+  const data = await fetchJson<SavedServicesApiResponse>(url, "Saved services");
+  return data.saved_services;
+}
+
+export async function saveWalletService(
+  config: WalletApiConfig,
+  input: {
+    serviceDocId: string;
+    sourceContentCid: string;
+    sourcePageCid?: string;
+    title?: string;
+    providerName?: string;
+    programName?: string;
+    sourceUrl?: string;
+    label?: string;
+    reason?: string;
+    priority?: string;
+    status?: string;
+    privateNotesRecordId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<SavedService> {
+  const url = new URL(`/wallets/${config.walletId}/portal/saved-services`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<SavedService>(url, "Saved service", {
+    actor_did: requiredActorDid(config),
+    service_doc_id: input.serviceDocId,
+    source_content_cid: input.sourceContentCid,
+    source_page_cid: input.sourcePageCid || "",
+    title: input.title || "",
+    provider_name: input.providerName || "",
+    program_name: input.programName || "",
+    source_url: input.sourceUrl || "",
+    label: input.label || "",
+    reason: input.reason || "",
+    priority: input.priority || "normal",
+    status: input.status || "saved",
+    private_notes_record_id: input.privateNotesRecordId || "",
+    metadata: input.metadata || {}
+  });
+}
+
+export async function listWalletServicePlans(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  filters: { serviceDocId?: string; status?: string } = {}
+): Promise<ServicePlan[]> {
+  const url = new URL(`/wallets/${config.walletId}/portal/plans`, normalizedBaseUrl(config.apiBaseUrl));
+  if (filters.serviceDocId) url.searchParams.set("service_doc_id", filters.serviceDocId);
+  if (filters.status) url.searchParams.set("status", filters.status);
+  const data = await fetchJson<ServicePlansApiResponse>(url, "Service plans");
+  return data.plans;
+}
+
+export async function createWalletServicePlan(
+  config: WalletApiConfig,
+  input: {
+    serviceDocId: string;
+    sourceContentCid?: string;
+    sourcePageCid?: string;
+    serviceTitle?: string;
+    providerName?: string;
+    goal?: string;
+    steps?: string[];
+    documentsNeeded?: string[];
+    questionsToAsk?: string[];
+    appointmentAt?: string;
+    reminderAt?: string;
+    travelTarget?: string;
+    assignedWorkerRecipientId?: string;
+    status?: string;
+    relatedInteractionIds?: string[];
+    privateNotesRecordId?: string;
+  }
+): Promise<ServicePlan> {
+  const url = new URL(`/wallets/${config.walletId}/portal/plans`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<ServicePlan>(url, "Service plan", {
+    actor_did: requiredActorDid(config),
+    service_doc_id: input.serviceDocId,
+    source_content_cid: input.sourceContentCid || "",
+    source_page_cid: input.sourcePageCid || "",
+    service_title: input.serviceTitle || "",
+    provider_name: input.providerName || "",
+    goal: input.goal || "",
+    steps: input.steps || [],
+    documents_needed: input.documentsNeeded || [],
+    questions_to_ask: input.questionsToAsk || [],
+    appointment_at: input.appointmentAt || "",
+    reminder_at: input.reminderAt || "",
+    travel_target: input.travelTarget || "",
+    assigned_worker_recipient_id: input.assignedWorkerRecipientId || "",
+    status: input.status || "active",
+    related_interaction_ids: input.relatedInteractionIds || [],
+    private_notes_record_id: input.privateNotesRecordId || ""
+  });
+}
+
+export async function updateWalletServicePlan(
+  config: WalletApiConfig,
+  planId: string,
+  input: {
+    sourceContentCid?: string;
+    sourcePageCid?: string;
+    serviceTitle?: string;
+    providerName?: string;
+    goal?: string;
+    steps?: string[];
+    documentsNeeded?: string[];
+    questionsToAsk?: string[];
+    appointmentAt?: string;
+    reminderAt?: string;
+    travelTarget?: string;
+    assignedWorkerRecipientId?: string;
+    status?: string;
+    relatedInteractionIds?: string[];
+    privateNotesRecordId?: string;
+  }
+): Promise<ServicePlan> {
+  const url = new URL(`/wallets/${config.walletId}/portal/plans/${planId}`, normalizedBaseUrl(config.apiBaseUrl));
+  return patchJson<ServicePlan>(url, "Service plan update", {
+    actor_did: requiredActorDid(config),
+    source_content_cid: input.sourceContentCid,
+    source_page_cid: input.sourcePageCid,
+    service_title: input.serviceTitle,
+    provider_name: input.providerName,
+    goal: input.goal,
+    steps: input.steps,
+    documents_needed: input.documentsNeeded,
+    questions_to_ask: input.questionsToAsk,
+    appointment_at: input.appointmentAt,
+    reminder_at: input.reminderAt,
+    travel_target: input.travelTarget,
+    assigned_worker_recipient_id: input.assignedWorkerRecipientId,
+    status: input.status,
+    related_interaction_ids: input.relatedInteractionIds,
+    private_notes_record_id: input.privateNotesRecordId
+  });
+}
+
+export async function listWalletServiceInteractions(
+  config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+  filters: { serviceDocId?: string; interactionType?: string; status?: string } = {}
+): Promise<ServiceInteractionEvent[]> {
+  const url = new URL(`/wallets/${config.walletId}/portal/interactions`, normalizedBaseUrl(config.apiBaseUrl));
+  if (filters.serviceDocId) url.searchParams.set("service_doc_id", filters.serviceDocId);
+  if (filters.interactionType) url.searchParams.set("interaction_type", filters.interactionType);
+  if (filters.status) url.searchParams.set("status", filters.status);
+  const data = await fetchJson<ServiceInteractionsApiResponse>(url, "Service interactions");
+  return data.interactions;
+}
+
+export async function createWalletServiceInteraction(
+  config: WalletApiConfig,
+  input: {
+    serviceDocId: string;
+    sourceContentCid?: string;
+    sourcePageCid?: string;
+    providerName?: string;
+    programName?: string;
+    interactionType: string;
+    channel?: string;
+    counterpartyName?: string;
+    counterpartyContact?: string;
+    timestamp?: string;
+    status?: string;
+    outcome?: string;
+    notesRecordId?: string;
+    nextAction?: string;
+    nextFollowUpAt?: string;
+    sourceActionUrl?: string;
+    relatedGrantIds?: string[];
+    relatedRecordIds?: string[];
+    privacyLevel?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<ServiceInteractionEvent> {
+  const url = new URL(`/wallets/${config.walletId}/portal/interactions`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<ServiceInteractionEvent>(url, "Service interaction", {
+    actor_did: requiredActorDid(config),
+    service_doc_id: input.serviceDocId,
+    source_content_cid: input.sourceContentCid || "",
+    source_page_cid: input.sourcePageCid || "",
+    provider_name: input.providerName || "",
+    program_name: input.programName || "",
+    interaction_type: input.interactionType,
+    channel: input.channel || "",
+    counterparty_name: input.counterpartyName || "",
+    counterparty_contact: input.counterpartyContact || "",
+    timestamp: input.timestamp || "",
+    status: input.status || "",
+    outcome: input.outcome || "",
+    notes_record_id: input.notesRecordId || "",
+    next_action: input.nextAction || "",
+    next_follow_up_at: input.nextFollowUpAt || "",
+    source_action_url: input.sourceActionUrl || "",
+    related_grant_ids: input.relatedGrantIds || [],
+    related_record_ids: input.relatedRecordIds || [],
+    privacy_level: input.privacyLevel || "private",
+    metadata: input.metadata || {}
+  });
 }
 
 export async function addTextDocument(
@@ -1620,6 +1841,18 @@ async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
     method: "POST"
+  });
+  if (!response.ok) {
+    throw new Error(`${label} request failed with status ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
+async function patchJson<T>(url: URL, label: string, body: unknown): Promise<T> {
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    method: "PATCH"
   });
   if (!response.ok) {
     throw new Error(`${label} request failed with status ${response.status}`);
