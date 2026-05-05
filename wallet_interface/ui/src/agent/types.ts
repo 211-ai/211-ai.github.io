@@ -254,6 +254,10 @@ export function isNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
+  return typeof value === "function";
+}
+
 export function isUnknownRecord(value: unknown): value is Record<string, unknown> {
   return isRecord(value);
 }
@@ -319,6 +323,18 @@ export function isAgentSchemaProperty(value: unknown): value is AgentSchemaPrope
     isOptional(value.properties, (candidate): candidate is Record<string, AgentSchemaProperty> =>
       isRecord(candidate) && Object.values(candidate).every(isAgentSchemaProperty)
     )
+  );
+}
+
+export function isAgentCommandSchema(value: unknown): value is AgentCommandSchema {
+  return (
+    isRecord(value) &&
+    isString(value.name) &&
+    isString(value.description) &&
+    isAgentSchemaProperty(value.inputSchema) &&
+    isAgentSchemaProperty(value.outputSchema) &&
+    isFunction(value.isInput) &&
+    isFunction(value.isOutput)
   );
 }
 
