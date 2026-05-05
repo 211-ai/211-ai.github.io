@@ -25,7 +25,9 @@ import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../comp
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
 import type { AgentMessage } from "../agent/types";
 import { getRouteLabel, listToolsForSurface } from "../agent/surfaceRegistry";
-import { answer211InfoQuestion } from "../services/graphRagService";
+import { answer211InfoQuestion, search211Info } from "../services/graphRagService";
+import type { SearchResult } from "../lib/graphrag";
+import { ServiceDetailScreen } from "./ServiceDetailScreen";
 import {
   CheckInChannel,
   AuditEvent,
@@ -192,6 +194,27 @@ const routes = primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.
 const secondaryNavigationRoutes = secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 const navigationRoutes = appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 
+function getServiceDetailDocIdFromHash(hash = typeof window === "undefined" ? "" : window.location.hash): string | null {
+  const servicePrefix = "#/services/";
+  if (!hash.startsWith(servicePrefix)) return null;
+  const encodedDocId = hash.slice(servicePrefix.length).split("/")[0];
+  if (!encodedDocId) return null;
+  try {
+    return decodeURIComponent(encodedDocId);
+  } catch {
+    return encodedDocId;
+  }
+}
+
+function setLocationServiceDetailHash(docId: string): void {
+  if (typeof window === "undefined") return;
+  window.location.hash = `#/services/${encodeURIComponent(docId)}`;
+}
+
+function getInitialRouteFromHash(): RouteId {
+  return getServiceDetailDocIdFromHash() ? "social-services" : getRouteFromHash();
+}
+
 function isAcceptedIdentityDocument(file: File): boolean {
   const lowerName = file.name.toLowerCase();
   return (
@@ -278,7 +301,8 @@ async function generateUploadSummary(file: File): Promise<string> {
 export function App() {
   const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
   const agentSessionId = useMemo(() => `agent-session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, []);
-  const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
+  const [activeRoute, setActiveRoute] = useState<RouteId>(getInitialRouteFromHash);
+  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getServiceDetailDocIdFromHash);
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -353,7 +377,9 @@ export function App() {
 
   useEffect(() => {
     const syncRouteFromHash = () => {
-      setActiveRoute(getRouteFromHash());
+      const detailDocId = getServiceDetailDocIdFromHash();
+      setServiceDetailDocId(detailDocId);
+      setActiveRoute(detailDocId ? "social-services" : getRouteFromHash());
       setMobileNavOpen(false);
     };
     window.addEventListener("hashchange", syncRouteFromHash);
@@ -435,6 +461,7 @@ export function App() {
   function navigate(route: RouteId) {
     setLocationRouteHash(route);
     setActiveRoute(route);
+    setServiceDetailDocId(null);
     setMobileNavOpen(false);
   }
 
@@ -567,7 +594,10 @@ export function App() {
             setUploads={setUploads}
           />
         ) : null}
-        {activeRoute === "social-services" ? <SocialServicesScreen /> : null}
+        {serviceDetailDocId ? (
+          <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
+        ) : null}
+        {activeRoute === "social-services" && !serviceDetailDocId ? <SocialServicesScreen /> : null}
         {activeRoute === "shelter" ? (
           <ShelterScreen
             checklist={shelterChecklist}
@@ -1733,15 +1763,106 @@ function UploadsScreen({
 
 function SocialServicesScreen() {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
+  const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
+  const [searchError, setSearchError] = useState("");
+
+  async function runSearch(nextQuery = query) {
+    const trimmedQuery = nextQuery.trim();
+    if (!trimmedQuery) return;
+
+    setQuery(trimmedQuery);
+    setSearchStatus("loading");
+    setSearchError("");
+    try {
+      const searchResults = await search211Info(trimmedQuery, 18);
+      const serviceResults = searchResults.filter((result) => result.document.doc_type === "service");
+      setResults((serviceResults.length ? serviceResults : searchResults).slice(0, 8));
+      setSearchStatus("complete");
+    } catch (error) {
+      setResults([]);
+      setSearchStatus("error");
+      setSearchError(error instanceof Error ? error.message : "Search failed");
+    }
+  }
+
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void runSearch();
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
         <p className="eyebrow">Social services</p>
         <h1>Find support</h1>
       </div>
+      <Section title="Search 211 services">
+        <form className="form-grid" onSubmit={handleSearchSubmit}>
+          <Field label="Search by need, provider, or place">
+            <input
+              placeholder="food pantry near Beaverton"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </Field>
+          <div className="row-actions">
+            <Button disabled={!query.trim()} loading={searchStatus === "loading"} loadingLabel="Searching" type="submit">
+              Search
+            </Button>
+          </div>
+        </form>
+        <div className="chip-grid" aria-label="Suggested searches">
+          {suggestedPrompts.map((prompt) => (
+            <button className="choice-chip" key={prompt} onClick={() => void runSearch(prompt)} type="button">
+              {prompt}
+            </button>
+          ))}
+        </div>
+        {searchStatus === "error" ? (
+          <StatusBanner tone="warning">211 service search is unavailable: {searchError}</StatusBanner>
+        ) : null}
+        {searchStatus === "complete" && results.length === 0 ? (
+          <StatusBanner tone="info">No local 211 records matched. Try a broader need or contact 211 directly.</StatusBanner>
+        ) : null}
+        {results.length ? (
+          <div className="list-stack" aria-label="211 service search results">
+            {results.map((result) => {
+              const document = result.document;
+              const provider = document.provider_name || "Provider not listed";
+              const program = document.program_name || document.title || "Program not listed";
+              return (
+                <article className="list-item" key={result.docId}>
+                  <div>
+                    <h3>{program}</h3>
+                    <p>{provider}</p>
+                    <small className="upload-machine-summary">{result.snippet}</small>
+                    <div className="badge-row">
+                      <Badge>{document.doc_type}</Badge>
+                      {document.city || document.state ? (
+                        <Badge>
+                          {[document.city, document.state].filter(Boolean).join(", ")}
+                        </Badge>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="row-actions list-item-action">
+                    {document.source_url ? <Badge tone="success">source</Badge> : null}
+                    <Button onClick={() => setLocationServiceDetailHash(result.docId)} variant="secondary">
+                      Open detail
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : null}
+      </Section>
       <div className="category-grid">
         {categories.map((category) => (
-          <button className="category-tile" key={category} type="button">
+          <button className="category-tile" key={category} onClick={() => void runSearch(category)} type="button">
             <HeartHandshake aria-hidden="true" size={22} />
             <span>{category}</span>
           </button>
