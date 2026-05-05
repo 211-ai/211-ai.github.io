@@ -3707,8 +3707,8 @@ function ExportCenterScreen({
                   <h3 id={titleId}>{bundle.audienceName}</h3>
                   <p>{bundle.bundleId}</p>
                 </div>
-                <Badge tone={bundle.storageOk ? "success" : "warning"}>
-                  {bundle.storageOk ? "storage verified" : "storage missing"}
+                <Badge tone={bundle.verificationOk && bundle.storageOk ? "success" : "warning"}>
+                  {!bundle.verificationOk ? "receipt invalid" : bundle.storageOk ? "storage verified" : "storage missing"}
                 </Badge>
               </div>
               <div className="privacy-metrics">
@@ -3720,11 +3720,18 @@ function ExportCenterScreen({
                 <code>{bundle.bundleHash}</code>
               </div>
               <div className="badge-row">
+                <Badge tone={bundle.hashOk ? "success" : "warning"}>
+                  {bundle.hashOk ? "hash verified" : "hash mismatch"}
+                </Badge>
+                <Badge tone={bundle.schemaOk ? "success" : "warning"}>
+                  {bundle.schemaOk ? "schema verified" : "schema failed"}
+                </Badge>
                 <Badge>{bundle.createdAt}</Badge>
                 <Badge tone={bundle.imported ? "success" : "neutral"}>
                   {bundle.imported ? "import verified" : "not imported"}
                 </Badge>
               </div>
+              {bundle.schemaError ? <p className="receipt-error">{bundle.schemaError}</p> : null}
               <div className="row-actions">
                 <Button
                   disabled={!apiConfig || !bundle.bundle || bundle.imported || importingBundleId === bundle.bundleId}

@@ -2365,11 +2365,23 @@ class WalletInterfaceService:
     def verify_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
         bundle_hash = self.wallet_service.export_bundle_hash(bundle)
         embedded_hash = bundle.get("bundle_hash")
+        hash_valid = isinstance(embedded_hash, str) and embedded_hash == bundle_hash
+        schema_valid = False
+        schema_error = None
+        if hash_valid:
+            try:
+                self.wallet_service.validate_export_bundle_schema(bundle)
+                schema_valid = True
+            except Exception as exc:
+                schema_error = str(exc)
         return {
-            "valid": self.wallet_service.verify_export_bundle(bundle),
+            "valid": hash_valid and schema_valid,
+            "hash_valid": hash_valid,
+            "schema_valid": schema_valid,
             "bundle_id": bundle.get("bundle_id"),
             "bundle_hash": embedded_hash,
             "computed_hash": bundle_hash,
+            **({"schema_error": schema_error} if schema_error else {}),
         }
 
     def import_export_bundle(self, bundle: Dict[str, Any]) -> Dict[str, Any]:

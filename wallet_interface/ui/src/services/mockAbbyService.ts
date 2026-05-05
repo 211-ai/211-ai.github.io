@@ -285,6 +285,9 @@ export const exportBundles: ExportBundleView[] = [
     audienceName: "Legal Aid desk",
     recordCount: 2,
     proofCount: 1,
+    verificationOk: true,
+    hashOk: true,
+    schemaOk: true,
     storageOk: true,
     imported: true,
     createdAt: "Today, 11:18 AM"
@@ -296,6 +299,9 @@ export const exportBundles: ExportBundleView[] = [
     audienceName: "Benefits help clinic",
     recordCount: 1,
     proofCount: 0,
+    verificationOk: true,
+    hashOk: true,
+    schemaOk: true,
     storageOk: false,
     imported: false,
     createdAt: "Yesterday, 2:35 PM"
