@@ -152,7 +152,13 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "delegate_grant"
   ],
   "benefits-protection": [...commonReadTools, "search_211_services", "answer_211_question"],
-  analytics: commonReadTools,
+  analytics: [
+    ...commonReadTools,
+    "select_analytics_study",
+    "unselect_analytics_study",
+    "explain_analytics_privacy_budget",
+    "submit_analytics_consent"
+  ],
   "proof-center": [
     ...commonReadTools,
     "create_proof",
@@ -162,7 +168,13 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
   ],
   exports: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle"],
   security: [...commonReadTools, "save_wallet_snapshot", "restore_wallet_snapshot"],
-  audit: [...commonReadTools, "refresh_wallet_audit"]
+  audit: [
+    ...commonReadTools,
+    "refresh_wallet_audit",
+    "search_audit_events",
+    "summarize_audit_events",
+    "explain_audit_event"
+  ]
 };
 
 const contextProvidersByRoute: Record<RouteId, SurfaceContextProviderDefinition[]> = {
@@ -486,6 +498,43 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.export_bundle.import"
   },
+  select_analytics_study: {
+    title: "Select analytics study",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["analytics"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  unselect_analytics_study: {
+    title: "Unselect analytics study",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["analytics"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  explain_analytics_privacy_budget: {
+    title: "Explain analytics privacy budget",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["analytics"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  submit_analytics_consent: {
+    title: "Submit analytics consent",
+    permissionLevel: "wallet_write",
+    surfaces: ["analytics"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.analytics_consent.submit"
+  },
   save_wallet_snapshot: {
     title: "Save wallet snapshot",
     permissionLevel: "wallet_write",
@@ -508,6 +557,33 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   },
   refresh_wallet_audit: {
     title: "Refresh wallet audit",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["audit"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  search_audit_events: {
+    title: "Search audit events",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["audit"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  summarize_audit_events: {
+    title: "Summarize audit events",
+    permissionLevel: "wallet_metadata",
+    surfaces: ["audit"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  explain_audit_event: {
+    title: "Explain audit event",
     permissionLevel: "wallet_metadata",
     surfaces: ["audit"],
     requiresConfirmation: false,

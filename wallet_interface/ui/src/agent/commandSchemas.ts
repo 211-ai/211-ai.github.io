@@ -44,9 +44,16 @@ export const AGENT_COMMAND_NAMES = [
   "verify_proof_status",
   "create_verified_export_bundle",
   "import_export_bundle",
+  "select_analytics_study",
+  "unselect_analytics_study",
+  "explain_analytics_privacy_budget",
+  "submit_analytics_consent",
   "save_wallet_snapshot",
   "restore_wallet_snapshot",
-  "refresh_wallet_audit"
+  "refresh_wallet_audit",
+  "search_audit_events",
+  "summarize_audit_events",
+  "explain_audit_event"
 ] as const;
 
 export type AgentCommandName = (typeof AGENT_COMMAND_NAMES)[number];
@@ -314,6 +321,16 @@ export interface ImportExportBundleCommandInput {
   stageOnly?: boolean;
 }
 
+export interface AnalyticsStudyReferenceCommandInput {
+  studyId?: string;
+}
+
+export interface SubmitAnalyticsConsentCommandInput {
+  studyId: string;
+  expiresAt?: string;
+  stageOnly?: boolean;
+}
+
 export interface SaveWalletSnapshotCommandInput {
   reason?: string;
 }
@@ -326,6 +343,30 @@ export interface RestoreWalletSnapshotCommandInput {
 
 export interface RefreshWalletAuditCommandInput {
   limit?: number;
+}
+
+export interface SearchAuditEventsCommandInput {
+  query?: string;
+  actor?: string;
+  action?: string;
+  resource?: string;
+  decision?: string;
+  grantId?: string;
+  limit?: number;
+}
+
+export interface SummarizeAuditEventsCommandInput {
+  query?: string;
+  actor?: string;
+  action?: string;
+  resource?: string;
+  decision?: string;
+  grantId?: string;
+  limit?: number;
+}
+
+export interface AuditEventReferenceCommandInput {
+  eventId: string;
 }
 
 const stringProperty: AgentSchemaProperty = { type: "string" };
@@ -718,6 +759,26 @@ export function isImportExportBundleCommandInput(value: unknown): value is Impor
   );
 }
 
+export function isAnalyticsStudyReferenceCommandInput(value: unknown): value is AnalyticsStudyReferenceCommandInput {
+  return isRecord(value) && isOptional(value.studyId, isString);
+}
+
+export function isRequiredAnalyticsStudyReferenceCommandInput(
+  value: unknown
+): value is AnalyticsStudyReferenceCommandInput {
+  return isRecord(value) && isString(value.studyId) && value.studyId.trim().length > 0;
+}
+
+export function isSubmitAnalyticsConsentCommandInput(value: unknown): value is SubmitAnalyticsConsentCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.studyId) &&
+    value.studyId.trim().length > 0 &&
+    isOptional(value.expiresAt, isString) &&
+    isOptional(value.stageOnly, isBoolean)
+  );
+}
+
 export function isSaveWalletSnapshotCommandInput(value: unknown): value is SaveWalletSnapshotCommandInput {
   return isRecord(value) && isOptional(value.reason, isString);
 }
@@ -733,6 +794,39 @@ export function isRestoreWalletSnapshotCommandInput(value: unknown): value is Re
 
 export function isRefreshWalletAuditCommandInput(value: unknown): value is RefreshWalletAuditCommandInput {
   return isRecord(value) && isOptionalLimitedNumber(value.limit, 1, 100);
+}
+
+export function isSearchAuditEventsCommandInput(value: unknown): value is SearchAuditEventsCommandInput {
+  return (
+    isRecord(value) &&
+    isOptional(value.query, isString) &&
+    isOptional(value.actor, isString) &&
+    isOptional(value.action, isString) &&
+    isOptional(value.resource, isString) &&
+    isOptional(value.decision, isString) &&
+    isOptional(value.grantId, isString) &&
+    isOptionalLimitedNumber(value.limit, 1, 100) &&
+    [value.query, value.actor, value.action, value.resource, value.decision, value.grantId].some(
+      (item) => isString(item) && item.trim().length > 0
+    )
+  );
+}
+
+export function isSummarizeAuditEventsCommandInput(value: unknown): value is SummarizeAuditEventsCommandInput {
+  return (
+    isRecord(value) &&
+    isOptional(value.query, isString) &&
+    isOptional(value.actor, isString) &&
+    isOptional(value.action, isString) &&
+    isOptional(value.resource, isString) &&
+    isOptional(value.decision, isString) &&
+    isOptional(value.grantId, isString) &&
+    isOptionalLimitedNumber(value.limit, 1, 100)
+  );
+}
+
+export function isAuditEventReferenceCommandInput(value: unknown): value is AuditEventReferenceCommandInput {
+  return isRecord(value) && isString(value.eventId) && value.eventId.trim().length > 0;
 }
 
 export const commandSchemas = {
@@ -1109,6 +1203,42 @@ export const commandSchemas = {
     isInput: isImportExportBundleCommandInput,
     isOutput: isCommandOutput
   },
+  select_analytics_study: {
+    name: "select_analytics_study",
+    description: "Select an analytics study for staged consent without submitting wallet consent.",
+    inputSchema: objectSchema({ studyId: stringProperty }, ["studyId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRequiredAnalyticsStudyReferenceCommandInput,
+    isOutput: isCommandOutput
+  },
+  unselect_analytics_study: {
+    name: "unselect_analytics_study",
+    description: "Remove an analytics study from staged consent without changing submitted wallet consents.",
+    inputSchema: objectSchema({ studyId: stringProperty }, ["studyId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRequiredAnalyticsStudyReferenceCommandInput,
+    isOutput: isCommandOutput
+  },
+  explain_analytics_privacy_budget: {
+    name: "explain_analytics_privacy_budget",
+    description: "Explain analytics epsilon budgets, cohort floors, and safe derived fields without raw documents.",
+    inputSchema: objectSchema({ studyId: stringProperty }),
+    outputSchema: commandOutputSchema,
+    isInput: isAnalyticsStudyReferenceCommandInput,
+    isOutput: isCommandOutput
+  },
+  submit_analytics_consent: {
+    name: "submit_analytics_consent",
+    description: "Submit analytics consent from a selected template after confirmation without exposing raw documents.",
+    inputSchema: objectSchema({
+      studyId: stringProperty,
+      expiresAt: stringProperty,
+      stageOnly: booleanProperty
+    }, ["studyId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isSubmitAnalyticsConsentCommandInput,
+    isOutput: isCommandOutput
+  },
   save_wallet_snapshot: {
     name: "save_wallet_snapshot",
     description: "Save an encrypted wallet snapshot after high-risk confirmation.",
@@ -1135,6 +1265,46 @@ export const commandSchemas = {
     inputSchema: objectSchema({ limit: numberProperty }),
     outputSchema: commandOutputSchema,
     isInput: isRefreshWalletAuditCommandInput,
+    isOutput: isCommandOutput
+  },
+  search_audit_events: {
+    name: "search_audit_events",
+    description: "Search wallet audit events using safe event metadata without exposing private notes.",
+    inputSchema: objectSchema({
+      query: stringProperty,
+      actor: stringProperty,
+      action: stringProperty,
+      resource: stringProperty,
+      decision: stringProperty,
+      grantId: stringProperty,
+      limit: numberProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isSearchAuditEventsCommandInput,
+    isOutput: isCommandOutput
+  },
+  summarize_audit_events: {
+    name: "summarize_audit_events",
+    description: "Summarize wallet audit history from safe event metadata without exposing private notes.",
+    inputSchema: objectSchema({
+      query: stringProperty,
+      actor: stringProperty,
+      action: stringProperty,
+      resource: stringProperty,
+      decision: stringProperty,
+      grantId: stringProperty,
+      limit: numberProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isSummarizeAuditEventsCommandInput,
+    isOutput: isCommandOutput
+  },
+  explain_audit_event: {
+    name: "explain_audit_event",
+    description: "Explain one audit event from safe event metadata without exposing private notes.",
+    inputSchema: objectSchema({ eventId: stringProperty }, ["eventId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isAuditEventReferenceCommandInput,
     isOutput: isCommandOutput
   }
 } satisfies Record<AgentCommandName, AgentCommandSchema>;
