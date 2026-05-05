@@ -10,6 +10,7 @@
     "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
     "pretest": "npm run clean:visual-artifacts",
     "test": "playwright test",
+    "test:fullstack": "playwright test tests/fullstack-wallet.spec.ts",
     "test:smoke": "playwright test tests/smoke.spec.ts",
     "pretest:visual": "npm run clean:visual-artifacts",
     "test:visual": "playwright test tests/visual-capture.spec.ts",

@@ -79,12 +79,14 @@ npm run dev
 ```bash
 npm run build
 npm run test
+npm run test:fullstack
 ```
 
 For focused checks:
 
 ```bash
 npm run test:smoke
+npm run test:fullstack
 npm run test:visual
 npm run test:refinement
 npm run review:visual:dry-run

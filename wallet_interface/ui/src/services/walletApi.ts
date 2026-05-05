@@ -700,10 +700,12 @@ export async function analyzeRecordWithGrant(
   {
     recordId,
     grantId,
+    invocationToken,
     maxChars = 200
   }: {
     recordId: string;
     grantId: string;
+    invocationToken?: string;
     maxChars?: number;
   }
 ): Promise<DerivedArtifactView> {
@@ -712,9 +714,38 @@ export async function analyzeRecordWithGrant(
     actor_did: requiredActorDid(config),
     actor_key_hex: config.audienceKeyHex,
     grant_id: grantId,
+    invocation_token: invocationToken || undefined,
     max_chars: maxChars
   });
   return toDerivedArtifactView(artifact);
+}
+
+export async function issueRecordAnalysisInvocation(
+  config: WalletApiConfig,
+  {
+    recordId,
+    grantId,
+    outputTypes,
+    userPresent = false
+  }: {
+    recordId: string;
+    grantId: string;
+    outputTypes?: string[];
+    userPresent?: boolean;
+  }
+): Promise<string> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/analysis-invocations`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const response = await postJson<RecordInvocationApiResponse>(url, "Record analysis invocation", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    grant_id: grantId,
+    output_types: outputTypes?.length ? outputTypes : undefined,
+    user_present: userPresent
+  });
+  return response.token;
 }
 
 export async function analyzeRecordRedactedWithGrant(

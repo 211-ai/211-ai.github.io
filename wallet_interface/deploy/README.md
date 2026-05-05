@@ -81,6 +81,8 @@ Required production environment:
   operations, including ops-health audit events.
 - `WALLET_OPS_HEALTH_SHARED_SECRET`: when set, `/ops/health` requires either
   `Authorization: Bearer ...` or `X-Wallet-Ops-Shared-Secret`.
+- `WALLET_API_CORS_ORIGINS`: comma-separated browser origin allow-list for
+  split API/UI deployments. Leave unset when a same-origin gateway fronts both.
 - `WALLET_OPS_ALERT_WEBHOOK_URL`: optional webhook target for warning/error
   ops-health alerts emitted by `python -m wallet_interface.ops`.
 - `WALLET_OPS_ALERT_ON`: optional minimum alert severity, `warning` or `error`.

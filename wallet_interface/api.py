@@ -10,9 +10,11 @@ from .app_service import WalletInterfaceService
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
     from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+    from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
     FastAPI = None  # type: ignore[assignment]
+    CORSMiddleware = None  # type: ignore[assignment]
     File = None  # type: ignore[assignment]
     Form = None  # type: ignore[assignment]
     Header = None  # type: ignore[assignment]
@@ -28,6 +30,15 @@ from ._vendor import ensure_ipfs_datasets_py_path
 ensure_ipfs_datasets_py_path()
 
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
+
+
+def _cors_origins_from_env() -> list[str]:
+    origins = [
+        origin.strip()
+        for origin in os.environ.get("WALLET_API_CORS_ORIGINS", "").split(",")
+        if origin.strip()
+    ]
+    return origins
 
 
 class CreateWalletRequest(BaseModel):
@@ -540,6 +551,14 @@ def create_app(*, service: WalletInterfaceService | None = None):
 
     app_service = service or WalletInterfaceService()
     app = FastAPI(title="211-AI Wallet Interface", version="0.1.0")
+    cors_origins = _cors_origins_from_env()
+    if cors_origins:
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=cors_origins,
+            allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+            allow_headers=["authorization", "content-type", "x-wallet-ops-shared-secret"],
+        )
 
     @app.get("/health")
     def health() -> Dict[str, str]:

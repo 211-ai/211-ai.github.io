@@ -41,6 +41,7 @@ WALLET_OPS_HEALTH_SECRET_REF=secret-manager://wallet/prod/ops-health
 WALLET_OPS_ALERT_SECRET_REF=secret-manager://wallet/prod/ops-alert
 WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/proof-verifier
 WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/storage
+WALLET_API_CORS_ORIGINS=https://wallet-ui.example.com
 ```
 
 Optional production settings:
@@ -58,6 +59,9 @@ Optional production settings:
   `WALLET_OPS_ALERT_BEARER_TOKEN`, and
   `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE` configure
   worker alert delivery.
+- `WALLET_API_CORS_ORIGINS` is a comma-separated allow-list for browser clients.
+  Leave it unset behind same-origin gateways; set it explicitly for split
+  API/UI origins.
 - The `*_SECRET_REF` variables are not secrets. They are secret-manager paths
   included in readiness and signoff evidence so operators can prove real
   verifier, storage, ops-health, and alert credentials are provisioned without
@@ -356,6 +360,7 @@ python -m pytest \
 
 python -m compileall -q wallet_interface ipfs_datasets_py/ipfs_datasets_py/wallet
 cd wallet_interface/ui && npm run build
+PLAYWRIGHT_PORT=5185 npm run test:fullstack
 ```
 
 The blackbox suite runs the wallet API through `uvicorn` and covers production
@@ -365,8 +370,19 @@ export hash/schema verification/import/storage checks, grant revocation,
 analytics, ops health, repository reload after restart, and matching wallet CLI
 subprocess flows for sharing, export, analytics, import merge, and revocation.
 `ipfs_datasets_py/tests/mcp/test_wallet_tools.py` covers the same
-share/export/import/revoke path through MCP wallet tools and dynamic manager
-discovery.
+share/export/import/revoke path and redacted analysis/form/extraction/vector/
+GraphRAG path plus analytics template/consent/contribution/private-count
+workflows through MCP wallet tools, dynamic manager discovery, and manager
+dispatch.
+`wallet_interface/ui/tests/smoke.spec.ts` covers the browser export center for
+API-backed export grant, invocation, bundle creation, hash/schema verification,
+storage status, and descriptor import, and covers recipient delegated document
+analysis for safe summaries, redacted analysis, extraction, form analysis,
+vector profiles, and GraphRAG.
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts` starts a real wallet API
+with local repository/blob storage, seeds wallet records through HTTP, and
+drives the 211-AI export center and recipient delegated analysis workflows
+against that live API from desktop and mobile browser projects.
 
 Also run `GET /ops/health?verify_storage=true` against the target environment
 after deployment and confirm no check has `status=error`. When
