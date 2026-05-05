@@ -12,6 +12,7 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt
 } from "../models/abby";
+import type { ShelterStaffAccount, ShelterUserAccount } from "./appState";
 import { type WalletApiConfig } from "../services/walletApi";
 import {
   answerServiceNavigationQuestion,
@@ -22,12 +23,20 @@ import { updateRegistrationDraftAction } from "../agent/tools/registrationTools"
 import { updateCheckInPolicyAction } from "../agent/tools/checkInTools";
 import {
   addRecipientAction,
-  approveShelterContactRequestAction,
-  denyShelterContactRequestAction,
   editRecipientAction,
-  removeRecipientAction,
-  requestShelterContactAction
+  removeRecipientAction
 } from "../agent/tools/contactTools";
+import {
+  addShelterAsRecipientAction,
+  approveShelterContactRequestAction,
+  approveUserShelterRequestAction,
+  createManagedUserAccountAction,
+  createShelterStaffAccountAction,
+  denyShelterContactRequestAction,
+  denyUserShelterRequestAction,
+  requestShelterContactAction,
+  sendShelterNudgeAction
+} from "../agent/tools/shelterTools";
 import {
   previewSharingCapabilitiesAction,
   setDisclosureScopesAction,
@@ -70,6 +79,7 @@ import {
 import type {
   AccessRequestDecisionCommandInput,
   AddRecipientCommandInput,
+  AddShelterAsRecipientCommandInput,
   AgentCommandName,
   AnalyticsStudyReferenceCommandInput,
   AnalyzeGrantedRecordCommandInput,
@@ -77,7 +87,9 @@ import type {
   Answer211QuestionCommandInput,
   CreateLocationRegionProofCommandInput,
   CreateProofCommandInput,
+  CreateManagedUserAccountCommandInput,
   CreateServicePlanCommandInput,
+  CreateShelterStaffAccountCommandInput,
   CreateVerifiedExportBundleCommandInput,
   DelegateGrantCommandInput,
   EditRecipientCommandInput,
@@ -93,11 +105,13 @@ import type {
   SaveServiceCommandInput,
   SearchAuditEventsCommandInput,
   Search211ServicesCommandInput,
+  SendShelterNudgeCommandInput,
   ShelterContactRequestDecisionCommandInput,
   SubmitAnalyticsConsentCommandInput,
   SummarizeAuditEventsCommandInput,
   ProofReceiptReferenceCommandInput,
   UpdateRecipientScopesCommandInput,
+  UserShelterRequestDecisionCommandInput,
   ViewGrantedRecordCommandInput
 } from "../agent/commandSchemas";
 import { commandSchemas } from "../agent/commandSchemas";
@@ -111,6 +125,8 @@ export interface AppActionState {
   policy: CheckInPolicyDraft;
   recipients: DisclosureRecipientDraft[];
   shelterContactRequests?: ShelterContactRequest[];
+  shelterStaffAccounts?: ShelterStaffAccount[];
+  shelterUserAccounts?: ShelterUserAccount[];
   uploads: UploadItem[];
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
@@ -132,6 +148,8 @@ export interface AppActionRuntime {
   setPolicy?: (policy: CheckInPolicyDraft) => void;
   setRecipients?: (recipients: DisclosureRecipientDraft[]) => void;
   setShelterContactRequests?: (requests: ShelterContactRequest[]) => void;
+  setShelterStaffAccounts?: (accounts: ShelterStaffAccount[]) => void;
+  setShelterUserAccounts?: (accounts: ShelterUserAccount[]) => void;
   setAccessRequests?: (requests: WalletAccessRequest[]) => void;
   setGrantReceipts?: (receipts: WalletGrantReceipt[]) => void;
   setWalletAuditEvents?: (events: AuditEvent[]) => void;
@@ -256,6 +274,26 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
     return `${action === "approve_shelter_contact_request" ? "Approve" : "Deny"} shelter contact request ${String(
       input.requestId ?? ""
     )}.`;
+  }
+  if (action === "create_managed_user_account" && isRecord(input)) {
+    return `Create managed shelter user account for ${String(input.legalName ?? "")}.`;
+  }
+  if (action === "create_shelter_staff_account" && isRecord(input)) {
+    return `Create shelter staff account for ${String(input.displayName ?? "")}.`;
+  }
+  if (action === "send_shelter_nudge" && isRecord(input)) {
+    return `Send shelter contact request to ${String(input.userName ?? "the selected person")}.`;
+  }
+  if (
+    (action === "approve_user_shelter_request" || action === "deny_user_shelter_request") &&
+    isRecord(input)
+  ) {
+    return `${action === "approve_user_shelter_request" ? "Approve" : "Deny"} user shelter request ${String(
+      input.requestId ?? ""
+    )}.`;
+  }
+  if (action === "add_shelter_as_recipient" && isRecord(input)) {
+    return `Add ${String(input.shelterName ?? "the selected shelter")} as a shelter recipient.`;
   }
   if (
     (action === "record_controller_approval" ||
@@ -409,6 +447,18 @@ export const appActionHandlers = {
     approveShelterContactRequestAction(runtime, input, options),
   deny_shelter_contact_request: (runtime, input: ShelterContactRequestDecisionCommandInput, options) =>
     denyShelterContactRequestAction(runtime, input, options),
+  create_managed_user_account: (runtime, input: CreateManagedUserAccountCommandInput, options) =>
+    createManagedUserAccountAction(runtime, input, options),
+  create_shelter_staff_account: (runtime, input: CreateShelterStaffAccountCommandInput, options) =>
+    createShelterStaffAccountAction(runtime, input, options),
+  send_shelter_nudge: (runtime, input: SendShelterNudgeCommandInput, options) =>
+    sendShelterNudgeAction(runtime, input, options),
+  approve_user_shelter_request: (runtime, input: UserShelterRequestDecisionCommandInput, options) =>
+    approveUserShelterRequestAction(runtime, input, options),
+  deny_user_shelter_request: (runtime, input: UserShelterRequestDecisionCommandInput, options) =>
+    denyUserShelterRequestAction(runtime, input, options),
+  add_shelter_as_recipient: (runtime, input: AddShelterAsRecipientCommandInput, options) =>
+    addShelterAsRecipientAction(runtime, input, options),
   set_disclosure_scopes: setDisclosureScopesAction,
   record_controller_approval: (runtime, input: RecordControllerApprovalCommandInput, options) =>
     recordControllerApprovalAction(runtime, input, options),

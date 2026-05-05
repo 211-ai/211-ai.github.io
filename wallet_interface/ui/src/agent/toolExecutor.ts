@@ -503,6 +503,26 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
       input.requestId ?? ""
     )}.`;
   }
+  if (name === "create_managed_user_account" && isRecord(input)) {
+    return `Create managed shelter user account for ${String(input.legalName ?? "")}.`;
+  }
+  if (name === "create_shelter_staff_account" && isRecord(input)) {
+    return `Create shelter staff account for ${String(input.displayName ?? "")}.`;
+  }
+  if (name === "send_shelter_nudge" && isRecord(input)) {
+    return `Send shelter contact request to ${String(input.userName ?? "the selected person")}.`;
+  }
+  if (
+    (name === "approve_user_shelter_request" || name === "deny_user_shelter_request") &&
+    isRecord(input)
+  ) {
+    return `${name === "approve_user_shelter_request" ? "Approve" : "Deny"} user shelter request ${String(
+      input.requestId ?? ""
+    )}.`;
+  }
+  if (name === "add_shelter_as_recipient" && isRecord(input)) {
+    return `Add ${String(input.shelterName ?? "the selected shelter")} as a shelter recipient.`;
+  }
   if (
     (name === "record_controller_approval" ||
       name === "approve_access_request" ||

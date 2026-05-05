@@ -184,6 +184,47 @@ function summarizeChange(confirmation: AgentConfirmationRequest, toolCall?: Agen
     };
   }
 
+  if (toolName === "create_managed_user_account" && isRecord(input)) {
+    return {
+      before: "No shelter-managed user account is created.",
+      after: `A managed user account will be created for ${readString(input.legalName, "the selected person")}.`,
+      details: summarizeChangedFieldNames(input).filter((field) => field !== "legalName")
+    };
+  }
+
+  if (toolName === "create_shelter_staff_account" && isRecord(input)) {
+    return {
+      before: "No shelter staff account is created.",
+      after: `A staff account will be created for ${readString(input.displayName, "the selected staff member")}.`,
+      details: readString(input.email) ? ["An email will be saved on the staff account."] : []
+    };
+  }
+
+  if (toolName === "send_shelter_nudge" && isRecord(input)) {
+    return {
+      before: "No shelter-to-user contact request is created.",
+      after: `A contact request will be sent to ${readString(input.userName, "the selected person")}.`,
+      details: [`Contact: ${readString(input.userContact, "not provided")}`]
+    };
+  }
+
+  if (toolName === "approve_user_shelter_request" || toolName === "deny_user_shelter_request") {
+    const verb = toolName === "approve_user_shelter_request" ? "approved" : "denied";
+    return {
+      before: "The user-to-shelter request remains pending.",
+      after: `User shelter request ${readString(isRecord(input) ? input.requestId : undefined, "selected request")} will be ${verb}.`,
+      details: isRecord(input) && readString(input.reason) ? ["A reason will be recorded."] : []
+    };
+  }
+
+  if (toolName === "add_shelter_as_recipient" && isRecord(input)) {
+    return {
+      before: "The shelter is not added to contacts.",
+      after: `${readString(input.shelterName, "The selected shelter")} will be added as a shelter recipient.`,
+      details: []
+    };
+  }
+
   if (toolName === "approve_access_request" || toolName === "reject_access_request" || toolName === "revoke_access_request") {
     const verb =
       toolName === "approve_access_request" ? "approved" : toolName === "reject_access_request" ? "rejected" : "revoked";
