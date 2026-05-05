@@ -312,6 +312,8 @@ class PortalImplementationDaemon:
         previous = PortalTaskState.load(self.state_path)
         strategy = self.load_strategy()
         now = utc_now()
+        merge_reconciliation = self._reconcile_failed_merges()
+        unresolved_merge_failures = self._unresolved_merge_failures_by_task()
 
         previous_completed = set(previous.completed_task_ids)
         completed_set: set[str] = set()
@@ -322,7 +324,10 @@ class PortalImplementationDaemon:
         for task in tasks:
             existing_outputs = [item for item in task.outputs if (self.repo_root / item).exists()]
             task_artifacts[task.task_id] = existing_outputs
-            unresolved_merge_failure = self._has_unresolved_merge_failure(task, previous)
+            unresolved_merge_failure = (
+                task.task_id in unresolved_merge_failures
+                or self._has_unresolved_merge_failure(task, previous)
+            )
             artifact_complete = (
                 task.completion == "artifact"
                 and bool(task.outputs)
@@ -430,6 +435,7 @@ class PortalImplementationDaemon:
             "strategy_path": str(self.strategy_path),
             "events_path": str(self.events_path),
             "implementation_result": implementation_result,
+            "merge_reconciliation": merge_reconciliation,
         }
 
     def _run_implementation(self, task: PortalTask, state: PortalTaskState) -> dict[str, Any]:
@@ -858,19 +864,31 @@ class PortalImplementationDaemon:
             except OSError:
                 logger.warning("Failed to remove merge lock %s", merge_lock)
 
-    def _cleanup_merged_worktree(self, worktree_path: Path, branch_name: str) -> dict[str, Any]:
+    def _cleanup_merged_worktree(self, worktree_path: Path | None, branch_name: str) -> dict[str, Any]:
         started_at = utc_now()
+        removed_worktree = False
+        deleted_branch = False
+        errors: list[str] = []
         try:
-            self._run_git(["worktree", "remove", "--force", str(worktree_path)], cwd=self.repo_root)
-            self._run_git(["branch", "-D", branch_name], cwd=self.repo_root)
+            if worktree_path is not None and worktree_path.exists():
+                self._run_git(["worktree", "remove", "--force", str(worktree_path)], cwd=self.repo_root)
+                removed_worktree = True
+            if self._git_ref_exists(branch_name):
+                self._run_git(["branch", "-D", branch_name], cwd=self.repo_root)
+                deleted_branch = True
         except RuntimeError as exc:
+            errors.append(str(exc))
+
+        if errors:
             result = {
                 "cleaned": False,
                 "branch": branch_name,
-                "worktree_path": str(worktree_path),
+                "worktree_path": str(worktree_path or ""),
                 "started_at": started_at,
                 "finished_at": utc_now(),
-                "error": str(exc),
+                "removed_worktree": removed_worktree,
+                "deleted_branch": deleted_branch,
+                "error": "\n".join(errors),
             }
             self._record_event("cleanup_finished", result)
             return result
@@ -878,12 +896,126 @@ class PortalImplementationDaemon:
         result = {
             "cleaned": True,
             "branch": branch_name,
-            "worktree_path": str(worktree_path),
+            "worktree_path": str(worktree_path or ""),
             "started_at": started_at,
             "finished_at": utc_now(),
+            "removed_worktree": removed_worktree,
+            "deleted_branch": deleted_branch,
         }
         self._record_event("cleanup_finished", result)
         return result
+
+    def _reconcile_failed_merges(self) -> list[dict[str, Any]]:
+        results: list[dict[str, Any]] = []
+        for event in self._failed_merge_candidates():
+            task_id = str(event.get("task_id") or "")
+            attempt = int(event.get("attempt") or 0)
+            branch = str(event.get("branch") or "")
+            worktree_path_text = str(event.get("worktree_path") or "")
+            worktree_path = Path(worktree_path_text) if worktree_path_text else None
+            implementation_commit = str(event.get("implementation_commit") or "")
+            if not task_id or not implementation_commit:
+                continue
+            if self._git_ref_is_ancestor(implementation_commit, "HEAD"):
+                cleanup_result = self._cleanup_merged_worktree(worktree_path, branch) if branch else {}
+                result = {
+                    "task_id": task_id,
+                    "attempt": attempt,
+                    "branch": branch,
+                    "implementation_commit": implementation_commit,
+                    "resolved": True,
+                    "reason": "implementation_commit_already_merged",
+                    "cleanup_result": cleanup_result,
+                }
+                self._record_event("merge_reconciled", result)
+                results.append(result)
+                continue
+            if not branch or not self._git_ref_exists(branch):
+                result = {
+                    "task_id": task_id,
+                    "attempt": attempt,
+                    "branch": branch,
+                    "implementation_commit": implementation_commit,
+                    "resolved": False,
+                    "reason": "implementation_branch_missing",
+                }
+                self._record_event("merge_reconcile_skipped", result)
+                results.append(result)
+                continue
+
+            task = PortalTask(
+                task_id=task_id,
+                title=str(event.get("title") or "failed implementation merge"),
+                status="todo",
+                completion="manual",
+                priority="P2",
+                track="ops",
+            )
+            merge_result = self._merge_branch_to_main(branch, task, attempt)
+            cleanup_result = {}
+            if merge_result.get("merged"):
+                cleanup_result = self._cleanup_merged_worktree(worktree_path, branch)
+            result = {
+                "task_id": task_id,
+                "attempt": attempt,
+                "branch": branch,
+                "implementation_commit": implementation_commit,
+                "resolved": bool(merge_result.get("merged")),
+                "reason": "merge_retried",
+                "merge_result": merge_result,
+                "cleanup_result": cleanup_result,
+            }
+            self._record_event("merge_reconciled", result)
+            results.append(result)
+        return results
+
+    def _failed_merge_candidates(self) -> list[dict[str, Any]]:
+        candidates: dict[tuple[str, str], dict[str, Any]] = {}
+        reconciled_commits: set[str] = set()
+        for event in self._iter_events():
+            if str(event.get("type") or "") == "merge_reconciled" and event.get("resolved"):
+                implementation_commit = str(event.get("implementation_commit") or "")
+                if implementation_commit:
+                    reconciled_commits.add(implementation_commit)
+                continue
+            if str(event.get("type") or "") != "implementation_finished":
+                continue
+            implementation_commit = str(event.get("implementation_commit") or "")
+            if not implementation_commit or implementation_commit in reconciled_commits:
+                continue
+            validation = event.get("validation_result") or {}
+            if isinstance(validation, dict) and validation.get("attempted") and not validation.get("passed", False):
+                continue
+            merge_result = event.get("merge_result") or {}
+            if not isinstance(merge_result, dict):
+                continue
+            if not merge_result.get("attempted") or merge_result.get("merged"):
+                continue
+            task_id = str(event.get("task_id") or "")
+            key = (task_id, implementation_commit)
+            candidates[key] = event
+
+        unresolved: list[dict[str, Any]] = []
+        for event in candidates.values():
+            implementation_commit = str(event.get("implementation_commit") or "")
+            if implementation_commit in reconciled_commits:
+                continue
+            if implementation_commit and not self._git_ref_is_ancestor(implementation_commit, "HEAD"):
+                unresolved.append(event)
+                continue
+            cleanup = event.get("cleanup_result") or {}
+            if isinstance(cleanup, dict) and not cleanup.get("cleaned", False):
+                unresolved.append(event)
+        return unresolved
+
+    def _unresolved_merge_failures_by_task(self) -> dict[str, dict[str, Any]]:
+        failures: dict[str, dict[str, Any]] = {}
+        for event in self._failed_merge_candidates():
+            task_id = str(event.get("task_id") or "")
+            implementation_commit = str(event.get("implementation_commit") or "")
+            if task_id and implementation_commit and not self._git_ref_is_ancestor(implementation_commit, "HEAD"):
+                failures[task_id] = event
+        return failures
 
     def _has_unresolved_merge_failure(self, task: PortalTask, previous: PortalTaskState) -> bool:
         if previous.last_implementation_task_id != task.task_id:
@@ -906,6 +1038,18 @@ class PortalImplementationDaemon:
         )
         return result.returncode == 0
 
+    def _git_ref_exists(self, ref: str) -> bool:
+        if not ref:
+            return False
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", ref],
+            cwd=self.repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode == 0
+
     def _implementation_lock_path(self) -> Path:
         return self.state_path.parent / "implementation.lock"
 
@@ -917,20 +1061,8 @@ class PortalImplementationDaemon:
         return None
 
     def _inflight_implementation_events(self) -> list[dict[str, Any]]:
-        if not self.events_path.exists():
-            return []
-
         inflight: dict[tuple[str, int], dict[str, Any]] = {}
-        for raw_line in self.events_path.read_text(encoding="utf-8").splitlines():
-            raw_line = raw_line.strip()
-            if not raw_line:
-                continue
-            try:
-                event = json.loads(raw_line)
-            except json.JSONDecodeError:
-                continue
-            if not isinstance(event, dict):
-                continue
+        for event in self._iter_events():
             event_type = str(event.get("type") or "")
             task_id = str(event.get("task_id") or "")
             attempt = int(event.get("attempt") or 0)
@@ -943,6 +1075,22 @@ class PortalImplementationDaemon:
                 inflight.pop(key, None)
 
         return list(inflight.values())
+
+    def _iter_events(self) -> list[dict[str, Any]]:
+        if not self.events_path.exists():
+            return []
+        events: list[dict[str, Any]] = []
+        for raw_line in self.events_path.read_text(encoding="utf-8").splitlines():
+            raw_line = raw_line.strip()
+            if not raw_line:
+                continue
+            try:
+                event = json.loads(raw_line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(event, dict):
+                events.append(event)
+        return events
 
     def _implementation_process_active(self, event: dict[str, Any]) -> bool:
         worktree_path = str(event.get("worktree_path") or "")
