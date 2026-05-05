@@ -78,6 +78,17 @@ export const agentToolPermissionPolicies: Record<AgentCommandName, AgentToolPerm
   request_shelter_contact: shareOrDisclosePolicy("agent.shelter_contact.request"),
   approve_shelter_contact_request: shareOrDisclosePolicy("agent.shelter_contact.approve"),
   deny_shelter_contact_request: shareOrDisclosePolicy("agent.shelter_contact.deny"),
+  summarize_upload_requirements: readPublicPolicy(),
+  classify_uploaded_document: {
+    gate: "write_wallet",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  repair_upload_storage: writeWalletPolicy("agent.upload.storage.repair"),
+  toggle_upload_shared: shareOrDisclosePolicy("agent.upload.shared.toggle"),
   set_disclosure_scopes: shareOrDisclosePolicy("agent.disclosure_scopes.set"),
   record_controller_approval: shareOrDisclosePolicy("agent.access_request.controller_approval"),
   approve_access_request: shareOrDisclosePolicy("agent.access_request.approve"),

@@ -59,6 +59,7 @@ export function useAgentChatService(
       setPolicy: (policy) => runtimeRef.current.setPolicy?.(policy),
       setRecipients: (recipients) => runtimeRef.current.setRecipients?.(recipients),
       setShelterContactRequests: (requests) => runtimeRef.current.setShelterContactRequests?.(requests),
+      setUploads: (uploads) => runtimeRef.current.setUploads?.(uploads),
       setAccessRequests: (requests) => runtimeRef.current.setAccessRequests?.(requests),
       setGrantReceipts: (receipts) => runtimeRef.current.setGrantReceipts?.(receipts),
       setWalletAuditEvents: (events) => runtimeRef.current.setWalletAuditEvents?.(events),

@@ -68,8 +68,8 @@ export function AgentChatDrawer({
           </header>
 
           <div className="agent-current-task" role="status">
-            <small>Read-only chat</small>
-            <span>Ask questions while continuing to use the app.</span>
+            <small>Guided chat</small>
+            <span>Abby asks before changing wallet data.</span>
           </div>
 
           <AgentMessageList

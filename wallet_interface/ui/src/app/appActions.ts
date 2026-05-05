@@ -44,18 +44,26 @@ import {
   revokeAccessRequestAction,
   viewGrantedRecordAction
 } from "../agent/tools/recipientAccessTools";
+import {
+  classifyUploadedDocumentAction,
+  repairUploadStorageAction,
+  summarizeUploadRequirementsAction,
+  toggleUploadSharedAction
+} from "../agent/tools/uploadTools";
 import type {
   AccessRequestDecisionCommandInput,
   AddRecipientCommandInput,
   AgentCommandName,
   AnalyzeGrantedRecordCommandInput,
   Answer211QuestionCommandInput,
+  ClassifyUploadedDocumentCommandInput,
   CreateLocationRegionProofCommandInput,
   CreateServicePlanCommandInput,
   CreateVerifiedExportBundleCommandInput,
   DelegateGrantCommandInput,
   EditRecipientCommandInput,
   OpenServiceDetailCommandInput,
+  RepairUploadStorageCommandInput,
   RemoveRecipientCommandInput,
   RequestShelterContactCommandInput,
   RefreshWalletAuditCommandInput,
@@ -64,6 +72,8 @@ import type {
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
   ShelterContactRequestDecisionCommandInput,
+  SummarizeUploadRequirementsCommandInput,
+  ToggleUploadSharedCommandInput,
   UpdateCheckInPolicyCommandInput,
   UpdateRecipientScopesCommandInput,
   UpdateRegistrationDraftCommandInput,
@@ -99,6 +109,7 @@ export interface AppActionRuntime {
   setPolicy?: (policy: CheckInPolicyDraft) => void;
   setRecipients?: (recipients: DisclosureRecipientDraft[]) => void;
   setShelterContactRequests?: (requests: ShelterContactRequest[]) => void;
+  setUploads?: (uploads: UploadItem[]) => void;
   setAccessRequests?: (requests: WalletAccessRequest[]) => void;
   setGrantReceipts?: (receipts: WalletGrantReceipt[]) => void;
   setWalletAuditEvents?: (events: AuditEvent[]) => void;
@@ -254,6 +265,12 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   }
   if (action === "create_verified_export_bundle" && isRecord(input)) {
     return `Create an export bundle for ${String(input.audienceName ?? "the selected recipient")}.`;
+  }
+  if (action === "repair_upload_storage" && isRecord(input)) {
+    return `Repair storage for upload ${String(input.uploadId ?? input.recordId ?? "")}.`;
+  }
+  if (action === "toggle_upload_shared" && isRecord(input)) {
+    return `${input.shared ? "Allow sharing for" : "Make private"} upload ${String(input.uploadId ?? "")}.`;
   }
   if (action === "update_registration_draft") return "Update private registration profile fields.";
   if (action === "update_check_in_policy") return "Update check-in reminder and escalation settings.";
@@ -493,6 +510,14 @@ export const appActionHandlers = {
     approveShelterContactRequestAction(runtime, input, options),
   deny_shelter_contact_request: (runtime, input: ShelterContactRequestDecisionCommandInput, options) =>
     denyShelterContactRequestAction(runtime, input, options),
+  summarize_upload_requirements: (runtime, input: SummarizeUploadRequirementsCommandInput) =>
+    summarizeUploadRequirementsAction(runtime, input),
+  classify_uploaded_document: (runtime, input: ClassifyUploadedDocumentCommandInput) =>
+    classifyUploadedDocumentAction(runtime, input),
+  repair_upload_storage: (runtime, input: RepairUploadStorageCommandInput, options) =>
+    repairUploadStorageAction(runtime, input, options),
+  toggle_upload_shared: (runtime, input: ToggleUploadSharedCommandInput, options) =>
+    toggleUploadSharedAction(runtime, input, options),
   set_disclosure_scopes: setDisclosureScopesAction,
   record_controller_approval: (runtime, input: RecordControllerApprovalCommandInput, options) =>
     recordControllerApprovalAction(runtime, input, options),

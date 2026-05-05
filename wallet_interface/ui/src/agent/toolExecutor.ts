@@ -535,5 +535,11 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
   if (name === "create_verified_export_bundle" && isRecord(input)) {
     return `Create an export bundle for ${String(input.audienceName ?? "the selected recipient")}.`;
   }
+  if (name === "repair_upload_storage" && isRecord(input)) {
+    return `Repair storage for upload ${String(input.uploadId ?? input.recordId ?? "")}.`;
+  }
+  if (name === "toggle_upload_shared" && isRecord(input)) {
+    return `${input.shared ? "Allow sharing for" : "Make private"} upload ${String(input.uploadId ?? "")}.`;
+  }
   return getToolDefinition(name).title;
 }
