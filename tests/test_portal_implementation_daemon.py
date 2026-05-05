@@ -323,6 +323,60 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert branch_check.returncode == 0
 
 
+def test_daemon_cleans_no_change_ephemeral_worktree(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: none
+- Validation: python -c "print('agent-control-ok')"
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text("print('no changes')\n", encoding="utf-8")
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+
+    assert implementation["commit_result"] == {"committed": False, "reason": "no_changes"}
+    assert implementation["cleanup_result"]["cleaned"] is True
+    assert not Path(implementation["worktree_path"]).exists()
+    assert subprocess.run(
+        ["git", "rev-parse", "--verify", implementation["branch"]],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).returncode != 0
+
+
 def test_daemon_merge_failure_keeps_artifact_task_ready(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
@@ -367,6 +421,8 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert implementation["commit_result"]["committed"] is True
     assert implementation["merge_result"]["attempted"] is True
     assert implementation["merge_result"]["merged"] is False
+    assert implementation["merge_result"]["reason"] == "main_checkout_dirty_conflict"
+    assert implementation["merge_result"]["dirty_paths"] == ["docs/agent.md"]
     assert implementation["returncode"] != 0
     assert state.last_merge_returncode != 0
 
@@ -377,6 +433,80 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert result["completed_count"] == 0
     assert "AGENT-000" not in state.completed_task_ids
     assert state.active_task_id == "AGENT-000"
+
+
+def test_daemon_skips_new_attempt_when_unresolved_merge_failure_exists(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    events_path = state_dir / "agent_chat_events.jsonl"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    init_git_repo(repo_root)
+    default_branch = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    branch_name = "implementation/agent-000-attempt-1-test"
+    subprocess.run(["git", "checkout", "-b", branch_name], cwd=repo_root, check=True, capture_output=True, text=True)
+    (repo_root / "docs").mkdir(exist_ok=True)
+    (repo_root / "docs" / "agent.md").write_text("implemented in branch", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
+    subprocess.run(["git", "commit", "-m", "AGENT-000: failed merge candidate"], cwd=repo_root, check=True)
+    implementation_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    subprocess.run(["git", "checkout", default_branch], cwd=repo_root, check=True, capture_output=True, text=True)
+    (repo_root / "docs").mkdir(exist_ok=True)
+    (repo_root / "docs" / "agent.md").write_text("dirty main copy", encoding="utf-8")
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path.write_text(
+        json.dumps(
+            {
+                "type": "implementation_finished",
+                "task_id": "AGENT-000",
+                "attempt": 1,
+                "returncode": 2,
+                "worktree_path": str(tmp_path / "missing-worktree"),
+                "branch": branch_name,
+                "implementation_commit": implementation_commit,
+                "merge_result": {"attempted": True, "merged": False, "returncode": 2},
+                "validation_result": {"attempted": True, "passed": True, "returncode": 0},
+                "cleanup_result": {"cleaned": False, "reason": "not_attempted"},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=events_path,
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {repo_root / 'missing.py'}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+
+    assert result["merge_reconciliation"][0]["resolved"] is False
+    assert result["implementation_result"]["skipped"] is True
+    assert result["implementation_result"]["reason"] == "unresolved_merge_failure"
+    assert result["implementation_result"]["branch"] == branch_name
+    assert not list((tmp_path / "worktrees").glob("*"))
 
 
 def test_daemon_retries_failed_worktree_merge_when_main_is_clean(tmp_path):
@@ -419,6 +549,7 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     first_implementation = first_result["implementation_result"]
 
     assert first_implementation["merge_result"]["merged"] is False
+    assert first_implementation["merge_result"]["reason"] == "main_checkout_dirty_conflict"
     assert Path(first_implementation["worktree_path"]).exists()
     assert subprocess.run(
         ["git", "rev-parse", "--verify", first_implementation["branch"]],
@@ -827,6 +958,161 @@ Path("docs/agent.md").write_text("implemented", encoding="utf-8")
     assert not stale_lock.exists()
 
 
+def test_daemon_preserves_live_lock_and_skips_duplicate_implementation(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    live_lock = state_dir / "implementation.lock"
+    live_lock.parent.mkdir(parents=True, exist_ok=True)
+    live_lock.write_text(
+        json.dumps(
+            {
+                "kind": "implementation",
+                "pid": 43210,
+                "owner_script": "portal_implementation_daemon.py",
+                "state_dir": str(state_dir.resolve()),
+                "task_id": "AGENT-000",
+                "attempt": 2,
+                "started_at": "2026-05-05T00:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {repo_root / 'missing.py'}",
+    )
+    monkeypatch.setattr("scripts.portal_implementation_daemon.process_is_running", lambda pid: pid == 43210)
+    monkeypatch.setattr(
+        "scripts.portal_implementation_daemon.process_command_line",
+        lambda pid: f"python portal_implementation_daemon.py --state-dir {state_dir}",
+    )
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    result = daemon._run_implementation(task, PortalTaskState())
+
+    assert result["skipped"] is True
+    assert result["reason"] == "lock_exists"
+    assert result["lock_owner_pid"] == 43210
+    assert json.loads(live_lock.read_text(encoding="utf-8"))["pid"] == 43210
+
+
+def test_daemon_validation_timeout_returns_failure(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: sleep 5
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implementation_timeout=0.1,
+    )
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    log_path = state_dir / "validation.log"
+    result = daemon._run_validation_commands(repo_root, task, log_path)
+
+    assert result["attempted"] is True
+    assert result["passed"] is False
+    assert result["returncode"] == 124
+    assert result["error"] == "timeout"
+    assert result["results"][0]["timed_out"] is True
+    assert "validation timed out" in log_path.read_text(encoding="utf-8")
+
+
+def test_daemon_load_strategy_falls_back_from_corrupt_json(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    strategy_path = state_dir / "agent_chat_strategy.json"
+    strategy_path.parent.mkdir(parents=True, exist_ok=True)
+    strategy_path.write_text("{broken", encoding="utf-8")
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=strategy_path,
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+
+    strategy = daemon.load_strategy()
+
+    assert strategy["generation"] == 0
+    assert strategy["focus_tracks"]
+
+
+def test_daemon_clears_stale_merge_lock_before_merging(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    worktree = tmp_path / "worktree"
+    branch_name = "implementation/test-stale-merge-lock"
+    daemon._create_seeded_worktree(worktree, branch_name)
+    (worktree / "docs").mkdir(exist_ok=True)
+    (worktree / "docs" / "agent.md").write_text("implemented", encoding="utf-8")
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    commit_result = daemon._commit_worktree_changes(worktree, task, 1)
+    merge_lock = daemon._repo_merge_lock_path()
+    merge_lock.parent.mkdir(parents=True, exist_ok=True)
+    merge_lock.write_text("stale\n", encoding="utf-8")
+
+    result = daemon._merge_branch_to_main(branch_name, task, 1)
+
+    assert commit_result["committed"] is True
+    assert result["attempted"] is True
+    assert result["merged"] is True
+    assert not merge_lock.exists()
+    daemon._cleanup_merged_worktree(worktree, branch_name)
+
+
 def test_daemon_marks_output_backed_tasks_completed_and_selects_next(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "todo.md"
@@ -940,3 +1226,65 @@ def test_supervisor_starts_managed_daemon_from_repo_root(tmp_path, monkeypatch):
     assert process.pid == 12345
     assert captured["kwargs"]["cwd"] == supervisor_module.REPO_ROOT
     assert (state_dir / "portal_managed_daemon.pid").read_text(encoding="utf-8") == "12345\n"
+
+
+def test_supervisor_load_strategy_falls_back_from_corrupt_json(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+    strategy_path = state_dir / "portal_strategy.json"
+    strategy_path.parent.mkdir(parents=True, exist_ok=True)
+    strategy_path.write_text("{broken", encoding="utf-8")
+
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=strategy_path,
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+        )
+    )
+
+    strategy = supervisor._load_strategy()
+
+    assert strategy["generation"] == 0
+    assert strategy["focus_tracks"]
+
+
+def test_supervisor_adopts_existing_managed_daemon_pid(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    (state_dir / "portal_managed_daemon.pid").write_text("43210\n", encoding="utf-8")
+
+    monkeypatch.setattr(supervisor_module, "process_is_running", lambda pid: pid == 43210)
+    monkeypatch.setattr(
+        supervisor_module,
+        "process_command_line",
+        lambda pid: (
+            f"python portal_implementation_daemon.py --todo-path {todo_path} "
+            f"--state-dir {state_dir} --state-prefix portal"
+        ),
+    )
+
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            state_prefix="portal",
+        )
+    )
+
+    adopted = supervisor._adopt_existing_daemon()
+
+    assert adopted is not None
+    assert adopted.pid == 43210

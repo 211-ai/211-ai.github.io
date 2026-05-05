@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
+import signal
 import subprocess
 import sys
 import time
@@ -16,7 +18,17 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scraper.utils import setup_logging
-from scripts.portal_implementation_daemon import DEFAULT_TRACKS, TASK_HEADER_PREFIX, PortalTaskState, utc_now
+from scripts.portal_implementation_daemon import (
+    DEFAULT_TRACKS,
+    TASK_HEADER_PREFIX,
+    PortalTaskState,
+    load_json_dict,
+    process_command_line,
+    process_is_running,
+    utc_now,
+    write_json_atomic,
+    write_text_atomic,
+)
 
 logger = logging.getLogger("scraper.portal.implementation.supervisor")
 
@@ -39,6 +51,47 @@ class PortalSupervisorConfig:
     implementation_timeout: float = 1800.0
     use_ephemeral_worktree: bool = True
     worktree_root: Path | None = None
+
+
+class AdoptedManagedDaemonProcess:
+    def __init__(self, pid: int) -> None:
+        self.pid = pid
+        self.returncode: int | None = None
+
+    def poll(self) -> int | None:
+        if process_is_running(self.pid):
+            return None
+        if self.returncode is None:
+            self.returncode = 0
+        return self.returncode
+
+    def terminate(self) -> None:
+        if self.poll() is not None:
+            return
+        try:
+            os.kill(self.pid, signal.SIGTERM)
+            self.returncode = -signal.SIGTERM
+        except ProcessLookupError:
+            self.returncode = 0
+
+    def kill(self) -> None:
+        if self.poll() is not None:
+            return
+        try:
+            os.kill(self.pid, signal.SIGKILL)
+            self.returncode = -signal.SIGKILL
+        except ProcessLookupError:
+            self.returncode = 0
+
+    def wait(self, timeout: float | None = None) -> int:
+        deadline = None if timeout is None else time.time() + timeout
+        while True:
+            polled = self.poll()
+            if polled is not None:
+                return polled
+            if deadline is not None and time.time() >= deadline:
+                raise subprocess.TimeoutExpired(cmd=["pid", str(self.pid)], timeout=timeout)
+            time.sleep(0.2)
 
 
 class PortalImplementationSupervisor:
@@ -73,14 +126,20 @@ class PortalImplementationSupervisor:
         }
 
     def run_forever(self) -> None:
-        process: subprocess.Popen[str] | None = None
+        process: subprocess.Popen[str] | AdoptedManagedDaemonProcess | None = None
         try:
             while self.restart_count <= self.config.max_restarts:
                 if process is None or process.poll() is not None:
-                    process = self._start_daemon()
-                    self.last_start_at = time.time()
-                    self.restart_count += 1
-                    self._record_event("daemon_start", {"restart_count": self.restart_count})
+                    adopted = self._adopt_existing_daemon()
+                    if adopted is not None:
+                        process = adopted
+                        self.last_start_at = None
+                        self._record_event("daemon_adopted", {"pid": adopted.pid})
+                    else:
+                        process = self._start_daemon()
+                        self.last_start_at = time.time()
+                        self.restart_count += 1
+                        self._record_event("daemon_start", {"restart_count": self.restart_count, "pid": process.pid})
 
                 state = PortalTaskState.load(self.config.state_path)
                 stuck, reason = self.is_stuck(
@@ -136,8 +195,7 @@ class PortalImplementationSupervisor:
                 "last_rewrite_reason": reason,
             }
         )
-        self.config.strategy_path.parent.mkdir(parents=True, exist_ok=True)
-        self.config.strategy_path.write_text(json.dumps(strategy, indent=2, sort_keys=True), encoding="utf-8")
+        write_json_atomic(self.config.strategy_path, strategy)
         self._record_event(
             "strategy_rewrite",
             {
@@ -160,10 +218,32 @@ class PortalImplementationSupervisor:
         }
         if not self.config.strategy_path.exists():
             return defaults
-        payload = json.loads(self.config.strategy_path.read_text(encoding="utf-8"))
+        payload = load_json_dict(self.config.strategy_path)
+        if payload is None:
+            logger.warning("Strategy file is missing or invalid JSON; using defaults: %s", self.config.strategy_path)
+            return defaults.copy()
         return {**defaults, **payload}
 
     def _start_daemon(self) -> subprocess.Popen[str]:
+        command = self._build_daemon_command()
+        process = subprocess.Popen(command, cwd=REPO_ROOT, text=True)
+        write_text_atomic(self._managed_daemon_pid_path(), f"{process.pid}\n")
+        return process
+
+    def _terminate(self, process: subprocess.Popen[str] | AdoptedManagedDaemonProcess) -> None:
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=15)
+        pid_path = self._managed_daemon_pid_path()
+        if pid_path.exists():
+            pid_path.unlink()
+        self._record_event("daemon_stop", {"returncode": process.returncode})
+
+    def _build_daemon_command(self) -> list[str]:
         command = [
             sys.executable,
             str(Path(__file__).resolve().parent / "portal_implementation_daemon.py"),
@@ -187,25 +267,49 @@ class PortalImplementationSupervisor:
                 command.append("--no-ephemeral-worktree")
             if self.config.worktree_root is not None:
                 command.extend(["--worktree-root", str(self.config.worktree_root)])
-        process = subprocess.Popen(command, cwd=REPO_ROOT, text=True)
-        pid_path = self.config.state_dir / f"{self.config.state_prefix}_managed_daemon.pid"
-        pid_path.parent.mkdir(parents=True, exist_ok=True)
-        pid_path.write_text(f"{process.pid}\n", encoding="utf-8")
-        return process
+        return command
 
-    def _terminate(self, process: subprocess.Popen[str]) -> None:
-        if process.poll() is not None:
-            return
-        process.terminate()
+    def _managed_daemon_pid_path(self) -> Path:
+        return self.config.state_dir / f"{self.config.state_prefix}_managed_daemon.pid"
+
+    def _adopt_existing_daemon(self) -> AdoptedManagedDaemonProcess | None:
+        pid_path = self._managed_daemon_pid_path()
+        if not pid_path.exists():
+            return None
         try:
-            process.wait(timeout=15)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait(timeout=15)
-        pid_path = self.config.state_dir / f"{self.config.state_prefix}_managed_daemon.pid"
-        if pid_path.exists():
-            pid_path.unlink()
-        self._record_event("daemon_stop", {"returncode": process.returncode})
+            pid = int(pid_path.read_text(encoding="utf-8").strip())
+        except (OSError, ValueError):
+            try:
+                pid_path.unlink()
+            except OSError:
+                pass
+            return None
+        if not process_is_running(pid):
+            try:
+                pid_path.unlink()
+            except OSError:
+                pass
+            return None
+        command_line = process_command_line(pid)
+        if not self._managed_daemon_matches_command_line(command_line):
+            try:
+                pid_path.unlink()
+            except OSError:
+                pass
+            return None
+        return AdoptedManagedDaemonProcess(pid)
+
+    def _managed_daemon_matches_command_line(self, command_line: str) -> bool:
+        required_fragments = [
+            "portal_implementation_daemon.py",
+            "--state-dir",
+            str(self.config.state_dir),
+            "--state-prefix",
+            self.config.state_prefix,
+            "--todo-path",
+            str(self.config.todo_path),
+        ]
+        return all(fragment in command_line for fragment in required_fragments)
 
     def _record_event(self, event_type: str, payload: dict[str, Any]) -> None:
         self.config.events_path.parent.mkdir(parents=True, exist_ok=True)

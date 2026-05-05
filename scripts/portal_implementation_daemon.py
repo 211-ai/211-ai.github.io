@@ -64,6 +64,68 @@ def normalize_task_header_prefix(value: str) -> str:
     return f"## {stripped}"
 
 
+def write_text_atomic(path: Path, content: str, *, encoding: str = "utf-8") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temp_path = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding=encoding) as fh:
+            fh.write(content)
+        os.replace(temp_path, path)
+    finally:
+        try:
+            os.unlink(temp_path)
+        except FileNotFoundError:
+            pass
+
+
+def write_json_atomic(path: Path, payload: Any) -> None:
+    write_text_atomic(path, json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def load_json_dict(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+    if not text:
+        return None
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    return payload
+
+
+def process_is_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+def process_command_line(pid: int) -> str:
+    result = subprocess.run(
+        ["ps", "-p", str(pid), "-o", "args="],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return ""
+    return result.stdout.strip()
+
+
 @dataclass(frozen=True)
 class PortalTask:
     task_id: str
@@ -119,8 +181,7 @@ class PortalTaskState:
     strategy_generation: int = 0
 
     def save(self, path: Path) -> None:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(asdict(self), indent=2, sort_keys=True), encoding="utf-8")
+        write_json_atomic(path, asdict(self))
 
     @classmethod
     def load(cls, path: Path) -> "PortalTaskState":
@@ -295,10 +356,12 @@ class PortalImplementationDaemon:
             "last_rewrite_reason": "",
         }
         if not self.strategy_path.exists():
-            self.strategy_path.parent.mkdir(parents=True, exist_ok=True)
-            self.strategy_path.write_text(json.dumps(defaults, indent=2, sort_keys=True), encoding="utf-8")
+            write_json_atomic(self.strategy_path, defaults)
             return defaults
-        payload = json.loads(self.strategy_path.read_text(encoding="utf-8"))
+        payload = load_json_dict(self.strategy_path)
+        if payload is None:
+            logger.warning("Strategy file is missing or invalid JSON; using defaults: %s", self.strategy_path)
+            return defaults.copy()
         merged = {**defaults, **payload}
         merged["focus_tracks"] = [str(item).lower() for item in merged.get("focus_tracks", DEFAULT_TRACKS)]
         merged["blocked_tasks"] = [str(item) for item in merged.get("blocked_tasks", [])]
@@ -413,7 +476,18 @@ class PortalImplementationDaemon:
             self._record_event("task_completed", {"task_id": task_id})
         implementation_result: dict[str, Any] | None = None
         if self.implement and selected is not None and resolved_statuses.get(selected.task_id) == "ready":
-            implementation_result = self._run_implementation(selected, state)
+            unresolved_for_selected = unresolved_merge_failures.get(selected.task_id)
+            if unresolved_for_selected is not None:
+                implementation_result = {
+                    "skipped": True,
+                    "reason": "unresolved_merge_failure",
+                    "task_id": selected.task_id,
+                    "branch": str(unresolved_for_selected.get("branch") or ""),
+                    "implementation_commit": str(unresolved_for_selected.get("implementation_commit") or ""),
+                }
+                self._record_event("implementation_skipped", implementation_result)
+            else:
+                implementation_result = self._run_implementation(selected, state)
         self._record_event(
             "daemon_pass",
             {
@@ -451,21 +525,29 @@ class PortalImplementationDaemon:
             self._record_event("implementation_skipped", result)
             return result
 
-        lock_path = self._implementation_lock_path()
-        if lock_path.exists():
-            try:
-                lock_path.unlink()
-            except OSError:
-                self._record_event("implementation_skipped", {"task_id": task.task_id, "reason": "lock_exists"})
-                return {"skipped": True, "reason": "lock_exists"}
-        try:
-            lock_fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        except FileExistsError:
-            self._record_event("implementation_skipped", {"task_id": task.task_id, "reason": "lock_exists"})
-            return {"skipped": True, "reason": "lock_exists"}
-
         started_at = utc_now()
         attempt = state.implementation_attempts.get(task.task_id, 0) + 1
+        lock_path = self._implementation_lock_path()
+        lock_metadata = self._build_implementation_lock_metadata(task, attempt, started_at)
+        lock_fd, lock_reason, existing_lock = self._try_acquire_lock(
+            lock_path,
+            lock_kind="implementation",
+            owner_active=self._implementation_lock_owner_is_active,
+        )
+        if lock_fd is None:
+            result = {
+                "skipped": True,
+                "reason": lock_reason,
+                "task_id": task.task_id,
+                "attempt": attempt,
+            }
+            if existing_lock:
+                result["lock_owner_pid"] = int(existing_lock.get("pid") or 0)
+                result["lock_owner_task_id"] = str(existing_lock.get("task_id") or "")
+            self._record_event("implementation_skipped", result)
+            return result
+
+        acquired_lock = True
         log_path = self.implementation_log_dir / f"{task.task_id.lower()}-attempt-{attempt}.log"
         prompt = self._build_implementation_prompt(task, attempt)
         workspace_path = self.repo_root
@@ -480,8 +562,7 @@ class PortalImplementationDaemon:
         }
 
         try:
-            os.write(lock_fd, f"{task.task_id}\n{started_at}\n".encode("utf-8"))
-            os.close(lock_fd)
+            self._write_lock_metadata(lock_fd, lock_metadata)
             if self.use_ephemeral_worktree:
                 return self._run_implementation_in_ephemeral_worktree(
                     task=task,
@@ -559,7 +640,7 @@ class PortalImplementationDaemon:
             return result
         finally:
             try:
-                if lock_path.exists():
+                if acquired_lock and lock_path.exists():
                     lock_path.unlink()
             except OSError:
                 logger.warning("Failed to remove implementation lock %s", lock_path)
@@ -640,6 +721,8 @@ class PortalImplementationDaemon:
                             cleanup_result = self._cleanup_merged_worktree(worktree_path, branch_name)
                         else:
                             returncode = int(merge_result.get("returncode") or 1)
+                    elif commit_result.get("reason") == "no_changes":
+                        cleanup_result = self._cleanup_merged_worktree(worktree_path, branch_name)
                 else:
                     returncode = int(validation_result.get("returncode") or 1)
         except subprocess.TimeoutExpired:
@@ -764,20 +847,43 @@ class PortalImplementationDaemon:
             }
 
         results: list[dict[str, Any]] = []
+        log_path.parent.mkdir(parents=True, exist_ok=True)
         with log_path.open("a", encoding="utf-8") as log_fh:
             log_fh.write("\nValidation:\n")
             for command in task.validation:
                 started_at = utc_now()
                 log_fh.write(f"$ {command}\n")
                 log_fh.flush()
-                completed = subprocess.run(
-                    ["/bin/bash", "-lc", command],
-                    cwd=workspace_path,
-                    text=True,
-                    stdout=log_fh,
-                    stderr=subprocess.STDOUT,
-                    check=False,
-                )
+                try:
+                    completed = subprocess.run(
+                        ["/bin/bash", "-lc", command],
+                        cwd=workspace_path,
+                        text=True,
+                        stdout=log_fh,
+                        stderr=subprocess.STDOUT,
+                        timeout=self.implementation_timeout,
+                        check=False,
+                    )
+                except subprocess.TimeoutExpired:
+                    results.append(
+                        {
+                            "command": command,
+                            "started_at": started_at,
+                            "finished_at": utc_now(),
+                            "returncode": 124,
+                            "timed_out": True,
+                        }
+                    )
+                    log_fh.write(f"[validation timed out] timeout={self.implementation_timeout}\n")
+                    log_fh.flush()
+                    return {
+                        "attempted": True,
+                        "passed": False,
+                        "returncode": 124,
+                        "results": results,
+                        "failed_command": command,
+                        "error": "timeout",
+                    }
                 result = {
                     "command": command,
                     "started_at": started_at,
@@ -806,21 +912,45 @@ class PortalImplementationDaemon:
 
     def _merge_branch_to_main(self, branch_name: str, task: PortalTask, attempt: int) -> dict[str, Any]:
         started_at = utc_now()
+        dirty_overlap = self._dirty_merge_conflict_paths(branch_name)
+        if dirty_overlap:
+            result = {
+                "attempted": True,
+                "merged": False,
+                "returncode": 2,
+                "branch": branch_name,
+                "started_at": started_at,
+                "finished_at": utc_now(),
+                "merge_commit": "",
+                "stdout": "",
+                "stderr": "",
+                "reason": "main_checkout_dirty_conflict",
+                "dirty_paths": dirty_overlap,
+            }
+            self._record_event("merge_finished", result)
+            return result
         merge_lock = self._repo_merge_lock_path()
-        try:
-            lock_fd = os.open(merge_lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        except FileExistsError:
-            return {
+        lock_metadata = self._build_merge_lock_metadata(branch_name, task, attempt, started_at)
+        lock_fd, lock_reason, existing_lock = self._try_acquire_lock(
+            merge_lock,
+            lock_kind="merge",
+            owner_active=self._merge_lock_owner_is_active,
+        )
+        if lock_fd is None:
+            result = {
                 "attempted": False,
                 "merged": False,
-                "reason": "merge_lock_exists",
+                "reason": lock_reason,
                 "branch": branch_name,
                 "started_at": started_at,
             }
+            if existing_lock:
+                result["lock_owner_pid"] = int(existing_lock.get("pid") or 0)
+                result["lock_owner_branch"] = str(existing_lock.get("branch") or "")
+            return result
 
         try:
-            os.write(lock_fd, f"{branch_name}\n{started_at}\n".encode("utf-8"))
-            os.close(lock_fd)
+            self._write_lock_metadata(lock_fd, lock_metadata)
             self._record_event(
                 "merge_started",
                 {"task_id": task.task_id, "attempt": attempt, "branch": branch_name, "started_at": started_at},
@@ -904,6 +1034,51 @@ class PortalImplementationDaemon:
         }
         self._record_event("cleanup_finished", result)
         return result
+
+    def _dirty_merge_conflict_paths(self, branch_name: str) -> list[str]:
+        dirty_paths = self._dirty_worktree_paths(self.repo_root)
+        if not dirty_paths:
+            return []
+        branch_paths = self._branch_changed_paths(branch_name)
+        return sorted(dirty_paths & branch_paths)
+
+    def _dirty_worktree_paths(self, cwd: Path) -> set[str]:
+        result = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=all"],
+            cwd=cwd,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return set()
+        paths: set[str] = set()
+        for line in result.stdout.splitlines():
+            if len(line) < 4:
+                continue
+            path_text = line[3:].strip()
+            if " -> " in path_text:
+                original, renamed = path_text.split(" -> ", 1)
+                if original:
+                    paths.add(original.strip())
+                if renamed:
+                    paths.add(renamed.strip())
+                continue
+            if path_text:
+                paths.add(path_text)
+        return paths
+
+    def _branch_changed_paths(self, branch_name: str) -> set[str]:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", f"HEAD..{branch_name}"],
+            cwd=self.repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            return set()
+        return {line.strip() for line in result.stdout.splitlines() if line.strip()}
 
     def _reconcile_failed_merges(self) -> list[dict[str, Any]]:
         results: list[dict[str, Any]] = []
@@ -1052,6 +1227,110 @@ class PortalImplementationDaemon:
 
     def _implementation_lock_path(self) -> Path:
         return self.state_path.parent / "implementation.lock"
+
+    def _build_implementation_lock_metadata(self, task: PortalTask, attempt: int, started_at: str) -> dict[str, Any]:
+        return {
+            "kind": "implementation",
+            "pid": os.getpid(),
+            "owner_script": Path(sys.argv[0]).name,
+            "repo_root": str(self.repo_root.resolve()),
+            "state_dir": str(self.state_path.parent.resolve()),
+            "task_id": task.task_id,
+            "attempt": attempt,
+            "started_at": started_at,
+        }
+
+    def _build_merge_lock_metadata(
+        self,
+        branch_name: str,
+        task: PortalTask,
+        attempt: int,
+        started_at: str,
+    ) -> dict[str, Any]:
+        return {
+            "kind": "merge",
+            "pid": os.getpid(),
+            "owner_script": Path(sys.argv[0]).name,
+            "repo_root": str(self.repo_root.resolve()),
+            "task_id": task.task_id,
+            "attempt": attempt,
+            "branch": branch_name,
+            "started_at": started_at,
+        }
+
+    def _implementation_lock_owner_is_active(self, metadata: dict[str, Any]) -> bool:
+        state_dir = str(metadata.get("state_dir") or "")
+        if state_dir and Path(state_dir).resolve() != self.state_path.parent.resolve():
+            return False
+        return self._lock_owner_is_active(metadata, expected_kind="implementation")
+
+    def _merge_lock_owner_is_active(self, metadata: dict[str, Any]) -> bool:
+        repo_root = str(metadata.get("repo_root") or "")
+        if repo_root and Path(repo_root).resolve() != self.repo_root.resolve():
+            return False
+        return self._lock_owner_is_active(metadata, expected_kind="merge")
+
+    def _lock_owner_is_active(self, metadata: dict[str, Any], *, expected_kind: str) -> bool:
+        kind = str(metadata.get("kind") or "")
+        if kind and kind != expected_kind:
+            return False
+        try:
+            pid = int(metadata.get("pid") or 0)
+        except (TypeError, ValueError):
+            return False
+        if not process_is_running(pid):
+            return False
+        owner_script = str(metadata.get("owner_script") or "")
+        command_line = process_command_line(pid)
+        if owner_script and owner_script not in command_line:
+            return False
+        return True
+
+    def _try_acquire_lock(
+        self,
+        lock_path: Path,
+        *,
+        lock_kind: str,
+        owner_active: Any,
+    ) -> tuple[int | None, str, dict[str, Any] | None]:
+        for _ in range(2):
+            try:
+                return os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY), "acquired", None
+            except FileExistsError:
+                existing = load_json_dict(lock_path)
+                if existing is not None and owner_active(existing):
+                    return None, "lock_exists", existing
+                if not self._clear_stale_lock(lock_path, lock_kind=lock_kind, metadata=existing):
+                    return None, "lock_cleanup_failed", existing
+        existing = load_json_dict(lock_path)
+        if existing is not None and owner_active(existing):
+            return None, "lock_exists", existing
+        return None, "lock_unavailable", existing
+
+    def _write_lock_metadata(self, lock_fd: int, metadata: dict[str, Any]) -> None:
+        try:
+            os.write(lock_fd, json.dumps(metadata, indent=2, sort_keys=True).encode("utf-8"))
+        finally:
+            os.close(lock_fd)
+
+    def _clear_stale_lock(self, lock_path: Path, *, lock_kind: str, metadata: dict[str, Any] | None) -> bool:
+        try:
+            lock_path.unlink()
+        except FileNotFoundError:
+            return True
+        except OSError:
+            logger.warning("Failed to remove stale %s lock %s", lock_kind, lock_path)
+            return False
+        self._record_event(
+            f"{lock_kind}_lock_cleared",
+            {
+                "lock_path": str(lock_path),
+                "lock_owner_pid": int(metadata.get("pid") or 0) if metadata else 0,
+                "task_id": str(metadata.get("task_id") or "") if metadata else "",
+                "branch": str(metadata.get("branch") or "") if metadata else "",
+            },
+        )
+        return True
 
     def _find_live_inflight_implementation(self) -> dict[str, Any] | None:
         inflight_events = self._inflight_implementation_events()
