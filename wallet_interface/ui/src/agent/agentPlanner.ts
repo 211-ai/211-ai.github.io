@@ -130,6 +130,12 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
     };
   }
 
+  const exportTurn = planExportTurn(input.context, lower, content);
+  if (exportTurn) return exportTurn;
+
+  const securityTurn = planSecurityTurn(input.context, lower, content);
+  if (securityTurn) return securityTurn;
+
   const serviceDetailId = parseServiceId(lower, content, input.context, "open");
   if (serviceDetailId) {
     return {
@@ -325,6 +331,89 @@ function planProofTurn(context: SurfaceContext, lower: string, original: string)
   };
 }
 
+function planExportTurn(context: SurfaceContext, lower: string, original: string): AgentPlannedTurn | undefined {
+  if (!/\b(export|exports|bundle|download)\b/.test(lower)) return undefined;
+
+  if (/\b(import|load|ingest)\b/.test(lower)) {
+    const bundleId = parseBundleId(original);
+    if (!bundleId) {
+      return {
+        intentKind: "export_request",
+        summary: "Clarify export import request.",
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "exports" }, title: getToolDefinition("navigate").title }]),
+        response: "To import an export bundle, I need the export bundle ID or provided bundle data."
+      };
+    }
+    return {
+      intentKind: "export_request",
+      summary: "Import export bundle.",
+      tools: withToolSurface(context, [tool("import_export_bundle", { bundleId })])
+    };
+  }
+
+  if (!/\b(create|stage|generate|prepare|make)\b/.test(lower)) return undefined;
+  const recordIds = parseRecordIds(original);
+  const audienceDid = parseDid(original);
+  const audienceName =
+    parseNamedValue(original, "audience") ??
+    parseNamedValue(original, "recipient") ??
+    parseNamedValue(original, "for") ??
+    audienceDid;
+  if (!audienceName || recordIds.length === 0) {
+    return {
+      intentKind: "export_request",
+      summary: "Clarify export bundle request.",
+      tools: withToolSurface(context, [{ name: "navigate", input: { route: "exports" }, title: getToolDefinition("navigate").title }]),
+      response: "To stage an export bundle, I need a recipient or audience label and at least one record ID."
+    };
+  }
+
+  return {
+    intentKind: "export_request",
+    summary: "Stage export bundle creation.",
+    tools: withToolSurface(context, [
+      tool("create_verified_export_bundle", {
+        audienceName,
+        ...(audienceDid ? { audienceDid } : {}),
+        recordIds,
+        proofIds: parseProofIds(original),
+        purpose: parseNamedValue(original, "purpose") ?? undefined,
+        stageOnly: /\bstage|prepare\b/.test(lower)
+      })
+    ])
+  };
+}
+
+function planSecurityTurn(context: SurfaceContext, lower: string, original: string): AgentPlannedTurn | undefined {
+  if (!/\b(snapshot|backup|restore|security)\b/.test(lower)) return undefined;
+
+  if (/\b(save|create|make|backup)\b/.test(lower) && /\b(snapshot|backup)\b/.test(lower)) {
+    return {
+      intentKind: "wallet_action",
+      summary: "Save wallet snapshot.",
+      tools: withToolSurface(context, [
+        tool("save_wallet_snapshot", { reason: parseNamedValue(original, "reason") ?? undefined })
+      ])
+    };
+  }
+
+  if (/\b(restore|load)\b/.test(lower) && /\b(snapshot|backup)\b/.test(lower)) {
+    return {
+      intentKind: "wallet_action",
+      summary: "Restore wallet snapshot.",
+      tools: withToolSurface(context, [
+        tool("restore_wallet_snapshot", {
+          walletId: parseNamedValue(original, "wallet") ?? undefined,
+          snapshotHash: parseNamedValue(original, "snapshot hash") ?? parseNamedValue(original, "hash") ?? undefined,
+          reason: parseNamedValue(original, "reason") ?? undefined
+        })
+      ])
+    };
+  }
+
+  return undefined;
+}
+
 function planRecipientAccessRequestTool(lower: string, original: string): AgentPlannedTool | undefined {
   const requestId = parseAccessRequestId(original);
   if (!requestId || !/\b(access|request|approval|approve|reject|revoke)\b/.test(lower)) return undefined;
@@ -484,8 +573,22 @@ function parseProofReference(original: string): { proofId?: string; receiptId?: 
   return receiptId ? { receiptId: receiptId.replace(/^receipt(?![-_:])/i, "receipt-") } : undefined;
 }
 
+function parseBundleId(original: string): string | undefined {
+  return original.match(/\bexport[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^export(?![-_:])/i, "export-");
+}
+
 function parseRecordId(original: string): string | undefined {
   return original.match(/\brec[-_:]?[a-zA-Z0-9._:-]+\b/i)?.[0].replace(/^rec(?![-_:])/i, "rec-");
+}
+
+function parseRecordIds(original: string): string[] {
+  const matches = original.match(/\brec[-_:]?[a-zA-Z0-9._:-]+\b/gi) ?? [];
+  return Array.from(new Set(matches.map((match) => match.replace(/^rec(?![-_:])/i, "rec-"))));
+}
+
+function parseProofIds(original: string): string[] {
+  const matches = original.match(/\bproof[-_:]?[a-zA-Z0-9._:-]+\b/gi) ?? [];
+  return Array.from(new Set(matches.map((match) => match.replace(/^proof(?![-_:])/i, "proof-"))));
 }
 
 function parseDid(original: string): string | undefined {

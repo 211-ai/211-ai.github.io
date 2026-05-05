@@ -11,12 +11,7 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt
 } from "../models/abby";
-import { auditEvents } from "../services/mockAbbyService";
-import {
-  createVerifiedExportBundleView,
-  listWalletAuditEvents,
-  type WalletApiConfig
-} from "../services/walletApi";
+import { type WalletApiConfig } from "../services/walletApi";
 import {
   answerServiceNavigationQuestion,
   searchServiceNavigation,
@@ -49,6 +44,15 @@ import {
   explainProofReceiptAction,
   verifyProofStatusAction
 } from "../agent/tools/proofTools";
+import {
+  createVerifiedExportBundleAction,
+  importExportBundleAction
+} from "../agent/tools/exportTools";
+import {
+  refreshWalletAuditAction,
+  restoreWalletSnapshotAction,
+  saveWalletSnapshotAction
+} from "../agent/tools/securityTools";
 import type {
   AccessRequestDecisionCommandInput,
   AddRecipientCommandInput,
@@ -61,12 +65,15 @@ import type {
   CreateVerifiedExportBundleCommandInput,
   DelegateGrantCommandInput,
   EditRecipientCommandInput,
+  ImportExportBundleCommandInput,
   OpenServiceDetailCommandInput,
   RemoveRecipientCommandInput,
   RequestShelterContactCommandInput,
   RefreshWalletAuditCommandInput,
   RecordControllerApprovalCommandInput,
+  RestoreWalletSnapshotCommandInput,
   RevokeAccessRequestCommandInput,
+  SaveWalletSnapshotCommandInput,
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
   ShelterContactRequestDecisionCommandInput,
@@ -267,6 +274,13 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   if (action === "create_verified_export_bundle" && isRecord(input)) {
     return `Create an export bundle for ${String(input.audienceName ?? "the selected recipient")}.`;
   }
+  if (action === "import_export_bundle" && isRecord(input)) {
+    return `Import export bundle ${String(input.bundleId ?? "from provided bundle data")}.`;
+  }
+  if (action === "save_wallet_snapshot") return "Save an encrypted wallet snapshot.";
+  if (action === "restore_wallet_snapshot" && isRecord(input)) {
+    return `Restore wallet snapshot${input.walletId ? ` for ${String(input.walletId)}` : ""}.`;
+  }
   if (action === "update_registration_draft") return "Update private registration profile fields.";
   if (action === "update_check_in_policy") return "Update check-in reminder and escalation settings.";
   if (action === "save_service") return "Save this service to the wallet-backed service list.";
@@ -390,66 +404,6 @@ async function updateCheckInPolicyAction(
   });
 }
 
-async function createVerifiedExportBundleAction(
-  runtime: AppActionRuntime,
-  input: CreateVerifiedExportBundleCommandInput,
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation("create_verified_export_bundle", input, options);
-  if (blocked) return blocked;
-  const setBundles = requireSetter("create_verified_export_bundle", runtime.setExportBundleViews, "Export bundles");
-  if (typeof setBundles !== "function") return setBundles;
-  if (!runtime.walletApiConfig) {
-    return failure("create_verified_export_bundle", "wallet_api_required", "Connect a wallet API before creating exports.");
-  }
-  const extendedInput = input as CreateVerifiedExportBundleCommandInput & { audienceDid?: string; purpose?: string };
-  const audienceDid = extendedInput.audienceDid?.trim() || input.audienceName.trim();
-  if (!audienceDid.startsWith("did:")) {
-    return failure(
-      "create_verified_export_bundle",
-      "audience_did_required",
-      "Export bundle creation requires a recipient DID."
-    );
-  }
-  try {
-    const state = runtime.getState();
-    const bundle = await createVerifiedExportBundleView(runtime.walletApiConfig, {
-      audienceDid,
-      audienceName: input.audienceName,
-      purpose: extendedInput.purpose || "user_export",
-      recordIds: input.recordIds
-    });
-    setBundles([bundle, ...state.exportBundleViews.filter((item) => item.bundleId !== bundle.bundleId)]);
-    return success("create_verified_export_bundle", `Created export bundle for ${bundle.audienceName}.`, {
-      artifactId: bundle.bundleId,
-      recordIds: input.recordIds,
-      confirmation: confirmationFor("create_verified_export_bundle", input)
-    });
-  } catch {
-    return failure("create_verified_export_bundle", "export_creation_failed", "Export bundle creation failed.", {
-      retryable: true,
-      confirmation: confirmationFor("create_verified_export_bundle", input)
-    });
-  }
-}
-
-async function refreshWalletAuditAction(
-  runtime: AppActionRuntime,
-  input: RefreshWalletAuditCommandInput
-): Promise<AppActionResult> {
-  const setWalletAuditEvents = requireSetter("refresh_wallet_audit", runtime.setWalletAuditEvents, "Wallet audit");
-  if (typeof setWalletAuditEvents !== "function") return setWalletAuditEvents;
-  if (!runtime.walletApiConfig) {
-    const limitedEvents = auditEvents.slice(0, input.limit ?? auditEvents.length);
-    setWalletAuditEvents(limitedEvents);
-    return success("refresh_wallet_audit", `Loaded ${limitedEvents.length} local audit events.`);
-  }
-  const events = await listWalletAuditEvents(runtime.walletApiConfig);
-  const limitedEvents = events.slice(0, input.limit ?? events.length);
-  setWalletAuditEvents(limitedEvents.length ? limitedEvents : auditEvents);
-  return success("refresh_wallet_audit", `Loaded ${limitedEvents.length || auditEvents.length} audit events.`);
-}
-
 export const appActionHandlers = {
   navigate: navigateAction,
   read_surface_context: readSurfaceContextAction,
@@ -494,8 +448,15 @@ export const appActionHandlers = {
   explain_proof_receipt: (runtime, input: ProofReceiptReferenceCommandInput) =>
     explainProofReceiptAction(runtime, input),
   verify_proof_status: (runtime, input: ProofReceiptReferenceCommandInput) => verifyProofStatusAction(runtime, input),
-  create_verified_export_bundle: createVerifiedExportBundleAction,
-  refresh_wallet_audit: refreshWalletAuditAction
+  create_verified_export_bundle: (runtime, input: CreateVerifiedExportBundleCommandInput, options) =>
+    createVerifiedExportBundleAction(runtime, input, options),
+  import_export_bundle: (runtime, input: ImportExportBundleCommandInput, options) =>
+    importExportBundleAction(runtime, input, options),
+  save_wallet_snapshot: (runtime, input: SaveWalletSnapshotCommandInput, options) =>
+    saveWalletSnapshotAction(runtime, input, options),
+  restore_wallet_snapshot: (runtime, input: RestoreWalletSnapshotCommandInput, options) =>
+    restoreWalletSnapshotAction(runtime, input, options),
+  refresh_wallet_audit: (runtime, input: RefreshWalletAuditCommandInput) => refreshWalletAuditAction(runtime, input)
 } satisfies Record<AgentCommandName, AppActionHandler<never>>;
 
 export async function runAppAction(
