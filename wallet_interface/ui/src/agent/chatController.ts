@@ -5,6 +5,7 @@ import { isAgentCommandName } from "./commandSchemas";
 import { planAgentTurn, type AgentPlannedTool, type AgentPlannedTurn } from "./agentPlanner";
 import type { AgentSurfaceApi } from "./surfaceApi";
 import { getToolDefinition } from "./surfaceRegistry";
+import { confirmationRiskForGate, getAgentToolPermissionPolicy } from "./permissionPolicy";
 import type {
   AgentConfirmationRequest,
   AgentIntent,
@@ -590,17 +591,29 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
 
   function createConfirmation(toolCall: AgentToolCall, tool: AgentPlannedTool): AgentConfirmationRequest {
     const definition = getToolDefinition(tool.name);
+    const policy = getAgentToolPermissionPolicy(tool.name);
     return {
       id: createId("agent-confirmation"),
       sessionId,
       toolCallId: toolCall.id,
       title: definition.title,
       summary: summarizeConfirmation(tool.name, tool.input),
-      risk: definition.permissionLevel === "admin" ? "restricted" : definition.permissionLevel === "wallet_write" ? "high" : "moderate",
+      risk: confirmationRiskForGate(policy.gate),
       permissionLevel: definition.permissionLevel,
       status: "pending",
       requestedAt: now(),
-      details: isRecord(tool.input) ? { input: tool.input } : undefined
+      details: isRecord(tool.input)
+        ? {
+            input: tool.input,
+            permissionGate: policy.gate,
+            requiresAudit: policy.requiresAudit,
+            auditEventType: policy.auditEventType
+          }
+        : {
+            permissionGate: policy.gate,
+            requiresAudit: policy.requiresAudit,
+            auditEventType: policy.auditEventType
+          }
     };
   }
 

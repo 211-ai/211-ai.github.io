@@ -11,6 +11,7 @@ import {
 } from "./types";
 import type { AgentCommandName } from "./commandSchemas";
 import { commandSchemas, isAgentCommandName } from "./commandSchemas";
+import { getAgentToolPermissionPolicy, permissionLevelForGate } from "./permissionPolicy";
 
 export const SURFACE_CONTEXT_SCOPES = ["public", "app_state", "wallet_metadata", "wallet_private"] as const;
 export type SurfaceContextScope = (typeof SURFACE_CONTEXT_SCOPES)[number];
@@ -307,19 +308,21 @@ export const agentSurfaces: AgentSurfaceDefinition[] = allRoutes.map((route) => 
 export const agentToolDefinitions: AgentToolDefinition[] = Object.entries(toolPolicies).map(([name, policy]) => {
   const commandName = name as AgentCommandName;
   const schema = commandSchemas[commandName];
+  const permissionPolicy = getAgentToolPermissionPolicy(commandName);
   return {
     name: commandName,
     title: policy.title,
     description: schema.description,
     inputSchema: schema.inputSchema,
     outputSchema: schema.outputSchema,
-    permissionLevel: policy.permissionLevel,
+    permissionLevel: permissionLevelForGate(permissionPolicy.gate),
     surfaces: policy.surfaces,
-    requiresConfirmation: policy.requiresConfirmation,
-    requiresWalletUnlock: policy.requiresWalletUnlock,
-    requiresUserPresence: policy.requiresUserPresence,
-    requiresPrivateContextOptIn: policy.requiresPrivateContextOptIn,
-    auditEventType: policy.auditEventType
+    requiresConfirmation: permissionPolicy.requiresConfirmation,
+    requiresAudit: permissionPolicy.requiresAudit,
+    requiresWalletUnlock: permissionPolicy.requiresWalletUnlock,
+    requiresUserPresence: permissionPolicy.requiresUserPresence,
+    requiresPrivateContextOptIn: permissionPolicy.requiresPrivateContextOptIn,
+    auditEventType: permissionPolicy.auditEventType
   };
 });
 
