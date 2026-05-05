@@ -30,6 +30,12 @@ export const AGENT_COMMAND_NAMES = [
   "request_shelter_contact",
   "approve_shelter_contact_request",
   "deny_shelter_contact_request",
+  "create_managed_user_account",
+  "create_shelter_staff_account",
+  "send_shelter_nudge",
+  "approve_user_shelter_request",
+  "deny_user_shelter_request",
+  "add_shelter_as_recipient",
   "set_disclosure_scopes",
   "record_controller_approval",
   "approve_access_request",
@@ -118,6 +124,8 @@ const disclosureRecipientTypes = [
   "government_liaison",
   "benefits_agency"
 ] as const;
+
+const easyBotCheckStatuses = ["pending", "passed", "failed"] as const;
 
 export interface NavigateCommandInput {
   route: RouteId;
@@ -228,6 +236,49 @@ export interface RequestShelterContactCommandInput {
 export interface ShelterContactRequestDecisionCommandInput {
   requestId: string;
   reason?: string;
+}
+
+export interface CreateManagedUserAccountCommandInput {
+  shelter: string;
+  staffId: string;
+  legalName: string;
+  preferredName?: string;
+  pronouns?: string;
+  dateOfBirth?: string;
+  photoAssetId: string;
+  phone?: string;
+  email?: string;
+  currentLocation?: string;
+  preferredShelter?: string;
+  serviceNeeds?: string[];
+  easyBotCheckStatus?: (typeof easyBotCheckStatuses)[number];
+  captchaToken?: string;
+  localPrecinctNotified?: boolean;
+  foundPermanentHousing?: boolean;
+}
+
+export interface CreateShelterStaffAccountCommandInput {
+  shelter: string;
+  operatorStaffId: string;
+  displayName: string;
+  email?: string;
+}
+
+export interface SendShelterNudgeCommandInput {
+  shelter: string;
+  staffId: string;
+  userName: string;
+  userContact: string;
+}
+
+export interface UserShelterRequestDecisionCommandInput {
+  requestId: string;
+  reason?: string;
+}
+
+export interface AddShelterAsRecipientCommandInput {
+  shelterName: string;
+  staffName?: string;
 }
 
 export interface AccessRequestDecisionCommandInput {
@@ -451,6 +502,10 @@ function isDisclosureRecipientType(value: unknown): value is (typeof disclosureR
   return isStringOneOf(disclosureRecipientTypes, value);
 }
 
+function isEasyBotCheckStatus(value: unknown): value is (typeof easyBotCheckStatuses)[number] {
+  return isStringOneOf(easyBotCheckStatuses, value);
+}
+
 export function isNavigateCommandInput(value: unknown): value is NavigateCommandInput {
   return isRecord(value) && isRouteId(value.route);
 }
@@ -632,6 +687,79 @@ export function isShelterContactRequestDecisionCommandInput(
     isString(value.requestId) &&
     value.requestId.trim().length > 0 &&
     isOptional(value.reason, isString)
+  );
+}
+
+export function isCreateManagedUserAccountCommandInput(value: unknown): value is CreateManagedUserAccountCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.shelter) &&
+    value.shelter.trim().length > 0 &&
+    isString(value.staffId) &&
+    value.staffId.trim().length > 0 &&
+    isString(value.legalName) &&
+    value.legalName.trim().length > 0 &&
+    isString(value.photoAssetId) &&
+    value.photoAssetId.trim().length > 0 &&
+    isOptional(value.preferredName, isString) &&
+    isOptional(value.pronouns, isString) &&
+    isOptional(value.dateOfBirth, isString) &&
+    isOptional(value.phone, isString) &&
+    isOptional(value.email, isString) &&
+    isOptional(value.currentLocation, isString) &&
+    isOptional(value.preferredShelter, isString) &&
+    isOptional(value.serviceNeeds, isStringArray) &&
+    isOptional(value.easyBotCheckStatus, isEasyBotCheckStatus) &&
+    isOptional(value.captchaToken, isString) &&
+    isOptional(value.localPrecinctNotified, isBoolean) &&
+    isOptional(value.foundPermanentHousing, isBoolean)
+  );
+}
+
+export function isCreateShelterStaffAccountCommandInput(value: unknown): value is CreateShelterStaffAccountCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.shelter) &&
+    value.shelter.trim().length > 0 &&
+    isString(value.operatorStaffId) &&
+    value.operatorStaffId.trim().length > 0 &&
+    isString(value.displayName) &&
+    value.displayName.trim().length > 0 &&
+    isOptional(value.email, isString)
+  );
+}
+
+export function isSendShelterNudgeCommandInput(value: unknown): value is SendShelterNudgeCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.shelter) &&
+    value.shelter.trim().length > 0 &&
+    isString(value.staffId) &&
+    value.staffId.trim().length > 0 &&
+    isString(value.userName) &&
+    value.userName.trim().length > 0 &&
+    isString(value.userContact) &&
+    value.userContact.trim().length > 0
+  );
+}
+
+export function isUserShelterRequestDecisionCommandInput(
+  value: unknown
+): value is UserShelterRequestDecisionCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.requestId) &&
+    value.requestId.trim().length > 0 &&
+    isOptional(value.reason, isString)
+  );
+}
+
+export function isAddShelterAsRecipientCommandInput(value: unknown): value is AddShelterAsRecipientCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.shelterName) &&
+    value.shelterName.trim().length > 0 &&
+    isOptional(value.staffName, isString)
   );
 }
 
@@ -1038,6 +1166,81 @@ export const commandSchemas = {
     inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
     outputSchema: commandOutputSchema,
     isInput: isShelterContactRequestDecisionCommandInput,
+    isOutput: isCommandOutput
+  },
+  create_managed_user_account: {
+    name: "create_managed_user_account",
+    description: "Stage a shelter-managed user account using the shelter UI account contract.",
+    inputSchema: objectSchema({
+      shelter: stringProperty,
+      staffId: stringProperty,
+      legalName: stringProperty,
+      preferredName: stringProperty,
+      pronouns: stringProperty,
+      dateOfBirth: stringProperty,
+      photoAssetId: stringProperty,
+      phone: stringProperty,
+      email: stringProperty,
+      currentLocation: stringProperty,
+      preferredShelter: stringProperty,
+      serviceNeeds: stringArrayProperty,
+      easyBotCheckStatus: { type: "string", enum: easyBotCheckStatuses },
+      captchaToken: stringProperty,
+      localPrecinctNotified: booleanProperty,
+      foundPermanentHousing: booleanProperty
+    }, ["shelter", "staffId", "legalName", "photoAssetId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isCreateManagedUserAccountCommandInput,
+    isOutput: isCommandOutput
+  },
+  create_shelter_staff_account: {
+    name: "create_shelter_staff_account",
+    description: "Stage a shelter staff account using the shelter UI staff account contract.",
+    inputSchema: objectSchema({
+      shelter: stringProperty,
+      operatorStaffId: stringProperty,
+      displayName: stringProperty,
+      email: stringProperty
+    }, ["shelter", "operatorStaffId", "displayName"]),
+    outputSchema: commandOutputSchema,
+    isInput: isCreateShelterStaffAccountCommandInput,
+    isOutput: isCommandOutput
+  },
+  send_shelter_nudge: {
+    name: "send_shelter_nudge",
+    description: "Stage a shelter-to-user contact request from a verified shelter operator.",
+    inputSchema: objectSchema({
+      shelter: stringProperty,
+      staffId: stringProperty,
+      userName: stringProperty,
+      userContact: stringProperty
+    }, ["shelter", "staffId", "userName", "userContact"]),
+    outputSchema: commandOutputSchema,
+    isInput: isSendShelterNudgeCommandInput,
+    isOutput: isCommandOutput
+  },
+  approve_user_shelter_request: {
+    name: "approve_user_shelter_request",
+    description: "Approve a pending user-to-shelter contact request and add the shelter recipient.",
+    inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isUserShelterRequestDecisionCommandInput,
+    isOutput: isCommandOutput
+  },
+  deny_user_shelter_request: {
+    name: "deny_user_shelter_request",
+    description: "Deny a pending user-to-shelter contact request.",
+    inputSchema: objectSchema({ requestId: stringProperty, reason: stringProperty }, ["requestId"]),
+    outputSchema: commandOutputSchema,
+    isInput: isUserShelterRequestDecisionCommandInput,
+    isOutput: isCommandOutput
+  },
+  add_shelter_as_recipient: {
+    name: "add_shelter_as_recipient",
+    description: "Add a shelter staff recipient using the shelter UI recipient contract.",
+    inputSchema: objectSchema({ shelterName: stringProperty, staffName: stringProperty }, ["shelterName"]),
+    outputSchema: commandOutputSchema,
+    isInput: isAddShelterAsRecipientCommandInput,
     isOutput: isCommandOutput
   },
   set_disclosure_scopes: {
