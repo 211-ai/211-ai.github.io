@@ -31,14 +31,31 @@ export const AGENT_TOOL_CALL_STATUSES = ["pending", "waiting_for_confirmation", 
 export type AgentToolCallStatus = (typeof AGENT_TOOL_CALL_STATUSES)[number];
 
 export const AGENT_PERMISSION_LEVELS = [
+  "read_public",
   "public",
   "app_context",
+  "read_wallet_summary",
   "wallet_metadata",
   "wallet_private",
+  "write_wallet",
   "wallet_write",
+  "share_or_disclose",
   "admin"
 ] as const;
 export type AgentPermissionLevel = (typeof AGENT_PERMISSION_LEVELS)[number];
+
+const AGENT_PERMISSION_LEVEL_RANKS: Record<AgentPermissionLevel, number> = {
+  read_public: 0,
+  public: 0,
+  app_context: 1,
+  read_wallet_summary: 2,
+  wallet_metadata: 2,
+  wallet_private: 2,
+  write_wallet: 3,
+  wallet_write: 3,
+  share_or_disclose: 4,
+  admin: 5
+};
 
 export const AGENT_CONFIRMATION_STATUSES = ["pending", "approved", "denied", "expired", "canceled"] as const;
 export type AgentConfirmationStatus = (typeof AGENT_CONFIRMATION_STATUSES)[number];
@@ -149,6 +166,7 @@ export interface AgentToolDefinition {
   permissionLevel: AgentPermissionLevel;
   surfaces: RouteId[];
   requiresConfirmation: boolean;
+  requiresAudit: boolean;
   requiresWalletUnlock: boolean;
   requiresUserPresence: boolean;
   requiresPrivateContextOptIn: boolean;
@@ -298,7 +316,7 @@ export function isAgentPermissionLevel(value: unknown): value is AgentPermission
 }
 
 export function hasPermissionLevel(granted: AgentPermissionLevel, required: AgentPermissionLevel): boolean {
-  return AGENT_PERMISSION_LEVELS.indexOf(granted) >= AGENT_PERMISSION_LEVELS.indexOf(required);
+  return AGENT_PERMISSION_LEVEL_RANKS[granted] >= AGENT_PERMISSION_LEVEL_RANKS[required];
 }
 
 export function isAgentSchemaProperty(value: unknown): value is AgentSchemaProperty {
@@ -445,6 +463,7 @@ export function isAgentToolDefinition(value: unknown): value is AgentToolDefinit
     Array.isArray(value.surfaces) &&
     value.surfaces.every(isRouteId) &&
     isBoolean(value.requiresConfirmation) &&
+    isBoolean(value.requiresAudit) &&
     isBoolean(value.requiresWalletUnlock) &&
     isBoolean(value.requiresUserPresence) &&
     isBoolean(value.requiresPrivateContextOptIn) &&

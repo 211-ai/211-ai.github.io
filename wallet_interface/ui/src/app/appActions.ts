@@ -43,6 +43,7 @@ import type {
 import { commandSchemas } from "../agent/commandSchemas";
 import type { AgentConfirmationRisk, AgentPermissionLevel, EvidenceBundle, SurfaceContext } from "../agent/types";
 import { getRouteLabel, getToolDefinition } from "../agent/surfaceRegistry";
+import { confirmationRiskForGate, getAgentToolPermissionPolicy } from "../agent/permissionPolicy";
 
 export interface AppActionState {
   activeRoute: RouteId;
@@ -151,22 +152,16 @@ function failure(
 
 function confirmationFor(action: AgentCommandName, input: unknown): AppActionConfirmationMetadata {
   const tool = getToolDefinition(action);
+  const policy = getAgentToolPermissionPolicy(action);
   return {
     required: tool.requiresConfirmation,
     title: tool.title,
     summary: summarizeConfirmation(action, input),
-    risk: confirmationRiskFor(tool.permissionLevel),
+    risk: confirmationRiskForGate(policy.gate),
     permissionLevel: tool.permissionLevel,
     auditEventType: tool.auditEventType,
-    details: input && typeof input === "object" ? { input } : undefined
+    details: input && typeof input === "object" ? { input, permissionGate: policy.gate, requiresAudit: policy.requiresAudit } : undefined
   };
-}
-
-function confirmationRiskFor(permissionLevel: AgentPermissionLevel): AgentConfirmationRisk {
-  if (permissionLevel === "admin") return "restricted";
-  if (permissionLevel === "wallet_write") return "high";
-  if (permissionLevel === "wallet_private") return "moderate";
-  return "low";
 }
 
 function summarizeConfirmation(action: AgentCommandName, input: unknown): string {
