@@ -25,6 +25,7 @@ import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../comp
 import {
   CheckInChannel,
   AuditEvent,
+  DecryptedRecordView,
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
@@ -72,7 +73,10 @@ import {
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createVerifiedExportBundleView,
+  decryptRecordWithGrant,
+  delegateGrant,
   importExportBundleView,
+  issueRecordDecryptInvocation,
   listWalletSnapshots,
   loadExportBundleView,
   loadWalletSnapshot,
@@ -2395,6 +2399,12 @@ function ShelterScreen({
 }
 
 type RecipientAnalysisMode = "summary" | "redacted" | "vector";
+type DelegationDraft = {
+  audienceDid: string;
+  audienceKeyHex: string;
+  purpose: string;
+  ability: string;
+};
 
 function RecipientAccessScreen({
   accessRequests,
@@ -2428,6 +2438,10 @@ function RecipientAccessScreen({
     {}
   );
   const [analyzingReceiptIds, setAnalyzingReceiptIds] = useState<string[]>([]);
+  const [decryptingReceiptIds, setDecryptingReceiptIds] = useState<string[]>([]);
+  const [delegatingReceiptIds, setDelegatingReceiptIds] = useState<string[]>([]);
+  const [delegationDrafts, setDelegationDrafts] = useState<Record<string, DelegationDraft>>({});
+  const [delegationMessages, setDelegationMessages] = useState<Record<string, string>>({});
 
   function hasThresholdApproval(request: WalletAccessRequest) {
     if (!request.approvalRequired) return true;
@@ -2453,6 +2467,14 @@ function RecipientAccessScreen({
   function receiptAllowsOutput(receipt: WalletGrantReceipt, outputType: string) {
     const outputTypes = receiptOutputTypes(receipt);
     return outputTypes.length === 0 || outputTypes.includes(outputType);
+  }
+
+  function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
+    return Boolean(
+      receipt.caveats?.user_presence_required ??
+        receipt.caveats?.requires_user_presence ??
+        receipt.caveats?.userPresent
+    );
   }
 
   function analysisActionId(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
