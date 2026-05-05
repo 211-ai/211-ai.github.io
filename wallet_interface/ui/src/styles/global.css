@@ -58,6 +58,7 @@ button {
 .button,
 .nav-button,
 .agent-chat-toggle,
+.agent-chat-bottom-sheet-toggle,
 .action-card,
 .checkin-panel,
 .choice-chip,
@@ -74,6 +75,7 @@ button {
 .button:active,
 .nav-button:active,
 .agent-chat-toggle:active,
+.agent-chat-bottom-sheet-toggle:active,
 .action-card:active,
 .checkin-panel:active,
 .choice-chip:active,
@@ -1127,10 +1129,30 @@ body.playful-pulse .decor-shape {
 }
 
 .agent-chat-shell {
+  display: none;
   inset: 0;
   pointer-events: none;
   position: fixed;
   z-index: 45;
+}
+
+.agent-chat-bottom-sheet-shell {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 9;
+}
+
+.agent-chat-bottom-sheet-toggle {
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
+  left: 16px;
+  margin: 0 auto;
+  max-width: 420px;
+  pointer-events: auto;
+  position: fixed;
+  right: 16px;
+  z-index: 12;
 }
 
 .agent-chat-toggle {
@@ -1140,6 +1162,72 @@ body.playful-pulse .decor-shape {
   position: fixed;
   right: 16px;
   z-index: 47;
+}
+
+.agent-chat-bottom-sheet {
+  background: #ffffff;
+  border: 1px solid #cfd8e3;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  bottom: 0;
+  box-shadow: 0 -18px 48px rgba(15, 23, 42, 0.22);
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  height: min(62dvh, 560px);
+  left: 0;
+  margin: 0 auto;
+  max-height: calc(100dvh - 72px - env(safe-area-inset-top));
+  overflow: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+  pointer-events: auto;
+  position: fixed;
+  right: 0;
+  width: min(100vw, 520px);
+  z-index: 11;
+}
+
+.agent-chat-bottom-sheet-expanded {
+  height: calc(100dvh - 72px - env(safe-area-inset-top));
+}
+
+.agent-sheet-grip {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: flex;
+  height: 28px;
+  justify-content: center;
+  padding: 8px 0 6px;
+  width: 100%;
+}
+
+.agent-sheet-grip span {
+  background: #9ca3af;
+  border-radius: 999px;
+  display: block;
+  height: 4px;
+  width: 46px;
+}
+
+.agent-chat-bottom-sheet-header {
+  padding-top: 8px;
+}
+
+.agent-sheet-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.agent-chat-bottom-sheet-body {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto;
+  min-height: 0;
+}
+
+.app-chat-open .main {
+  padding-bottom: min(66dvh, 584px);
 }
 
 .agent-chat-drawer {
@@ -1441,6 +1529,15 @@ body.playful-pulse .decor-shape {
   min-height: 72px;
   padding: 10px;
   resize: vertical;
+}
+
+.agent-chat-bottom-sheet .agent-message-list {
+  min-height: 0;
+}
+
+.agent-chat-bottom-sheet .agent-composer textarea {
+  max-height: 112px;
+  min-height: 56px;
 }
 
 .stepper {
@@ -1889,6 +1986,18 @@ body.playful-pulse .decor-shape {
     max-height: calc(100vh - 36px);
     right: 18px;
     top: 18px;
+  }
+
+  .agent-chat-shell {
+    display: block;
+  }
+
+  .agent-chat-bottom-sheet-shell {
+    display: none;
+  }
+
+  .app-chat-open .main {
+    padding-bottom: 24px;
   }
 
   .agent-chat-toggle {
