@@ -2,6 +2,11 @@ export interface Env {
   ORIGIN_API_BASE_URL: string;
   OPS_HEALTH_SHARED_SECRET: string;
   OPS_HEALTH_VERIFY_STORAGE?: string;
+  ORIGIN_AUTH_BEARER_TOKEN?: string;
+  ORIGIN_AUTH_HEADER_NAME?: string;
+  ORIGIN_AUTH_HEADER_VALUE?: string;
+  CF_ACCESS_CLIENT_ID?: string;
+  CF_ACCESS_CLIENT_SECRET?: string;
 }
 
 function normalizeBaseUrl(value: string): string {
@@ -32,7 +37,25 @@ function filteredHeaders(request: Request, env: Env): Headers {
   }
   headers.set("authorization", `Bearer ${env.OPS_HEALTH_SHARED_SECRET}`);
   headers.set("x-wallet-edge-proxy", "cloudflare-worker");
+  applyOriginAuthHeaders(headers, env);
   return headers;
+}
+
+function applyOriginAuthHeaders(headers: Headers, env: Env): void {
+  if (env.ORIGIN_AUTH_BEARER_TOKEN) {
+    headers.set("x-wallet-origin-authorization", `Bearer ${env.ORIGIN_AUTH_BEARER_TOKEN}`);
+  }
+  if (env.ORIGIN_AUTH_HEADER_NAME && env.ORIGIN_AUTH_HEADER_VALUE) {
+    headers.set(env.ORIGIN_AUTH_HEADER_NAME, env.ORIGIN_AUTH_HEADER_VALUE);
+  }
+  if (env.CF_ACCESS_CLIENT_ID && env.CF_ACCESS_CLIENT_SECRET) {
+    headers.set("CF-Access-Client-Id", env.CF_ACCESS_CLIENT_ID);
+    headers.set("CF-Access-Client-Secret", env.CF_ACCESS_CLIENT_SECRET);
+  }
+}
+
+function methodAllowed(method: string): boolean {
+  return method === "GET" || method === "HEAD";
 }
 
 async function proxy(request: Request, env: Env): Promise<Response> {
@@ -55,13 +78,15 @@ async function runScheduledHealth(env: Env): Promise<void> {
     verify_storage: verifyStorageEnabled(env),
   });
   const target = buildUrl(env, "/ops/health", search);
+  const headers = new Headers({
+    authorization: `Bearer ${env.OPS_HEALTH_SHARED_SECRET}`,
+    "x-wallet-ops-scheduled": "true",
+    "x-wallet-edge-proxy": "cloudflare-worker",
+  });
+  applyOriginAuthHeaders(headers, env);
   const response = await fetch(target, {
     method: "GET",
-    headers: {
-      authorization: `Bearer ${env.OPS_HEALTH_SHARED_SECRET}`,
-      "x-wallet-ops-scheduled": "true",
-      "x-wallet-edge-proxy": "cloudflare-worker",
-    },
+    headers,
   });
   if (!response.ok) {
     const body = await response.text();
@@ -73,6 +98,12 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/health" || url.pathname === "/ops/health") {
+      if (!methodAllowed(request.method)) {
+        return new Response("Method not allowed", {
+          status: 405,
+          headers: { allow: "GET, HEAD" },
+        });
+      }
       return proxy(request, env);
     }
     return new Response("Not found", { status: 404 });

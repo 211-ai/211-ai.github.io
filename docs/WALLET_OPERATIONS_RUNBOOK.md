@@ -4,6 +4,12 @@ This runbook covers the 211-AI wallet API backed by `ipfs_datasets_py.wallet`.
 It assumes the API is deployed with durable wallet snapshots and encrypted blob
 storage.
 
+Use `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md` for the stable API endpoint,
+CLI command, MCP tool, environment, and release-check reference.
+Use `docs/WALLET_RETENTION_POLICY.md` and
+`docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` to map target datastore, storage,
+backup, log, alert, and deletion-retention controls before launch.
+
 ## Baseline
 
 Required environment:
@@ -27,12 +33,21 @@ curl -fsS \
   -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
   "http://localhost:8000/ops/health?verify_storage=true"
 python -m wallet_interface.ops --max-runs 1 --fail-on-error
+python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-production-readiness
 ```
 
 The ops-health report checks repository state, encrypted storage availability,
 proof mode, external verifier health when configured, revocation propagation,
 and privacy-budget ledger readability. Each run writes an `ops/health` audit
 event for every loaded wallet.
+
+Run `--validate-production-readiness` in staging before launch and after secret
+rotation. It fails if durable repository/storage env vars, production proof
+mode, external verifier credentials, ops-health auth, alert routing, ops health,
+or the verifier prove/verify contract are missing or unsafe placeholders. The
+report shows only whether secret values are configured, not the values. Archive
+the passing report with the completed target production signoff packet.
 
 Optional alert routing:
 
@@ -45,6 +60,15 @@ Optional alert routing:
 When configured, `python -m wallet_interface.ops` sends a JSON webhook for each
 matching report. This is the reference integration point for Slack, PagerDuty,
 incident routers, or internal alert collectors.
+
+Secret management templates:
+
+- `wallet_interface/deploy/env.production.example` is the compose/Worker env
+  template; copy it to an ignored local path before adding real values.
+- `wallet_interface/deploy/kubernetes/secrets.example.yaml` is the direct
+  Kubernetes Secret shape.
+- `wallet_interface/deploy/kubernetes/externalsecret.example.yaml` maps the
+  same keys from an external secret manager through External Secrets Operator.
 
 ## Lost Key Or Device
 
@@ -98,6 +122,11 @@ If using the HTTP verifier adapter:
    circuit metadata for location-region proofs.
 7. Treat `/ops/health` `proof_registry=error` as a production outage for new
    proof creation.
+8. Run `python -m wallet_interface.ops --validate-proof-contract --fail-on-error`
+   after credential rotation or verifier deployment.
+
+The verifier request/response contract is documented in
+`docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
 
 ## Storage Outage
 
@@ -182,6 +211,12 @@ Required Worker configuration:
 - `ORIGIN_API_BASE_URL`
 - `OPS_HEALTH_SHARED_SECRET`
 - optional `OPS_HEALTH_VERIFY_STORAGE`
+- optional `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET` for Cloudflare
+  Access service-token protected origins
+- optional `ORIGIN_AUTH_HEADER_NAME` and `ORIGIN_AUTH_HEADER_VALUE` for
+  environment-specific origin gateways
+- optional `ORIGIN_AUTH_BEARER_TOKEN` for a bearer-like origin gateway token
+  sent outside the API route's own `Authorization` header
 
 Required origin API configuration when the route is protected:
 
@@ -191,4 +226,5 @@ The Worker reuses the existing Cloudflare account/token naming conventions from
 `ipfs_datasets_py` documentation (`CLOUDFLARE_ACCOUNT_ID`,
 `CLOUDFLARE_API_TOKEN`), but the wallet API still needs its own origin auth and
 network controls. Do not expose `/ops/health` publicly without validating the
-shared secret or equivalent edge identity.
+shared secret or equivalent edge identity. The Worker rejects non-GET/HEAD
+methods and only proxies `/health` and `/ops/health`.

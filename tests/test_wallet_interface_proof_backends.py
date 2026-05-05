@@ -72,6 +72,103 @@ def test_http_location_region_proof_backend_round_trip() -> None:
     assert health["status"] == "ready"
 
 
+def test_http_location_region_proof_backend_validates_contract() -> None:
+    calls: list[str] = []
+
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        calls.append(url)
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready", "version": "2026.05.05"}
+        if url.endswith("/prove/location-region"):
+            return {
+                "receipt": {
+                    "proof_id": "proof-contract-1",
+                    "wallet_id": str(payload["wallet_id"]),
+                    "proof_type": "location_region",
+                    "statement": payload["statement"],
+                    "verifier_id": "verifier-http-v1",
+                    "public_inputs": payload["public_inputs"],
+                    "proof_hash": "proof-hash-1",
+                    "witness_record_ids": payload["witness_record_ids"],
+                    "is_simulated": False,
+                    "proof_system": "groth16",
+                    "circuit_id": "location-region-v1",
+                    "verification_status": "verified",
+                    "proof_artifact_ref": "https://verifier.example.test/proofs/proof-contract-1",
+                }
+            }
+        return {"verified": True}
+
+    backend = HttpLocationRegionProofBackend(
+        base_url="https://verifier.example.test",
+        verifier_id="verifier-http-v1",
+        proof_system="groth16",
+        circuit_id="location-region-v1",
+        request_json=fake_request_json,
+    )
+
+    result = backend.validate_contract()
+
+    assert result["status"] == "ok"
+    assert result["receipt"]["proof_id"] == "proof-contract-1"
+    assert [check["status"] for check in result["checks"]] == ["ok", "ok", "ok", "ok"]
+    assert calls == [
+        "https://verifier.example.test/health",
+        "https://verifier.example.test/prove/location-region",
+        "https://verifier.example.test/verify",
+    ]
+
+
+def test_http_location_region_proof_backend_contract_validation_detects_witness_leak() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-region"):
+            public_inputs = dict(payload["public_inputs"])
+            public_inputs["lat"] = 45.5152
+            return {
+                "proof_id": "proof-contract-leak",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_region",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": public_inputs,
+                "proof_hash": "proof-hash-1",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-region-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    backend = HttpLocationRegionProofBackend(
+        base_url="https://verifier.example.test",
+        verifier_id="verifier-http-v1",
+        proof_system="groth16",
+        circuit_id="location-region-v1",
+        request_json=fake_request_json,
+    )
+
+    result = backend.validate_contract()
+    checks = {check["name"]: check for check in result["checks"]}
+
+    assert result["status"] == "error"
+    assert checks["public_input_safety"]["status"] == "error"
+
+
 def test_proof_backend_from_env_selects_http_backend(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_PROOF_BACKEND", "http-location-region")
     monkeypatch.setenv("WALLET_PROOF_SERVICE_URL", "https://verifier.example.test")

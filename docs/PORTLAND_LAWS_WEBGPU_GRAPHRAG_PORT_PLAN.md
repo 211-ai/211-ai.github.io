@@ -8,6 +8,8 @@ Reviewed source commit: `314470dbaf53625d06bdf276f1d2084dc1a7a93f`
 
 Target repository: `211-AI`
 
+Follow-on product plan: `docs/211_SERVICE_NAVIGATION_PORTAL_PLAN.md`
+
 ## Current Port Status
 
 This repository already has the core serverless GraphRAG path in place for the

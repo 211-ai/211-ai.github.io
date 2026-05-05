@@ -4,7 +4,13 @@ import json
 from io import StringIO
 
 from wallet_interface import WalletInterfaceService
-from wallet_interface.ops import WalletOpsHealthWorker, main
+from wallet_interface.ops import (
+    WalletOpsHealthWorker,
+    main,
+    validate_production_readiness,
+    validate_proof_contract,
+)
+from wallet_interface.proof_backends import HttpLocationRegionProofBackend
 
 
 def test_ops_health_worker_emits_jsonl_report() -> None:
@@ -141,3 +147,156 @@ def test_ops_health_worker_reads_alert_auth_headers_from_env(monkeypatch) -> Non
     _, _, headers = sent[0]
     assert headers["authorization"] == "Bearer alert-token"
     assert headers["x-wallet-alert-key"] == "shared-header"
+
+
+def test_validate_proof_contract_reports_error_for_non_http_backend() -> None:
+    report = validate_proof_contract(WalletInterfaceService())
+
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
+
+
+def test_validate_proof_contract_reports_http_backend_success() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-region"):
+            return {
+                "proof_id": "proof-contract-ops",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_region",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "proof-hash-1",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-region-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    service = WalletInterfaceService(
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.example.test",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-region-v1",
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+    )
+
+    report = validate_proof_contract(service)
+
+    assert report["status"] == "ok"
+    assert report["receipt"]["proof_id"] == "proof-contract-ops"
+    assert {check["name"] for check in report["checks"]} == {
+        "health",
+        "prove",
+        "public_input_safety",
+        "verify",
+    }
+
+
+def test_validate_production_readiness_reports_missing_target_environment() -> None:
+    report = validate_production_readiness(
+        WalletInterfaceService(),
+        env={},
+        run_proof_contract=False,
+        verify_storage=False,
+    )
+
+    checks = {check["name"]: check for check in report["checks"]}
+    assert report["status"] == "error"
+    assert checks["persistence_environment"]["status"] == "error"
+    assert checks["proof_environment"]["status"] == "error"
+    assert checks["proof_credentials"]["status"] == "error"
+    assert checks["ops_credentials"]["status"] == "error"
+
+
+def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_path) -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-region"):
+            return {
+                "proof_id": "proof-contract-ready",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_region",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "proof-hash-ready",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-region-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    repository_root = tmp_path / "wallet-repository"
+    storage_root = tmp_path / "wallet-blobs"
+    service = WalletInterfaceService(
+        repository_root=repository_root,
+        storage_config={"primary": {"type": "local", "root": str(storage_root)}},
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.staging.211.local",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-region-v1",
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+    )
+    env = {
+        "WALLET_REPOSITORY_ROOT": str(repository_root),
+        "WALLET_STORAGE_CONFIG": json.dumps({"primary": {"type": "local", "root": str(storage_root)}}),
+        "WALLET_AUTO_LOAD_REPOSITORY": "true",
+        "WALLET_AUTO_PERSIST": "true",
+        "WALLET_PROOF_MODE": "production",
+        "WALLET_PROOF_BACKEND": "http-location-region",
+        "WALLET_PROOF_SERVICE_URL": "https://verifier.staging.211.local",
+        "WALLET_PROOF_VERIFIER_ID": "verifier-http-v1",
+        "WALLET_PROOF_SYSTEM": "groth16",
+        "WALLET_PROOF_CIRCUIT_ID": "location-region-v1",
+        "WALLET_PROOF_BEARER_TOKEN": "proof-service-token",
+        "WALLET_OPS_HEALTH_SHARED_SECRET": "ops-health-secret",
+        "WALLET_OPS_ALERT_WEBHOOK_URL": "https://ops.staging.211.local/hooks/wallet",
+        "WALLET_OPS_ALERT_BEARER_TOKEN": "ops-alert-token",
+    }
+
+    report = validate_production_readiness(
+        service,
+        env=env,
+        run_proof_contract=True,
+        verify_storage=False,
+    )
+
+    assert report["status"] == "ok"
+    assert {check["name"]: check["status"] for check in report["checks"]} == {
+        "persistence_environment": "ok",
+        "proof_environment": "ok",
+        "proof_credentials": "ok",
+        "ops_credentials": "ok",
+        "ops_health": "ok",
+        "proof_contract": "ok",
+    }
+    rendered = json.dumps(report)
+    assert "proof-service-token" not in rendered
+    assert "ops-alert-token" not in rendered
+    assert "ops-health-secret" not in rendered

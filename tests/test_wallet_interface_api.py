@@ -534,7 +534,7 @@ def test_wallet_api_redacted_and_vector_document_analysis_outputs_are_safe() -> 
             "issuer_key_hex": owner_key,
             "audience_key_hex": delegate_key,
             "abilities": ["record/analyze"],
-            "output_types": ["redacted_derived_only", "vector_profile"],
+            "output_types": ["redacted_derived_only", "vector_profile", "redacted_graphrag"],
         },
     ).json()
 
@@ -592,9 +592,39 @@ def test_wallet_api_redacted_and_vector_document_analysis_outputs_are_safe() -> 
     assert "503-555-1212" not in vector_output
     assert vector["output"]["profile"]["profile_type"] == "redacted_lexical_hash_vector"
 
+    graphrag_invocation = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/{record['record_id']}/analysis-invocations",
+        json={
+            "grant_id": grant["grant_id"],
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "output_types": ["redacted_graphrag"],
+        },
+    ).json()
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/records/graphrag/redacted",
+        json={
+            "actor_did": "did:key:delegate",
+            "actor_key_hex": delegate_key,
+            "invocation_token": graphrag_invocation["token"],
+            "record_ids": [record["record_id"]],
+        },
+    )
+    assert response.status_code == 200
+    graph = response.json()
+    graph_output = json.dumps(graph["output"])
+    assert graph["artifact"]["artifact_type"] == "redacted_document_graphrag"
+    assert graph["output"]["output_policy"] == "redacted_graphrag"
+    assert graph["output"]["graph"]["graph_type"] == "redacted_category_entity_graph"
+    assert set(graph["output"]["graph"]["category_record_counts"]) >= {"housing", "food", "health"}
+    assert "jane@example.org" not in graph_output
+    assert "503-555-1212" not in graph_output
+    assert "123-45-6789" not in graph_output
+
     actions = [event["action"] for event in client.get(f"/wallets/{wallet['wallet_id']}/audit").json()["events"]]
     assert "record/analyze_redacted" in actions
     assert "record/vector_profile" in actions
+    assert "record/graphrag_redacted" in actions
 
 
 def test_wallet_api_owner_can_create_cross_record_redacted_analysis() -> None:

@@ -3,11 +3,19 @@
 This directory contains reference deployment assets for the 211-AI wallet API,
 wallet UI, and ops-health worker.
 
+For the stable API, CLI, MCP, and release-check reference, see
+`docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`. For the external proof verifier
+HTTP contract, see `docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
+
 Build context is the repository root:
 
 ```bash
 docker compose -f wallet_interface/deploy/docker-compose.wallet.yml up --build
 ```
+
+For environment-specific secrets, copy
+`wallet_interface/deploy/env.production.example` to an ignored local file and
+run compose with `--env-file`. Do not commit the populated file.
 
 When using the compose file for anything beyond local integration, export:
 
@@ -39,7 +47,8 @@ and ingress.
 
 Cloudflare reference edge assets live in `wallet_interface/deploy/cloudflare/`.
 They provide a narrow Worker that proxies `/health` and `/ops/health` to the
-origin API and can run scheduled ops-health checks from the edge.
+origin API, supports Cloudflare Access/custom origin-auth headers, rejects
+non-health routes at the edge, and can run scheduled ops-health checks.
 
 Required production environment:
 
@@ -79,6 +88,15 @@ location-region proof backend as an integration-safe production-mode stand-in.
 Switch `WALLET_PROOF_BACKEND` to `http-location-region` and provide the proof
 service vars before handling real user data. `GET /ops/health` will actively
 probe that verifier backend when configured.
+
+Before promoting a verifier-backed environment, run:
+
+```bash
+python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+```
+
+from the API/ops worker environment. This checks the external verifier health,
+prove, verify, and no-witness-leak contract using a synthetic witness.
 
 The Cloudflare Worker assets are reference glue only. They do not replace the
 Python API or local `wallet_interface.ops` worker; they front or trigger those

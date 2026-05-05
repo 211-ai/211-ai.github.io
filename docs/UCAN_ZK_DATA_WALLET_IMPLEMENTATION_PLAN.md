@@ -1,6 +1,6 @@
 # UCAN and ZK User Data Wallet Implementation Plan
 
-Last updated: 2026-05-03
+Last updated: 2026-05-05
 
 ## Goal
 
@@ -61,20 +61,19 @@ Implemented foundations:
   threshold-approved emergency revocation with wallet-wide grant revocation and
   key rotation.
 
-Still required before production:
+Remaining target-production gates:
 
-- Replace simulated proof receipts with production proof backends for selected
-  statements, and fail closed when proving artifacts are unavailable.
-- Replace deterministic local DP noise with reviewed production randomness and
-  durable privacy-budget ledgers.
-- Add passkey/device-key management and key backup/recovery UX.
-- Harden UCAN interoperability against a target implementation such as
-  `ucanto`/w3up or a chosen Python-compatible token profile.
-- Persist wallet state, consent ledgers, audit events, revocations, and privacy
-  budgets in a production datastore instead of only in in-memory/local-demo
-  services.
-- Add production observability, operator runbooks, data-retention policy, and
-  threat-model signoff.
+- Provision real external verifier credentials in the selected secret manager
+  and run `python -m wallet_interface.ops --validate-production-readiness` in
+  the target staging environment until the report is `status=ok`.
+- Complete and archive a target-environment signoff packet using
+  `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`, with retention mapping from
+  `docs/WALLET_RETENTION_POLICY.md` and supporting evidence from
+  `docs/WALLET_SECURITY_ARCHITECTURE_ADR.md`,
+  `docs/WALLET_PRODUCTION_DECISIONS_ADR.md`,
+  `docs/WALLET_UCAN_PROFILE.md`,
+  `docs/WALLET_OPERATIONS_RUNBOOK.md`, and
+  `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md`.
 
 ## Design Principles
 
@@ -495,22 +494,23 @@ abilities and caveats using `ipfs_datasets_py`.
 
 ## Implementation Phases
 
-The phase list below is the implementation contract. Items marked "MVP
-implemented" have working package/API/UI coverage in this repository, but may
-still need production hardening.
+The phase list below is the implementation contract. Each phase has working
+package/API/UI coverage in this repository. Remaining gates are target
+environment, governance, or future-compatibility items rather than missing
+in-repo MVP functionality.
 
-| Phase | Status | Main Gap |
+| Phase | Status | Remaining Gate |
 | --- | --- | --- |
-| 0. Architecture and threat model | partial | formal ADRs, production proof decision, privacy review process |
-| 1. Generic data wallet core | MVP implemented | recovery, durable persistence, richer record schemas |
-| 2. Storage integration | MVP implemented | live IPFS/Filecoin/S3 deployment tests, replica policy UX |
-| 3. UCAN wallet authorization | MVP implemented | external UCAN token interop and final production caveat profile |
-| 4. Location claims and service matching | MVP implemented | production polygon/distance proof backend |
-| 5. Proof system integration | MVP implemented | reviewed production circuit artifacts and verifier deployment selection |
-| 6. Privacy-preserving analytics | MVP implemented | production DP randomness, durable budget ledger, review workflow |
-| 7. Document and derived analysis | MVP implemented | production GraphRAG backend adapters and richer UI workflows |
-| 8. 211-AI product UI | MVP implemented | live session/auth, device keys, accessibility and usability pass |
-| 9. API, MCP, CLI, and operations | partial | stable API/CLI/MCP reference docs and production rollout guidance |
+| 0. Architecture and threat model | implementation complete | target signoff packet security/privacy/legal approval |
+| 1. Generic data wallet core | implementation complete | target retention-policy mapping and datastore lifecycle approval |
+| 2. Storage integration | implementation complete | target storage credentials and deployment verification |
+| 3. UCAN wallet authorization | implementation complete | `wallet-ucan-v1` profile documented; optional external `ucanto`/w3up interop fixtures after launch |
+| 4. Location claims and service matching | implementation complete | next proof family is `location_distance` through reviewed verifier contract |
+| 5. Proof system integration | implementation complete | real target verifier credentials and staging contract pass |
+| 6. Privacy-preserving analytics | implementation complete | organization privacy review for each approved template |
+| 7. Document and derived analysis | implementation complete | production model/backend selection for advanced GraphRAG usage |
+| 8. 211-AI product UI | implementation complete | live auth/accessibility/usability approval in target signoff packet |
+| 9. API, MCP, CLI, and operations | implementation complete | target-environment secret provisioning and production-readiness report |
 
 ### Phase 0: Architecture and Threat Model
 
@@ -518,8 +518,9 @@ Deliverables:
 
 - Threat model covering documents, precise location, derived facts, analytics,
   third-party delegates, storage providers, and administrators.
-- UCAN interop decision: keep internal wrapper around current delegation code,
-  then add spec-compatible token encoding and interop tests.
+- UCAN interop decision: keep the documented `wallet-ucan-v1` profile for first
+  production, then add optional external `ucanto`/w3up adapter fixtures after
+  launch.
 - ZK production decision: confirm Groth16 backend build, artifact management,
   verifier registry, and fail-closed behavior.
 - Analytics privacy policy: cohort thresholds, DP defaults, query budget model,
@@ -531,6 +532,16 @@ Acceptance:
 - Crypto round-trip test vectors.
 - One UCAN delegation-chain test.
 - One simulated proof test and one fail-closed production-proof test.
+
+Current implementation evidence:
+
+| Requirement | Evidence |
+| --- | --- |
+| Written security ADR | `docs/WALLET_SECURITY_ARCHITECTURE_ADR.md` records the wallet security boundary, threat model, proof-mode decision, analytics privacy review process, and production signoff gate. `docs/WALLET_PRODUCTION_DECISIONS_ADR.md` records the production choices for UCAN interop, proof backend sequencing, DP defaults, analytics execution, and passkey/device UX. `docs/WALLET_UCAN_PROFILE.md` documents the `wallet-ucan-v1` token and interop envelope. `docs/WALLET_RETENTION_POLICY.md` and `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` define the target-environment retention and governance evidence required before live data. |
+| Crypto round-trip test vectors | Wallet unit and API tests cover encrypted record ingest, authorized decrypt, unauthorized decrypt rejection, encrypted exports, storage verification, and key rotation/re-wrapping. |
+| UCAN delegation-chain test | Wallet unit/API/UI tests cover delegated grants, caveat preservation, attenuation, user-presence invocations, revocation, and child delegation from share-capable receipts. |
+| Simulated and fail-closed proof tests | Wallet/API/proof-backend tests cover simulated development receipts, production-mode rejection of simulated proofs, deterministic non-simulated backend success, HTTP verifier contract validation, and public-input no-leak checks. |
+| Privacy review process | Analytics template status gates, consent withdrawal, sparse-cell suppression, DP budget accounting, and `docs/WALLET_SECURITY_ARCHITECTURE_ADR.md` define the template approval process. |
 
 ### Phase 1: Generic Data Wallet Core
 
@@ -869,9 +880,10 @@ production hardening for external UCAN interoperability and production
 datastore operations is tracked below in Milestone E and the production gaps
 above.
 
-Scope:
+Implemented scope:
 
-- Define final UCAN token profile and interop target.
+- Document the first-production `wallet-ucan-v1` token profile and keep
+  external `ucanto`/w3up compatibility as a post-launch adapter track.
 - Add conformance tests for delegation chains, caveat attenuation, expiry,
   revocation, and threshold approval references.
 - Add capability previews in `211-AI` that show users exactly what the grant
@@ -892,7 +904,7 @@ Completion evidence:
 
 | Requirement | Evidence |
 | --- | --- |
-| UCAN token profile | `wallet-ucan-v1` invocation tokens are issued and accepted by `wallet_interface.api`, with issuer, audience, grant ID, wallet resource, ability, caveats, and expiration carried in signed wallet invocations. External `ucanto`/w3up compatibility remains a production-hardening target. |
+| UCAN token profile | `wallet-ucan-v1` invocation tokens are issued and accepted by `wallet_interface.api`, with issuer, audience, grant ID, wallet resource, ability, caveats, and expiration carried in signed wallet invocations. `docs/WALLET_UCAN_PROFILE.md` documents the profile, and wallet tests cover issuer-preserving tokens, the UCAN-compatible inspection envelope, legacy no-issuer token compatibility, and issuer mismatch rejection. External `ucanto`/w3up compatibility remains a post-launch adapter track. |
 | Delegated request, approval, invocation, and revocation | `tests/test_wallet_interface_api.py` covers third-party access requests, owner approval, bounded invocation, listed revoked requests, and later invocation failure after revocation. |
 | Capability separation | `ipfs_datasets_py/tests/unit/test_data_wallet.py` covers `record/analyze` without decrypt, `record/decrypt` key wrapping, coarse/proven location grants, analytics consent/contribution controls, export grants, wrong-ability rejection, tampered invocation rejection, and revoked grant rejection. |
 | Caveat enforcement | Wallet service tests cover record-ID constrained wildcard grants, not-before caveats, concrete output-type checks for document/export operations, and delegated grants preserving parent record restrictions. API tests cover user-presence-required grants failing direct use and succeeding only through a signed invocation carrying `user_present`. |
@@ -927,10 +939,10 @@ and non-simulated verifier path are implemented and tested. Replacing the
 deterministic backend with a reviewed circuit/verifier artifact is now a backend
 drop-in task, not a 211-AI product-flow blocker.
 
-Scope:
+Implemented scope:
 
-- Choose one first production proof family, preferably `location_region` or
-  `attribute_membership`, because both map directly to 211 service eligibility.
+- Choose `location_region` as the first production proof-family boundary because
+  it maps directly to 211 service eligibility.
 - Define witness schema, public inputs, circuit artifact storage, verifier ID,
   and proof receipt format.
 - Wire `wallet.proofs` to the existing `logic/zkp` verifier registry with a
@@ -997,7 +1009,7 @@ only duplicated wallet snapshots. The 211-AI Analytics screen now loads
 API-backed templates and consents, shows template status, fields used, consent
 expiration, and supports consent creation and withdrawal.
 
-Scope:
+Implemented scope:
 
 - Store analytics templates, consents, contributions, nullifiers, query-budget
   spend, and aggregate releases durably.
@@ -1040,7 +1052,7 @@ the recovery policy and recovery-controller flows alongside the existing
 controller, device, approval, and emergency revoke routes, and the Security
 screen can drive recovery-policy and controller-recovery actions.
 
-Scope:
+Implemented scope:
 
 - Add passkey/device-key abstraction for wallet controllers.
 - Implement key rotation and re-wrapping for active records.
@@ -1069,7 +1081,7 @@ Current implementation evidence:
 ### Milestone E: Deployment and Operations
 
 Status: implementation-complete for the in-repo production-ops path as of
-2026-05-04.
+2026-05-05.
 Production persistence is available through `LocalWalletRepository` and
 environment-driven wallet storage/proof configuration. The API-level operations
 health report checks repository persistence, encrypted storage availability,
@@ -1081,9 +1093,11 @@ runbook now cover the initial deployment and incident-response path. The ops
 worker can emit authenticated webhook alerts, the deployment assets carry the
 alert and proof-service env surface, the HTTP proof backend can probe a remote
 verifier service, and the Security screen now surfaces verifier metadata and
-live proof-backend health.
+live proof-backend health. The remaining work is target-environment
+provisioning: loading real verifier credentials into the selected secret
+manager and running the documented staging proof workflow.
 
-Scope:
+Implemented scope:
 
 - Select production persistence for wallet metadata, audit events, revocation
   state, privacy budgets, and encrypted blob references.
@@ -1112,31 +1126,40 @@ Current implementation evidence:
 | 211-AI ops UI | The Security screen runs `/ops/health`, shows overall status, per-check summaries, proof verifier metadata, live verifier health, and refreshes wallet audit events after the check. |
 | Scheduled worker | `python -m wallet_interface.ops` runs bounded or watch-mode ops checks, emits JSONL, can fail on warnings or errors for cron/sidecar integration, and can POST warning/error alerts to an operator webhook with bearer or custom-header authentication. |
 | Deployment config | `wallet_interface/deploy/docker-compose.wallet.yml` runs API, UI, and ops worker services with durable volumes and production-mode proof settings, `wallet_interface/deploy/kubernetes/` provides the parallel namespace/config/API/UI/ops/ingress reference manifests, and `wallet_interface/deploy/cloudflare/` adds edge proxy plus scheduled ops-health Worker glue. |
+| Cloudflare origin hardening | `wallet_interface/deploy/cloudflare/src/index.ts` limits the Worker to `GET`/`HEAD` health routes, forwards the wallet ops secret, and supports Cloudflare Access service-token headers plus custom origin-auth headers for environment-specific gateways. |
+| Secret and alert wiring | `wallet_interface/deploy/env.production.example`, `wallet_interface/deploy/kubernetes/secrets.example.yaml`, and `wallet_interface/deploy/kubernetes/externalsecret.example.yaml` define the production secret/env surface for ops-health auth, alert webhooks, proof-service credentials, storage config, and Cloudflare origin auth. |
 | Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
+| Operator/integrator reference | `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md` publishes the stable wallet API endpoint groups, CLI command list, MCP wallet tools, runtime env surface, privacy boundaries, and release checks. |
+| External verifier contract | `docs/WALLET_PROOF_VERIFIER_CONTRACT.md` defines the HTTP `location_region` proof verifier health/prove/verify contract, authentication headers, safe receipt fields, ops validation, and no-witness-leak requirements. `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` now runs the staging health/prove/verify/no-leak contract check against the configured HTTP verifier with a synthetic witness. |
 
-Remaining work:
+Target-environment handoff:
 
-- Validate the external verifier service contract and provision its production
-  credentials in the target secret manager.
-- Add environment-specific secret management and production alert destination wiring.
-- Harden the Cloudflare reference path with environment-specific origin auth,
-  Access/Tunnel integration, and deployment secrets.
-- Publish stable API/CLI/MCP reference docs for operators and integrators.
+- Provision real external verifier service credentials in the target secret
+  manager and run the verifier contract command in the target staging
+  environment.
+- Complete `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` for the target
+  environment, including the `docs/WALLET_RETENTION_POLICY.md` mapping to
+  repository lifecycle, encrypted storage lifecycle, backup purge, IPFS pinning,
+  Filecoin deal expiration, log retention, and alert retention controls.
+- The in-repo gate for that handoff is
+  `python -m wallet_interface.ops --validate-production-readiness`, which fails
+  until durable repository/storage env vars, production proof mode, verifier
+  credentials, ops-health auth, alert routing, ops health, and the external
+  verifier health/prove/verify contract all pass without placeholder secrets.
 
-## Open Decisions
+## Resolved Decisions
 
-- The public wallet package is `ipfs_datasets_py.wallet`. The older
-  package-level `data_wallet` and `document_wallet` names, plus
-  `ipfs_datasets_py.wallet.document`, were removed after migration.
-- Whether first production UCAN encoding should interoperate directly with
-  JavaScript `ucanto`/w3up or begin with a Python-internal verifier and add
-  interop tests later.
-- Which location proof backend to use for polygons and distance proofs beyond
-  simple range/membership circuits.
-- Differential privacy defaults for small regional cohorts.
-- Whether analytics aggregation should run in a trusted service first, or use
-  MPC/TEE/FHE for specific high-risk studies later.
-- Whether passkeys should be the primary UX for device keys from milestone one.
+| Decision | Resolution |
+| --- | --- |
+| Public wallet package | `ipfs_datasets_py.wallet` is canonical. The older package-level `data_wallet` and `document_wallet` names, plus `ipfs_datasets_py.wallet.document`, were removed after migration. |
+| First production UCAN encoding | Use signed `wallet-ucan-v1` invocation tokens for first production; `docs/WALLET_UCAN_PROFILE.md` defines the profile and UCAN-compatible inspection envelope. Add optional `ucanto`/w3up compatibility fixtures later. |
+| Next proof backend | Keep `location_region` as the first production verifier boundary; add `location_distance` next through the same HTTP verifier contract pattern, then polygon proofs after reviewed circuit/verifier artifacts are available. |
+| DP defaults for small regional cohorts | Keep default `min_cohort_size=10` and `epsilon_budget=1.0`; require explicit privacy review for lower thresholds, higher epsilon, new dimensions, joins, or rare-condition cohorts. |
+| Analytics execution model | Run first production analytics in the trusted wallet analytics service with template approval, nullifiers, k-thresholds, sparse-cell suppression, DP metadata, budget ledgers, and audit; evaluate MPC/TEE/FHE only for high-risk studies that need it. |
+| Passkey/device UX | Use passkeys as the preferred human authentication UX over wallet device keys when live auth is selected. Device DIDs, controllers, and recovery contacts remain the wallet authority model. |
+
+The binding rationale for these decisions is in
+`docs/WALLET_PRODUCTION_DECISIONS_ADR.md`.
 
 ## Risks and Mitigations
 
