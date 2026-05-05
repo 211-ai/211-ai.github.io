@@ -677,38 +677,9 @@ class PortalImplementationDaemon:
 
     def _create_seeded_worktree(self, worktree_path: Path, branch_name: str) -> str:
         self._run_git(["worktree", "add", "-b", branch_name, str(worktree_path), "HEAD"], cwd=self.repo_root)
-        self._seed_worktree_from_workspace(worktree_path)
         baseline_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
-        status = self._run_git(["status", "--porcelain"], cwd=worktree_path).stdout.strip()
-        if status:
-            self._run_git(["add", "-A"], cwd=worktree_path)
-            self._run_git(
-                [
-                    "-c",
-                    "user.name=Implementation Daemon",
-                    "-c",
-                    "user.email=implementation-daemon@example.invalid",
-                    "commit",
-                    "-m",
-                    "implementation daemon baseline",
-                ],
-                cwd=worktree_path,
-            )
-            baseline_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
         self._link_shared_worktree_paths(worktree_path)
         return baseline_ref
-
-    def _seed_worktree_from_workspace(self, worktree_path: Path) -> None:
-        dirty_paths = set(self._git_path_list(["diff", "--name-only", "HEAD", "--"]))
-        dirty_paths.update(self._git_path_list(["ls-files", "--others", "--exclude-standard", "-z"]))
-        for relative in sorted(path for path in dirty_paths if self._should_seed_path(path)):
-            source = self.repo_root / relative
-            target = worktree_path / relative
-            if source.exists() and source.is_file():
-                target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source, target)
-            elif not source.exists() and target.exists():
-                target.unlink()
 
     def _link_shared_worktree_paths(self, worktree_path: Path) -> None:
         for relative in SHARED_WORKTREE_PATHS:
@@ -727,28 +698,6 @@ class PortalImplementationDaemon:
                     target.unlink()
             target.parent.mkdir(parents=True, exist_ok=True)
             target.symlink_to(source, target_is_directory=source.is_dir())
-
-    def _git_path_list(self, args: list[str]) -> list[str]:
-        result = self._run_git(args, cwd=self.repo_root)
-        if "-z" in args:
-            return [item for item in result.stdout.split("\0") if item]
-        return [item for item in result.stdout.splitlines() if item]
-
-    @staticmethod
-    def _should_seed_path(path: str) -> bool:
-        skip_prefixes = (
-            ".git/",
-            ".pytest_cache/",
-            "data/",
-            "node_modules/",
-            "wallet_interface/ui/node_modules/",
-            "wallet_interface/ui/dist/",
-        )
-        skip_parts = {".git", "__pycache__", ".pytest_cache", "node_modules"}
-        normalized = path.replace("\\", "/")
-        if normalized == "data" or normalized.startswith(skip_prefixes):
-            return False
-        return not any(part in skip_parts for part in normalized.split("/"))
 
     def _commit_worktree_changes(self, worktree_path: Path, task: PortalTask, attempt: int) -> dict[str, Any]:
         self._restore_ephemeral_worktree_paths_for_commit(worktree_path)
