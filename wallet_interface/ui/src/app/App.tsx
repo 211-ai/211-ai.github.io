@@ -198,7 +198,7 @@ const defaultManagedUserDraft = {
 };
 
 const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: string }> = [
-  { id: "identity_minimum", label: "Minimum identity", detail: "Name, birth date, and contact status" },
+  { id: "identity_minimum", label: "Minimum identity", detail: "name, birthdate and contact status" },
   { id: "profile", label: "Profile", detail: "Basic profile details and help needs" },
   { id: "photo", label: "Photo or ID file", detail: "The setup file you chose, like an image or PDF" },
   { id: "current_location", label: "Current location", detail: "Most recent safe place or shelter" },
@@ -1629,105 +1629,6 @@ function ContactsScreen({
           </div>
         )}
       </Section>
-    </div>
-  );
-}
-
-function SharingRulesScreen({
-  recipients,
-  setRecipients
-}: {
-  recipients: DisclosureRecipientDraft[];
-  setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
-}) {
-  function toggleScope(recipientId: string, scope: DisclosureDataScope) {
-    setRecipients(
-      recipients.map((recipient) =>
-        recipient.id === recipientId
-          ? {
-              ...recipient,
-              allowedScopes: recipient.allowedScopes.includes(scope)
-                ? recipient.allowedScopes.filter((item) => item !== scope)
-                : [...recipient.allowedScopes, scope]
-            }
-          : recipient
-      )
-    );
-  }
-
-  return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Sharing choices</p>
-        <h1>Choose what each person can see</h1>
-      </div>
-      <StatusBanner tone="info">
-        These items start on. You can turn off any item before you save.
-      </StatusBanner>
-      <StatusBanner tone="warning">
-        A privacy and legal team must review this before real use.
-      </StatusBanner>
-      <div className="list-stack">
-        {recipients.map((recipient) => (
-          <article className="scope-editor" key={recipient.id}>
-            <div className="scope-header">
-              <div>
-                <h3>{recipient.displayName}</h3>
-                <p>{formatRecipientType(recipient.type)}</p>
-              </div>
-              <Badge>{recipient.allowedScopes.length} selected</Badge>
-            </div>
-            <div className="scope-grid">
-              {disclosureScopes.map((scope) => (
-                <label className="scope-option" key={scope.id}>
-                  <input
-                    checked={recipient.allowedScopes.includes(scope.id)}
-                    onChange={() => toggleScope(recipient.id, scope.id)}
-                    type="checkbox"
-                  />
-                  <span>
-                    <strong>{scope.label}</strong>
-                    <small>{scope.detail}</small>
-                  </span>
-                </label>
-              ))}
-            </div>
-            <div
-              className="capability-preview"
-              role="group"
-              aria-label={`${recipient.displayName} sharing capability preview`}
-            >
-              <div className="scope-header">
-                <div>
-                  <h4>What this allows</h4>
-                  <p>{recipient.allowedScopes.length} selected items</p>
-                </div>
-                <Badge tone={recipient.allowedScopes.length > 0 ? "success" : "warning"}>
-                  {recipient.allowedScopes.length > 0 ? "limited share" : "no access"}
-                </Badge>
-              </div>
-              <div className="disclosure-package">
-                <div className="disclosure-row">
-                  <strong>Can do</strong>
-                  <span>{plainCapabilitySummary(abilitiesForDisclosureScopes(recipient.allowedScopes))}</span>
-                </div>
-                <div className="disclosure-row">
-                  <strong>Items</strong>
-                  <span>
-                    {recipient.allowedScopes
-                      .map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope)
-                      .join(", ") || "No items selected"}
-                  </span>
-                </div>
-                <div className="disclosure-row">
-                  <strong>Not allowed</strong>
-                  <span>{plainNonGrantedCapabilities(abilitiesForDisclosureScopes(recipient.allowedScopes)).join(", ")}</span>
-                </div>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
     </div>
   );
 }
@@ -3387,7 +3288,7 @@ function BenefitsProtectionScreen({
           <div className="scope-header">
             <div>
               <h4>What this allows</h4>
-              <p>missed check-in and benefits status only</p>
+              <p>benefits status and notice details only</p>
             </div>
             <Badge tone={optedIn ? "success" : "neutral"}>{optedIn ? "ready to save" : "off"}</Badge>
           </div>
@@ -3398,7 +3299,7 @@ function BenefitsProtectionScreen({
             </div>
             <div className="disclosure-row">
               <strong>Items</strong>
-              <span>Missed check-in, Benefits information</span>
+              <span>Benefits information, Notice request</span>
             </div>
             <div className="disclosure-row">
               <strong>Not allowed</strong>
@@ -3409,7 +3310,7 @@ function BenefitsProtectionScreen({
         <label className="consent-box">
           <input checked={optedIn} onChange={(event) => setOptedIn(event.target.checked)} type="checkbox" />
           <span>
-            <strong>Allow Abby to prepare a benefits notice after missed check-ins.</strong>
+            <strong>Allow Abby to prepare a benefits notice for agency help.</strong>
             <small>This starts on. You can turn it off. A privacy and legal team must review this before real use.</small>
           </span>
         </label>

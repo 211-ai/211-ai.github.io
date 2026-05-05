@@ -187,6 +187,7 @@ test("analytics consent preserves opt-out after refresh", async ({ page }) => {
 test("benefits opt-in previews notification capability boundaries", async ({ page }) => {
   await page.goto("/#/benefits-protection");
   await expect(page.getByRole("heading", { name: /Benefits notice/i })).toBeVisible();
+  await expect(page.getByText(/missed check/i)).toHaveCount(0);
   await expect(page.getByLabel(/Allow Abby to prepare/i)).toBeChecked();
   const preview = page.getByLabel(/Benefits notification capability preview/i);
   await expect(preview.getByText(/read basic info/i)).toBeVisible();
