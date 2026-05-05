@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --configLoader runner",
     "preview": "vite preview --host 0.0.0.0",
     "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
     "pretest": "npm run clean:visual-artifacts",
