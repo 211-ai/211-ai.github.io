@@ -4,7 +4,8 @@ import type { AgentCommandName } from "./commandSchemas";
 import { commandSchemas, isAgentCommandName } from "./commandSchemas";
 import type { AgentToolCall, AgentToolResult, SurfaceContext } from "./types";
 import { hasPermissionLevel } from "./types";
-import { canUseToolOnSurface, getToolDefinition } from "./surfaceRegistry";
+import { canUseToolOnSurface, getRouteLabel, getToolDefinition } from "./surfaceRegistry";
+import { buildSafeSurfaceContext } from "./tools/navigationTools";
 
 export interface SurfaceApiInvokeOptions extends AppActionOptions {
   sessionId?: string;
@@ -65,29 +66,7 @@ export async function invokeToolCall(
 }
 
 export function buildSurfaceContext(runtime: AppActionRuntime, includePrivateContext = false): SurfaceContext {
-  const state = runtime.getState();
-  const visibleRecordIds =
-    state.activeRoute === "uploads" || state.activeRoute === "proof-center" || state.activeRoute === "exports"
-      ? state.uploads.map((upload) => upload.recordId || upload.id)
-      : undefined;
-
-  return {
-    route: state.activeRoute,
-    routeLabel: readableRouteLabel(state.activeRoute),
-    capturedAt: new Date().toISOString(),
-    visibleRecordIds,
-    walletUnlocked: state.walletUnlocked ?? true,
-    privateContextAllowed: Boolean(includePrivateContext && state.privateContextAllowed),
-    permissionLevel: includePrivateContext && state.privateContextAllowed ? "wallet_private" : "app_context",
-    summary: summarizeSurface(state.activeRoute, runtime),
-    metadata: {
-      uploadCount: state.uploads.length,
-      recipientCount: state.recipients.length,
-      pendingAccessRequestCount: state.accessRequests.filter((request) => request.status === "pending").length,
-      proofCount: state.walletProofReceipts.length,
-      exportBundleCount: state.exportBundleViews.length
-    }
-  };
+  return buildSafeSurfaceContext(runtime.getState(), { includePrivateContext });
 }
 
 function validateSurfaceInvocation(
@@ -115,7 +94,7 @@ function validateSurfaceInvocation(
       ok: false,
       action: name,
       errorCode: "surface_not_allowed",
-      message: `${tool.title} cannot run from ${readableRouteLabel(state.activeRoute)}.`
+      message: `${tool.title} cannot run from ${getRouteLabel(state.activeRoute)}.`
     };
   }
 
@@ -175,25 +154,4 @@ function toAgentToolResult(toolCall: AgentToolCall, result: AppActionResult): Ag
         },
         output: result
       };
-}
-
-function summarizeSurface(route: string, runtime: AppActionRuntime): string {
-  const state = runtime.getState();
-  if (route === "check-in") {
-    return `Check-in every ${state.policy.intervalDays} days.`;
-  }
-  if (route === "recipient-access") {
-    return `${state.accessRequests.filter((request) => request.status === "pending").length} pending access requests.`;
-  }
-  if (route === "sharing-rules" || route === "contacts") {
-    return `${state.recipients.length} recipients are visible.`;
-  }
-  return `${readableRouteLabel(state.activeRoute)} is active.`;
-}
-
-function readableRouteLabel(route: string): string {
-  return route
-    .split("-")
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join(" ");
 }
