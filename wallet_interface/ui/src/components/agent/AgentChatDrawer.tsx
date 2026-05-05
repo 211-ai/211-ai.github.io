@@ -58,15 +58,15 @@ export function AgentChatDrawer({
           </header>
 
           <div className="agent-current-task" role="status">
-            <small>Read-only chat</small>
-            <span>Ask questions while continuing to use the app.</span>
+            <small>App assistant</small>
+            <span>Ask questions or navigate while continuing to use the app.</span>
           </div>
 
           <AgentMessageList messages={messages} />
 
           {responding ? (
             <div className="agent-typing" role="status">
-              Abby is checking public app context.
+              Abby is working on that request.
             </div>
           ) : null}
 
