@@ -322,10 +322,12 @@ class PortalImplementationDaemon:
         for task in tasks:
             existing_outputs = [item for item in task.outputs if (self.repo_root / item).exists()]
             task_artifacts[task.task_id] = existing_outputs
+            unresolved_merge_failure = self._has_unresolved_merge_failure(task, previous)
             artifact_complete = (
                 task.completion == "artifact"
                 and bool(task.outputs)
                 and len(existing_outputs) == len(task.outputs)
+                and not unresolved_merge_failure
             )
             if task.status == "completed" or artifact_complete:
                 resolved_statuses[task.task_id] = "completed"
@@ -630,6 +632,8 @@ class PortalImplementationDaemon:
                         merge_result = self._merge_branch_to_main(branch_name, task, attempt)
                         if merge_result.get("merged"):
                             cleanup_result = self._cleanup_merged_worktree(worktree_path, branch_name)
+                        else:
+                            returncode = int(merge_result.get("returncode") or 1)
                 else:
                     returncode = int(validation_result.get("returncode") or 1)
         except subprocess.TimeoutExpired:
@@ -880,6 +884,27 @@ class PortalImplementationDaemon:
         }
         self._record_event("cleanup_finished", result)
         return result
+
+    def _has_unresolved_merge_failure(self, task: PortalTask, previous: PortalTaskState) -> bool:
+        if previous.last_implementation_task_id != task.task_id:
+            return False
+        if not previous.last_implementation_commit:
+            return False
+        if previous.last_merge_returncode in (None, 0):
+            return False
+        if previous.last_merge_commit:
+            return False
+        return not self._git_ref_is_ancestor(previous.last_implementation_commit, "HEAD")
+
+    def _git_ref_is_ancestor(self, ancestor: str, descendant: str) -> bool:
+        result = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", ancestor, descendant],
+            cwd=self.repo_root,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode == 0
 
     def _implementation_lock_path(self) -> Path:
         return self.state_path.parent / "implementation.lock"

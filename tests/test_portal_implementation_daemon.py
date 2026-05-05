@@ -322,6 +322,62 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert branch_check.returncode == 0
 
 
+def test_daemon_merge_failure_keeps_artifact_task_ready(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        f"""
+from pathlib import Path
+
+main_repo = Path({str(repo_root)!r})
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+(main_repo / "docs").mkdir(exist_ok=True)
+(main_repo / "docs" / "agent.md").write_text("dirty main copy", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["commit_result"]["committed"] is True
+    assert implementation["merge_result"]["attempted"] is True
+    assert implementation["merge_result"]["merged"] is False
+    assert implementation["returncode"] != 0
+    assert state.last_merge_returncode != 0
+
+    daemon.implement = False
+    result = daemon.run_once()
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+
+    assert result["completed_count"] == 0
+    assert "AGENT-000" not in state.completed_task_ids
+    assert state.active_task_id == "AGENT-000"
+
+
 def test_daemon_links_shared_node_modules_into_ephemeral_worktree(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
