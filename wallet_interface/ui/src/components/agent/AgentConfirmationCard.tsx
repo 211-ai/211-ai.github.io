@@ -113,7 +113,31 @@ function summarizeChange(confirmation: AgentConfirmationRequest, toolCall?: Agen
     return {
       before: "No new follow-up plan exists for this request.",
       after: `A private follow-up plan will be created for ${serviceId}.`,
-      details: summarizeNamedFields(input, ["goal", "steps"])
+      details: summarizeNamedFields(input, ["goal", "steps", "documentsNeeded", "questionsToAsk", "reminderAt"])
+    };
+  }
+
+  if (toolName === "add_service_plan_checklist_item" && isRecord(input)) {
+    return {
+      before: "The service plan checklist stays unchanged.",
+      after: `A checklist item will be added to plan ${readString(input.planId, "selected plan")}.`,
+      details: summarizeNamedFields(input, ["checklist", "item"])
+    };
+  }
+
+  if (toolName === "set_service_plan_reminder" && isRecord(input)) {
+    return {
+      before: "The service plan reminder stays unchanged.",
+      after: `Plan ${readString(input.planId, "selected plan")} will get a follow-up reminder.`,
+      details: summarizeNamedFields(input, ["reminderAt", "appointmentAt"])
+    };
+  }
+
+  if (toolName === "record_service_interaction" && isRecord(input)) {
+    return {
+      before: "No service interaction is recorded by this action yet.",
+      after: `A private service interaction will be recorded for ${readString(input.serviceId, "selected service")}.`,
+      details: summarizeNamedFields(input, ["interactionType", "channel", "outcome", "nextFollowUpAt"])
     };
   }
 

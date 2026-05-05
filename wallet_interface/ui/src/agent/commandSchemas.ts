@@ -20,6 +20,9 @@ export const AGENT_COMMAND_NAMES = [
   "open_service_detail",
   "save_service",
   "create_service_plan",
+  "add_service_plan_checklist_item",
+  "set_service_plan_reminder",
+  "record_service_interaction",
   "update_registration_draft",
   "update_check_in_policy",
   "add_recipient",
@@ -130,6 +133,7 @@ const disclosureRecipientTypes = [
 ] as const;
 
 const easyBotCheckStatuses = ["pending", "passed", "failed"] as const;
+const servicePlanChecklistNames = ["steps", "documents_needed", "questions_to_ask"] as const;
 
 export interface NavigateCommandInput {
   route: RouteId;
@@ -159,12 +163,65 @@ export interface OpenServiceDetailCommandInput {
 export interface SaveServiceCommandInput {
   serviceId: string;
   note?: string;
+  title?: string;
+  providerName?: string;
+  programName?: string;
+  sourceUrl?: string;
+  sourceContentCid?: string;
+  sourcePageCid?: string;
+  label?: string;
+  reason?: string;
+  priority?: string;
 }
 
 export interface CreateServicePlanCommandInput {
   serviceId: string;
   goal: string;
   steps?: string[];
+  documentsNeeded?: string[];
+  questionsToAsk?: string[];
+  appointmentAt?: string;
+  reminderAt?: string;
+  travelTarget?: string;
+  assignedWorkerRecipientId?: string;
+  title?: string;
+  providerName?: string;
+  sourceContentCid?: string;
+  sourcePageCid?: string;
+}
+
+export interface AddServicePlanChecklistItemCommandInput {
+  planId: string;
+  item: string;
+  checklist: "steps" | "documents_needed" | "questions_to_ask";
+}
+
+export interface SetServicePlanReminderCommandInput {
+  planId: string;
+  reminderAt: string;
+  appointmentAt?: string;
+}
+
+export interface RecordServiceInteractionCommandInput {
+  serviceId: string;
+  interactionType: string;
+  channel?: string;
+  providerName?: string;
+  programName?: string;
+  counterpartyName?: string;
+  counterpartyContact?: string;
+  timestamp?: string;
+  status?: string;
+  outcome?: string;
+  notesRecordId?: string;
+  nextAction?: string;
+  nextFollowUpAt?: string;
+  sourceActionUrl?: string;
+  sourceContentCid?: string;
+  sourcePageCid?: string;
+  relatedGrantIds?: string[];
+  relatedRecordIds?: string[];
+  privacyLevel?: string;
 }
 
 export interface UpdateRegistrationDraftCommandInput {
@@ -555,6 +612,10 @@ function isUploadDocumentCategory(value: unknown): value is UploadDocumentCatego
   return isStringOneOf(UPLOAD_DOCUMENT_CATEGORIES, value);
 }
 
+function isServicePlanChecklistName(value: unknown): value is (typeof servicePlanChecklistNames)[number] {
+  return isStringOneOf(servicePlanChecklistNames, value);
+}
+
 export function isNavigateCommandInput(value: unknown): value is NavigateCommandInput {
   return isRecord(value) && isRouteId(value.route);
 }
@@ -596,7 +657,16 @@ export function isSaveServiceCommandInput(value: unknown): value is SaveServiceC
     isRecord(value) &&
     isString(value.serviceId) &&
     value.serviceId.trim().length > 0 &&
-    isOptional(value.note, isString)
+    isOptional(value.note, isString) &&
+    isOptional(value.title, isString) &&
+    isOptional(value.providerName, isString) &&
+    isOptional(value.programName, isString) &&
+    isOptional(value.sourceUrl, isString) &&
+    isOptional(value.sourceContentCid, isString) &&
+    isOptional(value.sourcePageCid, isString) &&
+    isOptional(value.label, isString) &&
+    isOptional(value.reason, isString) &&
+    isOptional(value.priority, isString)
   );
 }
 
@@ -607,7 +677,70 @@ export function isCreateServicePlanCommandInput(value: unknown): value is Create
     value.serviceId.trim().length > 0 &&
     isString(value.goal) &&
     value.goal.trim().length > 0 &&
-    isOptional(value.steps, isStringArray)
+    isOptional(value.steps, isStringArray) &&
+    isOptional(value.documentsNeeded, isStringArray) &&
+    isOptional(value.questionsToAsk, isStringArray) &&
+    isOptional(value.appointmentAt, isString) &&
+    isOptional(value.reminderAt, isString) &&
+    isOptional(value.travelTarget, isString) &&
+    isOptional(value.assignedWorkerRecipientId, isString) &&
+    isOptional(value.title, isString) &&
+    isOptional(value.providerName, isString) &&
+    isOptional(value.sourceContentCid, isString) &&
+    isOptional(value.sourcePageCid, isString)
+  );
+}
+
+export function isAddServicePlanChecklistItemCommandInput(
+  value: unknown
+): value is AddServicePlanChecklistItemCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.planId) &&
+    value.planId.trim().length > 0 &&
+    isString(value.item) &&
+    value.item.trim().length > 0 &&
+    isServicePlanChecklistName(value.checklist)
+  );
+}
+
+export function isSetServicePlanReminderCommandInput(value: unknown): value is SetServicePlanReminderCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.planId) &&
+    value.planId.trim().length > 0 &&
+    isString(value.reminderAt) &&
+    value.reminderAt.trim().length > 0 &&
+    isOptional(value.appointmentAt, isString)
+  );
+}
+
+export function isRecordServiceInteractionCommandInput(
+  value: unknown
+): value is RecordServiceInteractionCommandInput {
+  return (
+    isRecord(value) &&
+    isString(value.serviceId) &&
+    value.serviceId.trim().length > 0 &&
+    isString(value.interactionType) &&
+    value.interactionType.trim().length > 0 &&
+    isOptional(value.channel, isString) &&
+    isOptional(value.providerName, isString) &&
+    isOptional(value.programName, isString) &&
+    isOptional(value.counterpartyName, isString) &&
+    isOptional(value.counterpartyContact, isString) &&
+    isOptional(value.timestamp, isString) &&
+    isOptional(value.status, isString) &&
+    isOptional(value.outcome, isString) &&
+    isOptional(value.notesRecordId, isString) &&
+    isOptional(value.nextAction, isString) &&
+    isOptional(value.nextFollowUpAt, isString) &&
+    isOptional(value.sourceActionUrl, isString) &&
+    isOptional(value.sourceContentCid, isString) &&
+    isOptional(value.sourcePageCid, isString) &&
+    isOptional(value.relatedGrantIds, isStringArray) &&
+    isOptional(value.relatedRecordIds, isStringArray) &&
+    isOptional(value.privacyLevel, isString)
   );
 }
 
@@ -1115,7 +1248,19 @@ export const commandSchemas = {
   save_service: {
     name: "save_service",
     description: "Save a service to the user's wallet-backed service list.",
-    inputSchema: objectSchema({ serviceId: stringProperty, note: stringProperty }, ["serviceId"]),
+    inputSchema: objectSchema({
+      serviceId: stringProperty,
+      note: stringProperty,
+      title: stringProperty,
+      providerName: stringProperty,
+      programName: stringProperty,
+      sourceUrl: stringProperty,
+      sourceContentCid: stringProperty,
+      sourcePageCid: stringProperty,
+      label: stringProperty,
+      reason: stringProperty,
+      priority: stringProperty
+    }, ["serviceId"]),
     outputSchema: commandOutputSchema,
     isInput: isSaveServiceCommandInput,
     isOutput: isCommandOutput
@@ -1126,10 +1271,72 @@ export const commandSchemas = {
     inputSchema: objectSchema({
       serviceId: stringProperty,
       goal: stringProperty,
-      steps: stringArrayProperty
+      steps: stringArrayProperty,
+      documentsNeeded: stringArrayProperty,
+      questionsToAsk: stringArrayProperty,
+      appointmentAt: stringProperty,
+      reminderAt: stringProperty,
+      travelTarget: stringProperty,
+      assignedWorkerRecipientId: stringProperty,
+      title: stringProperty,
+      providerName: stringProperty,
+      sourceContentCid: stringProperty,
+      sourcePageCid: stringProperty
     }, ["serviceId", "goal"]),
     outputSchema: commandOutputSchema,
     isInput: isCreateServicePlanCommandInput,
+    isOutput: isCommandOutput
+  },
+  add_service_plan_checklist_item: {
+    name: "add_service_plan_checklist_item",
+    description: "Add one checklist item to a service plan after confirmation.",
+    inputSchema: objectSchema({
+      planId: stringProperty,
+      item: stringProperty,
+      checklist: { type: "string", enum: servicePlanChecklistNames }
+    }, ["planId", "item", "checklist"]),
+    outputSchema: commandOutputSchema,
+    isInput: isAddServicePlanChecklistItemCommandInput,
+    isOutput: isCommandOutput
+  },
+  set_service_plan_reminder: {
+    name: "set_service_plan_reminder",
+    description: "Set a reminder or appointment time on a service plan after confirmation.",
+    inputSchema: objectSchema({
+      planId: stringProperty,
+      reminderAt: stringProperty,
+      appointmentAt: stringProperty
+    }, ["planId", "reminderAt"]),
+    outputSchema: commandOutputSchema,
+    isInput: isSetServicePlanReminderCommandInput,
+    isOutput: isCommandOutput
+  },
+  record_service_interaction: {
+    name: "record_service_interaction",
+    description: "Record a service contact, handoff, appointment, or follow-up interaction after confirmation.",
+    inputSchema: objectSchema({
+      serviceId: stringProperty,
+      interactionType: stringProperty,
+      channel: stringProperty,
+      providerName: stringProperty,
+      programName: stringProperty,
+      counterpartyName: stringProperty,
+      counterpartyContact: stringProperty,
+      timestamp: stringProperty,
+      status: stringProperty,
+      outcome: stringProperty,
+      notesRecordId: stringProperty,
+      nextAction: stringProperty,
+      nextFollowUpAt: stringProperty,
+      sourceActionUrl: stringProperty,
+      sourceContentCid: stringProperty,
+      sourcePageCid: stringProperty,
+      relatedGrantIds: stringArrayProperty,
+      relatedRecordIds: stringArrayProperty,
+      privacyLevel: stringProperty
+    }, ["serviceId", "interactionType"]),
+    outputSchema: commandOutputSchema,
+    isInput: isRecordServiceInteractionCommandInput,
     isOutput: isCommandOutput
   },
   update_registration_draft: {
