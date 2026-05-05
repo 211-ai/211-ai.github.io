@@ -422,6 +422,96 @@ def test_daemon_replaces_preexisting_shared_node_modules_directory_with_symlink(
     assert (target / "@xenova" / "transformers").is_dir()
 
 
+def test_daemon_skips_duplicate_implementation_when_prior_worktree_process_is_live(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    events_path = state_dir / "agent_chat_events.jsonl"
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path.write_text(
+        json.dumps(
+            {
+                "type": "implementation_started",
+                "timestamp": "2026-05-05T02:39:54.229904+00:00",
+                "task_id": "AGENT-000",
+                "attempt": 1,
+                "worktree_path": "/tmp/existing-worktree",
+                "command": ["/usr/local/bin/codex", "exec", "--full-auto", "-C", "/tmp/existing-worktree", "-"],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=events_path,
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {repo_root / 'missing.py'}",
+    )
+    monkeypatch.setattr(
+        daemon,
+        "_list_process_commands",
+        lambda: ["node /usr/local/bin/codex exec --full-auto -C /tmp/existing-worktree -"],
+    )
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    result = daemon._run_implementation(task, PortalTaskState())
+
+    assert result["skipped"] is True
+    assert result["reason"] == "inflight_process"
+    assert result["worktree_path"] == "/tmp/existing-worktree"
+    assert not (state_dir / "implementation.lock").exists()
+
+
+def test_daemon_clears_stale_lock_before_starting_new_implementation(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    output = repo_root / "docs" / "agent.md"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        """
+from pathlib import Path
+
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    stale_lock = state_dir / "implementation.lock"
+    stale_lock.parent.mkdir(parents=True, exist_ok=True)
+    stale_lock.write_text("stale\n", encoding="utf-8")
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+    )
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    result = daemon._run_implementation(task, PortalTaskState())
+
+    assert result["returncode"] == 0
+    assert output.read_text(encoding="utf-8") == "implemented"
+    assert not stale_lock.exists()
+
+
 def test_daemon_marks_output_backed_tasks_completed_and_selects_next(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "todo.md"
