@@ -30,7 +30,6 @@ import {
   DisclosureRecipientDraft,
   DisclosureRecipientType,
   DerivedArtifactView,
-  EasyBotCheckStatus,
   ExportBundleView,
   RegistrationProfileDraft,
   RouteId,
@@ -45,12 +44,9 @@ import {
   auditEvents,
   defaultDisclosureScopes,
   defaultCheckInPolicy,
-  emptyRegistrationProfile,
   exportBundles,
-  initialRecipients,
   initialAccessRequests,
   initialGrantReceipts,
-  initialShelterContactRequests,
   initialUploads,
   proofReceipts,
   serviceMatches
@@ -94,161 +90,50 @@ import {
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
+import {
+  appRoutes,
+  createDefaultAppState,
+  defaultManagedUserDraft,
+  defaultShelterChecklist,
+  disclosureScopes,
+  getRouteFromHash,
+  primaryRoutes,
+  readPersistedAppState,
+  secondaryRoutes,
+  serviceNeeds,
+  setLocationRouteHash,
+  shelterOptions,
+  ShelterStaffAccount,
+  ShelterUserAccount,
+  writePersistedAppState
+} from "./appState";
 
-const routes: Array<{ id: RouteId; label: string; icon: typeof Home }> = [
-  { id: "home", label: "Home", icon: Home },
-  { id: "register", label: "Register", icon: ClipboardCheck },
-  { id: "check-in", label: "Check in", icon: CalendarCheck },
-  { id: "contacts", label: "Contacts", icon: ContactRound },
-  { id: "sharing-rules", label: "Sharing", icon: ShieldCheck },
-  { id: "uploads", label: "Uploads", icon: FileUp },
-  { id: "social-services", label: "Services", icon: HeartHandshake },
-  { id: "shelter", label: "Shelter", icon: UsersRound }
-];
-
-const secondaryRoutes: Array<{ id: RouteId; label: string; icon: typeof Home }> = [
-  { id: "recipient-access", label: "Who can see info", icon: KeyRound },
-  { id: "benefits-protection", label: "Benefits", icon: Landmark },
-  { id: "analytics", label: "Group facts", icon: BarChart3 },
-  { id: "proof-center", label: "Proofs", icon: ShieldCheck },
-  { id: "exports", label: "Exports", icon: LogOut },
-  { id: "security", label: "Security", icon: LockKeyhole },
-  { id: "audit", label: "Audit", icon: ClipboardCheck }
-];
-
-const serviceNeeds = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation"];
-
-const shelterOptions = [
-  "Rose City Shelter",
-  "Downtown Outreach Shelter",
-  "Harbor Night Shelter",
-  "Northside Family Shelter"
-];
-
-type ShelterStaffAccount = {
-  id: string;
-  shelter: string;
-  displayName: string;
-  email: string;
-  verified: boolean;
-  updatedAt: string;
-};
-
-const initialShelterStaffAccounts: ShelterStaffAccount[] = [
-  {
-    id: "staff-demo-downtown",
-    shelter: "Downtown Outreach Shelter",
-    displayName: "Jordan Lee",
-    email: "jordan@downtown.example",
-    verified: true,
-    updatedAt: "Today, 8:30 AM"
-  },
-  {
-    id: "staff-demo-rose",
-    shelter: "Rose City Shelter",
-    displayName: "Avery Patel",
-    email: "avery@rose.example",
-    verified: true,
-    updatedAt: "Today, 8:35 AM"
-  },
-  {
-    id: "staff-demo-harbor",
-    shelter: "Harbor Night Shelter",
-    displayName: "Riley Chen",
-    email: "riley@harbor.example",
-    verified: true,
-    updatedAt: "Today, 8:40 AM"
-  }
-];
-
-type ShelterUserAccount = {
-  id: string;
-  shelter: string;
-  legalName: string;
-  preferredName: string;
-  pronouns: string;
-  dateOfBirth: string;
-  photoAssetId: string;
-  phone: string;
-  email: string;
-  currentLocation: string;
-  preferredShelter: string;
-  serviceNeeds: string[];
-  easyBotCheckStatus: EasyBotCheckStatus;
-  captchaToken: string;
-  localPrecinctNotified: boolean;
-  foundPermanentHousing: boolean;
-  createdByStaffId: string;
-  createdAt: string;
-};
-
-const defaultManagedUserDraft = {
-  legalName: "",
-  preferredName: "",
-  pronouns: "",
-  dateOfBirth: "",
-  photoAssetId: "",
-  phone: "",
-  email: "",
-  currentLocation: "",
-  preferredShelter: "",
-  serviceNeeds: [] as string[],
-  easyBotCheckStatus: "pending" as EasyBotCheckStatus,
-  captchaToken: "",
-  localPrecinctNotified: false,
-  foundPermanentHousing: false
-};
-
-const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; detail: string }> = [
-  { id: "identity_minimum", label: "Minimum identity", detail: "name, birthdate and contact status" },
-  { id: "profile", label: "Profile", detail: "Basic profile details and help needs" },
-  { id: "photo", label: "Photo or ID file", detail: "The setup file you chose, like an image or PDF" },
-  { id: "current_location", label: "Current location", detail: "Most recent safe place or shelter" },
-  { id: "uploaded_documents", label: "Uploads", detail: "Files the person chooses to include" },
-  { id: "missed_check_in", label: "Missed check-in", detail: "Whether a check-in was missed" },
-  { id: "found_permanent_housing", label: "Found permanent housing", detail: "Whether stable housing was reported" },
-  { id: "medical_notes", label: "Medical notes", detail: "Sensitive health notes" },
-  { id: "shelter_history", label: "Shelter history", detail: "Shelter stays and staff contact details" },
-  { id: "benefits_information", label: "Benefits information", detail: "Benefits status and IDs" },
-  { id: "custom", label: "Custom note", detail: "A user-written emergency note" }
-];
-
-const APP_PERSIST_KEY = "abby-ui-state-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 
-const defaultShelterChecklist = {
-  userPresent: false,
-  clearBrowserData: false,
-  auditLogConfirmed: false
+const routeIcons: Record<RouteId, typeof Home> = {
+  home: Home,
+  register: ClipboardCheck,
+  "check-in": CalendarCheck,
+  contacts: ContactRound,
+  "sharing-rules": ShieldCheck,
+  uploads: FileUp,
+  "social-services": HeartHandshake,
+  shelter: UsersRound,
+  "recipient-access": KeyRound,
+  "benefits-protection": Landmark,
+  analytics: BarChart3,
+  "proof-center": ShieldCheck,
+  exports: LogOut,
+  security: LockKeyhole,
+  audit: ClipboardCheck
 };
 
-type PersistedAppState = {
-  profile?: RegistrationProfileDraft;
-  policy?: typeof defaultCheckInPolicy;
-  recipients?: DisclosureRecipientDraft[];
-  uploads?: UploadItem[];
-  shelterContactRequests?: ShelterContactRequest[];
-  shelterStaffAccounts?: ShelterStaffAccount[];
-  shelterUserAccounts?: ShelterUserAccount[];
-  benefitsOptIn?: boolean;
-  analyticsOptIn?: Record<string, boolean>;
-  shelterChecklist?: typeof defaultShelterChecklist;
-};
-
-function readPersistedAppState(): PersistedAppState {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(APP_PERSIST_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? (parsed as PersistedAppState) : {};
-  } catch {
-    return {};
-  }
-}
+const routes = primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
+const secondaryNavigationRoutes = secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
+const navigationRoutes = appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 
 function isAcceptedIdentityDocument(file: File): boolean {
   const lowerName = file.name.toLowerCase();
@@ -333,55 +218,31 @@ async function generateUploadSummary(file: File): Promise<string> {
   return toShortSummaryTitle(fileNameWithoutExtension || "Uploaded document");
 }
 
-function getRouteFromHash(): RouteId {
-  const route = window.location.hash.replace("#/", "") || "home";
-  return [...routes, ...secondaryRoutes].some((item) => item.id === route) ? (route as RouteId) : "home";
-}
-
 export function App() {
-  const persistedState = useMemo(readPersistedAppState, []);
+  const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
   const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
-  const [profile, setProfile] = useState<RegistrationProfileDraft>(() => ({
-    ...emptyRegistrationProfile,
-    ...persistedState.profile
-  }));
-  const [policy, setPolicy] = useState(() => ({
-    ...defaultCheckInPolicy,
-    ...persistedState.policy
-  }));
-  const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() =>
-    Array.isArray(persistedState.recipients) ? persistedState.recipients : initialRecipients
-  );
-  const [uploads, setUploads] = useState<UploadItem[]>(() =>
-    Array.isArray(persistedState.uploads) ? persistedState.uploads : initialUploads
-  );
+  const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
+  const [policy, setPolicy] = useState(() => defaultAppState.policy);
+  const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
+  const [uploads, setUploads] = useState<UploadItem[]>(() => defaultAppState.uploads);
   const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
-  const [shelterContactRequests, setShelterContactRequests] = useState<ShelterContactRequest[]>(() =>
-    Array.isArray(persistedState.shelterContactRequests)
-      ? persistedState.shelterContactRequests
-      : initialShelterContactRequests
+  const [shelterContactRequests, setShelterContactRequests] = useState<ShelterContactRequest[]>(
+    () => defaultAppState.shelterContactRequests
   );
-  const [shelterStaffAccounts, setShelterStaffAccounts] = useState<ShelterStaffAccount[]>(() =>
-    Array.isArray(persistedState.shelterStaffAccounts) ? persistedState.shelterStaffAccounts : initialShelterStaffAccounts
+  const [shelterStaffAccounts, setShelterStaffAccounts] = useState<ShelterStaffAccount[]>(
+    () => defaultAppState.shelterStaffAccounts
   );
-  const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(() =>
-    Array.isArray(persistedState.shelterUserAccounts) ? persistedState.shelterUserAccounts : []
+  const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(
+    () => defaultAppState.shelterUserAccounts
   );
   const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>(initialGrantReceipts);
   const [walletAuditEvents, setWalletAuditEvents] = useState<AuditEvent[]>(auditEvents);
   const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
   const [recipientVerified, setRecipientVerified] = useState(false);
-  const [benefitsOptIn, setBenefitsOptIn] = useState(() => persistedState.benefitsOptIn ?? true);
-  const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() =>
-    persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"
-      ? persistedState.analyticsOptIn
-      : {}
-  );
-  const [shelterChecklist, setShelterChecklist] = useState(() => ({
-    ...defaultShelterChecklist,
-    ...persistedState.shelterChecklist
-  }));
+  const [benefitsOptIn, setBenefitsOptIn] = useState(() => defaultAppState.benefitsOptIn);
+  const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
+  const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
 
@@ -433,22 +294,18 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      APP_PERSIST_KEY,
-      JSON.stringify({
-        profile,
-        policy,
-        recipients,
-        uploads,
-        shelterContactRequests,
-        shelterStaffAccounts,
-        shelterUserAccounts,
-        benefitsOptIn,
-        analyticsOptIn,
-        shelterChecklist
-      })
-    );
+    writePersistedAppState({
+      profile,
+      policy,
+      recipients,
+      uploads,
+      shelterContactRequests,
+      shelterStaffAccounts,
+      shelterUserAccounts,
+      benefitsOptIn,
+      analyticsOptIn,
+      shelterChecklist
+    });
   }, [
     analyticsOptIn,
     benefitsOptIn,
@@ -509,7 +366,7 @@ export function App() {
   }, [walletApiConfig]);
 
   function navigate(route: RouteId) {
-    window.location.hash = route === "home" ? "#/" : `#/${route}`;
+    setLocationRouteHash(route);
     setActiveRoute(route);
     setMobileNavOpen(false);
   }
@@ -542,7 +399,7 @@ export function App() {
           ))}
         </nav>
         <div className="nav-secondary">
-          {secondaryRoutes.map((route) => (
+          {secondaryNavigationRoutes.map((route) => (
             <NavButton
               active={activeRoute === route.id}
               icon={route.icon}
@@ -576,7 +433,7 @@ export function App() {
 
         {mobileNavOpen ? (
           <nav className="mobile-nav-panel" id="mobile-navigation" aria-label="Mobile navigation">
-            {[...routes, ...secondaryRoutes].map((route) => (
+            {navigationRoutes.map((route) => (
               <NavButton
                 active={activeRoute === route.id}
                 icon={route.icon}
