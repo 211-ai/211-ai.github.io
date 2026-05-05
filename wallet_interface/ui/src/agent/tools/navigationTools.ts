@@ -10,11 +10,13 @@ type RouteSummaryBuilder = (state: AppActionState) => string;
 export interface NavigationSurface {
   route: RouteId;
   label: string;
+  aliases: string[];
 }
 
 export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => ({
   route: route.id,
-  label: getRouteLabel(route.id)
+  label: getRouteLabel(route.id),
+  aliases: buildRouteAliases(route.id, route.label)
 }));
 
 export const navigationRouteIds: RouteId[] = navigationSurfaces.map((surface) => surface.route);
@@ -85,7 +87,10 @@ export function buildSafeSurfaceContext(
   input: ReadSurfaceContextCommandInput = {}
 ): SurfaceContext {
   const route = resolveSurfaceRoute(state, input);
-  const includePrivateContext = Boolean(input.includePrivateContext && state.privateContextAllowed);
+  const walletUnlocked = state.walletUnlocked ?? true;
+  const includePrivateContext = Boolean(
+    input.includePrivateContext && state.privateContextAllowed && walletUnlocked
+  );
   const visibleRecordIds = includePrivateContext ? getVisibleRecordIds(route, state) : undefined;
   const visibleServiceDocIds = getVisibleServiceDocIds(route);
 
@@ -95,7 +100,7 @@ export function buildSafeSurfaceContext(
     capturedAt: new Date().toISOString(),
     visibleRecordIds,
     visibleServiceDocIds,
-    walletUnlocked: state.walletUnlocked ?? true,
+    walletUnlocked,
     privateContextAllowed: includePrivateContext,
     permissionLevel: includePrivateContext ? "wallet_private" : "app_context",
     summary: summarizeRouteState(route, state),
@@ -111,8 +116,36 @@ export function canNavigateToRoute(route: unknown): route is RouteId {
   return navigationRouteIdSet.has(route as RouteId);
 }
 
+export function resolveNavigationRoute(input: string): RouteId | undefined {
+  const normalized = normalizeRouteText(input);
+  if (!normalized) return undefined;
+  return navigationSurfaces.find((surface) =>
+    surface.aliases.some((alias) => normalizeRouteText(alias) === normalized)
+  )?.route;
+}
+
 export async function summarizeCurrentScreenAction(runtime: AppActionRuntime): Promise<AppActionResult> {
   return readSurfaceContextAction(runtime, {});
+}
+
+function buildRouteAliases(route: RouteId, appLabel: string): string[] {
+  const label = getRouteLabel(route);
+  return uniqueStrings([
+    route,
+    route.replace(/-/g, " "),
+    label,
+    appLabel,
+    appLabel.toLowerCase(),
+    label.toLowerCase()
+  ]);
+}
+
+function normalizeRouteText(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ");
 }
 
 function getVisibleRecordIds(route: RouteId, state: AppActionState): string[] | undefined {
@@ -249,4 +282,8 @@ function countBy(values: string[]): Record<string, number> {
     counts[value] = (counts[value] ?? 0) + 1;
     return counts;
   }, {});
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
 }
