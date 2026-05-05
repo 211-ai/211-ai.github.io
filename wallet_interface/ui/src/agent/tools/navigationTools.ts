@@ -50,7 +50,10 @@ const routeSummaries = {
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
   uploads: (state) => `${state.uploads.length} uploads are visible.`,
   "social-services": () => "Services search and public 211 guidance are active.",
-  shelter: () => "Shelter resources and public 211 guidance are active.",
+  shelter: (state) =>
+    `Shelter workspace is active with ${state.shelterStaffAccounts?.length ?? 0} staff accounts, ${
+      state.shelterUserAccounts?.length ?? 0
+    } managed user accounts, and ${state.shelterContactRequests?.filter((request) => request.status === "pending").length ?? 0} pending contact requests.`,
   "recipient-access": (state) => `${pendingAccessRequestCount(state)} pending access requests are visible.`,
   "benefits-protection": () => "Benefits protection resources and public 211 guidance are active.",
   analytics: (state) =>
@@ -321,6 +324,14 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
         verifiedRecipientCount: state.recipients.filter((recipient) => recipient.verified).length,
         recipientTypeCounts: countBy(state.recipients.map((recipient) => recipient.type))
       };
+    case "shelter":
+      return {
+        shelterStaffAccountCount: state.shelterStaffAccounts?.length ?? 0,
+        verifiedShelterStaffAccountCount: state.shelterStaffAccounts?.filter((account) => account.verified).length ?? 0,
+        shelterUserAccountCount: state.shelterUserAccounts?.length ?? 0,
+        pendingShelterContactRequestCount:
+          state.shelterContactRequests?.filter((request) => request.status === "pending").length ?? 0
+      };
     case "uploads":
       return {
         storedUploadCount: state.uploads.filter((upload) => upload.status === "stored").length,
@@ -357,6 +368,12 @@ function privateRouteMetadata(route: RouteId, state: AppActionState): Record<str
     case "recipient-access":
       return {
         visibleAccessRequestIds: state.accessRequests.map((request) => request.id)
+      };
+    case "shelter":
+      return {
+        visibleShelterStaffAccountIds: state.shelterStaffAccounts?.map((account) => account.id) ?? [],
+        visibleShelterUserAccountIds: state.shelterUserAccounts?.map((account) => account.id) ?? [],
+        visibleShelterContactRequestIds: state.shelterContactRequests?.map((request) => request.id) ?? []
       };
     case "proof-center":
       return {
