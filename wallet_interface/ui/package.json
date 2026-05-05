@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc && vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "build": "tsc && vite build --configLoader runner",
+    "preview": "vite preview --host 0.0.0.0 --configLoader runner",
     "clean:visual-artifacts": "node -e \"const fs=require('fs'); const root='artifacts/ui-screenshots/latest'; fs.rmSync(root,{recursive:true,force:true}); fs.mkdirSync(root,{recursive:true})\"",
     "pretest": "npm run clean:visual-artifacts",
     "test": "playwright test",

@@ -13,8 +13,9 @@ import type {
   GraphNode,
 } from "./types";
 
+const viteEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env ?? {};
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
-const configuredCorpusBaseUrl = import.meta.env.VITE_211_CORPUS_BASE_URL as string | undefined;
+const configuredCorpusBaseUrl = viteEnv.VITE_211_CORPUS_BASE_URL;
 const CORPUS_BASE_URL = stripTrailingSlash(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
 interface CorpusState {
@@ -203,7 +204,7 @@ function stripTrailingSlash(value: string): string {
 }
 
 function resolveDefaultCorpusBaseUrl(): string {
-  const baseUrl = String(import.meta.env.BASE_URL || "/");
+  const baseUrl = String(viteEnv.BASE_URL || "/");
   if (/^https?:\/\//i.test(baseUrl)) {
     return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
   }
