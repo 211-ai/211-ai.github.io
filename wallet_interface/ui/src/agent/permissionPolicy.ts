@@ -110,9 +110,58 @@ export const agentToolPermissionPolicies: Record<AgentCommandName, AgentToolPerm
   },
   create_verified_export_bundle: shareOrDisclosePolicy("agent.export_bundle.create"),
   import_export_bundle: writeWalletPolicy("agent.export_bundle.import"),
+  select_analytics_study: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  unselect_analytics_study: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  explain_analytics_privacy_budget: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  submit_analytics_consent: writeWalletPolicy("agent.analytics_consent.submit"),
   save_wallet_snapshot: writeWalletPolicy("agent.wallet_snapshot.save"),
   restore_wallet_snapshot: writeWalletPolicy("agent.wallet_snapshot.restore"),
   refresh_wallet_audit: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  search_audit_events: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  summarize_audit_events: {
+    gate: "read_wallet_summary",
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false,
+    requiresAudit: false
+  },
+  explain_audit_event: {
     gate: "read_wallet_summary",
     requiresConfirmation: false,
     requiresWalletUnlock: true,

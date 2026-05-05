@@ -53,7 +53,8 @@ const routeSummaries = {
   shelter: () => "Shelter resources and public 211 guidance are active.",
   "recipient-access": (state) => `${pendingAccessRequestCount(state)} pending access requests are visible.`,
   "benefits-protection": () => "Benefits protection resources and public 211 guidance are active.",
-  analytics: () => "Group facts and aggregate reporting are active.",
+  analytics: (state) =>
+    `Group facts and aggregate reporting are active with ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} studies selected.`,
   "proof-center": (state) => `${state.walletProofReceipts.length} proof receipts are visible.`,
   exports: (state) => `${state.exportBundleViews.length} export bundles are visible.`,
   security: () => "Security settings and wallet safety information are active.",
@@ -268,6 +269,7 @@ function publicSurfaceMetadata(route: RouteId, state: AppActionState): Record<st
     proofCount: state.walletProofReceipts.length,
     exportBundleCount: state.exportBundleViews.length,
     auditEventCount: state.walletAuditEvents.length,
+    selectedAnalyticsStudyCount: Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length,
     ...routePublicMetadata(route, state)
   };
 }
@@ -333,7 +335,8 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
       };
     case "analytics":
       return {
-        activeGrantCount: state.grantReceipts.filter((receipt) => receipt.status === "active").length
+        activeGrantCount: state.grantReceipts.filter((receipt) => receipt.status === "active").length,
+        selectedAnalyticsStudyCount: Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length
       };
     case "proof-center":
       return {

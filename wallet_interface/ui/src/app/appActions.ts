@@ -1,5 +1,6 @@
 import type {
   AuditEvent,
+  AnalyticsStudy,
   CheckInPolicyDraft,
   DisclosureRecipientDraft,
   ExportBundleView,
@@ -49,15 +50,28 @@ import {
   importExportBundleAction
 } from "../agent/tools/exportTools";
 import {
+  explainAnalyticsPrivacyBudgetAction,
+  selectAnalyticsStudyAction,
+  submitAnalyticsConsentAction,
+  unselectAnalyticsStudyAction
+} from "../agent/tools/analyticsTools";
+import {
   refreshWalletAuditAction,
   restoreWalletSnapshotAction,
   saveWalletSnapshotAction
 } from "../agent/tools/securityTools";
+import {
+  explainAuditEventAction,
+  searchAuditEventsAction,
+  summarizeAuditEventsAction
+} from "../agent/tools/auditTools";
 import type {
   AccessRequestDecisionCommandInput,
   AddRecipientCommandInput,
   AgentCommandName,
+  AnalyticsStudyReferenceCommandInput,
   AnalyzeGrantedRecordCommandInput,
+  AuditEventReferenceCommandInput,
   Answer211QuestionCommandInput,
   CreateLocationRegionProofCommandInput,
   CreateProofCommandInput,
@@ -75,8 +89,11 @@ import type {
   RevokeAccessRequestCommandInput,
   SaveWalletSnapshotCommandInput,
   SaveServiceCommandInput,
+  SearchAuditEventsCommandInput,
   Search211ServicesCommandInput,
   ShelterContactRequestDecisionCommandInput,
+  SubmitAnalyticsConsentCommandInput,
+  SummarizeAuditEventsCommandInput,
   ProofReceiptReferenceCommandInput,
   UpdateCheckInPolicyCommandInput,
   UpdateRecipientScopesCommandInput,
@@ -98,6 +115,8 @@ export interface AppActionState {
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
   walletAuditEvents: AuditEvent[];
+  analyticsStudies?: AnalyticsStudy[];
+  analyticsOptIn?: Record<string, boolean>;
   walletProofReceipts: ProofReceiptView[];
   exportBundleViews: ExportBundleView[];
   walletUnlocked?: boolean;
@@ -116,6 +135,7 @@ export interface AppActionRuntime {
   setAccessRequests?: (requests: WalletAccessRequest[]) => void;
   setGrantReceipts?: (receipts: WalletGrantReceipt[]) => void;
   setWalletAuditEvents?: (events: AuditEvent[]) => void;
+  setAnalyticsOptIn?: (optedIn: Record<string, boolean>) => void;
   setWalletProofReceipts?: (proofs: ProofReceiptView[]) => void;
   setExportBundleViews?: (bundles: ExportBundleView[]) => void;
   walletApiConfig?: WalletApiConfig;
@@ -452,11 +472,23 @@ export const appActionHandlers = {
     createVerifiedExportBundleAction(runtime, input, options),
   import_export_bundle: (runtime, input: ImportExportBundleCommandInput, options) =>
     importExportBundleAction(runtime, input, options),
+  select_analytics_study: (runtime, input: AnalyticsStudyReferenceCommandInput) =>
+    selectAnalyticsStudyAction(runtime, input),
+  unselect_analytics_study: (runtime, input: AnalyticsStudyReferenceCommandInput) =>
+    unselectAnalyticsStudyAction(runtime, input),
+  explain_analytics_privacy_budget: (runtime, input: AnalyticsStudyReferenceCommandInput) =>
+    explainAnalyticsPrivacyBudgetAction(runtime, input),
+  submit_analytics_consent: (runtime, input: SubmitAnalyticsConsentCommandInput, options) =>
+    submitAnalyticsConsentAction(runtime, input, options),
   save_wallet_snapshot: (runtime, input: SaveWalletSnapshotCommandInput, options) =>
     saveWalletSnapshotAction(runtime, input, options),
   restore_wallet_snapshot: (runtime, input: RestoreWalletSnapshotCommandInput, options) =>
     restoreWalletSnapshotAction(runtime, input, options),
-  refresh_wallet_audit: (runtime, input: RefreshWalletAuditCommandInput) => refreshWalletAuditAction(runtime, input)
+  refresh_wallet_audit: (runtime, input: RefreshWalletAuditCommandInput) => refreshWalletAuditAction(runtime, input),
+  search_audit_events: (runtime, input: SearchAuditEventsCommandInput) => searchAuditEventsAction(runtime, input),
+  summarize_audit_events: (runtime, input: SummarizeAuditEventsCommandInput) =>
+    summarizeAuditEventsAction(runtime, input),
+  explain_audit_event: (runtime, input: AuditEventReferenceCommandInput) => explainAuditEventAction(runtime, input)
 } satisfies Record<AgentCommandName, AppActionHandler<never>>;
 
 export async function runAppAction(
