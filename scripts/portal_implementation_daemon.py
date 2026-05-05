@@ -693,8 +693,15 @@ class PortalImplementationDaemon:
             if not source.exists():
                 continue
             target = worktree_path / relative
-            if target.exists() or target.is_symlink():
-                continue
+            if target.is_symlink():
+                if target.resolve() == source:
+                    continue
+                target.unlink()
+            elif target.exists():
+                if target.is_dir():
+                    shutil.rmtree(target)
+                else:
+                    target.unlink()
             target.parent.mkdir(parents=True, exist_ok=True)
             target.symlink_to(source, target_is_directory=source.is_dir())
 
