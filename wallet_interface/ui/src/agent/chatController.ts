@@ -3,6 +3,7 @@ import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";
 import { planAgentTurn, type AgentPlannedTool, type AgentPlannedTurn } from "./agentPlanner";
+import { selectLocalLlmTool } from "./localLlmToolSelector";
 import type { AgentSurfaceApi } from "./surfaceApi";
 import { getToolDefinition } from "./surfaceRegistry";
 import { confirmationRiskForGate, getAgentToolPermissionPolicy } from "./permissionPolicy";
@@ -66,6 +67,7 @@ export interface AgentChatControllerOptions {
   permissionLevel?: AgentPermissionLevel;
   privateContextAllowed?: boolean;
   initialMessages?: AgentMessage[];
+  enableLocalLlmToolSelection?: boolean;
   now?: () => string;
   createId?: (prefix: string) => string;
 }
@@ -260,7 +262,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     });
 
     pushProgress("planning", "Planning next assistant action.");
-    const turn = planAgentTurn({
+    let turn = planAgentTurn({
       content,
       context,
       pendingConfirmations: session.confirmations.filter((confirmation) => confirmation.status === "pending")
@@ -268,6 +270,20 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     if (turn.confirmationDecision) {
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
+    }
+    if (options.enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
+      const pendingConfirmations = session.confirmations.filter((confirmation) => confirmation.status === "pending");
+      const selection = await selectLocalLlmTool({
+        content,
+        context,
+        session,
+        deterministicTurn: turn,
+        pendingConfirmations
+      });
+      if (selection.source === "local_llm") {
+        pushProgress("planning", `Selected ${selection.turn.tools[0]?.title ?? "a tool"} with the local model.`);
+      }
+      turn = selection.turn;
     }
     await executeToolPlan(turn, context);
   }
@@ -823,6 +839,10 @@ function readableToolName(name: string): string {
 
 function fallbackResponse(context: SurfaceContext): string {
   return `You are on ${context.routeLabel}. I can explain this screen, navigate the app, answer public 211 service questions, and ask for confirmation before changing wallet data.`;
+}
+
+function shouldTryLocalLlmToolSelection(turn: AgentPlannedTurn): boolean {
+  return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
 }
 
 function toChatError(error: unknown): AgentChatError {
