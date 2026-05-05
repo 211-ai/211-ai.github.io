@@ -43,6 +43,9 @@ export const AGENT_COMMAND_NAMES = [
   "explain_proof_receipt",
   "verify_proof_status",
   "create_verified_export_bundle",
+  "import_export_bundle",
+  "save_wallet_snapshot",
+  "restore_wallet_snapshot",
   "refresh_wallet_audit"
 ] as const;
 
@@ -295,8 +298,30 @@ export interface ProofReceiptReferenceCommandInput {
 
 export interface CreateVerifiedExportBundleCommandInput {
   audienceName: string;
+  audienceDid?: string;
   recordIds: string[];
   proofIds?: string[];
+  purpose?: string;
+  includeDerivedArtifacts?: boolean;
+  includeProofs?: boolean;
+  stageOnly?: boolean;
+}
+
+export interface ImportExportBundleCommandInput {
+  bundleId?: string;
+  bundle?: Record<string, unknown>;
+  audienceName?: string;
+  stageOnly?: boolean;
+}
+
+export interface SaveWalletSnapshotCommandInput {
+  reason?: string;
+}
+
+export interface RestoreWalletSnapshotCommandInput {
+  walletId?: string;
+  snapshotHash?: string;
+  reason?: string;
 }
 
 export interface RefreshWalletAuditCommandInput {
@@ -671,9 +696,38 @@ export function isCreateVerifiedExportBundleCommandInput(value: unknown): value 
     isRecord(value) &&
     isString(value.audienceName) &&
     value.audienceName.trim().length > 0 &&
+    isOptional(value.audienceDid, isString) &&
     isStringArray(value.recordIds) &&
     value.recordIds.length > 0 &&
-    isOptional(value.proofIds, isStringArray)
+    isOptional(value.proofIds, isStringArray) &&
+    isOptional(value.purpose, isString) &&
+    isOptional(value.includeDerivedArtifacts, isBoolean) &&
+    isOptional(value.includeProofs, isBoolean) &&
+    isOptional(value.stageOnly, isBoolean)
+  );
+}
+
+export function isImportExportBundleCommandInput(value: unknown): value is ImportExportBundleCommandInput {
+  return (
+    isRecord(value) &&
+    (isString(value.bundleId) || isRecord(value.bundle)) &&
+    isOptional(value.bundleId, isString) &&
+    isOptional(value.bundle, isRecord) &&
+    isOptional(value.audienceName, isString) &&
+    isOptional(value.stageOnly, isBoolean)
+  );
+}
+
+export function isSaveWalletSnapshotCommandInput(value: unknown): value is SaveWalletSnapshotCommandInput {
+  return isRecord(value) && isOptional(value.reason, isString);
+}
+
+export function isRestoreWalletSnapshotCommandInput(value: unknown): value is RestoreWalletSnapshotCommandInput {
+  return (
+    isRecord(value) &&
+    isOptional(value.walletId, isString) &&
+    isOptional(value.snapshotHash, isString) &&
+    isOptional(value.reason, isString)
   );
 }
 
@@ -1030,11 +1084,49 @@ export const commandSchemas = {
     description: "Create a shareable export bundle from selected wallet records and proofs.",
     inputSchema: objectSchema({
       audienceName: stringProperty,
+      audienceDid: stringProperty,
       recordIds: stringArrayProperty,
-      proofIds: stringArrayProperty
+      proofIds: stringArrayProperty,
+      purpose: stringProperty,
+      includeDerivedArtifacts: booleanProperty,
+      includeProofs: booleanProperty,
+      stageOnly: booleanProperty
     }, ["audienceName", "recordIds"]),
     outputSchema: commandOutputSchema,
     isInput: isCreateVerifiedExportBundleCommandInput,
+    isOutput: isCommandOutput
+  },
+  import_export_bundle: {
+    name: "import_export_bundle",
+    description: "Import a verified export bundle descriptor without exposing plaintext records.",
+    inputSchema: objectSchema({
+      bundleId: stringProperty,
+      bundle: { type: "object", additionalProperties: true },
+      audienceName: stringProperty,
+      stageOnly: booleanProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isImportExportBundleCommandInput,
+    isOutput: isCommandOutput
+  },
+  save_wallet_snapshot: {
+    name: "save_wallet_snapshot",
+    description: "Save an encrypted wallet snapshot after high-risk confirmation.",
+    inputSchema: objectSchema({ reason: stringProperty }),
+    outputSchema: commandOutputSchema,
+    isInput: isSaveWalletSnapshotCommandInput,
+    isOutput: isCommandOutput
+  },
+  restore_wallet_snapshot: {
+    name: "restore_wallet_snapshot",
+    description: "Restore an encrypted wallet snapshot after high-risk confirmation.",
+    inputSchema: objectSchema({
+      walletId: stringProperty,
+      snapshotHash: stringProperty,
+      reason: stringProperty
+    }),
+    outputSchema: commandOutputSchema,
+    isInput: isRestoreWalletSnapshotCommandInput,
     isOutput: isCommandOutput
   },
   refresh_wallet_audit: {

@@ -239,6 +239,30 @@ function summarizeChange(confirmation: AgentConfirmationRequest, toolCall?: Agen
     };
   }
 
+  if (toolName === "import_export_bundle" && isRecord(input)) {
+    return {
+      before: "No export bundle descriptors are imported.",
+      after: `Export bundle ${readString(input.bundleId, "from provided bundle data")} will be imported.`,
+      details: summarizeNamedFields(input, ["bundleId", "audienceName"])
+    };
+  }
+
+  if (toolName === "save_wallet_snapshot") {
+    return {
+      before: "No wallet backup is saved.",
+      after: "An encrypted wallet snapshot will be saved.",
+      details: isRecord(input) ? summarizeNamedFields(input, ["reason"]) : []
+    };
+  }
+
+  if (toolName === "restore_wallet_snapshot") {
+    return {
+      before: "The current wallet state is not changed.",
+      after: "The wallet will load the selected encrypted snapshot.",
+      details: isRecord(input) ? summarizeNamedFields(input, ["walletId", "snapshotHash", "reason"]) : []
+    };
+  }
+
   return {
     before: "No wallet or app changes are applied until you confirm.",
     after: confirmation.summary,

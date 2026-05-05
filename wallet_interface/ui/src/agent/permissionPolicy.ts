@@ -109,6 +109,9 @@ export const agentToolPermissionPolicies: Record<AgentCommandName, AgentToolPerm
     requiresAudit: false
   },
   create_verified_export_bundle: shareOrDisclosePolicy("agent.export_bundle.create"),
+  import_export_bundle: writeWalletPolicy("agent.export_bundle.import"),
+  save_wallet_snapshot: writeWalletPolicy("agent.wallet_snapshot.save"),
+  restore_wallet_snapshot: writeWalletPolicy("agent.wallet_snapshot.restore"),
   refresh_wallet_audit: {
     gate: "read_wallet_summary",
     requiresConfirmation: false,

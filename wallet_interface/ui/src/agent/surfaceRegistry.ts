@@ -160,8 +160,8 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "explain_proof_receipt",
     "verify_proof_status"
   ],
-  exports: [...commonReadTools, "create_verified_export_bundle"],
-  security: commonReadTools,
+  exports: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle"],
+  security: [...commonReadTools, "save_wallet_snapshot", "restore_wallet_snapshot"],
   audit: [...commonReadTools, "refresh_wallet_audit"]
 };
 
@@ -475,6 +475,36 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.export_bundle.create"
+  },
+  import_export_bundle: {
+    title: "Import export bundle",
+    permissionLevel: "wallet_write",
+    surfaces: ["exports"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.export_bundle.import"
+  },
+  save_wallet_snapshot: {
+    title: "Save wallet snapshot",
+    permissionLevel: "wallet_write",
+    surfaces: ["security"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.wallet_snapshot.save"
+  },
+  restore_wallet_snapshot: {
+    title: "Restore wallet snapshot",
+    permissionLevel: "wallet_write",
+    surfaces: ["security"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.wallet_snapshot.restore"
   },
   refresh_wallet_audit: {
     title: "Refresh wallet audit",
