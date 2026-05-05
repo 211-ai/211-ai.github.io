@@ -13,11 +13,9 @@ import type {
 } from "../models/abby";
 import { auditEvents } from "../services/mockAbbyService";
 import {
-  approveAccessRequest as approveWalletAccessRequest,
   createLocationRegionProof,
   createVerifiedExportBundleView,
   listWalletAuditEvents,
-  rejectAccessRequest as rejectWalletAccessRequest,
   type WalletApiConfig
 } from "../services/walletApi";
 import {
@@ -25,20 +23,33 @@ import {
   searchServiceNavigation,
 } from "../agent/serviceNavigationAgent";
 import { navigateAction, readSurfaceContextAction } from "../agent/tools/navigationTools";
+import {
+  analyzeGrantedRecordAction,
+  decideAccessRequestAction,
+  delegateGrantAction,
+  recordControllerApprovalAction,
+  revokeAccessRequestAction,
+  viewGrantedRecordAction
+} from "../agent/tools/recipientAccessTools";
 import type {
   AccessRequestDecisionCommandInput,
   AgentCommandName,
+  AnalyzeGrantedRecordCommandInput,
   Answer211QuestionCommandInput,
   CreateLocationRegionProofCommandInput,
   CreateServicePlanCommandInput,
   CreateVerifiedExportBundleCommandInput,
+  DelegateGrantCommandInput,
   OpenServiceDetailCommandInput,
   RefreshWalletAuditCommandInput,
+  RecordControllerApprovalCommandInput,
+  RevokeAccessRequestCommandInput,
   SaveServiceCommandInput,
   Search211ServicesCommandInput,
   SetDisclosureScopesCommandInput,
   UpdateCheckInPolicyCommandInput,
-  UpdateRegistrationDraftCommandInput
+  UpdateRegistrationDraftCommandInput,
+  ViewGrantedRecordCommandInput
 } from "../agent/commandSchemas";
 import { commandSchemas } from "../agent/commandSchemas";
 import type { AgentConfirmationRisk, AgentPermissionLevel, EvidenceBundle, SurfaceContext } from "../agent/types";
@@ -80,6 +91,7 @@ export interface AppActionRuntime {
 
 export interface AppActionOptions {
   confirmed?: boolean;
+  userPresent?: boolean;
 }
 
 export interface AppActionConfirmationMetadata {
@@ -103,6 +115,7 @@ export interface AppActionSuccess {
   artifactId?: string;
   auditEventId?: string;
   confirmation?: AppActionConfirmationMetadata;
+  metadata?: Record<string, unknown>;
 }
 
 export interface AppActionFailure {
@@ -168,8 +181,31 @@ function summarizeConfirmation(action: AgentCommandName, input: unknown): string
   if (action === "set_disclosure_scopes" && isRecord(input)) {
     return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
   }
-  if ((action === "approve_access_request" || action === "reject_access_request") && isRecord(input)) {
-    return `${action === "approve_access_request" ? "Approve" : "Reject"} access request ${String(input.requestId ?? "")}.`;
+  if (
+    (action === "record_controller_approval" ||
+      action === "approve_access_request" ||
+      action === "reject_access_request" ||
+      action === "revoke_access_request") &&
+    isRecord(input)
+  ) {
+    const verbs: Partial<Record<AgentCommandName, string>> = {
+      record_controller_approval: "Record controller approval for",
+      approve_access_request: "Approve",
+      reject_access_request: "Reject",
+      revoke_access_request: "Revoke"
+    };
+    return `${verbs[action] ?? "Update"} access request ${String(input.requestId ?? "")}.`;
+  }
+  if (
+    (action === "analyze_granted_record" || action === "view_granted_record" || action === "delegate_grant") &&
+    isRecord(input)
+  ) {
+    const verbs: Partial<Record<AgentCommandName, string>> = {
+      analyze_granted_record: "Analyze",
+      view_granted_record: "View",
+      delegate_grant: "Delegate"
+    };
+    return `${verbs[action] ?? "Use"} grant ${String(input.grantId ?? input.receiptId ?? "")}.`;
   }
   if (action === "create_location_region_proof" && isRecord(input)) {
     return `Create a location-region proof for ${String(input.regionLabel ?? "the selected region")}.`;
@@ -331,78 +367,6 @@ async function setDisclosureScopesAction(
   });
 }
 
-async function decideAccessRequestAction(
-  runtime: AppActionRuntime,
-  input: AccessRequestDecisionCommandInput,
-  status: "approved" | "rejected",
-  action: "approve_access_request" | "reject_access_request",
-  options: AppActionOptions
-): Promise<AppActionResult> {
-  const blocked = requiresConfirmation(action, input, options);
-  if (blocked) return blocked;
-  const setAccessRequests = requireSetter(action, runtime.setAccessRequests, "Access requests");
-  if (typeof setAccessRequests !== "function") return setAccessRequests;
-  const state = runtime.getState();
-  const request = state.accessRequests.find((item) => item.id === input.requestId);
-  if (!request) return failure(action, "access_request_not_found", `Access request ${input.requestId} was not found.`);
-
-  if (runtime.walletApiConfig?.actorDid) {
-    try {
-      if (status === "approved") {
-        await approveWalletAccessRequest(runtime.walletApiConfig, input.requestId);
-      } else {
-        await rejectWalletAccessRequest(runtime.walletApiConfig, input.requestId, input.reason || "Rejected by app action");
-      }
-      await runtime.refreshWalletAccessState?.();
-      await runtime.refreshWalletAuditEvents?.();
-      return success(action, `${status === "approved" ? "Approved" : "Rejected"} ${request.requesterName}.`, {
-        artifactId: input.requestId,
-        confirmation: confirmationFor(action, input)
-      });
-    } catch {
-      // Keep the local demo state path available if a configured API is unavailable.
-    }
-  }
-
-  setAccessRequests(
-    state.accessRequests.map((item) =>
-      item.id === input.requestId
-        ? { ...item, status, grantStatus: status === "approved" ? "active" : item.grantStatus }
-        : item
-    )
-  );
-
-  if (
-    status === "approved" &&
-    runtime.setGrantReceipts &&
-    !state.grantReceipts.some((receipt) => receipt.id === `receipt-${request.id}`)
-  ) {
-    runtime.setGrantReceipts([
-      ...state.grantReceipts,
-      {
-        id: `receipt-${request.id}`,
-        grantId: `grant-${request.id}`,
-        audienceName: request.requesterName,
-        audienceDid: request.audienceDid,
-        resources: [`wallet://demo-wallet/records/${request.resourceLabel}`],
-        recordId: undefined,
-        resourceLabel: request.resourceLabel,
-        abilities: request.abilities,
-        purpose: request.purpose,
-        receiptHash: `local-${request.id}-receipt`,
-        status: "active",
-        createdAt: "Just now",
-        expiresAt: "30 days"
-      }
-    ]);
-  }
-
-  return success(action, `${status === "approved" ? "Approved" : "Rejected"} ${request.requesterName}.`, {
-    artifactId: input.requestId,
-    confirmation: confirmationFor(action, input)
-  });
-}
-
 async function createLocationRegionProofAction(
   runtime: AppActionRuntime,
   input: CreateLocationRegionProofCommandInput,
@@ -506,10 +470,20 @@ export const appActionHandlers = {
   update_registration_draft: updateRegistrationDraftAction,
   update_check_in_policy: updateCheckInPolicyAction,
   set_disclosure_scopes: setDisclosureScopesAction,
+  record_controller_approval: (runtime, input: RecordControllerApprovalCommandInput, options) =>
+    recordControllerApprovalAction(runtime, input, options),
   approve_access_request: (runtime, input, options) =>
     decideAccessRequestAction(runtime, input, "approved", "approve_access_request", options),
   reject_access_request: (runtime, input, options) =>
     decideAccessRequestAction(runtime, input, "rejected", "reject_access_request", options),
+  revoke_access_request: (runtime, input: RevokeAccessRequestCommandInput, options) =>
+    revokeAccessRequestAction(runtime, input, options),
+  analyze_granted_record: (runtime, input: AnalyzeGrantedRecordCommandInput, options) =>
+    analyzeGrantedRecordAction(runtime, input, options),
+  view_granted_record: (runtime, input: ViewGrantedRecordCommandInput, options) =>
+    viewGrantedRecordAction(runtime, input, options),
+  delegate_grant: (runtime, input: DelegateGrantCommandInput, options) =>
+    delegateGrantAction(runtime, input, options),
   create_location_region_proof: createLocationRegionProofAction,
   create_verified_export_bundle: createVerifiedExportBundleAction,
   refresh_wallet_audit: refreshWalletAuditAction

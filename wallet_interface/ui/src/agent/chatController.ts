@@ -728,8 +728,31 @@ function summarizeConfirmation(name: AgentCommandName, input: unknown): string {
   if (name === "set_disclosure_scopes" && isRecord(input)) {
     return `Update sharing scopes for recipient ${String(input.recipientId ?? "")}.`;
   }
-  if ((name === "approve_access_request" || name === "reject_access_request") && isRecord(input)) {
-    return `${name === "approve_access_request" ? "Approve" : "Reject"} access request ${String(input.requestId ?? "")}.`;
+  if (
+    (name === "record_controller_approval" ||
+      name === "approve_access_request" ||
+      name === "reject_access_request" ||
+      name === "revoke_access_request") &&
+    isRecord(input)
+  ) {
+    const verbs: Partial<Record<AgentCommandName, string>> = {
+      record_controller_approval: "Record controller approval for",
+      approve_access_request: "Approve",
+      reject_access_request: "Reject",
+      revoke_access_request: "Revoke"
+    };
+    return `${verbs[name] ?? "Update"} access request ${String(input.requestId ?? "")}.`;
+  }
+  if (
+    (name === "analyze_granted_record" || name === "view_granted_record" || name === "delegate_grant") &&
+    isRecord(input)
+  ) {
+    const verbs: Partial<Record<AgentCommandName, string>> = {
+      analyze_granted_record: "Analyze",
+      view_granted_record: "View",
+      delegate_grant: "Delegate"
+    };
+    return `${verbs[name] ?? "Use"} grant ${String(input.grantId ?? input.receiptId ?? "")}.`;
   }
   if (name === "create_location_region_proof" && isRecord(input)) {
     return `Create a location-region proof for ${String(input.regionLabel ?? "the selected region")}.`;
