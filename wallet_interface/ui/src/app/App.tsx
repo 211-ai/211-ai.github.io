@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   Bell,
@@ -23,9 +23,8 @@ import {
 } from "lucide-react";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
-import type { AgentMessage } from "../agent/types";
-import { getRouteLabel, listToolsForSurface } from "../agent/surfaceRegistry";
-import { answer211InfoQuestion } from "../services/graphRagService";
+import { getRouteLabel } from "../agent/surfaceRegistry";
+import { useAgentChatService } from "../services/agentChatService";
 import {
   CheckInChannel,
   AuditEvent,
@@ -116,59 +115,6 @@ const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
-
-function createAgentMessage(
-  sessionId: string,
-  role: AgentMessage["role"],
-  content: string,
-  status: AgentMessage["status"] = "complete"
-): AgentMessage {
-  const createdAt = new Date().toISOString();
-  return {
-    id: `agent-message-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    sessionId,
-    role,
-    content,
-    createdAt,
-    status
-  };
-}
-
-function isServiceNavigationQuestion(message: string): boolean {
-  return /\b(211|service|services|shelter|housing|food|pantry|benefits|legal|clinic|health|transport|crisis|near me|nearby)\b/i.test(
-    message
-  );
-}
-
-async function createReadOnlyAgentResponse(message: string, activeRoute: RouteId): Promise<string> {
-  const lowerMessage = message.toLowerCase();
-  const routeLabel = getRouteLabel(activeRoute);
-
-  if (/\b(what can i do here|what is this screen|where am i|current screen|this page)\b/.test(lowerMessage)) {
-    const availableReadTools = listToolsForSurface(activeRoute, "app_context")
-      .filter((tool) => !tool.requiresConfirmation)
-      .map((tool) => tool.title.toLowerCase());
-    const toolSummary = availableReadTools.length
-      ? ` Available read-only support here: ${availableReadTools.join(", ")}.`
-      : "";
-    return `You are on ${routeLabel}.${toolSummary} I can explain the screen and answer public 211 service questions without changing wallet data.`;
-  }
-
-  if (/\b(go to|open|navigate|show me)\b/.test(lowerMessage)) {
-    return `This drawer is read-only in this slice, so I will not move you automatically. Use the navigation controls to open the screen you want, and I can stay open while you work.`;
-  }
-
-  if (isServiceNavigationQuestion(message)) {
-    try {
-      const answer = await answer211InfoQuestion(message, { useLocalModel: false });
-      return answer.answer;
-    } catch {
-      return "I could not read the local 211 corpus for that question. You can still ask about the current screen, or use the Services screen to browse public service information.";
-    }
-  }
-
-  return `I can help with public 211 service questions and explain the current app screen. You are on ${routeLabel}. This read-only drawer will not change wallet records or app settings.`;
-}
 
 const routeIcons: Record<RouteId, typeof Home> = {
   home: Home,
@@ -277,8 +223,9 @@ async function generateUploadSummary(file: File): Promise<string> {
 
 export function App() {
   const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
-  const agentSessionId = useMemo(() => `agent-session-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, []);
   const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
+  const activeRouteRef = useRef(activeRoute);
+  activeRouteRef.current = activeRoute;
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -303,14 +250,6 @@ export function App() {
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
-  const [agentResponding, setAgentResponding] = useState(false);
-  const [agentMessages, setAgentMessages] = useState<AgentMessage[]>(() => [
-    createAgentMessage(
-      agentSessionId,
-      "assistant",
-      "I can answer public 211 service questions and explain the current screen. I will not change wallet data from this read-only chat."
-    )
-  ]);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
 
   async function refreshWalletAccessState() {
@@ -350,6 +289,55 @@ export function App() {
       refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts))
     ]);
   }
+
+  const agentRuntime = useMemo(
+    () => ({
+      getState: () => ({
+        activeRoute: activeRouteRef.current,
+        profile,
+        policy,
+        recipients,
+        uploads,
+        accessRequests,
+        grantReceipts,
+        walletAuditEvents,
+        walletProofReceipts,
+        exportBundleViews,
+        walletUnlocked: true,
+        privateContextAllowed: false,
+        permissionLevel: "wallet_write" as const
+      }),
+      setActiveRoute: (route: RouteId) => {
+        activeRouteRef.current = route;
+        setActiveRoute(route);
+      },
+      setMobileNavOpen,
+      setProfile,
+      setPolicy,
+      setRecipients,
+      setAccessRequests,
+      setGrantReceipts,
+      setWalletAuditEvents,
+      setWalletProofReceipts,
+      setExportBundleViews,
+      walletApiConfig,
+      refreshWalletAccessState,
+      refreshWalletAuditEvents
+    }),
+    [
+      accessRequests,
+      exportBundleViews,
+      grantReceipts,
+      policy,
+      profile,
+      recipients,
+      uploads,
+      walletApiConfig,
+      walletAuditEvents,
+      walletProofReceipts
+    ]
+  );
+  const agentChat = useAgentChatService(agentRuntime);
 
   useEffect(() => {
     const syncRouteFromHash = () => {
@@ -434,31 +422,9 @@ export function App() {
 
   function navigate(route: RouteId) {
     setLocationRouteHash(route);
+    activeRouteRef.current = route;
     setActiveRoute(route);
     setMobileNavOpen(false);
-  }
-
-  async function sendAgentMessage(message: string) {
-    setAgentMessages((current) => [...current, createAgentMessage(agentSessionId, "user", message)]);
-    setAgentResponding(true);
-    const routeAtRequest = activeRoute;
-
-    try {
-      const response = await createReadOnlyAgentResponse(message, routeAtRequest);
-      setAgentMessages((current) => [...current, createAgentMessage(agentSessionId, "assistant", response)]);
-    } catch {
-      setAgentMessages((current) => [
-        ...current,
-        createAgentMessage(
-          agentSessionId,
-          "assistant",
-          "I could not answer that message. Try asking about public services or the current screen.",
-          "failed"
-        )
-      ]);
-    } finally {
-      setAgentResponding(false);
-    }
   }
 
   const nextCheckIn = useMemo(() => {
@@ -624,12 +590,12 @@ export function App() {
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
-        messages={agentMessages}
+        messages={agentChat.messages}
         onClose={() => setAgentChatOpen(false)}
-        onSend={sendAgentMessage}
+        onSend={agentChat.sendMessage}
         onToggle={() => setAgentChatOpen((open) => !open)}
         open={agentChatOpen}
-        responding={agentResponding}
+        responding={agentChat.responding}
       />
     </div>
   );
