@@ -18,6 +18,7 @@ export const navigationSurfaces: NavigationSurface[] = appRoutes.map((route) => 
 }));
 
 export const navigationRouteIds: RouteId[] = navigationSurfaces.map((surface) => surface.route);
+const navigationRouteIdSet = new Set<RouteId>(navigationRouteIds);
 
 const routeSummaries = {
   home: (state) =>
@@ -45,6 +46,15 @@ export async function navigateAction(
   runtime: AppActionRuntime,
   input: NavigateCommandInput
 ): Promise<AppActionResult> {
+  if (!canNavigateToRoute(input.route)) {
+    return {
+      ok: false,
+      action: "navigate",
+      errorCode: "route_not_found",
+      message: `Route ${String(input.route)} is not available.`
+    };
+  }
+
   setLocationRouteHash(input.route);
   runtime.setActiveRoute?.(input.route);
   runtime.setMobileNavOpen?.(false);
@@ -74,10 +84,10 @@ export function buildSafeSurfaceContext(
   state: AppActionState,
   input: ReadSurfaceContextCommandInput = {}
 ): SurfaceContext {
-  const route = input.route ?? state.activeRoute ?? getRouteFromHash();
+  const route = resolveSurfaceRoute(state, input);
   const includePrivateContext = Boolean(input.includePrivateContext && state.privateContextAllowed);
-  const visibleRecordIds = getVisibleRecordIds(route, state);
-  const visibleServiceDocIds = isServiceRoute(route) ? [] : undefined;
+  const visibleRecordIds = includePrivateContext ? getVisibleRecordIds(route, state) : undefined;
+  const visibleServiceDocIds = getVisibleServiceDocIds(route);
 
   return {
     route,
@@ -97,8 +107,12 @@ export function summarizeRouteState(route: RouteId, state: AppActionState): stri
   return routeSummaries[route](state);
 }
 
-export function canNavigateToRoute(route: RouteId): boolean {
-  return navigationRouteIds.includes(route);
+export function canNavigateToRoute(route: unknown): route is RouteId {
+  return navigationRouteIdSet.has(route as RouteId);
+}
+
+export async function summarizeCurrentScreenAction(runtime: AppActionRuntime): Promise<AppActionResult> {
+  return readSurfaceContextAction(runtime, {});
 }
 
 function getVisibleRecordIds(route: RouteId, state: AppActionState): string[] | undefined {
@@ -112,9 +126,11 @@ function publicSurfaceMetadata(route: RouteId, state: AppActionState): Record<st
   return {
     route,
     routeLabel: getRouteLabel(route),
+    activeRoute: state.activeRoute,
     uploadCount: state.uploads.length,
     recipientCount: state.recipients.length,
     pendingAccessRequestCount: pendingAccessRequestCount(state),
+    activeGrantCount: state.grantReceipts.filter((receipt) => receipt.status === "active").length,
     proofCount: state.walletProofReceipts.length,
     exportBundleCount: state.exportBundleViews.length,
     auditEventCount: state.walletAuditEvents.length,
@@ -137,6 +153,14 @@ function privateSurfaceMetadata(route: RouteId, state: AppActionState): Record<s
       displayName: recipient.displayName,
       type: recipient.type,
       allowedScopes: recipient.allowedScopes
+    })),
+    uploads: state.uploads.map((upload) => ({
+      id: upload.id,
+      recordId: upload.recordId,
+      category: upload.category,
+      sensitivity: upload.sensitivity,
+      status: upload.status,
+      shared: upload.shared
     }))
   };
 }
@@ -157,21 +181,30 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
     case "contacts":
     case "sharing-rules":
       return {
-        verifiedRecipientCount: state.recipients.filter((recipient) => recipient.verified).length
+        verifiedRecipientCount: state.recipients.filter((recipient) => recipient.verified).length,
+        recipientTypeCounts: countBy(state.recipients.map((recipient) => recipient.type))
       };
     case "uploads":
       return {
         storedUploadCount: state.uploads.filter((upload) => upload.status === "stored").length,
-        sharedUploadCount: state.uploads.filter((upload) => upload.shared).length
+        sharedUploadCount: state.uploads.filter((upload) => upload.shared).length,
+        uploadCategoryCounts: countBy(state.uploads.map((upload) => upload.category)),
+        uploadSensitivityCounts: countBy(state.uploads.map((upload) => upload.sensitivity))
       };
     case "recipient-access":
       return {
         approvedAccessRequestCount: state.accessRequests.filter((request) => request.status === "approved").length,
+        rejectedAccessRequestCount: state.accessRequests.filter((request) => request.status === "rejected").length,
         visibleAccessRequestIds: state.accessRequests.map((request) => request.id)
+      };
+    case "analytics":
+      return {
+        activeGrantCount: state.grantReceipts.filter((receipt) => receipt.status === "active").length
       };
     case "proof-center":
       return {
         verifiedProofCount: state.walletProofReceipts.filter((proof) => proof.verificationStatus === "verified").length,
+        simulatedProofCount: state.walletProofReceipts.filter((proof) => proof.simulated).length,
         visibleProofReceiptIds: state.walletProofReceipts.map((proof) => proof.id)
       };
     case "exports":
@@ -184,6 +217,21 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
   }
 }
 
+function resolveSurfaceRoute(state: AppActionState, input: ReadSurfaceContextCommandInput): RouteId {
+  if (input.route && canNavigateToRoute(input.route)) {
+    return input.route;
+  }
+  if (canNavigateToRoute(state.activeRoute)) {
+    return state.activeRoute;
+  }
+  const hashRoute = getRouteFromHash();
+  return canNavigateToRoute(hashRoute) ? hashRoute : "home";
+}
+
+function getVisibleServiceDocIds(route: RouteId): string[] | undefined {
+  return isServiceRoute(route) ? [] : undefined;
+}
+
 function isServiceRoute(route: RouteId): boolean {
   return route === "social-services" || route === "shelter" || route === "benefits-protection";
 }
@@ -194,4 +242,11 @@ function routeHasVisibleWalletRecords(route: RouteId): boolean {
 
 function pendingAccessRequestCount(state: AppActionState): number {
   return state.accessRequests.filter((request) => request.status === "pending").length;
+}
+
+function countBy(values: string[]): Record<string, number> {
+  return values.reduce<Record<string, number>>((counts, value) => {
+    counts[value] = (counts[value] ?? 0) + 1;
+    return counts;
+  }, {});
 }
