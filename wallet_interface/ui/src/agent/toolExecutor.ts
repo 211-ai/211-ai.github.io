@@ -1,16 +1,20 @@
 import type { AgentCommandName } from "./commandSchemas";
 import { commandSchemas, isAgentCommandName, isCommandOutputFor } from "./commandSchemas";
 import type { AgentSurfaceApi, SurfaceApiInvokeOptions } from "./surfaceApi";
-import { canUseToolOnSurface, getToolDefinition } from "./surfaceRegistry";
+import { getToolDefinition } from "./surfaceRegistry";
+import {
+  confirmationRiskForGate,
+  evaluateAgentToolPermissionPolicy,
+  getAgentToolPermissionPolicy
+} from "./permissionPolicy";
 import type {
   AgentConfirmationRequest,
-  AgentConfirmationRisk,
   AgentPermissionLevel,
   AgentToolCall,
   AgentToolResult,
   SurfaceContext
 } from "./types";
-import { hasPermissionLevel, isAgentToolResult, isRecord } from "./types";
+import { isAgentToolResult, isRecord } from "./types";
 
 export type AgentToolExecutorEvent =
   | {
@@ -224,21 +228,25 @@ export function createAgentToolExecutor(options: AgentToolExecutorOptions): Agen
       events
     );
 
-    const result = normalizeSurfaceResult(
+    const result = enforceAuditRequirement(
       toolCall,
-      await options.surfaceApi.invokeToolCall(
-        {
-          ...toolCall,
-          status: "running",
-          startedAt,
-          confirmationId: executionOptions.confirmationId ?? toolCall.confirmationId
-        },
-        {
-          ...executionOptions,
-          confirmed: executionOptions.confirmed,
-          sessionId: executionOptions.sessionId ?? options.sessionId,
-          toolCallId: toolCall.id
-        }
+      validation.commandName,
+      normalizeSurfaceResult(
+        toolCall,
+        await options.surfaceApi.invokeToolCall(
+          {
+            ...toolCall,
+            status: "running",
+            startedAt,
+            confirmationId: executionOptions.confirmationId ?? toolCall.confirmationId
+          },
+          {
+            ...executionOptions,
+            confirmed: executionOptions.confirmed,
+            sessionId: executionOptions.sessionId ?? options.sessionId,
+            toolCallId: toolCall.id
+          }
+        )
       )
     );
     emit(resultEvent(toolCall, result, now()), events);
@@ -287,68 +295,19 @@ export function createAgentToolExecutor(options: AgentToolExecutorOptions): Agen
       executionOptions.privateContextAllowed ?? options.privateContextAllowed ?? context.privateContextAllowed;
     const userPresent = executionOptions.userPresent ?? options.userPresent ?? true;
 
-    if (!canUseToolOnSurface(toolCall.name, context.route, permissionLevel) && toolCall.name !== "navigate") {
+    const decision = evaluateAgentToolPermissionPolicy(toolCall.name, {
+      route: context.route,
+      allowedSurfaces: definition.surfaces,
+      grantedPermissionLevel: permissionLevel,
+      walletUnlocked,
+      privateContextAllowed,
+      userPresent,
+      toolTitle: definition.title
+    });
+    if (!decision.ok) {
       return {
         ok: false,
-        result: failureResult(
-          toolCall,
-          "surface_not_allowed",
-          `${definition.title} cannot run from ${context.routeLabel}.`,
-          false,
-          now()
-        )
-      };
-    }
-
-    if (!hasPermissionLevel(permissionLevel, definition.permissionLevel)) {
-      return {
-        ok: false,
-        result: failureResult(
-          toolCall,
-          "permission_denied",
-          `${definition.title} requires ${definition.permissionLevel} permission.`,
-          false,
-          now()
-        )
-      };
-    }
-
-    if (definition.requiresWalletUnlock && !walletUnlocked) {
-      return {
-        ok: false,
-        result: failureResult(
-          toolCall,
-          "wallet_locked",
-          `${definition.title} requires an unlocked wallet.`,
-          false,
-          now()
-        )
-      };
-    }
-
-    if (definition.requiresUserPresence && !userPresent) {
-      return {
-        ok: false,
-        result: failureResult(
-          toolCall,
-          "user_presence_required",
-          `${definition.title} requires user presence.`,
-          false,
-          now()
-        )
-      };
-    }
-
-    if (definition.requiresPrivateContextOptIn && !privateContextAllowed) {
-      return {
-        ok: false,
-        result: failureResult(
-          toolCall,
-          "private_context_required",
-          `${definition.title} requires private context permission.`,
-          false,
-          now()
-        )
+        result: failureResult(toolCall, decision.code, decision.message, false, now())
       };
     }
 
@@ -376,12 +335,12 @@ export function createAgentToolExecutor(options: AgentToolExecutorOptions): Agen
       toolCallId: toolCall.id,
       title: definition.title,
       summary: summarizeConfirmation(commandName, toolCall.input),
-      risk: confirmationRiskFor(definition.permissionLevel),
+      risk: confirmationRiskForGate(getAgentToolPermissionPolicy(commandName).gate),
       permissionLevel: definition.permissionLevel,
       status: "pending",
       requestedAt,
       expiresAt,
-      details: confirmationDetails(toolCall.input, definition.auditEventType)
+      details: confirmationDetails(toolCall.input, commandName)
     };
   }
 
@@ -421,6 +380,24 @@ function normalizeSurfaceResult(toolCall: AgentToolCall, result: AgentToolResult
   }
 
   return result;
+}
+
+function enforceAuditRequirement(
+  toolCall: AgentToolCall,
+  commandName: AgentCommandName,
+  result: AgentToolResult
+): AgentToolResult {
+  const policy = getAgentToolPermissionPolicy(commandName);
+  if (!result.success || !policy.requiresAudit || result.auditEventId) {
+    return result;
+  }
+  return failureResult(
+    toolCall,
+    "audit_required",
+    `The ${commandName} tool completed without the required audit event.`,
+    false,
+    result.completedAt
+  );
 }
 
 function completeToolCall(
@@ -467,11 +444,17 @@ function failureResult(
   };
 }
 
-function confirmationDetails(input: unknown, auditEventType?: string): Record<string, unknown> | undefined {
+function confirmationDetails(input: unknown, commandName: AgentCommandName): Record<string, unknown> | undefined {
+  const policy = getAgentToolPermissionPolicy(commandName);
+  const policyDetails = {
+    permissionGate: policy.gate,
+    requiresAudit: policy.requiresAudit,
+    auditEventType: policy.auditEventType
+  };
   if (isRecord(input)) {
-    return auditEventType ? { input, auditEventType } : { input };
+    return { input, ...policyDetails };
   }
-  return auditEventType ? { auditEventType } : undefined;
+  return policyDetails;
 }
 
 function resultEvent(toolCall: AgentToolCall, result: AgentToolResult, createdAt: string): AgentToolExecutorEvent {
@@ -484,13 +467,6 @@ function resultEvent(toolCall: AgentToolCall, result: AgentToolResult, createdAt
     auditEventId: result.auditEventId,
     createdAt
   };
-}
-
-function confirmationRiskFor(permissionLevel: AgentPermissionLevel): AgentConfirmationRisk {
-  if (permissionLevel === "admin") return "restricted";
-  if (permissionLevel === "wallet_write") return "high";
-  if (permissionLevel === "wallet_private") return "moderate";
-  return "low";
 }
 
 function summarizeConfirmation(name: AgentCommandName, input: unknown): string {

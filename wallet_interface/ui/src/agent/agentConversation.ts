@@ -41,6 +41,7 @@ export interface AgentToolPromptSummary {
   permissionLevel: AgentPermissionLevel;
   surfaces: SurfaceContext["route"][];
   requiresConfirmation: boolean;
+  requiresAudit: boolean;
   requiresWalletUnlock: boolean;
   requiresUserPresence: boolean;
   requiresPrivateContextOptIn: boolean;
@@ -188,6 +189,7 @@ export function buildRegisteredToolPromptSummaries(
     permissionLevel: tool.permissionLevel,
     surfaces: tool.surfaces,
     requiresConfirmation: tool.requiresConfirmation,
+    requiresAudit: tool.requiresAudit,
     requiresWalletUnlock: tool.requiresWalletUnlock,
     requiresUserPresence: tool.requiresUserPresence,
     requiresPrivateContextOptIn: tool.requiresPrivateContextOptIn,
@@ -277,6 +279,7 @@ function buildToolsSection(tools: AgentToolPromptSummary[]): string {
         description: tool.description,
         permissionLevel: tool.permissionLevel,
         requiresConfirmation: tool.requiresConfirmation,
+        requiresAudit: tool.requiresAudit,
         requiresWalletUnlock: tool.requiresWalletUnlock,
         requiresUserPresence: tool.requiresUserPresence,
         requiresPrivateContextOptIn: tool.requiresPrivateContextOptIn,
