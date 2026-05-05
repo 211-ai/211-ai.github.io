@@ -340,7 +340,7 @@ function singleVisibleServiceId(context: SurfaceContext): string | undefined {
 }
 
 function includesPhrase(text: string, phrase: string): boolean {
-  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[\\s_-]+");
   return new RegExp(`(^|\\W)${escaped}(?=\\W|$)`, "i").test(text);
 }
 
