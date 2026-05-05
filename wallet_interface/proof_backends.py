@@ -24,6 +24,8 @@ _PRIVATE_WITNESS_KEYS = {
     "longitude",
     "nonce",
     "precise_location",
+    "target_lat",
+    "target_lon",
     "witness",
 }
 _SAFE_WITNESS_KEY_EXCEPTIONS = {"witness_commitment", "witness_record_ids"}
@@ -58,7 +60,9 @@ class HttpLocationRegionProofBackend:
     This is a narrow production adapter for an external verifier service. The
     service contract is intentionally small:
 
-    - POST `{base_url}{prove_path}` with prove inputs, returning a serialized
+    - POST `{base_url}{prove_path}` with location-region prove inputs, returning a serialized
+      `ProofReceipt`
+    - POST `{base_url}{distance_prove_path}` with location-distance prove inputs, returning a serialized
       `ProofReceipt`
     - POST `{base_url}{verify_path}` with `{"receipt": ...}`, returning
       `{"verified": true|false}`
@@ -75,6 +79,7 @@ class HttpLocationRegionProofBackend:
         proof_system: str,
         circuit_id: str | None = None,
         prove_path: str = "/prove/location-region",
+        distance_prove_path: str = "/prove/location-distance",
         verify_path: str = "/verify",
         health_path: str = "/health",
         bearer_token: str | None = None,
@@ -92,6 +97,7 @@ class HttpLocationRegionProofBackend:
             raise ValueError("HTTP proof backend requires verifier_id and proof_system")
         self.circuit_id = str(circuit_id or "").strip() or None
         self.prove_path = self._normalize_path(prove_path)
+        self.distance_prove_path = self._normalize_path(distance_prove_path)
         self.verify_path = self._normalize_path(verify_path)
         self.health_path = self._normalize_path(health_path)
         self.timeout_seconds = float(timeout_seconds)
@@ -136,7 +142,36 @@ class HttpLocationRegionProofBackend:
             dict(self.extra_headers),
             self.timeout_seconds,
         )
-        return self._receipt_from_response(response, wallet_id=wallet_id)
+        return self._receipt_from_response(response, wallet_id=wallet_id, proof_type="location_region")
+
+    def prove_location_distance(
+        self,
+        *,
+        wallet_id: str,
+        statement: Dict[str, Any],
+        public_inputs: Dict[str, Any],
+        witness: Dict[str, Any],
+        witness_record_ids: list[str],
+    ) -> ProofReceipt:
+        payload = {
+            "wallet_id": wallet_id,
+            "proof_type": "location_distance",
+            "statement": statement,
+            "public_inputs": public_inputs,
+            "witness": witness,
+            "witness_record_ids": list(witness_record_ids),
+            "verifier_id": self.verifier_id,
+            "proof_system": self.proof_system,
+            "circuit_id": self.circuit_id,
+        }
+        response = self.request_json(
+            "POST",
+            f"{self.base_url}{self.distance_prove_path}",
+            payload,
+            dict(self.extra_headers),
+            self.timeout_seconds,
+        )
+        return self._receipt_from_response(response, wallet_id=wallet_id, proof_type="location_distance")
 
     def verify(self, receipt: ProofReceipt) -> bool:
         response = self.request_json(
@@ -255,13 +290,125 @@ class HttpLocationRegionProofBackend:
 
         return self._contract_result(checks, receipt=receipt)
 
-    def _receipt_from_response(self, payload: Dict[str, Any], *, wallet_id: str) -> ProofReceipt:
+    def validate_distance_contract(
+        self,
+        *,
+        wallet_id: str = "wallet-contract-test",
+        witness_record_id: str = "record-contract-test",
+        target_id: str = "contract-test-service",
+    ) -> Dict[str, Any]:
+        """Run a non-user location-distance contract check against the verifier."""
+        checks: list[Dict[str, Any]] = []
+
+        def add_check(name: str, ok: bool, summary: str, details: Dict[str, Any] | None = None) -> None:
+            checks.append(
+                {
+                    "name": name,
+                    "status": "ok" if ok else "error",
+                    "summary": summary,
+                    "details": details or {},
+                }
+            )
+
+        try:
+            health = self.healthcheck()
+            add_check(
+                "health",
+                bool(health.get("ok")) and str(health.get("status")) not in {"down", "error", "unavailable"},
+                f"verifier health status is {health.get('status')}",
+                health,
+            )
+        except Exception as exc:
+            add_check("health", False, f"verifier health check failed: {exc}", {"error": str(exc)})
+            return self._contract_result(checks)
+
+        statement = {
+            "claim": "location_within_distance",
+            "target_id": target_id,
+            "max_distance_km": 5.0,
+            "target_policy_hash": "contract-test-target-policy-hash",
+            "witness_commitment": "contract-test-witness-commitment",
+        }
+        public_inputs = {
+            "claim": "location_within_distance",
+            "target_id": target_id,
+            "max_distance_km": 5.0,
+            "target_policy_hash": "contract-test-target-policy-hash",
+        }
+        witness = {
+            "lat": 45.5152,
+            "lon": -122.6784,
+            "target_lat": 45.52,
+            "target_lon": -122.68,
+            "max_distance_km": 5.0,
+            "nonce": "wallet-contract-test-nonce",
+            "address": "123 Contract Test St",
+        }
+        sensitive_values = {
+            str(witness["lat"]),
+            str(witness["lon"]),
+            str(witness["target_lat"]),
+            str(witness["target_lon"]),
+            str(witness["nonce"]),
+            str(witness["address"]),
+        }
+
+        try:
+            receipt = self.prove_location_distance(
+                wallet_id=wallet_id,
+                statement=statement,
+                public_inputs=public_inputs,
+                witness=witness,
+                witness_record_ids=[witness_record_id],
+            )
+            receipt_dict = receipt.to_dict()
+            add_check(
+                "prove",
+                receipt.proof_type == "location_distance"
+                and receipt.wallet_id == wallet_id
+                and receipt.verifier_id == self.verifier_id
+                and receipt.proof_system == self.proof_system
+                and receipt.is_simulated is False
+                and receipt.verification_status == "verified",
+                "verifier returned a non-simulated verified location_distance receipt",
+                self._receipt_summary(receipt),
+            )
+            add_check(
+                "public_input_safety",
+                not self._contains_private_witness_data(receipt_dict, sensitive_values),
+                "receipt and public inputs do not expose synthetic wallet witness values",
+                {"public_input_keys": sorted(receipt.public_inputs.keys())},
+            )
+        except Exception as exc:
+            add_check("prove", False, f"verifier distance prove contract failed: {exc}", {"error": str(exc)})
+            return self._contract_result(checks)
+
+        try:
+            verified = self.verify(receipt)
+            add_check(
+                "verify",
+                verified,
+                "verifier accepted its returned proof receipt",
+                {"verified": verified},
+            )
+        except Exception as exc:
+            add_check("verify", False, f"verifier verify contract failed: {exc}", {"error": str(exc)})
+
+        return self._contract_result(checks, receipt=receipt)
+
+    def _receipt_from_response(
+        self,
+        payload: Dict[str, Any],
+        *,
+        wallet_id: str,
+        proof_type: str,
+    ) -> ProofReceipt:
         if "receipt" in payload and isinstance(payload["receipt"], dict):
             payload = payload["receipt"]
         allowed = {field.name for field in fields(ProofReceipt)}
         normalized = {key: value for key, value in payload.items() if key in allowed}
         normalized.setdefault("wallet_id", wallet_id)
-        normalized.setdefault("proof_type", "location_region")
+        normalized.setdefault("proof_type", proof_type)
         normalized.setdefault("verifier_id", self.verifier_id)
         normalized.setdefault("proof_system", self.proof_system)
         normalized.setdefault("circuit_id", self.circuit_id)

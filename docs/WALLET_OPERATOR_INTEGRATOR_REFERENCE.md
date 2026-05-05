@@ -44,8 +44,8 @@ Optional production settings:
 - `WALLET_STORAGE_ROOT`, `WALLET_STORAGE_BUCKET`, `WALLET_STORAGE_PREFIX`,
   `WALLET_STORAGE_PIN`, and `WALLET_STORAGE_MIRRORS` can build
   `WALLET_STORAGE_CONFIG` from individual environment variables.
-- `WALLET_PROOF_PROVE_PATH` and `WALLET_PROOF_VERIFY_PATH` override the HTTP
-  proof backend endpoints.
+- `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`, and
+  `WALLET_PROOF_VERIFY_PATH` override the HTTP proof backend endpoints.
 - `WALLET_PROOF_BEARER_TOKEN` or
   `WALLET_PROOF_HTTP_HEADER_NAME` / `WALLET_PROOF_HTTP_HEADER_VALUE` add proof
   service authentication.
@@ -62,7 +62,11 @@ Secret templates live at:
 - `wallet_interface/deploy/kubernetes/externalsecret.example.yaml`
 
 The external location proof verifier contract is documented in
-`docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
+`docs/WALLET_PROOF_VERIFIER_CONTRACT.md`. Use
+`python -m wallet_interface.ops --validate-proof-contract` for
+`location_region` and
+`python -m wallet_interface.ops --validate-distance-proof-contract` before
+exposing live `location_distance` proof UI.
 
 The wallet UCAN invocation profile and UCAN-compatible inspection envelope are
 documented in `docs/WALLET_UCAN_PROFILE.md`.
@@ -162,7 +166,10 @@ calling the wallet operation.
 | `POST` | `/wallets/{wallet_id}/records/graphrag/redacted` | `redacted_graphrag` | Redacted GraphRAG graph over explicit document records. |
 
 Redacted GraphRAG returns record/category/redaction/entity-type graph nodes and
-edges. Entity strings and document text are not returned.
+edges. Entity strings and document text are not returned. First production uses
+`wallet-local-redacted-graphrag-v1`: wallet-local execution, model-backed
+extraction disabled, encrypted artifact storage, and entity-type-count-only
+safe output.
 
 ### Location, Proofs, and Service Matching
 
@@ -172,6 +179,8 @@ edges. Entity strings and document text are not returned.
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/coarse-invocations` | Issue coarse-location invocation token. |
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/region-proof-grants` | Grant location-region proof creation. |
 | `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | Create a proof receipt for service-area membership. |
+| `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/distance-proof-grants` | Grant location-distance proof creation for a target and threshold. |
+| `POST` | `/wallets/{wallet_id}/locations/{location_record_id}/distance-proofs` | Create a proof receipt that a wallet location is within a target distance. |
 | `GET` | `/wallets/{wallet_id}/proofs` | List proof receipts for proof-center views. |
 | `POST` | `/wallets/{wallet_id}/services/match` | Match services using wallet coarse/proven data. |
 | `POST` | `/services/match-derived` | Match services from caller-provided derived/coarse facts. |

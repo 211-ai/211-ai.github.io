@@ -153,6 +153,56 @@ def validate_proof_contract(service: WalletInterfaceService | None = None) -> di
     }
 
 
+def validate_distance_proof_contract(service: WalletInterfaceService | None = None) -> dict[str, Any]:
+    """Validate the configured external location-distance proof verifier contract."""
+    resolved_service = service or WalletInterfaceService()
+    backend = resolved_service.wallet_service.proof_backend
+    generated_at = datetime.now(timezone.utc).isoformat()
+    if not hasattr(backend, "validate_distance_contract"):
+        return {
+            "source": "wallet_interface.ops",
+            "generated_at": generated_at,
+            "status": "error",
+            "summary": "configured proof backend does not support location-distance contract validation",
+            "backend": backend.__class__.__name__,
+            "verifier_id": getattr(backend, "verifier_id", None),
+            "proof_system": getattr(backend, "proof_system", None),
+            "checks": [
+                {
+                    "name": "backend",
+                    "status": "error",
+                    "summary": "set WALLET_PROOF_BACKEND=http-location-region for distance contract validation",
+                    "details": {"backend": backend.__class__.__name__},
+                }
+            ],
+        }
+    try:
+        validation = backend.validate_distance_contract()
+    except Exception as exc:
+        return {
+            "source": "wallet_interface.ops",
+            "generated_at": generated_at,
+            "status": "error",
+            "summary": f"distance proof verifier contract validation failed: {exc}",
+            "backend": backend.__class__.__name__,
+            "checks": [
+                {
+                    "name": "contract",
+                    "status": "error",
+                    "summary": str(exc),
+                    "details": {"error": str(exc)},
+                }
+            ],
+        }
+    return {
+        "source": "wallet_interface.ops",
+        "generated_at": generated_at,
+        "status": validation.get("status", "error"),
+        "summary": "distance proof verifier contract validation completed",
+        **validation,
+    }
+
+
 def validate_production_readiness(
     service: WalletInterfaceService | None = None,
     *,
@@ -557,6 +607,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Run health/prove/verify validation against the configured external proof verifier and exit.",
     )
     parser.add_argument(
+        "--validate-distance-proof-contract",
+        action="store_true",
+        help=(
+            "Run health/prove/verify validation against the configured external "
+            "location-distance proof verifier and exit."
+        ),
+    )
+    parser.add_argument(
         "--validate-production-readiness",
         action="store_true",
         help="Run the production env, ops-health, and verifier-contract release gate and exit.",
@@ -602,6 +660,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         service = WalletInterfaceService(repository_root=args.repository_root)
         if args.validate_proof_contract:
             report = validate_proof_contract(service)
+            target_output = output or sys.stdout
+            target_output.write(json.dumps(report, sort_keys=True))
+            target_output.write("\n")
+            target_output.flush()
+            return 0 if report.get("status") == "ok" else 2
+        if args.validate_distance_proof_contract:
+            report = validate_distance_proof_contract(service)
             target_output = output or sys.stdout
             target_output.write(json.dumps(report, sort_keys=True))
             target_output.write("\n")
