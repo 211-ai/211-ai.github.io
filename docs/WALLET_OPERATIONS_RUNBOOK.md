@@ -89,9 +89,11 @@ python -m pytest tests/test_wallet_production_handoff_blackbox.py -q
 
 This test starts a local HTTP verifier stub, runs
 `python -m wallet_interface.ops --validate-production-readiness` through a real
-subprocess with production-mode env vars, validates a completed signoff JSON
-packet, and verifies that a verifier returning witness data fails the release
-gate.
+subprocess with production-mode env vars, launches the wallet API with
+`uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops
+HTTP endpoints, verifies repository reload after API restart, validates a
+completed signoff JSON packet, and verifies that a verifier returning witness
+data fails the release gate.
 
 ## Lost Key Or Device
 
