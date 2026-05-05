@@ -116,6 +116,20 @@ expected UCAN fields, proof-chain grant ID, and signature-payload hash. External
 `ucanto`/w3up adapters can use these functions without depending on product API
 internals.
 
+The same contract is available from the wallet CLI for adapter pipelines:
+
+```bash
+python -m ipfs_datasets_py.wallet.cli --json ucan-profile
+python -m ipfs_datasets_py.wallet.cli --json ucan-conformance-fixture \
+  --invocation-token "$WALLET_UCAN_TOKEN" \
+  --grant-path grant.json \
+  --out wallet-ucan-fixture.json
+python -m ipfs_datasets_py.wallet.cli --json ucan-validate-profile \
+  --path wallet-ucan-profile-payload.json
+python -m ipfs_datasets_py.wallet.cli --json ucan-validate-fixture \
+  --path wallet-ucan-fixture.json
+```
+
 Conforming adapters must preserve:
 
 - issuer DID and audience DID

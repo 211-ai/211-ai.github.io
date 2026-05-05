@@ -23,6 +23,8 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md" in text
     assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in text
     assert "complete conformance fixture validation" in text
+    assert "CLI fixture round-trip validation" in text
+    assert "ucan-validate-fixture" in Path("docs/WALLET_UCAN_PROFILE.md").read_text(encoding="utf-8")
     assert "python -m wallet_interface.ops --validate-production-readiness" in text
     assert "python -m wallet_interface.ops --validate-distance-proof-contract" in text
     assert "python -m wallet_interface.ops --validate-target-signoff-packet" in text
@@ -113,9 +115,11 @@ def test_ucan_zk_wallet_has_target_signoff_and_retention_artifacts() -> None:
     assert "Do not paste secret values" in signoff_text
     assert "docs/WALLET_RETENTION_POLICY.md" in signoff_text
     assert "docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json" in signoff_text
+    assert "approved `retention_policy_version`" in signoff_text
     assert "status=ok" in signoff_text
     assert "secret_manager_refs" in packet_text
     assert "retention_mapping" in packet_text
+    assert "retention_policy_version" in packet_text
     assert "analytics_privacy_review" in packet_text
 
 

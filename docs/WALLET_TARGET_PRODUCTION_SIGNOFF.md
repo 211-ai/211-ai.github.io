@@ -27,7 +27,9 @@ python -m wallet_interface.ops \
 The JSON packet is the machine-readable completion record for retention,
 secret-manager references, staging readiness artifacts, analytics privacy
 review, organization review, and the launch decision. The Markdown checklist
-remains the human-readable reviewer guide.
+remains the human-readable reviewer guide. The packet validator requires the
+environment record to include the approved `retention_policy_version` that
+matches the target retention mapping.
 
 ## Environment Record
 

@@ -27,6 +27,7 @@ TASK_HEADER_PREFIX = "## PORTAL-"
 DEFAULT_TRACKS = ["platform", "data", "ui", "mobile", "wallet", "collab", "pwa", "ops"]
 PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS = 1800.0
+SHARED_WORKTREE_PATHS = ("wallet_interface/ui/node_modules",)
 
 
 def utc_now() -> str:
@@ -439,6 +440,13 @@ class PortalImplementationDaemon:
         workspace_path = self.repo_root
         command = self._build_implementation_command(workspace_path)
         result: dict[str, Any]
+        validation_result: dict[str, Any] = {
+            "attempted": False,
+            "passed": True,
+            "returncode": 0,
+            "results": [],
+            "reason": "not_run",
+        }
 
         try:
             os.write(lock_fd, f"{task.task_id}\n{started_at}\n".encode("utf-8"))
@@ -477,20 +485,26 @@ class PortalImplementationDaemon:
                     timeout=self.implementation_timeout,
                     check=False,
                 )
+            effective_returncode = completed.returncode
+            if completed.returncode == 0:
+                validation_result = self._run_validation_commands(workspace_path, task, log_path)
+                if not validation_result.get("passed", False):
+                    effective_returncode = int(validation_result.get("returncode") or 1)
             finished_at = utc_now()
             state.implementation_attempts[task.task_id] = attempt
             state.last_implementation_task_id = task.task_id
             state.last_implementation_started_at = started_at
             state.last_implementation_finished_at = finished_at
-            state.last_implementation_returncode = completed.returncode
+            state.last_implementation_returncode = effective_returncode
             state.last_implementation_log_path = str(log_path)
             state.last_progress_at = finished_at
             state.save(self.state_path)
             result = {
                 "task_id": task.task_id,
                 "attempt": attempt,
-                "returncode": completed.returncode,
+                "returncode": effective_returncode,
                 "log_path": str(log_path),
+                "validation_result": validation_result,
             }
             self._record_event("implementation_finished", result)
             return result
@@ -538,6 +552,14 @@ class PortalImplementationDaemon:
         baseline_ref = ""
         implementation_commit = ""
         merge_result: dict[str, Any] = {"merged": False, "reason": "not_attempted"}
+        validation_result: dict[str, Any] = {
+            "attempted": False,
+            "passed": True,
+            "returncode": 0,
+            "results": [],
+            "reason": "not_run",
+        }
+        cleanup_result: dict[str, Any] = {"cleaned": False, "reason": "not_attempted"}
         command: list[str] = []
         returncode = 1
         commit_result: dict[str, Any] = {"committed": False}
@@ -577,10 +599,16 @@ class PortalImplementationDaemon:
                 )
             returncode = completed.returncode
             if returncode == 0:
-                commit_result = self._commit_worktree_changes(worktree_path, task, attempt)
-                implementation_commit = str(commit_result.get("commit", ""))
-                if implementation_commit:
-                    merge_result = self._merge_branch_to_main(branch_name, task, attempt)
+                validation_result = self._run_validation_commands(worktree_path, task, log_path)
+                if validation_result.get("passed", False):
+                    commit_result = self._commit_worktree_changes(worktree_path, task, attempt)
+                    implementation_commit = str(commit_result.get("commit", ""))
+                    if implementation_commit:
+                        merge_result = self._merge_branch_to_main(branch_name, task, attempt)
+                        if merge_result.get("merged"):
+                            cleanup_result = self._cleanup_merged_worktree(worktree_path, branch_name)
+                else:
+                    returncode = int(validation_result.get("returncode") or 1)
         except subprocess.TimeoutExpired:
             returncode = 124
             self._record_event(
@@ -618,14 +646,79 @@ class PortalImplementationDaemon:
             "commit_result": commit_result,
             "implementation_commit": implementation_commit,
             "merge_result": merge_result,
+            "validation_result": validation_result,
+            "cleanup_result": cleanup_result,
         }
         self._record_event("implementation_finished", result)
         return result
 
     def _create_seeded_worktree(self, worktree_path: Path, branch_name: str) -> str:
         self._run_git(["worktree", "add", "-b", branch_name, str(worktree_path), "HEAD"], cwd=self.repo_root)
+        self._seed_worktree_from_workspace(worktree_path)
         baseline_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
+        status = self._run_git(["status", "--porcelain"], cwd=worktree_path).stdout.strip()
+        if status:
+            self._run_git(["add", "-A"], cwd=worktree_path)
+            self._run_git(
+                [
+                    "-c",
+                    "user.name=Implementation Daemon",
+                    "-c",
+                    "user.email=implementation-daemon@example.invalid",
+                    "commit",
+                    "-m",
+                    "implementation daemon baseline",
+                ],
+                cwd=worktree_path,
+            )
+            baseline_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
         return baseline_ref
+
+    def _seed_worktree_from_workspace(self, worktree_path: Path) -> None:
+        dirty_paths = set(self._git_path_list(["diff", "--name-only", "HEAD", "--"]))
+        dirty_paths.update(self._git_path_list(["ls-files", "--others", "--exclude-standard", "-z"]))
+        for relative in sorted(path for path in dirty_paths if self._should_seed_path(path)):
+            source = self.repo_root / relative
+            target = worktree_path / relative
+            if source.exists() and source.is_file():
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, target)
+            elif not source.exists() and target.exists():
+                target.unlink()
+        self._link_shared_worktree_paths(worktree_path)
+
+    def _link_shared_worktree_paths(self, worktree_path: Path) -> None:
+        for relative in SHARED_WORKTREE_PATHS:
+            source = (self.repo_root / relative).resolve()
+            if not source.exists():
+                continue
+            target = worktree_path / relative
+            if target.exists() or target.is_symlink():
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.symlink_to(source, target_is_directory=source.is_dir())
+
+    def _git_path_list(self, args: list[str]) -> list[str]:
+        result = self._run_git(args, cwd=self.repo_root)
+        if "-z" in args:
+            return [item for item in result.stdout.split("\0") if item]
+        return [item for item in result.stdout.splitlines() if item]
+
+    @staticmethod
+    def _should_seed_path(path: str) -> bool:
+        skip_prefixes = (
+            ".git/",
+            ".pytest_cache/",
+            "data/",
+            "node_modules/",
+            "wallet_interface/ui/node_modules/",
+            "wallet_interface/ui/dist/",
+        )
+        skip_parts = {".git", "__pycache__", ".pytest_cache", "node_modules"}
+        normalized = path.replace("\\", "/")
+        if normalized == "data" or normalized.startswith(skip_prefixes):
+            return False
+        return not any(part in skip_parts for part in normalized.split("/"))
 
     def _commit_worktree_changes(self, worktree_path: Path, task: PortalTask, attempt: int) -> dict[str, Any]:
         self._run_git(["add", "-A"], cwd=worktree_path)
@@ -648,6 +741,57 @@ class PortalImplementationDaemon:
         )
         commit_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
         return {"committed": True, "commit": commit_ref, "status": status}
+
+    def _run_validation_commands(self, workspace_path: Path, task: PortalTask, log_path: Path) -> dict[str, Any]:
+        if not task.validation:
+            return {
+                "attempted": False,
+                "passed": True,
+                "returncode": 0,
+                "results": [],
+                "reason": "no_commands",
+            }
+
+        results: list[dict[str, Any]] = []
+        with log_path.open("a", encoding="utf-8") as log_fh:
+            log_fh.write("\nValidation:\n")
+            for command in task.validation:
+                started_at = utc_now()
+                log_fh.write(f"$ {command}\n")
+                log_fh.flush()
+                completed = subprocess.run(
+                    ["/bin/bash", "-lc", command],
+                    cwd=workspace_path,
+                    text=True,
+                    stdout=log_fh,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                )
+                result = {
+                    "command": command,
+                    "started_at": started_at,
+                    "finished_at": utc_now(),
+                    "returncode": completed.returncode,
+                }
+                results.append(result)
+                if completed.returncode != 0:
+                    log_fh.write(f"[validation failed] returncode={completed.returncode}\n")
+                    log_fh.flush()
+                    return {
+                        "attempted": True,
+                        "passed": False,
+                        "returncode": completed.returncode,
+                        "results": results,
+                        "failed_command": command,
+                    }
+            log_fh.write("[validation passed]\n")
+            log_fh.flush()
+        return {
+            "attempted": True,
+            "passed": True,
+            "returncode": 0,
+            "results": results,
+        }
 
     def _merge_branch_to_main(self, branch_name: str, task: PortalTask, attempt: int) -> dict[str, Any]:
         started_at = utc_now()
@@ -709,6 +853,33 @@ class PortalImplementationDaemon:
             except OSError:
                 logger.warning("Failed to remove merge lock %s", merge_lock)
 
+    def _cleanup_merged_worktree(self, worktree_path: Path, branch_name: str) -> dict[str, Any]:
+        started_at = utc_now()
+        try:
+            self._run_git(["worktree", "remove", "--force", str(worktree_path)], cwd=self.repo_root)
+            self._run_git(["branch", "-D", branch_name], cwd=self.repo_root)
+        except RuntimeError as exc:
+            result = {
+                "cleaned": False,
+                "branch": branch_name,
+                "worktree_path": str(worktree_path),
+                "started_at": started_at,
+                "finished_at": utc_now(),
+                "error": str(exc),
+            }
+            self._record_event("cleanup_finished", result)
+            return result
+
+        result = {
+            "cleaned": True,
+            "branch": branch_name,
+            "worktree_path": str(worktree_path),
+            "started_at": started_at,
+            "finished_at": utc_now(),
+        }
+        self._record_event("cleanup_finished", result)
+        return result
+
     def _repo_merge_lock_path(self) -> Path:
         git_common_dir = self._run_git(["rev-parse", "--git-common-dir"], cwd=self.repo_root).stdout.strip()
         path = Path(git_common_dir)
@@ -763,6 +934,7 @@ Rules:
 - Prefer existing repo patterns and small, reviewable changes.
 - Implement the expected outputs for this task.
 - Run the listed validation commands when practical.
+- The daemon will run the listed validation commands and will only commit and merge the worktree if they pass.
 - If validation cannot be run, record why in your final response.
 - Do not mark the backlog task completed manually unless the task explicitly asks for TODO metadata changes.
 - Final response should list changed files and validation results.

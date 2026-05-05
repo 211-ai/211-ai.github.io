@@ -59,8 +59,13 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "WALLET_PROOF_SERVICE_URL" in compose
     assert "WALLET_PROOF_VERIFIER_ID" in compose
     assert "WALLET_PROOF_BEARER_TOKEN" in compose
+    assert "WALLET_OPS_HEALTH_SECRET_REF" in compose
+    assert "WALLET_OPS_ALERT_SECRET_REF" in compose
+    assert "WALLET_PROOF_CREDENTIAL_SECRET_REF" in compose
+    assert "WALLET_STORAGE_CREDENTIAL_SECRET_REF" in compose
     readme = (DEPLOY_ROOT / "README.md").read_text(encoding="utf-8")
     assert "--validate-proof-contract" in readme
+    assert "--validate-target-signoff-packet" in readme
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
@@ -86,10 +91,15 @@ def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     assert "WALLET_PROOF_SERVICE_URL" in secrets
     assert "WALLET_PROOF_VERIFIER_ID" in secrets
     assert "WALLET_PROOF_BEARER_TOKEN" in secrets
+    assert "WALLET_OPS_HEALTH_SECRET_REF" in secrets
+    assert "WALLET_OPS_ALERT_SECRET_REF" in secrets
+    assert "WALLET_PROOF_CREDENTIAL_SECRET_REF" in secrets
+    assert "WALLET_STORAGE_CREDENTIAL_SECRET_REF" in secrets
     assert "kind: ExternalSecret" in external_secret
     assert "wallet-production-secrets" in external_secret
     assert "WALLET_OPS_ALERT_WEBHOOK_URL" in external_secret
     assert "WALLET_STORAGE_CONFIG" in external_secret
+    assert "WALLET_PROOF_CREDENTIAL_SECRET_REF" in external_secret
 
 
 def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:

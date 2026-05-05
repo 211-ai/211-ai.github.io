@@ -26,7 +26,7 @@ def write_todo(path: Path) -> None:
 - Track: platform
 - Depends on: none
 - Outputs: docs/control.md, scripts/control.py
-- Validation: python scripts/control.py --once
+- Validation: python -c "print('control-ok')"
 - Acceptance: control plane exists
 
 ## PORTAL-010 Builder
@@ -35,7 +35,7 @@ def write_todo(path: Path) -> None:
 - Track: data
 - Depends on: PORTAL-000
 - Outputs: data/output.parquet
-- Validation: python scripts/build.py
+- Validation: python -c "print('build-ok')"
 - Acceptance: builder exists
 
 ## PORTAL-020 UI
@@ -44,7 +44,7 @@ def write_todo(path: Path) -> None:
 - Track: ui
 - Depends on: PORTAL-010
 - Outputs: ui/detail.tsx
-- Validation: npm test
+- Validation: python -c "print('ui-ok')"
 - Acceptance: ui exists
 """.strip()
         + "\n",
@@ -64,7 +64,7 @@ def write_agent_todo(path: Path) -> None:
 - Track: platform
 - Depends on: none
 - Outputs: docs/agent.md
-- Validation: python scripts/agent.py --once
+- Validation: python -c "print('agent-control-ok')"
 - Acceptance: agent control plane exists
 
 ## AGENT-010 Chat Shell
@@ -73,7 +73,7 @@ def write_agent_todo(path: Path) -> None:
 - Track: ui
 - Depends on: AGENT-000
 - Outputs: ui/chat.tsx
-- Validation: npm test
+- Validation: python -c "print('agent-chat-ok')"
 - Acceptance: chat exists
 """.strip()
         + "\n",
@@ -227,29 +227,170 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
 
     assert implementation["task_id"] == "AGENT-000"
     assert implementation["returncode"] == 0
+    assert implementation["validation_result"]["passed"] is True
     assert implementation["commit_result"]["committed"] is True
     assert implementation["implementation_commit"]
     assert implementation["branch"].startswith("implementation/agent-000-attempt-1-")
     assert implementation["merge_result"]["merged"] is True
+    assert implementation["cleanup_result"]["cleaned"] is True
     assert implementation["merge_result"]["merge_commit"]
-    assert Path(implementation["worktree_path"]).exists()
+    assert not Path(implementation["worktree_path"]).exists()
     assert state.last_implementation_task_id == "AGENT-000"
     assert state.last_implementation_branch == implementation["branch"]
     assert state.last_implementation_commit == implementation["implementation_commit"]
     assert state.last_merge_branch == implementation["branch"]
     assert state.last_merge_commit == implementation["merge_result"]["merge_commit"]
     assert output.read_text(encoding="utf-8") == "implemented in worktree"
-    assert (Path(implementation["worktree_path"]) / "docs" / "agent.md").read_text(encoding="utf-8") == "implemented in worktree"
-    assert (
-        subprocess.run(
-            ["git", "status", "--porcelain"],
-            cwd=implementation["worktree_path"],
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout
-        == ""
+    branch_check = subprocess.run(
+        ["git", "rev-parse", "--verify", implementation["branch"]],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
     )
+    assert branch_check.returncode != 0
+
+
+def test_daemon_validation_failure_blocks_commit_and_merge(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    validate_fail = repo_root / "validate_fail.py"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python validate_fail.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text(
+        """
+from pathlib import Path
+
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validate_fail.write_text("import sys\nsys.exit(7)\n", encoding="utf-8")
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+
+    assert implementation["task_id"] == "AGENT-000"
+    assert implementation["returncode"] == 7
+    assert implementation["validation_result"]["passed"] is False
+    assert implementation["commit_result"]["committed"] is False
+    assert implementation["merge_result"]["merged"] is False
+    assert implementation["cleanup_result"]["cleaned"] is False
+    assert Path(implementation["worktree_path"]).exists()
+    assert not (repo_root / "docs" / "agent.md").exists()
+    branch_check = subprocess.run(
+        ["git", "rev-parse", "--verify", implementation["branch"]],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert branch_check.returncode == 0
+
+
+def test_daemon_links_shared_node_modules_into_ephemeral_worktree(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    validate_worker = repo_root / "validate_node_modules.py"
+    repo_root.mkdir(parents=True)
+    (repo_root / "wallet_interface" / "ui" / "node_modules" / "@xenova" / "transformers").mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python validate_node_modules.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text(
+        """
+from pathlib import Path
+
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validate_worker.write_text(
+        """
+from pathlib import Path
+
+path = Path("wallet_interface/ui/node_modules/@xenova/transformers")
+assert path.exists()
+assert path.is_dir()
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+
+    assert implementation["returncode"] == 0
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["merge_result"]["merged"] is True
+    assert implementation["cleanup_result"]["cleaned"] is True
+    assert (repo_root / "docs" / "agent.md").read_text(encoding="utf-8") == "implemented in worktree"
 
 
 def test_daemon_marks_output_backed_tasks_completed_and_selects_next(tmp_path):
