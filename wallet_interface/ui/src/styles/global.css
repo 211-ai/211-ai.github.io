@@ -17,7 +17,7 @@
   --abby-color-text: #17202a;
   --abby-color-muted: #5b6776;
   --abby-color-border: #d8dee6;
-  --abby-color-focus: #0f766e;
+  --abby-color-focus: #1d4ed8;
   --abby-color-danger: #b42318;
   --abby-color-warning: #744b00;
   --abby-color-success: #166534;
@@ -241,8 +241,8 @@ body.playful-pulse .decor-shape {
 }
 
 .mobile-nav-panel .nav-button[aria-current="page"] {
-  background: #e6f5f2;
-  color: #0f766e;
+  background: #dbeafe;
+  color: #1d4ed8;
   font-weight: 800;
 }
 
@@ -263,6 +263,47 @@ body.playful-pulse .decor-shape {
   margin: 0 auto;
   max-width: 1180px;
   padding: 20px 16px 40px;
+}
+
+.login-page {
+  align-items: center;
+  display: grid;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.login-panel {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  margin: 0 auto;
+  max-width: 420px;
+  padding: 24px;
+  width: min(100%, 420px);
+}
+
+.login-brand {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.login-brand h1 {
+  margin: 0;
+}
+
+.login-mark {
+  align-items: center;
+  background: #1d4ed8;
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 900;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
 }
 
 .home-screen {
@@ -296,7 +337,7 @@ body.playful-pulse .decor-shape {
 }
 
 .eyebrow {
-  color: #0f766e;
+  color: #1d4ed8;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
@@ -333,9 +374,9 @@ body.playful-pulse .decor-shape {
 
 .action-icon {
   align-items: center;
-  background: #e6f5f2;
+  background: #dbeafe;
   border-radius: 8px;
-  color: #0f766e;
+  color: #1d4ed8;
   display: inline-flex;
   height: 48px;
   justify-content: center;
@@ -378,13 +419,13 @@ body.playful-pulse .decor-shape {
 }
 
 .status-panel-clickable:focus-visible {
-  outline: 3px solid #0f766e;
+  outline: 3px solid #1d4ed8;
   outline-offset: 2px;
 }
 
 .panel-teal {
-  background: #e6f5f2;
-  border-color: #0f766e;
+  background: #dbeafe;
+  border-color: #1d4ed8;
 }
 
 .panel-gold {
@@ -426,7 +467,7 @@ body.playful-pulse .decor-shape {
 }
 
 .button-primary {
-  background: #0f766e;
+  background: #1d4ed8;
   color: #ffffff;
 }
 
@@ -576,8 +617,8 @@ body.playful-pulse .decor-shape {
   align-items: center;
   gap: 14px;
   width: 100%;
-  background: #e6f5f2;
-  border: 2px solid #0f766e;
+  background: #dbeafe;
+  border: 2px solid #1d4ed8;
   border-radius: 8px;
   padding: 16px 20px;
   cursor: pointer;
@@ -589,12 +630,12 @@ body.playful-pulse .decor-shape {
 }
 
 .checkin-panel:focus-visible {
-  outline: 3px solid #0f766e;
+  outline: 3px solid #1d4ed8;
   outline-offset: 2px;
 }
 
 .checkin-panel-icon {
-  color: #0f766e;
+  color: #1d4ed8;
   flex-shrink: 0;
 }
 
@@ -610,23 +651,23 @@ body.playful-pulse .decor-shape {
   font-size: 0.78em;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #0f766e;
+  color: #1d4ed8;
   font-weight: 600;
 }
 
 .checkin-panel-value {
   font-size: 1.1em;
   font-weight: 700;
-  color: #134e4a;
+  color: #1e3a8a;
   overflow-wrap: anywhere;
 }
 
 .checkin-panel-cta {
   font-size: 1.15em;
   font-weight: 700;
-  color: #0f766e;
+  color: #1d4ed8;
   white-space: nowrap;
-  border: 1.5px solid #0f766e;
+  border: 1.5px solid #1d4ed8;
   border-radius: 999px;
   padding: 5px 14px;
   flex-shrink: 0;
@@ -786,8 +827,8 @@ body.playful-pulse .decor-shape {
 }
 
 .choice-chip[aria-pressed="true"] {
-  background: #0f766e;
-  border-color: #0f766e;
+  background: #1d4ed8;
+  border-color: #1d4ed8;
   color: #ffffff;
 }
 
@@ -843,7 +884,7 @@ body.playful-pulse .decor-shape {
 }
 
 .pin-request-note {
-  color: #0f766e;
+  color: #1d4ed8;
   display: block;
   margin-top: 8px;
 }
@@ -857,6 +898,16 @@ body.playful-pulse .decor-shape {
 .supporting-copy {
   color: #4b5563;
   margin: 0;
+}
+
+.page-note,
+.section-note {
+  color: #4b5563;
+  margin: 0;
+}
+
+.section-note {
+  font-weight: 600;
 }
 
 .review-list,
@@ -1361,9 +1412,9 @@ body.playful-pulse .decor-shape {
 }
 
 .category-tile[aria-pressed="true"] {
-  background: #e6f5f2;
-  border-color: #0f766e;
-  color: #0f766e;
+  background: #dbeafe;
+  border-color: #1d4ed8;
+  color: #1d4ed8;
   font-weight: 800;
 }
 
@@ -1434,7 +1485,7 @@ body.playful-pulse .decor-shape {
 }
 
 .timeline-event > span {
-  background: #0f766e;
+  background: #1d4ed8;
   border-radius: 50%;
   height: 12px;
   margin-top: 5px;
@@ -1503,7 +1554,7 @@ body.playful-pulse .decor-shape {
 
   .brand-mark {
     align-items: center;
-    background: #0f766e;
+    background: #1d4ed8;
     border-radius: 8px;
     color: #ffffff;
     display: inline-flex;
@@ -1537,8 +1588,8 @@ body.playful-pulse .decor-shape {
   }
 
   .nav-button[aria-current="page"] {
-    background: #e6f5f2;
-    color: #0f766e;
+    background: #dbeafe;
+    color: #1d4ed8;
     font-weight: 800;
   }
 
