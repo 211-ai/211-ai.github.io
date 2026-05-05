@@ -7,6 +7,7 @@ from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
     WalletOpsHealthWorker,
     main,
+    validate_distance_proof_contract,
     validate_production_readiness,
     validate_proof_contract,
 )
@@ -204,6 +205,80 @@ def test_validate_proof_contract_reports_http_backend_success() -> None:
         "public_input_safety",
         "verify",
     }
+
+
+def test_validate_distance_proof_contract_reports_error_for_non_http_backend() -> None:
+    report = validate_distance_proof_contract(WalletInterfaceService())
+
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
+
+
+def test_validate_distance_proof_contract_reports_http_backend_success() -> None:
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-distance"):
+            return {
+                "proof_id": "proof-distance-contract-ops",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_distance",
+                "statement": payload["statement"],
+                "verifier_id": "verifier-http-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "proof-hash-distance-1",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "location-distance-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    service = WalletInterfaceService(
+        proof_backend=HttpLocationRegionProofBackend(
+            base_url="https://verifier.example.test",
+            verifier_id="verifier-http-v1",
+            proof_system="groth16",
+            circuit_id="location-distance-v1",
+            request_json=fake_request_json,
+        ),
+        allow_simulated_proofs=False,
+    )
+
+    report = validate_distance_proof_contract(service)
+
+    assert report["status"] == "ok"
+    assert report["receipt"]["proof_id"] == "proof-distance-contract-ops"
+    assert {check["name"] for check in report["checks"]} == {
+        "health",
+        "prove",
+        "public_input_safety",
+        "verify",
+    }
+
+
+def test_ops_cli_accepts_distance_proof_contract_validation_flag(tmp_path) -> None:
+    output_path = tmp_path / "ops" / "distance-proof-contract.jsonl"
+
+    exit_code = main(
+        [
+            "--validate-distance-proof-contract",
+            "--output-jsonl",
+            str(output_path),
+        ]
+    )
+
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 2
+    assert report["status"] == "error"
+    assert report["checks"][0]["name"] == "backend"
 
 
 def test_validate_production_readiness_reports_missing_target_environment() -> None:

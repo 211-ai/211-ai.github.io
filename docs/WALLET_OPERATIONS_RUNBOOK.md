@@ -34,6 +34,7 @@ curl -fsS \
   "http://localhost:8000/ops/health?verify_storage=true"
 python -m wallet_interface.ops --max-runs 1 --fail-on-error
 python -m wallet_interface.ops --validate-proof-contract --fail-on-error
+python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error
 python -m wallet_interface.ops --validate-production-readiness
 ```
 
@@ -124,6 +125,10 @@ If using the HTTP verifier adapter:
    proof creation.
 8. Run `python -m wallet_interface.ops --validate-proof-contract --fail-on-error`
    after credential rotation or verifier deployment.
+9. Before enabling location-distance proof UI, run
+   `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error`
+   in staging and confirm no wallet or target coordinates appear in receipts,
+   public inputs, verifier logs, or errors.
 
 The verifier request/response contract is documented in
 `docs/WALLET_PROOF_VERIFIER_CONTRACT.md`.
