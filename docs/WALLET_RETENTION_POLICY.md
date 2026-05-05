@@ -133,3 +133,10 @@ python -m wallet_interface.ops --validate-production-readiness
 The governance gate is a completed
 `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` packet that names the approved
 retention schedule, storage lifecycle controls, backup purge SLA, and reviewers.
+Use `docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json` for the
+machine-readable retention mapping, then validate the completed packet with:
+
+```bash
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json
+```
