@@ -1,23 +1,33 @@
 import { Bot, MessageSquare, X } from "lucide-react";
-import type { AgentMessage } from "../../agent/types";
+import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult } from "../../agent/types";
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentMessageList } from "./AgentMessageList";
 
 export function AgentChatDrawer({
   activeRouteLabel,
+  confirmations = [],
   messages,
   open,
   responding = false,
+  toolCalls = [],
+  toolResults = [],
+  onCancelConfirmation,
   onClose,
+  onConfirmConfirmation,
   onSend,
   onToggle
 }: {
   activeRouteLabel: string;
+  confirmations?: AgentConfirmationRequest[];
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
+  toolCalls?: AgentToolCall[];
+  toolResults?: AgentToolResult[];
+  onCancelConfirmation?: (confirmationId: string) => void;
   onClose: () => void;
+  onConfirmConfirmation?: (confirmationId: string) => void;
   onSend: (message: string) => void;
   onToggle: () => void;
 }) {
@@ -62,7 +72,15 @@ export function AgentChatDrawer({
             <span>Ask questions while continuing to use the app.</span>
           </div>
 
-          <AgentMessageList messages={messages} />
+          <AgentMessageList
+            confirmations={confirmations}
+            messages={messages}
+            onCancel={onCancelConfirmation}
+            onConfirm={onConfirmConfirmation}
+            responding={responding}
+            toolCalls={toolCalls}
+            toolResults={toolResults}
+          />
 
           {responding ? (
             <div className="agent-typing" role="status">
