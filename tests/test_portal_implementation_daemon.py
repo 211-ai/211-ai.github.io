@@ -11,6 +11,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.portal_implementation_daemon import PortalImplementationDaemon, PortalTaskState, parse_task_file
+import scripts.portal_implementation_supervisor as supervisor_module
 from scripts.portal_implementation_supervisor import PortalImplementationSupervisor, PortalSupervisorConfig
 
 
@@ -900,3 +901,42 @@ def test_supervisor_rewrites_strategy_for_stale_task(tmp_path):
     assert strategy["generation"] == 1
     assert "PORTAL-010" in strategy["deprioritized_tasks"]
     assert strategy["focus_tracks"][-1] == "data"
+
+
+def test_supervisor_starts_managed_daemon_from_repo_root(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+    captured: dict[str, object] = {}
+
+    class FakeProcess:
+        pid = 12345
+
+        def poll(self) -> int | None:
+            return None
+
+    def fake_popen(command: list[str], **kwargs: object) -> FakeProcess:
+        captured["command"] = command
+        captured["kwargs"] = kwargs
+        return FakeProcess()
+
+    monkeypatch.setattr(supervisor_module.subprocess, "Popen", fake_popen)
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            implement=True,
+            daemon_interval=60.0,
+        )
+    )
+
+    process = supervisor._start_daemon()
+
+    assert process.pid == 12345
+    assert captured["kwargs"]["cwd"] == supervisor_module.REPO_ROOT
+    assert (state_dir / "portal_managed_daemon.pid").read_text(encoding="utf-8") == "12345\n"

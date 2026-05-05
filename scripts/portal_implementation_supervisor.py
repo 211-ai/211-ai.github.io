@@ -187,7 +187,7 @@ class PortalImplementationSupervisor:
                 command.append("--no-ephemeral-worktree")
             if self.config.worktree_root is not None:
                 command.extend(["--worktree-root", str(self.config.worktree_root)])
-        process = subprocess.Popen(command, text=True)
+        process = subprocess.Popen(command, cwd=REPO_ROOT, text=True)
         pid_path = self.config.state_dir / f"{self.config.state_prefix}_managed_daemon.pid"
         pid_path.parent.mkdir(parents=True, exist_ok=True)
         pid_path.write_text(f"{process.pid}\n", encoding="utf-8")
