@@ -37,7 +37,7 @@ export function AgentComposer({
         id={composerId}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Ask about this screen or public 211 services"
+        placeholder="Ask about this screen, routes, or public 211 services"
         rows={3}
         value={draft}
       />

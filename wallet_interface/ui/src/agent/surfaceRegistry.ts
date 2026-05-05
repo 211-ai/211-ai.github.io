@@ -1,5 +1,6 @@
 import type { RouteId } from "../models/abby";
 import type { AgentPermissionLevel, AgentToolDefinition } from "./types";
+import { NAVIGABLE_ROUTE_IDS, NAVIGATION_ROUTE_LABELS } from "./tools/navigationTools";
 import {
   hasPermissionLevel,
   isAgentPermissionLevel,
@@ -41,41 +42,8 @@ type ToolPolicy = Pick<
   | "auditEventType"
 >;
 
-const allRoutes = [
-  "home",
-  "register",
-  "check-in",
-  "contacts",
-  "sharing-rules",
-  "uploads",
-  "social-services",
-  "shelter",
-  "recipient-access",
-  "benefits-protection",
-  "analytics",
-  "proof-center",
-  "exports",
-  "security",
-  "audit"
-] as const satisfies readonly RouteId[];
-
-const routeLabels: Record<RouteId, string> = {
-  home: "Home",
-  register: "Register",
-  "check-in": "Check in",
-  contacts: "Contacts",
-  "sharing-rules": "Sharing",
-  uploads: "Uploads",
-  "social-services": "Services",
-  shelter: "Shelter",
-  "recipient-access": "Who can see info",
-  "benefits-protection": "Benefits",
-  analytics: "Group facts",
-  "proof-center": "Proofs",
-  exports: "Exports",
-  security: "Security",
-  audit: "Audit"
-};
+const allRoutes = NAVIGABLE_ROUTE_IDS;
+const routeLabels = NAVIGATION_ROUTE_LABELS;
 
 const publicContext: SurfaceContextProviderDefinition = {
   id: "route_summary",
