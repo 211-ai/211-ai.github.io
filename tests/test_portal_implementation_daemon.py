@@ -455,6 +455,49 @@ def test_daemon_shared_node_modules_link_does_not_create_baseline_commit(tmp_pat
     assert baseline_ref == head_before
 
 
+def test_daemon_worktree_starts_from_committed_head_without_dirty_workspace_seed(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    (repo_root / "docs").mkdir()
+    dirty_doc = repo_root / "docs" / "dirty.md"
+    dirty_doc.write_text("committed\n", encoding="utf-8")
+    init_git_repo(repo_root)
+    dirty_doc.write_text("uncommitted\n", encoding="utf-8")
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    worktree = tmp_path / "worktree"
+    baseline_ref = daemon._create_seeded_worktree(worktree, "implementation/test-clean-baseline")
+    status = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    assert baseline_ref == subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert (worktree / "docs" / "dirty.md").read_text(encoding="utf-8") == "committed\n"
+    assert status == ""
+
+
 def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
