@@ -422,6 +422,96 @@ def test_daemon_replaces_preexisting_shared_node_modules_directory_with_symlink(
     assert (target / "@xenova" / "transformers").is_dir()
 
 
+def test_daemon_shared_node_modules_link_does_not_create_baseline_commit(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    tracked_file = repo_root / "wallet_interface" / "ui" / "node_modules" / "@xenova" / "transformers" / "package.json"
+    tracked_file.parent.mkdir(parents=True, exist_ok=True)
+    tracked_file.write_text('{"name":"@xenova/transformers"}\n', encoding="utf-8")
+    init_git_repo(repo_root)
+    head_before = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    baseline_ref = daemon._create_seeded_worktree(tmp_path / "worktree", "implementation/test-baseline")
+
+    assert baseline_ref == head_before
+
+
+def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    tracked_module = repo_root / "wallet_interface" / "ui" / "node_modules" / "@xenova" / "transformers" / "package.json"
+    tracked_module.parent.mkdir(parents=True, exist_ok=True)
+    tracked_module.write_text('{"name":"@xenova/transformers"}\n', encoding="utf-8")
+    tracked_dist = repo_root / "wallet_interface" / "ui" / "dist" / "index.html"
+    tracked_dist.parent.mkdir(parents=True, exist_ok=True)
+    tracked_dist.write_text("<html>stable</html>\n", encoding="utf-8")
+    tracked_artifact = (
+        repo_root
+        / "wallet_interface"
+        / "ui"
+        / "artifacts"
+        / "ui-screenshots"
+        / "latest"
+        / "desktop"
+        / "home.png"
+    )
+    tracked_artifact.parent.mkdir(parents=True, exist_ok=True)
+    tracked_artifact.write_bytes(b"png")
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    worktree = tmp_path / "worktree"
+    daemon._create_seeded_worktree(worktree, "implementation/test-commit-restore")
+    (worktree / "docs").mkdir(exist_ok=True)
+    (worktree / "docs" / "agent.md").write_text("implemented", encoding="utf-8")
+    (worktree / "wallet_interface" / "ui" / "dist" / "index.html").write_text("<html>generated</html>\n", encoding="utf-8")
+    (worktree / "wallet_interface" / "ui" / "artifacts" / "ui-screenshots" / "latest" / "desktop" / "home.png").unlink()
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    commit_result = daemon._commit_worktree_changes(worktree, task, 1)
+    changed_paths = subprocess.run(
+        ["git", "show", "--name-only", "--format=", commit_result["commit"]],
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+
+    assert commit_result["committed"] is True
+    assert changed_paths == ["docs/agent.md"]
+
+
 def test_daemon_skips_duplicate_implementation_when_prior_worktree_process_is_live(tmp_path, monkeypatch):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
