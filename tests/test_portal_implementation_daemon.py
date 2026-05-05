@@ -393,6 +393,35 @@ assert path.is_dir()
     assert (repo_root / "docs" / "agent.md").read_text(encoding="utf-8") == "implemented in worktree"
 
 
+def test_daemon_replaces_preexisting_shared_node_modules_directory_with_symlink(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    source = repo_root / "wallet_interface" / "ui" / "node_modules" / "@xenova" / "transformers"
+    source.mkdir(parents=True)
+    worktree = tmp_path / "worktree"
+    target = worktree / "wallet_interface" / "ui" / "node_modules"
+    target.mkdir(parents=True)
+    (target / "stale.txt").write_text("stale", encoding="utf-8")
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+
+    daemon._link_shared_worktree_paths(worktree)
+
+    assert target.is_symlink()
+    assert target.resolve() == (repo_root / "wallet_interface" / "ui" / "node_modules").resolve()
+    assert (target / "@xenova" / "transformers").is_dir()
+
+
 def test_daemon_marks_output_backed_tasks_completed_and_selects_next(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "todo.md"
