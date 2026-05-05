@@ -131,7 +131,13 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "preview_sharing_capabilities",
     "set_disclosure_scopes"
   ],
-  uploads: [...commonReadTools],
+  uploads: [
+    ...commonReadTools,
+    "summarize_upload_requirements",
+    "classify_uploaded_document",
+    "repair_upload_storage",
+    "toggle_upload_shared"
+  ],
   "social-services": [
     ...commonReadTools,
     "search_211_services",
@@ -432,6 +438,44 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresUserPresence: true,
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.shelter_recipient.add"
+  },
+  summarize_upload_requirements: {
+    title: "Summarize upload requirements",
+    permissionLevel: "public",
+    surfaces: ["uploads"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: false,
+    requiresUserPresence: false,
+    requiresPrivateContextOptIn: false
+  },
+  classify_uploaded_document: {
+    title: "Classify uploaded document",
+    permissionLevel: "wallet_write",
+    surfaces: ["uploads"],
+    requiresConfirmation: false,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false
+  },
+  repair_upload_storage: {
+    title: "Repair upload storage",
+    permissionLevel: "wallet_write",
+    surfaces: ["uploads"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.upload.storage.repair"
+  },
+  toggle_upload_shared: {
+    title: "Toggle upload sharing",
+    permissionLevel: "share_or_disclose",
+    surfaces: ["uploads"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.upload.shared.toggle"
   },
   set_disclosure_scopes: {
     title: "Set disclosure scopes",

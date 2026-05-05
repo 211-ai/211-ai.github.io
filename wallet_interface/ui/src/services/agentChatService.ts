@@ -61,6 +61,7 @@ export function useAgentChatService(
       setShelterContactRequests: (requests) => runtimeRef.current.setShelterContactRequests?.(requests),
       setShelterStaffAccounts: (accounts) => runtimeRef.current.setShelterStaffAccounts?.(accounts),
       setShelterUserAccounts: (accounts) => runtimeRef.current.setShelterUserAccounts?.(accounts),
+      setUploads: (uploads) => runtimeRef.current.setUploads?.(uploads),
       setAccessRequests: (requests) => runtimeRef.current.setAccessRequests?.(requests),
       setGrantReceipts: (receipts) => runtimeRef.current.setGrantReceipts?.(receipts),
       setWalletAuditEvents: (events) => runtimeRef.current.setWalletAuditEvents?.(events),
