@@ -1,12 +1,13 @@
+const viteEnv = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env ?? {};
+
 export const LLM_CONFIG = {
-  inferenceMode: (import.meta.env.VITE_LLM_INFERENCE_MODE as "client" | "server" | undefined) || "client",
-  defaultModel: (import.meta.env.VITE_CLIENT_LLM_MODEL as string | undefined) || "Xenova/distilgpt2",
-  defaultEmbeddingModel:
-    (import.meta.env.VITE_DEFAULT_EMBEDDING_MODEL as string | undefined) || "Xenova/bge-small-en-v1.5",
-  requestTimeoutMs: Number.parseInt(import.meta.env.VITE_CLIENT_REQUEST_TIMEOUT || "45000", 10),
-  modelDownloadTimeoutMs: Number.parseInt(import.meta.env.VITE_MODEL_DOWNLOAD_TIMEOUT || "120000", 10),
-  enableWebGPU: import.meta.env.VITE_ENABLE_WEBGPU !== "false",
-  enableSIMD: import.meta.env.VITE_ENABLE_SIMD !== "false",
+  inferenceMode: (viteEnv.VITE_LLM_INFERENCE_MODE as "client" | "server" | undefined) || "client",
+  defaultModel: viteEnv.VITE_CLIENT_LLM_MODEL || "Xenova/distilgpt2",
+  defaultEmbeddingModel: viteEnv.VITE_DEFAULT_EMBEDDING_MODEL || "Xenova/bge-small-en-v1.5",
+  requestTimeoutMs: Number.parseInt(viteEnv.VITE_CLIENT_REQUEST_TIMEOUT || "45000", 10),
+  modelDownloadTimeoutMs: Number.parseInt(viteEnv.VITE_MODEL_DOWNLOAD_TIMEOUT || "120000", 10),
+  enableWebGPU: viteEnv.VITE_ENABLE_WEBGPU !== "false",
+  enableSIMD: viteEnv.VITE_ENABLE_SIMD !== "false",
 } as const;
 
 export const SUPPORTED_CLIENT_LLM_MODELS = {
