@@ -46,7 +46,7 @@ class PortalSupervisorConfig:
     daemon_interval: float = 300.0
     task_prefix: str = TASK_HEADER_PREFIX
     state_prefix: str = "portal"
-    implement: bool = False
+    implement: bool = True
     implementation_command: str = ""
     implementation_timeout: float = 1800.0
     use_ephemeral_worktree: bool = True
@@ -309,7 +309,12 @@ class PortalImplementationSupervisor:
             "--todo-path",
             str(self.config.todo_path),
         ]
-        return all(fragment in command_line for fragment in required_fragments)
+        if not all(fragment in command_line for fragment in required_fragments):
+            return False
+        has_implement_flag = "--implement" in command_line
+        if self.config.implement != has_implement_flag:
+            return False
+        return True
 
     def _record_event(self, event_type: str, payload: dict[str, Any]) -> None:
         self.config.events_path.parent.mkdir(parents=True, exist_ok=True)
@@ -359,7 +364,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="portal",
         help="State file prefix inside --state-dir",
     )
-    parser.add_argument("--implement", action="store_true", help="Let the managed daemon invoke an implementation agent")
+    parser.add_argument(
+        "--no-implement",
+        action="store_true",
+        help="Only supervise backlog state; do not let the managed daemon invoke the implementation agent",
+    )
     parser.add_argument(
         "--implementation-command",
         default="",
@@ -402,7 +411,7 @@ def main(argv: list[str] | None = None) -> None:
             daemon_interval=args.daemon_interval,
             task_prefix=args.task_prefix,
             state_prefix=args.state_prefix,
-            implement=args.implement,
+            implement=not args.no_implement,
             implementation_command=args.implementation_command,
             implementation_timeout=args.implementation_timeout,
             use_ephemeral_worktree=not args.no_ephemeral_worktree,

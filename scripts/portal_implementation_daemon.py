@@ -27,6 +27,9 @@ TASK_HEADER_PREFIX = "## PORTAL-"
 DEFAULT_TRACKS = ["platform", "data", "ui", "mobile", "wallet", "collab", "pwa", "ops"]
 PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS = 1800.0
+RECENT_NO_CHANGE_COOLDOWN_SECONDS = 1800.0
+NO_CHANGE_SELECTION_PENALTY = 50
+UNRESOLVED_MERGE_SELECTION_PENALTY = 1000
 SHARED_WORKTREE_PATHS = ("wallet_interface/ui/node_modules",)
 EPHEMERAL_WORKTREE_PATHS = (
     *SHARED_WORKTREE_PATHS,
@@ -124,6 +127,18 @@ def process_command_line(pid: int) -> str:
     if result.returncode != 0:
         return ""
     return result.stdout.strip()
+
+
+def parse_timestamp(value: str) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
 
 
 @dataclass(frozen=True)
@@ -377,6 +392,7 @@ class PortalImplementationDaemon:
         now = utc_now()
         merge_reconciliation = self._reconcile_failed_merges()
         unresolved_merge_failures = self._unresolved_merge_failures_by_task()
+        recent_outcomes = self._latest_implementation_finished_by_task()
 
         previous_completed = set(previous.completed_task_ids)
         completed_set: set[str] = set()
@@ -412,7 +428,7 @@ class PortalImplementationDaemon:
                 continue
             resolved_statuses[task.task_id] = "ready"
 
-        selected = self._select_next_task(tasks, resolved_statuses, strategy)
+        selected = self._select_next_task(tasks, resolved_statuses, strategy, unresolved_merge_failures, recent_outcomes)
         state = PortalTaskState.load(self.state_path)
         state.heartbeat_at = now
         if newly_completed or not state.last_progress_at:
@@ -484,6 +500,14 @@ class PortalImplementationDaemon:
                     "task_id": selected.task_id,
                     "branch": str(unresolved_for_selected.get("branch") or ""),
                     "implementation_commit": str(unresolved_for_selected.get("implementation_commit") or ""),
+                }
+                self._record_event("implementation_skipped", implementation_result)
+            elif self._task_has_recent_no_change_outcome(selected.task_id, recent_outcomes):
+                implementation_result = {
+                    "skipped": True,
+                    "reason": "recent_no_change",
+                    "task_id": selected.task_id,
+                    "last_attempt": int((recent_outcomes.get(selected.task_id) or {}).get("attempt") or 0),
                 }
                 self._record_event("implementation_skipped", implementation_result)
             else:
@@ -1355,6 +1379,39 @@ class PortalImplementationDaemon:
 
         return list(inflight.values())
 
+    def _latest_implementation_finished_by_task(self) -> dict[str, dict[str, Any]]:
+        latest: dict[str, dict[str, Any]] = {}
+        for event in self._iter_events():
+            if str(event.get("type") or "") != "implementation_finished":
+                continue
+            task_id = str(event.get("task_id") or "")
+            if task_id:
+                latest[task_id] = event
+        return latest
+
+    def _task_has_recent_no_change_outcome(
+        self,
+        task_id: str,
+        latest_results: dict[str, dict[str, Any]],
+        *,
+        now_ts: float | None = None,
+    ) -> bool:
+        latest = latest_results.get(task_id)
+        if not latest:
+            return False
+        commit_result = latest.get("commit_result") or {}
+        if not isinstance(commit_result, dict):
+            return False
+        if commit_result.get("reason") != "no_changes":
+            return False
+        if int(latest.get("returncode") or 0) != 0:
+            return False
+        event_timestamp = parse_timestamp(str(latest.get("timestamp") or ""))
+        if event_timestamp is None:
+            return False
+        age = (now_ts or time.time()) - event_timestamp.timestamp()
+        return max(0.0, age) < RECENT_NO_CHANGE_COOLDOWN_SECONDS
+
     def _iter_events(self) -> list[dict[str, Any]]:
         if not self.events_path.exists():
             return []
@@ -1467,6 +1524,8 @@ Rules:
         tasks: list[PortalTask],
         resolved_statuses: dict[str, str],
         strategy: dict[str, Any],
+        unresolved_merge_failures: dict[str, dict[str, Any]],
+        recent_outcomes: dict[str, dict[str, Any]],
     ) -> PortalTask | None:
         ready = [task for task in tasks if resolved_statuses.get(task.task_id) == "ready"]
         if not ready:
@@ -1479,8 +1538,14 @@ Rules:
         }
         deprioritized = {str(item) for item in strategy.get("deprioritized_tasks", [])}
 
-        def sort_key(task: PortalTask) -> tuple[int, int, int, int, str]:
+        def sort_key(task: PortalTask) -> tuple[int, int, int, int, int, str]:
+            selection_penalty = 0
+            if task.task_id in unresolved_merge_failures:
+                selection_penalty += UNRESOLVED_MERGE_SELECTION_PENALTY
+            if self._task_has_recent_no_change_outcome(task.task_id, recent_outcomes):
+                selection_penalty += NO_CHANGE_SELECTION_PENALTY
             return (
+                selection_penalty,
                 PRIORITY_ORDER.get(task.priority, 99),
                 1 if task.task_id in deprioritized else 0,
                 focus_order.get(task.track, len(focus_order)),
