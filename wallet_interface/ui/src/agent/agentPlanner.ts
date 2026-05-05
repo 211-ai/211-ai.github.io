@@ -1,6 +1,7 @@
 import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { getRouteLabel, getToolDefinition } from "./surfaceRegistry";
+import { resolveNavigationRoute } from "./tools/navigationTools";
 import type { AgentConfirmationRequest, AgentIntentKind, SurfaceContext } from "./types";
 
 export interface AgentPlannedTool {
@@ -42,24 +43,6 @@ const confirmationApprovePattern =
 
 const confirmationDenyPattern =
   /\b(no|nope|deny|denied|reject|rejected|cancel|stop|do not|don't|dont|never mind|nevermind|abort)\b/i;
-
-const routeAliases: Array<{ route: RouteId; aliases: string[] }> = [
-  { route: "home", aliases: ["home", "dashboard", "start", "today", "safety plan"] },
-  { route: "register", aliases: ["register", "registration", "profile", "intake"] },
-  { route: "check-in", aliases: ["check in", "check-in", "reminder", "reminders", "checkins"] },
-  { route: "contacts", aliases: ["contacts", "people", "recipients"] },
-  { route: "sharing-rules", aliases: ["sharing", "sharing rules", "disclosure", "permissions"] },
-  { route: "uploads", aliases: ["uploads", "documents", "files", "records"] },
-  { route: "social-services", aliases: ["social services", "services", "service navigator", "211", "211 services"] },
-  { route: "shelter", aliases: ["shelter", "shelters", "beds"] },
-  { route: "recipient-access", aliases: ["recipient access", "access requests", "who can see", "requests"] },
-  { route: "benefits-protection", aliases: ["benefits", "benefits protection", "public benefits"] },
-  { route: "analytics", aliases: ["analytics", "group facts", "reports"] },
-  { route: "proof-center", aliases: ["proof center", "proofs", "proof", "verification", "verifications"] },
-  { route: "exports", aliases: ["exports", "export", "sharing bundle", "bundle", "download"] },
-  { route: "security", aliases: ["security", "wallet security", "privacy"] },
-  { route: "audit", aliases: ["audit", "history", "wallet audit", "activity log"] }
-];
 
 export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
   const content = input.content.trim();
@@ -264,12 +247,7 @@ function withToolSurface(context: SurfaceContext, tools: AgentPlannedTool[]): Ag
 }
 
 function parseRouteTarget(lower: string): RouteId | undefined {
-  for (const candidate of routeAliases) {
-    if (candidate.aliases.some((alias) => includesPhrase(lower, alias))) {
-      return candidate.route;
-    }
-  }
-  return undefined;
+  return resolveNavigationRoute(lower);
 }
 
 function parseServiceId(
@@ -337,11 +315,6 @@ function isServiceIdCandidate(value: string | undefined): value is string {
 
 function singleVisibleServiceId(context: SurfaceContext): string | undefined {
   return context.visibleServiceDocIds?.length === 1 ? context.visibleServiceDocIds[0] : undefined;
-}
-
-function includesPhrase(text: string, phrase: string): boolean {
-  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[\\s_-]+");
-  return new RegExp(`(^|\\W)${escaped}(?=\\W|$)`, "i").test(text);
 }
 
 function fallbackResponse(context: SurfaceContext): string {
