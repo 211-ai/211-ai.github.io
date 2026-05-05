@@ -28,6 +28,11 @@ DEFAULT_TRACKS = ["platform", "data", "ui", "mobile", "wallet", "collab", "pwa",
 PRIORITY_ORDER = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 DEFAULT_IMPLEMENTATION_TIMEOUT_SECONDS = 1800.0
 SHARED_WORKTREE_PATHS = ("wallet_interface/ui/node_modules",)
+EPHEMERAL_WORKTREE_PATHS = (
+    *SHARED_WORKTREE_PATHS,
+    "wallet_interface/ui/dist",
+    "wallet_interface/ui/artifacts/ui-screenshots/latest",
+)
 
 
 def utc_now() -> str:
@@ -690,6 +695,7 @@ class PortalImplementationDaemon:
                 cwd=worktree_path,
             )
             baseline_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
+        self._link_shared_worktree_paths(worktree_path)
         return baseline_ref
 
     def _seed_worktree_from_workspace(self, worktree_path: Path) -> None:
@@ -703,7 +709,6 @@ class PortalImplementationDaemon:
                 shutil.copy2(source, target)
             elif not source.exists() and target.exists():
                 target.unlink()
-        self._link_shared_worktree_paths(worktree_path)
 
     def _link_shared_worktree_paths(self, worktree_path: Path) -> None:
         for relative in SHARED_WORKTREE_PATHS:
@@ -746,6 +751,7 @@ class PortalImplementationDaemon:
         return not any(part in skip_parts for part in normalized.split("/"))
 
     def _commit_worktree_changes(self, worktree_path: Path, task: PortalTask, attempt: int) -> dict[str, Any]:
+        self._restore_ephemeral_worktree_paths_for_commit(worktree_path)
         self._run_git(["add", "-A"], cwd=worktree_path)
         status = self._run_git(["status", "--porcelain"], cwd=worktree_path).stdout.strip()
         if not status:
@@ -766,6 +772,27 @@ class PortalImplementationDaemon:
         )
         commit_ref = self._run_git(["rev-parse", "HEAD"], cwd=worktree_path).stdout.strip()
         return {"committed": True, "commit": commit_ref, "status": status}
+
+    def _restore_ephemeral_worktree_paths_for_commit(self, worktree_path: Path) -> None:
+        for relative in EPHEMERAL_WORKTREE_PATHS:
+            target = worktree_path / relative
+            if self._path_tracked_in_repo(worktree_path, relative):
+                self._run_git(["restore", "--source=HEAD", "--staged", "--worktree", "--", relative], cwd=worktree_path)
+                continue
+            if target.is_symlink() or target.is_file():
+                target.unlink()
+            elif target.is_dir():
+                shutil.rmtree(target)
+
+    def _path_tracked_in_repo(self, cwd: Path, relative: str) -> bool:
+        result = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "--", relative],
+            cwd=cwd,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        return result.returncode == 0
 
     def _run_validation_commands(self, workspace_path: Path, task: PortalTask, log_path: Path) -> dict[str, Any]:
         if not task.validation:
