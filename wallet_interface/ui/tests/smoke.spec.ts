@@ -2,8 +2,9 @@ import { expect, test } from "@playwright/test";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 
-function walletRoute(route: string, actorDid: string) {
-  return `/?walletApiBaseUrl=${walletApiBaseUrl}&walletId=wallet-demo&actorDid=${encodeURIComponent(actorDid)}#/${route}`;
+function walletRoute(route: string, actorDid: string, audienceKeyHex?: string) {
+  const audienceKeyParam = audienceKeyHex ? `&audienceKeyHex=${encodeURIComponent(audienceKeyHex)}` : "";
+  return `/?walletApiBaseUrl=${walletApiBaseUrl}&walletId=wallet-demo&actorDid=${encodeURIComponent(actorDid)}${audienceKeyParam}#/${route}`;
 }
 
 test("mobile home exposes the two required primary cards", async ({ page }) => {
@@ -209,8 +210,13 @@ test("benefits opt-in preserves opt-out after refresh", async ({ page }) => {
 
 test("sharing rules preview scope-derived capabilities", async ({ page }) => {
   await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /Choose what each person can see/i })).toBeVisible();
-  const preview = page.getByLabel(/Maya Johnson sharing capability preview/i);
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText(/Sharing choices live with each saved contact/i)).toBeVisible();
+  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  await expect(editPanel.getByText("name, birthdate and contact status").first()).toBeVisible();
+  const preview = editPanel.getByLabel(/Maya Johnson sharing capability preview/i);
   await expect(preview.getByText(/read general location/i)).toBeVisible();
   await expect(preview.getByText(/open file contents/i)).toBeVisible();
   await expect(preview.getByText(/make a full wallet export/i)).toBeVisible();
@@ -218,49 +224,98 @@ test("sharing rules preview scope-derived capabilities", async ({ page }) => {
 
 test("sharing rules default on and preserve unchecked scopes after refresh", async ({ page }) => {
   await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /Choose what each person can see/i })).toBeVisible();
-  const recipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
   await expect(recipient).toBeVisible();
-  const scopes = recipient.locator(".scope-option input");
+  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  const scopes = editPanel.locator(".scope-option input");
   await expect(scopes).toHaveCount(11);
   expect(await scopes.evaluateAll((inputs) => inputs.every((input) => (input as HTMLInputElement).checked))).toBe(true);
 
-  await recipient.getByLabel(/Medical notes/i).uncheck();
-  await recipient.getByLabel(/Found permanent housing/i).uncheck();
-  await expect(recipient.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(recipient.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByLabel(/Medical notes/i).uncheck();
+  await editPanel.getByLabel(/Found permanent housing/i).uncheck();
+  await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(editPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByRole("button", { name: /Save sharing/i }).click();
   await page.reload();
 
-  const reloadedRecipient = page.locator(".scope-editor").filter({ hasText: "Maya Johnson" });
-  await expect(reloadedRecipient.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(reloadedRecipient.getByLabel(/Found permanent housing/i)).not.toBeChecked();
-  await expect(reloadedRecipient.getByLabel(/Minimum identity/i)).toBeChecked();
+  const reloadedRecipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
+  await reloadedRecipient.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const reloadedPanel = reloadedRecipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+  await expect(reloadedPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(reloadedPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await expect(reloadedPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+});
+
+test("contacts add flow saves sharing choices and opens edit panel by keyboard", async ({ page }) => {
+  await page.goto("/#/contacts");
+  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
+  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  await addPersonSection.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+  await addPersonSection.getByLabel(/Relationship or role/i).fill("Outreach case worker");
+  await addPersonSection.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
+  await addPersonSection.getByLabel("Email", { exact: true }).fill("morgan@example.org");
+  await addPersonSection.getByLabel(/Type/i).selectOption("social_worker");
+  await addPersonSection.getByLabel(/Medical notes/i).uncheck();
+  await addPersonSection.getByLabel(/Found permanent housing/i).uncheck();
+  await addPersonSection.getByRole("button", { name: /^Add person$/i }).click();
+
+  const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
+  const savedMorgan = savedContacts.locator(".recipient-list-item").filter({ hasText: "Morgan Caseworker" });
+  await expect(savedMorgan.getByText("9 items", { exact: true })).toBeVisible();
+  await savedMorgan.locator(".recipient-open-button").focus();
+  await page.keyboard.press("Enter");
+  const editPanel = savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(editPanel).toBeVisible();
+  await expect(editPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
+  await expect(editPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
+  await editPanel.getByLabel(/Benefits information/i).uncheck();
+  await editPanel.getByRole("button", { name: /Save sharing/i }).click();
+
+  await page.reload();
+  const reloadedMorgan = page.locator('section[aria-labelledby="Saved-contacts"] .recipient-list-item').filter({
+    hasText: "Morgan Caseworker"
+  });
+  await expect(reloadedMorgan.getByText("8 items", { exact: true })).toBeVisible();
+  await reloadedMorgan.locator(".recipient-open-button").focus();
+  await page.keyboard.press("Space");
+  const reloadedPanel = reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(reloadedPanel.getByLabel(/Benefits information/i)).not.toBeChecked();
 });
 
 test("contact list shelter nudge requires user approval before adding contact", async ({ page }) => {
   await page.goto("/#/contacts");
-  const addRecipientSection = page.locator('section[aria-labelledby="Add-person-or-group"]');
-  await expect(addRecipientSection.locator(".centered-action").getByRole("button", { name: /Add person or group/i })).toBeVisible();
-  expect(await addRecipientSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
-  await expect(addRecipientSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  const addShelterSection = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
+  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
+  await expect(addShelterSection).toBeVisible();
+  await expect(savedContacts.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" })).toBeVisible();
+  await expect(addPersonSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
+  expect(await addPersonSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
+  await expect(addPersonSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  await expect(addPersonSection.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(addPersonSection.getByText("name, birthdate and contact status").first()).toBeVisible();
   const nudge = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(nudge.getByText(/asked to be added to your contacts/i)).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Approve$/i })).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Deny$/i })).toBeVisible();
   await nudge.getByRole("button", { name: /^Approve$/i }).click();
   await expect(page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" })).toBeVisible();
-
-  await page.evaluate(() => {
-    window.location.hash = "#/sharing-rules";
-  });
-  const shelterRules = page.locator(".scope-editor").filter({ hasText: "Downtown Outreach Shelter" });
-  await expect(shelterRules.getByText("1 selected", { exact: true })).toBeVisible();
+  const shelterRules = page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" });
+  await expect(shelterRules.getByText("1 items", { exact: true })).toBeVisible();
+  await shelterRules.getByRole("button", { name: /^Edit sharing$/i }).click();
+  const shelterPanel = shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
+  await expect(shelterPanel.getByText("1 selected", { exact: true })).toBeVisible();
+  await expect(shelterPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(shelterPanel.getByLabel(/Profile/i)).not.toBeChecked();
 });
 
 test("user can request a shelter contact and shelter staff can approve it", async ({ page }) => {
   await page.goto("/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const shelterRequests = page.locator('section[aria-labelledby="Shelter-requests"]');
+  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
   await expect(shelterRequests.getByText(/already waiting/i)).toBeVisible();
   await shelterRequests.locator("select").selectOption("Downtown Outreach Shelter");
@@ -286,7 +341,7 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
 
 test("user can cancel a pending shelter contact request", async ({ page }) => {
   await page.goto("/#/contacts");
-  const shelterRequests = page.locator('section[aria-labelledby="Shelter-requests"]');
+  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   const request = page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "You asked this shelter." });
@@ -632,21 +687,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
     }
     if (path.endsWith("/grant-receipts")) {
       await route.fulfill({
-        json: {
-          receipts: [
-            {
-              receipt_id: "receipt-analysis",
-              grant_id: "grant-analysis",
-              audience_did: "did:key:delegate",
-              resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
-              abilities: ["record/analyze"],
-              purpose: "service_matching",
-              receipt_hash: "receipt-hash-analysis",
-              status: "active",
-              created_at: "2026-05-03T18:00:00Z"
-            }
-          ]
-        }
+        json: { receipts }
       });
       return;
     }
@@ -729,25 +770,27 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
         grant_id: "grant-analysis",
         max_chars: 500
       });
+      auditEvents.push({
+        event_id: "audit-record-analyze",
+        created_at: "2026-05-03T18:01:00Z",
+        actor_did: "did:key:delegate",
+        action: "record/analyze",
+        resource: "wallet://wallet-demo/records/rec-benefits-letter",
+        decision: "allow",
+        grant_id: "grant-analysis"
+      });
       await route.fulfill({
         json: {
-          artifact: {
-            artifact_id: "artifact-redacted-analysis",
-            source_record_ids: ["rec-benefits-letter"],
-            artifact_type: "redacted_document_analysis",
-            output_policy: "redacted_derived_only",
-            encrypted_payload_ref: {
-              uri: "mem://redacted-analysis",
-              storage_type: "memory",
-              digest: "sha256:redacted-analysis"
-            },
-            created_at: "2026-05-03T18:01:05Z"
+          artifact_id: "artifact-summary",
+          source_record_ids: ["rec-benefits-letter"],
+          artifact_type: "summary",
+          output_policy: "derived_only",
+          encrypted_payload_ref: {
+            uri: "mem://derived-artifact",
+            storage_type: "memory",
+            digest: "sha256:derived-artifact"
           },
-          output: {
-            summary: "Detected need categories across authorized text: housing, food.",
-            output_policy: "redacted_derived_only",
-            derived_facts: { need_categories: ["housing", "food"] }
-          }
+          created_at: "2026-05-03T18:01:05Z"
         }
       });
       return;
@@ -806,6 +849,44 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
       });
       return;
     }
+    if (path.endsWith("/grants/grant-analysis/delegate")) {
+      delegationRequests += 1;
+      expect(route.request().method()).toBe("POST");
+      expect(await route.request().postDataJSON()).toMatchObject({
+        abilities: ["record/analyze"],
+        audience_did: "did:key:case-worker",
+        issuer_did: "did:key:delegate",
+        issuer_key_hex: "delegate-key",
+        resources: ["wallet://wallet-demo/records/rec-benefits-letter"]
+      });
+      receipts.push({
+        receipt_id: "receipt-child",
+        grant_id: "grant-child",
+        audience_did: "did:key:case-worker",
+        resources: ["wallet://wallet-demo/records/rec-benefits-letter"],
+        abilities: ["record/analyze"],
+        purpose: "warm_handoff",
+        receipt_hash: "receipt-hash-child",
+        status: "active",
+        created_at: "2026-05-03T18:03:00Z"
+      });
+      auditEvents.push({
+        event_id: "audit-grant-delegate",
+        created_at: "2026-05-03T18:03:00Z",
+        actor_did: "did:key:delegate",
+        action: "grant/delegate",
+        resource: "wallet://wallet-demo/records/rec-benefits-letter",
+        decision: "allow",
+        grant_id: "grant-analysis"
+      });
+      await route.fulfill({
+        json: {
+          grant_id: "grant-child",
+          receipt_hash: "receipt-hash-child"
+        }
+      });
+      return;
+    }
     if (path.endsWith("/audit")) {
       await route.fulfill({ json: { events: auditEvents } });
       return;
@@ -813,7 +894,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
 
-  await page.goto(walletRoute("recipient-access", "did:key:delegate"));
+  await page.goto(walletRoute("recipient-access", "did:key:delegate", "delegate-key"));
   const receipt = page.getByRole("article", { name: /delegate/i }).filter({ hasText: "Share proof code" });
   await expect(receipt).toBeVisible({ timeout: 15_000 });
   const analyzeButton = receipt.getByRole("button", { name: /Make safe summary/i });
@@ -842,7 +923,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
   });
   await expect(page.getByRole("heading", { name: /Consent and access history/i })).toBeVisible();
   await expect(page.getByText(/record\/analyze/i).first()).toBeVisible();
-  await expect(page.getByText(/grant-analysis/i)).toBeVisible();
+  await expect(page.getByText(/grant-analysis/i).first()).toBeVisible();
   expect(analysisRequests).toBe(1);
   expect(redactedAnalysisRequests).toBe(1);
   expect(vectorProfileRequests).toBe(1);
