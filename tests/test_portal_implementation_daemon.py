@@ -378,6 +378,131 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert state.active_task_id == "AGENT-000"
 
 
+def test_daemon_retries_failed_worktree_merge_when_main_is_clean(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        f"""
+from pathlib import Path
+
+main_repo = Path({str(repo_root)!r})
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+(main_repo / "docs").mkdir(exist_ok=True)
+(main_repo / "docs" / "agent.md").write_text("dirty main copy", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    first_result = daemon.run_once()
+    first_implementation = first_result["implementation_result"]
+
+    assert first_implementation["merge_result"]["merged"] is False
+    assert Path(first_implementation["worktree_path"]).exists()
+    assert subprocess.run(
+        ["git", "rev-parse", "--verify", first_implementation["branch"]],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).returncode == 0
+
+    (repo_root / "docs" / "agent.md").unlink()
+    daemon.implement = False
+    second_result = daemon.run_once()
+    reconciliation = second_result["merge_reconciliation"]
+
+    assert reconciliation
+    assert reconciliation[0]["resolved"] is True
+    assert reconciliation[0]["merge_result"]["merged"] is True
+    assert reconciliation[0]["cleanup_result"]["cleaned"] is True
+    assert second_result["completed_count"] == 1
+    assert (repo_root / "docs" / "agent.md").read_text(encoding="utf-8") == "implemented in worktree"
+    assert not Path(first_implementation["worktree_path"]).exists()
+    assert subprocess.run(
+        ["git", "rev-parse", "--verify", first_implementation["branch"]],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    ).returncode != 0
+
+
+def test_daemon_reconciles_historical_failed_merge_that_already_landed(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    events_path = state_dir / "agent_chat_events.jsonl"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    (repo_root / "docs").mkdir()
+    (repo_root / "docs" / "agent.md").write_text("landed\n", encoding="utf-8")
+    init_git_repo(repo_root)
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path.write_text(
+        json.dumps(
+            {
+                "type": "implementation_finished",
+                "task_id": "AGENT-000",
+                "attempt": 1,
+                "returncode": 1,
+                "worktree_path": str(tmp_path / "missing-worktree"),
+                "branch": "implementation/missing",
+                "implementation_commit": head,
+                "merge_result": {"attempted": True, "merged": False, "returncode": 2},
+                "validation_result": {"attempted": True, "passed": True, "returncode": 0},
+                "cleanup_result": {"cleaned": False, "reason": "not_attempted"},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=events_path,
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+
+    result = daemon.run_once()
+    second_result = daemon.run_once()
+
+    assert result["merge_reconciliation"][0]["resolved"] is True
+    assert result["completed_count"] == 1
+    assert "AGENT-000" in PortalTaskState.load(state_dir / "agent_chat_task_state.json").completed_task_ids
+    assert second_result["merge_reconciliation"] == []
+
+
 def test_daemon_links_shared_node_modules_into_ephemeral_worktree(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
