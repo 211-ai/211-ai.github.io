@@ -313,6 +313,17 @@ same local snapshot/blob persistence conventions as the CLI.
 | `wallet_add_location` | Add encrypted location data. |
 | `wallet_list_records` | List wallet records. |
 | `wallet_create_location_region_proof` | Create a location-region proof receipt. |
+| `wallet_create_record_grant` | Create a bounded record grant. |
+| `wallet_issue_record_invocation` | Issue a signed record invocation token. |
+| `wallet_decrypt_document` | Decrypt a document with owner, grant, or invocation access. |
+| `wallet_grant_receipts` | List grant receipts. |
+| `wallet_revoke_grant` | Revoke a grant and dependent access. |
+| `wallet_create_export_grant` | Create a bounded encrypted export grant. |
+| `wallet_issue_export_invocation` | Issue a signed export invocation token. |
+| `wallet_create_export_bundle` | Create an encrypted export bundle. |
+| `wallet_verify_export_bundle` | Verify export bundle hash/schema. |
+| `wallet_import_export_bundle` | Import encrypted descriptors from a verified bundle. |
+| `wallet_export_bundle_storage` | Verify encrypted blob availability for a bundle. |
 | `wallet_analyze_document_redacted` | Run redacted document analysis. |
 | `wallet_extract_document_text_redacted` | Extract redacted document text. |
 | `wallet_analyze_document_form_redacted` | Analyze redacted form fields/stats. |
@@ -353,6 +364,9 @@ checks, UCAN delegate decrypt/export grants, signed invocations, encrypted
 export hash/schema verification/import/storage checks, grant revocation,
 analytics, ops health, repository reload after restart, and matching wallet CLI
 subprocess flows for sharing, export, analytics, import merge, and revocation.
+`ipfs_datasets_py/tests/mcp/test_wallet_tools.py` covers the same
+share/export/import/revoke path through MCP wallet tools and dynamic manager
+discovery.
 
 Also run `GET /ops/health?verify_storage=true` against the target environment
 after deployment and confirm no check has `status=error`. When
