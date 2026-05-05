@@ -1,5 +1,11 @@
 import { Bot, MessageSquare, X } from "lucide-react";
-import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult } from "../../agent/types";
+import type {
+  AgentConfirmationRequest,
+  AgentMessage,
+  AgentToolCall,
+  AgentToolResult,
+  EvidenceBundle
+} from "../../agent/types";
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentChatBottomSheet } from "./AgentChatBottomSheet";
@@ -8,6 +14,7 @@ import { AgentMessageList } from "./AgentMessageList";
 export function AgentChatDrawer({
   activeRouteLabel,
   confirmations = [],
+  evidenceBundles = [],
   messages,
   open,
   responding = false,
@@ -16,11 +23,13 @@ export function AgentChatDrawer({
   onCancelConfirmation,
   onClose,
   onConfirmConfirmation,
+  onOpenServiceDetail,
   onSend,
   onToggle
 }: {
   activeRouteLabel: string;
   confirmations?: AgentConfirmationRequest[];
+  evidenceBundles?: EvidenceBundle[];
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
@@ -29,6 +38,7 @@ export function AgentChatDrawer({
   onCancelConfirmation?: (confirmationId: string) => void;
   onClose: () => void;
   onConfirmConfirmation?: (confirmationId: string) => void;
+  onOpenServiceDetail?: (docId: string) => void;
   onSend: (message: string) => void;
   onToggle: () => void;
 }) {
@@ -37,10 +47,12 @@ export function AgentChatDrawer({
       <AgentChatBottomSheet
         activeRouteLabel={activeRouteLabel}
         confirmations={confirmations}
+        evidenceBundles={evidenceBundles}
         messages={messages}
         onCancelConfirmation={onCancelConfirmation}
         onClose={onClose}
         onConfirmConfirmation={onConfirmConfirmation}
+        onOpenServiceDetail={onOpenServiceDetail}
         onSend={onSend}
         onToggle={onToggle}
         open={open}
@@ -86,9 +98,11 @@ export function AgentChatDrawer({
 
             <AgentMessageList
               confirmations={confirmations}
+              evidenceBundles={evidenceBundles}
               messages={messages}
               onCancel={onCancelConfirmation}
               onConfirm={onConfirmConfirmation}
+              onOpenServiceDetail={onOpenServiceDetail}
               responding={responding}
               toolCalls={toolCalls}
               toolResults={toolResults}

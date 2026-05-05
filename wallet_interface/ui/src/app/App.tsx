@@ -606,14 +606,21 @@ export function App() {
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
+        confirmations={agentChat.pendingConfirmations}
+        evidenceBundles={agentChat.snapshot.session.evidenceBundles}
         messages={agentChat.messages}
+        onCancelConfirmation={(confirmationId) => agentChat.denyConfirmation(confirmationId)}
         onClose={() => setAgentChatOpen(false)}
+        onConfirmConfirmation={(confirmationId) => agentChat.approveConfirmation(confirmationId)}
+        onOpenServiceDetail={() => navigate("social-services")}
         onSend={(message) => {
           void agentChat.sendMessage(message);
         }}
         onToggle={() => setAgentChatOpen((open) => !open)}
         open={agentChatOpen}
         responding={agentChat.responding}
+        toolCalls={agentChat.snapshot.session.toolCalls}
+        toolResults={agentChat.snapshot.session.toolResults}
       />
     </div>
   );
