@@ -19,6 +19,17 @@ interface GraphRagRetrievalOptions {
   useEmbedding?: boolean;
 }
 
+export interface GraphRagCitation {
+  index: number;
+  label: string;
+  title: string;
+  source: string;
+  docId: string;
+  url?: string;
+  contentCid?: string;
+  pageCid?: string;
+}
+
 export interface GraphRagRuntimeStatus {
   corpusBaseUrl: string;
   corpus: {
@@ -75,6 +86,41 @@ export async function build211InfoEvidence(query: string, limit = 6, options: Gr
   );
 }
 
+export function build211InfoCitations(results: SearchResult[]): GraphRagCitation[] {
+  return results.map((result, index) => {
+    const document = result.document;
+    const title = document.provider_name || document.program_name || document.title || result.docId;
+    const source = document.source_url || document.host || "211 corpus";
+    return {
+      index: index + 1,
+      label: `[${index + 1}]`,
+      title,
+      source,
+      docId: result.docId,
+      url: document.source_url || undefined,
+      contentCid: result.contentCid || document.source_content_cid || undefined,
+      pageCid: result.pageCid || document.source_page_cid || undefined,
+    };
+  });
+}
+
+export function format211InfoCitations(results: SearchResult[], limit = 6): string {
+  return build211InfoCitations(results)
+    .slice(0, limit)
+    .map((citation) => {
+      const locator = citation.url || citation.contentCid || citation.pageCid || citation.docId;
+      return `${citation.label} ${citation.title} - ${locator}`;
+    })
+    .join("\n");
+}
+
+export function build211InfoFallbackSummary(evidence: GraphRagEvidence): string {
+  if (evidence.results.length === 0) {
+    return "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.";
+  }
+  return append211InfoSources(buildEvidenceSummary(evidence.results), evidence.results);
+}
+
 export async function get211InfoRuntimeStatus(): Promise<GraphRagRuntimeStatus> {
   const corpusBaseUrl = get211CorpusBaseUrl();
   const [corpus, retrievalWorker, embeddingWorker, backend] = await Promise.all([
@@ -113,8 +159,7 @@ export async function answer211InfoQuestion(
   if (evidence.results.length === 0) {
     return {
       question: trimmedQuestion,
-      answer:
-        "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.",
+      answer: build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: false,
     };
@@ -123,7 +168,7 @@ export async function answer211InfoQuestion(
   if (options.useLocalModel === false) {
     return {
       question: trimmedQuestion,
-      answer: buildEvidenceSummary(evidence.results),
+      answer: build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: false,
     };
@@ -136,17 +181,18 @@ export async function answer211InfoQuestion(
       options.maxTokens || 220,
     );
     const answer = clean211GraphRagModelAnswer(rawAnswer);
+    const grounded = isGrounded211GraphRagAnswer(answer);
     return {
       question: trimmedQuestion,
-      answer: isGrounded211GraphRagAnswer(answer) ? answer : buildEvidenceSummary(evidence.results),
+      answer: grounded ? append211InfoSources(answer, evidence.results) : build211InfoFallbackSummary(evidence),
       evidence,
-      usedLocalModel: isGrounded211GraphRagAnswer(answer),
+      usedLocalModel: grounded,
     };
   } catch (error) {
     console.warn("211 GraphRAG local model unavailable; falling back to evidence summary", error);
     return {
       question: trimmedQuestion,
-      answer: buildEvidenceSummary(evidence.results),
+      answer: build211InfoFallbackSummary(evidence),
       evidence,
       usedLocalModel: false,
     };
@@ -200,6 +246,14 @@ async function getBackendStatus(): Promise<GraphRagRuntimeStatus["backend"]> {
       error: error instanceof Error ? error.message : "Backend detection failed",
     };
   }
+}
+
+function append211InfoSources(answer: string, results: SearchResult[]): string {
+  if (results.length === 0 || /\nSources:\s*/i.test(answer)) {
+    return answer;
+  }
+  const sources = format211InfoCitations(results);
+  return sources ? `${answer}\n\nSources:\n${sources}` : answer;
 }
 
 async function tryGenerateQueryEmbedding(query: string, enabled = false): Promise<Float32Array | undefined> {
