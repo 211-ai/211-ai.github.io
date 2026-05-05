@@ -140,7 +140,20 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "save_service",
     "create_service_plan"
   ],
-  shelter: [...commonReadTools, "search_211_services", "answer_211_question"],
+  shelter: [
+    ...commonReadTools,
+    "search_211_services",
+    "answer_211_question",
+    "request_shelter_contact",
+    "approve_shelter_contact_request",
+    "deny_shelter_contact_request",
+    "create_managed_user_account",
+    "create_shelter_staff_account",
+    "send_shelter_nudge",
+    "approve_user_shelter_request",
+    "deny_user_shelter_request",
+    "add_shelter_as_recipient"
+  ],
   "recipient-access": [
     ...commonReadTools,
     "record_controller_approval",
@@ -333,7 +346,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   request_shelter_contact: {
     title: "Request shelter contact",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -343,7 +356,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   approve_shelter_contact_request: {
     title: "Approve shelter contact request",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -353,12 +366,72 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   deny_shelter_contact_request: {
     title: "Deny shelter contact request",
     permissionLevel: "wallet_write",
-    surfaces: ["contacts"],
+    surfaces: ["contacts", "shelter"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
     requiresPrivateContextOptIn: false,
     auditEventType: "agent.shelter_contact.deny"
+  },
+  create_managed_user_account: {
+    title: "Create managed user account",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_user.create"
+  },
+  create_shelter_staff_account: {
+    title: "Create shelter staff account",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_staff.create"
+  },
+  send_shelter_nudge: {
+    title: "Send shelter nudge",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_nudge.send"
+  },
+  approve_user_shelter_request: {
+    title: "Approve user shelter request",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.user_shelter_request.approve"
+  },
+  deny_user_shelter_request: {
+    title: "Deny user shelter request",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.user_shelter_request.deny"
+  },
+  add_shelter_as_recipient: {
+    title: "Add shelter as recipient",
+    permissionLevel: "wallet_write",
+    surfaces: ["shelter"],
+    requiresConfirmation: true,
+    requiresWalletUnlock: true,
+    requiresUserPresence: true,
+    requiresPrivateContextOptIn: false,
+    auditEventType: "agent.shelter_recipient.add"
   },
   set_disclosure_scopes: {
     title: "Set disclosure scopes",

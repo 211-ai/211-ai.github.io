@@ -599,11 +599,52 @@ function planContactTool(lower: string, original: string): AgentPlannedTool | un
   }
 
   const shelterRequestId = parseShelterRequestId(original);
+  if (shelterRequestId && /\b(approve|accept)\b.*\b(user.*shelter|shelter.*user)\b/.test(lower)) {
+    return tool("approve_user_shelter_request", { requestId: shelterRequestId });
+  }
+  if (shelterRequestId && /\b(deny|reject)\b.*\b(user.*shelter|shelter.*user)\b/.test(lower)) {
+    return tool("deny_user_shelter_request", { requestId: shelterRequestId });
+  }
   if (shelterRequestId && /\b(approve|accept)\b.*\b(shelter|contact|request)\b/.test(lower)) {
     return tool("approve_shelter_contact_request", { requestId: shelterRequestId });
   }
   if (shelterRequestId && /\b(deny|reject)\b.*\b(shelter|contact|request)\b/.test(lower)) {
     return tool("deny_shelter_contact_request", { requestId: shelterRequestId });
+  }
+
+  if (/\badd\b.*\bshelter\b.*\b(recipient|contact)\b/.test(lower)) {
+    const shelterName = parseNamedValue(original, "shelter") ?? parseAfterPhrase(original, /\badd\b.*?\bshelter\s+(?:recipient|contact)?\s*(?:for|as|named|called)?/i);
+    if (shelterName) return tool("add_shelter_as_recipient", { shelterName });
+  }
+
+  if (/\b(send|create|stage)\b.*\b(shelter nudge|shelter-to-user|contact request)\b/.test(lower)) {
+    const shelter = parseNamedValue(original, "shelter");
+    const staffId = parseNamedValue(original, "staff") ?? parseNamedValue(original, "staffId");
+    const userName = parseNamedValue(original, "user") ?? parseNamedValue(original, "name");
+    const userContact = parseNamedValue(original, "contact") ?? parseNamedValue(original, "email") ?? parseNamedValue(original, "phone");
+    if (shelter && staffId && userName && userContact) {
+      return tool("send_shelter_nudge", { shelter, staffId, userName, userContact });
+    }
+  }
+
+  if (/\bcreate\b.*\bshelter staff\b.*\b(account|login|staff)\b/.test(lower)) {
+    const shelter = parseNamedValue(original, "shelter");
+    const operatorStaffId = parseNamedValue(original, "operator") ?? parseNamedValue(original, "staffId");
+    const displayName = parseNamedValue(original, "name") ?? parseNamedValue(original, "displayName");
+    const email = parseNamedValue(original, "email");
+    if (shelter && operatorStaffId && displayName) {
+      return tool("create_shelter_staff_account", { shelter, operatorStaffId, displayName, ...(email ? { email } : {}) });
+    }
+  }
+
+  if (/\bcreate\b.*\b(managed user|shelter user)\b.*\baccount\b/.test(lower)) {
+    const shelter = parseNamedValue(original, "shelter");
+    const staffId = parseNamedValue(original, "staff") ?? parseNamedValue(original, "staffId");
+    const legalName = parseNamedValue(original, "legalName") ?? parseNamedValue(original, "name");
+    const photoAssetId = parseNamedValue(original, "photo") ?? parseNamedValue(original, "photoAssetId");
+    if (shelter && staffId && legalName && photoAssetId) {
+      return tool("create_managed_user_account", { shelter, staffId, legalName, photoAssetId });
+    }
   }
 
   const addName = parseAddRecipientName(original, lower);
