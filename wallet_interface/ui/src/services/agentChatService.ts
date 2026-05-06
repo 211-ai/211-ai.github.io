@@ -54,6 +54,7 @@ export function useAgentChatService(
     () => ({
       getState: () => runtimeRef.current.getState(),
       setActiveRoute: (route) => runtimeRef.current.setActiveRoute?.(route),
+      setServiceDetailDocId: (docId) => runtimeRef.current.setServiceDetailDocId?.(docId),
       setMobileNavOpen: (open) => runtimeRef.current.setMobileNavOpen?.(open),
       setProfile: (profile) => runtimeRef.current.setProfile?.(profile),
       setPolicy: (policy) => runtimeRef.current.setPolicy?.(policy),
