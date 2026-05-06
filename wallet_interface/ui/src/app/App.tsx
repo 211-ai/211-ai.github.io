@@ -125,6 +125,7 @@ import {
   writePersistedAppState
 } from "./appState";
 
+const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
@@ -154,6 +155,18 @@ const navigationRoutes = appRoutes.map((route) => ({ ...route, icon: routeIcons[
 
 function getInitialRouteFromHash(): RouteId {
   return getServiceDetailDocIdFromHash() ? "social-services" : getRouteFromHash();
+}
+
+function readSignedInUser(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const raw = window.localStorage.getItem(APP_SESSION_KEY);
+    if (!raw) return "";
+    const parsed = JSON.parse(raw);
+    return typeof parsed?.username === "string" ? parsed.username : "";
+  } catch {
+    return "";
+  }
 }
 
 function isAcceptedIdentityDocument(file: File): boolean {
@@ -241,6 +254,7 @@ async function generateUploadSummary(file: File): Promise<string> {
 
 export function App() {
   const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
+  const [signedInUser, setSignedInUser] = useState(readSignedInUser);
   const [activeRoute, setActiveRoute] = useState<RouteId>(getInitialRouteFromHash);
   const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getServiceDetailDocIdFromHash);
   const activeRouteRef = useRef(activeRoute);
@@ -475,11 +489,33 @@ export function App() {
     setMobileNavOpen(false);
   }
 
+  function handleSignIn(username: string) {
+    const nextUsername = username.trim();
+    setSignedInUser(nextUsername);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(APP_SESSION_KEY, JSON.stringify({ username: nextUsername }));
+    }
+  }
+
+  function handleSignOut() {
+    setSignedInUser("");
+    setActiveRoute("home");
+    setMobileNavOpen(false);
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(APP_SESSION_KEY);
+      window.location.hash = "#/";
+    }
+  }
+
   const nextCheckIn = useMemo(() => {
     const next = new Date(policy.lastCheckInAt);
     next.setDate(next.getDate() + policy.intervalDays);
     return next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }, [policy.intervalDays, policy.lastCheckInAt]);
+
+  if (!signedInUser) {
+    return <LoginScreen onSignIn={handleSignIn} />;
+  }
 
   return (
     <div className={`app ${agentChatOpen ? "app-chat-open" : ""}`}>
@@ -530,7 +566,7 @@ export function App() {
             <strong>Abby</strong>
             <small>Next check-in: {nextCheckIn}</small>
           </div>
-          <Button ariaLabel="Sign out" variant="quiet">
+          <Button ariaLabel="Sign out" onClick={handleSignOut} variant="quiet">
             <LogOut size={20} />
           </Button>
         </header>
@@ -550,7 +586,7 @@ export function App() {
         ) : null}
 
         {activeRoute === "home" ? (
-          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} recipients={recipients} uploads={uploads} />
+          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} uploads={uploads} />
         ) : null}
         {activeRoute === "register" ? (
           <RegistrationScreen
@@ -563,12 +599,11 @@ export function App() {
         {activeRoute === "check-in" ? (
           <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
         ) : null}
-        {activeRoute === "contacts" || activeRoute === "sharing-rules" ? (
+        {activeRoute === "contacts" ? (
           <ContactsScreen
             contactRequests={shelterContactRequests}
             profile={profile}
             recipients={recipients}
-            sharingCompatibility={activeRoute === "sharing-rules"}
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
@@ -598,23 +633,6 @@ export function App() {
             shelterUserAccounts={shelterUserAccounts}
             setShelterUserAccounts={setShelterUserAccounts}
           />
-        ) : null}
-        {activeRoute === "recipient-access" ? (
-          <RecipientAccessScreen
-            accessRequests={accessRequests}
-            apiConfig={walletApiConfig}
-            grantReceipts={grantReceipts}
-            recipients={recipients}
-            refreshWalletAuditEvents={refreshWalletAuditEvents}
-            refreshWalletAccessState={refreshWalletAccessState}
-            setAccessRequests={setAccessRequests}
-            setGrantReceipts={setGrantReceipts}
-            verified={recipientVerified}
-            setVerified={setRecipientVerified}
-          />
-        ) : null}
-        {activeRoute === "benefits-protection" ? (
-          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
           <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
@@ -739,36 +757,65 @@ function NavButton({
   );
 }
 
+function LoginScreen({ onSignIn }: { onSignIn: (username: string) => void }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const canSignIn = username.trim().length > 0 && password.trim().length > 0;
+
+  function submitLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (canSignIn) {
+      onSignIn(username);
+    }
+  }
+
+  return (
+    <main className="login-page">
+      <form className="login-panel" onSubmit={submitLogin}>
+        <div className="login-brand">
+          <span className="login-mark">A</span>
+          <div>
+            <p className="eyebrow">Abby</p>
+            <h1>Sign in</h1>
+          </div>
+        </div>
+        <Field label="Username" required>
+          <input
+            autoComplete="username"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+          />
+        </Field>
+        <Field label="Password" required>
+          <input
+            autoComplete="current-password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </Field>
+        <Button disabled={!canSignIn} type="submit">
+          <LockKeyhole aria-hidden="true" size={18} /> Sign in
+        </Button>
+      </form>
+    </main>
+  );
+}
+
 function HomeScreen({
   navigate,
   nextCheckIn,
-  recipients,
   uploads
 }: {
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
-  recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
 }) {
   return (
     <div className="screen home-screen">
       <div className="page-title">
         <p className="eyebrow">Today</p>
-        <h1>Your safety plan</h1>
-      </div>
-      <div className="home-actions" role="group" aria-label="Primary actions">
-        <ActionCard
-          detail={`${recipients.length} people or services set up`}
-          icon={<ContactRound aria-hidden="true" size={28} />}
-          onClick={() => navigate("contacts")}
-          title="Contacts"
-        />
-        <ActionCard
-          detail="Choose what people can see"
-          icon={<ShieldCheck aria-hidden="true" size={28} />}
-          onClick={() => navigate("sharing-rules")}
-          title="Sharing"
-        />
+        <h1>Welcome to your safety plan!</h1>
       </div>
       <Section title="Quick actions">
         <div className="quick-actions">
@@ -791,7 +838,7 @@ function HomeScreen({
         </div>
         <div className="home-footer-divider" />
         <div className="home-footer-stat">
-          <small>Sharing choices</small>
+          <small>Contact sharing</small>
           <span>Ready to review</span>
         </div>
       </div>
@@ -866,7 +913,7 @@ function RegistrationScreen({
         <p className="eyebrow">Registration</p>
         <h1>Create your Abby profile</h1>
       </div>
-      <StatusBanner tone="info">To start, add your name, birth date, photo or ID, and pass the person check.</StatusBanner>
+      <p className="page-note">To start, add your name, birth date, photo or ID.</p>
       <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
         <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
           <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
@@ -1266,14 +1313,12 @@ function ContactsScreen({
   contactRequests,
   profile,
   recipients,
-  sharingCompatibility = false,
   setContactRequests,
   setRecipients
 }: {
   contactRequests: ShelterContactRequest[];
   profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
-  sharingCompatibility?: boolean;
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
@@ -1423,16 +1468,16 @@ function ContactsScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">{sharingCompatibility ? "Sharing choices" : "Emergency contacts"}</p>
+        <p className="eyebrow">Emergency contacts</p>
         <h1>People who can help</h1>
       </div>
-      <StatusBanner tone="info">
+      <p className="page-note">
         Sharing choices live with each saved contact. Open a contact below to change what they can see.
-      </StatusBanner>
+      </p>
       <Section title="Add shelter or group">
-        <StatusBanner tone="info">
+        <p className="section-note">
           A shelter is added only after the other side says yes. It starts with Minimum identity only.
-        </StatusBanner>
+        </p>
         <form className="form-grid" onSubmit={requestShelterContact}>
           <Field label="Shelter">
             <select value={requestedShelter} onChange={(event) => setRequestedShelter(event.target.value)}>
@@ -2123,7 +2168,7 @@ function ShelterScreen({
         <p className="eyebrow">Shelter portal</p>
         <h1>Assisted access</h1>
       </div>
-      <StatusBanner tone="info">Shelter workflows are free and keep user sharing choices separate from staff access.</StatusBanner>
+      <p className="page-note">Shelter workflows are free and keep user sharing choices separate from staff access.</p>
       <Section title="Staff tools">
         <div className="tool-grid">
           <button className="tool-tile" type="button">
@@ -2337,9 +2382,9 @@ function ShelterScreen({
               </Section>
 
               <Section title="Contact list requests">
-                <StatusBanner tone="info">
+                <p className="section-note">
                   Send a request only. The person must approve before this shelter is added.
-                </StatusBanner>
+                </p>
                 <form className="form-grid" onSubmit={sendShelterNudge}>
                   <Field label="Person name" required>
                     <input
@@ -3591,9 +3636,9 @@ function AnalyticsScreen({
         <p className="eyebrow">Group facts choice</p>
         <h1>Share group facts, not your name</h1>
       </div>
-      <StatusBanner tone="info">
+      <p className="page-note">
         These choices start on. You can turn off any one. We use group facts, not names or contact details.
-      </StatusBanner>
+      </p>
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
@@ -3715,9 +3760,9 @@ function ProofCenterScreen({
         <p className="eyebrow">Proof center</p>
         <h1>Verified wallet claims</h1>
       </div>
-      <StatusBanner tone="info">
+      <p className="page-note">
         Proof receipts expose public claims and verifier details without showing raw documents or precise location.
-      </StatusBanner>
+      </p>
       <article className="proof-card" aria-label="Create location region proof">
         <div className="scope-header">
           <div>
@@ -3921,9 +3966,9 @@ function ExportCenterScreen({
         <p className="eyebrow">Encrypted exports</p>
         <h1>Shareable wallet bundles</h1>
       </div>
-      <StatusBanner tone="info">
+      <p className="page-note">
         Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal plaintext.
-      </StatusBanner>
+      </p>
       {!apiConfig ? (
         <StatusBanner tone="warning">Connect Abby before you make live export bundles.</StatusBanner>
       ) : null}
