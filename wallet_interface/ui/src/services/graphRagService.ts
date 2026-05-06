@@ -10,10 +10,10 @@ import {
   ragSearchWorkerService,
   search211Corpus,
 } from "../lib/graphrag";
-import { detectBrowserMlBackends } from "../lib/backendDetection";
+import { backendDetectionWorkerService } from "../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../lib/clientEmbeddingWorkerService";
 import type { GraphRagAnswer, GraphRagEvidence, SearchResult } from "../lib/graphrag";
-import type { BackendDetectionResult } from "../lib/backendDetection";
+import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
 
 interface GraphRagRetrievalOptions {
   useEmbedding?: boolean;
@@ -53,9 +53,13 @@ export interface GraphRagRuntimeStatus {
   };
   backend: {
     available: boolean;
-    recommendedBackend: BackendDetectionResult["recommendedBackend"] | "unknown";
-    capabilities: BackendDetectionResult["capabilities"] | null;
+    hasWorker: boolean;
+    source: BackendDetectionStatus["source"];
+    recommendedBackend: BackendDetectionStatus["recommendedBackend"];
+    capabilities: BackendDetectionStatus["capabilities"];
+    deviceInfo: BackendDetectionStatus["deviceInfo"];
     crossOriginIsolated: boolean;
+    benchmarks: BackendDetectionStatus["benchmarks"];
     error?: string;
   };
 }
@@ -229,23 +233,7 @@ async function getCorpusStatus(): Promise<GraphRagRuntimeStatus["corpus"]> {
 }
 
 async function getBackendStatus(): Promise<GraphRagRuntimeStatus["backend"]> {
-  try {
-    const detection = await detectBrowserMlBackends();
-    return {
-      available: true,
-      recommendedBackend: detection.recommendedBackend,
-      capabilities: detection.capabilities,
-      crossOriginIsolated: detection.deviceInfo.crossOriginIsolated,
-    };
-  } catch (error) {
-    return {
-      available: false,
-      recommendedBackend: "unknown",
-      capabilities: null,
-      crossOriginIsolated: Boolean(globalThis.crossOriginIsolated),
-      error: error instanceof Error ? error.message : "Backend detection failed",
-    };
-  }
+  return backendDetectionWorkerService.getStatus();
 }
 
 function append211InfoSources(answer: string, results: SearchResult[]): string {
