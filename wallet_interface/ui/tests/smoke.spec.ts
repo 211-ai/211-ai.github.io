@@ -1,4 +1,4 @@
-import { expect, test, type Route } from "@playwright/test";
+import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 
@@ -12,14 +12,61 @@ function walletRoute(route: string, actorDid: string, params: Record<string, str
   return `/?${query.toString()}#/${route}`;
 }
 
-test("mobile home exposes the two required primary cards", async ({ page }) => {
+async function expectLoginForm(page: Page) {
+  await expect(page.getByLabel(/username/i)).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel(/password/i)).toBeVisible();
+}
+
+async function signInIfNeeded(page: Page) {
+  const username = page.getByLabel(/username/i).first();
+
+  try {
+    await username.waitFor({ state: "visible", timeout: 1000 });
+  } catch {
+    return false;
+  }
+
+  await username.fill("abby");
+  await page.getByLabel(/password/i).fill("safety-plan");
+  await page.getByRole("button", { name: /log in|login|sign in|continue/i }).click();
+  return true;
+}
+
+async function openAppRoute(page: Page, route: string) {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
-  const overviewActions = page.locator(".home-actions .action-card");
-  await expect(overviewActions).toHaveCount(2);
-  await expect(overviewActions.filter({ hasText: "Contacts" })).toBeVisible();
-  await expect(overviewActions.filter({ hasText: "Sharing" })).toBeVisible();
-  await expect(overviewActions.filter({ hasText: /Check in/i })).toHaveCount(0);
+  const signedIn = await signInIfNeeded(page);
+
+  if (signedIn && route !== "/") {
+    await page.goto(route);
+    await signInIfNeeded(page);
+    return;
+  }
+
+  if (route !== "/") {
+    await page.goto(route);
+    await signInIfNeeded(page);
+  }
+}
+
+async function expectFirstAboveSecond(first: Locator, second: Locator) {
+  const firstBox = await first.boundingBox();
+  const secondBox = await second.boundingBox();
+  expect(firstBox, "expected first element to have a layout box").not.toBeNull();
+  expect(secondBox, "expected second element to have a layout box").not.toBeNull();
+  expect(firstBox!.y).toBeLessThan(secondBox!.y);
+}
+
+test("login page appears before the home screen", async ({ page }) => {
+  await page.goto("/");
+  await expectLoginForm(page);
+  await signInIfNeeded(page);
+  await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
+});
+
+test("mobile home exposes the safety plan heading and quick check-in action", async ({ page }) => {
+  await openAppRoute(page, "/");
+  await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.locator(".home-actions")).toHaveCount(0);
   const quickCheckIn = page.locator(".checkin-panel");
   const checkInNowIsLargest = await quickCheckIn.evaluate((panel) => {
     const cta = panel.querySelector(".checkin-panel-cta");
@@ -37,7 +84,7 @@ test("mobile home exposes the two required primary cards", async ({ page }) => {
 });
 
 test("registration enforces minimum required profile fields", async ({ page }) => {
-  await page.goto("/#/register");
+  await openAppRoute(page, "/#/register");
   await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible({ timeout: 10000 });
   await expect(page.getByLabel(/Legal or full name/i)).toBeVisible();
   await expect(page.getByLabel(/Birth date/i)).toBeVisible();
@@ -97,7 +144,7 @@ test("registration enforces minimum required profile fields", async ({ page }) =
 });
 
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
-  await page.goto("/#/check-in");
+  await openAppRoute(page, "/#/check-in");
   await expect(page.getByRole("heading", { name: /Set your schedule/i })).toBeVisible({ timeout: 10000 });
   await expect(page.getByRole("button", { name: /Texting allowed/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Email allowed/i })).toBeVisible();
@@ -127,10 +174,10 @@ test("check-in interval cannot exceed thirty days", async ({ page }) => {
   await page.getByRole("button", { name: /Texting allowed/i }).click();
   await page.getByRole("button", { name: /Email allowed/i }).click();
 
-  await page.goto("/#/register");
+  await openAppRoute(page, "/#/register");
   await page.getByLabel(/Phone/i).fill("(503) 555-0199");
   await page.getByLabel(/Email/i).fill("abby-checkin@example.org");
-  await page.goto("/#/check-in");
+  await openAppRoute(page, "/#/check-in");
   await expect(page.getByRole("heading", { name: /Set your schedule/i })).toBeVisible({ timeout: 10000 });
   await page.getByRole("button", { name: /Check in by text/i }).click();
   await expect(page.getByText(/Checked in by text/i)).toBeVisible();
@@ -139,8 +186,8 @@ test("check-in interval cannot exceed thirty days", async ({ page }) => {
 });
 
 test("hash navigation updates the active screen without a full reload", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible();
+  await openAppRoute(page, "/");
+  await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible();
   await page.evaluate(() => {
     window.location.hash = "#/contacts";
   });
@@ -153,17 +200,24 @@ test("hash navigation updates the active screen without a full reload", async ({
 
 test("mobile menu opens navigation and routes to contacts", async ({ page }, testInfo) => {
   test.skip(!/Mobile/i.test(testInfo.project.name), "Mobile navigation is hidden on desktop layouts");
-  await page.goto("/");
+  await openAppRoute(page, "/");
   await page.getByRole("button", { name: /Open menu/i }).click();
   const mobileNav = page.getByRole("navigation", { name: /Mobile navigation/i });
   await expect(mobileNav).toBeVisible();
+  await expect(mobileNav.getByRole("button", { name: /Sharing/i })).toHaveCount(0);
+  await expect(mobileNav.getByRole("button", { name: /Benefits/i })).toHaveCount(0);
+  await expect(mobileNav.getByRole("button", { name: /Who can see info/i })).toHaveCount(0);
+  await expectFirstAboveSecond(
+    mobileNav.getByRole("button", { name: /Services/i }),
+    mobileNav.getByRole("button", { name: /Uploads/i })
+  );
   await mobileNav.getByRole("button", { name: /Contacts/i }).click();
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible();
   await expect(mobileNav).not.toBeVisible();
 });
 
 test("analytics consent shows privacy controls and safe details", async ({ page }) => {
-  await page.goto("/#/analytics");
+  await openAppRoute(page, "/#/analytics");
   await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
   const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
   await expect(housingStudy.getByLabel(/Allow this choice/i)).toBeChecked();
@@ -179,7 +233,7 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
 });
 
 test("analytics consent preserves opt-out after refresh", async ({ page }) => {
-  await page.goto("/#/analytics");
+  await openAppRoute(page, "/#/analytics");
   const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
   const studyOptIn = housingStudy.getByLabel(/Allow this choice/i);
   await studyOptIn.uncheck();
@@ -189,75 +243,22 @@ test("analytics consent preserves opt-out after refresh", async ({ page }) => {
   await expect(reloadedStudy.getByLabel(/Allow this choice/i)).not.toBeChecked();
 });
 
-test("benefits opt-in previews notification capability boundaries", async ({ page }) => {
-  await page.goto("/#/benefits-protection");
-  await expect(page.getByRole("heading", { name: /Benefits notice/i })).toBeVisible();
-  await expect(page.getByText(/missed check/i)).toHaveCount(0);
-  await expect(page.getByLabel(/Allow Abby to prepare/i)).toBeChecked();
-  const preview = page.getByLabel(/Benefits notification capability preview/i);
-  await expect(preview.getByText(/read basic info/i)).toBeVisible();
-  await expect(preview.getByText(/read safe facts/i)).toBeVisible();
-  await expect(preview.getByText(/read exact location/i)).toBeVisible();
-  await expect(preview.getByText(/make a full wallet export/i)).toBeVisible();
-});
-
-test("benefits opt-in preserves opt-out after refresh", async ({ page }) => {
-  await page.goto("/#/benefits-protection");
-  await expect(page.getByRole("heading", { name: /Benefits notice/i })).toBeVisible({ timeout: 10000 });
-  const optIn = page.getByLabel(/Allow Abby to prepare/i);
-  await expect(optIn).toBeChecked();
-  await optIn.uncheck();
-  await expect(optIn).not.toBeChecked();
-  await page.reload();
-  await page.goto("/#/benefits-protection");
-  await expect(page.getByRole("heading", { name: /Benefits notice/i })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByLabel(/Allow Abby to prepare/i)).not.toBeChecked();
-});
-
-test("sharing rules preview scope-derived capabilities", async ({ page }) => {
-  await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByText(/Sharing choices live with each saved contact/i)).toBeVisible();
-  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
-  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-  await expect(editPanel.getByText("name, birthdate and contact status").first()).toBeVisible();
-  const preview = editPanel.getByLabel(/Maya Johnson sharing capability preview/i);
-  await expect(preview.getByText(/read general location/i)).toBeVisible();
-  await expect(preview.getByText(/open file contents/i)).toBeVisible();
-  await expect(preview.getByText(/make a full wallet export/i)).toBeVisible();
-});
-
-test("sharing rules default on and preserve unchecked scopes after refresh", async ({ page }) => {
-  await page.goto("/#/sharing-rules");
-  await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const recipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-  await expect(recipient).toBeVisible();
-  await recipient.getByRole("button", { name: /^Edit sharing$/i }).click();
-  const editPanel = recipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-  const scopes = editPanel.locator(".scope-option input");
-  await expect(scopes).toHaveCount(11);
-  expect(await scopes.evaluateAll((inputs) => inputs.every((input) => (input as HTMLInputElement).checked))).toBe(true);
-
-  await editPanel.getByLabel(/Medical notes/i).uncheck();
-  await editPanel.getByLabel(/Found permanent housing/i).uncheck();
-  await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(editPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
-  await editPanel.getByRole("button", { name: /Save sharing/i }).click();
-  await page.reload();
-
-  const reloadedRecipient = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-  await reloadedRecipient.getByRole("button", { name: /^Edit sharing$/i }).click();
-  const reloadedPanel = reloadedRecipient.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-  await expect(reloadedPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
-  await expect(reloadedPanel.getByLabel(/Found permanent housing/i)).not.toBeChecked();
-  await expect(reloadedPanel.getByLabel(/Minimum identity/i)).toBeChecked();
+test("removed standalone sharing, benefits, and recipient routes fall back home", async ({ page }) => {
+  for (const route of ["/#/sharing-rules", "/#/benefits-protection", "/#/recipient-access"]) {
+    await openAppRoute(page, route);
+    await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole("heading", { name: /Benefits notice|Requests to see my info/i })).toHaveCount(0);
+  }
 });
 
 test("contacts add flow saves sharing choices and opens edit panel by keyboard", async ({ page }) => {
-  await page.goto("/#/contacts");
+  await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
   const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  await expectFirstAboveSecond(
+    addPersonSection.getByLabel(/Type/i),
+    addPersonSection.getByText(/Sharing choices for this person/i)
+  );
   await addPersonSection.getByLabel(/Name or group/i).fill("Morgan Caseworker");
   await addPersonSection.getByLabel(/Relationship or role/i).fill("Outreach case worker");
   await addPersonSection.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
@@ -292,7 +293,7 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
 });
 
 test("contact list shelter nudge requires user approval before adding contact", async ({ page }) => {
-  await page.goto("/#/contacts");
+  await openAppRoute(page, "/#/contacts");
   const addShelterSection = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
   const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
@@ -319,7 +320,7 @@ test("contact list shelter nudge requires user approval before adding contact", 
 });
 
 test("user can request a shelter contact and shelter staff can approve it", async ({ page }) => {
-  await page.goto("/#/contacts");
+  await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
   const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
@@ -346,7 +347,7 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
 });
 
 test("user can cancel a pending shelter contact request", async ({ page }) => {
-  await page.goto("/#/contacts");
+  await openAppRoute(page, "/#/contacts");
   const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
   await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
@@ -359,7 +360,7 @@ test("user can cancel a pending shelter contact request", async ({ page }) => {
 });
 
 test("verified shelter staff can send a contact-list nudge", async ({ page }) => {
-  await page.goto("/#/shelter");
+  await openAppRoute(page, "/#/shelter");
   await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
   await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
   await expect(page.getByRole("button", { name: /Send contact request/i })).toBeDisabled();
@@ -408,7 +409,7 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
 });
 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
-  await page.goto("/#/proof-center");
+  await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toBeVisible();
   await expect(page.getByLabel(/Create proof capability preview/i).getByText(/location\/prove_region/i)).toBeVisible();
@@ -488,7 +489,7 @@ test("proof center can create an API-backed location region proof", async ({ pag
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
 
-  await page.goto(walletRoute("proof-center", "did:key:owner"));
+  await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
   await page.getByRole("button", { name: /Create proof/i }).click();
   await expect(page.getByText(/Proof receipt created/i)).toBeVisible();
   const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
@@ -501,7 +502,7 @@ test("proof center can create an API-backed location region proof", async ({ pag
 });
 
 test("exports show receipt hashes and storage status", async ({ page }) => {
-  await page.goto("/#/exports");
+  await openAppRoute(page, "/#/exports");
   await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Create export bundle/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
@@ -721,7 +722,7 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
     }
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
-  await page.goto(walletRoute("security", "did:key:owner"));
+  await openAppRoute(page, walletRoute("security", "did:key:owner"));
 
   await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText(/no backup/i)).toBeVisible();
@@ -793,7 +794,7 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
     }
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
-  await page.goto(walletRoute("uploads", "did:key:owner"));
+  await openAppRoute(page, walletRoute("uploads", "did:key:owner"));
   const upload = page.locator(".upload-list-item").filter({ hasText: "Benefits letter" });
   await expect(upload.getByText(/save needs fix/i)).toBeVisible();
   await expect(upload.getByText(/^high$/i)).not.toBeVisible();
@@ -1240,7 +1241,7 @@ test("recipient receipt can create an encrypted derived analysis artifact", asyn
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
 
-  await page.goto(walletRoute("recipient-access", "did:key:delegate", { audienceKeyHex: "delegate-key" }));
+  await openAppRoute(page, walletRoute("recipient-access", "did:key:delegate", { audienceKeyHex: "delegate-key" }));
   const receipt = page.getByRole("article", { name: /delegate/i }).filter({ hasText: "Share proof code" });
   await expect(receipt).toBeVisible({ timeout: 15_000 });
   const analyzeButton = receipt.getByRole("button", { name: /Make safe summary/i });
@@ -1337,7 +1338,7 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
 
-  await page.goto(walletRoute("audit", "did:key:owner"));
+  await openAppRoute(page, walletRoute("audit", "did:key:owner"));
   await expect(page.getByRole("heading", { name: /Consent and access history/i })).toBeVisible();
   await expect(page.getByText(/record\/analyze/i)).toBeVisible();
   await expect(page.getByText(/storage\/repair/i)).toBeVisible();
