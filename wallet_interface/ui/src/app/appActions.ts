@@ -22,6 +22,7 @@ import {
   searchServiceNavigation,
 } from "../agent/serviceNavigationAgent";
 import { navigateAction, readSurfaceContextAction } from "../agent/tools/navigationTools";
+import { openServiceDetailAction } from "../agent/tools/serviceDetailTools";
 import { updateRegistrationDraftAction } from "../agent/tools/registrationTools";
 import { updateCheckInPolicyAction } from "../agent/tools/checkInTools";
 import {
@@ -112,7 +113,6 @@ import type {
   DelegateGrantCommandInput,
   EditRecipientCommandInput,
   ImportExportBundleCommandInput,
-  OpenServiceDetailCommandInput,
   RepairUploadStorageCommandInput,
   RemoveRecipientCommandInput,
   RequestShelterContactCommandInput,
@@ -169,6 +169,7 @@ export interface AppActionState {
 export interface AppActionRuntime {
   getState: () => AppActionState;
   setActiveRoute?: (route: RouteId) => void;
+  setServiceDetailDocId?: (docId: string | null) => void;
   setMobileNavOpen?: (open: boolean) => void;
   setProfile?: (profile: RegistrationProfileDraft) => void;
   setPolicy?: (policy: CheckInPolicyDraft) => void;
@@ -429,17 +430,6 @@ async function answer211QuestionAction(
   return success("answer_211_question", response.answer, {
     evidenceBundle: response.evidenceBundle,
     recordIds: response.recordIds
-  });
-}
-
-async function openServiceDetailAction(
-  runtime: AppActionRuntime,
-  input: OpenServiceDetailCommandInput
-): Promise<AppActionResult> {
-  await navigateAction(runtime, { route: "social-services" });
-  return success("open_service_detail", `Opened service ${input.docId}.`, {
-    route: "social-services",
-    artifactId: input.docId
   });
 }
 

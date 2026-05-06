@@ -24,6 +24,11 @@ import {
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
+import {
+  getServiceDetailDocIdFromHash,
+  openCanonicalServiceDetailRoute,
+  setLocationServiceDetailHash
+} from "../agent/tools/serviceDetailTools";
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
@@ -146,23 +151,6 @@ const routeIcons: Record<RouteId, typeof Home> = {
 const routes = primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 const secondaryNavigationRoutes = secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 const navigationRoutes = appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
-
-function getServiceDetailDocIdFromHash(hash = typeof window === "undefined" ? "" : window.location.hash): string | null {
-  const servicePrefix = "#/services/";
-  if (!hash.startsWith(servicePrefix)) return null;
-  const encodedDocId = hash.slice(servicePrefix.length).split("/")[0];
-  if (!encodedDocId) return null;
-  try {
-    return decodeURIComponent(encodedDocId);
-  } catch {
-    return encodedDocId;
-  }
-}
-
-function setLocationServiceDetailHash(docId: string): void {
-  if (typeof window === "undefined") return;
-  window.location.hash = `#/services/${encodeURIComponent(docId)}`;
-}
 
 function getInitialRouteFromHash(): RouteId {
   return getServiceDetailDocIdFromHash() ? "social-services" : getRouteFromHash();
@@ -352,6 +340,7 @@ export function App() {
         activeRouteRef.current = route;
         setActiveRoute(route);
       },
+      setServiceDetailDocId,
       setMobileNavOpen,
       setProfile,
       setPolicy,
@@ -658,13 +647,16 @@ export function App() {
         onCancelConfirmation={(confirmationId) => agentChat.denyConfirmation(confirmationId)}
         onClose={() => setAgentChatOpen(false)}
         onConfirmConfirmation={(confirmationId) => agentChat.approveConfirmation(confirmationId)}
-        onOpenServiceDetail={(docId) => {
-          setLocationServiceDetailHash(docId);
-          setServiceDetailDocId(docId);
-          activeRouteRef.current = "social-services";
-          setActiveRoute("social-services");
-          setMobileNavOpen(false);
-        }}
+        onOpenServiceDetail={(docId) =>
+          openCanonicalServiceDetailRoute(docId, {
+            setActiveRoute: (route) => {
+              activeRouteRef.current = route;
+              setActiveRoute(route);
+            },
+            setServiceDetailDocId,
+            setMobileNavOpen
+          })
+        }
         onSend={(message) => {
           void agentChat.sendMessage(message);
         }}
