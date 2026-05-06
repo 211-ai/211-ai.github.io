@@ -266,6 +266,7 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "storage_credentials": "secret://ci/wallet/storage",
         },
         "artifact_refs": {
+            "release_check_evidence": "artifact://ci/release-checks",
             "readiness_report": "artifact://ci/readiness",
             "ops_health_report": "artifact://ci/ops-health",
             "proof_contract_report": "artifact://ci/proof-contract",
