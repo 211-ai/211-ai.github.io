@@ -2,18 +2,106 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+IPFS_DATASETS_ROOT = REPO_ROOT / "ipfs_datasets_py"
+for import_root in (IPFS_DATASETS_ROOT, REPO_ROOT):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root))
+os.environ.setdefault("IPFS_DATASETS_AUTO_INSTALL", "false")
+os.environ.setdefault("IPFS_AUTO_INSTALL", "false")
+os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import (
+    TodoImplementationSupervisor,
+    TodoSupervisorConfig,
+)
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import (
+    TodoTaskState,
+    process_command_line,
+    process_is_running,
+    write_text_atomic,
+)
 from scraper.utils import setup_logging
 from scripts.agent_chat_implementation_daemon import AGENT_STATE_PREFIX, AGENT_TASK_PREFIX, DEFAULT_STATE_DIR, DEFAULT_TODO_PATH
-from scripts.portal_implementation_supervisor import PortalImplementationSupervisor, PortalSupervisorConfig
 
 logger = logging.getLogger("scraper.agent_chat.implementation.supervisor")
+
+
+def _supervisor_pid_path(state_dir: Path) -> Path:
+    return state_dir / f"{AGENT_STATE_PREFIX}_supervisor.pid"
+
+
+def _matching_live_supervisor_pid(pid_path: Path, *, state_dir: Path) -> int | None:
+    if not pid_path.exists():
+        return None
+    try:
+        pid = int(pid_path.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        pid_path.unlink(missing_ok=True)
+        return None
+    if not process_is_running(pid):
+        pid_path.unlink(missing_ok=True)
+        return None
+    command_line = process_command_line(pid)
+    required_fragments = (
+        Path(__file__).name,
+        "--state-dir",
+        str(state_dir),
+    )
+    if not all(fragment in command_line for fragment in required_fragments):
+        pid_path.unlink(missing_ok=True)
+        return None
+    return pid
+
+
+def _claim_supervisor_pid_file(*, state_dir: Path) -> tuple[Path, bool]:
+    pid_path = _supervisor_pid_path(state_dir)
+    existing_pid = _matching_live_supervisor_pid(pid_path, state_dir=state_dir)
+    current_pid = os.getpid()
+    if existing_pid is not None and existing_pid != current_pid:
+        return pid_path, False
+    write_text_atomic(pid_path, f"{current_pid}\n")
+    return pid_path, True
+
+
+def _release_supervisor_pid_file(pid_path: Path) -> None:
+    try:
+        current = pid_path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return
+    if current == str(os.getpid()):
+        pid_path.unlink(missing_ok=True)
+
+
+class AgentChatImplementationSupervisor(TodoImplementationSupervisor):
+    """211-AI compatibility wrapper around the shared todo supervisor."""
+
+    def is_stuck(
+        self,
+        state: TodoTaskState,
+        *,
+        now_ts: float,
+        ignore_progress_until_ts: float | None = None,
+    ) -> tuple[bool, str]:
+        if self._implementation_attempt_is_active(state, now_ts=now_ts):
+            return False, ""
+        heartbeat_age = self._age_seconds(state.heartbeat_at, now_ts)
+        progress_age = self._age_seconds(state.last_progress_at, now_ts)
+        stale = self.config.stale_seconds
+        if state.active_task_id and heartbeat_age > stale:
+            return True, f"heartbeat stale for active task {state.active_task_id}"
+        startup_grace_seconds = max(5.0, float(self.config.check_interval) * 2.0)
+        if state.active_task_id and heartbeat_age <= startup_grace_seconds:
+            return False, ""
+        if ignore_progress_until_ts is not None and now_ts < ignore_progress_until_ts:
+            return False, ""
+        if state.active_task_id and state.ready_count > 0 and progress_age > stale:
+            return True, f"no progress on active task {state.active_task_id}"
+        return False, ""
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -33,13 +121,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--stale-seconds", type=float, default=1800.0)
     parser.add_argument("--check-interval", type=float, default=60.0)
-    parser.add_argument("--max-restarts", type=int, default=10)
+    parser.add_argument("--max-restarts", type=int, default=0)
     parser.add_argument("--daemon-interval", type=float, default=300.0)
-    parser.add_argument(
-        "--no-implement",
+    implement_group = parser.add_mutually_exclusive_group()
+    implement_group.add_argument(
+        "--implement",
+        dest="implement",
         action="store_true",
+        help="Allow the managed daemon to invoke the implementation agent",
+    )
+    implement_group.add_argument(
+        "--no-implement",
+        dest="implement",
+        action="store_false",
         help="Only supervise backlog state; do not invoke the implementation agent",
     )
+    parser.set_defaults(implement=False)
     parser.add_argument(
         "--implementation-command",
         default="",
@@ -66,9 +163,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def build_supervisor(args: argparse.Namespace) -> PortalImplementationSupervisor:
-    return PortalImplementationSupervisor(
-        PortalSupervisorConfig(
+def build_supervisor(args: argparse.Namespace) -> TodoImplementationSupervisor:
+    return AgentChatImplementationSupervisor(
+        TodoSupervisorConfig(
             todo_path=args.todo_path,
             state_path=args.state_dir / f"{AGENT_STATE_PREFIX}_task_state.json",
             strategy_path=args.state_dir / f"{AGENT_STATE_PREFIX}_strategy.json",
@@ -80,10 +177,12 @@ def build_supervisor(args: argparse.Namespace) -> PortalImplementationSupervisor
             daemon_interval=args.daemon_interval,
             task_prefix=AGENT_TASK_PREFIX,
             state_prefix=AGENT_STATE_PREFIX,
-            implement=not args.no_implement,
+            repo_root=REPO_ROOT,
+            daemon_script_path=Path(__file__).resolve().parent / "agent_chat_implementation_daemon.py",
+            implement=args.implement,
             implementation_command=args.implementation_command,
             implementation_timeout=args.implementation_timeout,
-            use_ephemeral_worktree=not args.no_ephemeral_worktree,
+            use_ephemeral_worktree=args.implement and not args.no_ephemeral_worktree,
             worktree_root=args.worktree_root,
         )
     )
@@ -97,7 +196,14 @@ def main(argv: list[str] | None = None) -> None:
         result = supervisor.run_once()
         logger.info("Agent chat implementation supervisor check complete: %s", result)
         return
-    supervisor.run_forever()
+    pid_path, claimed = _claim_supervisor_pid_file(state_dir=args.state_dir)
+    if not claimed:
+        logger.info("Agent chat implementation supervisor already running: pid file %s", pid_path)
+        return
+    try:
+        supervisor.run_forever()
+    finally:
+        _release_supervisor_pid_file(pid_path)
 
 
 if __name__ == "__main__":

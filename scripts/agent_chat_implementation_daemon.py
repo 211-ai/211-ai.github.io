@@ -2,16 +2,22 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 import time
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
+IPFS_DATASETS_ROOT = REPO_ROOT / "ipfs_datasets_py"
+for import_root in (IPFS_DATASETS_ROOT, REPO_ROOT):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root))
+os.environ.setdefault("IPFS_DATASETS_AUTO_INSTALL", "false")
+os.environ.setdefault("IPFS_AUTO_INSTALL", "false")
+os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import TodoImplementationDaemon
 from scraper.utils import setup_logging
-from scripts.portal_implementation_daemon import PortalImplementationDaemon
 
 logger = logging.getLogger("scraper.agent_chat.implementation.daemon")
 
@@ -38,6 +44,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Agent chat daemon state directory",
     )
     parser.add_argument(
+        "--task-prefix",
+        default=AGENT_TASK_PREFIX,
+        help="Markdown heading prefix for tasks, for example '## AGENT-'",
+    )
+    parser.add_argument(
+        "--state-prefix",
+        default=AGENT_STATE_PREFIX,
+        help="State file prefix inside --state-dir",
+    )
+    parser.add_argument(
         "--log-level",
         default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
@@ -47,6 +63,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--no-implement",
         action="store_true",
         help="Only update backlog state; do not invoke the implementation agent",
+    )
+    parser.add_argument(
+        "--implement",
+        action="store_true",
+        help="Accept implementation-mode launches from the shared supervisor wrapper",
     )
     parser.add_argument(
         "--implementation-command",
@@ -71,16 +92,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     setup_logging(getattr(logging, args.log_level))
-    daemon = PortalImplementationDaemon(
+    implement = bool(args.implement and not args.no_implement)
+    daemon = TodoImplementationDaemon(
         todo_path=args.todo_path,
-        state_path=args.state_dir / f"{AGENT_STATE_PREFIX}_task_state.json",
-        strategy_path=args.state_dir / f"{AGENT_STATE_PREFIX}_strategy.json",
-        events_path=args.state_dir / f"{AGENT_STATE_PREFIX}_events.jsonl",
-        task_header_prefix=AGENT_TASK_PREFIX,
-        implement=not args.no_implement,
+        state_path=args.state_dir / f"{args.state_prefix}_task_state.json",
+        strategy_path=args.state_dir / f"{args.state_prefix}_strategy.json",
+        events_path=args.state_dir / f"{args.state_prefix}_events.jsonl",
+        repo_root=REPO_ROOT,
+        task_header_prefix=args.task_prefix,
+        implement=implement,
         implementation_command=args.implementation_command or None,
         implementation_timeout=args.implementation_timeout,
-        use_ephemeral_worktree=not args.no_implement and not args.no_ephemeral_worktree,
+        use_ephemeral_worktree=implement and not args.no_ephemeral_worktree,
         worktree_root=args.worktree_root,
     )
     while True:

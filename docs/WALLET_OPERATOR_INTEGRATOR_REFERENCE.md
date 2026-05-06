@@ -347,7 +347,15 @@ redaction policies, and audit boundaries as the Python service API.
 Before a production release:
 
 ```bash
-PYTHONPATH=/path/to/211-AI/ipfs_datasets_py \
+python scripts/run_wallet_release_checks.py --dry-run
+python scripts/run_wallet_release_checks.py --playwright-port 5185
+```
+
+The runner executes the documented backend pytest slice, wallet compile check,
+UI build, and live full-stack Playwright checks. Expanded manual form:
+
+```bash
+PYTHONPATH=/path/to/211-AI:/path/to/211-AI/ipfs_datasets_py \
 IPFS_DATASETS_AUTO_INSTALL=false \
 IPFS_AUTO_INSTALL=false \
 IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
@@ -356,6 +364,10 @@ python -m pytest \
   ipfs_datasets_py/tests/mcp/test_wallet_tools.py \
   ipfs_datasets_py/tests/mcp/unit/test_hierarchical_tool_manager.py \
   tests/test_wallet_interface_api.py \
+  tests/test_wallet_interface_ops.py \
+  tests/test_wallet_interface_deploy.py \
+  tests/test_wallet_implementation_plan_docs.py \
+  tests/test_wallet_release_check_runner.py \
   tests/test_wallet_production_handoff_blackbox.py -q
 
 python -m compileall -q wallet_interface ipfs_datasets_py/ipfs_datasets_py/wallet

@@ -2,409 +2,286 @@
 
 Source repository: https://github.com/portland-laws/portland-laws.github.io
 
-Reviewed local clone: `/tmp/portland-laws-review.cLKXRz/portland-laws.github.io`
+Reviewed local clone: `/tmp/portland-laws.github.io`
 
-Reviewed source commit: `314470dbaf53625d06bdf276f1d2084dc1a7a93f`
+Reviewed source commit: `f01bf7484a0fa6ce9c24c99e3f0d8b59dbd6979d`
 
 Target repository: `211-AI`
 
-Follow-on product plan: `docs/211_SERVICE_NAVIGATION_PORTAL_PLAN.md`
+Executable backlog: `docs/PORTLAND_LAWS_WEBGPU_GRAPHRAG_PORT_TODO.md`
 
-## Current Port Status
+Control plane:
 
-This repository already has the core serverless GraphRAG path in place for the
-211 corpus.
+- `scripts/portland_graphrag_implementation_daemon.py`
+- `scripts/portland_graphrag_implementation_supervisor.py`
+- `python scripts/manage_implementation_services.py start graphrag --no-implement`
 
-Implemented:
+## Executive Summary
 
-- CID-indexed retrieval package builder: `scraper/build_retrieval_package.py`
-- Browser corpus exporter: `scraper/browser_graphrag_corpus.py`
-- Browser export CLI: `scripts/build_browser_graphrag_corpus.py`
-- Browser corpus tests: `tests/test_browser_graphrag_corpus.py`
-- Static browser corpus: `wallet_interface/ui/public/corpus/211-info/current`
-- Browser GraphRAG modules: `wallet_interface/ui/src/lib/graphrag/*`
-- Browser backend detection: `wallet_interface/ui/src/lib/backendDetection.ts`
-- Local embedding worker/service: `wallet_interface/ui/src/workers/embeddingWorker.ts`, `wallet_interface/ui/src/lib/clientEmbeddingWorkerService.ts`
-- Local LLM worker/service: `wallet_interface/ui/src/workers/clientLLMWorker.ts`, `wallet_interface/ui/src/lib/clientLLMWorkerService.ts`
-- Dedicated GraphRAG retrieval worker: `wallet_interface/ui/src/workers/ragSearchWorker.ts`
-- Retrieval worker service: `wallet_interface/ui/src/lib/graphrag/searchWorkerService.ts`
-- UI-facing service API: `wallet_interface/ui/src/services/graphRagService.ts`
-- Services-screen GraphRAG search and cited-answer UI: `wallet_interface/ui/src/app/App.tsx`
-- Services-screen GraphRAG runtime status panel for corpus, retrieval worker, embedding worker, and browser backend capability.
-- Retrieval quality benchmark: `scripts/benchmark_211_retrieval.py`
-- Vite cross-origin isolation headers for local development: `wallet_interface/ui/vite.config.ts`
+The core serverless browser GraphRAG port is already present in `211-AI`.
+What remains is not a greenfield port; it is parity and hardening work against
+the current upstream Portland Laws runtime.
 
-Current retrieval package checkpoint:
+The practical conclusion from this review is:
 
-- Documents: `22,638`
-- Page documents: `11,787`
-- Service documents: `10,851`
-- BM25 term rows: `3,191,432`
-- Embeddings: `22,638`
-- Embedding model: `BAAI/bge-small-en-v1.5`
-- Embedding dimensions: `384`
-- PDF and Office/PPTX text extraction: enabled
-- Graph nodes: `48,851`
-- Graph edges: `648,958`
-- Graph communities: `41`
-- Document communities: `22,638`
-- Build manifest CID: `bafkreihcclqadxrfhx256soxaqdqvc66ejhsuy3krj5bf446zq2miaox4i`
+- Keep the current 211 browser corpus format as the primary path.
+- Keep browser inference worker-first and backend-optional.
+- Treat WebNN as a capability signal, not as a shipped inference backend, until
+  a real execution provider is wired and validated.
+- Port only the useful runtime infrastructure from Portland Laws.
+- Do not wholesale import the Portland Laws game, NPC, or broad legal-logic
+  subsystems.
 
-Current browser corpus checkpoint:
+The dedicated backlog and daemon/supervisor lane created in this pass exists to
+finish the remaining parity work without mixing it into the portal or agent-chat
+lanes.
+
+## Current 211 Status
+
+This repository already contains the main browser GraphRAG building blocks:
+
+- Browser corpus exporter:
+  `scraper/browser_graphrag_corpus.py`
+- Browser corpus build CLI:
+  `scripts/build_browser_graphrag_corpus.py`
+- Browser corpus tests:
+  `tests/test_browser_graphrag_corpus.py`
+- Browser corpus assets:
+  `wallet_interface/ui/public/corpus/211-info/current`
+- Browser GraphRAG modules:
+  `wallet_interface/ui/src/lib/graphrag/*`
+- Search worker:
+  `wallet_interface/ui/src/workers/ragSearchWorker.ts`
+- Embedding worker and service:
+  `wallet_interface/ui/src/workers/embeddingWorker.ts`,
+  `wallet_interface/ui/src/lib/clientEmbeddingWorkerService.ts`
+- Local LLM worker and service:
+  `wallet_interface/ui/src/workers/clientLLMWorker.ts`,
+  `wallet_interface/ui/src/lib/clientLLMWorkerService.ts`
+- Browser backend detection:
+  `wallet_interface/ui/src/lib/backendDetection.ts`
+- UI-facing GraphRAG service:
+  `wallet_interface/ui/src/services/graphRagService.ts`
+- Services-screen GraphRAG UI:
+  `wallet_interface/ui/src/app/App.tsx`
+
+Current local browser corpus checkpoint:
 
 - Documents: `22,638`
 - Embedding vectors: `22,638`
-- BM25 documents: `22,638`
-- Graph neighborhoods: `22,638`
+- Embedding dimension: `384`
+- Embedding model: `BAAI/bge-small-en-v1.5`
 - Graph neighborhood shards: `46`
 - Graph communities: `41`
-- Document communities: `22,638`
-- Manifest artifact count: `55`
-- Uploaded browser file count: `56`
+- Build manifest CID: `bafkreihcclqadxrfhx256soxaqdqvc66ejhsuy3krj5bf446zq2miaox4i`
 
-Published package status:
+This means the first-order port objective has already been met:
 
-- Hugging Face dataset: `endomorphosis/211-info`
-- Retrieval package upload commit: `47863ed084c0c2054dd680e7ece3fc3978a38bf3`
-- Final dataset commit after browser artifact upload: `7e91ace5bc45fc27d2f5e0cabda741fb052be81d`
-- `data/content/documents.parquet` local/remote SHA-256: `b3a3041a2c82fbb5adfcf902f3bb6b89bbee6a492d081443e11e65752418549b`
-- The full Parquet package under `data/` is uploaded and verified.
-- Browser-generated assets under `browser/211-info/current` are uploaded and verified by size and SHA-256 hash.
+- serverless browser retrieval is present
+- worker-based local embedding is present
+- worker-based local generation is present
+- corpus packaging is present
+- citations and CIDs are already part of the public retrieval flow
 
-Validation completed after this review:
+## Upstream Repo Findings
 
-- `npm run build` from `wallet_interface/ui`
-- `npm run test:smoke` from `wallet_interface/ui`
-- `python -m pytest tests/test_office_text_extraction.py tests/test_pdf_text_extraction.py tests/test_browser_graphrag_corpus.py tests/test_retrieval_package.py -q`
-- `python -m compileall scraper scripts tests -q`
-- `python scripts/audit_hf_retrieval_upload.py --verify-documents-hash`
-- `python scripts/upload_hf_browser_artifacts.py --verify-hashes`
-- `python scripts/validate_bge_embedding_compat.py --max-document-texts 3`
-- `python scripts/benchmark_211_retrieval.py --output data/validation/retrieval_quality_benchmark.json`
-- Production-preview click test: searched `food pantry` from `/#/social-services` and received `6 local matches`.
-- Hugging Face remote-corpus preview test with `VITE_211_CORPUS_BASE_URL=https://huggingface.co/datasets/endomorphosis/211-info/resolve/main/browser/211-info/current`: searched `food pantry` and received `6 local matches`.
-- Non-PDF binary-looking document scan: `0` rows.
-- BGE browser/Python compatibility: dimensions match at `384`; cosine range `0.8953` to `0.9734`, mean `0.9395`.
-- Retrieval benchmark: `food pantry`, `emergency shelter`, `utility assistance`, `rental assistance`, `mental health crisis support`, and `transportation` all pass top-5 relevance checks for required keyword and hybrid modes.
+The current upstream Portland Laws repo is a Vite/React static app with a much
+larger product surface than `211-AI`, but the browser inference and GraphRAG
+stack is still concentrated in a small, portable subset.
 
-## Source Repository Findings
+Key upstream files reviewed:
 
-The Portland Laws repo is a Vite/React static app. It contains game and logic
-code, but the browser language-modeling and RAG implementation is concentrated
-in a small subset of files.
-
-Relevant source files:
-
-- `package.json`
-- `vite.config.ts`
+- `ARCHITECTURE.md`
 - `CLIENT_LLM_IMPLEMENTATION.md`
 - `MODEL_GUIDE.md`
-- `ARCHITECTURE.md`
-- `scripts/prepare-portland-corpus.mjs`
-- `scripts/extract-portland-corpus.py`
 - `src/lib/backendDetection.ts`
+- `src/lib/backendDetectionWorkerService.ts`
 - `src/lib/llmConfig.ts`
 - `src/lib/clientLLMWorkerService.ts`
 - `src/lib/clientEmbeddingWorkerService.ts`
-- `src/workers/clientLLMWorker.ts`
-- `src/workers/embeddingWorker.ts`
 - `src/lib/portlandCorpus.ts`
 - `src/lib/portlandGraphRag.ts`
 - `src/lib/portlandLogic.ts`
 - `src/lib/warningSuppressionUtils.ts`
+- `src/workers/backendDetectionWorker.ts`
+- `src/workers/clientLLMWorker.ts`
+- `src/workers/embeddingWorker.ts`
+- `scripts/prepare-portland-corpus.mjs`
+- `scripts/extract-portland-corpus.py`
+
+Important upstream characteristics:
+
+- WebGPU and WASM inference run through Transformers.js and ONNX Runtime Web.
+- WebNN is detected, but it is not the actual inference path there either.
+- Backend detection can run in a dedicated worker and includes benchmarking.
+- Warning suppression is used to reduce noisy WebGPU and ONNX console spam.
+- The GraphRAG answer layer can incorporate derived logic metadata in addition
+  to retrieval evidence.
+- Upstream includes optional heavy browser-side experiments and dependencies
+  such as `@duckdb/duckdb-wasm`, `parquet-wasm`, and HNSW-related packages.
+
+## Port Matrix
+
+| Upstream Portland Laws | 211 target | Current state | Notes |
+| --- | --- | --- | --- |
+| `src/lib/backendDetection.ts` | `wallet_interface/ui/src/lib/backendDetection.ts` | ported | 211 version is simpler and does not benchmark FLOPS |
+| `src/workers/backendDetectionWorker.ts` | no local equivalent yet | missing | useful parity item |
+| `src/lib/backendDetectionWorkerService.ts` | no local equivalent yet | missing | useful parity item |
+| `src/lib/llmConfig.ts` | `wallet_interface/ui/src/lib/llmConfig.ts` | ported | 211 version is intentionally conservative |
+| `src/workers/clientLLMWorker.ts` | `wallet_interface/ui/src/workers/clientLLMWorker.ts` | ported | 211 uses a smaller, safer default model posture |
+| `src/lib/clientLLMWorkerService.ts` | `wallet_interface/ui/src/lib/clientLLMWorkerService.ts` | ported | core pattern preserved |
+| `src/workers/embeddingWorker.ts` | `wallet_interface/ui/src/workers/embeddingWorker.ts` | ported | 211 uses BGE instead of GTE |
+| `src/lib/clientEmbeddingWorkerService.ts` | `wallet_interface/ui/src/lib/clientEmbeddingWorkerService.ts` | ported | core pattern preserved |
+| `src/lib/portlandCorpus.ts` | `wallet_interface/ui/src/lib/graphrag/corpus.ts`, `search.ts` | ported | 211 split the runtime into smaller modules |
+| `src/lib/portlandGraphRag.ts` | `wallet_interface/ui/src/lib/graphrag/graphRag.ts` | ported | prompt and fallback adapted for service navigation |
+| `src/lib/warningSuppressionUtils.ts` | no local equivalent yet | missing | optional but useful |
+| `src/lib/portlandLogic.ts` | no direct equivalent | intentionally not ported | adapt only the useful derived-evidence subset |
+| `scripts/extract-portland-corpus.py` | `scraper/browser_graphrag_corpus.py` | reimplemented | 211 schema and graph packaging differ |
+| main-thread retrieval path | `wallet_interface/ui/src/workers/ragSearchWorker.ts` | exceeded upstream | 211 already moved retrieval off the main thread |
+
+## Recommended Port Boundary
+
+The right boundary is narrower than the upstream repo:
 
-Relevant source dependencies:
+Port and finish:
+
+- backend detection worker parity
+- warning suppression and worker diagnostics
+- conservative model gating and model-selection UX
+- optional 211-specific derived reasoning metadata where it improves service
+  navigation
+- benchmarking, smoke coverage, and runtime observability
 
-- `@xenova/transformers`
-- `onnxruntime-web`
-- `@duckdb/duckdb-wasm`
-- `parquet-wasm`
-- `hnswlib-wasm`
-- `hnswlib-node`
-- React, Vite, TypeScript, Playwright, Jest
+Do not port wholesale:
 
-Only `@xenova/transformers` and `onnxruntime-web` are required for the current
-211 browser runtime. DuckDB-WASM, Parquet-WASM, and HNSW-WASM are useful future
-options, but the first working path should continue to use generated JSON plus
-`Float32Array` embeddings because it is simpler to ship, cache, and test.
-
-## Source Architecture
-
-**Backend Detection**
-
-`src/lib/backendDetection.ts` detects WebNN, WebGPU, WASM, WebGL, WASM SIMD, and
-WASM threads. It can also benchmark approximate FLOPS for available backends.
+- NPC or simulation code
+- upstream gameplay UI
+- full `src/lib/logic/*` theorem-prover stack
+- broad ZK, proof, or municipal-law-specific logic infrastructure that does not
+  map directly to 211 service navigation
 
-Important finding: WebNN is detection-only in the source repo. The actual model
-execution path is Transformers.js over WebGPU or WASM. We should not describe
-the current port as WebNN inference until an actual WebNN execution provider is
-wired and verified.
+For `211-AI`, the useful adaptation of the Portland logic path is not
+formal legal proofing. It is a lighter service-constraint layer over fields
+such as:
 
-**Local LLM Worker**
-
-`src/workers/clientLLMWorker.ts` loads Transformers.js `text-generation` models
-inside a web worker. It detects WebGPU/SIMD, configures ONNX Runtime options
-where available, initializes a model pipeline, and falls back from WebGPU to
-WASM when possible.
-
-The source model list includes:
+- eligibility
+- intake instructions
+- required documents
+- hours
+- service area
+- languages
+- access modality
 
-- `Xenova/distilgpt2`
-- `Xenova/gpt2`
-- `Xenova/LaMini-GPT-774M`
-- `onnx-community/Llama-3.2-1B-Instruct`
-- `onnx-community/Llama-3.2-3B-Instruct`
-- `webml-community/qwen3-webgpu`
-- `webml-community/deepseek-r1-webgpu`
+That is the correct place to borrow the upstream “logic-aware GraphRAG” idea.
 
-For 211, small-model fallback must stay first-class. Larger WebGPU models can
-produce better answers, but they have heavy initial downloads and unreliable
-availability across user devices.
-
-**Embedding Worker**
-
-`src/workers/embeddingWorker.ts` uses `@xenova/transformers` feature extraction
-with mean pooling and normalized output. Portland uses `Xenova/gte-small` for
-browser query embeddings against precomputed `thenlper/gte-small` vectors.
-
-For 211, the package currently uses `BAAI/bge-small-en-v1.5`, and the browser
-query model defaults to `Xenova/bge-small-en-v1.5`. That is dimension-compatible,
-but retrieval quality must be validated empirically because model naming alone
-does not prove identical embedding space.
-
-**Static Corpus Builder**
-
-`scripts/prepare-portland-corpus.mjs` downloads Parquet artifacts from a Hugging
-Face dataset and writes an artifact manifest.
-
-`scripts/extract-portland-corpus.py` converts those Parquet files into browser
-assets:
+## Architecture Decisions
 
-- `sections.json`
-- `section-index.json`
-- `bm25-documents.json`
-- `embedding-index.json`
-- `embeddings.f32`
-- `entities.json`
-- `relationships.json`
-- `graph-adjacency.json`
-- `logic-proof-summaries.json`
-- `generated-manifest.json`
+### 1. Keep JSON plus `Float32Array` as the default browser corpus format
 
-For 211, this maps to `scraper/browser_graphrag_corpus.py`, which already reads
-this repo's Parquet package and exports documents, BM25 data, embeddings, graph
-communities, document communities, and sharded graph neighborhoods.
-
-**GraphRAG Runtime**
-
-`src/lib/portlandCorpus.ts` loads static JSON/F32 assets, performs BM25 search,
-brute-force vector search, hybrid score fusion, and graph neighborhood expansion.
-
-`src/lib/portlandGraphRag.ts` builds a grounded prompt from retrieved sections,
-knowledge graph context, and generated logic metadata. It calls the local LLM
-worker when available and falls back to deterministic evidence summaries.
-
-The 211 runtime now follows the same pattern, with service-navigation prompts
-and bounded graph neighborhoods instead of full graph adjacency.
-
-## What Was Ported or Adapted
+Upstream carries optional DuckDB/Parquet/HNSW browser dependencies. They are
+interesting, but the current 211 static corpus format is already working and is
+simpler to:
 
-The port intentionally does not copy the Portland app wholesale. The useful
-runtime pattern has been adapted into 211-specific code.
+- build
+- test
+- cache
+- publish to Hugging Face
+- debug in the browser
 
-Migration mapping:
-
-| Portland source | 211 target | Current state |
-| --- | --- | --- |
-| `vite.config.ts` COOP/COEP headers | `wallet_interface/ui/vite.config.ts` | Ported |
-| `src/lib/backendDetection.ts` | `wallet_interface/ui/src/lib/backendDetection.ts` | Ported, simplified |
-| `src/lib/llmConfig.ts` | `wallet_interface/ui/src/lib/llmConfig.ts` | Ported with conservative 211 defaults |
-| `src/workers/clientLLMWorker.ts` | `wallet_interface/ui/src/workers/clientLLMWorker.ts` | Ported, simplified |
-| `src/lib/clientLLMWorkerService.ts` | `wallet_interface/ui/src/lib/clientLLMWorkerService.ts` | Ported |
-| `src/workers/embeddingWorker.ts` | `wallet_interface/ui/src/workers/embeddingWorker.ts` | Ported with BGE default |
-| `src/lib/clientEmbeddingWorkerService.ts` | `wallet_interface/ui/src/lib/clientEmbeddingWorkerService.ts` | Ported |
-| `scripts/extract-portland-corpus.py` | `scraper/browser_graphrag_corpus.py` | Reimplemented for 211 schema |
-| `src/lib/portlandCorpus.ts` | `wallet_interface/ui/src/lib/graphrag/corpus.ts`, `search.ts` | Ported and split |
-| `src/lib/portlandGraphRag.ts` | `wallet_interface/ui/src/lib/graphrag/graphRag.ts` | Ported for service navigation |
-| Main-thread retrieval in Portland | `wallet_interface/ui/src/workers/ragSearchWorker.ts` | Added for 211 scale |
-| `src/lib/warningSuppressionUtils.ts` | Not yet ported | Optional polish |
-| Portland logic metadata path | No 211 equivalent yet | Future enhancement |
-
-## Target Runtime Design
-
-The target should run without a backend LLM or search API.
-
-Runtime flow:
-
-1. Load static browser corpus assets from `wallet_interface/ui/public/corpus/211-info/current`.
-2. Generate query embeddings in `embeddingWorker.ts` when available.
-3. Run BM25/vector/hybrid retrieval in `ragSearchWorker.ts`.
-4. Expand evidence through sharded graph neighborhoods and communities.
-5. Build a service-navigation prompt with CIDs, source URLs, and compact graph context.
-6. Generate an answer in `clientLLMWorker.ts` when the user opts into local generation.
-7. Fall back to deterministic evidence summaries when local embedding or LLM inference fails.
-
-The main thread should keep only orchestration, UI state, and result rendering.
-Expensive retrieval and model loading should stay in workers.
-
-## 211 Artifact Design
+DuckDB-WASM or Parquet-WASM should be treated as optional later transport
+experiments, not as a prerequisite for completing the port.
 
-Current generated artifacts:
-
-- `generated/documents.json`
-- `generated/document-index.json`
-- `generated/bm25-documents.json`
-- `generated/embedding-index.json`
-- `generated/embeddings.f32`
-- `generated/graph-neighborhood-index.json`
-- `generated/graph-neighborhoods/shard-*.json`
-- `generated/graph-communities.json`
-- `generated/document-communities.json`
-- `generated/generated-manifest.json`
-- `artifacts.manifest.json`
+### 2. Keep retrieval worker-first
 
-The 211 graph is too large to eagerly ship as one full adjacency JSON. The
-current sharded-neighborhood design is the right direction:
+`211-AI` is already ahead of the upstream main-thread pattern by running search
+and evidence construction in `ragSearchWorker.ts`. That should remain the
+default.
 
-- Keep each document connected to bounded direct context.
-- Keep high-signal keyterm and co-occurrence edges.
-- Keep community labels and top terms.
-- Preserve `source_content_cid`, `source_page_cid`, source URL, node CIDs, and edge CIDs.
-- Keep full Parquet graph artifacts on Hugging Face for offline or advanced tooling.
+### 3. Treat WebNN honestly
 
-## Prompt Policy
+The current upstream repo detects WebNN but still runs inference via
+Transformers.js over WebGPU or WASM. `211-AI` should make the same claim:
 
-The 211 prompt must be stricter than the Portland legal prompt because users may
-act on service access information.
+- WebNN capability can be detected and displayed.
+- The shipped local inference path is WebGPU or WASM unless a real WebNN
+  execution provider is later added and validated.
 
-Rules:
+### 4. Keep deterministic fallback first-class
 
-- Use only retrieved 211 corpus evidence.
-- Cite every factual sentence with evidence numbers.
-- Include provider, program, phone, source URL, location, hours, and eligibility only when the evidence contains them.
-- Do not invent availability, eligibility, addresses, phone numbers, application steps, or medical/legal guidance.
-- If evidence is incomplete, say what is missing and recommend contacting 211 or the listed provider.
-- Preserve source CIDs in the prompt for traceability, but use human-readable labels in the UI.
+The 211 service domain is more action-sensitive than the Portland legal demo
+flow. Search and evidence summary must always work even when:
 
-## Remaining Work
+- no embedding model has loaded
+- no local LLM has loaded
+- WebGPU is unavailable
+- worker creation fails
 
-**Phase 1: UI Entry Point**
+### 5. Port only useful logic-aware evidence
 
-- Done: add a visible 211 GraphRAG search and answer panel to the Services screen.
-- Done: keep model loading lazy; default BM25/graph search works before any LLM or embedding model is downloaded.
-- Done: expose BGE-small hybrid vector search as an explicit browser-model opt-in.
-- Done: show query/search/answer status in the Services-screen panel.
-- Done: guard search and answer state against stale async responses.
-- Done: expose lower-level corpus, retrieval worker, embedding worker, WebGPU/WASM, and cross-origin isolation status for diagnostics.
-- Remaining: expose local LLM initialization status after model-selection UI is designed.
+If we add a logic-aware layer, it should be derived from 211 service constraints
+and remain optional. The GraphRAG runtime must continue to function without it.
 
-Acceptance criteria:
+## Remaining Delta
 
-- Confirmed: searching `food pantry` returns cited 211 results.
-- Done: `shelter` and `utility assistance` pass the benchmark top-5 relevance checks.
-- Done: the first screen does not download an LLM.
-- Done: the no-model evidence summary path works on desktop and mobile.
+### Runtime parity items
 
-**Phase 2: Browser Artifact Upload**
+- Add a dedicated backend-detection worker and service wrapper.
+- Standardize backend capability, benchmark, and diagnostic reporting through a
+  single runtime interface.
+- Port the useful subset of warning suppression for WebGPU and ONNX Runtime log
+  noise.
 
-- Done: upload generated browser assets to `endomorphosis/211-info` under `browser/211-info/current`.
-- Done: add `scripts/upload_hf_browser_artifacts.py` for audit, upload, and optional SHA-256 verification.
-- Done: support `VITE_211_CORPUS_BASE_URL` for loading either bundled assets or Hugging Face-hosted browser assets.
+### Model policy items
 
-Acceptance criteria:
+- Keep conservative browser defaults for 211.
+- Add device-gated model recommendations rather than exposing all large models
+  unguarded.
+- Add explicit model-selection UI only after memory and answer-quality behavior
+  are verified on representative hardware.
 
-- Done: local browser artifacts and Hugging Face browser artifacts match by size and hash at commit `7e91ace5bc45fc27d2f5e0cabda741fb052be81d`.
-- Done: the Vite app can load from bundled assets with no network dependency beyond model downloads.
-- Done: the Vite app can load from Hugging Face when configured with `VITE_211_CORPUS_BASE_URL`.
+### Derived reasoning items
 
-**Phase 3: Retrieval Quality Validation**
+- Export optional derived service-constraint metadata alongside GraphRAG assets.
+- Allow the answer builder to use those summaries when present.
+- Do not add mandatory legal-logic or theorem-prover dependencies to the 211 UI.
 
-- Done: build a small benchmark query set for 211 service navigation.
-- Done: compare keyword-only, vector-only, and hybrid ranking.
-- Done: confirm browser `Xenova/bge-small-en-v1.5` query vectors are compatible with package `BAAI/bge-small-en-v1.5` vectors.
-- Not needed now: rebuild package embeddings with a browser-exact model. Current validation shows matching dimensions and strong short-query cosine alignment.
-- Remaining: add stricter expected-result fixtures when product/service owners define canonical answers.
+### Quality and operations items
 
-Acceptance criteria:
+- Add an executable backlog for the remaining parity work.
+- Run that backlog through the shared todo daemon/supervisor stack.
+- Add a dedicated service-manager target so this lane can be supervised like the
+  portal and agent lanes.
 
-- Done: known queries rank expected service categories in the top 5.
-- Vector search is disabled or downgraded when model/dimension metadata does not match.
-- Hybrid search measurably improves at least some semantic queries without harming exact provider/category lookups.
+## Executable Backlog
 
-**Phase 4: Worker Hardening**
+The implementation queue created in this pass is:
 
-- Done: add worker status and browser backend fields to `graphRagService.ts`.
-- Done: add stale-response guards for rapid query and category changes in the Services screen.
-- Consider moving embedding generation and retrieval into one coordinated worker pipeline if duplicate postMessage copies become a bottleneck.
-- Port only the useful parts of `warningSuppressionUtils.ts` if ONNX/WebGPU warnings create noisy UX or test output.
+- `docs/PORTLAND_LAWS_WEBGPU_GRAPHRAG_PORT_TODO.md`
 
-Acceptance criteria:
+The queue is supervised through:
 
-- Rapid repeated searches do not show stale results.
-- Worker failures always fall back to deterministic main-thread retrieval.
-- Done: smoke tests assert the GraphRAG search worker reaches `Search worker ready`.
-- Console output remains actionable during normal use.
+- `scripts/portland_graphrag_implementation_daemon.py`
+- `scripts/portland_graphrag_implementation_supervisor.py`
 
-**Phase 5: Local LLM Quality**
+The service manager target is:
 
-- Validate `Xenova/distilgpt2` only as a smoke fallback, not as a production answer model.
-- Test `Xenova/LaMini-GPT-774M` for WASM answer quality.
-- Test `onnx-community/Llama-3.2-1B-Instruct` and `3B` on WebGPU-capable machines.
-- Add model-selection UI only after quality and memory behavior are known.
-
-Acceptance criteria:
-
-- Accepted generated answers include citations.
-- Ungrounded generated output is rejected and replaced with evidence summary.
-- Model download and inference failures do not block search.
-
-**Phase 6: Data Hygiene**
-
-- Done: extend extraction cleanup beyond PDF files to Office/PPTX uploads and binary `PK` payloads.
-- Done: extract Office/PPTX text through the `ipfs_datasets_py` office utilities when possible and skip bogus binary service rows.
-- Done: rebuild and re-upload the retrieval and browser packages after cleanup.
-- Remaining: add `.docx` and `.xlsx` extraction coverage when those file types appear in the corpus.
-
-Acceptance criteria:
-
-- Done: `documents.parquet` has no raw non-PDF binary-looking document text.
-- Done: extracted file metadata records original binary hashes and source CIDs.
-- Done: browser corpus text fields remain UTF-8 safe and useful for retrieval.
-
-**Phase 7: Tests**
-
-- Add focused TypeScript tests for tokenization, BM25 scoring, hybrid score fusion, graph prompt grounding, and URL resolution.
-- Done: add Playwright coverage for Services screen GraphRAG controls.
-- Done: add Playwright coverage for Services screen search and fallback answer rendering.
-- Done: add browser worker status smoke coverage through the Vite app.
-
-Acceptance criteria:
-
-- `npm run build` passes.
-- `npm run test:smoke` passes.
-- Python package/export tests pass.
-
-## Risks
-
-- WebNN is not currently an inference provider in the source or target.
-- WebGPU support is uneven across browsers and devices.
-- Browser LLM downloads can be hundreds of MB to multiple GB.
-- Full 211 BM25 and vector search are feasible but must stay off the main thread.
-- Full 211 graph adjacency is too heavy for eager browser loading.
-- COOP/COEP is required for WASM threads and `SharedArrayBuffer`, but can affect cross-origin asset loading.
-- Embedding compatibility between Python and browser model IDs has initial validation, but ranking quality still needs benchmark coverage.
-- Future non-PDF binary uploads may need additional extractors beyond the current PDF and PPTX paths.
+- `python scripts/manage_implementation_services.py status graphrag`
+- `python scripts/manage_implementation_services.py start graphrag --no-implement`
+- `python scripts/manage_implementation_services.py start graphrag --implement`
 
 ## Definition of Done
 
-The port is complete when:
+This port lane is complete when all of the following are true:
 
-- The Services screen can search the 211 corpus with no backend API.
-- Results are traceable to source URL, `source_content_cid`, and `source_page_cid`.
-- Graph context includes bounded neighboring nodes and community metadata.
-- Browser BM25 retrieval runs in a worker on all modern browsers.
-- Browser vector retrieval runs when model compatibility is verified.
-- Local answer generation works on supported WebGPU/WASM browsers.
-- Fallback evidence summaries work everywhere.
-- Browser artifacts are published to Hugging Face and verified.
-- Existing wallet flows continue to pass smoke tests.
+- Services-screen GraphRAG works fully serverlessly from the browser corpus.
+- Local embedding and local generation remain optional, worker-based, and
+  correctly gated by device capabilities.
+- Backend capability reporting is consistent and off-main-thread when
+  appropriate.
+- WebGPU and ONNX warning suppression improves signal without hiding real
+  failures.
+- Optional 211-specific derived reasoning metadata can enrich answers without
+  becoming a hard dependency.
+- Browser build, smoke, retrieval benchmark, and compatibility checks pass.
+- The remaining parity work is tracked and executable through the shared todo
+  daemon/supervisor stack.

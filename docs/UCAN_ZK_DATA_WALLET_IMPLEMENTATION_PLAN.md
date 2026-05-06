@@ -1,6 +1,6 @@
 # UCAN and ZK User Data Wallet Implementation Plan
 
-Last updated: 2026-05-05
+Last updated: 2026-05-06
 
 ## Goal
 
@@ -15,8 +15,23 @@ The durable core belongs in `ipfs_datasets_py`. The `211-AI` repository should
 provide the UI/UX, product workflows, and service-matching experience around
 that core.
 
-This plan extends `docs/DOCUMENT_WALLET_IMPLEMENTATION_PLAN.md` from a document
-vault into a broader personal data wallet and analytics system.
+This is the canonical data-wallet plan. Documents are one wallet record type
+inside the broader data wallet, not a separate package or implementation lane.
+`docs/DOCUMENT_WALLET_IMPLEMENTATION_PLAN.md` is retained only as historical
+context and points new work back to `ipfs_datasets_py.wallet`.
+
+Executable backlog: `docs/UCAN_ZK_DATA_WALLET_TODO.md`
+
+Control plane:
+
+- `scripts/wallet_implementation_daemon.py`
+- `scripts/wallet_implementation_supervisor.py`
+- `python scripts/manage_implementation_services.py start wallet --no-implement`
+
+The wallet control plane uses the shared
+`ipfs_datasets_py.optimizers.todo_daemon` daemon and supervisor stack. The
+repo-local scripts provide defaults, paths, and `WALLET-` task selection only;
+they do not fork lifecycle behavior away from the optimizer package.
 
 ## Current Implementation Status
 
@@ -159,6 +174,79 @@ Use these existing `ipfs_datasets_py` pieces instead of rebuilding them in
   PIR, FHE, structured encryption, and threshold schemes as relevant tools. See
   `https://csrc.nist.gov/Projects/pec/pec-tools`.
 
+## Optimizer Todo Daemon and Supervisor Integration
+
+Wallet implementation work is tracked in
+`docs/UCAN_ZK_DATA_WALLET_TODO.md`. The backlog is intentionally separate from
+the portal, agent-chat, and GraphRAG queues, but it runs through the same
+optimizer todo-daemon primitives:
+
+- Task headings use `## WALLET-...`.
+- Durable state lives under `data/wallet_implementation/state/`.
+- `scripts/wallet_implementation_daemon.py` subclasses the shared
+  `TodoImplementationDaemon` through the existing 211 compatibility wrapper.
+- `scripts/wallet_implementation_supervisor.py` subclasses the shared
+  `TodoImplementationSupervisor` and launches the wallet daemon with the
+  wallet task prefix, state prefix, and backlog path.
+- `scripts/manage_implementation_services.py status wallet` reports wrapper,
+  supervisor, daemon, and task-state health.
+- `scripts/manage_implementation_services.py start wallet --no-implement`
+  starts monitor-only supervision.
+- `scripts/manage_implementation_services.py start wallet --implement` is the
+  explicit mode for unattended implementation attempts after a human has
+  reviewed the active `WALLET-` task and the current worktree state.
+
+Backlog ownership:
+
+- Core, crypto, storage, UCAN, proof, analytics, and analysis tasks belong in
+  `ipfs_datasets_py/ipfs_datasets_py/wallet/` and its package tests.
+- Product workflow, API orchestration, browser UI, and full-stack user tests
+  belong in `wallet_interface/`.
+- Operational gates, runbooks, target signoff, and release checks belong in
+  this repository's `docs/`, `scripts/`, and `tests/` paths.
+- The UI must call wallet APIs and must not implement cryptography, UCAN
+  validation, proof verification, or storage-policy semantics independently.
+
+Working protocol:
+
+- Start or confirm monitor-only supervision with
+  `python scripts/manage_implementation_services.py start wallet`. The manager
+  defaults to monitor-only mode and passes `--no-implement` to the wallet
+  supervisor.
+- Inspect the active task with
+  `python scripts/manage_implementation_services.py status wallet`. The
+  `active_task_id`, ready/waiting counts, wrapper command, supervisor command,
+  and daemon command are reported from
+  `data/wallet_implementation/state/`.
+- Use autonomous implementation mode only after reviewing the active task,
+  current worktree, and validation commands:
+  `python scripts/manage_implementation_services.py restart wallet --implement`.
+  Both wrapper and daemon command lines must include `--implement` before the
+  manager reports `implementation_enabled=true`.
+- Stop the wallet queue with
+  `python scripts/manage_implementation_services.py stop wallet`. The manager
+  rechecks through the wrapper restart window so stale `nohup_loop` wrappers do
+  not restart old implementation-enabled commands after stop.
+- Keep target-environment evidence tasks as `Completion: evidence`. Those tasks
+  are not complete just because a local artifact exists; they require archived
+  staging reports, verifier/storage health results, signoff packets, or review
+  decisions.
+
+Current executable todo queue:
+
+- `WALLET-110`: end-to-end release gate and target signoff packet.
+- `WALLET-120`: external UCAN adapter compatibility track.
+- `WALLET-130`: target IPFS, Filecoin, and S3 storage operations.
+- `WALLET-140`: target verifier credential handoff.
+- `WALLET-150`: live auth and passkey binding.
+- `WALLET-160`: production analytics review packets.
+- `WALLET-170` through `WALLET-210`: follow-on blackbox, cutover,
+  retention, governance, and partner-pilot readiness work.
+
+Each wallet backlog item must declare outputs and validation commands. Items
+that require a target environment use `Completion: evidence` so the daemon does
+not mark them complete merely because local files exist.
+
 ## Target Architecture
 
 ```text
@@ -187,6 +275,46 @@ ipfs_datasets_py
 
 `211-AI` should never implement its own cryptography, proof verification, or
 UCAN chain semantics. It should call `ipfs_datasets_py.wallet` APIs.
+
+## End-to-End Operating Model
+
+The wallet flow is data-first and provider-neutral:
+
+1. User creates a wallet with owner/controller DIDs, device DIDs, recovery
+   contacts, and a default privacy policy.
+2. User adds data as typed records: documents, location, profile attributes,
+   service needs, form facts, interaction notes, derived artifacts, and future
+   data types.
+3. `ipfs_datasets_py.wallet` encrypts payloads and private metadata before
+   storage, writes deterministic encrypted descriptors, and wraps data keys only
+   for authorized controllers, devices, or delegates.
+4. Storage adapters replicate encrypted blobs and manifests to the configured
+   local/IPFS/S3/Filecoin stores. IPFS/Filecoin/S3 availability is a durability
+   concern, not a privacy control.
+5. Users share by choosing a recipient, purpose, records, outputs, expiration,
+   and re-delegation limits. The wallet converts those choices into UCAN-style
+   grants, caveats, and key wraps.
+6. High-impact operations such as plaintext export, precise-location sharing,
+   root authority changes, and long-lived grants require threshold approval
+   when wallet governance config demands it.
+7. Delegates invoke a grant for a concrete operation. The wallet verifies the
+   invocation, caveats, revocation state, user-presence requirements, and output
+   type before any decrypt, proof, analysis, service-match, or export work.
+8. Document analysis, extraction, vector profiles, and GraphRAG run inside the
+   wallet service boundary and persist encrypted derived artifacts. Safe outputs
+   are redacted, purpose-bound, and scoped by UCAN caveats.
+9. Location workflows prefer coarse claims and proof receipts. Precise
+   coordinates remain encrypted unless a grant explicitly authorizes precise
+   access.
+10. Analytics workflows use approved templates, consent receipts, contribution
+    nullifiers, proof receipts, cohort thresholds, differential privacy
+    metadata, query budgets, suppression, and audited release decisions.
+11. Revocation blocks future invocations and can trigger key rotation for active
+    records. The UI must plainly distinguish future-access revocation from data
+    a recipient already downloaded.
+12. Ops checks continuously verify repository persistence, encrypted storage
+    availability, proof backend health, revocation propagation, privacy-budget
+    readability, and release-readiness evidence.
 
 ## Data Model
 
@@ -1156,7 +1284,7 @@ Current implementation evidence:
 | Operator runbook | `docs/WALLET_OPERATIONS_RUNBOOK.md` covers lost keys, revoked grants, proof backend failure, storage outage, privacy incidents, and scheduled worker setup. |
 | Operator/integrator reference | `docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md` publishes the stable wallet API endpoint groups, CLI command list, MCP wallet tools, runtime env surface, privacy boundaries, and release checks. |
 | External verifier contract | `docs/WALLET_PROOF_VERIFIER_CONTRACT.md` defines the HTTP `location_region` and `location_distance` proof verifier health/prove/verify contracts, authentication headers, safe receipt fields, ops validation, and no-witness-leak requirements. `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` and `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` run staging health/prove/verify/no-leak checks against the configured HTTP verifier with synthetic witnesses. |
-| Blackbox staging harness | `tests/test_wallet_production_handoff_blackbox.py` starts a local HTTP verifier stub, runs the production-readiness CLI through a subprocess with production-mode env vars, launches the wallet API with `uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops HTTP endpoints, exercises delegate UCAN decrypt/export grants, signed invocations, encrypted export hash/schema verification/import/storage checks, grant revocation, post-restart grant receipt/audit persistence, runs matching wallet CLI subprocess flows for sharing, export, analytics, import merge, and revocation, validates a completed signoff packet, confirms redacted analysis does not leak email, phone, SSN, precise coordinates, or person-name strings, and proves that a verifier leaking witness data fails the release gate. MCP wallet tests cover the same share/export/import/revoke path plus redacted analysis, form, extraction, vector-profile, GraphRAG, and analytics template/consent/contribution/private-count paths through tool wrappers, dynamic manager discovery, and manager dispatch. `wallet_interface/ui/tests/fullstack-wallet.spec.ts` adds a live API browser blackbox for the 211-AI export and recipient-access UI, including CORS, HTTP wallet seeding, export grant/invocation/bundle creation, verification, storage status, descriptor import, delegated analysis invocation, redacted derived artifacts, GraphRAG, document view, and audit confirmation. |
+| Blackbox staging harness | `scripts/run_wallet_release_checks.py` gives operators a dry-run and executable local release gate for the backend pytest slice, wallet compile check, UI build, and live full-stack browser checks. `tests/test_wallet_production_handoff_blackbox.py` starts a local HTTP verifier stub, runs the production-readiness CLI through a subprocess with production-mode env vars, launches the wallet API with `uvicorn`, drives public wallet/document/location/proof/redaction/analytics/ops HTTP endpoints, exercises delegate UCAN decrypt/export grants, signed invocations, encrypted export hash/schema verification/import/storage checks, grant revocation, post-restart grant receipt/audit persistence, runs matching wallet CLI subprocess flows for sharing, export, analytics, import merge, and revocation, validates a completed signoff packet, confirms redacted analysis does not leak email, phone, SSN, precise coordinates, or person-name strings, and proves that a verifier leaking witness data fails the release gate. MCP wallet tests cover the same share/export/import/revoke path plus redacted analysis, form, extraction, vector-profile, GraphRAG, and analytics template/consent/contribution/private-count paths through tool wrappers, dynamic manager discovery, and manager dispatch. `wallet_interface/ui/tests/fullstack-wallet.spec.ts` adds a live API browser blackbox for the 211-AI export and recipient-access UI, including CORS, HTTP wallet seeding, export grant/invocation/bundle creation, verification, storage status, descriptor import, delegated analysis invocation, redacted derived artifacts, GraphRAG, document view, and audit confirmation. |
 
 Target-environment handoff:
 

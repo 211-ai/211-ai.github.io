@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 PLAN = Path("docs/UCAN_ZK_DATA_WALLET_IMPLEMENTATION_PLAN.md")
+TODO = Path("docs/UCAN_ZK_DATA_WALLET_TODO.md")
 RETENTION_POLICY = Path("docs/WALLET_RETENTION_POLICY.md")
 TARGET_SIGNOFF = Path("docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md")
 TARGET_SIGNOFF_PACKET = Path("docs/WALLET_TARGET_PRODUCTION_SIGNOFF_PACKET.template.json")
@@ -28,6 +29,8 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "python -m wallet_interface.ops --validate-production-readiness" in text
     assert "python -m wallet_interface.ops --validate-distance-proof-contract" in text
     assert "python -m wallet_interface.ops --validate-target-signoff-packet" in text
+    assert "scripts/run_wallet_release_checks.py" in text
+    assert "dry-run and executable local release gate" in text
     assert "person-name strings" in text
     assert "wallet CLI subprocess flows" in text
     assert "MCP wallet tests cover the same share/export/import/revoke path" in text
@@ -41,6 +44,11 @@ def test_ucan_zk_wallet_plan_has_no_unresolved_open_decisions() -> None:
     assert "recipient delegated analysis workflows against the live API" in text
     assert "recipient-access UI" in text
     assert "live API browser blackbox" in text
+    assert "docs/UCAN_ZK_DATA_WALLET_TODO.md" in text
+    assert "scripts/wallet_implementation_daemon.py" in text
+    assert "scripts/wallet_implementation_supervisor.py" in text
+    assert "ipfs_datasets_py.optimizers.todo_daemon" in text
+    assert "manage_implementation_services.py start wallet --no-implement" in text
 
 
 def test_ucan_zk_wallet_phase_table_tracks_gates_not_missing_mvp_work() -> None:
@@ -148,3 +156,22 @@ def test_location_distance_proof_ui_stays_behind_staging_verifier_gate() -> None
     assert "createLocationDistanceProof" not in app_text
     assert "/distance-proofs" not in app_text
     assert "location/prove_distance" not in app_text
+
+
+def test_ucan_zk_wallet_todo_is_connected_to_optimizer_daemon() -> None:
+    plan_text = PLAN.read_text(encoding="utf-8")
+    todo_text = TODO.read_text(encoding="utf-8")
+
+    assert "Executable backlog: `docs/UCAN_ZK_DATA_WALLET_TODO.md`" in plan_text
+    assert "python scripts/manage_implementation_services.py status wallet" in plan_text
+    assert "restart wallet --implement" in plan_text
+    assert "wrapper restart window" in plan_text
+    assert "WALLET-170" in plan_text
+    assert "## WALLET-000 Wallet Control Plane" in todo_text
+    assert "## WALLET-110 End-To-End Release Gate" in todo_text
+    assert "## WALLET-170 Third-Party Sharing Blackbox Harness" in todo_text
+    assert "## WALLET-210 211 Service Partner Pilot Readiness" in todo_text
+    assert "Completion: evidence" in todo_text
+    assert "scripts/wallet_implementation_daemon.py" in todo_text
+    assert "scripts/wallet_implementation_supervisor.py" in todo_text
+    assert "ipfs_datasets_py.optimizers.todo_daemon" in todo_text

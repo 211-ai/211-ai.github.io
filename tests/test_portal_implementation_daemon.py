@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
@@ -11,8 +12,20 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.portal_implementation_daemon import PortalImplementationDaemon, PortalTaskState, parse_task_file
+import scripts.agent_chat_implementation_daemon as agent_daemon_module
 import scripts.portal_implementation_supervisor as supervisor_module
 from scripts.portal_implementation_supervisor import PortalImplementationSupervisor, PortalSupervisorConfig
+from ipfs_datasets_py.optimizers.todo_daemon import (
+    ManagedDaemonSpec,
+    SupervisorLoop,
+    SupervisorLoopDecision,
+    TodoDaemonRunner,
+)
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon import TodoImplementationDaemon, TodoTaskState
+from ipfs_datasets_py.optimizers.todo_daemon.implementation_supervisor import (
+    TodoImplementationSupervisor,
+    TodoSupervisorConfig,
+)
 
 
 def write_todo(path: Path) -> None:
@@ -118,6 +131,135 @@ def init_git_repo(path: Path) -> None:
     subprocess.run(["git", "commit", "-m", "initial"], cwd=path, check=True, capture_output=True, text=True)
 
 
+def test_211_daemon_wrappers_use_shared_ipfs_optimizers_todo_daemon():
+    assert issubclass(PortalImplementationDaemon, TodoImplementationDaemon)
+    assert PortalTaskState is TodoTaskState
+    assert issubclass(PortalImplementationSupervisor, TodoImplementationSupervisor)
+    assert issubclass(PortalSupervisorConfig, TodoSupervisorConfig)
+    assert PortalImplementationDaemon.shared_todo_runner_class is TodoDaemonRunner
+    assert PortalImplementationSupervisor.shared_supervisor_loop_class is SupervisorLoop
+    assert PortalImplementationSupervisor.shared_managed_daemon_spec_class is ManagedDaemonSpec
+
+
+def test_supervisor_builds_shared_ipfs_supervisor_loop_config(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            check_interval=2.0,
+            max_restarts=3,
+        )
+    )
+
+    loop_config = supervisor.build_supervisor_loop_config()
+
+    assert loop_config.spec.task_board_path == todo_path
+    assert loop_config.spec.child_pid_path == state_dir / "portal_managed_daemon.pid"
+    assert loop_config.max_restarts == 3
+    assert Path(loop_config.command[1]).name == "portal_implementation_daemon.py"
+
+
+def test_shared_supervisor_launches_real_daemon_until_task_completion(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    worker = repo_root / "fake_worker.py"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Runtime Todo
+
+## PORTAL-900 Runtime Completion
+- Status: todo
+- Completion: artifact
+- Priority: P0
+- Track: ops
+- Depends on: none
+- Outputs: docs/runtime.md
+- Acceptance: runtime supervisor completes one implementation
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    worker.write_text(
+        """
+from pathlib import Path
+import sys
+
+prompt = sys.stdin.read()
+assert "PORTAL-900" in prompt
+Path("docs").mkdir(exist_ok=True)
+Path("docs/runtime.md").write_text("runtime-ok", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    pythonpath = os.pathsep.join(
+        [
+            str(REPO_ROOT / "ipfs_datasets_py"),
+            str(REPO_ROOT),
+            os.environ.get("PYTHONPATH", ""),
+        ]
+    )
+    monkeypatch.setenv("PYTHONPATH", pythonpath)
+    monkeypatch.setenv("IPFS_DATASETS_AUTO_INSTALL", "false")
+    monkeypatch.setenv("IPFS_AUTO_INSTALL", "false")
+    monkeypatch.setenv("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
+
+    class StopAfterCompletionSupervisor(TodoImplementationSupervisor):
+        def _supervisor_loop_watchdog_decision(self, loop, child, current_status):  # type: ignore[override]
+            state = PortalTaskState.load(self.config.state_path)
+            if state.completed_count >= 1:
+                return SupervisorLoopDecision.stop("task_completed", status="completed")
+            return super()._supervisor_loop_watchdog_decision(loop, child, current_status)
+
+    supervisor = StopAfterCompletionSupervisor(
+        TodoSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            stale_seconds=0.2,
+            check_interval=0.02,
+            max_restarts=5,
+            daemon_interval=0.02,
+            repo_root=repo_root,
+            implement=True,
+            implementation_command=f"{sys.executable} {worker}",
+            implementation_timeout=5.0,
+            use_ephemeral_worktree=False,
+        )
+    )
+
+    supervisor.run_forever()
+    state = PortalTaskState.load(state_dir / "portal_task_state.json")
+    supervisor_status = json.loads((state_dir / "portal_supervisor_status.json").read_text(encoding="utf-8"))
+    supervisor_events = [
+        json.loads(line)
+        for line in (state_dir / "portal_supervisor_events.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    assert state.completed_count == 1
+    assert state.completed_task_ids == ["PORTAL-900"]
+    assert (repo_root / "docs" / "runtime.md").read_text(encoding="utf-8") == "runtime-ok"
+    assert not (state_dir / "portal_managed_daemon.pid").exists()
+    assert supervisor_status["status"] == "completed"
+    assert supervisor_status["restart_count"] == 0
+    assert supervisor_events[-1]["type"] == "supervisor_loop_finished"
+    assert supervisor_events[-1]["status"] == "completed"
+
+
 def test_parse_task_file_reads_machine_friendly_markdown(tmp_path):
     todo_path = tmp_path / "todo.md"
     write_todo(todo_path)
@@ -139,6 +281,65 @@ def test_parse_task_file_supports_agent_task_prefix(tmp_path):
     assert [task.task_id for task in tasks] == ["AGENT-000", "AGENT-010"]
     assert tasks[0].outputs == ["docs/agent.md"]
     assert tasks[1].depends_on == ["AGENT-000"]
+
+
+def test_agent_chat_daemon_requires_explicit_implement_flag(tmp_path):
+    todo_path = tmp_path / "agent_todo.md"
+    state_dir = tmp_path / "state"
+    fake_worker = tmp_path / "fake_worker.py"
+    marker = tmp_path / "ran.txt"
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        f"from pathlib import Path\nPath({str(marker)!r}).write_text('ran', encoding='utf-8')\n",
+        encoding="utf-8",
+    )
+
+    agent_daemon_module.main(
+        [
+            "--once",
+            "--todo-path",
+            str(todo_path),
+            "--state-dir",
+            str(state_dir),
+            "--implementation-command",
+            f"{sys.executable} {fake_worker}",
+            "--no-ephemeral-worktree",
+        ]
+    )
+
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+    assert state.active_task_id == "AGENT-000"
+    assert not marker.exists()
+
+
+def test_agent_chat_daemon_runs_when_implement_flag_is_explicit(tmp_path):
+    todo_path = tmp_path / "agent_todo.md"
+    state_dir = tmp_path / "state"
+    fake_worker = tmp_path / "fake_worker.py"
+    marker = tmp_path / "ran.txt"
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        f"from pathlib import Path\nPath({str(marker)!r}).write_text('ran', encoding='utf-8')\n",
+        encoding="utf-8",
+    )
+
+    agent_daemon_module.main(
+        [
+            "--once",
+            "--todo-path",
+            str(todo_path),
+            "--state-dir",
+            str(state_dir),
+            "--implement",
+            "--implementation-command",
+            f"{sys.executable} {fake_worker}",
+            "--no-ephemeral-worktree",
+        ]
+    )
+
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+    assert state.last_implementation_task_id == "AGENT-000"
+    assert marker.read_text(encoding="utf-8") == "ran"
 
 
 def test_daemon_selects_agent_tasks_with_custom_prefix(tmp_path):
@@ -1024,6 +1225,86 @@ def test_daemon_shared_node_modules_link_does_not_create_baseline_commit(tmp_pat
     assert baseline_ref == head_before
 
 
+def test_daemon_initializes_declared_worktree_submodules_before_validation(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    worktree = tmp_path / "worktree"
+    repo_root.mkdir(parents=True)
+    worktree.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    (worktree / ".gitmodules").write_text(
+        """
+[submodule "ipfs_datasets_py"]
+    path = ipfs_datasets_py
+    url = ../ipfs_datasets_py
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+    calls: list[tuple[list[str], Path]] = []
+
+    def fake_run_git(args: list[str], *, cwd: Path) -> subprocess.CompletedProcess[str]:
+        calls.append((args, cwd))
+        return subprocess.CompletedProcess(["git", *args], 0, "", "")
+
+    daemon._run_git = fake_run_git  # type: ignore[method-assign]
+
+    daemon._initialize_worktree_submodules(worktree)
+
+    assert calls == [
+        (
+            ["submodule", "update", "--init", "--recursive", "--", "ipfs_datasets_py"],
+            worktree,
+        )
+    ]
+
+
+def test_daemon_links_local_declared_submodule_into_worktree(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    worktree = tmp_path / "worktree"
+    repo_root.mkdir(parents=True)
+    worktree.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    local_submodule = repo_root / "ipfs_datasets_py" / "ipfs_datasets_py" / "wallet"
+    local_submodule.mkdir(parents=True)
+    (local_submodule / "__init__.py").write_text("", encoding="utf-8")
+    (worktree / ".gitmodules").write_text(
+        """
+[submodule "ipfs_datasets_py"]
+    path = ipfs_datasets_py
+    url = ../ipfs_datasets_py
+""".lstrip(),
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+
+    daemon._initialize_worktree_submodules(worktree)
+
+    target = worktree / "ipfs_datasets_py"
+    assert target.is_symlink()
+    assert target.resolve() == (repo_root / "ipfs_datasets_py").resolve()
+    assert (target / "ipfs_datasets_py" / "wallet" / "__init__.py").exists()
+
+
 def test_daemon_worktree_starts_from_committed_head_without_dirty_workspace_seed(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
@@ -1067,6 +1348,92 @@ def test_daemon_worktree_starts_from_committed_head_without_dirty_workspace_seed
     assert status == ""
 
 
+def test_daemon_seeds_untracked_context_files_into_ephemeral_worktree(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Control Plane
+- Status: todo
+- Completion: artifact
+- Priority: P0
+- Track: platform
+- Depends on: none
+- Outputs: docs/agent.md
+- Validation: python scripts/run_release_check.py
+- Acceptance: agent control plane exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_worker.write_text(
+        """
+from pathlib import Path
+
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+    validation_script = repo_root / "scripts" / "run_release_check.py"
+    validation_fixture = repo_root / "tests" / "release_fixture.py"
+    validation_script.parent.mkdir(parents=True)
+    validation_fixture.parent.mkdir(parents=True)
+    validation_script.write_text(
+        """
+from pathlib import Path
+
+assert Path("tests/release_fixture.py").read_text(encoding="utf-8") == "VALUE = 42\\n"
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    validation_fixture.write_text("VALUE = 42\n", encoding="utf-8")
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+
+    assert implementation["returncode"] == 0
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["merge_result"]["merged"] is True
+    assert implementation["merge_result"]["identical_untracked_paths"] == [
+        "scripts/run_release_check.py",
+        "tests/release_fixture.py",
+    ]
+    assert (repo_root / "scripts" / "run_release_check.py").read_text(encoding="utf-8") == validation_script.read_text(
+        encoding="utf-8"
+    )
+    tracked = subprocess.run(
+        ["git", "ls-files", "scripts/run_release_check.py", "tests/release_fixture.py"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.splitlines()
+    assert tracked == ["scripts/run_release_check.py", "tests/release_fixture.py"]
+
+
 def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
@@ -1091,6 +1458,21 @@ def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     )
     tracked_artifact.parent.mkdir(parents=True, exist_ok=True)
     tracked_artifact.write_bytes(b"png")
+    tracked_iteration_artifact = (
+        repo_root
+        / "wallet_interface"
+        / "ui"
+        / "artifacts"
+        / "ui-iterations"
+        / "latest"
+        / "desktop"
+        / "home.png"
+    )
+    tracked_iteration_artifact.parent.mkdir(parents=True, exist_ok=True)
+    tracked_iteration_artifact.write_bytes(b"iteration")
+    tracked_pycache = repo_root / "wallet_interface" / "__pycache__" / "api.cpython-312.pyc"
+    tracked_pycache.parent.mkdir(parents=True, exist_ok=True)
+    tracked_pycache.write_bytes(b"stable-pyc")
     init_git_repo(repo_root)
 
     daemon = PortalImplementationDaemon(
@@ -1109,6 +1491,8 @@ def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     (worktree / "docs" / "agent.md").write_text("implemented", encoding="utf-8")
     (worktree / "wallet_interface" / "ui" / "dist" / "index.html").write_text("<html>generated</html>\n", encoding="utf-8")
     (worktree / "wallet_interface" / "ui" / "artifacts" / "ui-screenshots" / "latest" / "desktop" / "home.png").unlink()
+    (worktree / "wallet_interface" / "ui" / "artifacts" / "ui-iterations" / "latest" / "desktop" / "home.png").unlink()
+    (worktree / "wallet_interface" / "__pycache__" / "api.cpython-312.pyc").write_bytes(b"generated-pyc")
 
     task = parse_task_file(todo_path, "## AGENT-")[0]
     commit_result = daemon._commit_worktree_changes(worktree, task, 1)
@@ -1397,6 +1781,62 @@ def test_daemon_marks_output_backed_tasks_completed_and_selects_next(tmp_path):
     assert state.waiting_task_ids == ["PORTAL-020"]
 
 
+def test_daemon_resolves_dependencies_against_later_artifact_complete_tasks(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = repo_root / "state"
+    (repo_root / "wallet_interface" / "ui" / "src" / "agent").mkdir(parents=True)
+    (repo_root / "wallet_interface" / "ui" / "src" / "agent" / "promptGuards.ts").write_text(
+        "export const guards = true;\n",
+        encoding="utf-8",
+    )
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-035 Agent Session Memory
+- Status: todo
+- Completion: artifact
+- Priority: P1
+- Track: agent
+- Depends on: AGENT-050
+- Outputs: wallet_interface/ui/src/agent/agentMemory.ts
+- Validation: python -c "print('memory-ok')"
+- Acceptance: memory exists
+
+## AGENT-050 Prompt Redaction Guards
+- Status: todo
+- Completion: artifact
+- Priority: P0
+- Track: privacy
+- Depends on: none
+- Outputs: wallet_interface/ui/src/agent/promptGuards.ts
+- Validation: python -c "print('guards-ok')"
+- Acceptance: guards exist
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="## AGENT-",
+    )
+
+    result = daemon.run_once()
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+
+    assert result["completed_count"] == 1
+    assert state.completed_task_ids == ["AGENT-050"]
+    assert state.ready_task_ids == ["AGENT-035"]
+    assert state.waiting_task_ids == []
+    assert state.active_task_id == "AGENT-035"
+
+
 def test_supervisor_rewrites_strategy_for_stale_task(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "todo.md"
@@ -1443,6 +1883,63 @@ def test_supervisor_rewrites_strategy_for_stale_task(tmp_path):
     assert strategy["generation"] == 1
     assert "PORTAL-010" in strategy["deprioritized_tasks"]
     assert strategy["focus_tracks"][-1] == "data"
+
+
+def test_supervisor_does_not_flag_recent_inflight_implementation_as_stuck(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+    state_dir.mkdir(parents=True)
+
+    stale_time = (datetime.now(timezone.utc) - timedelta(hours=2)).isoformat()
+    recent_start = (datetime.now(timezone.utc) - timedelta(seconds=30)).isoformat()
+    state = PortalTaskState(
+        heartbeat_at=stale_time,
+        last_progress_at=stale_time,
+        active_task_id="PORTAL-010",
+        active_task_title="Builder",
+        active_task_track="data",
+        active_task_started_at=stale_time,
+        active_attempt=2,
+        active_phase="implementing",
+        active_phase_started_at=recent_start,
+        active_log_path="logs/portal-010.log",
+        active_worktree_path="/tmp/portal-010",
+        active_branch="implementation/portal-010-attempt-2",
+        implementation_in_progress=True,
+        completed_task_ids=["PORTAL-000"],
+        ready_task_ids=["PORTAL-010"],
+        task_statuses={"PORTAL-000": "completed", "PORTAL-010": "ready"},
+        last_implementation_task_id="PORTAL-010",
+        last_implementation_started_at=recent_start,
+        last_implementation_finished_at="",
+        completed_count=1,
+        ready_count=1,
+        task_count=3,
+    )
+    state.save(state_dir / "portal_task_state.json")
+
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            stale_seconds=60.0,
+            check_interval=1.0,
+            max_restarts=1,
+            daemon_interval=60.0,
+            implement=True,
+            implementation_timeout=600.0,
+        )
+    )
+
+    result = supervisor.run_once()
+
+    assert result["stuck"] is False
 
 
 def test_supervisor_starts_managed_daemon_from_repo_root(tmp_path, monkeypatch):
@@ -1537,6 +2034,7 @@ def test_supervisor_adopts_existing_managed_daemon_pid(tmp_path, monkeypatch):
             events_path=state_dir / "portal_supervisor_events.jsonl",
             state_dir=state_dir,
             state_prefix="portal",
+            implement=True,
         )
     )
 
@@ -1544,6 +2042,43 @@ def test_supervisor_adopts_existing_managed_daemon_pid(tmp_path, monkeypatch):
 
     assert adopted is not None
     assert adopted.pid == 43210
+
+
+def test_monitor_only_supervisor_rejects_implementation_mode_daemon(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "todo.md"
+    state_dir = repo_root / "state"
+    repo_root.mkdir(parents=True)
+    write_todo(todo_path)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    pid_path = state_dir / "portal_managed_daemon.pid"
+    pid_path.write_text("43210\n", encoding="utf-8")
+
+    monkeypatch.setattr(supervisor_module, "process_is_running", lambda pid: pid == 43210)
+    monkeypatch.setattr(
+        supervisor_module,
+        "process_command_line",
+        lambda pid: (
+            f"python portal_implementation_daemon.py --todo-path {todo_path} "
+            f"--state-dir {state_dir} --state-prefix portal --implement"
+        ),
+    )
+
+    supervisor = PortalImplementationSupervisor(
+        PortalSupervisorConfig(
+            todo_path=todo_path,
+            state_path=state_dir / "portal_task_state.json",
+            strategy_path=state_dir / "portal_strategy.json",
+            events_path=state_dir / "portal_supervisor_events.jsonl",
+            state_dir=state_dir,
+            state_prefix="portal",
+        )
+    )
+
+    adopted = supervisor._adopt_existing_daemon()
+
+    assert adopted is None
+    assert not pid_path.exists()
 
 
 def test_supervisor_rejects_managed_daemon_with_wrong_implement_mode(tmp_path, monkeypatch):
