@@ -116,6 +116,12 @@ prove, verify, and no-witness-leak contract using synthetic witnesses, then
 checks the completed retention, credential-reference, staging-artifact, and
 organization-review packet.
 
+For repository CI without target `WALLET_*` readiness variables,
+`--validate-production-readiness` runs a local synthetic verifier self-check.
+In staging and production, set the target env vars above so the same command
+validates the real repository, storage, secret-manager references, alert route,
+and verifier service.
+
 The Cloudflare Worker assets are reference glue only. They do not replace the
 Python API or local `wallet_interface.ops` worker; they front or trigger those
 services.

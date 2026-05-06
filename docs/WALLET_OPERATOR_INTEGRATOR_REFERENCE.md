@@ -347,21 +347,13 @@ redaction policies, and audit boundaries as the Python service API.
 Before a production release:
 
 ```bash
-PYTHONPATH=/path/to/211-AI/ipfs_datasets_py \
-IPFS_DATASETS_AUTO_INSTALL=false \
-IPFS_AUTO_INSTALL=false \
-IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
-python -m pytest \
-  ipfs_datasets_py/tests/unit/test_data_wallet.py \
-  ipfs_datasets_py/tests/mcp/test_wallet_tools.py \
-  ipfs_datasets_py/tests/mcp/unit/test_hierarchical_tool_manager.py \
-  tests/test_wallet_interface_api.py \
-  tests/test_wallet_production_handoff_blackbox.py -q
-
-python -m compileall -q wallet_interface ipfs_datasets_py/ipfs_datasets_py/wallet
-cd wallet_interface/ui && npm run build
-PLAYWRIGHT_PORT=5185 npm run test:fullstack
+python scripts/run_wallet_release_checks.py --playwright-port 5185
 ```
+
+The runner executes the backend wallet pytest targets, compileall, UI build,
+and live full-stack Playwright checks in order. Non-dry runs write a
+manifest/results evidence bundle under `artifacts/wallet-release-checks/` by
+default; archive that bundle with the target signoff packet.
 
 The blackbox suite runs the wallet API through `uvicorn` and covers production
 readiness, target signoff packet validation, external verifier no-witness-leak
@@ -395,3 +387,11 @@ python -m wallet_interface.ops --validate-production-readiness
 python -m wallet_interface.ops \
   --validate-target-signoff-packet /path/to/target-signoff.json
 ```
+
+If no target `WALLET_*` readiness variables are configured,
+`python -m wallet_interface.ops --validate-production-readiness` runs a local
+synthetic verifier self-check so CI can exercise the release-gate code path.
+Any configured target readiness variables switch the command back to strict
+target validation. Running `--validate-target-signoff-packet` without a path
+validates the committed packet template shape; a human launch decision requires
+the completed packet path form shown above.
