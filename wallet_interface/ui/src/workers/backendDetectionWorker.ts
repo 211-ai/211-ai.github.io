@@ -1,5 +1,8 @@
 import { detectBrowserMlBackends } from "../lib/backendDetection";
 import type { BackendDetectionOptions, BackendDetectionResult } from "../lib/backendDetection";
+import { installWarningSuppression } from "../lib/warningSuppressionUtils";
+
+installWarningSuppression();
 
 type BackendDetectionWorkerRequest =
   | {

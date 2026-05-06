@@ -1,8 +1,10 @@
 import { env, pipeline } from "@xenova/transformers";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
+import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
+installWarningSuppression();
 
 type LlmWorkerRequest =
   | {
@@ -207,7 +209,7 @@ function configureTransformersRuntime(): void {
     };
   };
   if (backends.onnx?.wasm) {
-    backends.onnx.wasm.numThreads = Math.min(navigator.hardwareConcurrency || 4, 8);
+    backends.onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
     backends.onnx.wasm.simd = capabilities.simd && LLM_CONFIG.enableSIMD;
   }
 }
