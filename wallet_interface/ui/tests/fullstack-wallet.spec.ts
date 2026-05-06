@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { spawn, type ChildProcess } from "node:child_process";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -18,6 +18,11 @@ type WalletRecord = {
 
 type WalletGrant = {
   grant_id: string;
+};
+
+type PageDiagnostics = {
+  apiErrors: string[];
+  browserErrors: string[];
 };
 
 const repoRoot = path.resolve(process.cwd(), "../..");
@@ -153,6 +158,40 @@ function walletRoute(
   return `/?${query.toString()}#/${route}`;
 }
 
+function collectPageDiagnostics(page: Page, apiBaseUrl: string): PageDiagnostics {
+  const diagnostics: PageDiagnostics = {
+    apiErrors: [],
+    browserErrors: []
+  };
+  page.on("pageerror", (error) => {
+    diagnostics.browserErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      diagnostics.browserErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (!response.url().startsWith(apiBaseUrl) || response.status() < 400) return;
+    void response.text().then((body) => {
+      diagnostics.apiErrors.push(`${response.status()} ${new URL(response.url()).pathname}: ${body.slice(0, 500)}`);
+    });
+  });
+  return diagnostics;
+}
+
+async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics: PageDiagnostics) {
+  await expect.poll(() => diagnostics.browserErrors).toEqual([]);
+  await expect(page.getByRole("heading", { name }))
+    .toBeVisible({ timeout: 15_000 })
+    .catch(async (error) => {
+      const body = await page.locator("body").innerText({ timeout: 1_000 }).catch(() => "");
+      throw new Error(
+        `${error instanceof Error ? error.message : String(error)}\nURL: ${page.url()}\nBody: ${body.slice(0, 2_000)}`
+      );
+    });
+}
+
 test("export center works against a live wallet API", async ({ page }) => {
   const api = await startWalletApi();
   const ownerDid = "did:key:fullstack-owner";
@@ -161,13 +200,7 @@ test("export center works against a live wallet API", async ({ page }) => {
   const delegateKeyHex = "22".repeat(32);
 
   try {
-    const apiErrors: string[] = [];
-    page.on("response", (response) => {
-      if (!response.url().startsWith(api.baseUrl) || response.status() < 400) return;
-      void response.text().then((body) => {
-        apiErrors.push(`${response.status()} ${new URL(response.url()).pathname}: ${body.slice(0, 500)}`);
-      });
-    });
+    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
     const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
     const document = await apiJson<WalletRecord>(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/documents/text`, {
       actor_did: ownerDid,
@@ -188,7 +221,7 @@ test("export center works against a live wallet API", async ({ page }) => {
         issuerKeyHex: ownerKeyHex
       })
     );
-    await expect(page.getByRole("heading", { name: /Shareable wallet bundles/i })).toBeVisible({ timeout: 15_000 });
+    await visibleHeadingOrDiagnostics(page, /Shareable wallet bundles/i, diagnostics);
     await page.getByLabel(/Recipient DID/i).fill(delegateDid);
     await page.getByLabel(/Recipient label/i).fill("Full-stack Clinic");
     await page.getByLabel(/Purpose/i).fill("benefits_portability");
@@ -236,13 +269,7 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
   ].join("\n");
 
   try {
-    const apiErrors: string[] = [];
-    page.on("response", (response) => {
-      if (!response.url().startsWith(api.baseUrl) || response.status() < 400) return;
-      void response.text().then((body) => {
-        apiErrors.push(`${response.status()} ${new URL(response.url()).pathname}: ${body.slice(0, 500)}`);
-      });
-    });
+    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
     const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
     const document = await apiJson<WalletRecord>(
       api.baseUrl,
@@ -285,7 +312,7 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
         audienceKeyHex: delegateKeyHex
       })
     );
-    await expect(page.getByRole("heading", { name: /Requests to see my info/i })).toBeVisible({ timeout: 15_000 });
+    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
     const receipt = page.getByRole("article", { name: /Fullstack Clinic/i }).filter({ hasText: "Share proof code" });
     await expect(receipt).toBeVisible({ timeout: 15_000 });
 
@@ -294,21 +321,21 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
     await expect(receipt.getByText(document.record_id)).toBeVisible();
 
     await receipt.getByRole("button", { name: /Redacted analysis/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt).toContainText("redacted_document_analysis · redacted_derived_only", { timeout: 15_000 });
     await expect(receipt.getByText(/jane@example\.org/i)).toHaveCount(0);
     await expect(receipt.getByText(/503-555-1212/i)).toHaveCount(0);
     await expect(receipt.getByText(/123-45-6789/i)).toHaveCount(0);
 
     await receipt.getByRole("button", { name: /Vector profile/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt).toContainText("redacted_document_vector_profile · encrypted_vector_profile", {
       timeout: 15_000
     });
     await expect(receipt).toContainText("redacted_lexical_hash_vector");
 
     await receipt.getByRole("button", { name: /Extract text/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt).toContainText("redacted_document_text_extraction · redacted_extracted_text", {
       timeout: 15_000
     });
@@ -318,19 +345,19 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
     await expect(receipt.getByText(/123-45-6789/i)).toHaveCount(0);
 
     await receipt.getByRole("button", { name: /Analyze form/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt).toContainText("redacted_document_form_analysis · redacted_form_analysis", {
       timeout: 15_000
     });
     await expect(receipt).toContainText("redacted fields");
 
     await receipt.getByRole("button", { name: /Build GraphRAG/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt).toContainText("redacted_document_graphrag · redacted_graphrag", { timeout: 15_000 });
     await expect(receipt).toContainText("redacted_category_entity_graph");
 
     await receipt.getByRole("button", { name: /View document/i }).click();
-    await expect.poll(() => apiErrors).toEqual([]);
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
     await expect(receipt.getByText(plaintext)).toBeVisible();
     await expect(receipt.getByText(`${plaintext.length} bytes`)).toBeVisible();
 
