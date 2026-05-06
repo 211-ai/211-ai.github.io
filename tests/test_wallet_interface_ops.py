@@ -7,10 +7,12 @@ from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
     WalletOpsHealthWorker,
     main,
+    validate_local_production_readiness_self_check,
     validate_distance_proof_contract,
     validate_production_readiness,
     validate_proof_contract,
     validate_target_signoff_packet,
+    validate_target_signoff_packet_template,
 )
 from wallet_interface.proof_backends import HttpLocationRegionProofBackend
 
@@ -442,6 +444,53 @@ def test_ops_cli_accepts_target_signoff_packet_validation_flag(tmp_path) -> None
     }
 
 
+def test_ops_cli_validates_committed_signoff_template_without_packet_path(tmp_path) -> None:
+    output_path = tmp_path / "ops" / "target-signoff-template-validation.jsonl"
+
+    exit_code = main(
+        [
+            "--validate-target-signoff-packet",
+            "--output-jsonl",
+            str(output_path),
+        ]
+    )
+
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert report["status"] == "ok"
+    assert report["summary"] == "target production signoff packet template validation completed"
+    assert {check["status"] for check in report["checks"]} == {"ok"}
+
+
+def test_validate_target_signoff_packet_template_accepts_committed_template() -> None:
+    report = validate_target_signoff_packet_template()
+
+    assert report["status"] == "ok"
+    assert {check["name"] for check in report["checks"]} >= {
+        "template_sections",
+        "template_environment_fields",
+        "template_review_areas",
+        "template_artifact_refs",
+    }
+
+
+def test_local_production_readiness_self_check_passes_without_target_env() -> None:
+    report = validate_local_production_readiness_self_check(verify_storage=False)
+
+    assert report["status"] == "ok"
+    assert report["mode"] == "local_self_check"
+    assert {check["name"]: check["status"] for check in report["checks"]} == {
+        "persistence_environment": "ok",
+        "proof_environment": "ok",
+        "proof_credentials": "ok",
+        "ops_credentials": "ok",
+        "secret_manager_references": "ok",
+        "ops_health": "ok",
+        "proof_contract": "ok",
+        "distance_proof_contract": "ok",
+    }
+
+
 def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> None:
     packet_path = tmp_path / "target-signoff.json"
     packet = {
@@ -466,6 +515,7 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "storage_credentials": "secret://staging/wallet/storage",
         },
         "artifact_refs": {
+            "release_check_evidence": "evidence://wallet/release-checks/2026-05-05",
             "readiness_report": "evidence://wallet/readiness/2026-05-05",
             "ops_health_report": "evidence://wallet/ops-health/2026-05-05",
             "proof_contract_report": "evidence://wallet/proof-contract/2026-05-05",
