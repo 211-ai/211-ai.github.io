@@ -31,6 +31,10 @@ remains the human-readable reviewer guide. The packet validator requires the
 environment record to include the approved `retention_policy_version` that
 matches the target retention mapping.
 
+Running `python -m wallet_interface.ops --validate-target-signoff-packet`
+without a packet path validates the committed JSON template shape only. A
+launch decision still requires validating the completed target packet path.
+
 ## Environment Record
 
 | Field | Value |
@@ -49,6 +53,7 @@ matches the target retention mapping.
 | Proof verifier service URL or private service name |  |
 | Proof verifier ID |  |
 | Proof system |  |
+| Release-check evidence artifact |  |
 | Readiness report artifact |  |
 | Ops-health report artifact |  |
 | Proof contract report artifact |  |
@@ -60,6 +65,7 @@ matches the target retention mapping.
 | Gate | Required Evidence | Status |
 | --- | --- | --- |
 | Production readiness | `python -m wallet_interface.ops --validate-production-readiness` returns `status=ok` in the target environment |  |
+| Release-check archive | `python scripts/run_wallet_release_checks.py --playwright-port 5185` passes and its evidence bundle is archived |  |
 | Durable wallet repository | `WALLET_REPOSITORY_ROOT` or equivalent managed datastore is configured, backed up, and covered by lifecycle policy |  |
 | Encrypted storage replicas | `WALLET_STORAGE_CONFIG` and provider credentials are configured without placeholder values |  |
 | External proof verifier | HTTP verifier health/prove/verify/no-leak contract passes with real staging credentials |  |
