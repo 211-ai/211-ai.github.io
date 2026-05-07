@@ -29,6 +29,12 @@ export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
 export WALLET_OPS_HEALTH_SECRET_REF=secret-manager://replace-me
 export WALLET_OPS_ALERT_SECRET_REF=secret-manager://replace-me
 export WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://replace-me
+export WALLET_STORAGE_RETENTION_POLICY_REF=docs/WALLET_RETENTION_POLICY.md@2026-05-05
+export WALLET_STORAGE_IPFS_PINNING_POLICY_REF=replace-with-private-ipfs-pinset-policy-id
+export WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF=replace-with-filecoin-deal-policy-id-or-not-used
+export WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF=replace-with-s3-lifecycle-policy-id
+export WALLET_BACKUP_PURGE_POLICY_REF=replace-with-backup-purge-policy-id
+export WALLET_ALERT_RETENTION_POLICY_REF=replace-with-alert-retention-policy-id
 export WALLET_PROOF_BACKEND=http-location-region
 export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
@@ -62,6 +68,15 @@ Required production environment:
 - `WALLET_STORAGE_CONFIG`: encrypted blob storage config. Use replicated
   storage for production, for example local primary plus S3/IPFS/Filecoin
   mirrors.
+- `WALLET_STORAGE_RETENTION_POLICY_REF`,
+  `WALLET_STORAGE_IPFS_PINNING_POLICY_REF`,
+  `WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF`,
+  `WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF`,
+  `WALLET_BACKUP_PURGE_POLICY_REF`, and
+  `WALLET_ALERT_RETENTION_POLICY_REF`: non-secret policy/evidence references
+  used by target operations to tie encrypted replica retention to IPFS pinning,
+  Filecoin deal expiration, S3 lifecycle, backup purge, and alert-retention
+  controls.
 - `WALLET_PROOF_MODE=production`: disables simulated proof acceptance.
 - `WALLET_PROOF_BACKEND`: production verifier backend selection. Supported
   values now include `http-location-region` for an external verifier service.
@@ -93,6 +108,24 @@ Required production environment:
   `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
   `WALLET_STORAGE_CREDENTIAL_SECRET_REF`: non-secret secret-manager reference
   paths required by the production readiness report and target signoff packet.
+
+Target IPFS/Filecoin/S3 storage operations:
+
+- Use `wallet_interface/deploy/storage-retention.example.json` as the provider
+  mapping template. Store the completed copy in the target evidence system, not
+  in git.
+- Keep live `WALLET_STORAGE_CONFIG` pointed at providers that the API runtime
+  can instantiate. Filecoin mirrors require the deployment to inject a
+  Filecoin-capable backend into `WalletInterfaceService`; leave Filecoin marked
+  `not-used` in the target mapping until that provider is present.
+- Run `GET /ops/health?verify_storage=true`, repair failed records with
+  `POST /wallets/{wallet_id}/records/{record_id}/storage/repair` or
+  `POST /wallets/{wallet_id}/storage/repair`, then run
+  `python -m wallet_interface.ops --validate-production-readiness`.
+- Storage repair evidence must show ciphertext hashes, storage types, failure
+  counts, and repaired replica counts only. Plaintext wallet data, proof
+  witnesses, precise coordinates, storage credentials, and alert/proof tokens
+  must not appear in repair output or alert payloads.
 
 The included compose file uses local volumes and defaults to the deterministic
 location-region proof backend as an integration-safe production-mode stand-in.

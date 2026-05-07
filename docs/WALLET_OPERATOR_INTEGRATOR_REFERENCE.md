@@ -41,6 +41,11 @@ WALLET_OPS_HEALTH_SECRET_REF=secret-manager://wallet/prod/ops-health
 WALLET_OPS_ALERT_SECRET_REF=secret-manager://wallet/prod/ops-alert
 WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/proof-verifier
 WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/storage
+WALLET_STORAGE_IPFS_PINNING_POLICY_REF=policy://wallet/prod/ipfs-pinset
+WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF=policy://wallet/prod/filecoin-deals
+WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF=policy://wallet/prod/s3-lifecycle
+WALLET_BACKUP_PURGE_POLICY_REF=policy://wallet/prod/backup-purge
+WALLET_ALERT_RETENTION_POLICY_REF=policy://wallet/prod/alert-retention
 WALLET_API_CORS_ORIGINS=https://wallet-ui.example.com
 ```
 
@@ -66,6 +71,11 @@ Optional production settings:
   included in readiness and signoff evidence so operators can prove real
   verifier, storage, ops-health, and alert credentials are provisioned without
   printing credential values.
+- The storage and alert `*_POLICY_REF` variables are not secrets. Use them to
+  connect the deployed encrypted replica topology to IPFS pinning, Filecoin
+  deal expiration, S3 lifecycle, backup purge, and alert-retention evidence.
+  The target mapping template is
+  `wallet_interface/deploy/storage-retention.example.json`.
 
 Secret templates live at:
 
