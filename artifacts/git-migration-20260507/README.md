@@ -59,6 +59,7 @@ These archive family branches were built with `ours`-strategy merges so that the
 	`git -C /home/barberb/211-AI push origin archive/rescue-portal-family-20260507`
 	`git -C /home/barberb/211-AI push origin archive/rescue-wallet210-family-20260507`
 	`git -C /home/barberb/211-AI push origin archive/rescue-misc-family-20260507`
+	or run `artifacts/git-migration-20260507/push-compact-migration.sh`
 2. If you want every original branch name preserved on the new remote, use the full-fidelity branch list in `PUSH_PLAN.md` instead.
 3. Push tags if needed: `git -C /home/barberb/211-AI push origin --tags`
 4. Keep the external bundle at `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle` until the new remote has been verified.

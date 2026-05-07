@@ -46,7 +46,16 @@ git -C /home/barberb/211-AI push origin archive/rescue-wallet210-family-20260507
 git -C /home/barberb/211-AI push origin archive/rescue-misc-family-20260507
 ```
 
+<<<<<<< HEAD
 >>>>>>> 028a5400 (Document compact migration branch set)
+=======
+Helper script:
+
+```bash
+artifacts/git-migration-20260507/push-compact-migration.sh
+```
+
+>>>>>>> 148c48eb (Add compact migration helper script)
 ## Phase 1: Push immediately
 
 These branches should be pushed first if you are using the full-fidelity branch-preservation path instead of the compact option above.
