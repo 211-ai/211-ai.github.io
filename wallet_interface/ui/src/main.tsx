@@ -8,3 +8,18 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <App />
   </React.StrictMode>
 );
+
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    const serviceWorkerBaseUrl = new URL(import.meta.env.BASE_URL || "./", window.location.href);
+    const serviceWorkerUrl = new URL("service-worker.js", serviceWorkerBaseUrl);
+    void navigator.serviceWorker
+      .register(serviceWorkerUrl, {
+        scope: serviceWorkerBaseUrl.href,
+        type: "module"
+      })
+      .catch((error) => {
+        console.warn("Abby offline shell registration failed", error);
+      });
+  });
+}

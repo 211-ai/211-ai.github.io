@@ -888,6 +888,7 @@ export async function addBinaryDocument(
   form.set("file", file, file.name);
   const response = await fetch(url, {
     body: form,
+    cache: "no-store",
     method: "POST"
   });
   if (!response.ok) {
@@ -1923,7 +1924,7 @@ async function toUploadItemViewWithStorage(
 }
 
 async function fetchJson<T>(url: URL, label: string): Promise<T> {
-  const response = await fetch(url);
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`${label} request failed with status ${response.status}`);
   }
@@ -1933,6 +1934,7 @@ async function fetchJson<T>(url: URL, label: string): Promise<T> {
 async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
+    cache: "no-store",
     headers: { "Content-Type": "application/json" },
     method: "POST"
   });
@@ -1945,6 +1947,7 @@ async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
 async function patchJson<T>(url: URL, label: string, body: unknown): Promise<T> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
+    cache: "no-store",
     headers: { "Content-Type": "application/json" },
     method: "PATCH"
   });
