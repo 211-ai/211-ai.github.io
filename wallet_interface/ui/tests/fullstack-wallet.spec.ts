@@ -18,11 +18,26 @@ type WalletRecord = {
 
 type WalletGrant = {
   grant_id: string;
+  status?: string;
 };
 
 type PageDiagnostics = {
   apiErrors: string[];
   browserErrors: string[];
+};
+
+type WalletRecordsResponse = {
+  records: WalletRecord[];
+};
+
+type WalletProof = {
+  proof_id: string;
+  proof_type: string;
+  public_inputs: Record<string, unknown>;
+};
+
+type WalletAuditResponse = {
+  events: Array<{ action: string; grant_id?: string | null; resource?: string }>;
 };
 
 const repoRoot = path.resolve(process.cwd(), "../..");
@@ -51,16 +66,27 @@ function freePort(): Promise<number> {
 }
 
 async function apiJson<T>(baseUrl: string, method: string, route: string, payload?: unknown): Promise<T> {
+  const { body, status } = await apiJsonResponse<T>(baseUrl, method, route, payload);
+  if (status < 200 || status >= 300) {
+    throw new Error(`${method} ${route} failed with ${status}: ${JSON.stringify(body)}`);
+  }
+  return body;
+}
+
+async function apiJsonResponse<T>(
+  baseUrl: string,
+  method: string,
+  route: string,
+  payload?: unknown
+): Promise<{ body: T; status: number }> {
   const response = await fetch(new URL(route, baseUrl), {
     body: payload === undefined ? undefined : JSON.stringify(payload),
     headers: payload === undefined ? undefined : { "content-type": "application/json" },
     method
   });
-  const body = (await response.json()) as T;
-  if (!response.ok) {
-    throw new Error(`${method} ${route} failed with ${response.status}: ${JSON.stringify(body)}`);
-  }
-  return body;
+  const text = await response.text();
+  const body = (text ? JSON.parse(text) : {}) as T;
+  return { body, status: response.status };
 }
 
 async function startWalletApi(): Promise<ApiServer> {
@@ -397,6 +423,222 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
           "invocation/verify"
         ])
       );
+  } finally {
+    await stopWalletApi(api);
+  }
+});
+
+test("211 service partner pilot workflow is visible through the live UI and wallet API", async ({ page }) => {
+  const api = await startWalletApi();
+  const ownerDid = "did:key:pilot-owner";
+  const ownerKeyHex = "55".repeat(32);
+  const partnerDid = "did:key:pilot-partner";
+  const partnerKeyHex = "66".repeat(32);
+  const exactLat = 45.515232;
+  const exactLon = -122.678385;
+
+  try {
+    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
+    const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
+
+    await page.goto(
+      walletRoute("uploads", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await signInIfNeeded(page, ownerDid);
+    await visibleHeadingOrDiagnostics(page, /Saved files and info/i, diagnostics);
+    await page.getByLabel(/Choose file to upload/i).setInputFiles({
+      name: "pilot-intake.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(
+        [
+          "Pilot intake note",
+          "Name: Jane Example",
+          "Email: jane@example.org",
+          "Phone: 503-555-1212",
+          "Needs emergency shelter, rent support, SNAP, and clinic referral."
+        ].join("\n")
+      )
+    });
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
+    let document: WalletRecord | undefined;
+    await expect
+      .poll(async () => {
+        const records = await apiJson<WalletRecordsResponse>(
+          api.baseUrl,
+          "GET",
+          `/wallets/${wallet.wallet_id}/records?data_type=document`
+        );
+        document = records.records[0];
+        return records.records.length;
+      }, { timeout: 15_000 })
+      .toBe(1);
+    expect(document?.record_id).toMatch(/^rec-/);
+
+    const location = await apiJson<WalletRecord>(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/locations`, {
+      actor_did: ownerDid,
+      lat: exactLat,
+      lon: exactLon
+    });
+    expect(location.record_id).toMatch(/^rec-/);
+
+    const partnerGrant = await apiJson<WalletGrant>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/records/${document!.record_id}/grants`,
+      {
+        issuer_did: ownerDid,
+        audience_did: partnerDid,
+        issuer_key_hex: ownerKeyHex,
+        audience_key_hex: partnerKeyHex,
+        abilities: ["record/analyze"],
+        output_types: ["summary", "redacted_derived_only"],
+        purpose: "pilot_partner_referral",
+        user_presence_required: true
+      }
+    );
+
+    await page.goto(
+      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, partnerDid, {
+        audienceKeyHex: partnerKeyHex
+      })
+    );
+    await signInIfNeeded(page, partnerDid);
+    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
+    const partnerReceipt = page.getByRole("article", { name: /Pilot Partner/i }).filter({ hasText: "Share proof code" });
+    await expect(partnerReceipt).toBeVisible({ timeout: 15_000 });
+    await expect(partnerReceipt.getByText(/active/i)).toBeVisible();
+    await partnerReceipt.getByRole("button", { name: /Make safe summary/i }).click();
+    await expect(partnerReceipt).toContainText("summary · derived_only", { timeout: 15_000 });
+
+    await page.goto(
+      walletRoute("proof-center", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
+    await page.getByLabel(/Location record ID/i).fill(location.record_id);
+    await page.getByLabel(/Region ID/i).fill("multnomah_county");
+    await page.getByRole("button", { name: /^Create proof$/i }).click();
+    await expect(page.getByText(/Proof receipt created/i)).toBeVisible({ timeout: 15_000 });
+    const regionProof = page.getByRole("article", { name: /location_in_region/i });
+    await expect(regionProof).toBeVisible();
+    await expect(regionProof.getByText(/region_policy_hash/i)).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(String(exactLat));
+    await expect(page.locator("body")).not.toContainText(String(exactLon));
+
+    await apiJson(api.baseUrl, "POST", "/analytics/templates", {
+      template_id: "pilot_housing_gap_v1",
+      title: "Housing service gaps",
+      purpose: "Pilot partner planning with approved derived fields only",
+      allowed_record_types: ["location", "need"],
+      allowed_derived_fields: ["county", "need_category"],
+      min_cohort_size: 1,
+      epsilon_budget: 0.5,
+      created_by: "did:key:pilot-analytics-reviewer"
+    });
+    const consent = await apiJson<{ consent_id: string }>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/analytics/consents/from-template`,
+      {
+        actor_did: ownerDid,
+        template_id: "pilot_housing_gap_v1"
+      }
+    );
+    const contribution = await apiJson<{ contribution_id: string; proof_id: string }>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/analytics/contributions`,
+      {
+        actor_did: ownerDid,
+        consent_id: consent.consent_id,
+        template_id: "pilot_housing_gap_v1",
+        fields: { county: "Multnomah", need_category: "housing" }
+      }
+    );
+    expect(contribution.contribution_id).toMatch(/^contrib-/);
+    const aggregate = await apiJson<{ released: boolean; noisy_count: number | null; privacy_budget_spent: number }>(
+      api.baseUrl,
+      "POST",
+      "/analytics/pilot_housing_gap_v1/count",
+      {
+        epsilon: 0.25,
+        min_cohort_size: 1
+      }
+    );
+    expect(aggregate.released).toBe(true);
+    expect(aggregate.noisy_count).not.toBeNull();
+    expect(aggregate.privacy_budget_spent).toBe(0.25);
+
+    const revoked = await apiJson<WalletGrant>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/grants/${partnerGrant.grant_id}/revoke`,
+      { actor_did: ownerDid }
+    );
+    expect(revoked.status).toBe("revoked");
+    const blockedAnalysis = await apiJsonResponse<{ detail?: string }>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/records/${document!.record_id}/analyze/redacted`,
+      {
+        actor_did: partnerDid,
+        actor_key_hex: partnerKeyHex,
+        grant_id: partnerGrant.grant_id
+      }
+    );
+    expect(blockedAnalysis.status).toBe(400);
+    expect(JSON.stringify(blockedAnalysis.body)).toMatch(/not active|revoked/i);
+
+    await page.goto(
+      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, partnerDid, {
+        audienceKeyHex: partnerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
+    const revokedReceipt = page.getByRole("article", { name: /Pilot Partner/i }).filter({ hasText: "Share proof code" });
+    await expect(revokedReceipt.getByText(/revoked/i)).toBeVisible({ timeout: 15_000 });
+
+    const proofs = await apiJson<{ proofs: WalletProof[] }>(api.baseUrl, "GET", `/wallets/${wallet.wallet_id}/proofs`);
+    expect(proofs.proofs.some((proof) => proof.proof_type === "location_region")).toBe(true);
+    expect(JSON.stringify(proofs)).not.toContain(String(exactLat));
+    expect(JSON.stringify(proofs)).not.toContain(String(exactLon));
+
+    await page.goto(
+      walletRoute("audit", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Consent and access history/i, diagnostics);
+    const auditTimeline = page.locator(".timeline");
+    for (const action of [
+      "record/add",
+      "grant/create",
+      "record/analyze",
+      "proof/create",
+      "analytics/contribute",
+      "analytics/query",
+      "grant/revoke"
+    ]) {
+      await expect(auditTimeline).toContainText(action, { timeout: 15_000 });
+    }
+    const audit = await apiJson<WalletAuditResponse>(api.baseUrl, "GET", `/wallets/${wallet.wallet_id}/audit`);
+    expect(audit.events.map((event) => event.action)).toEqual(
+      expect.arrayContaining([
+        "record/add",
+        "grant/create",
+        "invocation/issue",
+        "invocation/verify",
+        "record/analyze",
+        "proof/create",
+        "analytics/consent_create",
+        "analytics/contribute",
+        "analytics/query",
+        "grant/revoke"
+      ])
+    );
   } finally {
     await stopWalletApi(api);
   }

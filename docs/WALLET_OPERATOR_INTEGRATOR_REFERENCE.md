@@ -197,6 +197,82 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Reference
+
+The WALLET-210 pilot path is the staging demonstration that ties the wallet UI
+and public API into one partner-ready workflow. Run it only after the WALLET-170
+third-party blackbox harness, WALLET-180 verifier cutover packet, WALLET-190
+retention dry run, and WALLET-200 analytics governance review are archived for
+the target staging environment.
+
+Pilot participants:
+
+- Wallet owner: the user adding documents, location, analytics consent, and
+  revocation decisions.
+- Service partner: the agency or navigator receiving purpose-bound access.
+- Eligibility verifier: the verifier or partner role checking proof receipts.
+- Analytics reviewer: the role that approves aggregate templates and release
+  parameters before contributions are accepted.
+
+Pilot sequence:
+
+1. Create or load a staging wallet with durable repository and encrypted storage
+   enabled. Add a document through the Uploads UI or
+   `POST /wallets/{wallet_id}/documents`, then add precise location through
+   `POST /wallets/{wallet_id}/locations`.
+2. Grant the service partner only the required ability and purpose. For document
+   triage, use `POST /wallets/{wallet_id}/records/{record_id}/grants` with
+   `abilities=["record/analyze"]`, `purpose` set to the partner use case, and
+   `output_types` limited to approved derived outputs. For export transfer, use
+   `/wallets/{wallet_id}/exports/grants` with explicit `record_ids`.
+3. Issue any required invocation and demonstrate partner access from the
+   recipient-access UI or the matching API. Confirm the result contains only
+   the allowed derived output or encrypted descriptor and that the grant receipt
+   shows an active receipt hash.
+4. Prove location eligibility from Proof Center or
+   `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs`.
+   The visible receipt may include `region_id`, `claim`,
+   `region_policy_hash`, verifier metadata, and proof status. It must not show
+   latitude, longitude, target coordinates, witness values, or verifier secrets.
+5. Register or reuse an approved analytics template, create wallet consent from
+   the template, submit a derived-field contribution, and release only an
+   approved aggregate through `/analytics/{template_id}/count` or
+   `/analytics/{template_id}/count-by-fields`. Raw queries and precise
+   coordinates are out of scope for the pilot.
+6. Revoke partner access with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove the old
+   grant or invocation can no longer analyze, decrypt, export, or create proofs.
+7. Open the Audit UI and archive the wallet audit timeline. The timeline should
+   include `record/add`, `grant/create`, `invocation/issue`,
+   `invocation/verify`, `record/analyze` or `record/analyze_redacted`,
+   `proof/create`, `analytics/consent_create`, `analytics/contribute`,
+   `analytics/query`, and `grant/revoke` as applicable.
+
+Pilot privacy checks:
+
+- UI screenshots and API evidence must not contain plaintext documents, direct
+  identifiers, precise coordinates, proof witnesses, key material, bearer
+  tokens, webhook secrets, or secret-manager resolved values.
+- Proof receipts must expose public inputs only. For `location_region`, that is
+  the service region claim and policy hash. For `location_distance`, keep live
+  UI hidden until the distance cutover packet is complete; API evidence must
+  still exclude wallet and target coordinates.
+- Analytics evidence must name the template, consent, contribution, proof
+  receipt, nullifier policy, k-threshold, epsilon spend, and reviewer role
+  without exporting raw wallet facts.
+
+Validation command:
+
+```bash
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+The `211 service partner pilot workflow is visible through the live UI and
+wallet API` Playwright scenario starts a live wallet API backed by
+`ipfs_datasets_py.wallet`, drives Uploads, Recipient Access, Proof Center, and
+Audit UI screens, and uses public API calls for location creation, approved
+analytics contribution, revocation, proof listing, and audit verification.
+
 ## API Reference
 
 Run the API with:

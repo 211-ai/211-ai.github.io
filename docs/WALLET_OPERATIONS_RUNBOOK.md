@@ -398,6 +398,111 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 211 Service Partner Pilot Readiness
+
+Use this runbook section for the final staging pilot before a service partner
+demonstration. It assumes WALLET-170, WALLET-180, WALLET-190, and WALLET-200
+evidence is archived and linked from the target signoff packet.
+
+Preflight:
+
+- Target staging uses `WALLET_AUTO_LOAD_REPOSITORY=true`,
+  `WALLET_AUTO_PERSIST=true`, durable `WALLET_REPOSITORY_ROOT`, encrypted
+  `WALLET_STORAGE_CONFIG`, and the approved proof backend.
+- The selected analytics template is approved in the WALLET-200 review packet
+  and has consent copy, allowed fields, nullifier handling, k-threshold,
+  epsilon budget, retention mapping, and reviewer role recorded.
+- The service partner DID, label, purpose, allowed abilities, output types, and
+  expiration are recorded in the pilot ticket before any grant is issued.
+- The evidence ticket names the staging API origin, UI build, verifier cutover
+  packet ID, storage dry-run ID, analytics review ID, and reviewer performing
+  the leak check. Do not paste secrets or precise coordinates into the ticket.
+
+Demo sequence:
+
+1. Create or select the staging wallet and add a user document from the Uploads
+   UI. Confirm `/wallets/{wallet_id}/records?data_type=document` lists the
+   document and `/wallets/{wallet_id}/records/{record_id}/storage` returns
+   `ok=true`.
+2. Add the user's precise location through
+   `POST /wallets/{wallet_id}/locations`. Record only the returned
+   `record_id`; do not archive the latitude or longitude.
+3. Create the service partner grant with the smallest useful scope. For
+   document-derived triage:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-partner-record-grant.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/records/${DOCUMENT_RECORD_ID}/grants"
+   ```
+
+   The grant request must include the partner DID, explicit purpose, allowed
+   abilities, allowed output types, and expiry if required by the pilot policy.
+4. Open the recipient-access UI as the partner and run the approved partner
+   action. Pass criteria: the page shows an active receipt hash and the partner
+   output is limited to the approved derived output or encrypted descriptor.
+5. Open Proof Center as the wallet owner and create a `location_region` proof
+   for the service area. Pass criteria: the proof receipt shows public inputs,
+   verifier metadata, and verification status, and no latitude, longitude,
+   target coordinate, witness, or secret value appears in the UI, API response,
+   browser console, or server logs.
+6. Create analytics consent from the approved template, submit the derived-field
+   contribution, and release the approved aggregate:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"template_id\":\"${TEMPLATE_ID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/from-template"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-analytics-contribution.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/contributions"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/approved-aggregate-query.json \
+     "${WALLET_API_ORIGIN}/analytics/${TEMPLATE_ID}/count"
+   ```
+
+   Pass criteria: the aggregate is released only when the approved template,
+   consent, nullifier, k-threshold, and epsilon budget allow it.
+7. Revoke the service partner grant:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/grants/${GRANT_ID}/revoke"
+   ```
+
+   Re-run the partner action with the old grant or invocation. Pass criteria:
+   the API rejects the request and recipient-access shows the receipt as
+   revoked after refresh.
+8. Open the Audit UI and export the audit timeline through
+   `GET /wallets/{wallet_id}/audit`. Required actions are `record/add`,
+   `grant/create`, `invocation/issue`, `invocation/verify`,
+   `record/analyze` or `record/analyze_redacted`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `analytics/query`, and
+   `grant/revoke` when those steps are part of the pilot.
+
+Automated local validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+The full-stack Playwright pilot scenario starts a live wallet API with local
+durable storage, uses the Uploads, Recipient Access, Proof Center, and Audit UI
+surfaces, and verifies public API evidence for location, analytics, revocation,
+proof listing, and audit history. Archive the Playwright run output with the
+pilot ticket, but keep generated traces and screenshots out of committed
+source.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or
