@@ -1,0 +1,135 @@
+import { useEffect, useState } from "react";
+import { Bot, ChevronDown, ChevronUp, MessageSquare, X } from "lucide-react";
+import type {
+  AgentConfirmationRequest,
+  AgentMessage,
+  AgentToolCall,
+  AgentToolResult,
+  EvidenceBundle
+} from "../../agent/types";
+import { Button } from "../ui";
+import { AgentComposer } from "./AgentComposer";
+import { AgentMessageList } from "./AgentMessageList";
+
+export function AgentChatBottomSheet({
+  activeRouteLabel,
+  confirmations = [],
+  evidenceBundles = [],
+  messages,
+  open,
+  responding = false,
+  toolCalls = [],
+  toolResults = [],
+  onCancelConfirmation,
+  onClose,
+  onConfirmConfirmation,
+  onOpenServiceDetail,
+  onSend,
+  onToggle
+}: {
+  activeRouteLabel: string;
+  confirmations?: AgentConfirmationRequest[];
+  evidenceBundles?: EvidenceBundle[];
+  messages: AgentMessage[];
+  open: boolean;
+  responding?: boolean;
+  toolCalls?: AgentToolCall[];
+  toolResults?: AgentToolResult[];
+  onCancelConfirmation?: (confirmationId: string) => void;
+  onClose: () => void;
+  onConfirmConfirmation?: (confirmationId: string) => void;
+  onOpenServiceDetail?: (docId: string) => void;
+  onSend: (message: string) => void;
+  onToggle: () => void;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const sheetTitle = expanded ? "Collapse assistant sheet" : "Expand assistant sheet";
+
+  useEffect(() => {
+    if (!open) setExpanded(false);
+  }, [open]);
+
+  return (
+    <div className="agent-chat-bottom-sheet-shell">
+      {!open ? (
+        <Button
+          ariaControls="agent-chat-bottom-sheet"
+          ariaExpanded={open}
+          ariaLabel="Open assistant"
+          className="agent-chat-bottom-sheet-toggle"
+          onClick={onToggle}
+        >
+          <MessageSquare aria-hidden="true" size={20} />
+          <span>Assistant</span>
+        </Button>
+      ) : null}
+
+      {open ? (
+        <aside
+          aria-label="Abby assistant"
+          className={`agent-chat-bottom-sheet ${expanded ? "agent-chat-bottom-sheet-expanded" : ""}`}
+          data-expanded={expanded ? "true" : "false"}
+          id="agent-chat-bottom-sheet"
+        >
+          <button
+            aria-controls="agent-chat-bottom-sheet-body"
+            aria-expanded={expanded}
+            aria-label={sheetTitle}
+            className="agent-sheet-grip"
+            onClick={() => setExpanded((current) => !current)}
+            type="button"
+          >
+            <span aria-hidden="true" />
+          </button>
+
+          <header className="agent-chat-header agent-chat-bottom-sheet-header">
+            <div className="agent-chat-title">
+              <span className="agent-chat-mark" aria-hidden="true">
+                <Bot size={20} />
+              </span>
+              <div>
+                <strong>Abby assistant</strong>
+                <small>{activeRouteLabel}</small>
+              </div>
+            </div>
+            <div className="agent-sheet-actions">
+              <Button ariaLabel={sheetTitle} onClick={() => setExpanded((current) => !current)} variant="quiet">
+                {expanded ? <ChevronDown aria-hidden="true" size={18} /> : <ChevronUp aria-hidden="true" size={18} />}
+              </Button>
+              <Button ariaLabel="Close assistant" onClick={onClose} variant="quiet">
+                <X aria-hidden="true" size={18} />
+              </Button>
+            </div>
+          </header>
+
+          <div className="agent-current-task" role="status">
+            <small>Read-only chat</small>
+            <span>Ask questions while continuing to use the app.</span>
+          </div>
+
+          <div className="agent-chat-bottom-sheet-body" id="agent-chat-bottom-sheet-body">
+            <AgentMessageList
+              confirmations={confirmations}
+              evidenceBundles={evidenceBundles}
+              messages={messages}
+              onCancel={onCancelConfirmation}
+              onConfirm={onConfirmConfirmation}
+              onOpenServiceDetail={onOpenServiceDetail}
+              responding={responding}
+              toolCalls={toolCalls}
+              toolResults={toolResults}
+            />
+
+            {responding ? (
+              <div className="agent-typing" role="status">
+                Abby is checking public app context.
+              </div>
+            ) : null}
+
+            <AgentComposer disabled={responding} onSend={onSend} />
+          </div>
+        </aside>
+      ) : null}
+    </div>
+  );
+}

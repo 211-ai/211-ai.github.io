@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "task_id": "PORTAL-080",
+  "title": "Production Readiness",
+  "generated_at": "2026-05-07",
+  "release_decision": "ready_for_release_validation",
+  "decision_rule": "The 211 service-navigation portal can ship only when every required gate is passing in the target environment or has a documented launch exception.",
+  "scope": {
+    "plan": "docs/211_SERVICE_NAVIGATION_PORTAL_PLAN.md",
+    "todo": "docs/211_SERVICE_NAVIGATION_PORTAL_TODO.md",
+    "runbook": "docs/211_SERVICE_NAVIGATION_PORTAL_RUNBOOK.md",
+    "threat_model": "docs/211_SERVICE_NAVIGATION_PORTAL_THREAT_MODEL.md",
+    "artifact_audit": "data/portal/upload_audit.json"
+  },
+  "dependencies": [
+    {
+      "task_id": "PORTAL-012",
+      "name": "Portal Package Publish And Audit",
+      "required": true,
+      "evidence": [
+        "scripts/upload_hf_portal_package.py",
+        "data/portal/upload_audit.json"
+      ],
+      "validation": "python scripts/upload_hf_portal_package.py --repo endomorphosis/211-info --source data/portal"
+    },
+    {
+      "task_id": "PORTAL-050",
+      "name": "Interaction Timeline",
+      "required": true,
+      "evidence": [
+        "wallet_interface/ui/src/app/InteractionsScreen.tsx",
+        "wallet_interface/ui/src/components/services/InteractionTimeline.tsx",
+        "wallet_interface/ui/src/services/serviceInteractionService.ts",
+        "tests/test_wallet_interface_api.py"
+      ],
+      "validation": "npm --prefix wallet_interface/ui test -- --runInBand; python -m pytest tests/test_wallet_interface_api.py -q"
+    },
+    {
+      "task_id": "PORTAL-061",
+      "name": "Worker Redaction And Revocation",
+      "required": true,
+      "evidence": [
+        "wallet_interface/ui/src/components/services/WorkerServicePlanView.tsx",
+        "tests/test_wallet_interface_api.py"
+      ],
+      "validation": "python -m pytest tests/test_wallet_interface_api.py -q"
+    },
+    {
+      "task_id": "PORTAL-070",
+      "name": "PWA Offline Shell",
+      "required": true,
+      "evidence": [
+        "wallet_interface/ui/public/manifest.webmanifest",
+        "wallet_interface/ui/src/pwa/serviceWorker.ts",
+        "wallet_interface/ui/tests/smoke.spec.ts"
+      ],
+      "validation": "npm --prefix wallet_interface/ui test -- --runInBand"
+    }
+  ],
+  "required_validation": [
+    {
+      "name": "Portal wallet API regression",
+      "command": "python -m pytest tests/test_wallet_interface_api.py -q",
+      "required_for_release": true
+    },
+    {
+      "name": "Portal UI regression and smoke suite",
+      "command": "npm --prefix wallet_interface/ui test -- --runInBand",
+      "required_for_release": true
+    },
+    {
+      "name": "Portal package parser and manifest coverage",
+      "command": "python -m pytest tests/test_service_portal_package.py -q",
+      "required_for_release": true
+    },
+    {
+      "name": "Mobile action URL and calendar generation",
+      "command": "npm --prefix wallet_interface/ui test -- tests/service-action-service.spec.ts",
+      "required_for_release": true
+    },
+    {
+      "name": "Interaction intent construction",
+      "command": "npm --prefix wallet_interface/ui test -- tests/service-interaction-service.spec.ts",
+      "required_for_release": true
+    }
+  ],
+  "release_gates": [
+    {
+      "id": "accessibility_review",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Core service-navigation flows have desktop and mobile accessibility review with no accepted P0/P1 blockers.",
+      "evidence": [
+        "wallet_interface/ui/tests/smoke.spec.ts",
+        "wallet_interface/ui/src/app/ServiceDetailScreen.tsx",
+        "wallet_interface/ui/src/app/ServicePlanScreen.tsx",
+        "wallet_interface/ui/src/app/InteractionsScreen.tsx",
+        "wallet_interface/ui/src/components/services/WorkerServicePlanView.tsx"
+      ],
+      "release_checks": [
+        "Keyboard focus and visible focus are usable on service search, detail, plan, interaction timeline, worker redaction, and offline banners.",
+        "Screen reader names are present for action buttons, filters, plan controls, revoke controls, and status banners.",
+        "Large text, mobile viewport, contrast, and reduced-motion review has no launch-blocking issue."
+      ]
+    },
+    {
+      "id": "mobile_smoke_coverage",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "iOS Safari and Android Chrome smoke tests cover service detail, handoff actions, share/calendar fallbacks, wallet persistence, worker redaction, and offline shell behavior.",
+      "evidence": [
+        "wallet_interface/ui/tests/smoke.spec.ts",
+        "wallet_interface/ui/tests/service-action-service.spec.ts",
+        "wallet_interface/ui/tests/service-interaction-service.spec.ts",
+        "wallet_interface/ui/src/services/serviceActionService.ts",
+        "wallet_interface/ui/src/services/serviceInteractionService.ts"
+      ],
+      "release_checks": [
+        "Call, text, email, map, share, and calendar actions are generated only from valid backing data.",
+        "The browser records explicit handoff intent only and never claims provider-side completion.",
+        "Manual mobile results record browser version, device or emulator, build artifact, corpus CID, and sanitized failure notes."
+      ]
+    },
+    {
+      "id": "privacy_review",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Public service data and private wallet interaction data remain separated across UI, API, worker sharing, offline cache, analytics, and release evidence.",
+      "evidence": [
+        "docs/211_SERVICE_NAVIGATION_PORTAL_THREAT_MODEL.md",
+        "docs/WALLET_OPERATIONS_RUNBOOK.md",
+        "wallet_interface/api.py",
+        "wallet_interface/app_service.py",
+        "wallet_interface/ui/src/pwa/serviceWorker.ts",
+        "wallet_interface/ui/src/components/services/WorkerServicePlanView.tsx",
+        "tests/test_wallet_interface_api.py"
+      ],
+      "release_checks": [
+        "Saved services, plans, notes, reminders, interactions, precise location, grants, proof receipts, uploads, and audit details are wallet-private.",
+        "Worker service-plan views render only fields allowed by active grant caveats and hide fields after revocation.",
+        "PWA caches contain public shell/detail artifacts only and bypass wallet-bearing URLs.",
+        "Release tickets, screenshots, logs, and mobile notes do not include private wallet plaintext, grant tokens, proof witnesses, secrets, or exact location."
+      ]
+    },
+    {
+      "id": "artifact_auditing",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "HF portal package artifacts match local hashes and the release references the source retrieval package CID.",
+      "evidence": [
+        "data/portal/upload_audit.json",
+        "data/retrieval_package/manifest/build_manifest.json",
+        "wallet_interface/ui/public/corpus/211-info/current/artifacts.manifest.json"
+      ],
+      "expected_audit": {
+        "upload_performed": true,
+        "verified_hashes": true,
+        "package_match": true,
+        "missing_remote_files": [],
+        "hash_mismatches": [],
+        "size_mismatches": [],
+        "source_build_manifest_cid": "bafkreihcclqadxrfhx256soxaqdqvc66ejhsuy3krj5bf446zq2miaox4i"
+      },
+      "release_checks": [
+        "Every post-upload file has status=ok and sha256_match=true.",
+        "Portal manifest records service, contact, location, hours, requirement, action, artifact, and coverage counts.",
+        "Any changed portal package or browser artifact is rebuilt, uploaded, and re-audited before launch."
+      ]
+    },
+    {
+      "id": "release_operations",
+      "status": "ready_for_validation",
+      "required": true,
+      "acceptance": "Operators have documented validation, go/no-go, rollback, incident response, artifact audit, privacy review, and launch exception procedures.",
+      "evidence": [
+        "docs/211_SERVICE_NAVIGATION_PORTAL_RUNBOOK.md",
+        "docs/211_SERVICE_NAVIGATION_PORTAL_THREAT_MODEL.md",
+        "data/portal/release_checklist.json",
+        "docs/WALLET_OPERATIONS_RUNBOOK.md"
+      ],
+      "release_checks": [
+        "Runbook lists task validation, broader validation, troubleshooting, incident severity, rollback, artifact audit, mobile smoke, privacy review, and launch checklist.",
+        "Threat model documents trust boundaries, data classification, privacy rules, threats, mitigations, and incident handling.",
+        "Release owner records go/no-go, privacy reviewer, accessibility reviewer, artifact publisher, rollback owner, and on-call path in the target release ticket."
+      ]
+    }
+  ],
+  "manual_mobile_matrix": [
+    {
+      "platform": "iOS Safari",
+      "required": true,
+      "flows": [
+        "search_to_detail",
+        "call_text_email_map_handoffs",
+        "web_share_or_clipboard_fallback",
+        "calendar_ics_download_or_share",
+        "save_and_plan_wallet_persistence",
+        "interaction_timeline_filtering",
+        "worker_redaction_and_revocation",
+        "offline_public_shell"
+      ]
+    },
+    {
+      "platform": "Android Chrome",
+      "required": true,
+      "flows": [
+        "search_to_detail",
+        "call_text_email_map_handoffs",
+        "web_share_or_clipboard_fallback",
+        "calendar_ics_download_or_share",
+        "save_and_plan_wallet_persistence",
+        "interaction_timeline_filtering",
+        "worker_redaction_and_revocation",
+        "offline_public_shell"
+      ]
+    }
+  ],
+  "launch_exceptions": [],
+  "operator_handoff": {
+    "go_no_go_owner": "release owner",
+    "artifact_audit_source": "data/portal/upload_audit.json",
+    "incident_runbook": "docs/211_SERVICE_NAVIGATION_PORTAL_RUNBOOK.md",
+    "privacy_incident_source": "docs/WALLET_OPERATIONS_RUNBOOK.md",
+    "rollback_strategy": "Disable the affected portal surface, fall back to public read-only service detail when wallet workflows are unsafe, evict or bump unsafe service-worker caches, and re-run required validation before re-enabling."
+  }
+}

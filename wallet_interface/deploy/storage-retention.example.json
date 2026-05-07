@@ -1,0 +1,76 @@
+{
+  "schema": "wallet-storage-retention-target-v1",
+  "status": "template; replace placeholders in target evidence storage",
+  "environment": {
+    "environment_name": "replace-with-environment-name",
+    "storage_configuration_id": "replace-with-storage-config-id",
+    "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05"
+  },
+  "secret_manager_refs": {
+    "storage_credentials": "secret-manager://replace-with-storage-credential-path",
+    "ops_health_secret": "secret-manager://replace-with-ops-health-secret-path",
+    "alert_credentials": "secret-manager://replace-with-alert-credential-path"
+  },
+  "wallet_storage_config_example": {
+    "primary": {
+      "type": "local",
+      "root": "/var/lib/211-ai/wallet-blobs"
+    },
+    "mirrors": [
+      {
+        "type": "ipfs",
+        "pin": true
+      },
+      {
+        "type": "s3",
+        "bucket": "replace-with-wallet-ciphertext-bucket",
+        "prefix": "wallet/blobs"
+      },
+      {
+        "type": "filecoin"
+      }
+    ]
+  },
+  "retention_mapping": {
+    "encrypted_storage_lifecycle": "same as source wallet record retention; encrypted payload and metadata only",
+    "ipfs_pinning": {
+      "pinset_policy_id": "replace-with-private-pinset-policy-id",
+      "retain_while": "source record version is active, retained for recovery, or under legal hold",
+      "delete_action": "remove wallet manifest references, revoke dependent key wraps, then unpin encrypted CIDs",
+      "evidence": "record CID list and unpin ticket without plaintext"
+    },
+    "filecoin_deal_expiration": {
+      "deal_policy_id": "replace-with-filecoin-deal-policy-id-or-not-used",
+      "maximum_deal_expiration": "replace-with-duration-not-longer-than-source-record-retention",
+      "renewal_rule": "renew only active retained encrypted replicas",
+      "delete_action": "block renewal or issue provider-supported removal for deleted or expired records"
+    },
+    "s3_lifecycle": {
+      "bucket": "replace-with-wallet-ciphertext-bucket",
+      "prefix": "wallet/blobs",
+      "lifecycle_policy_id": "replace-with-s3-lifecycle-policy-id",
+      "current_object_expiration": "delete when source record retention ends and legal hold is absent",
+      "noncurrent_version_expiration": "expire within approved recovery window",
+      "incomplete_multipart_cleanup": "7 days or less",
+      "server_side_encryption": "enabled as defense-in-depth; client-side wallet encryption remains authoritative"
+    },
+    "backup_purge": {
+      "repository_backup_policy_id": "replace-with-repository-backup-policy-id",
+      "encrypted_blob_backup_policy_id": "replace-with-blob-backup-policy-id",
+      "purge_sla": "replace-with-approved-backup-purge-sla",
+      "evidence": "ciphertext object IDs and purge ticket IDs only"
+    },
+    "alert_retention": {
+      "ops_health_jsonl": "90 days unless incident/legal hold requires longer",
+      "alert_router_payloads": "90 days unless incident/legal hold requires longer",
+      "payload_rule": "status metadata only; no plaintext, proof witnesses, coordinates, tokens, or secret values"
+    }
+  },
+  "repair_validation": {
+    "ops_health_command": "python -m wallet_interface.ops --validate-production-readiness",
+    "api_health_route": "GET /ops/health?verify_storage=true",
+    "wallet_repair_route": "POST /wallets/{wallet_id}/storage/repair",
+    "record_repair_route": "POST /wallets/{wallet_id}/records/{record_id}/storage/repair",
+    "required_result": "storage repair reports pass with failed_replica_count=0 and expose ciphertext hashes/statuses only"
+  }
+}

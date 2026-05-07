@@ -1,0 +1,70 @@
+name: Abby UI Visual Review Artifacts
+
+on:
+  pull_request:
+    paths:
+      - "wallet_interface/ui/**"
+      - ".github/workflows/abby-ui-visual-review.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "wallet_interface/ui/**"
+      - ".github/workflows/abby-ui-visual-review.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet_interface/ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: wallet_interface/ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Build
+        run: npm run build
+
+      - name: Capture visual review screenshots
+        run: npm run test:visual
+
+      - name: Validate visual review manifests
+        run: npm run review:visual:dry-run
+
+      - name: Generate refinement backlog
+        run: npm run review:tasks
+
+      - name: Generate agent prompts
+        run: npm run review:prompts -- --include-blocked
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: abby-ui-screenshots
+          path: wallet_interface/ui/artifacts/ui-screenshots/latest
+          if-no-files-found: error
+
+      - name: Upload dry-run review
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: abby-ui-review-dry-run
+          path: wallet_interface/ui/artifacts/ui-review/latest
+          if-no-files-found: error

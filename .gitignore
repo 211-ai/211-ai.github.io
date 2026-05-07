@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+__pycache__/
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scraped data (large, regenerated)
+data/raw/
+data/processed/
+data/portal/*
+!data/portal/upload_audit.json
+!data/portal/release_checklist.json
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Playwright browser binaries
+ms-playwright/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*__pycache__*
+
+# Dotenv
+.env
+.env.*
+etl_warehouse.duckdb
+state.duckdb
+*.duckdb
+data/live/state/agentic_daemon_state.duckdb
+
+# Implementation daemon runtime state
+data/agent_chat_implementation/
+!data/agent_chat_implementation/
+!data/agent_chat_implementation/release_checklist.json
+data/agent_chat_implementation/state/
+data/portal_implementation/
+data/wallet_implementation/
+data/portland_graphrag_implementation/

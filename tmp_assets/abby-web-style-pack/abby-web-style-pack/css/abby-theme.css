@@ -1,0 +1,398 @@
+/* ABBY website style-transfer starter theme
+   Upload /assets and /css with your HTML/CSS/JS bundle.
+   No font files are included; this uses system font stacks. */
+
+:root {
+  --abby-navy: #07314A;
+  --abby-ink: #102333;
+  --abby-forest: #0E5A3C;
+  --abby-evergreen: #164C3A;
+  --abby-teal: #0F7C73;
+  --abby-muted-teal: #7FAEB4;
+  --abby-blue-gray: #B7D3D5;
+  --abby-mist: #DCE8E2;
+  --abby-off-white: #FAFBF8;
+  --abby-soft-panel: #F3F8F6;
+  --abby-border: rgba(127, 174, 180, 0.45);
+  --abby-shadow: 0 10px 28px rgba(7, 49, 74, 0.07);
+  --abby-radius-card: 16px;
+  --abby-radius-pill: 999px;
+
+  --font-readable-sans: Avenir Next, Nunito, Trebuchet MS, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+  --font-friendly-display: Georgia, Charter, ui-serif, serif;
+}
+
+html, body {
+  min-height: 100%;
+  color: var(--abby-ink);
+  background: var(--abby-off-white);
+  font-family: var(--font-readable-sans);
+}
+
+.abby-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr);
+  background:
+    url('../assets/watercolor-wash.svg') center / cover no-repeat,
+    linear-gradient(135deg, #FAFBF8 0%, #F3F8F6 52%, #EAF5F8 100%);
+}
+
+.abby-sidebar {
+  position: relative;
+  overflow: hidden;
+  background: rgba(250, 251, 248, 0.88);
+  border-right: 1px solid rgba(127, 174, 180, 0.42);
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.6);
+}
+
+.abby-sidebar::after {
+  content: "";
+  position: absolute;
+  left: -28px;
+  bottom: -18px;
+  width: 230px;
+  height: 230px;
+  pointer-events: none;
+  opacity: 0.38;
+  background: url('../assets/abby-evergreen-cluster.svg') left bottom / contain no-repeat;
+}
+
+.abby-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 18px 22px;
+  color: var(--abby-navy);
+}
+
+.abby-brand-mark {
+  width: 42px;
+  height: 42px;
+  flex: none;
+}
+
+.abby-brand-title {
+  margin: 0;
+  color: var(--abby-navy);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.abby-brand-subtitle {
+  margin: 2px 0 0;
+  color: var(--abby-ink);
+  font-size: 0.86rem;
+  line-height: 1.2;
+}
+
+.abby-nav {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 4px;
+  padding: 0 18px 24px;
+}
+
+.abby-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--abby-navy);
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.abby-nav-item svg,
+.abby-nav-item .icon {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+}
+
+.abby-nav-item.is-active {
+  color: var(--abby-teal);
+  background: rgba(220, 232, 226, 0.88);
+  box-shadow: inset 0 0 0 1px rgba(127, 174, 180, 0.28);
+}
+
+.abby-main {
+  position: relative;
+  padding: clamp(28px, 4vw, 48px);
+}
+
+.abby-page-header {
+  position: relative;
+  min-height: 138px;
+  padding-top: 2px;
+}
+
+.abby-page-header::after {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -22px;
+  width: min(870px, 68vw);
+  height: 210px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.78;
+  background: url('../assets/abby-header-landscape.svg') right top / contain no-repeat;
+}
+
+.abby-page-eyebrow,
+.abby-page-title {
+  position: relative;
+  z-index: 1;
+}
+
+.abby-page-eyebrow {
+  margin: 0 0 8px;
+  color: var(--abby-teal);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.085em;
+  text-transform: uppercase;
+}
+
+.abby-page-title {
+  margin: 0;
+  color: var(--abby-ink);
+  font-family: var(--font-friendly-display);
+  font-size: clamp(2.65rem, 4.8vw, 4.2rem);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+}
+
+.abby-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.abby-card {
+  background: rgba(250, 251, 248, 0.93);
+  border: 1px solid var(--abby-border);
+  border-radius: var(--abby-radius-card);
+  box-shadow: var(--abby-shadow);
+  color: var(--abby-ink);
+}
+
+.abby-action-card {
+  display: flex;
+  align-items: center;
+  min-height: 104px;
+  padding: 22px 28px;
+  gap: 16px;
+}
+
+.abby-card-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  flex: none;
+  border-radius: 14px;
+  color: var(--abby-teal);
+  background: rgba(220, 232, 226, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(127, 174, 180, 0.15);
+}
+
+.abby-card-title {
+  margin: 0;
+  color: var(--abby-ink);
+  font-family: var(--font-friendly-display);
+  font-size: 1.55rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.abby-card-copy {
+  margin: 6px 0 0;
+  color: rgba(16, 35, 51, 0.74);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.abby-section-title {
+  margin: 28px 0 14px;
+  color: var(--abby-ink);
+  font-family: var(--font-friendly-display);
+  font-size: clamp(1.7rem, 2.3vw, 2.2rem);
+  line-height: 1.05;
+}
+
+.abby-checkin-panel {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 92px;
+  padding: 20px 24px;
+  background:
+    url('../assets/watercolor-card-wash.svg') center / cover no-repeat,
+    linear-gradient(90deg, rgba(220,232,226,0.94), rgba(183,211,213,0.42));
+  border: 1.5px solid var(--abby-teal);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(7, 49, 74, 0.045);
+}
+
+.abby-checkin-meta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.abby-kicker {
+  color: var(--abby-teal);
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.abby-date {
+  margin-top: 4px;
+  color: var(--abby-forest);
+  font-size: clamp(1.45rem, 2.3vw, 1.95rem);
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.abby-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--abby-radius-pill);
+  background: var(--abby-forest);
+  color: #fff;
+  font-family: var(--font-readable-sans);
+  font-size: 0.98rem;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 7px 15px rgba(14, 90, 60, 0.22);
+}
+
+.abby-button:hover {
+  background: var(--abby-evergreen);
+}
+
+.abby-button:focus-visible,
+.abby-nav-item:focus-visible {
+  outline: 3px solid rgba(15, 124, 115, 0.3);
+  outline-offset: 3px;
+}
+
+.abby-summary-row {
+  display: flex;
+  gap: 30px;
+  margin: 26px 0 28px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(127, 174, 180, 0.42);
+}
+
+.abby-summary-block + .abby-summary-block {
+  padding-left: 30px;
+  border-left: 1px solid rgba(127, 174, 180, 0.42);
+}
+
+.abby-summary-label {
+  color: rgba(7, 49, 74, 0.65);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.abby-summary-value {
+  margin-top: 3px;
+  color: var(--abby-ink);
+  font-weight: 800;
+}
+
+.abby-support-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 150px;
+  padding: 28px 32px;
+  background:
+    linear-gradient(90deg, rgba(250,251,248,0.94), rgba(243,248,246,0.85));
+  border: 1px solid rgba(127, 174, 180, 0.62);
+  border-radius: var(--abby-radius-card);
+  box-shadow: var(--abby-shadow);
+}
+
+.abby-support-card::after {
+  content: "";
+  position: absolute;
+  right: 20px;
+  bottom: -26px;
+  width: 480px;
+  height: 160px;
+  pointer-events: none;
+  opacity: 0.5;
+  background: url('../assets/abby-bridge-watermark.svg') right bottom / contain no-repeat;
+}
+
+.abby-support-badge {
+  width: 112px;
+  height: 112px;
+  flex: none;
+}
+
+.abby-support-content {
+  position: relative;
+  z-index: 1;
+  max-width: 660px;
+}
+
+.abby-support-title {
+  margin: 0 0 6px;
+  color: var(--abby-ink);
+  font-family: var(--font-friendly-display);
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+.abby-support-copy {
+  margin: 0 0 16px;
+  color: var(--abby-navy);
+  line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .abby-shell {
+    grid-template-columns: 1fr;
+  }
+  .abby-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid rgba(127, 174, 180, 0.42);
+  }
+  .abby-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .abby-page-header::after {
+    width: 95vw;
+    opacity: 0.44;
+  }
+  .abby-checkin-panel,
+  .abby-support-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
