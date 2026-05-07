@@ -261,6 +261,143 @@ Provider retention checks:
 - Alerts: confirm alert-router retention matches the approved alert-retention
   period and that webhook payloads contain status metadata only.
 
+## WALLET-190 Staging Retention And Deletion Dry Run
+
+Run this dry run in target staging before launch, after storage-provider
+changes, and after retention-policy changes. Use synthetic wallet data only.
+Archive command output as evidence after redacting environment-specific hostnames
+when needed; do not redact status fields, ciphertext hashes, storage types,
+bundle hashes, tombstone IDs, or ticket IDs.
+
+Required setup:
+
+- Target staging uses the production-like `WALLET_REPOSITORY_ROOT`,
+  `WALLET_STORAGE_CONFIG`, lifecycle policies, alert retention, and secret
+  manager references that will be used at launch.
+- The synthetic wallet has one owner DID, one delegate DID, one encrypted record,
+  one analytics template and consent, and one export grant.
+- The evidence ticket names the approved `retention_policy_version`,
+  `backup_purge_sla`, IPFS pinset policy, Filecoin deal policy or not-used
+  decision, S3 lifecycle policy, and alert-retention policy.
+
+Dry-run sequence:
+
+1. Create an encrypted record and confirm replica creation.
+
+   ```bash
+   curl -fsS \
+     -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/records/${RECORD_ID}/storage"
+   ```
+
+   Evidence must show primary and mirror refs with `storage_type`, `size_bytes`,
+   and `sha256` only. Plaintext record values, decrypted metadata, key material,
+   and storage credentials are not allowed in the artifact.
+
+2. Run replica health checks.
+
+   ```bash
+   curl -fsS \
+     -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/storage"
+
+   curl -fsS \
+     -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+     "${WALLET_API_ORIGIN}/ops/health?verify_storage=true"
+   ```
+
+   Pass criteria: `failed_replica_count=0`, `storage_availability` is not
+   `error`, and storage evidence contains ciphertext hashes/statuses only.
+
+3. Rehearse repair.
+
+   Remove or invalidate one non-production staging mirror replica through the
+   provider console or test fixture, then run:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/storage/repair"
+   ```
+
+   Pass criteria: the repair report returns `ok=true` and either
+   `repaired_replica_count` or the per-record `repaired` status shows the mirror
+   was restored.
+
+4. Revoke the delegate grant and rotate the retained record key.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/grants/${GRANT_ID}/revoke"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/records/${RECORD_ID}/rotate-key"
+   ```
+
+   Then prove the revoked grant cannot decrypt, analyze, or export the record,
+   and confirm `revocation_propagation` in `/ops/health` is not `error`.
+
+5. Withdraw analytics consent.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/${CONSENT_ID}/revoke"
+   ```
+
+   Pass criteria: future contributions for that consent are rejected, and the
+   retained evidence contains only consent ID, template ID, nullifier or ledger
+   IDs, query-budget status, and audit event IDs.
+
+6. Verify export-bundle retention behavior.
+
+   Create the encrypted export bundle through the approved export workflow, then
+   run:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-export-bundle-request.json \
+     "${WALLET_API_ORIGIN}/exports/verify"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-export-bundle-request.json \
+     "${WALLET_API_ORIGIN}/exports/storage"
+   ```
+
+   Record the bundle hash, record count, storage status, owner-copy retention
+   decision, recipient retention terms, and expiration or purge ticket. Do not
+   archive bundle plaintext or recipient secrets.
+
+7. Delete one synthetic staging record and collect purge/audit evidence.
+
+   Use the target deployment's approved record deletion control, whether it is
+   an API route, CLI command, or scheduled purge job. The dry run is not
+   complete until evidence shows manifest references and dependent key wraps are
+   removed, encrypted storage unpin/delete actions are submitted, backup purge
+   tracking is opened under the approved SLA, and a tombstone/audit event exists
+   without plaintext. If the target has no record deletion control, record this
+   as a launch blocker rather than approving the environment.
+
+8. Run final readiness.
+
+   ```bash
+   python -m wallet_interface.ops --validate-production-readiness
+   python scripts/run_wallet_release_checks.py --dry-run
+   ```
+
+   Attach the passing readiness report, release-check dry-run manifest,
+   provider purge tickets, backup purge ticket, audit timeline, and reviewer
+   leak-check result to the WALLET-190 evidence artifact.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

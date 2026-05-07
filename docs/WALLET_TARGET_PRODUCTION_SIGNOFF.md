@@ -57,6 +57,9 @@ launch decision still requires validating the completed target packet path.
 | Readiness report artifact |  |
 | Ops-health report artifact |  |
 | Proof contract report artifact |  |
+| Storage retention/deletion dry-run evidence artifact |  |
+| Storage repair evidence artifact |  |
+| Deletion purge/audit evidence artifact |  |
 | Retention policy version |  |
 | S3 lifecycle policy ID |  |
 | IPFS pinset policy ID |  |
@@ -73,6 +76,7 @@ launch decision still requires validating the completed target packet path.
 | Release-check archive | `python scripts/run_wallet_release_checks.py --playwright-port 5185` passes and its evidence bundle is archived |  |
 | Durable wallet repository | `WALLET_REPOSITORY_ROOT` or equivalent managed datastore is configured, backed up, and covered by lifecycle policy |  |
 | Encrypted storage replicas | `WALLET_STORAGE_CONFIG` and provider credentials are configured without placeholder values |  |
+| WALLET-190 dry run | Target staging demonstrates encrypted replica creation, replica health checks, repair, grant revocation, key rotation, record deletion, analytics-consent withdrawal, export-bundle retention, and purge/audit evidence |  |
 | Storage repair | `/ops/health?verify_storage=true` plus wallet or record storage repair checks pass with ciphertext/hash evidence only |  |
 | External proof verifier | HTTP verifier health/prove/verify/no-leak contract passes with real staging credentials |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
@@ -90,6 +94,26 @@ launch decision still requires validating the completed target packet path.
 | Deletion and purge | Record deletion, grant revocation, storage unpin/delete, backup purge tracking, and tombstone audit behavior are validated |  |
 | Browser/session storage | UI stores no raw wallet plaintext, verifier secrets, or long-lived invocation tokens in browser storage |  |
 | Rollback plan | API/UI/ops worker rollback path is documented and tested for the target environment |  |
+
+## WALLET-190 Evidence Checklist
+
+Complete this checklist with synthetic target-staging data and archive the
+evidence bundle ID in the environment record. The evidence must be reviewed
+before launch and must not reveal plaintext wallet data, proof witnesses,
+precise coordinates, key material, bearer tokens, webhook credentials, or secret
+values.
+
+| Dry-Run Step | Required Evidence | Status |
+| --- | --- | --- |
+| Encrypted replica creation | Record creation or upload produced encrypted primary and mirror refs with `storage_type`, `size_bytes`, and `sha256` only |  |
+| Replica health checks | Record or wallet storage verification and `/ops/health?verify_storage=true` returned `failed_replica_count=0` or no storage errors |  |
+| Repair | A staging replica was removed or invalidated, repair was run, and the report showed `ok=true` with repaired-replica evidence |  |
+| Grant revocation | Delegate grant was revoked, descendant access failed, delegated key wraps were revoked, and `revocation_propagation` was not `error` |  |
+| Key rotation | Retained synthetic record key was rotated after revocation and only version ID, key-wrap status counts, and audit event IDs were archived |  |
+| Record deletion | Synthetic record deletion removed manifest references and dependent key wraps, opened provider unpin/delete actions, created a tombstone, and started backup purge tracking |  |
+| Analytics-consent withdrawal | Consent was revoked, future contributions were blocked, and withdrawal/nullifier/query-budget audit evidence was retained |  |
+| Export-bundle retention | Encrypted export bundle create/verify/storage checks passed and bundle retention or purge disposition was recorded by bundle hash and ticket ID |  |
+| Purge/audit evidence | IPFS, Filecoin, S3, backup, alert/log retention, tombstone, and audit evidence was reviewed for absence of plaintext and secret values |  |
 
 ## Required Commands
 

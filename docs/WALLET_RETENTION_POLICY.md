@@ -94,6 +94,30 @@ than credential values.
 | Alert retention | Ops-health JSONL, alert-router payloads, incident tickets, and notification delivery logs default to 90 days. Incident-attached alerts follow the incident-retention period. Alert payloads must include status metadata only and must not include wallet plaintext, precise coordinates, proof witnesses, verifier tokens, or storage credentials. |
 | Repair evidence | Storage health and repair reports must prove encrypted replica availability with ciphertext hashes and storage-type statuses. They must not decrypt payloads for operators or include plaintext in report bodies, logs, alerts, or tickets. |
 
+## WALLET-190 Staging Dry-Run Evidence
+
+Before a target environment can be signed off, operators must run one
+production-like storage retention and deletion dry run against synthetic staging
+wallet data. The dry run demonstrates the retention controls below and archives
+the evidence artifact IDs in `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`.
+
+| Control | Required Dry-Run Evidence |
+| --- | --- |
+| Encrypted replica creation | Create or upload at least one synthetic wallet record with the target `WALLET_STORAGE_CONFIG`. Evidence includes the primary encrypted storage ref, mirror refs, `storage_type`, `size_bytes`, and `sha256` values only. |
+| Replica health checks | Run record-level wallet storage verification and `GET /ops/health?verify_storage=true`. Evidence includes `record_count`, `replica_count`, `failed_replica_count=0`, and the storage-type summary. |
+| Repair | Remove or invalidate one non-production staging replica, run the record or wallet repair control, and archive the repair report showing `ok=true` and the repaired replica count or per-record repaired status. |
+| Grant revocation | Revoke a delegated grant that can access the synthetic record, then prove descendant grants and delegated key wraps no longer permit decrypt, analysis, or export access. |
+| Key rotation | Rotate the retained synthetic record key after revocation and archive only the new version ID, key-wrap status counts, and audit event IDs. |
+| Record deletion | Delete one synthetic staging record through the approved record deletion control, remove manifest references and dependent key wraps, and record tombstone, unpin/delete, and backup-purge ticket IDs. A dry run is not complete if record deletion is only marked as future work. |
+| Analytics-consent withdrawal | Withdraw one analytics consent, show future contributions are blocked, and retain only the consent withdrawal, nullifier, query-budget, and aggregate-release audit records required by this policy. |
+| Export-bundle retention | Create, verify, storage-check, and expire or retain one encrypted export bundle according to the approved export retention decision. Evidence includes bundle hash, record count, storage status, and retention ticket IDs only. |
+| Purge/audit evidence | Archive provider purge, backup purge, audit timeline, and reviewer evidence. The evidence must contain no plaintext wallet data, proof witnesses, precise coordinates, key material, bearer tokens, webhook credentials, or secret values. |
+
+The privacy reviewer or operations reviewer must inspect the dry-run artifact for
+leaks before approving the retention mapping. A dry-run artifact that reveals
+plaintext or secret values fails the target environment signoff even when all
+storage and deletion actions succeeded.
+
 ## Deletion Workflow
 
 When a user deletes a record, closes a wallet, withdraws an analytics consent, or
