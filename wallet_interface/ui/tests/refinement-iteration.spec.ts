@@ -26,17 +26,18 @@ const previousRoot = process.env.UI_REFINEMENT_BASELINE_ROOT
   ? path.resolve(process.cwd(), process.env.UI_REFINEMENT_BASELINE_ROOT)
   : "";
 const iterationId = process.env.UI_REFINEMENT_ITERATION_ID || new Date().toISOString().replace(/[:.]/g, "-");
+const appSessionKey = "abby-ui-session-v1";
 
 const iterationScenarios: IterationScenario[] = [
   {
     id: "home",
     path: "/",
-    title: "Two-card home screen",
+    title: "Home safety plan screen",
     state: "default",
     goals: [
-      "Contacts and Sharing should be the only overview actions.",
-      "The combined next check-in and Check in now action should stay in Quick actions.",
-      "Next check-in information should be visible without crowding the overview actions."
+      "The welcome heading should stay prominent.",
+      "The old overview action row should stay removed.",
+      "Next check-in information should remain easy to find in Quick actions."
     ]
   },
   {
@@ -95,21 +96,6 @@ const iterationScenarios: IterationScenario[] = [
       await page.getByLabel(/Phone/i).fill("(503) 555-0188");
       await page.getByLabel(/Email/i).fill("morgan@example.org");
       await page.getByLabel(/Type/i).selectOption("social_worker");
-    }
-  },
-  {
-    id: "recipient-access-grant-revoked",
-    path: "/#/recipient-access",
-    title: "Emergency recipient access after revocation",
-    state: "active grant revoked",
-    goals: [
-      "Revoked grants should no longer look active.",
-      "The revoked state should remain auditable and understandable.",
-      "The UI should not imply the recipient still has decrypt or analysis access."
-    ],
-    prepare: async (page) => {
-      const legalAidRequest = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
-      await legalAidRequest.getByRole("button", { name: /Revoke/i }).click();
     }
   },
   {
@@ -181,6 +167,11 @@ test("capture Abby UI refinement iteration screenshots for multimodal agents", a
       continue;
     }
 
+    await page.goto("/");
+    await page.evaluate(
+      (key) => window.localStorage.setItem(key, JSON.stringify({ username: "iteration-reviewer" })),
+      appSessionKey
+    );
     await page.goto(scenario.path);
     await resetMobileNavigation(page, scenario.id);
     await expect(page.locator(".screen")).toBeVisible();
