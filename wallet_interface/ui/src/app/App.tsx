@@ -4,6 +4,7 @@ import {
   Bell,
   BarChart3,
   CalendarCheck,
+  CalendarClock,
   ClipboardCheck,
   ContactRound,
   FileUp,
@@ -16,6 +17,7 @@ import {
   Menu,
   MessageSquare,
   RefreshCw,
+  Save,
   ShieldCheck,
   Upload,
   UsersRound,
@@ -32,6 +34,12 @@ import {
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
+import {
+  getServicePlanDocIdFromHash,
+  ServicePlanScreen,
+  setLocationServicePlanHash
+} from "./ServicePlanScreen";
+import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { search211Info } from "../services/graphRagService";
 import type { SearchResult } from "../lib/graphrag";
 import {
@@ -101,9 +109,13 @@ import {
   listWalletAuditEvents,
   listWalletDocuments,
   listWalletProofReceipts,
+  listWalletSavedServices,
+  listWalletServiceInteractions,
+  listWalletServicePlans,
   rejectAccessRequest,
   repairRecordStorage,
   revokeAccessRequest,
+  saveWalletService,
   saveWalletSnapshot,
   verifyWalletSnapshot,
   WalletSnapshotVerification,
@@ -164,7 +176,9 @@ function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig())
 }
 
 function getInitialRouteFromHash(): RouteId {
-  return getServiceDetailDocIdFromHash() ? "social-services" : normalizeAppRoute(getRouteFromHash());
+  return getServicePlanDocIdFromHash() || getServiceDetailDocIdFromHash()
+    ? "social-services"
+    : normalizeAppRoute(getRouteFromHash());
 }
 
 function readSignedInUser(): string {
@@ -276,7 +290,10 @@ export function App() {
   const [signedInUser, setSignedInUser] = useState(readSignedInUser);
   const activeRouteRef = useRef<RouteId>(getInitialRouteFromHash());
   const [activeRoute, setActiveRoute] = useState<RouteId>(activeRouteRef.current);
-  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getServiceDetailDocIdFromHash());
+  const [servicePlanDocId, setServicePlanDocId] = useState<string | null>(getServicePlanDocIdFromHash());
+  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(
+    getServicePlanDocIdFromHash() ? null : getServiceDetailDocIdFromHash()
+  );
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -295,9 +312,13 @@ export function App() {
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
   const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
   const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>(initialGrantReceipts);
-  const [savedServices, setSavedServices] = useState<SavedService[]>([]);
-  const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
-  const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
+  const [savedServices, setSavedServices] = useState<SavedService[]>(() => defaultAppState.savedServices);
+  const [servicePlans, setServicePlans] = useState<ServicePlan[]>(() => defaultAppState.servicePlans);
+  const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>(
+    () => defaultAppState.serviceInteractions
+  );
+  const [walletPortalLoading, setWalletPortalLoading] = useState(false);
+  const [walletPortalError, setWalletPortalError] = useState("");
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
@@ -331,12 +352,33 @@ export function App() {
     setWalletProofReceipts(proofs.length ? proofs : proofReceipts);
   }
 
+  async function refreshWalletPortalState() {
+    if (!walletApiConfig) return;
+    setWalletPortalLoading(true);
+    setWalletPortalError("");
+    try {
+      const [nextSavedServices, nextServicePlans, nextServiceInteractions] = await Promise.all([
+        listWalletSavedServices(walletApiConfig),
+        listWalletServicePlans(walletApiConfig),
+        listWalletServiceInteractions(walletApiConfig)
+      ]);
+      setSavedServices(nextSavedServices);
+      setServicePlans(nextServicePlans);
+      setServiceInteractions(nextServiceInteractions);
+    } catch (error) {
+      setWalletPortalError(error instanceof Error ? error.message : "Wallet portal state unavailable");
+    } finally {
+      setWalletPortalLoading(false);
+    }
+  }
+
   async function refreshWalletAfterSnapshotLoad() {
     if (!walletApiConfig) return;
     await Promise.all([
       refreshWalletAuditEvents().catch(() => setWalletAuditEvents(auditEvents)),
       refreshWalletDocuments().catch(() => setUploads(initialUploads)),
-      refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts))
+      refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts)),
+      refreshWalletPortalState()
     ]);
   }
 
@@ -415,8 +457,10 @@ export function App() {
 
   useEffect(() => {
     const syncRouteFromHash = () => {
-      const detailDocId = getServiceDetailDocIdFromHash();
-      const nextRoute = detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
+      const planDocId = getServicePlanDocIdFromHash();
+      const detailDocId = planDocId ? null : getServiceDetailDocIdFromHash();
+      const nextRoute = planDocId || detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
+      setServicePlanDocId(planDocId);
       setServiceDetailDocId(detailDocId);
       activeRouteRef.current = nextRoute;
       setActiveRoute(nextRoute);
@@ -436,6 +480,9 @@ export function App() {
       shelterContactRequests,
       shelterStaffAccounts,
       shelterUserAccounts,
+      savedServices,
+      servicePlans,
+      serviceInteractions,
       benefitsOptIn,
       analyticsOptIn,
       shelterChecklist
@@ -446,6 +493,9 @@ export function App() {
     policy,
     profile,
     recipients,
+    savedServices,
+    serviceInteractions,
+    servicePlans,
     shelterContactRequests,
     shelterChecklist,
     shelterStaffAccounts,
@@ -478,6 +528,11 @@ export function App() {
 
   useEffect(() => {
     if (!walletApiConfig) return;
+    void refreshWalletPortalState();
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
     const demoBundleJson = import.meta.env.VITE_DEMO_EXPORT_BUNDLE_JSON as string | undefined;
     if (!demoBundleJson) return;
 
@@ -504,6 +559,7 @@ export function App() {
     setLocationRouteHash(nextRoute);
     activeRouteRef.current = nextRoute;
     setActiveRoute(nextRoute);
+    setServicePlanDocId(null);
     setServiceDetailDocId(null);
     setMobileNavOpen(false);
   }
@@ -660,10 +716,45 @@ export function App() {
             setUploads={setUploads}
           />
         ) : null}
-        {serviceDetailDocId ? (
+        {servicePlanDocId ? (
+          <ServicePlanScreen
+            apiConfig={walletApiConfig}
+            docId={servicePlanDocId}
+            onBack={() => navigate("social-services")}
+            onOpenDetail={(nextDocId) => {
+              setLocationServiceDetailHash(nextDocId);
+              setServicePlanDocId(null);
+              setServiceDetailDocId(nextDocId);
+            }}
+            refreshWalletPortalState={refreshWalletPortalState}
+            savedServices={savedServices}
+            servicePlans={servicePlans}
+            setSavedServices={setSavedServices}
+            setServicePlans={setServicePlans}
+          />
+        ) : null}
+        {serviceDetailDocId && !servicePlanDocId ? (
           <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
         ) : null}
-        {activeRoute === "social-services" && !serviceDetailDocId ? <SocialServicesScreen /> : null}
+        {activeRoute === "social-services" && !serviceDetailDocId && !servicePlanDocId ? (
+          <SocialServicesScreen
+            apiConfig={walletApiConfig}
+            onOpenPlan={(nextDocId) => {
+              setLocationServicePlanHash(nextDocId);
+              setServicePlanDocId(nextDocId);
+              setServiceDetailDocId(null);
+              activeRouteRef.current = "social-services";
+              setActiveRoute("social-services");
+              setMobileNavOpen(false);
+            }}
+            refreshWalletPortalState={refreshWalletPortalState}
+            savedServices={savedServices}
+            servicePlans={servicePlans}
+            setSavedServices={setSavedServices}
+            walletPortalError={walletPortalError}
+            walletPortalLoading={walletPortalLoading}
+          />
+        ) : null}
         {activeRoute === "shelter" ? (
           <ShelterScreen
             checklist={shelterChecklist}
@@ -726,8 +817,9 @@ export function App() {
         onCancelConfirmation={(confirmationId) => agentChat.denyConfirmation(confirmationId)}
         onClose={() => setAgentChatOpen(false)}
         onConfirmConfirmation={(confirmationId) => agentChat.approveConfirmation(confirmationId)}
-        onOpenServiceDetail={(docId) =>
-          openCanonicalServiceDetailRoute(docId, {
+        onOpenServiceDetail={(docId) => {
+          setServicePlanDocId(null);
+          return openCanonicalServiceDetailRoute(docId, {
             setActiveRoute: (route) => {
               const nextRoute = normalizeAppRoute(route);
               activeRouteRef.current = nextRoute;
@@ -735,8 +827,8 @@ export function App() {
             },
             setServiceDetailDocId,
             setMobileNavOpen
-          })
-        }
+          });
+        }}
         onSend={(message) => {
           void agentChat.sendMessage(message);
         }}
@@ -1910,13 +2002,33 @@ function UploadsScreen({
   );
 }
 
-function SocialServicesScreen() {
+function SocialServicesScreen({
+  apiConfig,
+  onOpenPlan,
+  refreshWalletPortalState,
+  savedServices,
+  servicePlans,
+  setSavedServices,
+  walletPortalError,
+  walletPortalLoading
+}: {
+  apiConfig?: WalletApiConfig;
+  onOpenPlan: (docId: string) => void;
+  refreshWalletPortalState?: () => Promise<void>;
+  savedServices: SavedService[];
+  servicePlans: ServicePlan[];
+  setSavedServices: (services: SavedService[]) => void;
+  walletPortalError: string;
+  walletPortalLoading: boolean;
+}) {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
   const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
   const [searchError, setSearchError] = useState("");
+  const [savingDocIds, setSavingDocIds] = useState<string[]>([]);
+  const [saveError, setSaveError] = useState("");
 
   async function runSearch(nextQuery = query) {
     const trimmedQuery = nextQuery.trim();
@@ -1940,6 +2052,24 @@ function SocialServicesScreen() {
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void runSearch();
+  }
+
+  async function saveResult(result: SearchResult) {
+    if (savingDocIds.includes(result.docId)) return;
+    setSavingDocIds([...savingDocIds, result.docId]);
+    setSaveError("");
+    try {
+      const saved =
+        apiConfig?.actorDid
+          ? await saveWalletService(apiConfig, toSaveWalletServiceInput(result))
+          : toLocalSavedService(result, apiConfig?.walletId);
+      setSavedServices([saved, ...savedServices.filter((service) => service.saved_service_id !== saved.saved_service_id)]);
+      await refreshWalletPortalState?.().catch(() => undefined);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Service could not be saved.");
+    } finally {
+      setSavingDocIds((current) => current.filter((docId) => docId !== result.docId));
+    }
   }
 
   return (
@@ -1973,6 +2103,7 @@ function SocialServicesScreen() {
         {searchStatus === "error" ? (
           <StatusBanner tone="warning">211 service search is unavailable: {searchError}</StatusBanner>
         ) : null}
+        {saveError ? <StatusBanner tone="warning">{saveError}</StatusBanner> : null}
         {searchStatus === "complete" && results.length === 0 ? (
           <StatusBanner tone="info">No local 211 records matched. Try a broader need or contact 211 directly.</StatusBanner>
         ) : null}
@@ -1999,6 +2130,20 @@ function SocialServicesScreen() {
                   </div>
                   <div className="row-actions list-item-action">
                     {document.source_url ? <Badge tone="success">source</Badge> : null}
+                    <Button
+                      disabled={savedServices.some((service) => service.service_doc_id === result.docId)}
+                      loading={savingDocIds.includes(result.docId)}
+                      loadingLabel="Saving"
+                      onClick={() => void saveResult(result)}
+                      variant="secondary"
+                    >
+                      <Save aria-hidden="true" size={18} />
+                      {savedServices.some((service) => service.service_doc_id === result.docId) ? "Saved" : "Save"}
+                    </Button>
+                    <Button onClick={() => onOpenPlan(result.docId)} variant="secondary">
+                      <CalendarClock aria-hidden="true" size={18} />
+                      Plan
+                    </Button>
                     <Button onClick={() => setLocationServiceDetailHash(result.docId)} variant="secondary">
                       Open detail
                     </Button>
@@ -2009,6 +2154,15 @@ function SocialServicesScreen() {
           </div>
         ) : null}
       </Section>
+      <SavedServicesPanel
+        error={walletPortalError}
+        loading={walletPortalLoading}
+        onOpenDetail={setLocationServiceDetailHash}
+        onOpenPlan={onOpenPlan}
+        onRefresh={refreshWalletPortalState ? () => void refreshWalletPortalState() : undefined}
+        savedServices={savedServices}
+        servicePlans={servicePlans}
+      />
       <div className="category-grid">
         {categories.map((category) => (
           <button className="category-tile" key={category} onClick={() => void runSearch(category)} type="button">
@@ -2044,6 +2198,59 @@ function SocialServicesScreen() {
       </Section>
     </div>
   );
+}
+
+function toSaveWalletServiceInput(result: SearchResult) {
+  const document = result.document;
+  const title = document.program_name || document.provider_name || document.title || result.docId;
+  return {
+    serviceDocId: result.docId,
+    sourceContentCid: result.contentCid || document.source_content_cid || `ui-unresolved-${appStableSuffix(result.docId)}`,
+    sourcePageCid: result.pageCid || document.source_page_cid || "",
+    title,
+    providerName: document.provider_name || "",
+    programName: document.program_name || document.title || "",
+    sourceUrl: document.source_url || "",
+    label: title,
+    priority: "normal",
+    reason: "",
+    status: "saved",
+    metadata: {
+      saved_from: "services_search"
+    }
+  };
+}
+
+function toLocalSavedService(result: SearchResult, walletId = "local-wallet"): SavedService {
+  const now = new Date().toISOString();
+  const input = toSaveWalletServiceInput(result);
+  return {
+    created_at: now,
+    label: input.label,
+    metadata: input.metadata,
+    priority: input.priority,
+    private_notes_record_id: "",
+    program_name: input.programName,
+    provider_name: input.providerName,
+    reason: input.reason,
+    saved_service_id: `saved-local-${appStableSuffix(input.serviceDocId)}`,
+    service_doc_id: input.serviceDocId,
+    source_content_cid: input.sourceContentCid,
+    source_page_cid: input.sourcePageCid,
+    source_url: input.sourceUrl,
+    status: input.status,
+    title: input.title,
+    updated_at: now,
+    wallet_id: walletId
+  };
+}
+
+function appStableSuffix(value: string): string {
+  let hash = 5381;
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 33) ^ value.charCodeAt(index);
+  }
+  return (hash >>> 0).toString(36);
 }
 
 function ShelterScreen({

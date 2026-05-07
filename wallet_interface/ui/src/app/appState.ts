@@ -4,6 +4,9 @@ import type {
   EasyBotCheckStatus,
   RegistrationProfileDraft,
   RouteId,
+  SavedService,
+  ServiceInteractionEvent,
+  ServicePlan,
   ShelterContactRequest,
   UploadItem
 } from "../models/abby";
@@ -152,6 +155,9 @@ export type PersistedAppState = {
   shelterContactRequests?: ShelterContactRequest[];
   shelterStaffAccounts?: ShelterStaffAccount[];
   shelterUserAccounts?: ShelterUserAccount[];
+  savedServices?: SavedService[];
+  servicePlans?: ServicePlan[];
+  serviceInteractions?: ServiceInteractionEvent[];
   benefitsOptIn?: boolean;
   analyticsOptIn?: Record<string, boolean>;
   shelterChecklist?: typeof defaultShelterChecklist;
@@ -211,6 +217,9 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
       ? persistedState.shelterStaffAccounts
       : initialShelterStaffAccounts,
     shelterUserAccounts: Array.isArray(persistedState.shelterUserAccounts) ? persistedState.shelterUserAccounts : [],
+    savedServices: Array.isArray(persistedState.savedServices) ? persistedState.savedServices : [],
+    servicePlans: Array.isArray(persistedState.servicePlans) ? persistedState.servicePlans : [],
+    serviceInteractions: Array.isArray(persistedState.serviceInteractions) ? persistedState.serviceInteractions : [],
     benefitsOptIn: persistedState.benefitsOptIn ?? true,
     analyticsOptIn:
       persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"
