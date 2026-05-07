@@ -621,6 +621,45 @@ export async function saveWalletService(
   });
 }
 
+export async function updateWalletSavedService(
+  config: WalletApiConfig,
+  savedServiceId: string,
+  input: {
+    sourceContentCid?: string;
+    sourcePageCid?: string;
+    title?: string;
+    providerName?: string;
+    programName?: string;
+    sourceUrl?: string;
+    label?: string;
+    reason?: string;
+    priority?: string;
+    status?: string;
+    privateNotesRecordId?: string;
+    metadata?: Record<string, unknown>;
+  }
+): Promise<SavedService> {
+  const url = new URL(
+    `/wallets/${config.walletId}/portal/saved-services/${savedServiceId}`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  return patchJson<SavedService>(url, "Saved service update", {
+    actor_did: requiredActorDid(config),
+    source_content_cid: input.sourceContentCid,
+    source_page_cid: input.sourcePageCid,
+    title: input.title,
+    provider_name: input.providerName,
+    program_name: input.programName,
+    source_url: input.sourceUrl,
+    label: input.label,
+    reason: input.reason,
+    priority: input.priority,
+    status: input.status,
+    private_notes_record_id: input.privateNotesRecordId,
+    metadata: input.metadata
+  });
+}
+
 export async function listWalletServicePlans(
   config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
   filters: { serviceDocId?: string; status?: string } = {}
