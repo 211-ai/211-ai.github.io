@@ -37,11 +37,15 @@ The current `main` tree itself is much smaller, about `738082404` bytes, so a hi
 
 ## Remote fallback branch
 
-A slim current-state snapshot branch has already been pushed successfully to the target remote:
+A pair of slim history-free snapshot branches has already been pushed successfully to the target remote:
 
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
-This branch is a fresh-root snapshot of the current local `main` tree. It preserves the current repository contents on the target remote without carrying the oversized prior history.
+These branches are fresh-root snapshots that preserve the current repository contents on the target remote without carrying the oversized prior history.
+
+- `migration/slim-main-20260507`: snapshot of the current local `main` tree
+- `migration/slim-worktree-patches-20260507`: snapshot of `archive/worktree-patches-20260507`, including the patch archive and migration handoff artifacts
 
 ## Preserved artifacts
 
@@ -91,3 +95,4 @@ These archive family branches were built with `ours`-strategy merges so that the
 
 - Full-history compact migration: prepared locally but still blocked by repository size.
 - Current-state slim migration: already published on the remote as `migration/slim-main-20260507`.
+- Patch-archive slim migration: already published on the remote as `migration/slim-worktree-patches-20260507`.

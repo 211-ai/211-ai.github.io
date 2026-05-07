@@ -9,6 +9,7 @@ The target remote currently exposes only:
 - `main`
 - `copilot/211-ai-pull-changes`
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
 Local remote-tracking refs such as `origin/rescue/*` are historical and should not be treated as proof that those branches exist on the new remote.
 
@@ -71,8 +72,14 @@ That means the compact five-branch migration set is still blocked as a full-hist
 The history-free snapshot branch below has already been pushed successfully to the target remote:
 
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
-It is a fresh-root snapshot of the current local `main` tree and provides a viable current-state migration path when full history cannot be transferred.
+These are fresh-root snapshots of:
+
+- the current local `main` tree
+- the `archive/worktree-patches-20260507` tree containing the patch archive and migration handoff artifacts
+
+They provide viable current-state fallback branches when full history cannot be transferred.
 
 ## Phase 1: Push immediately
 
