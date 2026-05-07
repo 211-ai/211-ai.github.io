@@ -398,6 +398,64 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 211 Partner Pilot Rehearsal
+
+Run this rehearsal in staging before the first service-partner pilot session and
+after any UI, API, verifier, analytics-template, or revocation-policy change
+that affects the workflow. Use synthetic records and partner DIDs. Do not use
+real client documents, exact home addresses, live credentials, proof witnesses,
+or secret values in rehearsal evidence.
+
+Required setup:
+
+- The API and UI are deployed from the same candidate build.
+- `WALLET_REPOSITORY_ROOT`, `WALLET_STORAGE_CONFIG`, and
+  `WALLET_AUTO_PERSIST=true` point to staging storage.
+- `WALLET_SERVICES_JSONL` points at the staging 211 service directory used by
+  service matching.
+- The proof backend mode matches the launch decision for the pilot. Simulated
+  proofs are acceptable only for development rehearsal; target launch evidence
+  needs the WALLET-180 verifier cutover packet.
+- The analytics template used by the rehearsal is approved and recorded in the
+  target signoff packet with allowed fields, k-threshold, epsilon budget,
+  retention mapping, reviewer roles, and withdrawal handling.
+
+Rehearsal sequence:
+
+1. Add one document from Uploads and one current location through the wallet
+   API. Confirm `GET /wallets/{wallet_id}/records` shows a document and a
+   location record without plaintext.
+2. Create a purpose-bound partner grant for redacted document analysis. Confirm
+   the partner sees the receipt in Recipient Access and that invocation output
+   is `redacted_derived_only`.
+3. Run service matching with a coarse-location invocation. Confirm the response
+   includes service IDs/reasons only and does not include exact latitude or
+   longitude.
+4. Create a location-region proof from Proof Center. Confirm the receipt public
+   inputs contain only the region ID, claim, and policy hash, and do not include
+   location coordinates or witness values.
+5. Submit an approved aggregate analytics contribution from consented,
+   derived/coarse fields, then run the approved aggregate count endpoint.
+6. Revoke the partner grant and retry the previous invocation. The retry must
+   fail, and the grant receipt must appear as revoked.
+7. Open Audit and confirm the timeline includes the document/location add,
+   grant, invocation, redacted analysis, coarse location read, proof creation,
+   analytics consent/contribution/query, and grant revocation events.
+8. Run:
+
+   ```bash
+   pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+   npm --prefix wallet_interface/ui run build
+   npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+   ```
+
+Archive the command output, the audit timeline, the proof receipt public-input
+view, the grant receipt before and after revocation, and the analytics aggregate
+result. Evidence may include record IDs, grant IDs, receipt hashes, template
+IDs, nullifiers, policy hashes, and service IDs. Evidence must not include
+plaintext document text, exact coordinates, proof witnesses, wallet keys, bearer
+tokens, verifier credentials, or storage credentials.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

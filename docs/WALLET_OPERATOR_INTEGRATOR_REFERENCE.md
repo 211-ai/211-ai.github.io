@@ -197,6 +197,49 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Flow
+
+Use this flow for the WALLET-210 staging pilot with synthetic records and a
+named partner DID. The pilot is valid only when every step is visible through a
+211-AI UI or public API surface and the resulting audit timeline is archived
+without plaintext, precise coordinates, proof witnesses, or secrets.
+
+Pilot sequence:
+
+1. Create or select the staging wallet in the 211-AI UI, then add one document
+   through Uploads and one current location through
+   `POST /wallets/{wallet_id}/locations`.
+2. Grant the service partner purpose-bound document access with
+   `POST /wallets/{wallet_id}/records/{record_id}/grants`. Use a concrete
+   pilot purpose such as `211_partner_screening`, output types limited to
+   `redacted_derived_only`, and user presence when the partner is acting with
+   the user present.
+3. Let the partner inspect their receipt in Recipient Access and invoke only
+   the allowed redacted analysis output. Direct plaintext document viewing is
+   out of scope unless a separate `record/decrypt` grant exists.
+4. Grant and invoke coarse-location service matching for the partner when
+   needed. Match responses may include coarse service-area facts and reasons;
+   they must not include precise latitude or longitude.
+5. Create a location-region proof from Proof Center or
+   `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs`.
+   The public inputs should contain the region, claim, and policy hash only.
+6. Register an approved analytics template, create the user's consent from that
+   template, submit one derived-field contribution, and run only the approved
+   aggregate endpoint. Template fields must be coarse or derived fields already
+   covered by `docs/WALLET_RETENTION_POLICY.md`.
+7. Revoke the partner grant with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove the prior
+   invocation no longer works.
+8. Open Audit and archive the timeline containing `record/add`,
+   `grant/create`, `invocation/issue`, `record/analyze_redacted`,
+   `location/read_coarse`, `proof/create`, `analytics/consent_create`,
+   `analytics/contribute`, `analytics/query`, and `grant/revoke`.
+
+The browser regression for this pilot is
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live API
+backed by `ipfs_datasets_py.wallet`, drives the 211-AI UI, and verifies the
+same public API boundaries.
+
 ## API Reference
 
 Run the API with:
