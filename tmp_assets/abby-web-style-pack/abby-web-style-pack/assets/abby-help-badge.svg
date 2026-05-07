@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 260" role="img" aria-labelledby="title desc">
+  <title id="title">Need help today badge</title>
+  <desc id="desc">Circular watercolor landscape with a heart, mountains, and evergreens.</desc>
+  <defs>
+    <clipPath id="circleClip"><circle cx="130" cy="130" r="118"/></clipPath>
+    <filter id="watercolor" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="3" seed="42" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="7"/>
+      <feGaussianBlur stdDeviation="0.7"/>
+    </filter>
+    <symbol id="pine" viewBox="0 0 54 110">
+      <path d="M27 5c-2 16-8 28-19 41 8-2 15-5 20-11-2 18-10 31-23 45 10-2 19-6 27-14-2 15-10 28-22 40 14-2 25-9 33-20 6 9 15 16 26 18-12-13-21-27-23-42 7 8 16 12 26 13-14-14-23-28-26-45 6 7 13 11 22 12C39 36 32 20 27 5Z" fill="#164C3A"/>
+      <rect x="24" y="78" width="6" height="30" rx="3" fill="#164C3A"/>
+    </symbol>
+  </defs>
+  <circle cx="130" cy="130" r="120" fill="#F3F8F6" stroke="#7FAEB4" stroke-width="2" opacity="0.95"/>
+  <g clip-path="url(#circleClip)" filter="url(#watercolor)">
+    <rect width="260" height="260" fill="#F3F8F6"/>
+    <path d="M-12 159 73 78l52 46 49-35 104 84H-12Z" fill="#B7D3D5" opacity="0.6"/>
+    <path d="M55 80 38 106l20-8-5 20 31-38Z" fill="#FAFBF8" opacity="0.72"/>
+    <path d="M-10 204c52-28 94-34 153-18 46 12 76 8 126-19v90H-10Z" fill="#DCE8E2" opacity="0.78"/>
+    <path d="M-10 224c72-33 142-30 270 5v45H-10Z" fill="#7FAEB4" opacity="0.34"/>
+    <use href="#pine" x="17" y="137" width="58" height="118" opacity="0.77"/>
+    <use href="#pine" x="62" y="122" width="72" height="146" opacity="0.82"/>
+    <use href="#pine" x="184" y="133" width="58" height="118" opacity="0.72"/>
+    <use href="#pine" x="143" y="150" width="46" height="94" opacity="0.68"/>
+    <path d="M130 104s-34-19-34-45c0-14 11-25 25-25 8 0 15 4 19 11 4-7 11-11 19-11 14 0 25 11 25 25 0 26-34 45-54 45Z" fill="#0E5A3C" opacity="0.96"/>
+  </g>
+</svg>
