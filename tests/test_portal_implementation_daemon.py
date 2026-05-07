@@ -1528,6 +1528,9 @@ def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     tracked_pycache = repo_root / "wallet_interface" / "__pycache__" / "api.cpython-312.pyc"
     tracked_pycache.parent.mkdir(parents=True, exist_ok=True)
     tracked_pycache.write_bytes(b"stable-pyc")
+    tracked_nested_pycache = repo_root / "tests" / "__pycache__" / "fixture.cpython-312.pyc"
+    tracked_nested_pycache.parent.mkdir(parents=True, exist_ok=True)
+    tracked_nested_pycache.write_bytes(b"stable-nested-pyc")
     init_git_repo(repo_root)
 
     daemon = PortalImplementationDaemon(
@@ -1548,6 +1551,10 @@ def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
     (worktree / "wallet_interface" / "ui" / "artifacts" / "ui-screenshots" / "latest" / "desktop" / "home.png").unlink()
     (worktree / "wallet_interface" / "ui" / "artifacts" / "ui-iterations" / "latest" / "desktop" / "home.png").unlink()
     (worktree / "wallet_interface" / "__pycache__" / "api.cpython-312.pyc").write_bytes(b"generated-pyc")
+    (worktree / "tests" / "__pycache__" / "fixture.cpython-312.pyc").write_bytes(b"generated-nested-pyc")
+    untracked_pyc = worktree / "scraper" / "__pycache__" / "generated.cpython-312.pyc"
+    untracked_pyc.parent.mkdir(parents=True, exist_ok=True)
+    untracked_pyc.write_bytes(b"untracked-generated-pyc")
 
     task = parse_task_file(todo_path, "## AGENT-")[0]
     commit_result = daemon._commit_worktree_changes(worktree, task, 1)
@@ -1561,6 +1568,76 @@ def test_daemon_commit_restores_ephemeral_paths_before_staging(tmp_path):
 
     assert commit_result["committed"] is True
     assert changed_paths == ["docs/agent.md"]
+    assert (worktree / "tests" / "__pycache__" / "fixture.cpython-312.pyc").read_bytes() == b"stable-nested-pyc"
+    assert not untracked_pyc.exists()
+
+
+def test_daemon_marks_successfully_merged_evidence_task_completed(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    events_path = state_dir / "agent_chat_events.jsonl"
+    repo_root.mkdir(parents=True)
+    todo_path.write_text(
+        """
+# Agent Todo
+
+## AGENT-000 Evidence Gate
+- Status: todo
+- Completion: evidence
+- Priority: P0
+- Track: ops
+- Depends on: none
+- Outputs: docs/evidence.md
+- Validation: python -c "print('evidence-ok')"
+- Acceptance: evidence exists
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path.write_text(
+        json.dumps(
+            {
+                "type": "implementation_finished",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "task_id": "AGENT-000",
+                "attempt": 1,
+                "returncode": 0,
+                "implementation_commit": head,
+                "merge_result": {"attempted": True, "merged": True, "returncode": 0, "merge_commit": head},
+                "validation_result": {"attempted": True, "passed": True, "returncode": 0},
+                "cleanup_result": {"cleaned": True},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=events_path,
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+
+    result = daemon.run_once()
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+
+    assert result["completed_count"] == 1
+    assert result["ready_count"] == 0
+    assert state.completed_task_ids == ["AGENT-000"]
+    assert state.active_task_id == ""
 
 
 def test_daemon_skips_duplicate_implementation_when_prior_worktree_process_is_live(tmp_path, monkeypatch):
@@ -1609,6 +1686,68 @@ def test_daemon_skips_duplicate_implementation_when_prior_worktree_process_is_li
     assert result["reason"] == "inflight_process"
     assert result["worktree_path"] == "/tmp/existing-worktree"
     assert not (state_dir / "implementation.lock").exists()
+
+
+def test_daemon_clears_stale_in_progress_state_when_process_is_missing(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    events_path = state_dir / "agent_chat_events.jsonl"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    PortalTaskState(
+        active_task_id="AGENT-000",
+        active_task_title="Control Plane",
+        active_task_track="platform",
+        active_attempt=2,
+        active_phase="validating",
+        active_worktree_path="/tmp/missing-worktree",
+        active_branch="implementation/agent-000-attempt-2",
+        implementation_in_progress=True,
+        last_implementation_task_id="AGENT-000",
+        last_implementation_started_at=datetime.now(timezone.utc).isoformat(),
+        last_implementation_finished_at="",
+    ).save(state_dir / "agent_chat_task_state.json")
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    events_path.write_text(
+        json.dumps(
+            {
+                "type": "implementation_started",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "task_id": "AGENT-000",
+                "attempt": 2,
+                "worktree_path": "/tmp/missing-worktree",
+                "command": ["/usr/local/bin/codex", "exec", "-C", "/tmp/missing-worktree", "-"],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=events_path,
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+    )
+    monkeypatch.setattr(daemon, "_list_process_commands", lambda: [])
+
+    daemon.run_once()
+    state = PortalTaskState.load(state_dir / "agent_chat_task_state.json")
+    event_types = [
+        json.loads(line)["type"]
+        for line in events_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    assert state.active_task_id == "AGENT-000"
+    assert state.implementation_in_progress is False
+    assert state.active_phase == ""
+    assert state.active_attempt == 0
+    assert state.active_worktree_path == ""
+    assert "implementation_state_recovered" in event_types
 
 
 def test_daemon_clears_stale_lock_before_starting_new_implementation(tmp_path):
