@@ -1,0 +1,165 @@
+/*
+  ABBY PNG asset helpers
+  Upload this file with the /assets/png folder, or copy the rules into your app stylesheet.
+  Paths assume this CSS file lives in /css and image files live in /assets/png.
+*/
+
+:root {
+  --abby-navy: #07314A;
+  --abby-ink: #102333;
+  --abby-forest: #0E5A3C;
+  --abby-evergreen: #164C3A;
+  --abby-teal: #0F7C73;
+  --abby-muted-teal: #7FAEB4;
+  --abby-blue-gray: #B7D3D5;
+  --abby-mist: #DCE8E2;
+  --abby-off-white: #FAFBF8;
+  --abby-soft-panel: #F3F8F6;
+}
+
+.abby-page-shell {
+  background:
+    radial-gradient(circle at 82% 8%, rgba(183, 211, 213, 0.46), transparent 34%),
+    radial-gradient(circle at 18% 0%, rgba(220, 232, 226, 0.62), transparent 30%),
+    linear-gradient(135deg, var(--abby-off-white) 0%, var(--abby-soft-panel) 48%, #EAF5F8 100%);
+  color: var(--abby-ink);
+}
+
+.abby-page-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.abby-page-header::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  right: 24px;
+  width: min(52vw, 620px);
+  height: 180px;
+  background-image: url("../assets/png/from-preview/preview-header-landscape.png");
+  background-repeat: no-repeat;
+  background-position: right top;
+  background-size: contain;
+  opacity: 0.68;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.abby-sidebar {
+  position: relative;
+  overflow: hidden;
+  background: rgba(250, 251, 248, 0.92);
+  border-right: 1px solid rgba(127, 174, 180, 0.42);
+}
+
+.abby-sidebar::after {
+  content: "";
+  position: absolute;
+  left: 48%;
+  bottom: 28px;
+  width: 160px;
+  height: 260px;
+  transform: translateX(-20%);
+  background-image: url("../assets/png/from-preview/preview-sidebar-evergreens.png");
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: contain;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.abby-card {
+  background: rgba(250, 251, 248, 0.92);
+  border: 1px solid rgba(127, 174, 180, 0.45);
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(7, 49, 74, 0.06);
+}
+
+.abby-checkin-panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(220, 232, 226, 0.95), rgba(183, 211, 213, 0.50));
+  border: 1.5px solid var(--abby-teal);
+  border-radius: 14px;
+}
+
+.abby-checkin-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../assets/png/from-preview/preview-quick-action-wash.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 58% auto;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.abby-checkin-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.abby-primary-button {
+  background: var(--abby-forest);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(7, 49, 74, 0.16);
+  font-weight: 700;
+}
+
+.abby-support-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(243, 248, 246, 0.92);
+  border: 1px solid rgba(127, 174, 180, 0.56);
+  border-radius: 16px;
+}
+
+.abby-support-card::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: 0;
+  width: min(34vw, 380px);
+  height: 160px;
+  background-image: url("../assets/png/from-preview/preview-support-bridge-watermark.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: contain;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.abby-support-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.abby-support-badge {
+  display: block;
+  width: 120px;
+  height: 124px;
+  background-image: url("../assets/png/from-preview/preview-support-badge.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+/* Alternate stronger original-reference artwork, useful for landing pages or hero backgrounds. */
+.abby-reference-landscape {
+  background-image: url("../assets/png/from-reference/reference-landscape-clean.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: min(68vw, 900px) auto;
+}
+
+.abby-reference-bridge {
+  background-image: url("../assets/png/from-reference/reference-bridge-skyline-clean.png");
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  background-size: min(54vw, 680px) auto;
+}
