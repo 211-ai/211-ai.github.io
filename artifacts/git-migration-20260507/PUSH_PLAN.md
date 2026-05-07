@@ -21,10 +21,35 @@ An ancestry and diff-equivalence pass was run across the non-merged local rescue
 - `rescue/wallet-210-attempt-19-1778188297-failed-validation` is covered by `rescue/wallet-210-attempt-21-1778191683-failed-validation` and does not need to be pushed separately.
 - Aside from that single covered branch, the Phase 2 rescue/history list is already the smallest content-preserving branch set.
 
+<<<<<<< HEAD
 >>>>>>> 59df02f3 (Refine minimal branch migration set)
+=======
+## Preferred compact push set
+
+If the goal is to preserve all meaningful local history with the fewest remote refs, push these branches:
+
+- `main`
+- `archive/worktree-patches-20260507`
+- `archive/rescue-portal-family-20260507`
+- `archive/rescue-wallet210-family-20260507`
+- `archive/rescue-misc-family-20260507`
+
+These curated rescue archive branches were built with `ours`-strategy merges, and every original rescue-family branch tip was verified to be an ancestor of its corresponding archive branch.
+
+Recommended compact commands:
+
+```bash
+git -C /home/barberb/211-AI push origin main
+git -C /home/barberb/211-AI push origin archive/worktree-patches-20260507
+git -C /home/barberb/211-AI push origin archive/rescue-portal-family-20260507
+git -C /home/barberb/211-AI push origin archive/rescue-wallet210-family-20260507
+git -C /home/barberb/211-AI push origin archive/rescue-misc-family-20260507
+```
+
+>>>>>>> 028a5400 (Document compact migration branch set)
 ## Phase 1: Push immediately
 
-These branches should be pushed first because they preserve the current intended state and the archived uncommitted worktree deltas.
+These branches should be pushed first if you are using the full-fidelity branch-preservation path instead of the compact option above.
 
 - `main`
 - `archive/worktree-patches-20260507`
