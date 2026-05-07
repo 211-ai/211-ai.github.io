@@ -471,6 +471,7 @@ def test_validate_target_signoff_packet_template_accepts_committed_template() ->
         "template_environment_fields",
         "template_review_areas",
         "template_artifact_refs",
+        "template_retention_fields",
     }
 
 
@@ -528,6 +529,7 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             "backup_purge_sla": "30 days",
             "ipfs_pinning": "private pinset unpin on deletion ticket",
             "filecoin_deal_expiration": "no live Filecoin deals for staging",
+            "s3_lifecycle": "wallet-prod-v1 lifecycle covers current and noncurrent encrypted objects",
             "log_retention": "90 days",
             "alert_retention": "90 days",
             "deletion_tombstone_retention": "7 years",

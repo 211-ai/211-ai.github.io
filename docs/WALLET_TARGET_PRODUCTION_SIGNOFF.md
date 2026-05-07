@@ -58,6 +58,11 @@ launch decision still requires validating the completed target packet path.
 | Ops-health report artifact |  |
 | Proof contract report artifact |  |
 | Retention policy version |  |
+| S3 lifecycle policy ID |  |
+| IPFS pinset policy ID |  |
+| Filecoin deal policy ID or not-used decision |  |
+| Backup purge policy ID |  |
+| Alert retention policy ID |  |
 | Incident-response contact path |  |
 
 ## Required Evidence
@@ -68,6 +73,7 @@ launch decision still requires validating the completed target packet path.
 | Release-check archive | `python scripts/run_wallet_release_checks.py --playwright-port 5185` passes and its evidence bundle is archived |  |
 | Durable wallet repository | `WALLET_REPOSITORY_ROOT` or equivalent managed datastore is configured, backed up, and covered by lifecycle policy |  |
 | Encrypted storage replicas | `WALLET_STORAGE_CONFIG` and provider credentials are configured without placeholder values |  |
+| Storage repair | `/ops/health?verify_storage=true` plus wallet or record storage repair checks pass with ciphertext/hash evidence only |  |
 | External proof verifier | HTTP verifier health/prove/verify/no-leak contract passes with real staging credentials |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
 | Alert routing | Warning/error reports reach the approved incident router with authenticated delivery |  |

@@ -141,6 +141,7 @@ def test_ucan_zk_wallet_has_target_signoff_and_retention_artifacts() -> None:
     assert "secret_manager_refs" in packet_text
     assert "retention_mapping" in packet_text
     assert "retention_policy_version" in packet_text
+    assert "s3_lifecycle" in packet_text
     assert "analytics_privacy_review" in packet_text
 
 

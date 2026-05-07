@@ -59,6 +59,8 @@ import {
   defaultDisclosureScopes,
   defaultCheckInPolicy,
   exportBundles,
+  initialAccessRequests,
+  initialGrantReceipts,
   initialRecipients,
   initialShelterContactRequests,
   initialUploads,
@@ -78,6 +80,7 @@ import {
   createVerifiedExportBundleView,
   importExportBundleView,
   listWalletSnapshots,
+  loadWalletAccessState,
   loadExportBundleView,
   loadWalletSnapshot,
   listWalletAuditEvents,
@@ -132,20 +135,21 @@ const routeIcons: Record<RouteId, typeof Home> = {
   audit: ClipboardCheck
 };
 
-type PersistedAppState = {
-  profile?: RegistrationProfileDraft;
-  policy?: typeof defaultCheckInPolicy;
-  recipients?: DisclosureRecipientDraft[];
-  uploads?: UploadItem[];
-  shelterContactRequests?: ShelterContactRequest[];
-  shelterStaffAccounts?: ShelterStaffAccount[];
-  shelterUserAccounts?: ShelterUserAccount[];
-  analyticsOptIn?: Record<string, boolean>;
-  shelterChecklist?: typeof defaultShelterChecklist;
-};
+const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection"]);
+const routes = primaryRoutes
+  .filter((route) => !removedStandaloneRoutes.has(route.id))
+  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
+const secondaryNavigationRoutes = secondaryRoutes
+  .filter((route) => !removedStandaloneRoutes.has(route.id))
+  .map((route) => ({ ...route, icon: routeIcons[route.id] }));
+const navigationRoutes = [...routes, ...secondaryNavigationRoutes];
+
+function normalizeAppRoute(route: RouteId): RouteId {
+  return removedStandaloneRoutes.has(route) ? "home" : route;
+}
 
 function getInitialRouteFromHash(): RouteId {
-  return getServiceDetailDocIdFromHash() ? "social-services" : getRouteFromHash();
+  return getServiceDetailDocIdFromHash() ? "social-services" : normalizeAppRoute(getRouteFromHash());
 }
 
 function readSignedInUser(): string {
@@ -244,9 +248,12 @@ async function generateUploadSummary(file: File): Promise<string> {
 }
 
 export function App() {
-  const defaultAppState = useMemo(() => createDefaultAppState(readPersistedAppState()), []);
+  const persistedState = useMemo(() => readPersistedAppState(), []);
+  const defaultAppState = useMemo(() => createDefaultAppState(persistedState), [persistedState]);
   const [signedInUser, setSignedInUser] = useState(readSignedInUser);
-  const [activeRoute, setActiveRoute] = useState<RouteId>(getRouteFromHash);
+  const activeRouteRef = useRef<RouteId>(getInitialRouteFromHash());
+  const [activeRoute, setActiveRoute] = useState<RouteId>(activeRouteRef.current);
+  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getServiceDetailDocIdFromHash());
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -263,20 +270,24 @@ export function App() {
   const [walletAuditEvents, setWalletAuditEvents] = useState<AuditEvent[]>(auditEvents);
   const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
+  const [accessRequests, setAccessRequests] = useState(initialAccessRequests);
+  const [grantReceipts, setGrantReceipts] = useState(initialGrantReceipts);
+  const [savedServices, setSavedServices] = useState<SavedService[]>([]);
+  const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
+  const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
+  const [benefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
-  const activeRouteRef = useRef<RouteId>(getRouteFromHash());
-  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(() => getServiceDetailDocIdFromHash() ?? null);
-  const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>([]);
-  const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>([]);
-  const [savedServices, setSavedServices] = useState<SavedService[]>([]);
-  const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
-  const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
-  const [recipientVerified, setRecipientVerified] = useState(false);
-  const [benefitsOptIn, setBenefitsOptIn] = useState(() => defaultAppState.benefitsOptIn ?? true);
+
+  async function refreshWalletAccessState() {
+    if (!walletApiConfig) return;
+    const state = await loadWalletAccessState(walletApiConfig);
+    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
+    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
+  }
 
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
@@ -334,8 +345,9 @@ export function App() {
         permissionLevel: "wallet_write" as const
       }),
       setActiveRoute: (route: RouteId) => {
-        activeRouteRef.current = route;
-        setActiveRoute(route);
+        const nextRoute = normalizeAppRoute(route);
+        activeRouteRef.current = nextRoute;
+        setActiveRoute(nextRoute);
       },
       setServiceDetailDocId,
       setMobileNavOpen,
@@ -388,8 +400,10 @@ export function App() {
   useEffect(() => {
     const syncRouteFromHash = () => {
       const detailDocId = getServiceDetailDocIdFromHash();
+      const nextRoute = detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
       setServiceDetailDocId(detailDocId);
-      setActiveRoute(detailDocId ? "social-services" : getRouteFromHash());
+      activeRouteRef.current = nextRoute;
+      setActiveRoute(nextRoute);
       setMobileNavOpen(false);
     };
     window.addEventListener("hashchange", syncRouteFromHash);
@@ -398,22 +412,21 @@ export function App() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(
-      APP_PERSIST_KEY,
-      JSON.stringify({
-        profile,
-        policy,
-        recipients,
-        uploads,
-        shelterContactRequests,
-        shelterStaffAccounts,
-        shelterUserAccounts,
-        analyticsOptIn,
-        shelterChecklist
-      })
-    );
+    writePersistedAppState({
+      profile,
+      policy,
+      recipients,
+      uploads,
+      shelterContactRequests,
+      shelterStaffAccounts,
+      shelterUserAccounts,
+      benefitsOptIn,
+      analyticsOptIn,
+      shelterChecklist
+    });
   }, [
     analyticsOptIn,
+    benefitsOptIn,
     policy,
     profile,
     recipients,
@@ -427,6 +440,14 @@ export function App() {
   useEffect(() => {
     if (!walletApiConfig) return;
     refreshWalletDocuments().catch(() => setUploads(initialUploads));
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
+    refreshWalletAccessState().catch(() => {
+      setAccessRequests(initialAccessRequests);
+      setGrantReceipts(initialGrantReceipts);
+    });
   }, [walletApiConfig]);
 
   useEffect(() => {
@@ -463,9 +484,10 @@ export function App() {
   }, [walletApiConfig]);
 
   function navigate(route: RouteId) {
-    setLocationRouteHash(route);
-    activeRouteRef.current = route;
-    setActiveRoute(route);
+    const nextRoute = normalizeAppRoute(route);
+    setLocationRouteHash(nextRoute);
+    activeRouteRef.current = nextRoute;
+    setActiveRoute(nextRoute);
     setServiceDetailDocId(null);
     setMobileNavOpen(false);
   }
@@ -551,9 +573,20 @@ export function App() {
             <strong>Abby</strong>
             <small>Next check-in: {nextCheckIn}</small>
           </div>
-          <Button ariaLabel="Sign out" onClick={handleSignOut} variant="quiet">
-            <LogOut size={20} />
-          </Button>
+          <div className="topbar-actions">
+            <Button
+              ariaControls="agent-chat-bottom-sheet"
+              ariaExpanded={agentChatOpen}
+              ariaLabel={agentChatOpen ? "Close assistant" : "Open assistant"}
+              onClick={() => setAgentChatOpen((open) => !open)}
+              variant="quiet"
+            >
+              <MessageSquare size={20} />
+            </Button>
+            <Button ariaLabel="Sign out" onClick={handleSignOut} variant="quiet">
+              <LogOut size={20} />
+            </Button>
+          </div>
         </header>
 
         {mobileNavOpen ? (
@@ -571,7 +604,7 @@ export function App() {
         ) : null}
 
         {activeRoute === "home" ? (
-          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} uploads={uploads} />
+          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} recipients={recipients} uploads={uploads} />
         ) : null}
         {activeRoute === "register" ? (
           <RegistrationScreen
@@ -592,23 +625,6 @@ export function App() {
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
-        ) : null}
-        {activeRoute === "recipient-access" ? (
-          <RecipientAccessScreen
-            accessRequests={accessRequests}
-            apiConfig={walletApiConfig}
-            grantReceipts={grantReceipts}
-            recipients={recipients}
-            refreshWalletAuditEvents={refreshWalletAuditEvents}
-            refreshWalletAccessState={refreshWalletAccessState}
-            setAccessRequests={setAccessRequests}
-            setGrantReceipts={setGrantReceipts}
-            verified={recipientVerified}
-            setVerified={setRecipientVerified}
-          />
-        ) : null}
-        {activeRoute === "benefits-protection" ? (
-          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
@@ -670,8 +686,9 @@ export function App() {
         onOpenServiceDetail={(docId) =>
           openCanonicalServiceDetailRoute(docId, {
             setActiveRoute: (route) => {
-              activeRouteRef.current = route;
-              setActiveRoute(route);
+              const nextRoute = normalizeAppRoute(route);
+              activeRouteRef.current = nextRoute;
+              setActiveRoute(nextRoute);
             },
             setServiceDetailDocId,
             setMobileNavOpen
@@ -807,15 +824,17 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string) => void }) {
 function HomeScreen({
   navigate,
   nextCheckIn,
+  recipients,
   uploads
 }: {
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
+  recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
 }) {
   return (
     <div className="screen home-screen">
-      <div className="page-title">
+      <div className="page-title home-hero">
         <p className="eyebrow">Today</p>
         <h1>Welcome to your safety plan!</h1>
       </div>
@@ -833,6 +852,20 @@ function HomeScreen({
           </button>
         </div>
       </Section>
+      <div className="home-actions" aria-label="Safety plan setup">
+        <ActionCard
+          detail={`${recipients.length} people or services set up`}
+          icon={<ContactRound aria-hidden="true" size={28} />}
+          onClick={() => navigate("contacts")}
+          title="Contacts"
+        />
+        <ActionCard
+          detail="Review what helpers can see"
+          icon={<ShieldCheck aria-hidden="true" size={28} />}
+          onClick={() => navigate("contacts")}
+          title="Sharing"
+        />
+      </div>
       <div className="home-footer">
         <div className="home-footer-stat">
           <small>Saved files</small>
@@ -844,6 +877,16 @@ function HomeScreen({
           <span>Ready to review</span>
         </div>
       </div>
+      <section className="support-card" aria-labelledby="support-card-title">
+        <span className="support-card-badge" aria-hidden="true" />
+        <div className="support-card-content">
+          <h2 id="support-card-title">Need help today?</h2>
+          <p>Find shelter, services, and support through your local 211 network.</p>
+          <Button onClick={() => navigate("social-services")}>
+            <HeartHandshake aria-hidden="true" size={18} /> Find help near you
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
