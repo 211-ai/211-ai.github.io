@@ -197,6 +197,70 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 pilot readiness is a staging demonstration, not a production launch
+approval. Use synthetic users, synthetic partner accounts, and the same
+production-mode storage/proof/analytics controls that passed WALLET-170 through
+WALLET-200 evidence gates.
+
+Minimum pilot roles:
+
+- Wallet owner: adds documents and precise location from the 211-AI UI or API.
+- Service partner: receives purpose-bound record and location capabilities.
+- Eligibility verifier: receives proof-only location eligibility access.
+- Analytics reviewer: owns the approved aggregate template and review packet.
+- Operator: captures audit, revocation, storage, proof, and analytics evidence.
+
+Required pilot flow:
+
+1. Create or load a staging wallet through `POST /wallets`, then add an
+   encrypted document with `POST /wallets/{wallet_id}/documents` or
+   `/documents/text` and add precise location with
+   `POST /wallets/{wallet_id}/locations`. UI upload flows must call these API
+   routes; do not seed plaintext directly into repository files.
+2. Share only the partner's needed purpose-bound capability. For document
+   screening use `POST /wallets/{wallet_id}/records/{record_id}/grants` with a
+   concrete `purpose`, explicit `abilities`, explicit `output_types`, and
+   `user_presence_required=true` when partner action happens in the browser.
+   For service matching use a coarse-location grant plus
+   `/coarse-invocations`; partner calls to `/services/match` must not receive
+   the precise latitude/longitude.
+3. Prove location eligibility with
+   `/locations/{location_record_id}/region-proof-grants` and
+   `/region-proofs`. Archive public inputs, proof hash, verifier metadata, and
+   audit IDs only. Public inputs must not include `lat`, `lon`, target
+   coordinates, witness values, secrets, or plaintext document fields.
+4. Contribute to aggregate analytics only through an approved template created
+   at `/analytics/templates`, consented through
+   `/wallets/{wallet_id}/analytics/consents/from-template`, and submitted to
+   `/wallets/{wallet_id}/analytics/contributions` with derived/coarse fields.
+   Run `/analytics/{template_id}/count` or `/count-by-fields` only when the
+   approved k-threshold and privacy budget allow release.
+5. Revoke partner access with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove stale
+   invocation tokens, coarse-location calls, proof creation, decrypt, analyze,
+   export, and service matching are rejected.
+6. Review `GET /wallets/{wallet_id}/audit` from the 211-AI UI/API and confirm
+   the timeline includes `record/add`, `grant/create`, `invocation/issue`,
+   `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`,
+   `proof/create`, `analytics/consent_create`, `analytics/contribute`,
+   `analytics/query`, and `grant/revoke` as applicable.
+
+Pilot evidence can contain wallet IDs, record IDs, grant IDs, invocation IDs,
+proof IDs, proof hashes, public proof inputs, template IDs, consent IDs,
+nullifier IDs, aggregate result IDs, bundle hashes, storage ciphertext hashes,
+and audit event IDs. It must not contain document plaintext, precise
+coordinates, proof witnesses, user contact details, private keys, bearer
+tokens, storage credentials, or secret-manager resolved values.
+
+The browser readiness harness is
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
+API backed by local durable repository/blob storage, drives the upload,
+recipient-access, proof-center, analytics API, revocation, service matching,
+and audit surfaces, and asserts that precise coordinates and document contact
+details are not disclosed in partner/proof/aggregate outputs.
+
 ## API Reference
 
 Run the API with:
