@@ -105,6 +105,37 @@ This envelope is for verifier, audit, and adapter tests. It deliberately does
 not expose raw record payloads, document text, precise location, decrypted keys,
 or private metadata.
 
+## External Adapter Target
+
+The selected external interoperability target is the `ucanto/w3up`
+DAG-CBOR block shape exposed by the adapter id
+`wallet-ucan-v1-ucanto-w3up-dag-cbor-v1`. This adapter is a conformance target,
+not the production wallet token format. Production wallet invocations continue
+to use the `wallet-ucan-v1.` token prefix and verifier path above.
+
+`wallet_ucan_external_adapter_fixture(...)` derives the external block from the
+validated profile payload and encodes only the UCAN-equivalent fields:
+
+| Field | Source |
+| --- | --- |
+| `iss` | wallet invocation issuer DID |
+| `aud` | wallet invocation audience DID |
+| `att[0].with` | wallet resource URI |
+| `att[0].can` | wallet ability |
+| `att[0].nb` | wallet invocation caveats |
+| `nnc` | invocation nonce |
+| `fct` | invocation issue time |
+| `exp` | optional invocation expiry |
+| `sig` | wallet invocation signature |
+| `prf` | proof-chain grant IDs |
+
+The fixture records the canonical DAG-CBOR bytes as `bytes_base64url`, their
+`bytes_sha256`, the CIDv1 base32 DAG-CBOR SHA-256 `cid`, and the decoded block.
+`validate_wallet_ucan_external_adapter_fixture(...)` recomputes those byte-level
+values and rejects non-canonical blocks, mismatched decoded content, broadened
+capabilities, extra attenuations, changed caveats, changed proof chains, or
+blocks that no longer match the wallet profile payload.
+
 ## Conformance Fixtures
 
 `wallet_ucan_conformance_fixture(invocation, grant=...)` packages the token,
@@ -112,9 +143,9 @@ expected decoded UCAN fields, profile payload, and signature-payload hash into a
 stable adapter-test fixture. `validate_ucan_profile_payload(payload)` validates
 and normalizes an inspection envelope. `validate_wallet_ucan_conformance_fixture`
 validates the complete fixture, including token prefix, decoded token fields,
-expected UCAN fields, proof-chain grant ID, and signature-payload hash. External
-`ucanto`/w3up adapters can use these functions without depending on product API
-internals.
+expected UCAN fields, proof-chain grant ID, signature-payload hash, and the
+selected external adapter bytes. External `ucanto`/w3up adapters can use these
+functions without depending on product API internals.
 
 The same contract is available from the wallet CLI for adapter pipelines:
 
