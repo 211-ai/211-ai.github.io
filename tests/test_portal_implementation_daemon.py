@@ -623,6 +623,70 @@ Path("docs/agent.md").write_text("implemented from feature checkout", encoding="
     assert not (repo_root / "docs" / "agent.md").exists()
 
 
+def test_daemon_refuses_merge_when_baseline_is_not_on_main(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    init_git_repo(repo_root)
+    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["git", "checkout", "-b", "feature/review"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    (repo_root / "docs").mkdir(exist_ok=True)
+    (repo_root / "docs" / "feature.md").write_text("feature baseline\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
+    subprocess.run(["git", "commit", "-m", "feature baseline"], cwd=repo_root, check=True, capture_output=True, text=True)
+    baseline_ref = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    branch_name = "implementation/agent-000-attempt-1-unsafe-baseline"
+    subprocess.run(
+        ["git", "checkout", "-b", branch_name],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    (repo_root / "docs" / "agent.md").write_text("unsafe implementation\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
+    subprocess.run(["git", "commit", "-m", "unsafe implementation"], cwd=repo_root, check=True, capture_output=True, text=True)
+    subprocess.run(["git", "checkout", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        worktree_root=tmp_path / "worktrees",
+    )
+
+    task = parse_task_file(todo_path, "## AGENT-")[0]
+    result = daemon._merge_branch_to_main(branch_name, task, 1, baseline_ref=baseline_ref)
+
+    assert result["attempted"] is False
+    assert result["merged"] is False
+    assert result["reason"] == "baseline_not_ancestor_of_target"
+    main_agent_file = subprocess.run(
+        ["git", "cat-file", "-e", "main:docs/agent.md"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert main_agent_file.returncode != 0
+
+
 def test_daemon_validation_failure_blocks_commit_and_merge(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
