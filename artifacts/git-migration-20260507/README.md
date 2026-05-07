@@ -26,6 +26,23 @@ Quick re-check command:
 
 To finish migration later, the simplest path is to re-authenticate `gh` with an account that has push access to `211-ai/211-ai.github.io`, then run the compact push and verification scripts.
 
+## Size blocker
+
+Full-history migration of this repository to `211-ai/211-ai.github.io` is still blocked by repository size:
+
+- local reachable tracked blob payload is approximately `2233958269` bytes, which is above the `2147483648` byte limit enforced during push
+- pushing branches rooted in the full local history fails with a remote `422` size error
+
+The current `main` tree itself is much smaller, about `738082404` bytes, so a history-free snapshot migration is feasible.
+
+## Remote fallback branch
+
+A slim current-state snapshot branch has already been pushed successfully to the target remote:
+
+- `migration/slim-main-20260507`
+
+This branch is a fresh-root snapshot of the current local `main` tree. It preserves the current repository contents on the target remote without carrying the oversized prior history.
+
 ## Preserved artifacts
 
 - Offline bundle containing all committed refs: `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle`
@@ -69,3 +86,8 @@ These archive family branches were built with `ours`-strategy merges so that the
 4. Push tags if needed: `git -C /home/barberb/211-AI push origin --tags`
 5. Keep the external bundle at `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle` until the new remote has been verified.
 6. Remove stale temporary worktrees only after any wanted patches have been committed or separately archived.
+
+## Current best available remote state
+
+- Full-history compact migration: prepared locally but still blocked by repository size.
+- Current-state slim migration: already published on the remote as `migration/slim-main-20260507`.

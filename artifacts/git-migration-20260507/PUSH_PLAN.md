@@ -8,6 +8,7 @@ The target remote currently exposes only:
 
 - `main`
 - `copilot/211-ai-pull-changes`
+- `migration/slim-main-20260507`
 
 Local remote-tracking refs such as `origin/rescue/*` are historical and should not be treated as proof that those branches exist on the new remote.
 
@@ -58,6 +59,20 @@ Auth diagnosis:
 ```bash
 artifacts/git-migration-20260507/check-github-auth.sh
 ```
+
+## Full-history size blocker
+
+The target remote accepts authentication, but full-history pushes rooted in local `main` still fail because the reachable tracked blob history is about `2233958269` bytes, above the `2147483648` byte limit enforced during push.
+
+That means the compact five-branch migration set is still blocked as a full-history transfer, even though authentication is now correct.
+
+## Published slim fallback
+
+The history-free snapshot branch below has already been pushed successfully to the target remote:
+
+- `migration/slim-main-20260507`
+
+It is a fresh-root snapshot of the current local `main` tree and provides a viable current-state migration path when full history cannot be transferred.
 
 ## Phase 1: Push immediately
 
