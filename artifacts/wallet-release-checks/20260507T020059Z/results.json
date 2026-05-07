@@ -1,0 +1,80 @@
+{
+  "completed": [
+    "backend-wallet-pytest",
+    "wallet-compileall",
+    "wallet-ui-build",
+    "wallet-ui-fullstack"
+  ],
+  "exit_code": 0,
+  "failed": null,
+  "generated_at": "2026-05-07T02:01:55.629318+00:00",
+  "source": "scripts/run_wallet_release_checks.py",
+  "status": "ok",
+  "steps": [
+    {
+      "command": [
+        "/home/barberb/miniforge3/bin/python",
+        "-m",
+        "pytest",
+        "ipfs_datasets_py/tests/unit/test_data_wallet.py",
+        "ipfs_datasets_py/tests/mcp/test_wallet_tools.py",
+        "ipfs_datasets_py/tests/mcp/unit/test_hierarchical_tool_manager.py",
+        "tests/test_wallet_interface_api.py",
+        "tests/test_wallet_interface_ops.py",
+        "tests/test_wallet_interface_deploy.py",
+        "tests/test_wallet_implementation_plan_docs.py",
+        "tests/test_wallet_release_check_runner.py",
+        "tests/test_wallet_production_handoff_blackbox.py",
+        "-q"
+      ],
+      "cwd": "/tmp/211-ai-implementation-worktrees/wallet-110-attempt-7-1778118693",
+      "duration_seconds": 16.580129,
+      "finished_at": "2026-05-07T02:01:15.618220+00:00",
+      "name": "backend-wallet-pytest",
+      "returncode": 0,
+      "started_at": "2026-05-07T02:00:59.038091+00:00"
+    },
+    {
+      "command": [
+        "/home/barberb/miniforge3/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "wallet_interface",
+        "ipfs_datasets_py/ipfs_datasets_py/wallet"
+      ],
+      "cwd": "/tmp/211-ai-implementation-worktrees/wallet-110-attempt-7-1778118693",
+      "duration_seconds": 0.035683,
+      "finished_at": "2026-05-07T02:01:15.654024+00:00",
+      "name": "wallet-compileall",
+      "returncode": 0,
+      "started_at": "2026-05-07T02:01:15.618341+00:00"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/tmp/211-ai-implementation-worktrees/wallet-110-attempt-7-1778118693/wallet_interface/ui",
+      "duration_seconds": 9.006885,
+      "finished_at": "2026-05-07T02:01:24.660997+00:00",
+      "name": "wallet-ui-build",
+      "returncode": 0,
+      "started_at": "2026-05-07T02:01:15.654112+00:00"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "test:fullstack"
+      ],
+      "cwd": "/tmp/211-ai-implementation-worktrees/wallet-110-attempt-7-1778118693/wallet_interface/ui",
+      "duration_seconds": 30.968195,
+      "finished_at": "2026-05-07T02:01:55.629285+00:00",
+      "name": "wallet-ui-fullstack",
+      "returncode": 0,
+      "started_at": "2026-05-07T02:01:24.661090+00:00"
+    }
+  ]
+}

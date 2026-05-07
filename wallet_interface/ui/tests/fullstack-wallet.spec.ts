@@ -180,6 +180,18 @@ function collectPageDiagnostics(page: Page, apiBaseUrl: string): PageDiagnostics
   return diagnostics;
 }
 
+async function signInIfNeeded(page: Page, username = "abby"): Promise<void> {
+  const usernameField = page.getByLabel(/username/i).first();
+  try {
+    await usernameField.waitFor({ state: "visible", timeout: 1_000 });
+  } catch {
+    return;
+  }
+  await usernameField.fill(username);
+  await page.getByLabel(/password/i).fill("safety-plan");
+  await page.getByRole("button", { name: /log in|login|sign in|continue/i }).click();
+}
+
 async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics: PageDiagnostics) {
   await expect.poll(() => diagnostics.browserErrors).toEqual([]);
   await expect(page.getByRole("heading", { name }))
@@ -221,6 +233,7 @@ test("export center works against a live wallet API", async ({ page }) => {
         issuerKeyHex: ownerKeyHex
       })
     );
+    await signInIfNeeded(page, ownerDid);
     await visibleHeadingOrDiagnostics(page, /Shareable wallet bundles/i, diagnostics);
     await page.getByLabel(/Recipient DID/i).fill(delegateDid);
     await page.getByLabel(/Recipient label/i).fill("Full-stack Clinic");
@@ -312,6 +325,7 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
         audienceKeyHex: delegateKeyHex
       })
     );
+    await signInIfNeeded(page, delegateDid);
     await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
     const receipt = page.getByRole("article", { name: /Fullstack Clinic/i }).filter({ hasText: "Share proof code" });
     await expect(receipt).toBeVisible({ timeout: 15_000 });

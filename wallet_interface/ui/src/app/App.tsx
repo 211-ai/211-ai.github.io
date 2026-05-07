@@ -608,6 +608,23 @@ export function App() {
             setRecipients={setRecipients}
           />
         ) : null}
+        {activeRoute === "recipient-access" ? (
+          <RecipientAccessScreen
+            accessRequests={accessRequests}
+            apiConfig={walletApiConfig}
+            grantReceipts={grantReceipts}
+            recipients={recipients}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            refreshWalletAccessState={refreshWalletAccessState}
+            setAccessRequests={setAccessRequests}
+            setGrantReceipts={setGrantReceipts}
+            verified={recipientVerified}
+            setVerified={setRecipientVerified}
+          />
+        ) : null}
+        {activeRoute === "benefits-protection" ? (
+          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
+        ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
