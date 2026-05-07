@@ -258,8 +258,9 @@ The browser readiness harness is
 `wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
 API backed by local durable repository/blob storage, drives the upload,
 recipient-access, proof-center, analytics API, revocation, service matching,
-and audit surfaces, and asserts that precise coordinates and document contact
-details are not disclosed in partner/proof/aggregate outputs.
+and audit surfaces, pre-issues stale decrypt/export invocations for revocation
+checks, and asserts that precise coordinates and document contact details are
+not disclosed in partner/proof/aggregate outputs.
 
 ## API Reference
 

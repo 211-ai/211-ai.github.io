@@ -541,6 +541,65 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
         actor_did: partnerDid,
         actor_key_hex: partnerKeyHex,
         output_types: ["redacted_derived_only"],
+        purpose: "pilot_partner_screening",
+        user_present: true
+      }
+    );
+
+    const decryptGrant = await apiJson<WalletGrant>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/records/${document.record_id}/grants`,
+      {
+        issuer_did: ownerDid,
+        audience_did: partnerDid,
+        issuer_key_hex: ownerKeyHex,
+        audience_key_hex: partnerKeyHex,
+        abilities: ["record/decrypt"],
+        output_types: ["plaintext"],
+        purpose: "pilot_partner_document_view",
+        user_presence_required: true
+      }
+    );
+    const decryptInvocation = await apiJson<{ token: string }>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/records/${document.record_id}/decrypt-invocations`,
+      {
+        grant_id: decryptGrant.grant_id,
+        actor_did: partnerDid,
+        actor_key_hex: partnerKeyHex,
+        output_types: ["plaintext"],
+        purpose: "pilot_partner_document_view",
+        user_present: true
+      }
+    );
+
+    const exportGrant = await apiJson<WalletGrant>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/exports/grants`,
+      {
+        issuer_did: ownerDid,
+        audience_did: partnerDid,
+        issuer_key_hex: ownerKeyHex,
+        audience_key_hex: partnerKeyHex,
+        record_ids: [document.record_id, location.record_id],
+        output_types: ["encrypted_export_bundle"],
+        purpose: "pilot_partner_portability"
+      }
+    );
+    const exportInvocation = await apiJson<{ invocation_token: string }>(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/exports/invocations`,
+      {
+        grant_id: exportGrant.grant_id,
+        actor_did: partnerDid,
+        actor_key_hex: partnerKeyHex,
+        record_ids: [document.record_id, location.record_id],
+        output_types: ["encrypted_export_bundle"],
+        purpose: "pilot_partner_portability",
         user_present: true
       }
     );
@@ -661,7 +720,7 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
     expect(aggregate.suppressed).toBe(false);
     expect(aggregate.cohorts.length).toBe(1);
 
-    for (const grant of [recordGrant, coarseGrant, regionGrant]) {
+    for (const grant of [recordGrant, decryptGrant, coarseGrant, regionGrant, exportGrant]) {
       const revoked = await apiJson<WalletGrant>(
         api.baseUrl,
         "POST",
@@ -682,6 +741,17 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
       }
     );
     expect(blockedAnalysis.status).toBe(400);
+    const blockedDecrypt = await apiStatusJson(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/records/${document.record_id}/decrypt`,
+      {
+        actor_did: partnerDid,
+        actor_key_hex: partnerKeyHex,
+        invocation_token: decryptInvocation.token
+      }
+    );
+    expect(blockedDecrypt.status).toBe(400);
     const blockedMatch = await apiStatusJson(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/services/match`, {
       location_record_id: location.record_id,
       actor_did: partnerDid,
@@ -701,12 +771,21 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
       }
     );
     expect(blockedProof.status).toBe(400);
+    const blockedExport = await apiStatusJson(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/exports`, {
+      actor_did: partnerDid,
+      actor_key_hex: partnerKeyHex,
+      invocation_token: exportInvocation.invocation_token,
+      record_ids: [document.record_id, location.record_id]
+    });
+    expect(blockedExport.status).toBe(400);
 
     await page.goto(walletRoute("audit", api.baseUrl, wallet.wallet_id, ownerDid, {}));
     await visibleHeadingOrDiagnostics(page, /Consent and access history/i, diagnostics);
     for (const action of [
       "record/add",
       "grant/create",
+      "invocation/issue",
+      "invocation/verify",
       "record/analyze_redacted",
       "location/read_coarse",
       "proof/create",

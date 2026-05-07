@@ -459,6 +459,9 @@ Drill sequence:
      `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`.
    - Re-run partner redacted analysis, coarse service matching, proof creation,
      decrypt, and export attempts with stale grants or invocation tokens.
+     The repository harness pre-issues decrypt and encrypted-export
+     invocations for this step and never displays their plaintext or bundle
+     output before revocation.
    - Pass criteria: every stale call returns an authorization error and
      `/ops/health?verify_storage=true` reports revocation propagation without
      dangling key wraps.
