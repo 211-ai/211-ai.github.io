@@ -96,6 +96,50 @@ validate retention, organization review, and staging evidence before launch.
 The wallet UCAN invocation profile and UCAN-compatible inspection envelope are
 documented in `docs/WALLET_UCAN_PROFILE.md`.
 
+## Verifier Cutover Packet
+
+Operators must complete a WALLET-180 non-simulated verifier cutover packet
+before exposing any user-facing proof creation path backed by the selected HTTP
+verifier. The packet is the launch evidence for replacing simulated development
+proofs with a target verifier. It belongs in the approved evidence system next
+to the target signoff packet and should contain references only, never secret
+or witness values.
+
+Cutover sequence:
+
+1. Confirm the target deployment is using `WALLET_PROOF_MODE=production`,
+   `WALLET_ALLOW_SIMULATED_PROOFS=false`, and
+   `WALLET_PROOF_BACKEND=http-location-region`.
+2. Confirm the verifier credential is injected at runtime from
+   `WALLET_PROOF_CREDENTIAL_SECRET_REF` or the provider equivalent. Do not
+   archive process env dumps, bearer tokens, custom header values, Kubernetes
+   Secret payloads, or ExternalSecret resolved values.
+3. Run and archive the target-staging outputs for
+   `python -m wallet_interface.ops --validate-proof-contract --fail-on-error`,
+   `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error`,
+   and `python -m wallet_interface.ops --validate-production-readiness`.
+4. For both `location_region` and `location_distance`, verify the archived JSON
+   shows `health`, `prove`, `public_input_safety`, and `verify` checks with
+   `status=ok`, an expected `verifier_id` and `proof_system`,
+   `is_simulated=false`, and no witness or credential values.
+5. Run a failure-mode drill in target staging. Use an invalid credential,
+   unhealthy verifier, rejected prove response, out-of-policy distance response,
+   or `verify=false` response and archive that validation fails closed with no
+   stored proof receipt and no witness or secret values in output or logs.
+6. Run a rollback drill. Archive the previous deployment reference, credential
+   rollback or revocation step, API/UI/ops worker rollback command, named
+   operator, expected rollback time, and post-rollback proof behavior. Keep
+   production proof mode enabled so simulated receipts remain rejected.
+7. Record the cutover packet artifact ID in
+   `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` and in the completed target
+   signoff JSON packet evidence repository record.
+
+`location_distance` remains hidden from live Proof Center creation and display
+until its distance contract report, failure-mode evidence, rollback evidence,
+and security/privacy/ops/product approvals are archived. A `mode=local_self_check`
+report is acceptable for repository automation only and must not be used as
+target launch evidence.
+
 ## API Reference
 
 Run the API with:

@@ -59,6 +59,10 @@ launch decision still requires validating the completed target packet path.
 | Ops-health report artifact |  |
 | Location-region proof contract report artifact |  |
 | Location-distance proof contract report artifact |  |
+| Non-simulated verifier cutover packet artifact |  |
+| Location-region verifier failure-mode artifact |  |
+| Location-distance verifier failure-mode artifact |  |
+| Verifier rollback drill artifact |  |
 | Storage retention/deletion dry-run evidence artifact |  |
 | Storage repair evidence artifact |  |
 | Deletion purge/audit evidence artifact |  |
@@ -86,6 +90,53 @@ checklist records references and evidence IDs only.
 | Rotation dry run | Staging credential rotation was exercised or explicitly scheduled with rollback owner and artifact ID |  |
 | Staging contract archive | Region and distance contract reports are archived from target staging with `status=ok` and no leaked witness or secret values |  |
 
+## WALLET-180 Non-Simulated Verifier Cutover Packet
+
+Complete this packet after WALLET-140 verifier credential handoff and before
+any non-simulated proof creation path is exposed to users. The same selected
+verifier backend must have evidence for both `location_region` and
+`location_distance`. A repo-local `mode=local_self_check` report is not launch
+evidence.
+
+Record only artifact references, reviewer names, deployment IDs, secret-manager
+references, and rollback owners. Do not attach bearer tokens, custom header
+values, proving keys, verifier keys, witness payloads, precise wallet
+coordinates, target coordinates, exact addresses, nonces, process env dumps, or
+resolved secret-manager payloads.
+
+| Cutover Field | Required Value | Status |
+| --- | --- | --- |
+| Selected verifier backend | Service URL or private service name, deployment artifact or image digest, verifier owner, and on-call path |  |
+| Verifier metadata | `proof_backend`, `proof_verifier_id`, `proof_system`, region circuit ID, distance circuit ID, endpoint paths, and version |  |
+| Credential reference | `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent plus rotation owner and latest rotation artifact |  |
+| Exposure scope | Which API/UI paths become available at cutover, with `location_distance` still hidden unless separately approved |  |
+| Rollback owner | Named operator, incident channel, previous deployment reference, and expected rollback time |  |
+
+Required evidence matrix:
+
+| Proof Family | Evidence Gate | Required Artifact | Status |
+| --- | --- | --- | --- |
+| `location_region` | Staging health | Archived `--validate-proof-contract` JSON showing `checks.health.status=ok` for the selected verifier |  |
+| `location_region` | Prove | Same artifact showing `checks.prove.status=ok`, `proof_type=location_region`, `is_simulated=false`, expected verifier metadata, and no stored receipt on failed prove |  |
+| `location_region` | Verify | Same artifact showing `checks.verify.status=ok` for the returned receipt |  |
+| `location_region` | No-leak | Same artifact showing `checks.public_input_safety.status=ok` plus API/verifier log-review artifact with no witness keys, coordinates, addresses, nonces, or secret values |  |
+| `location_region` | Credential reference | Readiness/signoff evidence shows only the secret-manager reference and no rendered credential material |  |
+| `location_region` | Failure mode | Target-staging drill with invalid credential, unhealthy verifier, rejected prove, or `verify=false` causes nonzero validation/readiness output, `status=error`, no stored proof receipt, and no witness or secret values in archived output |  |
+| `location_region` | Rollback | Drill artifact proves the operator can revert API/UI/ops/verifier deployment or disable proof creation while keeping production proof mode fail-closed against simulated receipts |  |
+| `location_distance` | Staging health | Archived `--validate-distance-proof-contract` JSON showing `checks.health.status=ok` for the selected verifier |  |
+| `location_distance` | Prove | Same artifact showing `checks.prove.status=ok`, `proof_type=location_distance`, `is_simulated=false`, expected verifier metadata, and no stored receipt on failed prove |  |
+| `location_distance` | Verify | Same artifact showing `checks.verify.status=ok` for the returned receipt |  |
+| `location_distance` | No-leak | Same artifact showing `checks.public_input_safety.status=ok` plus API/verifier log-review artifact with no wallet coordinates, target coordinates, addresses, nonces, or secret values |  |
+| `location_distance` | Credential reference | Readiness/signoff evidence shows only the secret-manager reference and no rendered credential material |  |
+| `location_distance` | Failure mode | Target-staging drill with invalid credential, unhealthy verifier, rejected prove, out-of-policy distance response, or `verify=false` causes nonzero validation/readiness output, `status=error`, no stored proof receipt, and no witness or secret values in archived output |  |
+| `location_distance` | Rollback | Drill artifact proves the live Proof Center keeps distance proof creation and display hidden until the distance cutover is approved |  |
+
+The cutover decision is blocked until every row above is complete, both direct
+contract reports and the full readiness report show `status=ok`, the packet has
+security, privacy, operations, and product approval, and rollback evidence has
+been archived. Do not enable a non-simulated user proof path as an exception to
+this packet.
+
 ## Required Evidence
 
 | Gate | Required Evidence | Status |
@@ -98,6 +149,7 @@ checklist records references and evidence IDs only.
 | Storage repair | `/ops/health?verify_storage=true` plus wallet or record storage repair checks pass with ciphertext/hash evidence only |  |
 | External location-region verifier | `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` passes in target staging with real runtime-injected credentials and archived JSON evidence |  |
 | External location-distance verifier | `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` passes in target staging with real runtime-injected credentials and archived JSON evidence |  |
+| WALLET-180 verifier cutover | Non-simulated verifier cutover packet archives health, prove, verify, no-leak, credential-reference, failure-mode, and rollback evidence for `location_region` and `location_distance` |  |
 | Proof Center distance exposure | Live Proof Center creation and display surfaces keep `location_distance` hidden until the distance verifier report is archived and security, privacy, ops, and product reviewers approve exposure |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
 | Alert routing | Warning/error reports reach the approved incident router with authenticated delivery |  |
@@ -158,6 +210,9 @@ with `--skip-proof-contract` is not sufficient for production launch.
 The direct proof-contract commands may report `mode=local_self_check` only in
 repo-local automation without target verifier env vars; launch evidence must be
 from the target staging environment and must not use the local self-check mode.
+Archive the WALLET-180 failure-mode and rollback drill outputs beside the
+passing contract reports; launch evidence is incomplete without both proof
+families and both drill types.
 
 ## Reviewer Signoff
 

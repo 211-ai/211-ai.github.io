@@ -77,6 +77,57 @@ environment, request headers, Kubernetes Secret contents, ExternalSecret
 resolved values, CI masked-secret screenshots, or verifier private key
 material.
 
+## Non-Simulated Cutover Evidence
+
+Before any user-facing non-simulated proof path is exposed, the target
+environment needs a completed cutover packet for the selected HTTP verifier
+backend. The packet is an evidence bundle, not a secret bundle. It records
+artifact IDs, reviewer decisions, service metadata, and rollback owners while
+leaving bearer tokens, header values, proving keys, verifier keys, witnesses,
+precise coordinates, and secret payloads in their approved systems.
+
+The packet applies to both proof families handled by this backend:
+`location_region` and `location_distance`. A passing local self-check is useful
+for repository automation, but it is not launch evidence. Launch evidence must
+come from the target staging environment with the real verifier service,
+runtime-injected credentials, production proof mode, and simulated receipts
+disabled.
+
+Record this verifier selection in the packet:
+
+- Verifier service URL or private service name.
+- `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`, and region/distance
+  circuit IDs.
+- Region, distance, health, and verify endpoint paths.
+- `WALLET_PROOF_CREDENTIAL_SECRET_REF` and the credential rotation owner.
+- Verifier deployment artifact or image digest.
+- Rollback owner, rollback command or deployment reference, and last known good
+  verifier release.
+
+Required evidence:
+
+| Proof family | Evidence | Pass condition |
+| --- | --- | --- |
+| `location_region` | Staging health report | `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` archives `checks.health.status=ok` for the selected verifier ID and proof system. |
+| `location_region` | Staging prove report | The same artifact archives `checks.prove.status=ok`, `receipt.proof_type=location_region`, `receipt.is_simulated=false`, and expected verifier metadata. |
+| `location_region` | Staging verify report | The same artifact archives `checks.verify.status=ok` and a verified returned receipt. |
+| `location_region` | No-leak report | The same artifact archives `checks.public_input_safety.status=ok`, and any linked verifier/API log review shows no witness keys, precise coordinates, addresses, nonce values, bearer tokens, header values, or secret payloads. |
+| `location_region` | Credential-reference report | The readiness report and signoff packet show `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent, with no rendered secret values. |
+| `location_region` | Failure-mode report | A target-staging drill with an invalid credential, unhealthy verifier, rejected prove response, or `verify=false` response makes the contract/readiness command return nonzero and leaves no stored proof receipt. The archived failure output must not include witness or secret values. |
+| `location_region` | Rollback report | A target-staging rollback drill reverts to the approved previous API/UI/ops/verifier configuration or otherwise disables proof creation while keeping `WALLET_PROOF_MODE=production` so simulated receipts remain rejected. |
+| `location_distance` | Staging health report | `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` archives `checks.health.status=ok` for the selected verifier ID and proof system. |
+| `location_distance` | Staging prove report | The same artifact archives `checks.prove.status=ok`, `receipt.proof_type=location_distance`, `receipt.is_simulated=false`, and expected verifier metadata. |
+| `location_distance` | Staging verify report | The same artifact archives `checks.verify.status=ok` and a verified returned receipt. |
+| `location_distance` | No-leak report | The same artifact archives `checks.public_input_safety.status=ok`, and any linked verifier/API log review shows no wallet coordinates, target coordinates, addresses, nonce values, bearer tokens, header values, or secret payloads. |
+| `location_distance` | Credential-reference report | The readiness report and signoff packet show the verifier credential reference used by the distance endpoint, with no rendered secret values. |
+| `location_distance` | Failure-mode report | A target-staging drill with an invalid credential, unhealthy verifier, rejected prove response, out-of-policy distance response, or `verify=false` response makes the contract/readiness command return nonzero and leaves no stored proof receipt. The archived failure output must not include witness or secret values. |
+| `location_distance` | Rollback report | A target-staging rollback drill proves the live Proof Center can keep distance proof creation and display hidden while the API/ops worker continue to reject simulated receipts. |
+
+The cutover packet is incomplete if any evidence artifact is missing, reports
+`mode=local_self_check`, has `status=error`, records a simulated receipt, or
+contains secret or witness material. Treat an incomplete packet as a launch
+blocker for all non-simulated user proof creation.
+
 ## Health Endpoint
 
 Default path: `POST /health`
