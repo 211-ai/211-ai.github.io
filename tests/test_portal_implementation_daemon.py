@@ -438,6 +438,34 @@ def test_daemon_default_command_uses_codex_with_copilot_fallback(tmp_path, monke
     assert command[4:] == ["/usr/local/bin/codex", "/usr/local/bin/copilot", str(repo_root)]
 
 
+def test_daemon_default_command_uses_copilot_when_codex_missing(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir(parents=True)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=repo_root / "agent_todo.md",
+        state_path=tmp_path / "state" / "agent_chat_task_state.json",
+        strategy_path=tmp_path / "state" / "agent_chat_strategy.json",
+        events_path=tmp_path / "state" / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+    )
+    monkeypatch.setattr(
+        implementation_daemon_module.shutil,
+        "which",
+        lambda name: {"copilot": "/usr/local/bin/copilot"}.get(name),
+    )
+
+    command = daemon._build_implementation_command(repo_root)
+
+    assert command[:2] == ["bash", "-lc"]
+    assert command[3] == "bash"
+    assert command[4:] == ["", "/usr/local/bin/copilot", str(repo_root)]
+    assert 'if [[ -n "$codex_bin" ]]; then' in command[2]
+    assert 'exec "$copilot_bin" --silent --allow-all-tools --allow-all-paths --no-ask-user --autopilot --prompt "$(cat "$prompt_file")"' in command[2]
+
+
 def test_daemon_runs_implementation_in_worktree_branch_and_merges_main(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
