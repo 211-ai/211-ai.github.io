@@ -9,6 +9,7 @@ import {
   ContactRound,
   FileUp,
   HeartHandshake,
+  History,
   Home,
   KeyRound,
   Landmark,
@@ -33,6 +34,7 @@ import {
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
+import { InteractionsScreen } from "./InteractionsScreen";
 import {
   getServicePlanDocIdFromHash,
   ServicePlanScreen,
@@ -151,6 +153,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   "sharing-rules": ShieldCheck,
   uploads: FileUp,
   "social-services": HeartHandshake,
+  interactions: History,
   shelter: UsersRound,
   "recipient-access": KeyRound,
   "benefits-protection": Landmark,
@@ -765,6 +768,32 @@ export function App() {
             setSavedServices={setSavedServices}
             walletPortalError={walletPortalError}
             walletPortalLoading={walletPortalLoading}
+          />
+        ) : null}
+        {activeRoute === "interactions" ? (
+          <InteractionsScreen
+            accessRequests={accessRequests}
+            apiConfig={walletApiConfig}
+            auditEvents={walletAuditEvents}
+            error={walletPortalError}
+            grantReceipts={grantReceipts}
+            interactions={serviceInteractions}
+            loading={walletPortalLoading}
+            onOpenPlan={(nextDocId) => {
+              setLocationServicePlanHash(nextDocId);
+              setServicePlanDocId(nextDocId);
+              setServiceDetailDocId(null);
+              activeRouteRef.current = "social-services";
+              setActiveRoute("social-services");
+              setMobileNavOpen(false);
+            }}
+            onOpenService={openServiceDetailFromServices}
+            onRefresh={refreshWalletPortalState ? () => void refreshWalletPortalState() : undefined}
+            proofReceipts={walletProofReceipts}
+            recipients={recipients}
+            savedServices={savedServices}
+            servicePlans={servicePlans}
+            uploads={uploads}
           />
         ) : null}
         {activeRoute === "shelter" ? (

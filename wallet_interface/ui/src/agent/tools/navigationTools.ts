@@ -28,6 +28,7 @@ const extraRouteAliases = {
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
   uploads: ["documents", "files", "records"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
+  interactions: ["interaction history", "service history", "service interactions", "timeline"],
   shelter: ["shelters", "shelter services", "beds"],
   "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
   "benefits-protection": ["benefits", "benefits protection", "public benefits"],
@@ -50,6 +51,7 @@ const routeSummaries = {
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
   uploads: (state) => `${state.uploads.length} uploads are visible.`,
   "social-services": () => "Services search and public 211 guidance are active.",
+  interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
   shelter: (state) =>
     `Shelter workspace is active with ${state.shelterStaffAccounts?.length ?? 0} staff accounts, ${
       state.shelterUserAccounts?.length ?? 0
@@ -338,6 +340,13 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
         sharedUploadCount: state.uploads.filter((upload) => upload.shared).length,
         uploadCategoryCounts: countBy(state.uploads.map((upload) => upload.category)),
         uploadSensitivityCounts: countBy(state.uploads.map((upload) => upload.sensitivity))
+      };
+    case "interactions":
+      return {
+        serviceInteractionCount: state.serviceInteractions?.length ?? 0,
+        serviceInteractionStatusCounts: countBy(
+          (state.serviceInteractions ?? []).map((interaction) => interaction.status).filter(Boolean)
+        )
       };
     case "recipient-access":
       return {

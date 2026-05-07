@@ -50,6 +50,7 @@ const allRoutes = [
   "sharing-rules",
   "uploads",
   "social-services",
+  "interactions",
   "shelter",
   "recipient-access",
   "benefits-protection",
@@ -68,6 +69,7 @@ const routeLabels: Record<RouteId, string> = {
   "sharing-rules": "Sharing",
   uploads: "Uploads",
   "social-services": "Services",
+  interactions: "Interactions",
   shelter: "Shelter",
   "recipient-access": "Who can see info",
   "benefits-protection": "Benefits",
@@ -149,6 +151,7 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "set_service_plan_reminder",
     "record_service_interaction"
   ],
+  interactions: [...commonReadTools],
   shelter: [
     ...commonReadTools,
     "search_211_services",
@@ -207,6 +210,7 @@ const contextProvidersByRoute: Record<RouteId, SurfaceContextProviderDefinition[
   "sharing-rules": [publicContext, appStateContext, walletMetadataContext],
   uploads: [publicContext, appStateContext, walletMetadataContext],
   "social-services": [publicContext, appStateContext],
+  interactions: [publicContext, appStateContext],
   shelter: [publicContext, appStateContext],
   "recipient-access": [publicContext, appStateContext, walletMetadataContext],
   "benefits-protection": [publicContext, appStateContext, walletMetadataContext],
