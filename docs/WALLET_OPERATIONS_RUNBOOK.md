@@ -124,6 +124,107 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Service Partner Pilot Drill
+
+Run this drill in target staging before a 211 service partner pilot. Use
+synthetic data only and archive references in the target evidence system. The
+drill is complete only when the browser UI and API audit trail both show the
+same wallet-backed workflow.
+
+Prerequisites:
+
+- WALLET-170 third-party public API blackbox evidence passed for the target
+  build.
+- WALLET-180 proof verifier cutover evidence passed for the enabled proof UI.
+- WALLET-190 storage retention/deletion dry-run evidence passed for the target
+  repository and encrypted blob topology.
+- WALLET-200 analytics governance evidence approved the template used below.
+- `WALLET_API_CORS_ORIGINS` includes the staging 211-AI UI origin.
+
+Pilot sequence:
+
+1. Create or load the synthetic pilot wallet and open the Uploads UI with the
+   owner DID. Add one document and confirm `GET /wallets/${WALLET_ID}/records`
+   lists a document record without plaintext.
+2. Add one precise location through the API:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"lat\":45.515232,\"lon\":-122.678385}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations"
+   ```
+
+   Do not include the coordinate values in screenshots or evidence summaries
+   after this step; record only the returned location record ID.
+
+3. In the Export Center, enter the partner DID, partner label, selected document
+   and location record IDs, and purpose `partner_service_navigation`. Create the
+   encrypted bundle and record only the bundle hash, record count, proof count,
+   storage status, and schema/hash verification status.
+4. Grant partner proof access and create a location-region proof in the Proof
+   Center:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"issuer_did\":\"${WALLET_OWNER_DID}\",\"audience_did\":\"${PARTNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations/${LOCATION_RECORD_ID}/region-proof-grants"
+   ```
+
+   Pass criteria: the proof receipt has `proof_type=location_region`,
+   `verification_status=verified`, expected verifier metadata, and public inputs
+   containing no `lat`, `lon`, coordinate strings, witness values, invocation
+   tokens, or credential references.
+
+5. Submit the approved aggregate analytics contribution:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"template_id\":\"${TEMPLATE_ID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/from-template"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"consent_id\":\"${CONSENT_ID}\",\"template_id\":\"${TEMPLATE_ID}\",\"fields\":{\"county\":\"Multnomah\",\"need_category\":\"housing\"}}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/contributions"
+   ```
+
+   Pass criteria: the template is approved, fields are derived/coarse only, the
+   release uses the approved aggregate endpoint, and withdrawal behavior is
+   recorded in the WALLET-200 evidence packet.
+
+6. Revoke partner access and prove future use fails:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/grants/${GRANT_ID}/revoke"
+   ```
+
+   Retry the partner export, decrypt, analysis, or proof call. The expected
+   result is an HTTP 400 failure and a `grant/revoke` audit event.
+
+7. Open the Audit UI and confirm `record/add`, `grant/create`, `proof/create`,
+   `analytics/contribute`, `analytics/query`, `export/create`, and
+   `grant/revoke` are visible for the synthetic wallet.
+
+Repository validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Evidence must not contain plaintext documents, precise coordinates, proof
+witnesses, private keys, invocation tokens, bearer tokens, verifier credentials,
+or complete export bundles. If any appear in UI text, API output, browser
+console logs, server logs, screenshots, or archived artifacts, stop the drill and
+treat it as a privacy incident.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

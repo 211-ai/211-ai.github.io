@@ -197,6 +197,56 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 pilot evidence proves one synthetic 211 partner workflow across the
+browser UI and public wallet API backed by `ipfs_datasets_py.wallet`. Run it in
+target staging after the WALLET-170, WALLET-180, WALLET-190, and WALLET-200
+evidence gates pass. Use synthetic users, synthetic partner DIDs, and the
+approved staging service directory only.
+
+Required pilot path:
+
+1. Create or load a staging wallet with durable repository/blob storage and the
+   same proof/analytics settings intended for pilot launch.
+2. Add one encrypted document through the 211-AI Uploads UI or
+   `POST /wallets/{wallet_id}/documents` and add one encrypted precise location
+   through `POST /wallets/{wallet_id}/locations`.
+3. Share partner access with an explicit purpose. The browser Export Center must
+   show the partner DID or label, selected record IDs, `export/create`, and the
+   purpose such as `partner_service_navigation` before bundle creation.
+4. Grant `location/prove_region` to the partner or use owner authority, create a
+   location-region proof in the Proof Center, and confirm public inputs include
+   only the claim, region ID, and policy hash. Precise wallet coordinates,
+   target coordinates, witnesses, bearer tokens, and verifier credentials must
+   not appear in UI text, API receipts, logs, or archived evidence.
+5. Register or reconcile one WALLET-200 approved analytics template, create user
+   consent, submit only approved derived/coarse fields such as `county` and
+   `need_category`, and release the aggregate only through
+   `/analytics/{template_id}/count` or `/analytics/{template_id}/count-by-fields`.
+6. Revoke the partner export or analysis grant with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove a later
+   partner export, decrypt, analysis, or proof attempt fails.
+7. Open the 211-AI Audit UI and verify the timeline includes `record/add`,
+   `grant/create`, `proof/create`, `analytics/contribute`, `analytics/query`,
+   `export/create`, and `grant/revoke`.
+
+Archive the UI/API evidence as references only: wallet ID, synthetic DIDs,
+record IDs, grant IDs, proof IDs, bundle hash, template ID, consent ID, aggregate
+release metadata, audit event IDs, release-check run ID, and screenshots that do
+not show plaintext document content or precise coordinates. Do not archive raw
+documents, decrypted payloads, precise latitude/longitude, proof witnesses,
+private keys, invocation tokens, verifier credentials, or complete export
+bundles.
+
+Repository validation for this path is:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
 ## API Reference
 
 Run the API with:
