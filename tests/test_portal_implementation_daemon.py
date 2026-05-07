@@ -536,6 +536,93 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert branch_check.returncode != 0
 
 
+def test_daemon_merges_to_main_from_non_main_checkout(tmp_path):
+    repo_root = tmp_path / "repo"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    worktree_root = tmp_path / "worktrees"
+    repo_root.mkdir(parents=True)
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        """
+from pathlib import Path
+import os
+import sys
+
+prompt = sys.stdin.read()
+assert "AGENT-000" in prompt
+assert "agent-000-attempt-1" in os.getcwd()
+Path("docs").mkdir(exist_ok=True)
+Path("docs/agent.md").write_text("implemented from feature checkout", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    init_git_repo(repo_root)
+    subprocess.run(["git", "branch", "-M", "main"], cwd=repo_root, check=True, capture_output=True, text=True)
+    subprocess.run(
+        ["git", "checkout", "-b", "feature/sandbox"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    (repo_root / "docs").mkdir(exist_ok=True)
+    (repo_root / "docs" / "feature.md").write_text("feature only\n", encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
+    subprocess.run(["git", "commit", "-m", "feature-only"], cwd=repo_root, check=True, capture_output=True, text=True)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=worktree_root,
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+    merge_result = implementation["merge_result"]
+
+    assert implementation["returncode"] == 0
+    assert merge_result["merged"] is True
+    assert merge_result["target_branch"] == "main"
+    assert merge_result["used_ephemeral_main_worktree"] is True
+    assert not Path(merge_result["main_worktree_path"]).exists()
+    current_branch = subprocess.run(
+        ["git", "branch", "--show-current"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert current_branch == "feature/sandbox"
+    main_agent_file = subprocess.run(
+        ["git", "show", "main:docs/agent.md"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    assert main_agent_file == "implemented from feature checkout"
+    main_feature_file = subprocess.run(
+        ["git", "cat-file", "-e", "main:docs/feature.md"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert main_feature_file.returncode != 0
+    assert not (repo_root / "docs" / "agent.md").exists()
+
+
 def test_daemon_validation_failure_blocks_commit_and_merge(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
