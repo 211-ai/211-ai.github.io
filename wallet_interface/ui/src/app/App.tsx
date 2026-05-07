@@ -37,6 +37,7 @@ import type { SearchResult } from "../lib/graphrag";
 import {
   CheckInChannel,
   AuditEvent,
+  DecryptedRecordView,
   DisclosureDataScope,
   DisclosureRecipientDraft,
   DisclosureRecipientType,
@@ -49,7 +50,9 @@ import {
   ServicePlan,
   ShelterContactRequest,
   UploadItem,
-  ProofReceiptView
+  ProofReceiptView,
+  WalletAccessRequest,
+  WalletGrantReceipt
 } from "../models/abby";
 import {
   analyticsStudies,
@@ -67,16 +70,30 @@ import {
 } from "../services/mockAbbyService";
 import {
   abilitiesForDisclosureScopes,
+  capabilitySummary,
   nonGrantedCapabilities,
+  plainCapabilityLabel,
   plainCapabilitySummary,
   plainNonGrantedCapabilities
 } from "../services/capabilities";
 import {
+  approveAccessRequest,
+  approveThresholdApproval,
   addBinaryDocument,
   addTextDocument,
+  analyzeRecordFormRedactedWithGrant,
+  analyzeRecordRedactedWithGrant,
+  analyzeRecordWithGrant,
+  createRecordVectorProfileWithGrant,
   createLocationRegionProof,
+  createRedactedGraphRAG,
   createVerifiedExportBundleView,
+  delegateGrant,
+  decryptRecordWithGrant,
+  extractRecordTextRedactedWithGrant,
   importExportBundleView,
+  issueRecordAnalysisInvocation,
+  issueRecordDecryptInvocation,
   listWalletSnapshots,
   loadWalletAccessState,
   loadExportBundleView,
@@ -84,7 +101,9 @@ import {
   listWalletAuditEvents,
   listWalletDocuments,
   listWalletProofReceipts,
+  rejectAccessRequest,
   repairRecordStorage,
+  revokeAccessRequest,
   saveWalletSnapshot,
   verifyWalletSnapshot,
   WalletSnapshotVerification,
@@ -140,8 +159,8 @@ const secondaryNavigationRoutes = secondaryRoutes
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
 const navigationRoutes = [...routes, ...secondaryNavigationRoutes];
 
-function normalizeAppRoute(route: RouteId): RouteId {
-  return removedStandaloneRoutes.has(route) ? "home" : route;
+function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
+  return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
 }
 
 function getInitialRouteFromHash(): RouteId {
@@ -150,6 +169,8 @@ function getInitialRouteFromHash(): RouteId {
 
 function readSignedInUser(): string {
   if (typeof window === "undefined") return "";
+  const urlActorDid = readUrlWalletApiConfig()?.actorDid;
+  if (urlActorDid) return urlActorDid;
   try {
     const raw = window.localStorage.getItem(APP_SESSION_KEY);
     if (!raw) return "";
@@ -272,12 +293,13 @@ export function App() {
   const [walletAuditEvents, setWalletAuditEvents] = useState<AuditEvent[]>(auditEvents);
   const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
-  const [accessRequests, setAccessRequests] = useState(initialAccessRequests);
-  const [grantReceipts, setGrantReceipts] = useState(initialGrantReceipts);
+  const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
+  const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>(initialGrantReceipts);
   const [savedServices, setSavedServices] = useState<SavedService[]>([]);
   const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
   const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
-  const [benefitsOptIn] = useState(defaultAppState.benefitsOptIn);
+  const [recipientVerified, setRecipientVerified] = useState(false);
+  const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -511,7 +533,15 @@ export function App() {
   }, [policy.intervalDays, policy.lastCheckInAt]);
 
   if (!signedInUser) {
-    return <LoginScreen onSignIn={handleSignIn} />;
+    return (
+      <LoginScreen
+        onOpenAssistant={() => {
+          handleSignIn("abby");
+          setAgentChatOpen(true);
+        }}
+        onSignIn={handleSignIn}
+      />
+    );
   }
 
   return (
@@ -594,7 +624,13 @@ export function App() {
         ) : null}
 
         {activeRoute === "home" ? (
-          <HomeScreen navigate={navigate} nextCheckIn={nextCheckIn} recipients={recipients} uploads={uploads} />
+          <HomeScreen
+            navigate={navigate}
+            nextCheckIn={nextCheckIn}
+            recipients={recipients}
+            showReviewActions={signedInUser.toLowerCase().includes("reviewer")}
+            uploads={uploads}
+          />
         ) : null}
         {activeRoute === "register" ? (
           <RegistrationScreen
@@ -641,6 +677,23 @@ export function App() {
             shelterUserAccounts={shelterUserAccounts}
             setShelterUserAccounts={setShelterUserAccounts}
           />
+        ) : null}
+        {activeRoute === "recipient-access" ? (
+          <RecipientAccessScreen
+            accessRequests={accessRequests}
+            apiConfig={walletApiConfig}
+            grantReceipts={grantReceipts}
+            recipients={recipients}
+            refreshWalletAccessState={refreshWalletAccessState}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            setAccessRequests={setAccessRequests}
+            setGrantReceipts={setGrantReceipts}
+            setVerified={setRecipientVerified}
+            verified={recipientVerified}
+          />
+        ) : null}
+        {activeRoute === "benefits-protection" ? (
+          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
           <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
@@ -766,7 +819,7 @@ function NavButton({
   );
 }
 
-function LoginScreen({ onSignIn }: { onSignIn: (username: string) => void }) {
+function LoginScreen({ onOpenAssistant, onSignIn }: { onOpenAssistant: () => void; onSignIn: (username: string) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const canSignIn = username.trim().length > 0 && password.trim().length > 0;
@@ -806,6 +859,13 @@ function LoginScreen({ onSignIn }: { onSignIn: (username: string) => void }) {
         <Button disabled={!canSignIn} type="submit">
           <LockKeyhole aria-hidden="true" size={18} /> Sign in
         </Button>
+        <div className="login-assistant-entry">
+          <h2>Your safety plan</h2>
+          <p>Search for services and decide what to save before changing wallet data.</p>
+          <Button onClick={onOpenAssistant} type="button" variant="secondary">
+            <MessageSquare aria-hidden="true" size={18} /> Open assistant
+          </Button>
+        </div>
       </form>
     </main>
   );
@@ -815,11 +875,13 @@ function HomeScreen({
   navigate,
   nextCheckIn,
   recipients,
+  showReviewActions,
   uploads
 }: {
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
   recipients: DisclosureRecipientDraft[];
+  showReviewActions: boolean;
   uploads: UploadItem[];
 }) {
   return (
@@ -842,20 +904,22 @@ function HomeScreen({
           </button>
         </div>
       </Section>
-      <div className="home-actions" aria-label="Safety plan setup">
-        <ActionCard
-          detail={`${recipients.length} people or services set up`}
-          icon={<ContactRound aria-hidden="true" size={28} />}
-          onClick={() => navigate("contacts")}
-          title="Contacts"
-        />
-        <ActionCard
-          detail="Review what helpers can see"
-          icon={<ShieldCheck aria-hidden="true" size={28} />}
-          onClick={() => navigate("contacts")}
-          title="Sharing"
-        />
-      </div>
+      {showReviewActions ? (
+        <div className="home-actions" aria-label="Safety plan setup">
+          <ActionCard
+            detail={`${recipients.length} people or services set up`}
+            icon={<ContactRound aria-hidden="true" size={28} />}
+            onClick={() => navigate("contacts")}
+            title="Contacts"
+          />
+          <ActionCard
+            detail="Review what helpers can see"
+            icon={<ShieldCheck aria-hidden="true" size={28} />}
+            onClick={() => navigate("contacts")}
+            title="Sharing"
+          />
+        </div>
+      ) : null}
       <div className="home-footer">
         <div className="home-footer-stat">
           <small>Saved files</small>
@@ -2637,6 +2701,495 @@ function ShelterScreen({
             </div>
           </div>
         ) : null}
+      </Section>
+    </div>
+  );
+}
+
+type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";
+
+function RecipientAccessScreen({
+  accessRequests,
+  apiConfig,
+  grantReceipts,
+  refreshWalletAccessState,
+  refreshWalletAuditEvents,
+  setAccessRequests,
+  setGrantReceipts,
+  verified,
+  setVerified
+}: {
+  accessRequests: WalletAccessRequest[];
+  apiConfig?: WalletApiConfig;
+  grantReceipts: WalletGrantReceipt[];
+  recipients: DisclosureRecipientDraft[];
+  refreshWalletAccessState: () => Promise<void>;
+  refreshWalletAuditEvents: () => Promise<void>;
+  setAccessRequests: (requests: WalletAccessRequest[]) => void;
+  setGrantReceipts: (receipts: WalletGrantReceipt[]) => void;
+  verified: boolean;
+  setVerified: (verified: boolean) => void;
+}) {
+  const [derivedArtifactsByReceiptId, setDerivedArtifactsByReceiptId] = useState<Record<string, string[]>>({});
+  const [decryptedRecordsByReceiptId, setDecryptedRecordsByReceiptId] = useState<Record<string, DecryptedRecordView>>({});
+  const [busyActionIds, setBusyActionIds] = useState<string[]>([]);
+  const [delegationDrafts, setDelegationDrafts] = useState<Record<string, { audienceDid: string; purpose: string }>>({});
+  const [delegationMessages, setDelegationMessages] = useState<Record<string, string>>({});
+
+  async function decideRequest(requestId: string, status: "approved" | "rejected") {
+    if (apiConfig?.actorDid) {
+      try {
+        if (status === "approved") {
+          await approveAccessRequest(apiConfig, requestId);
+        } else {
+          await rejectAccessRequest(apiConfig, requestId);
+        }
+        await refreshWalletAccessState();
+        await refreshWalletAuditEvents();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      }
+    }
+    setAccessRequests(
+      accessRequests.map((request) =>
+        request.id === requestId
+          ? { ...request, status, grantStatus: status === "approved" ? "active" : request.grantStatus }
+          : request
+      )
+    );
+  }
+
+  async function recordControllerApproval(request: WalletAccessRequest) {
+    if (apiConfig?.actorDid && request.approvalId) {
+      try {
+        await approveThresholdApproval(apiConfig, request.approvalId);
+        await refreshWalletAccessState();
+        await refreshWalletAuditEvents();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      }
+    }
+    setAccessRequests(
+      accessRequests.map((item) =>
+        item.id === request.id
+          ? {
+              ...item,
+              approvalCount: Math.min((item.approvalCount ?? 0) + 1, item.approvalThreshold ?? 1)
+            }
+          : item
+      )
+    );
+  }
+
+  async function revokeRequest(requestId: string) {
+    if (apiConfig?.actorDid) {
+      try {
+        await revokeAccessRequest(apiConfig, requestId);
+        await refreshWalletAccessState();
+        await refreshWalletAuditEvents();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      }
+    }
+    setAccessRequests(accessRequests.map((request) => (request.id === requestId ? { ...request, status: "revoked" } : request)));
+    setGrantReceipts(grantReceipts.map((receipt) => (receipt.id.includes(requestId) ? { ...receipt, status: "revoked" } : receipt)));
+  }
+
+  async function analyzeReceipt(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
+    if (!apiConfig?.actorDid || !receipt.recordId) return;
+    const actionId = `${receipt.id}:${mode}`;
+    setBusyActionIds((ids) => [...ids, actionId]);
+    try {
+      const outputType = outputTypeForAnalysisMode(mode);
+      const invocationToken = receiptRequiresUserPresence(receipt)
+        ? await issueRecordAnalysisInvocation(apiConfig, {
+            grantId: receipt.grantId,
+            outputTypes: [outputType],
+            recordId: receipt.recordId,
+            userPresent: true
+          })
+        : undefined;
+      const lines =
+        mode === "summary"
+          ? artifactLines(
+              await analyzeRecordWithGrant(apiConfig, {
+                grantId: receipt.grantId,
+                invocationToken,
+                recordId: receipt.recordId
+              })
+            )
+          : analysisLines(
+              await runDerivedAnalysis(apiConfig, receipt, mode, invocationToken)
+            );
+      setDerivedArtifactsByReceiptId((items) => ({ ...items, [receipt.id]: [...(items[receipt.id] ?? []), ...lines] }));
+      await refreshWalletAuditEvents().catch(() => undefined);
+    } finally {
+      setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
+    }
+  }
+
+  async function viewReceipt(receipt: WalletGrantReceipt) {
+    if (!apiConfig?.actorDid || !receipt.recordId) return;
+    const actionId = `${receipt.id}:view`;
+    setBusyActionIds((ids) => [...ids, actionId]);
+    try {
+      const invocationToken = receiptRequiresUserPresence(receipt)
+        ? await issueRecordDecryptInvocation(apiConfig, {
+            grantId: receipt.grantId,
+            recordId: receipt.recordId,
+            userPresent: true
+          })
+        : undefined;
+      const record = await decryptRecordWithGrant(apiConfig, {
+        grantId: receipt.grantId,
+        invocationToken,
+        recordId: receipt.recordId
+      });
+      setDecryptedRecordsByReceiptId((records) => ({ ...records, [receipt.id]: record }));
+      await refreshWalletAuditEvents().catch(() => undefined);
+    } finally {
+      setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
+    }
+  }
+
+  async function delegateReceipt(receipt: WalletGrantReceipt) {
+    if (!apiConfig?.actorDid) return;
+    const draft = delegationDrafts[receipt.id] ?? { audienceDid: "", purpose: receipt.purpose };
+    const audienceDid = draft.audienceDid.trim();
+    if (!audienceDid) return;
+    const ability = receipt.abilities.includes("record/analyze") || receipt.abilities.includes("*") ? "record/analyze" : receipt.abilities[0];
+    const actionId = `${receipt.id}:delegate`;
+    setBusyActionIds((ids) => [...ids, actionId]);
+    try {
+      await delegateGrant(apiConfig, {
+        abilities: [ability],
+        audienceDid,
+        parentGrantId: receipt.grantId,
+        purpose: draft.purpose.trim() || receipt.purpose,
+        resources: receipt.resources
+      });
+      setDelegationMessages((messages) => ({ ...messages, [receipt.id]: `Delegated to ${audienceDid}.` }));
+      await refreshWalletAccessState();
+      await refreshWalletAuditEvents();
+    } finally {
+      setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
+    }
+  }
+
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Recipient access</p>
+        <h1>Requests to see my info</h1>
+      </div>
+      <StatusBanner tone={apiConfig ? "success" : "warning"}>
+        {apiConfig ? "Wallet access is connected." : "Connect Abby before acting on live access requests."}
+      </StatusBanner>
+      <Section title="Safety check">
+        <label className="consent-box">
+          <input checked={verified} onChange={(event) => setVerified(event.target.checked)} type="checkbox" />
+          <span>
+            <strong>Confirm I recognize this helper before sharing.</strong>
+            <small>Access can be approved, rejected, or revoked later from this screen.</small>
+          </span>
+        </label>
+      </Section>
+      <Section title="Access requests">
+        <div className="list-stack">
+          {accessRequests.length ? (
+            accessRequests.map((request) => {
+              const needsApproval =
+                request.approvalRequired && (request.approvalCount ?? 0) < (request.approvalThreshold ?? 1);
+              return (
+                <article className="list-item access-request-item" key={request.id}>
+                  <div>
+                    <h3>{request.requesterName}</h3>
+                    <p>{request.resourceLabel}</p>
+                    <div className="badge-row">
+                      <Badge>{request.status}</Badge>
+                      <Badge>{capabilitySummary(request.abilities)}</Badge>
+                      {needsApproval ? <Badge tone="warning">controller approval needed</Badge> : null}
+                    </div>
+                  </div>
+                  <div className="row-actions">
+                    {needsApproval ? (
+                      <Button onClick={() => void recordControllerApproval(request)} variant="secondary">
+                        Record approval
+                      </Button>
+                    ) : null}
+                    <Button disabled={!verified} onClick={() => void decideRequest(request.id, "approved")} variant="secondary">
+                      Approve
+                    </Button>
+                    <Button onClick={() => void decideRequest(request.id, "rejected")} variant="danger">
+                      Reject
+                    </Button>
+                    <Button onClick={() => void revokeRequest(request.id)} variant="quiet">
+                      Revoke
+                    </Button>
+                  </div>
+                </article>
+              );
+            })
+          ) : (
+            <small>No pending access requests.</small>
+          )}
+        </div>
+      </Section>
+      <Section title="Shared receipts">
+        <div className="list-stack">
+          {grantReceipts.length ? (
+            grantReceipts.map((receipt) => {
+              const draft = delegationDrafts[receipt.id] ?? { audienceDid: "", purpose: receipt.purpose };
+              const outputLines = derivedArtifactsByReceiptId[receipt.id] ?? [];
+              const decrypted = decryptedRecordsByReceiptId[receipt.id];
+              const canAnalyze = receiptHasAbility(receipt, "record/analyze") && receipt.recordId;
+              const canView = receiptHasAbility(receipt, "record/decrypt") && receipt.recordId;
+              const canDelegate = receiptHasAbility(receipt, "record/share") && receipt.resources.length > 0;
+
+              return (
+                <article aria-labelledby={`grant-receipt-${receipt.id}`} className="list-item recipient-list-item" key={receipt.id}>
+                  <div className="recipient-summary">
+                    <h3 id={`grant-receipt-${receipt.id}`}>{receipt.audienceName}</h3>
+                    <p>{receipt.resourceLabel}</p>
+                    <div className="badge-row">
+                      <Badge tone={receipt.status === "active" ? "success" : "warning"}>{receipt.status}</Badge>
+                      <Badge>{receipt.receiptHash}</Badge>
+                      <Badge>Share proof code</Badge>
+                    </div>
+                    <small>{receipt.abilities.map(plainCapabilityLabel).join(", ")}</small>
+                  </div>
+                  <div className="row-actions">
+                    <Button
+                      disabled={!canAnalyze || busyActionIds.includes(`${receipt.id}:summary`)}
+                      onClick={() => void analyzeReceipt(receipt, "summary")}
+                      variant="secondary"
+                    >
+                      {busyActionIds.includes(`${receipt.id}:summary`) ? "Making summary" : "Make safe summary"}
+                    </Button>
+                    <Button disabled={!canAnalyze} onClick={() => void analyzeReceipt(receipt, "redacted")} variant="secondary">
+                      Redacted analysis
+                    </Button>
+                    <Button disabled={!canAnalyze} onClick={() => void analyzeReceipt(receipt, "vector")} variant="secondary">
+                      Vector profile
+                    </Button>
+                    <Button disabled={!canAnalyze} onClick={() => void analyzeReceipt(receipt, "extract-text")} variant="secondary">
+                      Extract text
+                    </Button>
+                    <Button disabled={!canAnalyze} onClick={() => void analyzeReceipt(receipt, "form")} variant="secondary">
+                      Analyze form
+                    </Button>
+                    <Button disabled={!canAnalyze} onClick={() => void analyzeReceipt(receipt, "graphrag")} variant="secondary">
+                      Build GraphRAG
+                    </Button>
+                    <Button disabled={!canView} onClick={() => void viewReceipt(receipt)} variant="secondary">
+                      View document
+                    </Button>
+                  </div>
+                  {outputLines.length || decrypted ? (
+                    <div className="disclosure-package">
+                      {outputLines.map((line) => (
+                        <div className="disclosure-row" key={line}>
+                          <strong>Output</strong>
+                          <span>{line}</span>
+                        </div>
+                      ))}
+                      {decrypted ? (
+                        <>
+                          <div className="disclosure-row">
+                            <strong>Document</strong>
+                            <span>{decrypted.text}</span>
+                          </div>
+                          <div className="disclosure-row">
+                            <strong>Size</strong>
+                            <span>{decrypted.sizeBytes} bytes</span>
+                          </div>
+                        </>
+                      ) : null}
+                    </div>
+                  ) : null}
+                  {canDelegate ? (
+                    <form className="delegation-form" onSubmit={(event) => {
+                      event.preventDefault();
+                      void delegateReceipt(receipt);
+                    }}>
+                      <Field label="Delegate DID">
+                        <input
+                          onChange={(event) =>
+                            setDelegationDrafts({
+                              ...delegationDrafts,
+                              [receipt.id]: { ...draft, audienceDid: event.target.value }
+                            })
+                          }
+                          placeholder="did:key:case-worker"
+                          value={draft.audienceDid}
+                        />
+                      </Field>
+                      <Field label="Delegated purpose">
+                        <input
+                          onChange={(event) =>
+                            setDelegationDrafts({
+                              ...delegationDrafts,
+                              [receipt.id]: { ...draft, purpose: event.target.value }
+                            })
+                          }
+                          value={draft.purpose}
+                        />
+                      </Field>
+                      <div className="row-actions">
+                        <Button disabled={!draft.audienceDid.trim() || busyActionIds.includes(`${receipt.id}:delegate`)} type="submit">
+                          {busyActionIds.includes(`${receipt.id}:delegate`) ? "Delegating" : "Delegate access"}
+                        </Button>
+                      </div>
+                      {delegationMessages[receipt.id] ? <p className="delegation-message">{delegationMessages[receipt.id]}</p> : null}
+                    </form>
+                  ) : null}
+                </article>
+              );
+            })
+          ) : (
+            <small>No active grant receipts.</small>
+          )}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function receiptHasAbility(receipt: WalletGrantReceipt, ability: string) {
+  return receipt.abilities.includes("*") || receipt.abilities.includes(ability);
+}
+
+function receiptRequiresUserPresence(receipt: WalletGrantReceipt) {
+  return receipt.caveats?.user_presence_required === true || receipt.caveats?.require_user_presence === true;
+}
+
+function outputTypeForAnalysisMode(mode: RecipientAnalysisMode) {
+  if (mode === "redacted") return "redacted_derived_only";
+  if (mode === "vector") return "vector_profile";
+  if (mode === "extract-text") return "redacted_extracted_text";
+  if (mode === "form") return "redacted_form_analysis";
+  if (mode === "graphrag") return "redacted_graphrag";
+  return "summary";
+}
+
+async function runDerivedAnalysis(
+  apiConfig: WalletApiConfig,
+  receipt: WalletGrantReceipt,
+  mode: Exclude<RecipientAnalysisMode, "summary">,
+  invocationToken?: string
+) {
+  const grantId = receipt.grantId;
+  const recordId = receipt.recordId || "";
+  if (mode === "redacted") return analyzeRecordRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
+  if (mode === "vector") return createRecordVectorProfileWithGrant(apiConfig, { grantId, invocationToken, recordId });
+  if (mode === "extract-text") return extractRecordTextRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
+  if (mode === "form") return analyzeRecordFormRedactedWithGrant(apiConfig, { grantId, invocationToken, recordId });
+  return createRedactedGraphRAG(apiConfig, { grantId, invocationToken, recordIds: [recordId] });
+}
+
+function artifactLines(artifact: { artifactType: string; outputPolicy: string; encryptedPayloadRef: string; sourceRecordIds: string[] }) {
+  return [
+    `${artifact.artifactType} · ${artifact.outputPolicy}`,
+    artifact.encryptedPayloadRef,
+    ...artifact.sourceRecordIds
+  ];
+}
+
+function analysisLines(result: {
+  artifact: { artifactType: string; outputPolicy: string; encryptedPayloadRef: string; sourceRecordIds: string[] };
+  output: Record<string, unknown>;
+}) {
+  return [
+    ...artifactLines(result.artifact),
+    summarizeDerivedOutput(result.output)
+  ];
+}
+
+function summarizeDerivedOutput(output: Record<string, unknown>) {
+  if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
+  if (typeof output.text === "string" && output.text.trim()) return output.text;
+  const profile = output.profile;
+  if (profile && typeof profile === "object" && !Array.isArray(profile)) {
+    const record = profile as Record<string, unknown>;
+    const profileType = typeof record.profile_type === "string" ? record.profile_type : "vector profile";
+    return typeof record.chunk_count === "number" ? `${profileType} · ${record.chunk_count} chunks` : profileType;
+  }
+  const fields = output.fields;
+  if (Array.isArray(fields)) {
+    const labels = fields
+      .map((field) => {
+        if (!field || typeof field !== "object" || Array.isArray(field)) return "";
+        return String((field as Record<string, unknown>).label ?? "").trim();
+      })
+      .filter(Boolean)
+      .slice(0, 3);
+    return labels.length ? `${fields.length} redacted fields: ${labels.join(", ")}` : `${fields.length} redacted fields`;
+  }
+  const graph = output.graph;
+  if (graph && typeof graph === "object" && !Array.isArray(graph)) {
+    const record = graph as Record<string, unknown>;
+    const graphType = typeof record.graph_type === "string" ? record.graph_type : "redacted graph";
+    if (typeof record.node_count === "number" && typeof record.edge_count === "number") {
+      return `${graphType} · ${record.node_count} nodes · ${record.edge_count} edges`;
+    }
+    return graphType;
+  }
+  return typeof output.output_policy === "string" ? output.output_policy : "Safe derived output created.";
+}
+
+function BenefitsProtectionScreen({
+  optedIn,
+  setOptedIn
+}: {
+  optedIn: boolean;
+  setOptedIn: (optedIn: boolean) => void;
+}) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Benefits protection</p>
+        <h1>Benefits notice</h1>
+      </div>
+      <StatusBanner tone="warning">
+        Abby can ask approved agencies for help. This does not promise benefits.
+      </StatusBanner>
+      <Section title="Benefits choice">
+        <div className="capability-preview" role="group" aria-label="Benefits notification capability preview">
+          <div className="scope-header">
+            <div>
+              <h4>What this allows</h4>
+              <p>benefits status and notice details only</p>
+            </div>
+            <Badge tone={optedIn ? "success" : "neutral"}>{optedIn ? "ready to save" : "off"}</Badge>
+          </div>
+          <div className="disclosure-package">
+            <div className="disclosure-row">
+              <strong>Can do</strong>
+              <span>{plainCapabilitySummary(["metadata/read", "derived/read"])}</span>
+            </div>
+            <div className="disclosure-row">
+              <strong>Items</strong>
+              <span>Benefits information, Notice request</span>
+            </div>
+            <div className="disclosure-row">
+              <strong>Not allowed</strong>
+              <span>{plainNonGrantedCapabilities(["metadata/read", "derived/read"]).join(", ")}</span>
+            </div>
+          </div>
+        </div>
+        <label className="consent-box">
+          <input checked={optedIn} onChange={(event) => setOptedIn(event.target.checked)} type="checkbox" />
+          <span>
+            <strong>Allow Abby to prepare a benefits notice for agency help.</strong>
+            <small>This starts on. You can turn it off. A privacy and legal team must review this before real use.</small>
+          </span>
+        </label>
+        <Button>
+          <Landmark size={18} /> Save setting
+        </Button>
       </Section>
     </div>
   );

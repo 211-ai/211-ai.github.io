@@ -23,8 +23,8 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "check-in", label: "Check in" },
   { id: "contacts", label: "Contacts" },
   { id: "sharing-rules", label: "Sharing" },
-  { id: "uploads", label: "Uploads" },
   { id: "social-services", label: "Services" },
+  { id: "uploads", label: "Uploads" },
   { id: "shelter", label: "Shelter" }
 ];
 
