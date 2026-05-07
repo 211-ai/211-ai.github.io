@@ -11,6 +11,21 @@ This directory captures the current local Git state for migration to `https://gi
 - Fourteen attached implementation worktrees still contain uncommitted changes. Those edits are not preserved by branch pushes and were exported as patch files here.
 - A compact migration path now exists: the rescue history can be preserved by pushing `main` plus four archive branches instead of dozens of individual rescue refs.
 
+## Auth blocker
+
+The current machine-level auth state is:
+
+- Git HTTPS credentials are delegated through GitHub CLI via `gh auth git-credential`.
+- The active GitHub CLI account is currently `hallucinate-llc`.
+- Pushes to `211-ai/211-ai.github.io` fail with `403`, which means that account does not have write access to the target repo.
+- GitHub SSH auth is not currently usable on this machine for `git@github.com`.
+
+Quick re-check command:
+
+- `artifacts/git-migration-20260507/check-github-auth.sh`
+
+To finish migration later, the simplest path is to re-authenticate `gh` with an account that has push access to `211-ai/211-ai.github.io`, then run the compact push and verification scripts.
+
 ## Preserved artifacts
 
 - Offline bundle containing all committed refs: `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle`

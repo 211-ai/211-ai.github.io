@@ -53,6 +53,12 @@ Post-push verification:
 artifacts/git-migration-20260507/verify-compact-migration.sh
 ```
 
+Auth diagnosis:
+
+```bash
+artifacts/git-migration-20260507/check-github-auth.sh
+```
+
 ## Phase 1: Push immediately
 
 These branches should be pushed first if you are using the full-fidelity branch-preservation path instead of the compact option above.
