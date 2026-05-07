@@ -100,6 +100,89 @@ validate retention, organization review, and staging evidence before launch.
 The wallet UCAN invocation profile and UCAN-compatible inspection envelope are
 documented in `docs/WALLET_UCAN_PROFILE.md`.
 
+## 211 Service Partner Pilot Readiness
+
+The WALLET-210 staging pilot is the integrated readiness path for a 211 service
+partner. It uses `wallet_interface/` UI and API surfaces backed by
+`ipfs_datasets_py.wallet`; it does not bypass the wallet core for grants,
+proofs, redaction, analytics, revocation, or audit.
+
+Pilot roles:
+
+- Wallet owner: creates the wallet, uploads documents, records location, grants
+  access, opts into approved aggregate analytics, revokes access, and reviews
+  audit history.
+- Service partner: receives a purpose-bound grant or approved access request,
+  runs permitted derived analysis, receives encrypted export descriptors when
+  explicitly granted, and verifies proof receipts.
+- Navigator or matcher: may use only coarse-location grants or proof receipts
+  for service matching. Precise coordinates must not be returned to the browser,
+  partner, logs, or evidence artifacts.
+- Analytics reviewer: approves a template before collection, including allowed
+  fields, cohort threshold, budget, consent copy, proof statement, nullifier
+  policy, retention mapping, and withdrawal behavior.
+
+Minimum staging flow:
+
+1. Create a synthetic wallet and add one document through the Uploads UI or
+   `POST /wallets/{wallet_id}/documents`.
+2. Add one encrypted location record through `POST /wallets/{wallet_id}/locations`.
+3. Create a partner access request or bounded grant with a concrete purpose,
+   record IDs, abilities, output caveats when applicable, and expiration when
+   the pilot scenario needs it.
+4. Approve the request from the Recipient Access UI after the user-facing helper
+   recognition check, then confirm the partner can run only the permitted
+   derived analysis or encrypted export.
+5. For eligibility, create a location-region proof from the Proof Center UI or
+   `/locations/{location_record_id}/region-proofs`. Archive only public inputs,
+   verifier metadata, proof hash, proof ID, and audit ID; never archive precise
+   location, target coordinates, witness values, or verifier credentials.
+6. For service matching, use `/wallets/{wallet_id}/services/match` with a
+   coarse-location invocation token, or `/services/match-derived` with derived
+   facts only. Reject any pilot response that includes `lat`, `lon`,
+   `latitude`, `longitude`, raw address, or precise-coordinate values.
+7. Register an approved analytics template, create consent from that template,
+   submit derived/coarse fields through
+   `/wallets/{wallet_id}/analytics/contributions`, and release aggregate results
+   only through `/analytics/{template_id}/count` or
+   `/analytics/{template_id}/count-by-fields`.
+8. Revoke the partner access request or grant and confirm subsequent partner
+   analyze, decrypt, proof, match, or export attempts fail.
+9. Open the Audit UI and export `/wallets/{wallet_id}/audit` as the pilot
+   timeline. The timeline must include record add, access request/approval,
+   grant creation, invocation or operation verification when applicable,
+   proof creation, analytics consent/contribution/query, revocation, and denied
+   post-revocation attempts when exercised.
+
+Evidence to archive for WALLET-210:
+
+- UI/API validation output from `wallet_interface/ui/tests/fullstack-wallet.spec.ts`.
+- Redacted API request/response IDs for the synthetic document, location,
+  grant/access request, proof, analytics consent/contribution, aggregate result,
+  revocation, and audit export.
+- A no-leak review confirming partner-visible outputs, service-match results,
+  proof public inputs, analytics contributions, aggregate releases, browser
+  console logs, API logs, and evidence artifacts do not contain plaintext
+  document contents, precise coordinates, witness values, direct identifiers,
+  or secret values.
+- The active analytics template approval record from the target signoff packet,
+  or an explicit staging-only template record with reviewer roles and retention
+  mapping.
+
+The repository-level regression command is:
+
+```bash
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Run it with the backend pytest slice before pilot signoff:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
 ## Verifier Cutover Packet
 
 Operators must complete a WALLET-180 non-simulated verifier cutover packet

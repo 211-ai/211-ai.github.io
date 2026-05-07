@@ -3158,6 +3158,7 @@ function RecipientAccessScreen({
                   <div>
                     <h3>{request.requesterName}</h3>
                     <p>{request.resourceLabel}</p>
+                    <small>{request.purpose}</small>
                     <div className="badge-row">
                       <Badge>{request.status}</Badge>
                       <Badge>{capabilitySummary(request.abilities)}</Badge>
@@ -3204,6 +3205,7 @@ function RecipientAccessScreen({
                   <div className="recipient-summary">
                     <h3 id={`grant-receipt-${receipt.id}`}>{receipt.audienceName}</h3>
                     <p>{receipt.resourceLabel}</p>
+                    <small>{receipt.purpose}</small>
                     <div className="badge-row">
                       <Badge tone={receipt.status === "active" ? "success" : "warning"}>{receipt.status}</Badge>
                       <Badge>{receipt.receiptHash}</Badge>

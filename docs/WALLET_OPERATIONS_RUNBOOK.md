@@ -398,6 +398,104 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 Staging Service Partner Pilot
+
+Run this pilot dry run after WALLET-170 through WALLET-200 evidence is archived
+and before inviting a real service partner into staging. Use synthetic wallet
+data, synthetic partner DIDs, and staging-only service records. Do not use a
+real client, real eligibility document, real address, or real precise
+coordinates in the evidence packet.
+
+Preflight:
+
+- Target staging is using durable `WALLET_REPOSITORY_ROOT` and encrypted
+  `WALLET_STORAGE_CONFIG`.
+- Proof mode and verifier evidence satisfy the current launch gate for any
+  user-visible proof path. `location_distance` remains hidden from the live
+  Proof Center unless its WALLET-180 distance cutover evidence is complete.
+- The service directory is loaded through `WALLET_SERVICES_JSONL` or the target
+  deployment's approved directory source.
+- The analytics template used in the pilot is approved under the WALLET-200
+  governance workflow, or is explicitly labeled as staging-only with the same
+  consent, fields, nullifier, threshold, budget, retention, and reviewer fields.
+- Browser console logging, API access logs, alert payloads, and evidence
+  capture are configured to retain IDs, hashes, statuses, and public proof
+  inputs only.
+
+Operator sequence:
+
+1. Run the automated pilot regression locally or in staging CI.
+
+   ```bash
+   pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+   npm --prefix wallet_interface/ui run build
+   npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+   ```
+
+2. Create a synthetic wallet and upload one document from the Uploads UI.
+   Record only `wallet_id`, `record_id`, storage status, and audit event ID.
+
+3. Add one encrypted location record through the API.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"lat\":45.515232,\"lon\":-122.678385}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations"
+   ```
+
+   The command payload is a synthetic staging fixture. The archived evidence
+   must replace the exact coordinates with the resulting `record_id`, storage
+   hash, and audit event ID.
+
+4. Create a purpose-bound partner access request or grant. The evidence must
+   show partner DID, purpose, record IDs, abilities, output caveats when used,
+   expiration when used, receipt hash, and `grant_id`; it must not include
+   plaintext document content or key material.
+
+5. Approve the request from the Recipient Access UI after the helper
+   recognition check. Then sign in or route as the partner and run the permitted
+   derived analysis. Confirm the partner output contains only the allowed
+   output policy and derived artifact reference.
+
+6. Create a coarse-location grant and service-match invocation for the navigator
+   or partner, then run service matching. Confirm the response includes service
+   IDs and reasons but no `lat`, `lon`, `latitude`, `longitude`, precise address,
+   or coordinate values.
+
+7. Create a location-region proof from the Proof Center UI or proof API. Confirm
+   public inputs contain the claim, region ID, and policy hash only. Archive
+   proof ID, verifier ID, proof system, circuit ID, proof hash, and audit event
+   ID.
+
+8. Create or select the approved analytics template, create wallet consent from
+   the template, submit one derived/coarse contribution, and run the approved
+   aggregate endpoint. Archive template ID, consent ID, contribution ID, proof
+   ID, result ID, cohort threshold, budget spent, suppression status, and audit
+   event IDs.
+
+9. Revoke the partner access request or grant from the UI/API. Then retry the
+   partner operation and confirm it fails. Archive the revoked receipt status
+   and the failed post-revocation response status, not the response body if it
+   contains environment-specific routing details.
+
+10. Open the Audit UI and export `/wallets/${WALLET_ID}/audit`. The timeline
+    must show `record/add`, `access/request`, `access/approve`, `grant/create`,
+    `record/analyze` or the selected derived-analysis action, `location/read_coarse`
+    when service matching is used, `proof/create`, `analytics/consent_create`,
+    `analytics/contribute`, `analytics/query`, `grant/revoke`, and
+    `access/revoke` when using access requests.
+
+Exit criteria:
+
+- All validation commands pass.
+- Partner-visible UI and API outputs are purpose-bound and do not expose raw
+  document text, precise coordinates, witnesses, direct identifiers, or secrets.
+- Aggregate analytics are released only through approved template endpoints and
+  respect the recorded threshold and privacy budget.
+- Revocation blocks the partner's previous operation.
+- The audit timeline covers every pilot step through wallet-backed events.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or
