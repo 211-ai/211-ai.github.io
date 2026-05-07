@@ -28,8 +28,7 @@ import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
 import {
   getServiceDetailDocIdFromHash,
-  openCanonicalServiceDetailRoute,
-  setLocationServiceDetailHash
+  openCanonicalServiceDetailRoute
 } from "../agent/tools/serviceDetailTools";
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
@@ -564,6 +563,19 @@ export function App() {
     setMobileNavOpen(false);
   }
 
+  function openServiceDetailFromServices(docId: string) {
+    setServicePlanDocId(null);
+    openCanonicalServiceDetailRoute(docId, {
+      setActiveRoute: (route) => {
+        const nextRoute = normalizeAppRoute(route);
+        activeRouteRef.current = nextRoute;
+        setActiveRoute(nextRoute);
+      },
+      setServiceDetailDocId,
+      setMobileNavOpen
+    });
+  }
+
   function handleSignIn(username: string) {
     const nextUsername = username.trim();
     setSignedInUser(nextUsername);
@@ -722,11 +734,7 @@ export function App() {
             docId={servicePlanDocId}
             grantReceipts={grantReceipts}
             onBack={() => navigate("social-services")}
-            onOpenDetail={(nextDocId) => {
-              setLocationServiceDetailHash(nextDocId);
-              setServicePlanDocId(null);
-              setServiceDetailDocId(nextDocId);
-            }}
+            onOpenDetail={openServiceDetailFromServices}
             recipients={recipients}
             refreshWalletPortalState={refreshWalletPortalState}
             savedServices={savedServices}
@@ -742,6 +750,7 @@ export function App() {
         {activeRoute === "social-services" && !serviceDetailDocId && !servicePlanDocId ? (
           <SocialServicesScreen
             apiConfig={walletApiConfig}
+            onOpenDetail={openServiceDetailFromServices}
             onOpenPlan={(nextDocId) => {
               setLocationServicePlanHash(nextDocId);
               setServicePlanDocId(nextDocId);
@@ -2007,6 +2016,7 @@ function UploadsScreen({
 
 function SocialServicesScreen({
   apiConfig,
+  onOpenDetail,
   onOpenPlan,
   refreshWalletPortalState,
   savedServices,
@@ -2016,6 +2026,7 @@ function SocialServicesScreen({
   walletPortalLoading
 }: {
   apiConfig?: WalletApiConfig;
+  onOpenDetail: (docId: string) => void;
   onOpenPlan: (docId: string) => void;
   refreshWalletPortalState?: () => Promise<void>;
   savedServices: SavedService[];
@@ -2147,7 +2158,7 @@ function SocialServicesScreen({
                       <CalendarClock aria-hidden="true" size={18} />
                       Plan
                     </Button>
-                    <Button onClick={() => setLocationServiceDetailHash(result.docId)} variant="secondary">
+                    <Button onClick={() => onOpenDetail(result.docId)} variant="secondary">
                       Open detail
                     </Button>
                   </div>
@@ -2160,7 +2171,7 @@ function SocialServicesScreen({
       <SavedServicesPanel
         error={walletPortalError}
         loading={walletPortalLoading}
-        onOpenDetail={setLocationServiceDetailHash}
+        onOpenDetail={onOpenDetail}
         onOpenPlan={onOpenPlan}
         onRefresh={refreshWalletPortalState ? () => void refreshWalletPortalState() : undefined}
         savedServices={savedServices}

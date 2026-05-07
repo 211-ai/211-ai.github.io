@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ExternalLink, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ServiceProvenancePanel } from "../components/services/ServiceProvenancePanel";
 import { Badge, Button, Section, StatusBanner } from "../components/ui";
 import {
   load211ArtifactManifest,
@@ -7,6 +8,7 @@ import {
   load211GeneratedManifest,
   type CorpusDocument,
 } from "../lib/graphrag";
+import { build211InfoServiceProvenance } from "../services/graphRagService";
 
 type ServiceDetailMetadata = {
   buildManifestCid: string;
@@ -35,23 +37,32 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
     async function loadServiceDetail() {
       setState({ status: "loading", document: null, metadata: null, error: "" });
       try {
-        const [documentsState, artifactManifest, generatedManifest] = await Promise.all([
-          load211Documents(),
+        const documentsState = await load211Documents();
+        const [artifactManifestResult, generatedManifestResult] = await Promise.allSettled([
           load211ArtifactManifest(),
           load211GeneratedManifest(),
         ]);
         if (canceled) return;
 
+        const artifactManifest =
+          artifactManifestResult.status === "fulfilled" ? artifactManifestResult.value : null;
+        const generatedManifest =
+          generatedManifestResult.status === "fulfilled" ? generatedManifestResult.value : null;
         const document =
           documentsState.documentById.get(docId) ??
           documentsState.documentByContentCid.get(docId) ??
           documentsState.documents.find((item) => item.source_page_cid === docId) ??
           null;
-        const documentsArtifact = artifactManifest.artifacts.find((artifact) => artifact.role === "documents");
+        const documentsArtifact = artifactManifest?.artifacts.find((artifact) => artifact.role === "documents");
         const metadata: ServiceDetailMetadata = {
-          buildManifestCid: artifactManifest.sourcePackage.build_manifest_cid,
+          buildManifestCid:
+            artifactManifest?.sourcePackage.build_manifest_cid ||
+            ((generatedManifest as { sourcePackage?: { build_manifest_cid?: string } } | null)?.sourcePackage
+              ?.build_manifest_cid ??
+              ""),
           documentsArtifactCid: documentsArtifact?.cid ?? "",
-          documentCount: generatedManifest.documentCount,
+          documentCount:
+            generatedManifest?.documentCount ?? artifactManifest?.corpus.documentCount ?? documentsState.documents.length,
           loadedAt: new Date().toISOString(),
         };
 
@@ -129,6 +140,12 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
   const program = document.program_name || document.title || "Program not listed";
   const sourceUrl = document.source_url;
   const location = [document.city, document.state].filter(Boolean).join(", ");
+  const provenance = build211InfoServiceProvenance(document, {
+    buildManifestCid: metadata.buildManifestCid,
+    documentsArtifactCid: metadata.documentsArtifactCid,
+    documentCount: metadata.documentCount,
+    generatedAt: metadata.loadedAt,
+  });
 
   return (
     <div className="screen">
@@ -179,45 +196,8 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
         </div>
       </Section>
 
-      <Section title="Source and provenance">
-        <div className="list-stack">
-          <article className="list-item">
-            <div>
-              <h3>Source URL</h3>
-              {sourceUrl ? (
-                <p style={{ overflowWrap: "anywhere" }}>
-                  <a href={sourceUrl} rel="noreferrer" target="_blank">
-                    {sourceUrl}
-                  </a>
-                </p>
-              ) : (
-                <p>Source URL not listed</p>
-              )}
-            </div>
-            {sourceUrl ? <LinkIcon aria-hidden="true" size={20} /> : null}
-          </article>
-          <ProvenanceRow label="Service document ID" value={document.doc_id} />
-          <ProvenanceRow label="Source content CID" value={document.source_content_cid} />
-          <ProvenanceRow label="Source page CID" value={document.source_page_cid} />
-          <ProvenanceRow label="Build manifest CID" value={metadata.buildManifestCid} />
-          <ProvenanceRow label="Documents artifact CID" value={metadata.documentsArtifactCid} />
-          <ProvenanceRow label="Detail loaded at" value={metadata.loadedAt} />
-          <ProvenanceRow label="Scrape timestamp" value="Not included in the current browser corpus" />
-          <ProvenanceRow label="Corpus document count" value={metadata.documentCount.toLocaleString()} />
-        </div>
-      </Section>
+      <ServiceProvenancePanel report={provenance} />
     </div>
-  );
-}
-
-function ProvenanceRow({ label, value }: { label: string; value: string }) {
-  return (
-    <article className="list-item">
-      <div>
-        <h3>{label}</h3>
-        <p style={{ overflowWrap: "anywhere" }}>{value || "Not listed"}</p>
-      </div>
-    </article>
   );
 }
 
