@@ -279,6 +279,7 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "backup_purge_sla": "30 days",
             "ipfs_pinning": "ci private pinset only",
             "filecoin_deal_expiration": "not used in CI",
+            "s3_lifecycle": "ci S3 lifecycle fixture covers current and noncurrent encrypted objects",
             "log_retention": "90 days",
             "alert_retention": "90 days",
             "deletion_tombstone_retention": "7 years",

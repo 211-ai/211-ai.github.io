@@ -203,6 +203,64 @@ The verifier request/response contract is documented in
 4. If the primary encrypted blob store is unavailable, restore from a mirror
    before accepting new uploads.
 
+## Target Storage Operations
+
+Use `wallet_interface/deploy/storage-retention.example.json` as the target
+storage checklist. Replace placeholder provider names, bucket names, secret
+paths, lifecycle IDs, deal policy IDs, and evidence references in the target
+evidence system; do not commit the completed file with live environment details.
+
+Target storage credential requirements:
+
+- `WALLET_STORAGE_CREDENTIAL_SECRET_REF` must point to the selected
+  secret-manager entry for IPFS, Filecoin, S3, and local-replica credentials.
+- `WALLET_STORAGE_CONFIG` must describe the encrypted primary and mirror
+  topology. Example production shapes include a durable local primary with IPFS
+  pin, S3 object, and Filecoin archival mirrors, or an S3 primary with IPFS and
+  Filecoin mirrors when the S3 lifecycle policy is the primary retention
+  control.
+- Operators may record CIDs, S3 object keys, bucket policy IDs, Filecoin deal
+  policy IDs, and ciphertext hashes in tickets. They must not paste wallet
+  plaintext, proof witnesses, precise coordinates, key material, or secret
+  values into tickets, logs, alert payloads, or signoff packets.
+
+Storage repair validation:
+
+```bash
+curl -fsS \
+  -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+  "${WALLET_API_ORIGIN}/ops/health?verify_storage=true"
+
+curl -fsS -X POST \
+  -H "content-type: application/json" \
+  -H "authorization: Bearer ${WALLET_OPS_HEALTH_SHARED_SECRET}" \
+  -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+  "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/storage/repair"
+
+python -m wallet_interface.ops --validate-production-readiness
+```
+
+The repair response should show `failed_replica_count=0` after repair and may
+show `repaired_replica_count` for S3/IPFS/Filecoin mirrors. The report verifies
+encrypted bytes and stored hashes only; if a repair run or alert contains raw
+document text, precise location values, proof witnesses, or credential values,
+treat it as a privacy incident.
+
+Provider retention checks:
+
+- IPFS: confirm encrypted CIDs are in the approved private pinset while active,
+  and that deletion tickets remove pins after manifest references and key wraps
+  are revoked.
+- Filecoin: confirm new deals use the approved maximum expiration window and
+  that renewal is blocked for deleted or expired wallet records.
+- S3: confirm lifecycle rules cover the wallet prefix, current and noncurrent
+  encrypted objects, incomplete multipart uploads, backup buckets, and legal
+  hold exceptions.
+- Backups: confirm wallet repository backups and encrypted blob backups purge
+  under the approved SLA, with evidence that references ciphertext IDs only.
+- Alerts: confirm alert-router retention matches the approved alert-retention
+  period and that webhook payloads contain status metadata only.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

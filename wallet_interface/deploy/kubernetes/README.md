@@ -8,6 +8,8 @@ stack:
 - `secrets.example.yaml`: secret shape to replace per environment.
 - `externalsecret.example.yaml`: optional External Secrets Operator mapping for
   environment-specific secret managers.
+- `../storage-retention.example.json`: target IPFS/Filecoin/S3 retention and
+  repair-evidence mapping template.
 - `pvc.yaml`: persistent storage for wallet snapshots and encrypted blob state.
 - `api-deployment.yaml`: FastAPI wallet API deployment.
 - `ops-deployment.yaml`: long-running ops-health worker.
@@ -40,6 +42,15 @@ Before production use:
 - Move `WALLET_STORAGE_CONFIG` and any provider credentials into a real Secret
   or external secret manager. `externalsecret.example.yaml` provides the
   expected key mapping when using External Secrets Operator.
+- Map `WALLET_STORAGE_RETENTION_POLICY_REF`,
+  `WALLET_STORAGE_IPFS_PINNING_POLICY_REF`,
+  `WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF`,
+  `WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF`,
+  `WALLET_BACKUP_PURGE_POLICY_REF`, and
+  `WALLET_ALERT_RETENTION_POLICY_REF` to target evidence IDs before launch.
+  The completed mapping should prove that encrypted replicas, IPFS pins,
+  Filecoin deals, S3 lifecycle rules, backups, and alert-router payloads all
+  expire or purge under the approved retention policy.
 - Set the non-secret reference keys `WALLET_OPS_HEALTH_SECRET_REF`,
   `WALLET_OPS_ALERT_SECRET_REF`, `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
   `WALLET_STORAGE_CREDENTIAL_SECRET_REF` to the target secret-manager paths so
@@ -58,3 +69,7 @@ Before production use:
 - Run `python -m wallet_interface.ops --validate-production-readiness` and
   `python -m wallet_interface.ops --validate-target-signoff-packet` from the
   deployed ops environment before live wallet data.
+- Run `/ops/health?verify_storage=true` and the wallet or record storage repair
+  endpoint after any replica outage. Archive only ciphertext hashes, storage
+  types, failure counts, and repair counts; never archive wallet plaintext,
+  proof witnesses, precise coordinates, tokens, or credential values.

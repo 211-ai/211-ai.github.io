@@ -7,6 +7,11 @@ data:
   WALLET_REPOSITORY_ROOT: /var/lib/211-ai/wallet-repository
   WALLET_STORAGE_CONFIG: |
     {"primary":{"type":"local","root":"/var/lib/211-ai/wallet-blobs"}}
+  WALLET_STORAGE_RETENTION_POLICY_REF: docs/WALLET_RETENTION_POLICY.md@2026-05-05
+  WALLET_STORAGE_IPFS_PINNING_POLICY_REF: replace-with-private-ipfs-pinset-policy-id
+  WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF: replace-with-filecoin-deal-policy-id-or-not-used
+  WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF: replace-with-s3-lifecycle-policy-id
+  WALLET_BACKUP_PURGE_POLICY_REF: replace-with-backup-purge-policy-id
   WALLET_PROOF_MODE: production
   WALLET_PROOF_BACKEND: http-location-region
   WALLET_PROOF_TIMEOUT_SECONDS: "30"
@@ -15,3 +20,4 @@ data:
   WALLET_API_CORS_ORIGINS: https://wallet-ui.example.com
   WALLET_OPS_INTERVAL_SECONDS: "300"
   WALLET_OPS_ALERT_ON: "error"
+  WALLET_ALERT_RETENTION_POLICY_REF: replace-with-alert-retention-policy-id
