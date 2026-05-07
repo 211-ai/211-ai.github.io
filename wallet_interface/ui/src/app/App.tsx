@@ -79,6 +79,7 @@ import {
   importExportBundleView,
   listWalletSnapshots,
   loadExportBundleView,
+  loadWalletAccessState,
   loadWalletSnapshot,
   listWalletAuditEvents,
   listWalletDocuments,
@@ -275,20 +276,7 @@ export function App() {
   const [savedServices, setSavedServices] = useState<SavedService[]>([]);
   const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
   const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
-  const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(() => defaultAppState.benefitsOptIn ?? true);
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      const persistedState = readPersistedAppState() ?? createDefaultAppState();
-      writePersistedAppState({
-        ...persistedState,
-        benefitsOptIn
-      });
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [benefitsOptIn]);
 
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
@@ -318,7 +306,10 @@ export function App() {
   }
 
   async function refreshWalletAccessState() {
-    // TODO: fetch access requests and grant receipts from wallet API when available
+    if (!walletApiConfig) return;
+    const accessState = await loadWalletAccessState(walletApiConfig);
+    setAccessRequests(accessState.accessRequests);
+    setGrantReceipts(accessState.grantReceipts);
   }
 
   const agentRuntime = useMemo<AppActionRuntime>(
@@ -421,11 +412,13 @@ export function App() {
         shelterStaffAccounts,
         shelterUserAccounts,
         analyticsOptIn,
+        benefitsOptIn,
         shelterChecklist
       })
     );
   }, [
     analyticsOptIn,
+    benefitsOptIn,
     policy,
     profile,
     recipients,
@@ -449,6 +442,14 @@ export function App() {
   useEffect(() => {
     if (!walletApiConfig) return;
     refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts));
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
+    refreshWalletAccessState().catch(() => {
+      setAccessRequests([]);
+      setGrantReceipts([]);
+    });
   }, [walletApiConfig]);
 
   useEffect(() => {
@@ -608,15 +609,7 @@ export function App() {
         {activeRoute === "recipient-access" ? (
           <RecipientAccessScreen
             accessRequests={accessRequests}
-            apiConfig={walletApiConfig}
             grantReceipts={grantReceipts}
-            recipients={recipients}
-            refreshWalletAuditEvents={refreshWalletAuditEvents}
-            refreshWalletAccessState={refreshWalletAccessState}
-            setAccessRequests={setAccessRequests}
-            setGrantReceipts={setGrantReceipts}
-            verified={recipientVerified}
-            setVerified={setRecipientVerified}
           />
         ) : null}
         {activeRoute === "benefits-protection" ? (
@@ -3281,26 +3274,10 @@ function AuditScreen({ events }: { events: AuditEvent[] }) {
 
 function RecipientAccessScreen({
   accessRequests,
-  apiConfig,
-  grantReceipts,
-  recipients,
-  refreshWalletAuditEvents,
-  refreshWalletAccessState,
-  setAccessRequests,
-  setGrantReceipts,
-  verified,
-  setVerified
+  grantReceipts
 }: {
   accessRequests: WalletAccessRequest[];
-  apiConfig?: WalletApiConfig;
   grantReceipts: WalletGrantReceipt[];
-  recipients: DisclosureRecipientDraft[];
-  refreshWalletAuditEvents: () => Promise<void>;
-  refreshWalletAccessState: () => Promise<void>;
-  setAccessRequests: (requests: WalletAccessRequest[]) => void;
-  setGrantReceipts: (receipts: WalletGrantReceipt[]) => void;
-  verified: boolean;
-  setVerified: (verified: boolean) => void;
 }) {
   return (
     <div className="screen">
@@ -3314,14 +3291,14 @@ function RecipientAccessScreen({
       {accessRequests.length > 0 ? (
         <Section title="Access requests">
           {accessRequests.map((req) => (
-            <ActionCard key={req.id} title={req.requesterName} detail={req.purpose} icon={<KeyRound size={18} />} onClick={() => undefined} />
+            <ActionCard key={req.id} title={req.requesterName} detail={req.purpose} icon={<KeyRound size={18} />} />
           ))}
         </Section>
       ) : null}
       {grantReceipts.length > 0 ? (
         <Section title="Grant receipts">
           {grantReceipts.map((receipt) => (
-            <ActionCard key={receipt.id} title={receipt.audienceName} detail={receipt.purpose} icon={<ShieldCheck size={18} />} onClick={() => undefined} />
+            <ActionCard key={receipt.id} title={receipt.audienceName} detail={receipt.purpose} icon={<ShieldCheck size={18} />} />
           ))}
         </Section>
       ) : null}
