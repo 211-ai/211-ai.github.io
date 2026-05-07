@@ -197,6 +197,35 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+The WALLET-210 staging pilot path is the minimum end-to-end demonstration for a
+service partner. It must use synthetic or consented staging data, a durable
+wallet repository, encrypted blob storage, and the same `ipfs_datasets_py.wallet`
+API surfaces that production will use. Do not substitute browser-only mock state
+for the pilot evidence.
+
+| Pilot moment | 211-AI surface | Required wallet API evidence |
+| --- | --- | --- |
+| Add an intake document | Uploads UI, backed by `POST /wallets/{wallet_id}/documents` or `/documents/text` | `record/add` audit event and encrypted storage check for the document record. |
+| Add precise location | API or approved intake integration using `POST /wallets/{wallet_id}/locations` | `record/add` audit event for a `location` record; no precise coordinates in tickets or screenshots. |
+| Share partner access | Recipient-access UI plus `POST /wallets/{wallet_id}/records/{record_id}/grants` | Active grant receipt with purpose caveat, output-type caveat, expiration when used, and recipient key wrap. |
+| Prove location eligibility | Proof Center UI using `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | `location_region` receipt with `region_id`, `claim`, policy hash, verifier metadata, and no lat/lon/witness values in public inputs. |
+| Contribute analytics | Approved template and consent APIs | Active consent, contribution proof/nullifier, k-threshold policy, query-budget entry, and `analytics/contribute` audit event. |
+| Revoke access | `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` or approved access-request revoke | Revoked grant receipt, blocked post-revoke partner call, and `grant/revoke` audit event. |
+| Audit handoff | Audit UI and `GET /wallets/{wallet_id}/audit` | Timeline includes document, location, grant, invocation, proof, analytics, and revoke events. |
+
+Pilot partners should receive only derived or encrypted outputs unless a
+separate decrypt grant is approved. A `record/analyze` grant for the pilot
+should include a concrete purpose such as `partner_service_screening`, explicit
+`output_types`, and `user_presence_required=true` when the recipient UI issues
+invocation tokens.
+
+`location_distance` remains an API/backend readiness path until the target
+distance verifier evidence described in the verifier cutover packet is archived.
+The visible Proof Center should continue to demonstrate `location_region`
+eligibility unless the target environment has completed that extra approval.
+
 ## API Reference
 
 Run the API with:

@@ -124,6 +124,64 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Service Partner Pilot Drill
+
+Run this drill in target staging before the first service partner walkthrough
+and after changes to Uploads, Recipient Access, Proof Center, Analytics, or
+Audit screens. Use a synthetic participant and a synthetic partner DID unless a
+real pilot user has completed the approved consent process.
+
+Required setup:
+
+- Staging API is backed by `ipfs_datasets_py.wallet` with
+  `WALLET_AUTO_LOAD_REPOSITORY=true`, `WALLET_AUTO_PERSIST=true`, and durable
+  encrypted blob storage.
+- Proof mode and verifier evidence satisfy the WALLET-180 cutover packet for
+  the proof type shown in the UI.
+- At least one approved analytics template has consent copy, allowed fields,
+  nullifier policy, k-threshold, privacy budget, retention mapping, and reviewer
+  evidence in the target signoff packet.
+- The browser is launched with a wallet API URL, wallet ID, actor DID, and
+  owner/recipient key hex values from staging test credentials.
+
+Pilot sequence:
+
+1. Create or load the staging pilot wallet, then use the Uploads UI to add a
+   synthetic intake document. Confirm `/wallets/{wallet_id}/records` lists the
+   document and `/wallets/{wallet_id}/records/{record_id}/storage` reports
+   encrypted storage only.
+2. Add a synthetic precise location through the approved intake API or partner
+   integration. Do not place raw latitude or longitude in screenshots, tickets,
+   or partner-facing evidence.
+3. Create a `record/analyze` grant for the partner with a concrete purpose,
+   explicit output types, and user-presence requirements when the recipient UI
+   will issue invocation tokens.
+4. Open Recipient Access as the partner and run a redacted analysis action.
+   Confirm the partner sees only derived or redacted output and cannot see
+   direct identifiers unless a separate decrypt grant is approved.
+5. Open Proof Center as the owner, create a `location_region` proof receipt, and
+   confirm the visible public inputs contain region and policy data only.
+6. Create analytics consent from the approved template and submit only derived
+   or coarse contribution fields. If the walkthrough includes an aggregate
+   release, meet the template k-threshold with additional synthetic cohort
+   wallets before calling the count endpoint.
+7. Revoke the partner grant. Re-run the partner action and confirm the API
+   rejects it. Refresh Recipient Access and confirm the receipt is revoked.
+8. Open Audit and confirm the timeline includes `record/add`, `grant/create`,
+   `invocation/issue`, `invocation/verify`, `record/analyze_redacted`,
+   `proof/create`, `analytics/contribute`, and `grant/revoke`.
+
+Evidence to archive:
+
+- The completed target signoff packet ID.
+- The passing proof-readiness report used by the walkthrough.
+- The Playwright fullstack result for
+  `wallet_interface/ui/tests/fullstack-wallet.spec.ts`.
+- Redacted API responses for records, proofs, analytics contribution/count, grant
+  receipts, blocked post-revoke access, and audit events.
+- A reviewer note that no plaintext document values, precise coordinates, proof
+  witnesses, key material, or secret values appear in the archived evidence.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or
