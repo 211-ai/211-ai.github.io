@@ -1971,6 +1971,28 @@ def test_wallet_api_portal_saved_services_plans_and_interactions_round_trip() ->
     assert plan["steps"] == ["Call provider", "Gather bill", "Complete intake"]
 
     response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:worker",
+            "worker_recipient_id": "rec-worker-1",
+            "worker_name": "Case Worker Desk",
+            "scopes": ["service_summary", "checklist"],
+        },
+    )
+    assert response.status_code == 200
+    share = response.json()
+    assert share["grant_id"].startswith("grant-")
+    assert share["grant"]["abilities"] == ["service_plan/read"]
+    assert share["grant"]["resources"] == [f"wallet://{wallet['wallet_id']}/portal/plans/{plan['plan_id']}"]
+    assert share["grant"]["caveats"]["service_plan_scopes"] == ["service_summary", "checklist"]
+    assert "private_notes_record_id" not in share["grant"]["caveats"]["allowed_fields"]
+    assert share["receipt"]["grant_id"] == share["grant_id"]
+    assert share["interaction"]["interaction_type"] == "shared_service_plan"
+    assert share["interaction"]["related_grant_ids"] == [share["grant_id"]]
+    assert share["plan"]["assigned_worker_recipient_id"] == "rec-worker-1"
+
+    response = client.post(
         f"/wallets/{wallet['wallet_id']}/portal/interactions",
         json={
             "actor_did": "did:key:owner",
@@ -2045,6 +2067,8 @@ def test_wallet_api_portal_saved_services_plans_and_interactions_round_trip() ->
     assert "service/update" in actions
     assert "service_plan/create" in actions
     assert "service_plan/update" in actions
+    assert "service_plan/share" in actions
+    assert "grant/create" in actions
     assert "interaction/create" in actions
     assert "interaction/update" in actions
 

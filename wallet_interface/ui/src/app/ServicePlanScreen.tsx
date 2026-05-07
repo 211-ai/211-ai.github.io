@@ -1,8 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CalendarClock, ExternalLink, Plus, Save, Trash2 } from "lucide-react";
 import { Badge, Button, Field, Section, StatusBanner } from "../components/ui";
+import { ServicePlanSharingPanel } from "../components/services/ServicePlanSharingPanel";
 import { load211Documents, type CorpusDocument } from "../lib/graphrag";
-import type { SavedService, ServicePlan } from "../models/abby";
+import type { DisclosureRecipientDraft, SavedService, ServicePlan, WalletGrantReceipt } from "../models/abby";
 import {
   addTextDocument,
   createWalletServicePlan,
@@ -92,21 +93,27 @@ export function setLocationServicePlanHash(docId: string): void {
 export function ServicePlanScreen({
   apiConfig,
   docId,
+  grantReceipts,
   onBack,
   onOpenDetail,
+  recipients,
   refreshWalletPortalState,
   savedServices,
   servicePlans,
+  setGrantReceipts,
   setSavedServices,
   setServicePlans
 }: {
   apiConfig?: WalletApiConfig;
   docId: string;
+  grantReceipts?: WalletGrantReceipt[];
   onBack: () => void;
   onOpenDetail: (docId: string) => void;
+  recipients?: DisclosureRecipientDraft[];
   refreshWalletPortalState?: () => Promise<void>;
   savedServices: SavedService[];
   servicePlans: ServicePlan[];
+  setGrantReceipts?: (receipts: WalletGrantReceipt[]) => void;
   setSavedServices: (services: SavedService[]) => void;
   setServicePlans: (plans: ServicePlan[]) => void;
 }) {
@@ -534,6 +541,21 @@ export function ServicePlanScreen({
           </Button>
         </div>
       </form>
+
+      <ServicePlanSharingPanel
+        apiConfig={apiConfig}
+        grantReceipts={grantReceipts}
+        onShared={(result) => {
+          setServicePlans(upsertServicePlan(servicePlans, result.plan));
+          if (result.receipt && setGrantReceipts) {
+            setGrantReceipts([result.receipt, ...(grantReceipts || []).filter((item) => item.id !== result.receipt?.id)]);
+          }
+          setMessage({ tone: "success", text: "Worker grant created and logged." });
+          void refreshWalletPortalState?.().catch(() => undefined);
+        }}
+        plan={currentPlan}
+        recipients={recipients}
+      />
     </div>
   );
 }

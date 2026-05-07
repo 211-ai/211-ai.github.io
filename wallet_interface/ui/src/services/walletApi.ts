@@ -92,6 +92,16 @@ interface ServiceInteractionsApiResponse {
   interactions: ServiceInteractionEvent[];
 }
 
+interface ServicePlanShareGrantApiResponse {
+  grant_id: string;
+  plan_id: string;
+  interaction_id: string;
+  grant: RecordGrantResponse;
+  receipt?: GrantReceiptApiRecord;
+  plan: ServicePlan;
+  interaction: ServiceInteractionEvent;
+}
+
 interface ProofReceiptApiRecord {
   proof_id: string;
   proof_type: string;
@@ -362,6 +372,16 @@ export interface RecordGrantResponse {
   status?: string;
   created_at?: string;
   expires_at?: string | null;
+}
+
+export interface ServicePlanShareGrantResponse {
+  grantId: string;
+  planId: string;
+  interactionId: string;
+  grant: RecordGrantResponse;
+  receipt?: WalletGrantReceipt;
+  plan: ServicePlan;
+  interaction: ServiceInteractionEvent;
 }
 
 export interface ThresholdApprovalResponse {
@@ -715,6 +735,49 @@ export async function updateWalletServicePlan(
     related_interaction_ids: input.relatedInteractionIds,
     private_notes_record_id: input.privateNotesRecordId
   });
+}
+
+export async function createWalletServicePlanShareGrant(
+  config: WalletApiConfig,
+  planId: string,
+  input: {
+    audienceDid: string;
+    scopes: string[];
+    purpose?: string;
+    workerRecipientId?: string;
+    workerName?: string;
+    expiresAt?: string;
+    approvalId?: string;
+    audienceKeyHex?: string;
+    caveats?: Record<string, unknown>;
+  }
+): Promise<ServicePlanShareGrantResponse> {
+  const url = new URL(
+    `/wallets/${config.walletId}/portal/plans/${planId}/share-grants`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const data = await postJson<ServicePlanShareGrantApiResponse>(url, "Service plan share grant", {
+    actor_did: requiredActorDid(config),
+    audience_did: input.audienceDid,
+    audience_key_hex: input.audienceKeyHex || undefined,
+    caveats: input.caveats || {},
+    expires_at: input.expiresAt || undefined,
+    issuer_key_hex: config.issuerKeyHex,
+    approval_id: input.approvalId || undefined,
+    purpose: input.purpose || "service_plan_collaboration",
+    scopes: input.scopes,
+    worker_name: input.workerName || "",
+    worker_recipient_id: input.workerRecipientId || ""
+  });
+  return {
+    grantId: data.grant_id,
+    planId: data.plan_id,
+    interactionId: data.interaction_id,
+    grant: data.grant,
+    receipt: data.receipt ? toGrantReceiptView(data.receipt) : undefined,
+    plan: data.plan,
+    interaction: data.interaction
+  };
 }
 
 export async function listWalletServiceInteractions(

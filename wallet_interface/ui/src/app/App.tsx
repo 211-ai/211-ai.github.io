@@ -720,15 +720,18 @@ export function App() {
           <ServicePlanScreen
             apiConfig={walletApiConfig}
             docId={servicePlanDocId}
+            grantReceipts={grantReceipts}
             onBack={() => navigate("social-services")}
             onOpenDetail={(nextDocId) => {
               setLocationServiceDetailHash(nextDocId);
               setServicePlanDocId(null);
               setServiceDetailDocId(nextDocId);
             }}
+            recipients={recipients}
             refreshWalletPortalState={refreshWalletPortalState}
             savedServices={savedServices}
             servicePlans={servicePlans}
+            setGrantReceipts={setGrantReceipts}
             setSavedServices={setSavedServices}
             setServicePlans={setServicePlans}
           />
