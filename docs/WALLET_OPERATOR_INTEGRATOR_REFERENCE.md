@@ -197,6 +197,58 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## WALLET-210 211 Service Partner Pilot Readiness
+
+The partner pilot is a staging demonstration of the complete wallet workflow
+through 211-AI UI/API surfaces backed by `ipfs_datasets_py.wallet`. It is not a
+new authorization layer. The API remains the source of truth for encryption,
+UCAN caveats, proof receipts, analytics policy, revocation, and audit events.
+
+Pilot participant roles:
+
+| Role | DID / key use | Allowed surface |
+| --- | --- | --- |
+| Wallet owner | Owner/controller DID and owner key | Uploads, Proof Center, Analytics, Recipient Access, Audit |
+| Service partner | Partner DID and recipient key | Approved grant receipts, delegated analysis, encrypted bundles |
+| 211 analytics reviewer | Reviewer/service DID | Approved template registration and aggregate release checks |
+| Operator | Ops DID or secured admin channel | Staging health, evidence capture, incident stop/go |
+
+Pilot API/UI sequence:
+
+1. Create a staging wallet with `POST /wallets`, then add the user's document
+   through the Uploads screen or `POST /wallets/{wallet_id}/documents/text`.
+2. Add precise location with `POST /wallets/{wallet_id}/locations`. Precise
+   coordinates stay encrypted; UI evidence should show only record IDs, coarse
+   claims, or proof public inputs.
+3. Create a partner access request with
+   `POST /wallets/{wallet_id}/access-requests` using a purpose such as
+   `housing_navigation`, then approve it from the Recipient Access screen. The
+   resulting grant receipt must show `record/analyze`, the partner DID, the
+   purpose caveat, and active status.
+4. Use the Proof Center to create a `location_region` proof for the staged
+   location record. The visible public inputs are `region_id`, `claim`, and
+   `region_policy_hash`; precise latitude, longitude, witness values, verifier
+   credentials, and secrets must not appear in UI, API responses, logs, or
+   evidence.
+5. Register an approved analytics template with `/analytics/templates`, collect
+   owner consent from the Analytics screen, and submit only approved derived or
+   coarse fields through `/wallets/{wallet_id}/analytics/contributions`.
+6. Revoke the partner request from Recipient Access or call
+   `POST /wallets/{wallet_id}/access-requests/{request_id}/revoke`. Confirm the
+   grant receipt status becomes `revoked` and any later grant/invocation use
+   fails.
+7. Open the Audit screen and verify the workflow includes `record/add`,
+   `access/approve`, `grant/create`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `access/revoke`, and
+   `grant/revoke`.
+
+Pilot evidence should include screenshots or captured outputs for each surface,
+the exact staging build IDs, the verifier mode, the approved analytics template
+ID, the partner DID, receipt hashes, proof IDs, grant IDs, revocation status, and
+audit event IDs. Do not include plaintext document content, exact coordinates,
+proof witnesses, key material, bearer tokens, resolved secrets, or secret-manager
+values.
+
 ## API Reference
 
 Run the API with:

@@ -20,6 +20,27 @@ type WalletGrant = {
   grant_id: string;
 };
 
+type WalletRecordListResponse = {
+  records: WalletRecord[];
+};
+
+type WalletGrantReceipt = {
+  abilities: string[];
+  audience_did: string;
+  caveats?: Record<string, unknown>;
+  grant_id: string;
+  purpose: string | null;
+  status: "active" | "revoked";
+};
+
+type WalletGrantReceiptsResponse = {
+  receipts: WalletGrantReceipt[];
+};
+
+type WalletAuditResponse = {
+  events: Array<{ action: string; grant_id?: string | null; resource?: string }>;
+};
+
 type PageDiagnostics = {
   apiErrors: string[];
   browserErrors: string[];
@@ -202,6 +223,45 @@ async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics
         `${error instanceof Error ? error.message : String(error)}\nURL: ${page.url()}\nBody: ${body.slice(0, 2_000)}`
       );
     });
+}
+
+async function waitForWalletRecord(baseUrl: string, walletId: string, dataType: string): Promise<WalletRecord> {
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    const records = await apiJson<WalletRecordListResponse>(
+      baseUrl,
+      "GET",
+      `/wallets/${walletId}/records?data_type=${encodeURIComponent(dataType)}`
+    );
+    if (records.records.length) return records.records[0];
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${dataType} wallet record`);
+}
+
+async function waitForGrantReceipt(
+  baseUrl: string,
+  walletId: string,
+  audienceDid: string,
+  status: "active" | "revoked"
+): Promise<WalletGrantReceipt> {
+  const deadline = Date.now() + 15_000;
+  while (Date.now() < deadline) {
+    const receipts = await apiJson<WalletGrantReceiptsResponse>(
+      baseUrl,
+      "GET",
+      `/wallets/${walletId}/grant-receipts?audience_did=${encodeURIComponent(audienceDid)}&status=${status}`
+    );
+    const receipt = receipts.receipts.find((item) => item.status === status);
+    if (receipt) return receipt;
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${status} grant receipt for ${audienceDid}`);
+}
+
+async function auditActions(baseUrl: string, walletId: string): Promise<string[]> {
+  const audit = await apiJson<WalletAuditResponse>(baseUrl, "GET", `/wallets/${walletId}/audit`);
+  return audit.events.map((event) => event.action);
 }
 
 test("export center works against a live wallet API", async ({ page }) => {
@@ -397,6 +457,167 @@ test("recipient access runs live redacted analysis workflows", async ({ page }) 
           "invocation/verify"
         ])
       );
+  } finally {
+    await stopWalletApi(api);
+  }
+});
+
+test("211 service partner pilot readiness workflow spans live UI and API", async ({ page }) => {
+  const api = await startWalletApi();
+  const ownerDid = "did:key:pilot-owner";
+  const ownerKeyHex = "55".repeat(32);
+  const partnerDid = "did:key:partner-navigation-clinic";
+  const partnerKeyHex = "66".repeat(32);
+  const exactLat = 45.515232;
+  const exactLon = -122.678385;
+  const pilotDocumentText = [
+    "Pilot intake note for housing navigation.",
+    "Email jane.pilot@example.org should not leave the wallet.",
+    "The resident needs rent support, SNAP screening, and clinic follow-up."
+  ].join("\n");
+
+  try {
+    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
+    const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
+    const location = await apiJson<WalletRecord>(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/locations`, {
+      actor_did: ownerDid,
+      lat: exactLat,
+      lon: exactLon
+    });
+    await apiJson(api.baseUrl, "POST", "/analytics/templates", {
+      allowed_derived_fields: ["county", "need_category"],
+      allowed_record_types: ["location", "need"],
+      created_by: "did:key:211-analytics-reviewer",
+      epsilon_budget: 0.5,
+      min_cohort_size: 1,
+      purpose: "Approved 211 partner pilot planning",
+      status: "approved",
+      template_id: "pilot_housing_gap_v1",
+      title: "Pilot housing service gaps"
+    });
+
+    await page.goto(
+      walletRoute("uploads", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await signInIfNeeded(page, ownerDid);
+    await visibleHeadingOrDiagnostics(page, /Saved files and info/i, diagnostics);
+    await page.getByLabel(/Choose file to upload/i).setInputFiles({
+      buffer: Buffer.from(pilotDocumentText),
+      mimeType: "text/plain",
+      name: "pilot-intake.txt"
+    });
+    const document = await waitForWalletRecord(api.baseUrl, wallet.wallet_id, "document");
+    await expect(page.getByText(document.record_id.replace(/^rec-/, "Record "))).toBeVisible({ timeout: 15_000 });
+
+    await apiJson(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/access-requests`, {
+      ability: "record/analyze",
+      audience_did: partnerDid,
+      purpose: "housing_navigation",
+      record_id: document.record_id,
+      requester_did: partnerDid
+    });
+    await page.goto(
+      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, ownerDid, {
+        audienceKeyHex: partnerKeyHex,
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
+    await page.getByLabel(/Confirm I recognize this helper/i).check();
+    const partnerRequest = page.locator("article.access-request-item").filter({ hasText: "Partner Navigation Clinic" });
+    await expect(partnerRequest).toBeVisible({ timeout: 15_000 });
+    await partnerRequest.getByRole("button", { name: /Approve/i }).click();
+    const activeReceipt = await waitForGrantReceipt(api.baseUrl, wallet.wallet_id, partnerDid, "active");
+    expect(activeReceipt.abilities).toContain("record/analyze");
+    expect(activeReceipt.purpose).toBe("housing_navigation");
+    expect(activeReceipt.caveats?.purpose).toBe("housing_navigation");
+    const sharedReceipt = page.locator("article.recipient-list-item").filter({ hasText: "Partner Navigation Clinic" });
+    await expect(sharedReceipt).toContainText("active", { timeout: 15_000 });
+
+    await page.goto(
+      walletRoute("proof-center", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
+    await page.getByLabel(/Location record ID/i).fill(location.record_id);
+    await page.getByLabel(/Region ID/i).fill("multnomah_county");
+    await page.getByRole("button", { name: /Create proof/i }).click();
+    await expect(page.getByText(/Proof receipt created/i)).toBeVisible({ timeout: 15_000 });
+    const proofCard = page.locator("article.proof-card").filter({ hasText: "location_in_region" });
+    await expect(proofCard).toContainText("multnomah_county");
+    const proofText = await proofCard.innerText();
+    expect(proofText).not.toContain(String(exactLat));
+    expect(proofText).not.toContain(String(exactLon));
+    expect(proofText.toLowerCase()).not.toContain("witness");
+
+    await page.goto(
+      walletRoute("analytics", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Share group facts, not your name/i, diagnostics);
+    const analyticsCard = page.locator("article.analytics-card").filter({ hasText: "Pilot housing service gaps" });
+    await expect(analyticsCard).toBeVisible({ timeout: 15_000 });
+    await analyticsCard.getByLabel(/Allow this choice/i).check();
+    await expect(analyticsCard.getByText(/Analytics choice saved/i)).toBeVisible({ timeout: 15_000 });
+    await analyticsCard.getByLabel(/County/i).fill("Multnomah");
+    await analyticsCard.getByLabel(/Need category/i).fill("housing");
+    await analyticsCard.getByRole("button", { name: /Contribute safe facts/i }).click();
+    await expect(analyticsCard.getByText(/Analytics contribution recorded/i)).toBeVisible({ timeout: 15_000 });
+    const aggregate = await apiJson<{ released: boolean; count: number | null; suppressed: boolean }>(
+      api.baseUrl,
+      "POST",
+      "/analytics/pilot_housing_gap_v1/count",
+      { epsilon: 0.25, min_cohort_size: 1 }
+    );
+    expect(aggregate.released).toBe(true);
+    expect(aggregate.suppressed).toBe(false);
+    expect(aggregate.count).toBeNull();
+
+    await page.goto(
+      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, ownerDid, {
+        audienceKeyHex: partnerKeyHex,
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
+    await page.locator("article.access-request-item").filter({ hasText: "Partner Navigation Clinic" })
+      .getByRole("button", { name: /Revoke/i })
+      .click();
+    const revokedReceipt = await waitForGrantReceipt(api.baseUrl, wallet.wallet_id, partnerDid, "revoked");
+    expect(revokedReceipt.grant_id).toBe(activeReceipt.grant_id);
+    await expect(page.locator("article.recipient-list-item").filter({ hasText: "Partner Navigation Clinic" }))
+      .toContainText("revoked", { timeout: 15_000 });
+
+    await page.goto(
+      walletRoute("audit", api.baseUrl, wallet.wallet_id, ownerDid, {
+        issuerKeyHex: ownerKeyHex
+      })
+    );
+    await visibleHeadingOrDiagnostics(page, /Consent and access history/i, diagnostics);
+    await expect.poll(() => auditActions(api.baseUrl, wallet.wallet_id)).toEqual(
+      expect.arrayContaining([
+        "record/add",
+        "access/approve",
+        "grant/create",
+        "proof/create",
+        "analytics/consent_create",
+        "analytics/contribute",
+        "analytics/query",
+        "access/revoke",
+        "grant/revoke"
+      ])
+    );
+    await expect(page.getByText("proof/create")).toBeVisible();
+    await expect(page.getByText("analytics/contribute")).toBeVisible();
+    await expect(page.getByText("grant/revoke")).toBeVisible();
+    const auditBody = await page.locator("body").innerText();
+    expect(auditBody).not.toContain(String(exactLat));
+    expect(auditBody).not.toContain(String(exactLon));
+    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
   } finally {
     await stopWalletApi(api);
   }

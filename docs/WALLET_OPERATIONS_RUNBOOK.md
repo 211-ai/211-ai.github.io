@@ -398,6 +398,71 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 Service Partner Pilot Drill
+
+Run this drill in staging before inviting a 211 service partner into the pilot.
+Use synthetic data unless the environment has completed target-production
+signoff and user consent for live pilot data. The drill proves the UI and API can
+show the complete partner workflow while the wallet core enforces privacy and
+authorization.
+
+Required setup:
+
+- WALLET-170, WALLET-180, WALLET-190, and WALLET-200 evidence has been archived
+  for the same staging environment or an explicit exception is recorded.
+- The staging API is started with durable repository/storage settings,
+  `WALLET_AUTO_LOAD_REPOSITORY=true`, `WALLET_AUTO_PERSIST=true`, configured CORS
+  for the UI origin, and the intended proof mode.
+- The partner DID, reviewer DID, owner DID, and key references are recorded in
+  the evidence ticket. Do not record private keys or resolved secret values.
+- At least one approved analytics template is registered with allowed derived
+  fields, k-threshold, epsilon budget, reviewer role, and retention mapping.
+
+Pilot sequence:
+
+1. Create a wallet and upload a document from the Uploads screen. Confirm
+   `GET /wallets/{wallet_id}/records?data_type=document` returns the new record
+   and that the UI shows stored/saved status without plaintext leakage.
+2. Add a wallet location through `POST /wallets/{wallet_id}/locations`. Capture
+   only the location record ID and storage/audit status. Exact latitude and
+   longitude must not appear in evidence after this step.
+3. Create a partner access request and approve it from Recipient Access. Confirm
+   the grant receipt is active, has the partner DID, includes only the intended
+   ability such as `record/analyze`, and carries the agreed purpose caveat.
+4. Create a location-region proof in Proof Center. Confirm the UI and
+   `/wallets/{wallet_id}/proofs` expose only public inputs such as `region_id`,
+   `claim`, and policy hash. If any precise coordinate, witness value, verifier
+   secret, or credential appears, stop the pilot and open a privacy incident.
+5. From Analytics, create consent for the approved template and submit derived
+   fields such as county and need category. Confirm
+   `/wallets/{wallet_id}/analytics/contributions` returns a proof-backed
+   contribution and that aggregate release endpoints remain template-bound.
+6. Revoke the partner request or grant. Confirm `grant-receipts?status=revoked`
+   includes the grant ID and that later partner invocations are rejected.
+7. Open Audit and export the audit timeline. Required actions are `record/add`,
+   `access/approve`, `grant/create`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `access/revoke`, and
+   `grant/revoke`. Include `analytics/query` when the pilot also runs an
+   aggregate release.
+8. Run validation:
+
+   ```bash
+   pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+   npm --prefix wallet_interface/ui run build
+   npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+   ```
+
+Pass criteria:
+
+- User-facing UI can demonstrate document upload, location-backed proof,
+  purpose-bound partner access, approved analytics contribution, revocation, and
+  audit without direct access to wallet internals.
+- API evidence is backed by `ipfs_datasets_py.wallet` records, grant receipts,
+  proof receipts, analytics contribution proofs, and hash-linked audit events.
+- Evidence contains IDs, hashes, statuses, public proof inputs, and release
+  decisions only. Plaintext documents, exact coordinates, proof witnesses, key
+  material, tokens, and secret values are not present.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

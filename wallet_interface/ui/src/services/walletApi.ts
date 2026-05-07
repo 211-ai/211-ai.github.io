@@ -201,6 +201,16 @@ interface AnalyticsConsentApiRecord {
   status: "active" | "revoked" | string;
 }
 
+interface AnalyticsContributionApiRecord {
+  contribution_id: string;
+  template_id: string;
+  consent_id: string;
+  nullifier: string;
+  fields: Record<string, unknown>;
+  proof_id: string;
+  created_at: string;
+}
+
 interface AnalyticsConsentsApiResponse {
   consents: AnalyticsConsentApiRecord[];
 }
@@ -250,6 +260,15 @@ export interface WalletAnalyticsConsent {
   createdAt: string;
   expiresAt?: string;
   expiresAtRaw?: string;
+}
+
+export interface WalletAnalyticsContribution {
+  id: string;
+  templateId: string;
+  consentId: string;
+  fields: Record<string, unknown>;
+  proofId: string;
+  createdAt: string;
 }
 
 interface DerivedArtifactApiResponse {
@@ -535,6 +554,28 @@ export async function revokeWalletAnalyticsConsent(
     actor_did: requiredActorDid(config)
   });
   return toWalletAnalyticsConsentView(consent);
+}
+
+export async function createWalletAnalyticsContribution(
+  config: WalletApiConfig,
+  {
+    consentId,
+    fields,
+    templateId
+  }: {
+    consentId: string;
+    fields: Record<string, unknown>;
+    templateId: string;
+  }
+): Promise<WalletAnalyticsContribution> {
+  const url = new URL(`/wallets/${config.walletId}/analytics/contributions`, normalizedBaseUrl(config.apiBaseUrl));
+  const contribution = await postJson<AnalyticsContributionApiRecord>(url, "Analytics contribution", {
+    actor_did: requiredActorDid(config),
+    consent_id: consentId,
+    fields,
+    template_id: templateId
+  });
+  return toWalletAnalyticsContributionView(contribution);
 }
 
 export async function createLocationRegionProof(
@@ -1894,6 +1935,17 @@ function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): Walle
     createdAt: formatTimestamp(consent.created_at),
     expiresAt: consent.expires_at ? formatTimestamp(consent.expires_at) : undefined,
     expiresAtRaw: consent.expires_at ?? undefined
+  };
+}
+
+function toWalletAnalyticsContributionView(contribution: AnalyticsContributionApiRecord): WalletAnalyticsContribution {
+  return {
+    id: contribution.contribution_id,
+    templateId: contribution.template_id,
+    consentId: contribution.consent_id,
+    fields: contribution.fields,
+    proofId: contribution.proof_id,
+    createdAt: formatTimestamp(contribution.created_at)
   };
 }
 
