@@ -1,0 +1,130 @@
+{
+  "environment": {
+    "environment_name": "replace-with-environment-name",
+    "deployment_owner": "replace-with-team-or-owner",
+    "review_date": "YYYY-MM-DD",
+    "wallet_api_origin": "https://wallet-api.example.com",
+    "wallet_ui_origin": "https://wallet.example.com",
+    "repository_configuration_id": "replace-with-repository-config-id",
+    "encrypted_storage_configuration_id": "replace-with-storage-config-id",
+    "proof_backend": "http-location-region",
+    "proof_verifier_service": "replace-with-private-service-name-or-url",
+    "proof_verifier_id": "replace-with-verifier-id",
+    "proof_system": "groth16",
+    "retention_policy_version": "docs/WALLET_RETENTION_POLICY.md@2026-05-05"
+  },
+  "secret_manager_refs": {
+    "ops_health_secret": "replace-with-secret-manager-path",
+    "alert_credentials": "replace-with-secret-manager-path",
+    "proof_verifier_credentials": "replace-with-secret-manager-path",
+    "storage_credentials": "replace-with-secret-manager-path"
+  },
+  "artifact_refs": {
+    "release_check_evidence": "replace-with-artifact-id",
+    "readiness_report": "replace-with-artifact-id",
+    "ops_health_report": "replace-with-artifact-id",
+    "proof_contract_report": "replace-with-artifact-id",
+    "distance_proof_contract_report": "replace-with-artifact-id"
+  },
+  "retention_mapping": {
+    "policy_version": "replace-with-approved-policy-version",
+    "repository_lifecycle": "replace-with-repository-lifecycle-rule",
+    "encrypted_storage_lifecycle": "replace-with-storage-lifecycle-rule",
+    "backup_purge_sla": "replace-with-backup-purge-sla",
+    "ipfs_pinning": "replace-with-ipfs-pinning-retention-control",
+    "filecoin_deal_expiration": "replace-with-filecoin-deal-control-or-not-used",
+    "s3_lifecycle": "replace-with-s3-lifecycle-policy-id-and-rule-summary",
+    "log_retention": "replace-with-log-retention-rule",
+    "alert_retention": "replace-with-alert-retention-rule",
+    "deletion_tombstone_retention": "replace-with-tombstone-retention-rule"
+  },
+  "reviewer_signoff": {
+    "security": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    },
+    "privacy": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    },
+    "legal_policy": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    },
+    "accessibility_usability": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    },
+    "operations_on_call": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    },
+    "product_owner": {
+      "reviewer": "replace-with-reviewer",
+      "decision": "approved",
+      "date": "YYYY-MM-DD",
+      "evidence": "replace-with-evidence-id"
+    }
+  },
+  "analytics_privacy_review": {
+    "no_live_analytics_templates": false,
+    "approved_templates": [
+      {
+        "template_id": "replace-with-template-id",
+        "reviewer": "replace-with-reviewer",
+        "review_date": "YYYY-MM-DD",
+        "consent_copy_artifact": "replace-with-approved-consent-copy-artifact-id",
+        "allowed_record_types": ["replace-with-record-type"],
+        "allowed_derived_fields": ["replace-with-derived-field"],
+        "min_cohort_size": 10,
+        "k_threshold": 10,
+        "allowed_dimensions": ["replace-with-dimension"],
+        "proof_statements": [
+          {
+            "proof_type": "analytics_contribution",
+            "statement": "replace-with-public-proof-statement",
+            "verifier_or_mode": "replace-with-verifier-or-mode"
+          }
+        ],
+        "nullifier_policy": "replace-with-nullifier-scope-duplicate-rejection-and-retention-policy",
+        "privacy_budget": {
+          "epsilon_budget": 1.0,
+          "per_query_epsilon": 0.25,
+          "sensitivity": 1.0,
+          "budget_key": "replace-with-budget-ledger-key",
+          "budget_limit": 1.0,
+          "budget_exhaustion_behavior": "replace-with-budget-exhaustion-behavior"
+        },
+        "retention_mapping": {
+          "template_definition": "replace-with-template-definition-retention-control",
+          "consent_copy": "replace-with-consent-copy-retention-control",
+          "consents_withdrawals": "replace-with-consent-withdrawal-retention-control",
+          "contributions": "replace-with-contribution-retention-control",
+          "nullifiers": "replace-with-nullifier-retention-control",
+          "query_budget_ledger": "replace-with-budget-ledger-retention-control",
+          "released_aggregates": "replace-with-released-aggregate-retention-control",
+          "audit_events": "replace-with-audit-event-retention-control"
+        },
+        "retention_decision": "replace-with-retention-decision",
+        "withdrawal_behavior": "replace-with-withdrawal-behavior"
+      }
+    ]
+  },
+  "launch_decision": {
+    "decision": "approved",
+    "approved_launch_window": "replace-with-launch-window",
+    "required_exceptions": [],
+    "first_post_launch_readiness_run": "replace-with-timestamp",
+    "first_post_launch_retention_audit": "replace-with-date"
+  }
+}
