@@ -398,6 +398,83 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 211 Service Partner Pilot Drill
+
+Run this drill in staging before any 211 service partner pilot and after changes
+to wallet UI routes, wallet API routes, service-directory loading, verifier
+configuration, analytics templates, grant caveats, or revocation behavior. Use
+synthetic data and synthetic DIDs only. Archive status evidence, record IDs,
+grant IDs, proof IDs, aggregate result IDs, bundle hashes if used, and audit
+event IDs. Do not archive plaintext documents, person-name strings, contact
+details, precise coordinates, proof witnesses, wallet keys, bearer tokens,
+secret values, or verifier credentials.
+
+Required setup:
+
+- Staging API is backed by `ipfs_datasets_py.wallet` with durable
+  `WALLET_REPOSITORY_ROOT`, encrypted `WALLET_STORAGE_CONFIG`, and
+  `WALLET_SERVICES_JSONL` for the pilot service region.
+- The UI is opened with `walletApiBaseUrl`, `walletId`, `actorDid`, and key
+  parameters for the synthetic owner or partner persona under test.
+- WALLET-170 sharing, WALLET-180 verifier, WALLET-190 retention/deletion, and
+  WALLET-200 analytics governance evidence are archived or explicitly marked as
+  pilot blockers.
+- The analytics template used by the drill is approved in the target signoff
+  packet or is a synthetic template whose fields and consent copy match the
+  approved template shape.
+
+Drill sequence:
+
+1. Create a wallet and add a document from `/#/uploads`. Confirm
+   `GET /wallets/{wallet_id}/records?data_type=document` returns the new
+   document record and `GET /wallets/{wallet_id}/records/{record_id}/storage`
+   reports encrypted storage only.
+2. Add a location with `POST /wallets/{wallet_id}/locations`. Record the
+   location record ID only. Keep exact coordinates out of screenshots, tickets,
+   terminal logs, and evidence packets after creation.
+3. Create a partner grant on the document with a concrete partner DID, explicit
+   purpose, `record/analyze`, `redacted_derived_only`, and user-presence caveats
+   when the workflow requires them. Open `/#/recipient-access` as the partner
+   and confirm the active receipt is visible.
+4. Issue a partner invocation and run the redacted analysis endpoint. Pass
+   criteria: derived facts are returned, and the response excludes document
+   plaintext, names, email addresses, phone numbers, SSNs, and unapproved output
+   types.
+5. Create a coarse-location grant and invocation for the navigator partner, then
+   call `POST /wallets/{wallet_id}/services/match`. Pass criteria: the response
+   ranks expected pilot services using coarse city/state/zip or need reasons,
+   and exact latitude/longitude strings are absent from the response.
+6. Open `/#/proof-center`, create a `location_region` proof, and capture the
+   proof receipt public inputs. Pass criteria: public inputs contain the region
+   claim, verifier metadata, and policy hash, with no `lat`, `lon`, target
+   coordinate, witness, or credential values.
+7. Create consent from the approved analytics template and submit a contribution
+   with only approved derived/coarse fields. Run the approved aggregate endpoint
+   if the pilot needs a released count. Pass criteria: k-threshold, privacy
+   budget, nullifier, and consent controls are reflected in API output and audit
+   events.
+8. Revoke every partner grant created during the drill. Re-run at least one
+   previously valid invocation and confirm it fails. Open `/#/recipient-access`
+   as the partner and confirm the receipt status is revoked.
+9. Open `/#/audit` as the owner and confirm the timeline contains the full
+   workflow: `record/add`, `grant/create`, `invocation/issue`,
+   `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`,
+   `proof/create`, `analytics/consent_create`, `analytics/contribute`, optional
+   `analytics/query`, and `grant/revoke`.
+
+Repository validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Block the pilot if any validation fails, if a UI/API response exposes precise
+coordinates or plaintext beyond the user's selected document-upload control, if
+revoked grants still authorize invocations, or if the audit timeline cannot
+reconstruct the workflow from wallet-backed events.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

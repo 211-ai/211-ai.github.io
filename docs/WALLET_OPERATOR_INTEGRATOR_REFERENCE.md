@@ -351,6 +351,79 @@ Audit events are append-only hash-linked records. They should be exported for
 incident response and retained according to the deployment retention policy in
 `docs/WALLET_RETENTION_POLICY.md`.
 
+## 211 Service Partner Pilot Reference
+
+WALLET-210 pilot staging uses the browser UI for user-visible document upload,
+recipient access review, proof-center review, analytics choice review, and audit
+review. Location capture, partner grants, service matching, analytics
+contribution, and revocation use the public wallet API endpoints above. All
+wallet records, grants, proofs, analytics ledgers, and audit events remain
+backed by `ipfs_datasets_py.wallet`; the UI must not create local-only pilot
+state for these checks.
+
+Minimum pilot setup:
+
+- Start the API with durable staging `WALLET_REPOSITORY_ROOT`,
+  `WALLET_STORAGE_CONFIG`, `WALLET_AUTO_LOAD_REPOSITORY=true`,
+  `WALLET_AUTO_PERSIST=true`, and `WALLET_SERVICES_JSONL` pointing at the 211
+  service directory for the pilot region.
+- Use development proof mode only for synthetic local rehearsals. Target
+  staging that represents launch readiness must have the WALLET-180 verifier
+  cutover packet archived before exposing live proof creation.
+- Use an approved analytics template from the WALLET-200 governance packet.
+  The template fields for the pilot must be coarse or derived fields such as
+  `county` and `need_category`, not direct identifiers, plaintext document
+  fields, precise coordinates, or free-form raw query fields.
+
+Pilot demonstration sequence:
+
+1. Open `/#/uploads` with `walletApiBaseUrl`, `walletId`, `actorDid`, and
+   `issuerKeyHex` query parameters. Upload a synthetic intake document and
+   confirm `GET /wallets/{wallet_id}/records?data_type=document` lists the new
+   encrypted document record.
+2. Add a synthetic location with `POST /wallets/{wallet_id}/locations`. Treat
+   this as private witness data; do not show or archive the precise coordinates
+   after creation.
+3. Create a purpose-bound partner grant with
+   `POST /wallets/{wallet_id}/records/{record_id}/grants`, using
+   `abilities=["record/analyze"]`, an explicit partner audience DID,
+   `purpose`, and output types such as `redacted_derived_only`. The recipient
+   UI at `/#/recipient-access` must show an active shared receipt for the
+   partner.
+4. Issue and verify a partner invocation, run redacted analysis, and confirm the
+   response excludes person-name strings, email addresses, phone numbers, SSNs,
+   plaintext document text, and unapproved output types.
+5. Create a coarse-location grant and invocation, then call
+   `POST /wallets/{wallet_id}/services/match` for the partner navigator. The
+   service-match response may contain coarse city/state/zip reasons and service
+   IDs, but must not contain exact latitude or longitude values.
+6. Open `/#/proof-center`, create a `location_region` proof for the location
+   record, and confirm the visible public inputs include the region claim and
+   policy hash without `lat`, `lon`, target coordinates, or witness values.
+7. Create consent from the approved analytics template and submit one
+   contribution through
+   `POST /wallets/{wallet_id}/analytics/contributions` using only approved
+   derived/coarse fields. If the pilot releases an aggregate, use the approved
+   `/analytics/{template_id}/count` or `/count-by-fields` endpoint with the
+   configured k-threshold and privacy budget.
+8. Revoke partner grants with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`. Re-run a previously
+   valid invocation and confirm it fails. The recipient-access UI must show the
+   receipt as revoked.
+9. Open `/#/audit` and confirm the timeline includes `record/add`,
+   `grant/create`, `invocation/issue`, `invocation/verify`,
+   `record/analyze_redacted`, `location/read_coarse`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, optional
+   `analytics/query`, and `grant/revoke`.
+
+Repository validation for this sequence is:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
 ## CLI Reference
 
 The local CLI persists snapshots under `~/.ipfs_datasets/wallet/manifests` and
