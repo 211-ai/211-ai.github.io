@@ -197,6 +197,35 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Workflow
+
+The WALLET-210 staging pilot is the minimum integrated demonstration for a 211
+partner handoff. Run it only in staging with synthetic users and partner DIDs
+until the target signoff packet is approved.
+
+| Step | UI/API surface | Required evidence |
+| --- | --- | --- |
+| Add a document | Uploads screen or `POST /wallets/{wallet_id}/documents/text` / `POST /wallets/{wallet_id}/documents` | A `document` record exists, encrypted storage verifies, and audit includes `record/add`. |
+| Add location | `POST /wallets/{wallet_id}/locations` | A `location` record exists; evidence never prints precise latitude/longitude outside the request fixture. |
+| Share with partner | `POST /wallets/{wallet_id}/records/{record_id}/grants` and Recipient access screen | Grant receipt shows partner DID, active status, purpose such as `partner_service_screening`, and output caveat such as `redacted_derived_only`. |
+| Partner uses access | Recipient access screen redacted analysis | Derived output is encrypted/redacted and excludes names, contact data, SSNs, precise location, and plaintext document body unless decrypt was explicitly granted. |
+| Prove eligibility | Proof Center or `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | `location_region` receipt exposes only public inputs such as `claim`, `region_id`, and policy hash; no `lat`, `lon`, witness, or target coordinates appear. |
+| Contribute analytics | Analytics screen backed by `/analytics/templates`, `/analytics/consents/from-template`, and `/analytics/contributions` | Template is approved, consent is active, fields are allowed derived/coarse fields, contribution proof has a nullifier, and aggregate release respects k-threshold and budget policy. |
+| Revoke partner access | `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` or approved recipient-access workflow | Grant and receipt are revoked, post-revocation invocations fail, and audit includes `grant/revoke`. |
+| Audit workflow | Audit screen and `GET /wallets/{wallet_id}/audit` | Timeline includes document `record/add`, location `record/add`, grant create/use, proof create, analytics contribute, revoke, and blocked post-revoke attempts where applicable. |
+
+Pilot data handling:
+
+- Use synthetic documents, coordinates, partner DIDs, keys, and analytics
+  fields. Do not use real client records in readiness rehearsals.
+- Archive receipt IDs, grant IDs, record IDs, proof IDs, bundle hashes,
+  contribution IDs, aggregate result IDs, and audit event IDs. Do not archive
+  private document text, precise coordinates, proof witnesses, key material, or
+  secret values.
+- The browser pilot path is covered by
+  `wallet_interface/ui/tests/fullstack-wallet.spec.ts`; backend public API
+  coverage is covered by `tests/test_wallet_third_party_blackbox.py`.
+
 ## API Reference
 
 Run the API with:

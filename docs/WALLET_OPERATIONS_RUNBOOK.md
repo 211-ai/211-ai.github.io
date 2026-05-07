@@ -124,6 +124,82 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Partner Pilot Drill
+
+Run this drill before inviting a 211 service partner into staging and after any
+UI/API change to uploads, recipient access, proof center, analytics, revocation,
+or audit. Use synthetic data only.
+
+Prerequisites:
+
+- WALLET-170 third-party blackbox evidence is passing for public API sharing,
+  proof, export, revocation, and audit.
+- WALLET-180 verifier cutover evidence is archived for the proof backend that
+  will be shown in staging. If distance proofs are not approved, keep the
+  browser Proof Center limited to `location_region`.
+- WALLET-190 retention/deletion dry-run evidence is archived for the staging
+  repository and encrypted blob stores.
+- WALLET-200 analytics governance evidence names the approved template,
+  allowed fields, consent copy, nullifier policy, k-threshold, privacy budget,
+  retention mapping, and reviewers.
+
+Drill sequence:
+
+1. Create a synthetic wallet and open the Uploads screen with
+   `walletApiBaseUrl`, `walletId`, `actorDid`, and `issuerKeyHex` query
+   parameters. Upload a synthetic document, then confirm the UI lists the new
+   document record and `GET /wallets/{wallet_id}/audit` contains `record/add`.
+2. Add a synthetic precise location through
+   `POST /wallets/{wallet_id}/locations`. Record only the returned record ID in
+   evidence.
+3. Create a purpose-bound partner grant:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/synthetic-partner-grant.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/records/${DOCUMENT_RECORD_ID}/grants"
+   ```
+
+   The request must include the partner DID, `purpose`, allowed abilities,
+   output caveats, and any user-presence requirement. Evidence may include the
+   grant ID, receipt hash, purpose, abilities, output types, and status.
+4. Open the Recipient access screen as the partner DID and run redacted
+   analysis. Confirm the UI shows the grant purpose and redacted derived output,
+   and that names, emails, phone numbers, SSNs, document plaintext, and precise
+   coordinates are absent.
+5. Open Proof Center as the owner, create a `location_region` proof using the
+   location record ID, and confirm public inputs show the claim and region
+   policy metadata only. Treat any `lat`, `lon`, target coordinate, witness, or
+   credential value in the UI, API response, logs, or archived evidence as a
+   pilot blocker.
+6. Open Analytics, select the approved template, submit allowed derived/coarse
+   fields, and confirm `/wallets/{wallet_id}/analytics/contributions` records
+   an `analytics_contribution` proof/nullifier. If demonstrating aggregate
+   release, add enough synthetic wallets to meet the template k-threshold before
+   calling `/analytics/{template_id}/count` or
+   `/analytics/{template_id}/count-by-fields`.
+7. Revoke the partner grant with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, reload Recipient
+   access, and confirm the receipt is revoked. Re-run the partner analysis call
+   and confirm it fails.
+8. Open Audit and confirm the timeline includes document `record/add`,
+   location `record/add`, grant create, invocation issue/verify, redacted
+   analysis, proof create, analytics contribute, and grant revoke.
+
+Local readiness validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Archive the command outputs, browser screenshots or trace references, API
+receipt IDs, and audit event IDs with the staging pilot ticket. Do not archive
+private document payloads, precise coordinates, proof witnesses, bearer tokens,
+key material, secret-manager resolved values, or webhook secrets.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

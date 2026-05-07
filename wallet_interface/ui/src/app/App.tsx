@@ -46,6 +46,7 @@ import type { SearchResult } from "../lib/graphrag";
 import {
   CheckInChannel,
   AuditEvent,
+  AnalyticsStudy,
   DecryptedRecordView,
   DisclosureDataScope,
   DisclosureRecipientDraft,
@@ -93,6 +94,8 @@ import {
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  createWalletAnalyticsConsent,
+  createWalletAnalyticsContribution,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createRedactedGraphRAG,
@@ -107,7 +110,9 @@ import {
   loadWalletAccessState,
   loadExportBundleView,
   loadWalletSnapshot,
+  listAnalyticsTemplates,
   listWalletAuditEvents,
+  listWalletAnalyticsConsents,
   listWalletDocuments,
   listWalletProofReceipts,
   listWalletSavedServices,
@@ -116,9 +121,11 @@ import {
   rejectAccessRequest,
   repairRecordStorage,
   revokeAccessRequest,
+  revokeWalletAnalyticsConsent,
   saveWalletService,
   saveWalletSnapshot,
   verifyWalletSnapshot,
+  WalletAnalyticsConsent,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -828,7 +835,12 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen
+            apiConfig={walletApiConfig}
+            optedIn={analyticsOptIn}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            setOptedIn={setAnalyticsOptIn}
+          />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -3206,6 +3218,7 @@ function RecipientAccessScreen({
                     <p>{receipt.resourceLabel}</p>
                     <div className="badge-row">
                       <Badge tone={receipt.status === "active" ? "success" : "warning"}>{receipt.status}</Badge>
+                      <Badge>{receipt.purpose}</Badge>
                       <Badge>{receipt.receiptHash}</Badge>
                       <Badge>Share proof code</Badge>
                     </div>
@@ -3446,18 +3459,146 @@ function BenefitsProtectionScreen({
 }
 
 function AnalyticsScreen({
+  apiConfig,
   optedIn,
+  refreshWalletAuditEvents,
   setOptedIn
 }: {
+  apiConfig?: WalletApiConfig;
   optedIn: Record<string, boolean>;
+  refreshWalletAuditEvents: () => Promise<void>;
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
-  function toggleStudy(studyId: string) {
+  const [apiStudies, setApiStudies] = useState<AnalyticsStudy[]>([]);
+  const [apiConsents, setApiConsents] = useState<WalletAnalyticsConsent[]>([]);
+  const [busyStudyIds, setBusyStudyIds] = useState<string[]>([]);
+  const [contributedStudyIds, setContributedStudyIds] = useState<string[]>([]);
+  const [fieldDrafts, setFieldDrafts] = useState<Record<string, Record<string, string>>>({});
+  const [analyticsStatus, setAnalyticsStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle");
+  const studies = apiConfig && apiStudies.length ? apiStudies : analyticsStudies;
+
+  useEffect(() => {
+    if (!apiConfig) {
+      setApiStudies([]);
+      setApiConsents([]);
+      setAnalyticsStatus("idle");
+      return;
+    }
+
+    let cancelled = false;
+    setAnalyticsStatus("loading");
+    Promise.all([
+      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl }),
+      listWalletAnalyticsConsents(apiConfig)
+    ])
+      .then(([templates, consents]) => {
+        if (cancelled) return;
+        setApiStudies(templates);
+        setApiConsents(consents);
+        setAnalyticsStatus("ready");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setApiStudies([]);
+        setApiConsents([]);
+        setAnalyticsStatus("failed");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiConfig]);
+
+  function activeConsentFor(studyId: string) {
+    return apiConsents.find((consent) => consent.templateId === studyId && consent.status === "active");
+  }
+
+  function isApiStudy(studyId: string) {
+    return Boolean(apiConfig && apiStudies.some((study) => study.id === studyId));
+  }
+
+  async function toggleStudy(studyId: string) {
+    if (apiConfig && isApiStudy(studyId)) {
+      if (busyStudyIds.includes(studyId)) return;
+      setBusyStudyIds((ids) => [...ids, studyId]);
+      try {
+        const activeConsent = activeConsentFor(studyId);
+        if (activeConsent) {
+          const revokedConsent = await revokeWalletAnalyticsConsent(apiConfig, activeConsent.id);
+          setApiConsents((consents) =>
+            consents.map((consent) => (consent.id === revokedConsent.id ? revokedConsent : consent))
+          );
+          setContributedStudyIds((ids) => ids.filter((id) => id !== studyId));
+        } else {
+          const consent = await createWalletAnalyticsConsent(apiConfig, studyId);
+          setApiConsents((consents) => [consent, ...consents.filter((item) => item.id !== consent.id)]);
+        }
+        await refreshWalletAuditEvents().catch(() => undefined);
+        setAnalyticsStatus("ready");
+      } catch {
+        setAnalyticsStatus("failed");
+      } finally {
+        setBusyStudyIds((ids) => ids.filter((id) => id !== studyId));
+      }
+      return;
+    }
+
     setOptedIn({ ...optedIn, [studyId]: !isStudySelected(studyId) });
   }
 
   function isStudySelected(studyId: string) {
+    if (apiConfig && isApiStudy(studyId)) {
+      return Boolean(activeConsentFor(studyId));
+    }
     return optedIn[studyId] ?? true;
+  }
+
+  function defaultAnalyticsFieldValue(field: string) {
+    if (field === "county") return "Multnomah";
+    if (field === "need_category") return "housing";
+    return "";
+  }
+
+  function analyticsFieldValue(studyId: string, field: string) {
+    return fieldDrafts[studyId]?.[field] ?? defaultAnalyticsFieldValue(field);
+  }
+
+  function updateAnalyticsField(studyId: string, field: string, value: string) {
+    setFieldDrafts({
+      ...fieldDrafts,
+      [studyId]: {
+        ...(fieldDrafts[studyId] ?? {}),
+        [field]: value
+      }
+    });
+  }
+
+  async function submitAnalyticsContribution(study: AnalyticsStudy) {
+    if (!apiConfig || busyStudyIds.includes(study.id) || contributedStudyIds.includes(study.id)) return;
+    const consent = activeConsentFor(study.id);
+    if (!consent) return;
+    const fields = Object.fromEntries(
+      study.fields
+        .map((field) => [field, analyticsFieldValue(study.id, field).trim()] as const)
+        .filter(([, value]) => value.length > 0)
+    );
+    if (!Object.keys(fields).length) return;
+
+    setBusyStudyIds((ids) => [...ids, study.id]);
+    try {
+      await createWalletAnalyticsContribution(apiConfig, {
+        consentId: consent.id,
+        fields,
+        templateId: study.id
+      });
+      setContributedStudyIds((ids) => (ids.includes(study.id) ? ids : [...ids, study.id]));
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus("ready");
+    } catch {
+      setAnalyticsStatus("failed");
+    } finally {
+      setBusyStudyIds((ids) => ids.filter((id) => id !== study.id));
+    }
   }
 
   return (
@@ -3472,11 +3613,18 @@ function AnalyticsScreen({
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
+      {apiConfig && analyticsStatus === "failed" ? (
+        <StatusBanner tone="warning">Wallet analytics is unavailable.</StatusBanner>
+      ) : null}
       <div className="analytics-grid">
-        {analyticsStudies.map((study) => {
+        {studies.map((study) => {
           const selected = isStudySelected(study.id);
           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
           const titleId = `analytics-title-${study.id}`;
+          const consent = activeConsentFor(study.id);
+          const apiBacked = isApiStudy(study.id);
+          const busy = busyStudyIds.includes(study.id);
+          const contributed = contributedStudyIds.includes(study.id);
           return (
             <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
               <div className="scope-header">
@@ -3529,7 +3677,8 @@ function AnalyticsScreen({
               <label className="consent-box">
                 <input
                   checked={selected}
-                  onChange={() => toggleStudy(study.id)}
+                  disabled={busy}
+                  onChange={() => void toggleStudy(study.id)}
                   type="checkbox"
                 />
                 <span>
@@ -3537,6 +3686,35 @@ function AnalyticsScreen({
                   <small>Exact location, files, names, and contact details are not used.</small>
                 </span>
               </label>
+              {apiBacked ? (
+                <div
+                  className="analytics-contribution-form"
+                  role="group"
+                  aria-label={`${study.title} group facts contribution`}
+                >
+                  <div className="form-grid">
+                    {study.fields.map((field) => (
+                      <Field label={formatAnalyticsField(field)} key={field}>
+                        <input
+                          disabled={!selected || busy || contributed}
+                          onChange={(event) => updateAnalyticsField(study.id, field, event.target.value)}
+                          value={analyticsFieldValue(study.id, field)}
+                        />
+                      </Field>
+                    ))}
+                  </div>
+                  <div className="row-actions">
+                    <Button
+                      disabled={!consent || busy || contributed}
+                      onClick={() => void submitAnalyticsContribution(study)}
+                      variant="secondary"
+                    >
+                      {busy ? "Submitting" : contributed ? "Group facts submitted" : "Submit group facts"}
+                    </Button>
+                    {contributed ? <Badge tone="success">submitted</Badge> : null}
+                  </div>
+                </div>
+              ) : null}
             </article>
           );
         })}
