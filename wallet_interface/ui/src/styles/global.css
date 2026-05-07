@@ -2025,6 +2025,66 @@ body.playful-pulse .decor-shape {
   padding: 14px;
 }
 
+.service-list-meta {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.service-list-meta h3,
+.service-list-meta p {
+  overflow-wrap: anywhere;
+}
+
+.saved-service-item,
+.service-plan-summary {
+  align-items: flex-start;
+}
+
+.service-plan-checklists {
+  display: grid;
+  gap: 12px;
+}
+
+.checklist-group h3 {
+  margin: 0;
+}
+
+.plan-checklist-list {
+  display: grid;
+  gap: 8px;
+}
+
+.plan-checklist-row {
+  align-items: center;
+  background: rgba(248, 250, 252, 0.78);
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 8px 10px;
+}
+
+.plan-checklist-row input {
+  height: 20px;
+  width: 20px;
+}
+
+.plan-checklist-row span {
+  overflow-wrap: anywhere;
+}
+
+.inline-form {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+}
+
+.service-notes-panel textarea {
+  min-height: 140px;
+}
+
 .category-tile[aria-pressed="true"] {
   background: #dbeafe;
   border-color: #1d4ed8;
@@ -2254,8 +2314,13 @@ body.playful-pulse .decor-shape {
   .form-grid,
   .identity-fields,
   .scope-grid,
-  .upload-controls {
+  .upload-controls,
+  .service-plan-checklists {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inline-form {
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr) auto;
   }
 
   .scope-header {

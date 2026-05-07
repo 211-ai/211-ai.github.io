@@ -23,6 +23,13 @@ import {
 } from "lucide-react";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
+import {
+  SavedServicesPanel,
+  persistSavedService,
+  serviceReferenceFromDocument,
+  upsertSavedServiceList,
+  writeLocalPortalCollections
+} from "../components/services/SavedServicesPanel";
 import { getRouteLabel } from "../agent/surfaceRegistry";
 import {
   getServiceDetailDocIdFromHash,
@@ -32,6 +39,7 @@ import {
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
+import { ServicePlanScreen } from "./ServicePlanScreen";
 import { search211Info } from "../services/graphRagService";
 import type { SearchResult } from "../lib/graphrag";
 import {
@@ -144,8 +152,32 @@ function normalizeAppRoute(route: RouteId): RouteId {
   return removedStandaloneRoutes.has(route) ? "home" : route;
 }
 
+const servicePlanPrefix = "#/services/";
+
+function getServicePlanDocIdFromHash(hash = typeof window === "undefined" ? "" : window.location.hash): string | null {
+  if (!hash.startsWith(servicePlanPrefix) || !hash.endsWith("/plan")) return null;
+  const encodedDocId = hash.slice(servicePlanPrefix.length, -"/plan".length).split("/")[0];
+  if (!encodedDocId) return null;
+  try {
+    return decodeURIComponent(encodedDocId);
+  } catch {
+    return encodedDocId;
+  }
+}
+
+function setLocationServicePlanHash(docId: string): void {
+  if (typeof window === "undefined") return;
+  window.location.hash = `#/services/${encodeURIComponent(docId.trim())}/plan`;
+}
+
 function getInitialRouteFromHash(): RouteId {
-  return getServiceDetailDocIdFromHash() ? "social-services" : normalizeAppRoute(getRouteFromHash());
+  return getServicePlanDocIdFromHash() || getServiceDetailDocIdFromHash()
+    ? "social-services"
+    : normalizeAppRoute(getRouteFromHash());
+}
+
+function getInitialServiceDetailDocIdFromHash(): string | null {
+  return getServicePlanDocIdFromHash() ? null : getServiceDetailDocIdFromHash();
 }
 
 function readSignedInUser(): string {
@@ -249,7 +281,8 @@ export function App() {
   const [signedInUser, setSignedInUser] = useState(readSignedInUser);
   const activeRouteRef = useRef<RouteId>(getInitialRouteFromHash());
   const [activeRoute, setActiveRoute] = useState<RouteId>(activeRouteRef.current);
-  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getServiceDetailDocIdFromHash());
+  const [serviceDetailDocId, setServiceDetailDocId] = useState<string | null>(getInitialServiceDetailDocIdFromHash());
+  const [servicePlanDocId, setServicePlanDocId] = useState<string | null>(getServicePlanDocIdFromHash());
   const [profile, setProfile] = useState<RegistrationProfileDraft>(() => defaultAppState.profile);
   const [policy, setPolicy] = useState(() => defaultAppState.policy);
   const [recipients, setRecipients] = useState<DisclosureRecipientDraft[]>(() => defaultAppState.recipients);
@@ -387,8 +420,10 @@ export function App() {
 
   useEffect(() => {
     const syncRouteFromHash = () => {
-      const detailDocId = getServiceDetailDocIdFromHash();
-      const nextRoute = detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
+      const planDocId = getServicePlanDocIdFromHash();
+      const detailDocId = planDocId ? null : getServiceDetailDocIdFromHash();
+      const nextRoute = planDocId || detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
+      setServicePlanDocId(planDocId);
       setServiceDetailDocId(detailDocId);
       activeRouteRef.current = nextRoute;
       setActiveRoute(nextRoute);
@@ -477,6 +512,7 @@ export function App() {
     activeRouteRef.current = nextRoute;
     setActiveRoute(nextRoute);
     setServiceDetailDocId(null);
+    setServicePlanDocId(null);
     setMobileNavOpen(false);
   }
 
@@ -618,10 +654,30 @@ export function App() {
             setUploads={setUploads}
           />
         ) : null}
-        {serviceDetailDocId ? (
+        {servicePlanDocId ? (
+          <ServicePlanScreen
+            apiConfig={walletApiConfig}
+            docId={servicePlanDocId}
+            onBack={() => navigate("social-services")}
+            onOpenDetail={(docId) => setLocationServiceDetailHash(docId)}
+            savedServices={savedServices}
+            servicePlans={servicePlans}
+            setSavedServices={setSavedServices}
+            setServicePlans={setServicePlans}
+          />
+        ) : null}
+        {serviceDetailDocId && !servicePlanDocId ? (
           <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
         ) : null}
-        {activeRoute === "social-services" && !serviceDetailDocId ? <SocialServicesScreen /> : null}
+        {activeRoute === "social-services" && !serviceDetailDocId && !servicePlanDocId ? (
+          <SocialServicesScreen
+            apiConfig={walletApiConfig}
+            savedServices={savedServices}
+            servicePlans={servicePlans}
+            setSavedServices={setSavedServices}
+            setServicePlans={setServicePlans}
+          />
+        ) : null}
         {activeRoute === "shelter" ? (
           <ShelterScreen
             checklist={shelterChecklist}
@@ -674,7 +730,10 @@ export function App() {
               activeRouteRef.current = nextRoute;
               setActiveRoute(nextRoute);
             },
-            setServiceDetailDocId,
+            setServiceDetailDocId: (docId) => {
+              setServicePlanDocId(null);
+              setServiceDetailDocId(docId);
+            },
             setMobileNavOpen
           })
         }
@@ -1840,13 +1899,28 @@ function UploadsScreen({
   );
 }
 
-function SocialServicesScreen() {
+function SocialServicesScreen({
+  apiConfig,
+  savedServices,
+  servicePlans,
+  setSavedServices,
+  setServicePlans
+}: {
+  apiConfig?: WalletApiConfig;
+  savedServices: SavedService[];
+  servicePlans: ServicePlan[];
+  setSavedServices: (services: SavedService[]) => void;
+  setServicePlans: (plans: ServicePlan[]) => void;
+}) {
   const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
   const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
   const [searchError, setSearchError] = useState("");
+  const [savingServiceIds, setSavingServiceIds] = useState<string[]>([]);
+  const [serviceActionMessage, setServiceActionMessage] = useState("");
+  const [serviceActionError, setServiceActionError] = useState("");
 
   async function runSearch(nextQuery = query) {
     const trimmedQuery = nextQuery.trim();
@@ -1870,6 +1944,38 @@ function SocialServicesScreen() {
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void runSearch();
+  }
+
+  function savedServiceForResult(result: SearchResult): SavedService | undefined {
+    const document = result.document;
+    return savedServices.find(
+      (service) =>
+        service.service_doc_id === document.doc_id ||
+        service.service_doc_id === result.docId ||
+        service.source_content_cid === document.source_content_cid ||
+        service.source_page_cid === document.source_page_cid
+    );
+  }
+
+  async function saveSearchResult(result: SearchResult) {
+    if (savedServiceForResult(result)) return;
+    const reference = serviceReferenceFromDocument(result.document);
+    setSavingServiceIds((ids) => [...ids, result.docId]);
+    setServiceActionMessage("");
+    setServiceActionError("");
+    try {
+      const saved = await persistSavedService(apiConfig, reference);
+      const nextSavedServices = upsertSavedServiceList(savedServices, saved);
+      setSavedServices(nextSavedServices);
+      if (!apiConfig?.actorDid) {
+        writeLocalPortalCollections(nextSavedServices, servicePlans);
+      }
+      setServiceActionMessage("Service saved.");
+    } catch (error) {
+      setServiceActionError(error instanceof Error ? error.message : "Service could not be saved");
+    } finally {
+      setSavingServiceIds((ids) => ids.filter((id) => id !== result.docId));
+    }
   }
 
   return (
@@ -1903,6 +2009,8 @@ function SocialServicesScreen() {
         {searchStatus === "error" ? (
           <StatusBanner tone="warning">211 service search is unavailable: {searchError}</StatusBanner>
         ) : null}
+        {serviceActionMessage ? <StatusBanner tone="success">{serviceActionMessage}</StatusBanner> : null}
+        {serviceActionError ? <StatusBanner tone="warning">{serviceActionError}</StatusBanner> : null}
         {searchStatus === "complete" && results.length === 0 ? (
           <StatusBanner tone="info">No local 211 records matched. Try a broader need or contact 211 directly.</StatusBanner>
         ) : null}
@@ -1912,6 +2020,8 @@ function SocialServicesScreen() {
               const document = result.document;
               const provider = document.provider_name || "Provider not listed";
               const program = document.program_name || document.title || "Program not listed";
+              const savedService = savedServiceForResult(result);
+              const savingService = savingServiceIds.includes(result.docId);
               return (
                 <article className="list-item" key={result.docId}>
                   <div>
@@ -1929,6 +2039,18 @@ function SocialServicesScreen() {
                   </div>
                   <div className="row-actions list-item-action">
                     {document.source_url ? <Badge tone="success">source</Badge> : null}
+                    <Button
+                      disabled={Boolean(savedService)}
+                      loading={savingService}
+                      loadingLabel="Saving"
+                      onClick={() => void saveSearchResult(result)}
+                      variant={savedService ? "secondary" : "primary"}
+                    >
+                      {savedService ? "Saved" : "Save"}
+                    </Button>
+                    <Button onClick={() => setLocationServicePlanHash(result.docId)} variant="secondary">
+                      Plan
+                    </Button>
                     <Button onClick={() => setLocationServiceDetailHash(result.docId)} variant="secondary">
                       Open detail
                     </Button>
@@ -1947,6 +2069,15 @@ function SocialServicesScreen() {
           </button>
         ))}
       </div>
+      <SavedServicesPanel
+        apiConfig={apiConfig}
+        onOpenDetail={(docId) => setLocationServiceDetailHash(docId)}
+        onOpenPlan={(docId) => setLocationServicePlanHash(docId)}
+        savedServices={savedServices}
+        servicePlans={servicePlans}
+        setSavedServices={setSavedServices}
+        setServicePlans={setServicePlans}
+      />
       <Section title="Government help">
         <div className="liaison-panel">
           <MessageSquare aria-hidden="true" size={28} />
