@@ -197,6 +197,38 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Surface Map
+
+WALLET-210 pilot demonstrations should use the public 211-AI API and browser
+surfaces backed by `ipfs_datasets_py.wallet`; do not seed or inspect wallet core
+objects directly during the demo. A complete pilot path touches these surfaces:
+
+| Step | API surface | UI surface | Evidence to show |
+| --- | --- | --- | --- |
+| Create wallet and add data | `POST /wallets`, `POST /wallets/{wallet_id}/documents/text` or `/documents`, `POST /wallets/{wallet_id}/locations` | `#/uploads`, `#/proof-center` | Document record ID, location record ID, encrypted-storage status, no plaintext in record lists. |
+| Share partner access | `POST /wallets/{wallet_id}/records/{record_id}/grants`, analysis invocation routes, `/exports/grants`, `/exports/invocations`, `/exports` | `#/recipient-access`, `#/exports` | Partner DID, purpose string, abilities, output caveats, bundle hash/schema/storage checks. |
+| Prove eligibility | `/locations/{location_record_id}/region-proof-grants`, `/region-proofs`; use distance proof routes only after WALLET-180 cutover evidence is archived | `#/proof-center` | Public inputs such as `claim`, `region_id`, and policy hash; no `lat`, `lon`, address, target coordinate, or witness values. |
+| Contribute aggregate analytics | `POST /analytics/templates`, `/analytics/consents/from-template`, `/analytics/contributions`, `/analytics/{template_id}/count-by-fields` | `#/analytics` | Approved template, active consent, derived fields, k-threshold release, privacy-budget spend, no direct identifiers. |
+| Revoke and audit | `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, `GET /wallets/{wallet_id}/grant-receipts`, `GET /wallets/{wallet_id}/audit` | `#/recipient-access`, `#/audit` | Revoked receipt, blocked stale invocation, timeline entries for add/share/proof/analytics/export/revoke. |
+
+Required pilot guardrails:
+
+- Use synthetic staging data unless the target signoff packet authorizes live
+  data.
+- Use explicit purpose strings such as `partner_intake_review`,
+  `partner_case_transfer`, or an approved partner-specific value; blank or
+  generic purposes are not pilot evidence.
+- Partner-visible record workflows must use derived or redacted outputs unless
+  the user explicitly grants `record/decrypt` for that partner and purpose.
+- Location eligibility demos should prefer `location_region` until
+  `location_distance` has target verifier, failure-mode, rollback, and approval
+  evidence from WALLET-180.
+- Aggregate analytics demos must run only through approved templates and must
+  show consent, contribution, release, threshold, privacy budget, and withdrawal
+  handling in the evidence packet.
+- The audit timeline must be captured from 211-AI UI/API surfaces after
+  revocation and after a stale invocation is proven blocked.
+
 ## API Reference
 
 Run the API with:

@@ -45,6 +45,7 @@ import type { SearchResult } from "../lib/graphrag";
 import {
   CheckInChannel,
   AuditEvent,
+  AnalyticsStudy,
   DecryptedRecordView,
   DisclosureDataScope,
   DisclosureRecipientDraft,
@@ -94,6 +95,7 @@ import {
   analyzeRecordWithGrant,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
+  createWalletAnalyticsConsent,
   createRedactedGraphRAG,
   createVerifiedExportBundleView,
   delegateGrant,
@@ -109,15 +111,19 @@ import {
   listWalletAuditEvents,
   listWalletDocuments,
   listWalletProofReceipts,
+  listAnalyticsTemplates,
   listWalletSavedServices,
+  listWalletAnalyticsConsents,
   listWalletServiceInteractions,
   listWalletServicePlans,
   rejectAccessRequest,
   repairRecordStorage,
   revokeAccessRequest,
+  revokeWalletAnalyticsConsent,
   saveWalletService,
   saveWalletSnapshot,
   verifyWalletSnapshot,
+  WalletAnalyticsConsent,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -787,7 +793,12 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen
+            apiConfig={walletApiConfig}
+            optedIn={analyticsOptIn}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            setOptedIn={setAnalyticsOptIn}
+          />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -3115,6 +3126,7 @@ function RecipientAccessScreen({
                   <div>
                     <h3>{request.requesterName}</h3>
                     <p>{request.resourceLabel}</p>
+                    <small>Purpose: {request.purpose}</small>
                     <div className="badge-row">
                       <Badge>{request.status}</Badge>
                       <Badge>{capabilitySummary(request.abilities)}</Badge>
@@ -3161,6 +3173,7 @@ function RecipientAccessScreen({
                   <div className="recipient-summary">
                     <h3 id={`grant-receipt-${receipt.id}`}>{receipt.audienceName}</h3>
                     <p>{receipt.resourceLabel}</p>
+                    <small>Purpose: {receipt.purpose}</small>
                     <div className="badge-row">
                       <Badge tone={receipt.status === "active" ? "success" : "warning"}>{receipt.status}</Badge>
                       <Badge>{receipt.receiptHash}</Badge>
@@ -3403,17 +3416,75 @@ function BenefitsProtectionScreen({
 }
 
 function AnalyticsScreen({
+  apiConfig,
   optedIn,
+  refreshWalletAuditEvents,
   setOptedIn
 }: {
+  apiConfig?: WalletApiConfig;
   optedIn: Record<string, boolean>;
+  refreshWalletAuditEvents: () => Promise<void>;
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
-  function toggleStudy(studyId: string) {
+  const [studies, setStudies] = useState<AnalyticsStudy[]>(analyticsStudies);
+  const [consentsByTemplateId, setConsentsByTemplateId] = useState<Record<string, WalletAnalyticsConsent>>({});
+  const [analyticsStatus, setAnalyticsStatus] = useState<"idle" | "loading" | "updated" | "failed">("idle");
+
+  useEffect(() => {
+    if (!apiConfig) {
+      setStudies(analyticsStudies);
+      setConsentsByTemplateId({});
+      setAnalyticsStatus("idle");
+      return;
+    }
+    let cancelled = false;
+    setAnalyticsStatus("loading");
+    Promise.all([
+      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl }),
+      listWalletAnalyticsConsents(apiConfig)
+    ])
+      .then(([nextStudies, nextConsents]) => {
+        if (cancelled) return;
+        setStudies(nextStudies.length ? nextStudies : analyticsStudies);
+        setConsentsByTemplateId(activeConsentMap(nextConsents));
+        setAnalyticsStatus("idle");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStudies(analyticsStudies);
+        setConsentsByTemplateId({});
+        setAnalyticsStatus("failed");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [apiConfig]);
+
+  async function toggleStudy(studyId: string) {
+    if (apiConfig?.actorDid) {
+      setAnalyticsStatus("loading");
+      try {
+        const activeConsent = consentsByTemplateId[studyId];
+        if (activeConsent) {
+          await revokeWalletAnalyticsConsent(apiConfig, activeConsent.id);
+        } else {
+          await createWalletAnalyticsConsent(apiConfig, studyId);
+        }
+        const nextConsents = await listWalletAnalyticsConsents(apiConfig);
+        setConsentsByTemplateId(activeConsentMap(nextConsents));
+        await refreshWalletAuditEvents().catch(() => undefined);
+        setAnalyticsStatus("updated");
+        return;
+      } catch {
+        setAnalyticsStatus("failed");
+        return;
+      }
+    }
     setOptedIn({ ...optedIn, [studyId]: !isStudySelected(studyId) });
   }
 
   function isStudySelected(studyId: string) {
+    if (apiConfig) return Boolean(consentsByTemplateId[studyId]);
     return optedIn[studyId] ?? true;
   }
 
@@ -3429,8 +3500,11 @@ function AnalyticsScreen({
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
+      {apiConfig ? <StatusBanner tone="success">Wallet analytics is connected.</StatusBanner> : null}
+      {analyticsStatus === "updated" ? <StatusBanner tone="success">Group-facts choice updated.</StatusBanner> : null}
+      {analyticsStatus === "failed" ? <StatusBanner tone="warning">Group-facts choices could not be refreshed.</StatusBanner> : null}
       <div className="analytics-grid">
-        {analyticsStudies.map((study) => {
+        {studies.map((study) => {
           const selected = isStudySelected(study.id);
           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
           const titleId = `analytics-title-${study.id}`;
@@ -3485,8 +3559,9 @@ function AnalyticsScreen({
               </div>
               <label className="consent-box">
                 <input
+                  disabled={analyticsStatus === "loading"}
                   checked={selected}
-                  onChange={() => toggleStudy(study.id)}
+                  onChange={() => void toggleStudy(study.id)}
                   type="checkbox"
                 />
                 <span>
@@ -3499,6 +3574,14 @@ function AnalyticsScreen({
         })}
       </div>
     </div>
+  );
+}
+
+function activeConsentMap(consents: WalletAnalyticsConsent[]): Record<string, WalletAnalyticsConsent> {
+  return Object.fromEntries(
+    consents
+      .filter((consent) => consent.status === "active")
+      .map((consent) => [consent.templateId, consent])
   );
 }
 

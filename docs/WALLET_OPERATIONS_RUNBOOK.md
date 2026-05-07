@@ -124,6 +124,78 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Service Partner Pilot Rehearsal
+
+Run this rehearsal in staging before a partner pilot, after UI/API changes that
+touch wallet flows, and after verifier or analytics-template changes. Use
+synthetic user data unless the target signoff packet authorizes live data.
+
+Required setup:
+
+- The API is deployed with durable `WALLET_REPOSITORY_ROOT`,
+  `WALLET_STORAGE_CONFIG`, `WALLET_AUTO_LOAD_REPOSITORY=true`, and
+  `WALLET_AUTO_PERSIST=true`.
+- WALLET-170 through WALLET-200 evidence is archived for blackbox API behavior,
+  proof verifier cutover, storage retention/deletion, and analytics governance.
+- The partner DID, partner display name, purpose strings, approved analytics
+  template ID, region policy ID, and operator/reviewer names are recorded in
+  the staging evidence ticket.
+- The browser is opened against the 211-AI UI with `walletApiBaseUrl`,
+  `walletId`, `actorDid`, and the staging key parameters required by the
+  target environment.
+
+Rehearsal sequence:
+
+1. Create the wallet and add one document plus one precise location through
+   `POST /wallets`, `POST /wallets/{wallet_id}/documents/text` or
+   `/documents`, and `POST /wallets/{wallet_id}/locations`.
+   In `#/uploads`, confirm the document appears with encrypted-storage status.
+   Keep the precise coordinates out of screenshots, logs, tickets, and chat.
+2. Create a partner record grant for a named purpose and redacted output,
+   then open `#/recipient-access` as the partner. Confirm the receipt shows the
+   partner DID label, purpose, active status, and safe output action. Run
+   redacted analysis and verify names, email addresses, phone numbers, SSNs, and
+   plaintext document text are absent.
+3. Create a `location_region` proof grant and proof receipt. Open
+   `#/proof-center` and confirm the proof shows only public inputs such as
+   `claim`, `region_id`, and policy hash. If any `lat`, `lon`, address,
+   target coordinate, or witness value is visible, stop the pilot and file a
+   privacy incident.
+4. Create an encrypted partner export in `#/exports` with the same purpose.
+   Confirm the bundle hash, schema verification, storage verification, record
+   count, and proof count. Import descriptors only; do not reveal plaintext
+   during the export proof.
+5. Register or select an approved analytics template, create user consent,
+   submit derived fields such as `county` and `need_category`, and run
+   `/analytics/{template_id}/count-by-fields` after the k-threshold is met.
+   In `#/analytics`, confirm the live template and active consent are visible.
+   Evidence must include released/suppressed status, group fields, threshold,
+   privacy-budget spend, and no direct identifiers or precise coordinates.
+6. Revoke the partner grant with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`. Confirm
+   `GET /wallets/{wallet_id}/grant-receipts?status=revoked` contains the grant
+   and that a stale invocation is rejected. Reopen `#/recipient-access` and
+   confirm the receipt status is revoked.
+7. Open `#/audit` and capture the timeline entries for `record/add`,
+   `grant/create`, `invocation/issue`, `invocation/verify`,
+   `record/analyze_redacted`, `proof/create`, `export/create`,
+   `analytics/consent_create`, `analytics/contribute`, `analytics/query`, and
+   `grant/revoke`.
+
+Automated rehearsal:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+The Playwright fullstack spec starts a live wallet API with local durable
+storage and drives the same partner-pilot path across desktop and mobile
+projects. A passing local rehearsal is not target evidence by itself; archive
+the staging API outputs, browser screenshots, audit timeline, and reviewer
+leak-check result with the WALLET-210 evidence ticket.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or
