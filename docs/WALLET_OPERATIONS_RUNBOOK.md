@@ -124,6 +124,75 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Service Partner Pilot
+
+Run this drill in target staging before inviting a 211 service partner to the
+pilot, after any wallet API/UI release that changes sharing, proofs, analytics,
+or audit, and after partner DID/key rotation. Use synthetic user data only. The
+drill must exercise the public 211-AI browser/API surfaces backed by
+`ipfs_datasets_py.wallet`; do not run private wallet service methods directly as
+launch evidence.
+
+Required setup:
+
+- Target staging has the same `WALLET_REPOSITORY_ROOT`,
+  `WALLET_STORAGE_CONFIG`, proof mode, CORS origin, and service-directory input
+  expected for the partner pilot.
+- The synthetic user wallet has one owner/controller DID, one partner DID, one
+  analyst/service DID, and a documented partner purpose such as
+  `housing_navigation_referral`.
+- The approved analytics template is already recorded in the target signoff
+  packet with allowed derived fields, consent copy, k-threshold, epsilon
+  budget, nullifier policy, reviewer role, and withdrawal behavior.
+- Evidence capture is configured to store IDs, hashes, status summaries, and
+  audit event references only.
+
+Pilot drill:
+
+1. Add a document through the Uploads UI. Add a precise location through
+   `POST /wallets/{wallet_id}/locations`. Confirm `/wallets/{wallet_id}/records`
+   lists document and location records without plaintext.
+2. Create a purpose-bound partner grant for the selected document or export
+   records. Confirm the grant caveats contain the expected purpose, record IDs,
+   output types, user-presence requirement when applicable, and expiration.
+3. Open the Recipient Access UI as the partner and run only the allowed
+   redacted or derived workflow. Evidence must show the output policy and
+   encrypted artifact reference, not document plaintext or direct identifiers.
+4. Create a location-region proof from Proof Center or the region-proof API.
+   Confirm the receipt public inputs contain the claim and region policy fields
+   and do not contain latitude, longitude, target coordinates, witness values,
+   or verifier credentials.
+5. Create analytics consent from the approved template, submit only derived or
+   coarse contribution fields, and run an aggregate count or grouped count.
+   Confirm sparse cells are suppressed and privacy budget is debited.
+6. Revoke the partner grants or approved access requests. Re-run one previously
+   valid partner invocation and confirm it fails. Run `/ops/health` and confirm
+   `revocation_propagation` is not `error`.
+7. Open the Audit UI and fetch `/wallets/{wallet_id}/audit`. Confirm the
+   workflow includes record creation, grant creation, invocation issue/verify
+   when used, redacted analysis, proof creation, analytics consent,
+   contribution, aggregate query, export creation when used, revocation, and
+   ops-health entries.
+
+Validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Pass criteria:
+
+- Partner-facing access is purpose-bound and revoked access fails closed.
+- Location eligibility is demonstrated without precise-coordinate disclosure.
+- Analytics uses approved templates and derived/coarse contribution fields only.
+- Audit evidence ties every step to hash-linked wallet events.
+- Evidence artifacts contain IDs, hashes, counts, status, and policy references
+  only. Plaintext records, precise coordinates, proof witnesses, private keys,
+  bearer tokens, proof headers, storage credentials, and resolved secret values
+  are launch blockers.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

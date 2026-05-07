@@ -197,6 +197,55 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 pilot demonstrations must use the same 211-AI UI and public wallet
+API surfaces that partner staff will exercise in staging. The pilot path is not
+a script-only smoke test: it must show the user-visible upload, proof,
+recipient-access, analytics choice, export, revoke, and audit surfaces while
+all wallet state is backed by `ipfs_datasets_py.wallet`.
+
+Required pilot sequence:
+
+1. Create or load a staging wallet with durable repository and encrypted blob
+   storage enabled.
+2. Add at least one document through the Uploads UI or
+   `POST /wallets/{wallet_id}/documents/text`; add a precise location through
+   `POST /wallets/{wallet_id}/locations`.
+3. Share a document or export bundle with the service partner through a
+   purpose-bound grant. The grant must name the partner DID, allowed abilities,
+   output types, selected record IDs, purpose, expiration when applicable, and
+   user-presence requirement when raw view or delegated invocation is allowed.
+4. Show the partner view in the Recipient Access UI and prove that redacted
+   analysis outputs do not contain document plaintext identifiers such as email,
+   phone, SSN, street address, or person-name strings unless a separate
+   plaintext decrypt grant is intentionally issued for the demo.
+5. Create a location-region proof in Proof Center or through
+   `/locations/{location_record_id}/region-proofs`. The receipt may expose
+   `region_id`, `claim`, verifier metadata, proof hash, and witness record
+   reference, but not latitude, longitude, target coordinates, verifier
+   credentials, proof witness values, or raw location payloads.
+6. Register or select only an approved analytics template, create user consent,
+   contribute derived or coarse fields, and release aggregates only through
+   `/analytics/{template_id}/count` or
+   `/analytics/{template_id}/count-by-fields`. The template must satisfy the
+   analytics governance workflow above.
+7. Revoke every partner grant used in the demo with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` or the approved access
+   request revoke flow, then prove old invocations cannot analyze, decrypt,
+   prove, match, or export.
+8. Open the Audit UI and fetch `/wallets/{wallet_id}/audit`. The evidence must
+   include the hash-linked actions for record creation, grant creation,
+   invocation issue/verify when used, redacted analysis, proof creation,
+   analytics consent/contribution/query, export creation when used, and grant
+   revocation.
+
+Pilot evidence must contain record IDs, grant IDs, proof IDs, template IDs,
+bundle hashes, audit event IDs, status fields, and validation command output.
+It must not contain plaintext documents, precise coordinates, proof witnesses,
+private keys, bearer tokens, custom proof headers, storage credentials, or
+resolved secret-manager values.
+
 ## API Reference
 
 Run the API with:
