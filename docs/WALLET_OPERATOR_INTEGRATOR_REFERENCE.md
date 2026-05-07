@@ -140,6 +140,59 @@ and security/privacy/ops/product approvals are archived. A `mode=local_self_chec
 report is acceptable for repository automation only and must not be used as
 target launch evidence.
 
+## Analytics Governance Release Workflow
+
+Production analytics is template-bound. Operators and integrators must not run
+ad hoc SQL, notebook filters, GraphRAG prompts, export jobs, or other arbitrary
+raw queries over wallet records, contribution payloads, precise locations,
+plaintext documents, or direct identifiers. The production API surface releases
+aggregates only through approved template IDs via `/analytics/{template_id}/count`
+and `/analytics/{template_id}/count-by-fields`.
+
+Before setting an analytics template to `approved` or allowing it to remain live
+in a target environment:
+
+1. Register or reconcile the template definition with the wallet service. The
+   template must name its purpose, allowed record types, allowed derived fields,
+   allowed aggregation dimensions, minimum cohort size, and epsilon budget.
+2. Archive user-facing consent copy that describes the template purpose, data
+   categories, derived fields, aggregation behavior, retention summary,
+   withdrawal behavior, and support path.
+3. Record public proof statements for `analytics_contribution`, including the
+   approved public inputs and verifier or proof mode. Public inputs must not
+   contain raw payloads, precise coordinates, plaintext document fields, or
+   direct identifiers.
+4. Record the nullifier policy: scope, duplicate-rejection rule, retention
+   period, withdrawal handling, and assurance that nullifiers are not exported
+   as wallet identifiers.
+5. Record the k-threshold and privacy budget: `min_cohort_size`, `k_threshold`,
+   epsilon budget, per-query epsilon, sensitivity, budget key, budget limit,
+   budget-exhaustion behavior, and reviewer rationale.
+6. Map template definition, consent copy, consents and withdrawals,
+   contributions, nullifiers, query-budget ledger, released aggregates, and
+   audit events to `docs/WALLET_RETENTION_POLICY.md` in the target signoff
+   packet.
+7. Record reviewer names or accountable reviewer roles, decision date, evidence
+   ID, withdrawal behavior, and any tracked exceptions in
+   `analytics_privacy_review.approved_templates[]`.
+
+Run the release gate after any template addition, field expansion, proof
+statement change, consent copy change, lower k-threshold, higher epsilon,
+retention change, reviewer exception, or transition from `paused`/`retired` back
+to `approved`:
+
+```bash
+python -m wallet_interface.ops \
+  --validate-target-signoff-packet /path/to/target-signoff.json \
+  --fail-on-error
+python scripts/run_wallet_release_checks.py --dry-run
+```
+
+If no production analytics templates are live, set
+`analytics_privacy_review.no_live_analytics_templates=true` in the completed
+packet and keep `/analytics/templates` free of approved production templates for
+that environment.
+
 ## API Reference
 
 Run the API with:

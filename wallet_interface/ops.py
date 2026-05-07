@@ -88,6 +88,43 @@ _SIGNOFF_REQUIRED_REVIEW_AREAS = (
 
 _SIGNOFF_ALLOWED_APPROVAL_DECISIONS = {"approved", "approved with tracked exception"}
 
+_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS = (
+    "template_id",
+    "reviewer",
+    "review_date",
+    "consent_copy_artifact",
+    "nullifier_policy",
+    "retention_decision",
+    "withdrawal_behavior",
+)
+
+_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS = (
+    "allowed_record_types",
+    "allowed_derived_fields",
+    "allowed_dimensions",
+    "proof_statements",
+)
+
+_SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS = (
+    "epsilon_budget",
+    "per_query_epsilon",
+    "sensitivity",
+    "budget_key",
+    "budget_limit",
+    "budget_exhaustion_behavior",
+)
+
+_SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS = (
+    "template_definition",
+    "consent_copy",
+    "consents_withdrawals",
+    "contributions",
+    "nullifiers",
+    "query_budget_ledger",
+    "released_aggregates",
+    "audit_events",
+)
+
 _READINESS_TARGET_ENV_VARS = (
     "WALLET_REPOSITORY_ROOT",
     "WALLET_STORAGE_CONFIG",
@@ -197,6 +234,38 @@ def _missing_or_placeholder_fields(payload: Mapping[str, Any], names: Sequence[s
     for name in names:
         value = str(payload.get(name) or "").strip()
         if _is_placeholder(value):
+            missing.append(name)
+    return missing
+
+
+def _has_placeholder_value(value: Any) -> bool:
+    if isinstance(value, str):
+        return _is_placeholder(value)
+    if isinstance(value, Mapping):
+        return any(_has_placeholder_value(item) for item in value.values())
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return any(_has_placeholder_value(item) for item in value)
+    return value is None
+
+
+def _missing_or_placeholder_list_fields(payload: Mapping[str, Any], names: Sequence[str]) -> list[str]:
+    missing: list[str] = []
+    for name in names:
+        value = payload.get(name)
+        if (
+            not isinstance(value, list)
+            or not value
+            or any(_has_placeholder_value(item) for item in value)
+        ):
+            missing.append(name)
+    return missing
+
+
+def _missing_or_placeholder_mapping_fields(payload: Mapping[str, Any], names: Sequence[str]) -> list[str]:
+    missing: list[str] = []
+    for name in names:
+        value = payload.get(name)
+        if _has_placeholder_value(value):
             missing.append(name)
     return missing
 
@@ -369,25 +438,56 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
     for index, item in enumerate(reviewed_templates):
         template = item if isinstance(item, dict) else {}
         template_id = str(template.get("template_id") or f"template[{index}]")
-        required_template_fields = (
-            "template_id",
-            "reviewer",
-            "review_date",
-            "min_cohort_size",
-            "epsilon_budget",
-            "allowed_dimensions",
-            "retention_decision",
-            "withdrawal_behavior",
+        missing_template_fields = _missing_or_placeholder_fields(
+            template,
+            _SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS,
         )
-        if _missing_or_placeholder_fields(template, required_template_fields):
+        missing_template_fields.extend(
+            _missing_or_placeholder_list_fields(
+                template,
+                _SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS,
+            )
+        )
+        privacy_budget = template.get("privacy_budget")
+        privacy_budget = privacy_budget if isinstance(privacy_budget, dict) else {}
+        missing_budget_fields = _missing_or_placeholder_mapping_fields(
+            privacy_budget,
+            _SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS,
+        )
+        retention_template_mapping = template.get("retention_mapping")
+        retention_template_mapping = (
+            retention_template_mapping if isinstance(retention_template_mapping, dict) else {}
+        )
+        missing_retention_fields = _missing_or_placeholder_mapping_fields(
+            retention_template_mapping,
+            _SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS,
+        )
+        if missing_template_fields or missing_budget_fields or missing_retention_fields:
             incomplete_templates.append(template_id)
         try:
-            if int(template.get("min_cohort_size")) < 1:
+            min_cohort_size = int(template.get("min_cohort_size"))
+            if min_cohort_size < 1:
                 incomplete_templates.append(template_id)
         except Exception:
             incomplete_templates.append(template_id)
         try:
-            if float(template.get("epsilon_budget")) <= 0:
+            k_threshold = int(template.get("k_threshold"))
+            if k_threshold < 1:
+                incomplete_templates.append(template_id)
+        except Exception:
+            incomplete_templates.append(template_id)
+        try:
+            if float(privacy_budget.get("epsilon_budget")) <= 0:
+                incomplete_templates.append(template_id)
+        except Exception:
+            incomplete_templates.append(template_id)
+        try:
+            if float(privacy_budget.get("per_query_epsilon")) <= 0:
+                incomplete_templates.append(template_id)
+        except Exception:
+            incomplete_templates.append(template_id)
+        try:
+            if float(privacy_budget.get("budget_limit")) < float(privacy_budget.get("epsilon_budget")):
                 incomplete_templates.append(template_id)
         except Exception:
             incomplete_templates.append(template_id)
@@ -573,6 +673,55 @@ def validate_target_signoff_packet_template(
                 else "Retention template fields are incomplete."
             ),
             {"missing": missing_retention_fields},
+        )
+
+        analytics_review = payload.get("analytics_privacy_review")
+        analytics_review = analytics_review if isinstance(analytics_review, dict) else {}
+        approved_templates = analytics_review.get("approved_templates")
+        first_template = approved_templates[0] if isinstance(approved_templates, list) and approved_templates else {}
+        first_template = first_template if isinstance(first_template, dict) else {}
+        required_analytics_fields = (
+            *_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_FIELDS,
+            *_SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS,
+            "min_cohort_size",
+            "k_threshold",
+            "privacy_budget",
+            "retention_mapping",
+        )
+        missing_analytics_fields = [
+            field for field in required_analytics_fields if field not in first_template
+        ]
+        privacy_budget = first_template.get("privacy_budget")
+        privacy_budget = privacy_budget if isinstance(privacy_budget, dict) else {}
+        missing_budget_fields = [
+            field for field in _SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS if field not in privacy_budget
+        ]
+        retention_template_mapping = first_template.get("retention_mapping")
+        retention_template_mapping = (
+            retention_template_mapping if isinstance(retention_template_mapping, dict) else {}
+        )
+        missing_analytics_retention_fields = [
+            field for field in _SIGNOFF_REQUIRED_ANALYTICS_RETENTION_FIELDS if field not in retention_template_mapping
+        ]
+        add_check(
+            "template_analytics_governance_fields",
+            (
+                "error"
+                if missing_analytics_fields
+                or missing_budget_fields
+                or missing_analytics_retention_fields
+                else "ok"
+            ),
+            (
+                "Analytics template packet fields cover consent copy, allowed fields, proof statements, nullifiers, k-threshold, privacy budget, retention, reviewers, and withdrawal."
+                if not missing_analytics_fields and not missing_budget_fields and not missing_analytics_retention_fields
+                else "Analytics template packet fields are incomplete for WALLET-200 governance."
+            ),
+            {
+                "missing_template_fields": missing_analytics_fields,
+                "missing_privacy_budget_fields": missing_budget_fields,
+                "missing_retention_fields": missing_analytics_retention_fields,
+            },
         )
 
     return {
