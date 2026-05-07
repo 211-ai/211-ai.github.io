@@ -398,6 +398,94 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 Staging Partner Pilot Drill
+
+Run this drill after WALLET-170 blackbox, WALLET-180 verifier cutover,
+WALLET-190 retention/deletion dry run, and WALLET-200 analytics governance
+evidence are archived. Use synthetic data only.
+
+Preconditions:
+
+- The staging API is backed by `ipfs_datasets_py.wallet` with durable wallet
+  repository and encrypted blob storage enabled.
+- The UI points at the staging wallet API and `/ops/health?verify_storage=true`
+  is not `error`.
+- The 211 service directory used by `/wallets/{wallet_id}/services/match` is
+  the approved staging directory or a synthetic pilot fixture.
+- The analytics template has an approved WALLET-200 review packet and matches
+  the deployed retention policy.
+
+Drill sequence:
+
+1. Add user data through 211-AI surfaces.
+
+   - Create the staging wallet or load its snapshot.
+   - Upload a synthetic intake document from the UI Uploads screen or
+     `POST /wallets/{wallet_id}/documents/text`.
+   - Add a precise location with `POST /wallets/{wallet_id}/locations`.
+   - Confirm `GET /wallets/{wallet_id}/records` lists document and location
+     records without plaintext or coordinates.
+
+2. Share purpose-bound partner access.
+
+   - Create a record grant for the partner with explicit `purpose`,
+     `abilities`, `output_types`, expiration if required, and
+     `user_presence_required=true` for browser actions.
+   - Create a coarse-location grant and signed coarse-location invocation for
+     service matching.
+   - From the Recipient Access UI, run a redacted partner analysis and confirm
+     the output is derived/redacted only.
+
+3. Prove location eligibility without precise-coordinate disclosure.
+
+   - Create a location-region proof grant for the partner or verifier.
+   - Create the proof from the Proof Center UI or
+     `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs`.
+   - Verify the receipt has `verification_status=verified`, expected verifier
+     metadata, `claim=location_in_region`, and public inputs that omit `lat`,
+     `lon`, target coordinates, witnesses, and secrets.
+
+4. Contribute to approved aggregate analytics.
+
+   - Create consent from the approved template.
+   - Submit only derived/coarse fields such as `county` and `need_category`.
+   - Run the approved aggregate count or grouped count after enough synthetic
+     cohort contributions exist to satisfy the k-threshold.
+   - Confirm sparse cells are suppressed and privacy budget is debited.
+
+5. Revoke access and prove stale access is blocked.
+
+   - Revoke every partner grant with
+     `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`.
+   - Re-run partner redacted analysis, coarse service matching, proof creation,
+     decrypt, and export attempts with stale grants or invocation tokens.
+   - Pass criteria: every stale call returns an authorization error and
+     `/ops/health?verify_storage=true` reports revocation propagation without
+     dangling key wraps.
+
+6. Audit the full workflow.
+
+   - Open the Audit screen and export `GET /wallets/{wallet_id}/audit`.
+   - Confirm the audit timeline contains the expected allow/deny decisions for
+     record creation, grant creation, invocation issue/verify, redacted
+     analysis, coarse location read, proof creation, analytics consent,
+     analytics contribution, analytics query, and grant revocation.
+   - Archive audit event IDs, grant/proof/template/result IDs, and ciphertext
+     storage hashes only.
+
+Validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Treat any artifact that contains synthetic document plaintext, contact details,
+precise coordinates, proof witnesses, private keys, bearer tokens, storage
+credentials, or resolved secret values as a privacy incident and rerun the
+drill after evidence handling is fixed.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or
