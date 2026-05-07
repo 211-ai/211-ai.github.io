@@ -2073,6 +2073,121 @@ def test_wallet_api_portal_saved_services_plans_and_interactions_round_trip() ->
     assert "interaction/update" in actions
 
 
+def test_wallet_api_worker_service_plan_redaction_and_revocation_audit() -> None:
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans",
+        json={
+            "actor_did": "did:key:owner",
+            "service_doc_id": "service:redaction-1",
+            "source_content_cid": "bafk-redaction-service",
+            "source_page_cid": "bafk-redaction-page",
+            "service_title": "Shelter Intake",
+            "provider_name": "Shelter Network",
+            "goal": "Complete intake before Friday",
+            "steps": ["Call intake line", "Confirm bed availability"],
+            "documents_needed": ["Photo ID", "Proof of income"],
+            "questions_to_ask": ["Are walk-ins accepted?"],
+            "appointment_at": "2026-05-08T17:00:00+00:00",
+            "reminder_at": "2026-05-08T15:00:00+00:00",
+            "travel_target": "123 Main St",
+            "assigned_worker_recipient_id": "rec-worker-1",
+            "status": "active",
+            "private_notes_record_id": "record-private-redaction-notes",
+        },
+    )
+    assert response.status_code == 200
+    plan = response.json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/portal/plans/{plan['plan_id']}/share-grants",
+        json={
+            "actor_did": "did:key:owner",
+            "audience_did": "did:key:worker",
+            "worker_recipient_id": "rec-worker-1",
+            "worker_name": "Case Worker Desk",
+            "scopes": ["service_summary", "checklist"],
+        },
+    )
+    assert response.status_code == 200
+    share = response.json()
+    grant_id = share["grant_id"]
+    allowed_fields = share["grant"]["caveats"]["allowed_fields"]
+
+    assert allowed_fields == [
+        "service_doc_id",
+        "source_content_cid",
+        "source_page_cid",
+        "service_title",
+        "provider_name",
+        "goal",
+        "status",
+        "steps",
+        "documents_needed",
+        "questions_to_ask",
+    ]
+    assert "appointment_at" not in allowed_fields
+    assert "reminder_at" not in allowed_fields
+    assert "travel_target" not in allowed_fields
+    assert "assigned_worker_recipient_id" not in allowed_fields
+    assert "private_notes_record_id" not in allowed_fields
+
+    worker_visible_plan = {field: share["plan"][field] for field in allowed_fields}
+    assert worker_visible_plan["service_title"] == "Shelter Intake"
+    assert worker_visible_plan["steps"] == ["Call intake line", "Confirm bed availability"]
+    assert "123 Main St" not in json.dumps(worker_visible_plan)
+    assert "record-private-redaction-notes" not in json.dumps(worker_visible_plan)
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/grant-receipts",
+        params={"audience_did": "did:key:worker", "status": "active"},
+    )
+    assert response.status_code == 200
+    assert [receipt["grant_id"] for receipt in response.json()["receipts"]] == [grant_id]
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/grants/{grant_id}/revoke",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "revoked"
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/grant-receipts",
+        params={"audience_did": "did:key:worker", "status": "active"},
+    )
+    assert response.status_code == 200
+    assert response.json()["receipts"] == []
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/grant-receipts",
+        params={"audience_did": "did:key:worker", "status": "revoked"},
+    )
+    assert response.status_code == 200
+    revoked_receipts = response.json()["receipts"]
+    assert [receipt["grant_id"] for receipt in revoked_receipts] == [grant_id]
+    assert revoked_receipts[0]["caveats"]["allowed_fields"] == allowed_fields
+
+    response = client.get(
+        f"/wallets/{wallet['wallet_id']}/portal/interactions",
+        params={"interaction_type": "shared_service_plan"},
+    )
+    assert response.status_code == 200
+    interactions = response.json()["interactions"]
+    assert [interaction["related_grant_ids"] for interaction in interactions] == [[grant_id]]
+
+    response = client.get(f"/wallets/{wallet['wallet_id']}/audit")
+    assert response.status_code == 200
+    events = response.json()["events"]
+    actions = [event["action"] for event in events]
+    assert "service_plan/share" in actions
+    assert "grant/create" in actions
+    assert "grant/revoke" in actions
+    assert [event["action"] for event in events if event["grant_id"] == grant_id] == ["grant/create", "grant/revoke"]
+
+
 def test_wallet_api_portal_state_persists_through_snapshot_load(tmp_path) -> None:
     repository_root = tmp_path / "wallet-repository"
     service = WalletInterfaceService(repository_root=repository_root, services=[])
