@@ -382,6 +382,10 @@ export function App() {
   const agentChat = useAgentChatService(agentRuntime);
 
   useEffect(() => {
+    activeRouteRef.current = activeRoute;
+  }, [activeRoute]);
+
+  useEffect(() => {
     const syncRouteFromHash = () => {
       const detailDocId = getServiceDetailDocIdFromHash();
       setServiceDetailDocId(detailDocId);
