@@ -592,10 +592,15 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
     assert implementation["task_id"] == "AGENT-000"
     assert implementation["returncode"] == 7
     assert implementation["validation_result"]["passed"] is False
-    assert implementation["commit_result"]["committed"] is False
+    assert implementation["commit_result"]["committed"] is True
+    assert implementation["implementation_commit"]
     assert implementation["merge_result"]["merged"] is False
-    assert implementation["cleanup_result"]["cleaned"] is False
-    assert Path(implementation["worktree_path"]).exists()
+    assert implementation["cleanup_result"]["cleaned"] is True
+    assert implementation["failed_preservation_result"]["preserved"] is True
+    rescue_branch = implementation["failed_preservation_result"]["rescue_branch"]
+    assert rescue_branch.startswith("rescue/agent-000-attempt-1-")
+    assert rescue_branch.endswith("-failed-validation")
+    assert not Path(implementation["worktree_path"]).exists()
     assert not (repo_root / "docs" / "agent.md").exists()
     branch_check = subprocess.run(
         ["git", "rev-parse", "--verify", implementation["branch"]],
@@ -604,7 +609,16 @@ Path("docs/agent.md").write_text("implemented in worktree", encoding="utf-8")
         text=True,
         check=False,
     )
-    assert branch_check.returncode == 0
+    assert branch_check.returncode != 0
+    rescued_file = subprocess.run(
+        ["git", "show", f"{rescue_branch}:docs/agent.md"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert rescued_file.returncode == 0
+    assert rescued_file.stdout == "implemented in worktree"
 
 
 def test_daemon_cleans_no_change_ephemeral_worktree(tmp_path):
