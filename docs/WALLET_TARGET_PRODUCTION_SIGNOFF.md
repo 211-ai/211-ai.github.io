@@ -157,7 +157,7 @@ this packet.
 | UCAN profile | `docs/WALLET_UCAN_PROFILE.md` reviewed for the target delegation boundary and future interop expectations |  |
 | Production decisions | `docs/WALLET_PRODUCTION_DECISIONS_ADR.md` accepted or amended for this deployment |  |
 | Retention policy | `docs/WALLET_RETENTION_POLICY.md` mapped to datastore lifecycle, backup purge, IPFS pinning, Filecoin deal, S3 lifecycle, log, and alert retention settings |  |
-| Privacy review | Approved analytics templates have cohort thresholds, epsilon budgets, allowed dimensions, nullifier handling, withdrawal behavior, and reviewer identity |  |
+| Privacy review | Approved analytics templates are present in the signoff packet with consent copy, allowed fields, proof statements, nullifier policy, k-threshold, privacy budget, retention mapping, withdrawal handling, and reviewer names or roles |  |
 | Legal/policy review | User consent language, delegate terms, export behavior, revocation limits, and data-sharing obligations are approved |  |
 | Accessibility/usability review | Live UI auth, registration, sharing, recipient access, consent, proof center, export, and emergency revoke flows pass the target accessibility and usability standard |  |
 | Incident response | `docs/WALLET_OPERATIONS_RUNBOOK.md` is linked from the on-call system and the team has tested proof-backend, storage-outage, revoked-grant, lost-key, and privacy-incident paths |  |
@@ -177,10 +177,20 @@ in the Reviewer Signoff table.
 
 For each approved template, the completed JSON packet's
 `analytics_privacy_review.approved_templates[]` entry must include the
-validator-required fields: `template_id`, `reviewer`, `review_date`,
-`min_cohort_size`, `epsilon_budget`, `allowed_dimensions`,
-`retention_decision`, and `withdrawal_behavior`. The human packet must also
+validator-required governance fields: `template_id`, `reviewer`, `review_date`,
+`consent_copy_artifact`, `allowed_record_types`, `allowed_derived_fields`,
+`allowed_dimensions`, `proof_statements`, `nullifier_policy`,
+`min_cohort_size`, `k_threshold`, `privacy_budget`, `retention_mapping`,
+`retention_decision`, and `withdrawal_behavior`. The `reviewer` value may be a
+named reviewer or an accountable reviewer role. The human packet must also
 document the extended WALLET-160 review fields below.
+
+Production analytics must run only from approved template IDs recorded in this
+packet. Do not approve ad hoc SQL, GraphRAG prompts, notebook filters, export
+jobs, or other arbitrary raw queries against wallet records or contribution
+payloads. New questions require a new or amended template, consent copy,
+proof statement, privacy-budget decision, retention mapping, reviewer decision,
+and a passing packet validation run.
 
 | Packet Item | Required Content |
 | --- | --- |
@@ -188,16 +198,18 @@ document the extended WALLET-160 review fields below.
 | Purpose | Specific study or operational question, why aggregate analytics is necessary, and why the same decision cannot be made from less sensitive or already public data. |
 | Data fields | Approved record types, approved derived fields, approved dimensions, and explicit confirmation that raw payloads, precise location, plaintext document fields, direct identifiers, and arbitrary raw queries are out of scope. |
 | Consent language | User-facing consent copy or copy artifact ID, including the template purpose, data categories, derived fields, aggregation behavior, retention summary, withdrawal behavior, and support/contact path. |
+| Proof statements | Public proof statements required for contributions, including `analytics_contribution` statement fields, verifier or proof mode, and confirmation that proof public inputs expose only template ID, field names, and nullifier-like anti-duplication material. |
+| Nullifier policy | Scope of the per-template or per-study nullifier, duplicate-rejection behavior, retention period, withdrawal handling, and proof that nullifiers cannot be used as wallet identifiers outside the analytics audit boundary. |
 | Retention mapping | `docs/WALLET_RETENTION_POLICY.md` data classes and target `retention_mapping` controls for the template definition, consent copy, consents, withdrawals, contributions, nullifiers, query-budget ledger, sparse-cell reviews, released aggregates, and audit events. |
-| Cohort threshold | Minimum cohort size, any stricter per-dimension threshold, release behavior when the threshold is not met, and evidence that `count-by-fields` suppression does not reveal suppressed labels. |
-| Privacy budget | Epsilon budget, per-query epsilon, sensitivity, budget key or ledger scope, budget-exhaustion behavior, and reviewer rationale for any value higher than the default. |
+| Cohort threshold | Minimum cohort size and `k_threshold`, any stricter per-dimension threshold, release behavior when the threshold is not met, and evidence that `count-by-fields` suppression does not reveal suppressed labels. |
+| Privacy budget | `privacy_budget` values for epsilon budget, per-query epsilon, sensitivity, budget key or ledger scope, budget limit, budget-exhaustion behavior, and reviewer rationale for any value higher than the default. |
 | Sparse-cell risk review | Reviewed dimensions and joins, rare-condition or rare-region risk notes, regression evidence for sparse-cell suppression and duplicate-nullifier rejection, and any tracked exceptions. |
 | Reviewer decision | Reviewer name or role, decision, decision date, evidence ID, and whether the decision is `approved`, `approved with tracked exception`, or `deferred`. A `deferred` decision blocks production approval for that template. |
 | Withdrawal and audit handling | How consent withdrawal blocks future contributions, how prior released aggregates are handled, which nullifier/query-budget/audit records are retained, and how paused or retired templates block new consent, contribution, and aggregate query creation. |
 
 Production analytics register:
 
-| Template ID | Purpose Evidence | Data Fields and Dimensions | Consent Copy Artifact | Retention Mapping | Cohort Threshold and Privacy Budget | Sparse-Cell Review | Reviewer Decision | Withdrawal and Audit Plan |
+| Template ID | Purpose Evidence | Allowed Fields and Dimensions | Consent Copy Artifact | Proof Statements and Nullifier Policy | Retention Mapping | K-Threshold and Privacy Budget | Reviewer Names or Roles | Withdrawal and Audit Plan |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |  |  |  |
 
@@ -242,6 +254,7 @@ python -m wallet_interface.ops --validate-production-readiness
 python -m wallet_interface.ops \
   --validate-target-signoff-packet /path/to/target-signoff.json \
   --fail-on-error
+python scripts/run_wallet_release_checks.py --dry-run
 ```
 
 The readiness report must not include secret values. A report that passes only
