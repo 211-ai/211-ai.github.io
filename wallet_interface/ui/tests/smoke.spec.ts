@@ -1346,36 +1346,4 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
 });
 
-test("recipient access requires multi-sig approval before decrypt sharing", async ({ page }) => {
-  await page.goto("/#/recipient-access");
-  const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
-  const preview = request.getByLabel(/Downtown Outreach access capability preview/i);
-  await expect(preview.getByText(/open file contents/i)).toBeVisible();
-  await expect(preview.getByText(/approval pending/i)).toBeVisible();
-  await expect(preview.getByText(/ask group questions/i)).toBeVisible();
-  await expect(request.getByText(/1\/2 approvals/i)).toBeVisible();
-  await expect(request.getByRole("button", { name: /^Approve$/i })).toBeDisabled();
-  await request.getByRole("button", { name: /Record approval/i }).click();
-  await expect(preview.getByText(/approval ready/i)).toBeVisible();
-  await expect(request.getByText(/2\/2 approvals/i)).toBeVisible();
-  await request.getByRole("button", { name: /^Approve$/i }).click();
-  await expect(request.getByText("approved", { exact: true })).toBeVisible();
-  const receipt = page.getByRole("article", { name: /Downtown Outreach/i }).filter({ hasText: "Share proof code" });
-  const receiptPreview = receipt.getByLabel(/Downtown Outreach receipt capability preview/i);
-  await expect(receipt.locator(".badge-row").getByText(/open file contents/i)).toBeVisible();
-  await expect(receipt.locator(":scope > .scope-header").getByText("active", { exact: true })).toBeVisible();
-  await expect(receiptPreview.getByText(/currently active/i)).toBeVisible();
-  await expect(receiptPreview.getByText(/make a full wallet export/i)).toBeVisible();
-});
 
-test("recipient access can revoke an active grant", async ({ page }) => {
-  await page.goto("/#/recipient-access");
-  const request = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
-  await expect(request.getByText(/active grant/i)).toBeVisible();
-  await request.getByRole("button", { name: /Revoke/i }).click();
-  await expect(request.getByText("revoked", { exact: true })).toBeVisible();
-  await expect(request.getByRole("button", { name: /Revoke/i })).toHaveCount(0);
-  const receipt = page.getByRole("article", { name: /Legal Aid desk/i }).filter({ hasText: "Share proof code" });
-  await expect(receipt.locator(":scope > .scope-header").getByText("revoked", { exact: true })).toBeVisible();
-  await expect(receipt.getByLabel(/Legal Aid desk receipt capability preview/i).getByText(/revoked/i)).toBeVisible();
-});

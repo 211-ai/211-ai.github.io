@@ -22,14 +22,25 @@ type ScreenshotManifestEntry = Omit<CaptureScenario, "prepare"> & {
 
 const captureScenarios: CaptureScenario[] = [
   {
+    id: "login",
+    path: "/__login",
+    title: "Login page",
+    state: "signed out",
+    goals: [
+      "Username and password fields should be immediately visible.",
+      "The sign-in action should be clear and reachable on mobile.",
+      "The page should feel like the entry point to Abby without extra informational boxes."
+    ]
+  },
+  {
     id: "home",
     path: "/",
-    title: "Two-card home screen",
+    title: "Home safety plan screen",
     state: "default",
     goals: [
-      "Contacts and Sharing should be the only overview cards.",
-      "The combined next check-in and Check in now action should live in Quick actions.",
-      "The next check-in status should be easy to find without crowding the overview cards."
+      "The welcome heading should be the first clear page signal.",
+      "The old overview card row should stay removed.",
+      "The next check-in and Check in now action should live in Quick actions."
     ]
   },
   {
@@ -235,40 +246,6 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
-    id: "sharing-rules",
-    path: "/#/sharing-rules",
-    title: "Sharing compatibility route",
-    state: "default",
-    goals: [
-      "The old Sharing route should lead to the combined contacts and sharing screen.",
-      "A saved contact should open into an obvious sharing edit panel.",
-      "A saved contact should own its sharing-rule settings."
-    ],
-    prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
-    }
-  },
-  {
-    id: "sharing-rules-some-items-off",
-    path: "/#/sharing-rules",
-    title: "Sharing compatibility route with items turned off",
-    state: "medical and housing items off",
-    goals: [
-      "Unchecked items should be visually clear but not alarming.",
-      "The preview should update to plain item names after choices change.",
-      "The compatibility route should avoid a second conflicting sharing editor."
-    ],
-    prepare: async (page) => {
-      const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
-      await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
-      await editPanel.getByLabel(/Medical notes/i).uncheck();
-      await editPanel.getByLabel(/Found permanent housing/i).uncheck();
-    }
-  },
-  {
     id: "contacts-shelter-nudge-approved",
     path: "/#/contacts",
     title: "Emergency contacts after shelter nudge approval",
@@ -377,122 +354,6 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
-    id: "recipient-access",
-    path: "/#/recipient-access",
-    title: "Emergency recipient access",
-    state: "unverified",
-    goals: [
-      "Sensitive data should be hidden before verification.",
-      "Recipient verification should be prominent and clear.",
-      "The screen should be usable in the field on a phone."
-    ]
-  },
-  {
-    id: "recipient-access-verified",
-    path: "/#/recipient-access",
-    title: "Emergency recipient access after verification",
-    state: "verified",
-    goals: [
-      "Authorized disclosure scopes should be obvious after verification.",
-      "The screen should not expose unrelated wallet data.",
-      "The next action for contacting support should be clear."
-    ],
-    prepare: async (page) => {
-      await page.getByLabel(/Access code/i).fill("123456");
-      await page.getByLabel(/Recipient phone or email/i).fill("maya@example.org");
-      await page.getByRole("button", { name: /Verify and view/i }).click();
-    }
-  },
-  {
-    id: "recipient-access-approval-ready",
-    path: "/#/recipient-access",
-    title: "Recipient access ready for approval",
-    state: "second approval recorded",
-    goals: [
-      "The request should clearly show that enough approvals are recorded.",
-      "Approve and reject actions should remain easy to distinguish.",
-      "Capability language should stay understandable before sharing starts."
-    ],
-    prepare: async (page) => {
-      const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
-      await request.getByRole("button", { name: /Record approval/i }).click();
-      await expect(request.getByText(/2\/2 approvals/i)).toBeVisible();
-    }
-  },
-  {
-    id: "recipient-access-active-grant",
-    path: "/#/recipient-access",
-    title: "Recipient access active grant",
-    state: "grant approved",
-    goals: [
-      "Approved access should be visually distinct from pending requests.",
-      "The revoke action should be visible without overpowering the receipt details.",
-      "Sharing history should show the approved grant clearly."
-    ],
-    prepare: async (page) => {
-      const request = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach" });
-      await request.getByRole("button", { name: /Record approval/i }).click();
-      await request.getByRole("button", { name: /^Approve$/i }).click();
-      await expect(page.getByRole("article", { name: /Downtown Outreach/i }).filter({ hasText: "Share proof code" })).toBeVisible();
-    }
-  },
-  {
-    id: "recipient-access-grant-revoked",
-    path: "/#/recipient-access",
-    title: "Recipient access revoked grant",
-    state: "grant revoked",
-    goals: [
-      "Revoked access should be obvious without hiding the audit trail.",
-      "The screen should explain that access is turned off.",
-      "Receipt status should remain readable on mobile."
-    ],
-    prepare: async (page) => {
-      const request = page.locator(".access-request-item").filter({ hasText: "Legal Aid desk" });
-      await request.getByRole("button", { name: /Revoke/i }).click();
-      await expect(request.getByText("revoked", { exact: true })).toBeVisible();
-    }
-  },
-  {
-    id: "benefits-protection",
-    path: "/#/benefits-protection",
-    title: "Benefits protection consent",
-    state: "default",
-    goals: [
-      "The benefits checkbox should start checked unless the user saved it as off.",
-      "The user should be able to turn it off in plain language.",
-      "Agency action should not be implied as guaranteed.",
-      "Legal/policy review limitations should be visible without overwhelming the user."
-    ]
-  },
-  {
-    id: "benefits-protection-enabled",
-    path: "/#/benefits-protection",
-    title: "Benefits protection consent enabled",
-    state: "checked",
-    goals: [
-      "The checked consent state should be visually explicit.",
-      "Legal and policy limitations should remain visible after consent is on.",
-      "The save action should become available without implying guaranteed agency action."
-    ],
-    prepare: async (page) => {
-      await page.getByLabel(/Allow Abby to prepare/i).check();
-    }
-  },
-  {
-    id: "benefits-protection-off",
-    path: "/#/benefits-protection",
-    title: "Benefits protection consent off",
-    state: "unchecked",
-    goals: [
-      "Turning benefits help off should be visibly clear.",
-      "The copy should still avoid promising agency action.",
-      "The privacy/legal review caveat should remain visible."
-    ],
-    prepare: async (page) => {
-      await page.getByLabel(/Allow Abby to prepare/i).uncheck();
-    }
-  },
-  {
     id: "analytics",
     path: "/#/analytics",
     title: "Group facts choice",
@@ -592,18 +453,16 @@ const captureScenarios: CaptureScenario[] = [
 ];
 
 const artifactRoot = path.resolve(process.cwd(), "artifacts/ui-screenshots/latest");
+const appSessionKey = "abby-ui-session-v1";
 const routeReadyHeadings: Record<string, RegExp> = {
-  "/": /Your safety plan/i,
+  "/": /Welcome to your safety plan!/i,
   "/#/analytics": /Share group facts, not your name/i,
-  "/#/benefits-protection": /Benefits notice/i,
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
   "/#/exports": /Shareable wallet bundles/i,
   "/#/proof-center": /Verified wallet claims/i,
-  "/#/recipient-access": /Requests to see my info/i,
   "/#/register": /Create your Abby profile/i,
   "/#/security": /Account safety/i,
-  "/#/sharing-rules": /People who can help/i,
   "/#/shelter": /Assisted access/i,
   "/#/social-services": /Find support/i,
   "/#/uploads": /Saved files and info/i,
@@ -632,6 +491,21 @@ function buildPrompt(route: CaptureScenario, viewport: CaptureViewport) {
 }
 
 async function openCaptureScenario(page: Page, scenarioPath: string) {
+  if (scenarioPath === "/__login") {
+    await page.goto("/");
+    await page.evaluate((key) => window.localStorage.removeItem(key), appSessionKey);
+    await page.reload();
+    await expect(page.locator(".login-page")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Sign in/i })).toBeVisible();
+    return;
+  }
+
+  await page.goto("/");
+  await page.evaluate(
+    (key) => window.localStorage.setItem(key, JSON.stringify({ username: "visual-reviewer" })),
+    appSessionKey
+  );
+
   if (scenarioPath === "/#/shelter") {
     await verifyShelterStaffForCapture(page);
     return;
