@@ -278,6 +278,18 @@ export function App() {
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(() => defaultAppState.benefitsOptIn ?? true);
 
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const persistedState = readPersistedAppState() ?? createDefaultAppState();
+      writePersistedAppState({
+        ...persistedState,
+        benefitsOptIn
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [benefitsOptIn]);
+
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
     const events = await listWalletAuditEvents(walletApiConfig);
