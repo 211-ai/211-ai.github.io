@@ -398,6 +398,117 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 Service Partner Pilot Readiness
+
+Run this pilot in target staging after WALLET-170, WALLET-180, WALLET-190, and
+WALLET-200 evidence has been accepted. Use synthetic records and a staging
+partner DID only. The pilot demonstrates the same browser/API workflow guarded
+by `wallet_interface/ui/tests/fullstack-wallet.spec.ts`, then archives
+target-environment evidence without plaintext, precise coordinates, verifier
+witnesses, key material, or secret values.
+
+Required setup:
+
+- Target staging uses production-like `WALLET_REPOSITORY_ROOT`,
+  `WALLET_STORAGE_CONFIG`, `WALLET_AUTO_LOAD_REPOSITORY=true`, and
+  `WALLET_AUTO_PERSIST=true`.
+- The active proof path is the WALLET-180 approved verifier configuration. A
+  simulated local proof is acceptable only for repository automation, not for
+  target pilot signoff.
+- The analytics template is already approved under WALLET-200 with consent
+  copy, allowed fields, nullifier policy, k-threshold, privacy budget, reviewer
+  decision, and retention mapping.
+- The partner DID, partner organization label, user DID, analytics reviewer DID,
+  and evidence ticket IDs are known before the run.
+
+Pilot sequence:
+
+1. Create a synthetic wallet and add a document through the 211-AI Uploads
+   screen.
+
+   Pass criteria: the browser shows the stored encrypted record, record storage
+   verifies, and `GET /wallets/${WALLET_ID}/audit` includes `record/add`.
+
+2. Add the synthetic precise location through the wallet API.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/synthetic-location.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations"
+   ```
+
+   Archive the location record ID and storage/audit status only. Do not archive
+   real or synthetic precise coordinates in shared evidence.
+
+3. Create the service-area eligibility proof from Proof Center.
+
+   Pass criteria: the proof receipt is `location_region`, verified by the
+   approved verifier, and public inputs contain only the claim, region ID,
+   policy hash, and verifier-safe metadata. Confirm no response, browser text,
+   audit entry, or archived log contains `lat`, `lon`, target coordinates, or
+   witness values.
+
+4. Share purpose-bound partner access from Export Center or the bounded grant
+   endpoints.
+
+   Use a purpose such as `211_partner_screening` and include only the document
+   and location record IDs needed for the handoff. Verify bundle hash, schema,
+   storage, and descriptor import. Confirm the bundle contains encrypted
+   descriptors and proof receipts only, not plaintext documents or precise
+   coordinates.
+
+5. Contribute to approved aggregate analytics.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/synthetic-derived-fields.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/contributions"
+   ```
+
+   Pass criteria: contribution fields are approved derived or coarse fields,
+   duplicate nullifier checks are active, the cohort release meets the approved
+   k-threshold, privacy-budget spend is recorded, and sparse cells are
+   suppressed.
+
+6. Revoke partner access.
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/grants/${GRANT_ID}/revoke"
+   ```
+
+   Then repeat the partner export, analysis, or proof call that was allowed
+   before revocation. It must fail, and `GET
+   /wallets/${WALLET_ID}/grant-receipts?status=revoked` must show the grant as
+   revoked.
+
+7. Audit the complete workflow through the UI and API.
+
+   The final audit evidence must include `record/add`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `analytics/query`,
+   `export/create`, and `grant/revoke`. Archive the event IDs, timestamps,
+   actor DIDs, resources, decisions, grant IDs, and hash-chain metadata if
+   available. Do not archive plaintext payloads, precise coordinates, proof
+   witnesses, key material, bearer tokens, or verifier credentials.
+
+Local repository validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Target staging signoff is blocked if the local full-stack check fails, the
+target proof verifier is not the approved non-simulated backend, analytics
+template approval is missing, revocation does not block reuse, or any evidence
+artifact leaks data outside the allowed public inputs and encrypted descriptor
+boundary.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or

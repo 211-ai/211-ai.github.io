@@ -351,6 +351,49 @@ Audit events are append-only hash-linked records. They should be exported for
 incident response and retained according to the deployment retention policy in
 `docs/WALLET_RETENTION_POLICY.md`.
 
+## 211 Service Partner Pilot
+
+WALLET-210 pilot readiness is the staging demonstration that ties the wallet
+API to the 211-AI browser surfaces a partner will see during an assisted service
+handoff. The pilot must use synthetic data and must be backed by
+`ipfs_datasets_py.wallet` through `wallet_interface.api`; browser-only mock
+state is not launch evidence.
+
+Pilot surface map:
+
+| Pilot step | UI/API surface | Evidence to archive |
+| --- | --- | --- |
+| Create wallet and add a document | Uploads screen plus `POST /wallets` and `POST /wallets/{wallet_id}/documents` or `/documents/text` | Wallet ID, record ID, encrypted storage status, and `record/add` audit event. |
+| Add precise location | `POST /wallets/{wallet_id}/locations` | Location record ID only; do not archive precise coordinates outside the synthetic fixture. |
+| Prove service-area eligibility | Proof Center plus `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | Proof receipt with `location_region`, verifier metadata, `region_id`, `region_policy_hash`, and no `lat`, `lon`, target coordinates, or witness values in public inputs. |
+| Share with a service partner | Export Center or bounded grant endpoints with a named partner DID and purpose such as `211_partner_screening` | Grant receipt, invocation evidence where used, encrypted export hash/schema/storage verification, and purpose caveat. |
+| Contribute approved aggregate analytics | `/analytics/templates`, `/wallets/{wallet_id}/analytics/consents/from-template`, `/wallets/{wallet_id}/analytics/contributions`, and approved aggregate count endpoints | Approved template ID, consent ID, contribution ID, nullifier/proof ID, k-threshold result, privacy-budget spend, and no precise fields. |
+| Revoke partner access | `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` | Revoked grant receipt and a blocked post-revocation partner call. |
+| Audit the workflow | Audit screen and `GET /wallets/{wallet_id}/audit` | Timeline containing `record/add`, `proof/create`, `analytics/consent_create`, `analytics/contribute`, `analytics/query`, `export/create`, and `grant/revoke`. |
+
+The repository regression for this scenario is
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
+API with local durable repository/blob storage, adds a document through the UI,
+adds location through the API, creates a Proof Center location-region proof,
+contributes to an approved k-threshold analytics template, creates a
+purpose-bound encrypted partner bundle, revokes the partner grant, verifies the
+revoked grant cannot be reused, and checks the audit timeline through both UI
+and API surfaces.
+
+Run the focused pilot check with:
+
+```bash
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Target staging pilot evidence should include the same flow, replacing local
+development proof mode with the WALLET-180 approved verifier cutover packet and
+retention evidence from WALLET-190 and WALLET-200. If any UI/API response,
+audit event, export bundle, analytics contribution, proof public input, browser
+console, or archived log contains plaintext document text, precise coordinates,
+proof witnesses, key material, bearer tokens, or verifier credentials, stop the
+pilot and handle it as a privacy incident.
+
 ## CLI Reference
 
 The local CLI persists snapshots under `~/.ipfs_datasets/wallet/manifests` and
