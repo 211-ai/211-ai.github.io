@@ -197,6 +197,52 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Workflow
+
+WALLET-210 pilot readiness uses the public 211-AI UI and API surfaces backed by
+`ipfs_datasets_py.wallet`; it must not require direct mutation of wallet core
+objects or plaintext storage. The recommended staging demonstration uses one
+synthetic owner DID, one synthetic partner DID, and an approved analytics
+template whose review evidence is already recorded under the WALLET-200
+analytics governance workflow.
+
+Pilot route map:
+
+| Pilot step | UI surface | API surface | Audit evidence |
+| --- | --- | --- | --- |
+| Create wallet and add documents | Uploads | `POST /wallets`, `POST /wallets/{wallet_id}/documents/text`, `POST /wallets/{wallet_id}/documents` | `wallet/create`, `record/add` |
+| Add current location | Assisted setup or staging API seed | `POST /wallets/{wallet_id}/locations` | `record/add` for a `location` record |
+| Share purpose-bound partner access | Recipient access | `POST /wallets/{wallet_id}/access-requests`, `POST /wallets/{wallet_id}/access-requests/{request_id}/approve`, `GET /wallets/{wallet_id}/grant-receipts` | `access/request`, `grant/create`, `access/approve` |
+| Partner uses bounded access | Recipient access | `POST /wallets/{wallet_id}/records/{record_id}/analyze` or redacted analysis endpoints with grant or invocation | `record/analyze` or redacted analysis action |
+| Prove location eligibility | Proof center | `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proof-grants`, `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | `proof/create` |
+| Contribute approved aggregate facts | Analytics consent and API | `POST /analytics/templates`, `POST /wallets/{wallet_id}/analytics/consents/from-template`, `POST /wallets/{wallet_id}/analytics/contributions`, `POST /analytics/{template_id}/count-by-fields` | `analytics/consent_create`, `analytics/contribute`, `analytics/query` |
+| Revoke partner access | Recipient access | `POST /wallets/{wallet_id}/access-requests/{request_id}/revoke` or `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` | `grant/revoke`, `access/revoke` |
+| Audit the workflow | Audit | `GET /wallets/{wallet_id}/audit` | Ordered end-to-end event timeline |
+
+Location proof receipts must expose only public inputs such as `claim`,
+`region_id`, and `region_policy_hash`. The receipt, UI, logs, export bundles,
+and analytics contribution proof must not contain precise latitude, longitude,
+target coordinates, witness values, wallet keys, or partner secrets.
+
+Purpose-bound partner access should use `access-requests` when the partner asks
+for a single record or `records/{record_id}/grants` when the owner is directly
+issuing a scoped grant. In both cases record the partner DID, purpose string,
+resource IDs, abilities, output types or caveats, expiration when applicable,
+grant receipt hash, and revocation evidence. Approved pilot purposes should be
+human-reviewable values such as `housing_navigation_referral`,
+`benefits_screening`, or `document_review_for_service_referral`; do not use
+generic production purposes like `*`, `admin`, or `debug`.
+
+Use `wallet_interface/ui/tests/fullstack-wallet.spec.ts` as the executable
+staging reference. The WALLET-210 scenario starts a live wallet API with local
+durable storage, drives browser upload, partner access approval, proof center,
+revocation, and audit views, and uses public analytics APIs for approved
+template consent, contribution, and aggregate release. Run it with:
+
+```bash
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
 ## API Reference
 
 Run the API with:

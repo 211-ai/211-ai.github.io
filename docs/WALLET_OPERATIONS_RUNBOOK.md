@@ -124,6 +124,74 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Partner Pilot
+
+Run this pilot only in a staging environment with synthetic people, synthetic
+documents, synthetic partner DIDs, approved analytics-template evidence, and
+durable wallet repository/blob storage. The pilot is ready when a reviewer can
+perform the flow through 211-AI UI/API surfaces and then verify the audit
+timeline without inspecting plaintext storage or `ipfs_datasets_py.wallet`
+internals.
+
+Preflight:
+
+1. Confirm WALLET-170, WALLET-180, WALLET-190, and WALLET-200 evidence is
+   archived for the staging environment.
+2. Confirm `GET /health`, `/ops/health?verify_storage=true`, proof contract
+   validation, and target signoff validation pass for the environment under
+   test.
+3. Confirm the partner DID, owner DID, wallet ID, purpose string, approved
+   analytics template ID, and retention evidence ID are recorded in the pilot
+   evidence ticket.
+4. Confirm the analytics template is `approved`, has legal/privacy consent copy,
+   allowed fields, k-threshold, epsilon budget, nullifier policy, reviewer
+   roles, and withdrawal handling recorded in the WALLET-200 packet.
+
+Demonstration path:
+
+1. Create or load the synthetic wallet and add at least one document from the
+   Uploads UI. Add the precise location through the assisted setup path or the
+   staging API. Verify `GET /wallets/{wallet_id}/records` lists document and
+   location records without plaintext.
+2. Have the partner request purpose-bound access to the document. The owner
+   approves it from Recipient access with the expected purpose, ability,
+   resource, partner DID, receipt hash, and expiration. The partner may run only
+   the allowed safe summary or redacted analysis.
+3. In Proof center, create a `location_region` proof for the partner or owner.
+   Confirm the receipt shows public inputs only and no precise coordinates,
+   target coordinates, witness values, keys, or secrets in the UI, API response,
+   logs, or export evidence.
+4. Create analytics consent from the approved template, contribute only approved
+   derived fields such as `county` and `need_category`, and run the approved
+   aggregate release. Confirm any sparse cells are suppressed and raw document
+   content, direct identifiers, and precise location fields are absent.
+5. Revoke the partner access from Recipient access or the public revoke API.
+   Confirm grant receipts show `revoked`, dependent invocations are blocked,
+   and post-revocation partner analysis/decrypt/export calls fail.
+6. Open Audit and confirm the ordered timeline contains `record/add`,
+   `access/request`, `grant/create`, `access/approve`, `record/analyze` or the
+   redacted analysis action, `proof/create`, `analytics/consent_create`,
+   `analytics/contribute`, `analytics/query`, `grant/revoke`, and
+   `access/revoke` when the access-request path is used.
+
+Stop the pilot and file a launch blocker if any UI, API response, log, export,
+audit detail, analytics proof, or screenshot includes precise coordinates,
+document plaintext outside an explicitly owner-approved decrypt view, contact
+details in redacted outputs, key material, bearer tokens, secret-manager
+resolved values, or unapproved analytics fields.
+
+Validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Archive the validation output, `/ops/health?verify_storage=true` result, proof
+receipt IDs, grant receipt IDs, aggregate result ID, audit export, and reviewer
+leak-check notes with the pilot evidence ticket.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or
