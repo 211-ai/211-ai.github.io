@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ABBY PNG asset usage example</title>
+  <link rel="stylesheet" href="css/abby-png-assets.css" />
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .demo { min-height: 100vh; display: grid; grid-template-columns: 280px 1fr; }
+    .sidebar { padding: 24px; }
+    .main { padding: 44px 56px; }
+    h1 { margin: 0 0 28px; font-size: clamp(2.4rem, 5vw, 4.2rem); color: var(--abby-navy); }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(240px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .card { padding: 28px; }
+    .checkin { padding: 26px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .support { padding: 32px; display: flex; gap: 28px; align-items: center; min-height: 150px; }
+    button { padding: 12px 22px; }
+  </style>
+</head>
+<body>
+  <main class="demo abby-page-shell">
+    <aside class="sidebar abby-sidebar">
+      <strong style="color: var(--abby-navy);">ABBY</strong>
+    </aside>
+    <section class="main">
+      <header class="abby-page-header">
+        <div style="color: var(--abby-teal); font-weight: 800; letter-spacing: .08em;">TODAY</div>
+        <h1>Your safety plan</h1>
+      </header>
+
+      <div class="cards">
+        <article class="card abby-card"><h2>Contacts</h2><p>2 people or services set up</p></article>
+        <article class="card abby-card"><h2>Sharing</h2><p>Choose what people can see</p></article>
+      </div>
+
+      <section class="checkin abby-checkin-panel">
+        <div><strong>NEXT CHECK-IN</strong><br><span style="font-size: 1.5rem; color: var(--abby-forest); font-weight: 800;">May 11, 2026</span></div>
+        <button class="abby-primary-button">Check in now</button>
+      </section>
+
+      <section class="support abby-support-card">
+        <span class="abby-support-badge" aria-hidden="true"></span>
+        <div>
+          <h2>Need help today?</h2>
+          <p>Find shelter, services, and support through your local 211 network.</p>
+          <button class="abby-primary-button">Find help near you</button>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
