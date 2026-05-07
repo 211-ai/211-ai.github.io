@@ -71,6 +71,7 @@ _SIGNOFF_REQUIRED_RETENTION_FIELDS = (
     "backup_purge_sla",
     "ipfs_pinning",
     "filecoin_deal_expiration",
+    "s3_lifecycle",
     "log_retention",
     "alert_retention",
     "deletion_tombstone_retention",
@@ -543,6 +544,22 @@ def validate_target_signoff_packet_template(
                 else "Artifact template fields are incomplete."
             ),
             {"missing": missing_artifact_refs},
+        )
+
+        retention_mapping = payload.get("retention_mapping")
+        retention_mapping = retention_mapping if isinstance(retention_mapping, dict) else {}
+        missing_retention_fields = [
+            field for field in _SIGNOFF_REQUIRED_RETENTION_FIELDS if field not in retention_mapping
+        ]
+        add_check(
+            "template_retention_fields",
+            "error" if missing_retention_fields else "ok",
+            (
+                "Retention template fields cover repository, storage, backup, IPFS, Filecoin, S3, logs, alerts, and deletion."
+                if not missing_retention_fields
+                else "Retention template fields are incomplete."
+            ),
+            {"missing": missing_retention_fields},
         )
 
     return {

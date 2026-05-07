@@ -1299,7 +1299,8 @@ Target-environment handoff:
 - Complete `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` for the target
   environment, including the `docs/WALLET_RETENTION_POLICY.md` mapping to
   repository lifecycle, encrypted storage lifecycle, backup purge, IPFS pinning,
-  Filecoin deal expiration, log retention, and alert retention controls.
+  Filecoin deal expiration, S3 lifecycle, log retention, and alert retention
+  controls, plus storage repair evidence that exposes ciphertext status only.
 - The in-repo gate for that handoff is
   `python -m wallet_interface.ops --validate-production-readiness`, which fails
   until durable repository/storage env vars, production proof mode, verifier

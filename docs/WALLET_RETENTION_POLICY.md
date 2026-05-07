@@ -76,6 +76,24 @@ must replace or confirm them during target-environment signoff.
 | UI/browser cache and local session state | Session only unless explicitly approved | Do not store raw wallet plaintext, verifier secrets, or long-lived invocation tokens in browser storage. |
 | Backups and replicas | Same retention as source data, with backup purge SLA recorded in signoff | S3 lifecycle, local backup rotation, IPFS pinning, and Filecoin deal expiration must be aligned. |
 
+## Target Storage Retention Mapping
+
+Target deployments must convert the default schedule above into concrete
+provider controls before live wallet data is stored. The approved mapping belongs
+in the completed signoff packet and must use secret-manager references rather
+than credential values.
+
+| Control | Required Mapping |
+| --- | --- |
+| Storage credentials | `WALLET_STORAGE_CREDENTIAL_SECRET_REF` names the secret-manager entry that provisions IPFS, Filecoin, S3, and any local-replica credentials. Readiness and signoff evidence may include the reference only, never the secret value. |
+| Encrypted replica set | `WALLET_STORAGE_CONFIG` names one primary encrypted store and the target mirror set. Production storage should use client-side encrypted replicas; S3 server-side encryption or private IPFS gateways are defense-in-depth, not the confidentiality boundary. |
+| IPFS pinning | Pin encrypted payload and metadata blocks only in the approved private pinset while the source wallet record version is retained. On deletion, key rotation, account closure, or retention expiry, remove wallet manifest references and unpin the associated CIDs. Record the pinset policy ID and unpin evidence in the signoff packet. |
+| Filecoin deal expiration | Filecoin deals for wallet ciphertext must not outlive the approved source-record retention period plus any legal hold. Renew deals only for active retained encrypted replicas. On deletion or expiry, let deals expire or issue provider-supported removal/renewal-blocking controls, and record deal IDs or policy references without plaintext. |
+| S3 lifecycle | S3 buckets or prefixes that hold wallet ciphertext must have lifecycle rules covering current object deletion, noncurrent-version expiration, incomplete multipart upload cleanup, and legal-hold exceptions. The lifecycle policy ID is recorded separately from `WALLET_STORAGE_CONFIG` so reviewers can verify object retention and backup purge behavior. |
+| Backup purge | Wallet repository backups and encrypted blob backups must purge deleted or expired records under the approved `backup_purge_sla`, unless a legal hold is active. Backup evidence must show ciphertext/object IDs only. |
+| Alert retention | Ops-health JSONL, alert-router payloads, incident tickets, and notification delivery logs default to 90 days. Incident-attached alerts follow the incident-retention period. Alert payloads must include status metadata only and must not include wallet plaintext, precise coordinates, proof witnesses, verifier tokens, or storage credentials. |
+| Repair evidence | Storage health and repair reports must prove encrypted replica availability with ciphertext hashes and storage-type statuses. They must not decrypt payloads for operators or include plaintext in report bodies, logs, alerts, or tickets. |
+
 ## Deletion Workflow
 
 When a user deletes a record, closes a wallet, withdraws an analytics consent, or

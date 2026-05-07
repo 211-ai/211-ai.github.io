@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -19,6 +20,7 @@ def test_wallet_deploy_reference_files_exist() -> None:
         DEPLOY_ROOT / "Dockerfile.ui",
         DEPLOY_ROOT / "docker-compose.wallet.yml",
         DEPLOY_ROOT / "env.production.example",
+        DEPLOY_ROOT / "storage-retention.example.json",
         DOCS_ROOT / "WALLET_OPERATOR_INTEGRATOR_REFERENCE.md",
         DOCS_ROOT / "WALLET_PROOF_VERIFIER_CONTRACT.md",
         DEPLOY_ROOT / "README.md",
@@ -63,9 +65,15 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "WALLET_OPS_ALERT_SECRET_REF" in compose
     assert "WALLET_PROOF_CREDENTIAL_SECRET_REF" in compose
     assert "WALLET_STORAGE_CREDENTIAL_SECRET_REF" in compose
+    assert "WALLET_STORAGE_IPFS_PINNING_POLICY_REF" in compose
+    assert "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF" in compose
+    assert "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF" in compose
+    assert "WALLET_BACKUP_PURGE_POLICY_REF" in compose
+    assert "WALLET_ALERT_RETENTION_POLICY_REF" in compose
     readme = (DEPLOY_ROOT / "README.md").read_text(encoding="utf-8")
     assert "--validate-proof-contract" in readme
     assert "--validate-target-signoff-packet" in readme
+    assert "storage-retention.example.json" in readme
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
@@ -83,6 +91,11 @@ def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:
     assert "secretRef" in api_manifest
     assert "secretRef" in ops_manifest
     assert "WALLET_OPS_ALERT_ON" in config_map
+    assert "WALLET_STORAGE_IPFS_PINNING_POLICY_REF" in config_map
+    assert "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF" in config_map
+    assert "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF" in config_map
+    assert "WALLET_BACKUP_PURGE_POLICY_REF" in config_map
+    assert "WALLET_ALERT_RETENTION_POLICY_REF" in config_map
     assert "WALLET_OPS_HEALTH_SHARED_SECRET" in secrets
     assert "WALLET_OPS_ALERT_WEBHOOK_URL" in secrets
     assert "WALLET_OPS_ALERT_BEARER_TOKEN" in secrets
@@ -119,6 +132,25 @@ def test_wallet_cloudflare_assets_reference_ops_health_and_origin() -> None:
     assert "x-wallet-ops-scheduled" in worker
     assert "wrangler deploy" in readme
     assert "Cloudflare Access" in readme
+
+
+def test_wallet_storage_retention_template_maps_target_provider_controls() -> None:
+    payload = json.loads((DEPLOY_ROOT / "storage-retention.example.json").read_text(encoding="utf-8"))
+    mapping = payload["retention_mapping"]
+    storage_config = payload["wallet_storage_config_example"]
+
+    assert payload["schema"] == "wallet-storage-retention-target-v1"
+    assert "storage_credentials" in payload["secret_manager_refs"]
+    assert {mirror["type"] for mirror in storage_config["mirrors"]} == {"ipfs", "s3", "filecoin"}
+    assert "ipfs_pinning" in mapping
+    assert "filecoin_deal_expiration" in mapping
+    assert "s3_lifecycle" in mapping
+    assert "backup_purge" in mapping
+    assert "alert_retention" in mapping
+    assert "repair_validation" in payload
+    rendered = json.dumps(payload)
+    assert "plaintext" in rendered
+    assert "secret-manager://" in rendered
 
 
 def test_wallet_kubernetes_manifests_validate_when_kubectl_available() -> None:
