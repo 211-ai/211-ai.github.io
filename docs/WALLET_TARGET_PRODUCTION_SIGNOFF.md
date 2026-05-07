@@ -167,6 +167,45 @@ this packet.
 | Browser/session storage | UI stores no raw wallet plaintext, verifier secrets, or long-lived invocation tokens in browser storage |  |
 | Rollback plan | API/UI/ops worker rollback path is documented and tested for the target environment |  |
 
+## Production Analytics Review Packets
+
+Complete one production analytics review packet for every analytics template that
+will run with status `approved` in the target environment. If no templates are
+live, set `analytics_privacy_review.no_live_analytics_templates=true` in the
+completed JSON packet and record the privacy reviewer decision and evidence ID
+in the Reviewer Signoff table.
+
+For each approved template, the completed JSON packet's
+`analytics_privacy_review.approved_templates[]` entry must include the
+validator-required fields: `template_id`, `reviewer`, `review_date`,
+`min_cohort_size`, `epsilon_budget`, `allowed_dimensions`,
+`retention_decision`, and `withdrawal_behavior`. The human packet must also
+document the extended WALLET-160 review fields below.
+
+| Packet Item | Required Content |
+| --- | --- |
+| Template identity | Template ID, title, owner, status, creation or approval date, expiration or renewal date, and evidence artifact for the approved template definition. |
+| Purpose | Specific study or operational question, why aggregate analytics is necessary, and why the same decision cannot be made from less sensitive or already public data. |
+| Data fields | Approved record types, approved derived fields, approved dimensions, and explicit confirmation that raw payloads, precise location, plaintext document fields, direct identifiers, and arbitrary raw queries are out of scope. |
+| Consent language | User-facing consent copy or copy artifact ID, including the template purpose, data categories, derived fields, aggregation behavior, retention summary, withdrawal behavior, and support/contact path. |
+| Retention mapping | `docs/WALLET_RETENTION_POLICY.md` data classes and target `retention_mapping` controls for the template definition, consent copy, consents, withdrawals, contributions, nullifiers, query-budget ledger, sparse-cell reviews, released aggregates, and audit events. |
+| Cohort threshold | Minimum cohort size, any stricter per-dimension threshold, release behavior when the threshold is not met, and evidence that `count-by-fields` suppression does not reveal suppressed labels. |
+| Privacy budget | Epsilon budget, per-query epsilon, sensitivity, budget key or ledger scope, budget-exhaustion behavior, and reviewer rationale for any value higher than the default. |
+| Sparse-cell risk review | Reviewed dimensions and joins, rare-condition or rare-region risk notes, regression evidence for sparse-cell suppression and duplicate-nullifier rejection, and any tracked exceptions. |
+| Reviewer decision | Reviewer name or role, decision, decision date, evidence ID, and whether the decision is `approved`, `approved with tracked exception`, or `deferred`. A `deferred` decision blocks production approval for that template. |
+| Withdrawal and audit handling | How consent withdrawal blocks future contributions, how prior released aggregates are handled, which nullifier/query-budget/audit records are retained, and how paused or retired templates block new consent, contribution, and aggregate query creation. |
+
+Production analytics register:
+
+| Template ID | Purpose Evidence | Data Fields and Dimensions | Consent Copy Artifact | Retention Mapping | Cohort Threshold and Privacy Budget | Sparse-Cell Review | Reviewer Decision | Withdrawal and Audit Plan |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |
+
+Re-run the review packet before approving any change that adds data fields or
+dimensions, lowers cohort thresholds, increases epsilon, changes consent or
+withdrawal language, extends retention, enables a new join, or changes the
+template from `paused` or `retired` back to `approved`.
+
 ## WALLET-190 Evidence Checklist
 
 Complete this checklist with synthetic target-staging data and archive the

@@ -141,18 +141,26 @@ an operator executes approved incident cleanup:
 
 ## Analytics Retention
 
-Each analytics template must carry a retention decision before approval:
+Each analytics template must carry a retention decision before approval, and the
+decision must be copied into the completed target signoff packet. The template
+definition, user-facing consent language, data-field review, sparse-cell risk
+review, retention mapping, reviewer decision, withdrawal plan, and audit plan
+are retained together as the production analytics review packet.
 
-- Approved derived fields and dimensions.
-- Minimum cohort size and epsilon budget.
-- Whether released results can be retained after the study ends.
-- Nullifier retention period needed to prevent duplicate counting.
-- Withdrawal behavior for future contributions.
-- Reviewer identity and approval date.
+| Review Packet Component | Retention Mapping | Withdrawal and Purge Handling |
+| --- | --- | --- |
+| Template definition, purpose, approved record types, approved derived fields, and approved dimensions | Retain while the template is active plus the approved audit-retention period. Map this to `analytics_privacy_review.approved_templates[]` and the target `retention_mapping.policy_version`. | Template changes that add fields or dimensions require a new review packet. Paused or retired templates block new consent, contribution, and aggregate query creation while preserving prior audit history. |
+| Consent language and copy artifact | Retain the approved consent copy/version for the consent lifetime plus the audit-retention period so users and reviewers can reconstruct what was authorized. | Consent withdrawal must preserve the consent copy, withdrawal time, actor, and support path without retaining raw contribution values. |
+| Cohort threshold, privacy budget, budget key, and allowed aggregation dimensions | Retain with the template approval record and released aggregate audit trail. The mapping must name the minimum cohort size, epsilon budget, per-query epsilon where applicable, and query-budget ledger scope. | Budget exhaustion, threshold failures, and reviewer-approved exceptions are audit events. They must not expose suppressed cell labels, raw derived values, or wallet identifiers outside the approved audit boundary. |
+| Sparse-cell risk review, suppression evidence, and duplicate-nullifier evidence | Retain sparse-cell review evidence for the template lifetime plus audit-retention period, and retain release-specific suppression metadata with each aggregate result. | Suppressed cells must remain suppressed in exports, reports, tickets, and alerts. Regression evidence should show counts of suppressed cells without retaining the suppressed labels when those labels would identify a rare cohort. |
+| Analytics consents, withdrawals, contribution nullifiers, and query-budget ledgers | Retain for the consent lifetime plus the approved audit-retention period. Nullifier retention must be long enough to prevent duplicate counting for the approved study window. | Withdrawal blocks future contribution use. Prior released aggregate audit history, nullifiers, and budget-spend records are retained only as needed to explain releases and prevent duplicate counting. |
+| Released aggregate results and privacy metadata | Retain for the approved study-retention period. Store result ID, template ID, privacy notes, suppression counts, noisy/exact count policy, budget spend, and reviewer evidence. | At study close, delete or archive aggregate results according to the approved retention decision. Exported aggregate reports must not contain sparse suppressed labels or raw contribution values. |
+| Reviewer decision, exception record, and audit handling plan | Retain for the approved audit-retention period with reviewer name or role, decision date, decision, evidence ID, and tracked exceptions. | A `deferred` decision blocks production approval. Exception expiry or policy change requires re-review before the template continues running. |
 
-Sparse-cell suppression, budget exhaustion, rejected proof receipts, and denied
-template changes are audit events. They should not retain raw contribution
-values beyond the operation needed to make the decision.
+Sparse-cell suppression, budget exhaustion, rejected proof receipts, denied
+template changes, consent withdrawals, and template pause or retirement are
+audit events. They should not retain raw contribution values beyond the
+operation needed to make the decision.
 
 ## Operational Requirements
 
