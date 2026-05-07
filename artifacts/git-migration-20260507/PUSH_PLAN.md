@@ -9,11 +9,10 @@ The target remote currently exposes only:
 - `main`
 - `copilot/211-ai-pull-changes`
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
 Local remote-tracking refs such as `origin/rescue/*` are historical and should not be treated as proof that those branches exist on the new remote.
 
-<<<<<<< HEAD
-=======
 ## Reduction result
 
 An ancestry and diff-equivalence pass was run across the non-merged local rescue/history branches.
@@ -47,36 +46,24 @@ git -C /home/barberb/211-AI push origin archive/rescue-wallet210-family-20260507
 git -C /home/barberb/211-AI push origin archive/rescue-misc-family-20260507
 ```
 
-<<<<<<< HEAD
->>>>>>> 028a5400 (Document compact migration branch set)
-=======
 Helper script:
 
 ```bash
 artifacts/git-migration-20260507/push-compact-migration.sh
 ```
 
-<<<<<<< HEAD
->>>>>>> 148c48eb (Add compact migration helper script)
-=======
 Post-push verification:
 
 ```bash
 artifacts/git-migration-20260507/verify-compact-migration.sh
 ```
 
-<<<<<<< HEAD
->>>>>>> 92d64eeb (Add compact migration verification script)
-=======
 Auth diagnosis:
 
 ```bash
 artifacts/git-migration-20260507/check-github-auth.sh
 ```
 
-<<<<<<< HEAD
->>>>>>> 95db9108 (Document GitHub auth blocker)
-=======
 ## Full-history size blocker
 
 The target remote accepts authentication, but full-history pushes rooted in local `main` still fail because the reachable tracked blob history is about `2233958269` bytes, above the `2147483648` byte limit enforced during push.
@@ -88,10 +75,14 @@ That means the compact five-branch migration set is still blocked as a full-hist
 The history-free snapshot branch below has already been pushed successfully to the target remote:
 
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
-It is a fresh-root snapshot of the current local `main` tree and provides a viable current-state migration path when full history cannot be transferred.
+These are fresh-root snapshots of:
 
->>>>>>> f429af54 (Document full-history size blocker and slim fallback)
+- the current local `main` tree
+- the `archive/worktree-patches-20260507` tree containing the patch archive and migration handoff artifacts
+
+They provide viable current-state fallback branches when full history cannot be transferred.
 ## Phase 1: Push immediately
 
 These branches should be pushed first if you are using the full-fidelity branch-preservation path instead of the compact option above.
@@ -141,10 +132,7 @@ These branches contain commits not reachable from local `main` and should be pre
 - `rescue/wallet-210-attempt-16-1778181952-failed-validation`
 - `rescue/wallet-210-attempt-17-1778183571-failed-validation`
 - `rescue/wallet-210-attempt-18-1778187037-failed-validation`
-<<<<<<< HEAD
-=======
 - `rescue/wallet-210-attempt-21-1778191683-failed-validation`
->>>>>>> 59df02f3 (Refine minimal branch migration set)
 - `rescue/wallet-210-attempt-20-1778190099-failed-validation`
 - `rescue/worktree-artifacts`
 
@@ -183,10 +171,7 @@ git -C /home/barberb/211-AI push origin \
   rescue/wallet-210-attempt-16-1778181952-failed-validation \
   rescue/wallet-210-attempt-17-1778183571-failed-validation \
   rescue/wallet-210-attempt-18-1778187037-failed-validation \
-<<<<<<< HEAD
-=======
   rescue/wallet-210-attempt-21-1778191683-failed-validation \
->>>>>>> 59df02f3 (Refine minimal branch migration set)
   rescue/wallet-210-attempt-20-1778190099-failed-validation \
   rescue/worktree-artifacts
 ```
@@ -205,11 +190,7 @@ Push them only if you want the old PR-local naming retained on the new remote.
 These branch tips are already reachable from local `main`, so pushing them does not preserve additional committed content.
 
 - `implementation/*`
-<<<<<<< HEAD
-- `rescue/wallet-210-attempt-19-1778188297-failed-validation`
-=======
 - `rescue/wallet-210-attempt-19-1778188297-failed-validation` is covered by `rescue/wallet-210-attempt-21-1778191683-failed-validation`
->>>>>>> 59df02f3 (Refine minimal branch migration set)
 - `implementation/wallet-210-attempt-21-1778191683`
 - `backup/pre-merge-20260504-0001`
 - `backup/pre-merge-20260504-0002`

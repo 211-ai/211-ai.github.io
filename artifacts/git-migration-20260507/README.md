@@ -9,10 +9,7 @@ This directory captures the current local Git state for migration to `https://gi
 - Local `main` is ahead of `origin/main` and includes the WALLET-210 readiness merge at `141580cf`.
 - A push to the new origin is currently blocked by GitHub permission errors for the configured credentials.
 - Fourteen attached implementation worktrees still contain uncommitted changes. Those edits are not preserved by branch pushes and were exported as patch files here.
-<<<<<<< HEAD
-=======
 - A compact migration path now exists: the rescue history can be preserved by pushing `main` plus four archive branches instead of dozens of individual rescue refs.
->>>>>>> 028a5400 (Document compact migration branch set)
 
 ## Auth blocker
 
@@ -40,11 +37,15 @@ The current `main` tree itself is much smaller, about `738082404` bytes, so a hi
 
 ## Remote fallback branch
 
-A slim current-state snapshot branch has already been pushed successfully to the target remote:
+A pair of slim history-free snapshot branches has already been pushed successfully to the target remote:
 
 - `migration/slim-main-20260507`
+- `migration/slim-worktree-patches-20260507`
 
-This branch is a fresh-root snapshot of the current local `main` tree. It preserves the current repository contents on the target remote without carrying the oversized prior history.
+These branches are fresh-root snapshots that preserve the current repository contents on the target remote without carrying the oversized prior history.
+
+- `migration/slim-main-20260507`: snapshot of the current local `main` tree
+- `migration/slim-worktree-patches-20260507`: snapshot of `archive/worktree-patches-20260507`, including the patch archive and migration handoff artifacts
 
 ## Preserved artifacts
 
@@ -63,14 +64,6 @@ This branch is a fresh-root snapshot of the current local `main` tree. It preser
 - `backup/pre-merge-*`: local backup refs. `backup/pre-merge-20260504-0003` still has one unique commit not on local `main`.
 - `merge/pr2-ready-20260507` and `pr/endomorphosis/2`: preserved PR-era refs pointing at `a67efc93`.
 
-<<<<<<< HEAD
-## To complete migration after credentials are fixed
-
-1. Push committed refs: `git -C /home/barberb/211-AI push origin --all`
-2. Push tags if needed: `git -C /home/barberb/211-AI push origin --tags`
-3. Review `worktree-patch-summary.txt` and either commit those patches onto archival branches or apply them to new branches before pushing.
-4. Remove stale temporary worktrees only after any wanted patches have been committed or separately archived.
-=======
 ## Compact migration option
 
 The smallest practical remote preservation set is now:
@@ -92,24 +85,14 @@ These archive family branches were built with `ours`-strategy merges so that the
 	`git -C /home/barberb/211-AI push origin archive/rescue-wallet210-family-20260507`
 	`git -C /home/barberb/211-AI push origin archive/rescue-misc-family-20260507`
 	or run `artifacts/git-migration-20260507/push-compact-migration.sh`
-<<<<<<< HEAD
-2. If you want every original branch name preserved on the new remote, use the full-fidelity branch list in `PUSH_PLAN.md` instead.
-3. Push tags if needed: `git -C /home/barberb/211-AI push origin --tags`
-4. Keep the external bundle at `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle` until the new remote has been verified.
-5. Remove stale temporary worktrees only after any wanted patches have been committed or separately archived.
->>>>>>> 028a5400 (Document compact migration branch set)
-=======
 2. Verify the push with `artifacts/git-migration-20260507/verify-compact-migration.sh`
 3. If you want every original branch name preserved on the new remote, use the full-fidelity branch list in `PUSH_PLAN.md` instead.
 4. Push tags if needed: `git -C /home/barberb/211-AI push origin --tags`
 5. Keep the external bundle at `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle` until the new remote has been verified.
 6. Remove stale temporary worktrees only after any wanted patches have been committed or separately archived.
-<<<<<<< HEAD
->>>>>>> 92d64eeb (Add compact migration verification script)
-=======
 
 ## Current best available remote state
 
 - Full-history compact migration: prepared locally but still blocked by repository size.
 - Current-state slim migration: already published on the remote as `migration/slim-main-20260507`.
->>>>>>> f429af54 (Document full-history size blocker and slim fallback)
+- Patch-archive slim migration: already published on the remote as `migration/slim-worktree-patches-20260507`.
