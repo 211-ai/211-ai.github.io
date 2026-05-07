@@ -245,7 +245,7 @@ Required pilot flow:
    the timeline includes `record/add`, `grant/create`, `invocation/issue`,
    `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`,
    `proof/create`, `analytics/consent_create`, `analytics/contribute`,
-   `analytics/query`, and `grant/revoke` as applicable.
+   `analytics/query`, `export/create`, and `grant/revoke` as applicable.
 
 Pilot evidence can contain wallet IDs, record IDs, grant IDs, invocation IDs,
 proof IDs, proof hashes, public proof inputs, template IDs, consent IDs,
@@ -258,8 +258,11 @@ The browser readiness harness is
 `wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
 API backed by local durable repository/blob storage, drives the upload,
 recipient-access, proof-center, analytics API, revocation, service matching,
-and audit surfaces, and asserts that precise coordinates and document contact
-details are not disclosed in partner/proof/aggregate outputs.
+encrypted export, and audit surfaces, and asserts that precise coordinates and
+document contact details are not disclosed in partner/proof/aggregate/export
+outputs. The revocation portion replays stale redacted-analysis, decrypt,
+coarse-location, proof, and export invocation paths and expects authorization
+errors before the audit timeline is accepted.
 
 ## API Reference
 

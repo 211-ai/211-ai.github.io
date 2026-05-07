@@ -469,7 +469,8 @@ Drill sequence:
    - Confirm the audit timeline contains the expected allow/deny decisions for
      record creation, grant creation, invocation issue/verify, redacted
      analysis, coarse location read, proof creation, analytics consent,
-     analytics contribution, analytics query, and grant revocation.
+     analytics contribution, analytics query, encrypted export creation, and
+     grant revocation.
    - Archive audit event IDs, grant/proof/template/result IDs, and ciphertext
      storage hashes only.
 
@@ -480,6 +481,11 @@ pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox
 npm --prefix wallet_interface/ui run build
 npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
 ```
+
+The Playwright pilot harness must include a successful encrypted export and
+then prove stale redacted-analysis, decrypt, coarse-location, proof, and export
+invocation tokens fail after grant revocation. Treat a missing negative path as
+an incomplete drill even if the UI walkthrough appears to succeed.
 
 Treat any artifact that contains synthetic document plaintext, contact details,
 precise coordinates, proof witnesses, private keys, bearer tokens, storage
