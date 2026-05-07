@@ -4,6 +4,9 @@ import type {
   EasyBotCheckStatus,
   RegistrationProfileDraft,
   RouteId,
+  SavedService,
+  ServiceInteractionEvent,
+  ServicePlan,
   ShelterContactRequest,
   UploadItem
 } from "../models/abby";
@@ -155,6 +158,9 @@ export type PersistedAppState = {
   benefitsOptIn?: boolean;
   analyticsOptIn?: Record<string, boolean>;
   shelterChecklist?: typeof defaultShelterChecklist;
+  savedServices?: SavedService[];
+  servicePlans?: ServicePlan[];
+  serviceInteractions?: ServiceInteractionEvent[];
 };
 
 export function readPersistedAppState(): PersistedAppState {
@@ -219,6 +225,9 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
     shelterChecklist: {
       ...defaultShelterChecklist,
       ...persistedState.shelterChecklist
-    }
+    },
+    savedServices: Array.isArray(persistedState.savedServices) ? persistedState.savedServices : [],
+    servicePlans: Array.isArray(persistedState.servicePlans) ? persistedState.servicePlans : [],
+    serviceInteractions: Array.isArray(persistedState.serviceInteractions) ? persistedState.serviceInteractions : []
   };
 }

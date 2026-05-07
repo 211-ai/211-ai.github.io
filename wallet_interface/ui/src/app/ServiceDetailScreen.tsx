@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { Badge, Button, Section, StatusBanner } from "../components/ui";
+import { setLocationServicePlanHash } from "./ServicePlanScreen";
 import {
   load211ArtifactManifest,
   load211Documents,
@@ -162,6 +163,9 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
 
       <Section title="Actions">
         <div className="row-actions">
+          <Button onClick={() => setLocationServicePlanHash(document.doc_id)} variant="primary">
+            Plan
+          </Button>
           {sourceUrl ? (
             <a className="button button-secondary" href={sourceUrl} rel="noreferrer" target="_blank">
               <ExternalLink aria-hidden="true" size={18} />
