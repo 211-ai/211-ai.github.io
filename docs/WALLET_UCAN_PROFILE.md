@@ -8,11 +8,15 @@ Date: 2026-05-05
 
 The wallet uses signed `wallet-ucan-v1` invocation tokens as its first
 production authorization profile. Direct byte-level `ucanto`/w3up token
-compatibility is not a launch blocker. External UCAN adapters must preserve the
-same issuer, audience, capability, caveat, expiry, revocation, and proof-chain
-semantics before they are accepted as equivalent.
+compatibility is handled by a target-specific adapter track and is not the
+production wallet token. External UCAN adapters must preserve the same issuer,
+audience, capability, caveat, expiry, revocation, and proof-chain semantics
+before they are accepted as equivalent.
 
 The profile is implemented in `ipfs_datasets_py.wallet.ucan`.
+
+The selected external stack for the current adapter track is `ucanto/w3up`.
+The adapter identifier is `wallet-ucan-v1-ucanto-w3up-dag-cbor-v1`.
 
 ## Token Format
 
@@ -105,14 +109,44 @@ This envelope is for verifier, audit, and adapter tests. It deliberately does
 not expose raw record payloads, document text, precise location, decrypted keys,
 or private metadata.
 
+## External Adapter Track
+
+`wallet-ucan-v1` remains the first-production encoding. The `ucanto/w3up`
+adapter proves byte-level compatibility for an external verifier by encoding the
+UCAN inspection fields as a canonical DAG-CBOR block:
+
+```json
+{
+  "iss": "did:key:owner",
+  "aud": "did:key:delegate",
+  "att": [{"with": "wallet://wallet/records/record", "can": "record/analyze", "nb": {}}],
+  "nnc": "nonce",
+  "fct": "issued-at",
+  "exp": "optional-expiry",
+  "sig": "signature",
+  "prf": ["grant-id"]
+}
+```
+
+The adapter fixture records the `dag-cbor` block bytes as base64url, the
+SHA-256 of those bytes, and the CIDv1 base32 `dag-cbor`/`sha2-256` CID. Fixture
+validation decodes the exact bytes, recomputes the hash and CID, and verifies
+that the decoded block exactly matches the wallet profile payload. Added,
+removed, or changed capabilities and caveats fail validation. The adapter does
+not introduce new wallet abilities, resources, caveats, proof semantics, or
+authorization bypasses.
+
 ## Conformance Fixtures
 
 `wallet_ucan_conformance_fixture(invocation, grant=...)` packages the token,
-expected decoded UCAN fields, profile payload, and signature-payload hash into a
-stable adapter-test fixture. `validate_ucan_profile_payload(payload)` validates
-and normalizes an inspection envelope. `validate_wallet_ucan_conformance_fixture`
-validates the complete fixture, including token prefix, decoded token fields,
-expected UCAN fields, proof-chain grant ID, and signature-payload hash. External
+expected decoded UCAN fields, profile payload, external adapter block, and
+signature-payload hash into a stable adapter-test fixture.
+`validate_ucan_profile_payload(payload)` validates and normalizes an inspection
+envelope. `validate_wallet_ucan_external_adapter_fixture(adapter, profile_payload=...)`
+validates the byte-level `ucanto/w3up` DAG-CBOR adapter block.
+`validate_wallet_ucan_conformance_fixture` validates the complete fixture,
+including token prefix, decoded token fields, expected UCAN fields, proof-chain
+grant ID, signature-payload hash, and external adapter hash/CID. External
 `ucanto`/w3up adapters can use these functions without depending on product API
 internals.
 
@@ -128,7 +162,11 @@ python -m ipfs_datasets_py.wallet.cli --json ucan-validate-profile \
   --path wallet-ucan-profile-payload.json
 python -m ipfs_datasets_py.wallet.cli --json ucan-validate-fixture \
   --path wallet-ucan-fixture.json
+python -m ipfs_datasets_py.wallet.cli ucan-validate-fixture
 ```
+
+When `ucan-validate-fixture` is run without `--path`, it validates the built-in
+deterministic reference fixture for CI and adapter smoke tests.
 
 Conforming adapters must preserve:
 
