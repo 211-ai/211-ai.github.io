@@ -5,6 +5,7 @@ from io import StringIO
 
 from wallet_interface import WalletInterfaceService
 from wallet_interface.ops import (
+    _PROOF_CONTRACT_TARGET_ENV_VARS,
     WalletOpsHealthWorker,
     main,
     validate_local_production_readiness_self_check,
@@ -267,7 +268,10 @@ def test_validate_distance_proof_contract_reports_http_backend_success() -> None
     }
 
 
-def test_ops_cli_accepts_distance_proof_contract_validation_flag(tmp_path) -> None:
+def test_ops_cli_distance_proof_contract_runs_local_self_check_without_target_env(tmp_path, monkeypatch) -> None:
+    for name in _PROOF_CONTRACT_TARGET_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("WALLET_REPOSITORY_ROOT", str(tmp_path / "wallet-repository"))
     output_path = tmp_path / "ops" / "distance-proof-contract.jsonl"
 
     exit_code = main(
@@ -279,9 +283,40 @@ def test_ops_cli_accepts_distance_proof_contract_validation_flag(tmp_path) -> No
     )
 
     report = json.loads(output_path.read_text(encoding="utf-8"))
-    assert exit_code == 2
-    assert report["status"] == "error"
-    assert report["checks"][0]["name"] == "backend"
+    assert exit_code == 0
+    assert report["status"] == "ok"
+    assert report["mode"] == "local_self_check"
+    assert {check["name"] for check in report["checks"]} == {
+        "health",
+        "prove",
+        "public_input_safety",
+        "verify",
+    }
+
+
+def test_ops_cli_proof_contract_runs_local_self_check_without_target_env(tmp_path, monkeypatch) -> None:
+    for name in _PROOF_CONTRACT_TARGET_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
+    output_path = tmp_path / "ops" / "proof-contract.jsonl"
+
+    exit_code = main(
+        [
+            "--validate-proof-contract",
+            "--output-jsonl",
+            str(output_path),
+        ]
+    )
+
+    report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert report["status"] == "ok"
+    assert report["mode"] == "local_self_check"
+    assert {check["name"] for check in report["checks"]} == {
+        "health",
+        "prove",
+        "public_input_safety",
+        "verify",
+    }
 
 
 def test_validate_production_readiness_reports_missing_target_environment() -> None:

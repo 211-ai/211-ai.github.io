@@ -103,6 +103,19 @@ _READINESS_TARGET_ENV_VARS = (
     "WALLET_STORAGE_CREDENTIAL_SECRET_REF",
 )
 
+_PROOF_CONTRACT_TARGET_ENV_VARS = (
+    "WALLET_PROOF_MODE",
+    "WALLET_PROOF_BACKEND",
+    "WALLET_PROOF_SERVICE_URL",
+    "WALLET_PROOF_VERIFIER_ID",
+    "WALLET_PROOF_SYSTEM",
+    "WALLET_PROOF_CIRCUIT_ID",
+    "WALLET_PROOF_CREDENTIAL_SECRET_REF",
+    "WALLET_PROOF_BEARER_TOKEN",
+    "WALLET_PROOF_HTTP_HEADER_NAME",
+    "WALLET_PROOF_HTTP_HEADER_VALUE",
+)
+
 
 @dataclass
 class OpsHealthRunResult:
@@ -673,6 +686,90 @@ def validate_distance_proof_contract(service: WalletInterfaceService | None = No
     }
 
 
+def _local_self_check_http_proof_backend():
+    from .proof_backends import HttpLocationRegionProofBackend
+
+    def fake_request_json(
+        method: str,
+        url: str,
+        payload: dict[str, object],
+        headers: dict[str, str],
+        timeout_seconds: float,
+    ) -> dict[str, object]:
+        if url.endswith("/health"):
+            return {"ok": True, "status": "ready"}
+        if url.endswith("/prove/location-region"):
+            return {
+                "proof_id": "local-self-check-location-region",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_region",
+                "statement": payload["statement"],
+                "verifier_id": "local-self-check-verifier-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "local-self-check-region-hash",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "local-self-check-location-v1",
+                "verification_status": "verified",
+            }
+        if url.endswith("/prove/location-distance"):
+            return {
+                "proof_id": "local-self-check-location-distance",
+                "wallet_id": str(payload["wallet_id"]),
+                "proof_type": "location_distance",
+                "statement": payload["statement"],
+                "verifier_id": "local-self-check-verifier-v1",
+                "public_inputs": payload["public_inputs"],
+                "proof_hash": "local-self-check-distance-hash",
+                "witness_record_ids": payload["witness_record_ids"],
+                "is_simulated": False,
+                "proof_system": "groth16",
+                "circuit_id": "local-self-check-location-v1",
+                "verification_status": "verified",
+            }
+        return {"verified": True}
+
+    return HttpLocationRegionProofBackend(
+        base_url="http://127.0.0.1/local-self-check-verifier",
+        verifier_id="local-self-check-verifier-v1",
+        proof_system="groth16",
+        circuit_id="local-self-check-location-v1",
+        request_json=fake_request_json,
+    )
+
+
+def _local_self_check_proof_service() -> WalletInterfaceService:
+    return WalletInterfaceService(
+        proof_backend=_local_self_check_http_proof_backend(),
+        allow_simulated_proofs=False,
+    )
+
+
+def validate_local_proof_contract_self_check() -> dict[str, Any]:
+    """Run the location-region verifier contract path against a synthetic local backend."""
+
+    report = validate_proof_contract(_local_self_check_proof_service())
+    report["mode"] = "local_self_check"
+    report["summary"] = (
+        "local proof-contract self-check completed; configure target WALLET_* env vars "
+        "to validate the external staging or production verifier"
+    )
+    return report
+
+
+def validate_local_distance_proof_contract_self_check() -> dict[str, Any]:
+    """Run the location-distance verifier contract path against a synthetic local backend."""
+
+    report = validate_distance_proof_contract(_local_self_check_proof_service())
+    report["mode"] = "local_self_check"
+    report["summary"] = (
+        "local distance proof-contract self-check completed; configure target WALLET_* env vars "
+        "to validate the external staging or production verifier"
+    )
+    return report
+
+
 def validate_production_readiness(
     service: WalletInterfaceService | None = None,
     *,
@@ -940,6 +1037,11 @@ def _has_target_readiness_environment(env: Mapping[str, str] | None = None) -> b
     return any(str(source.get(name) or "").strip() for name in _READINESS_TARGET_ENV_VARS)
 
 
+def _has_target_proof_contract_environment(env: Mapping[str, str] | None = None) -> bool:
+    source = env if env is not None else os.environ
+    return any(str(source.get(name) or "").strip() for name in _PROOF_CONTRACT_TARGET_ENV_VARS)
+
+
 def validate_local_production_readiness_self_check(*, verify_storage: bool = True) -> dict[str, Any]:
     """Run the production-readiness validator against a local synthetic target.
 
@@ -948,49 +1050,6 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
     strict production gate and fail closed when required values are missing.
     """
 
-    from .proof_backends import HttpLocationRegionProofBackend
-
-    def fake_request_json(
-        method: str,
-        url: str,
-        payload: dict[str, object],
-        headers: dict[str, str],
-        timeout_seconds: float,
-    ) -> dict[str, object]:
-        if url.endswith("/health"):
-            return {"ok": True, "status": "ready"}
-        if url.endswith("/prove/location-region"):
-            return {
-                "proof_id": "local-self-check-location-region",
-                "wallet_id": str(payload["wallet_id"]),
-                "proof_type": "location_region",
-                "statement": payload["statement"],
-                "verifier_id": "local-self-check-verifier-v1",
-                "public_inputs": payload["public_inputs"],
-                "proof_hash": "local-self-check-region-hash",
-                "witness_record_ids": payload["witness_record_ids"],
-                "is_simulated": False,
-                "proof_system": "groth16",
-                "circuit_id": "local-self-check-location-v1",
-                "verification_status": "verified",
-            }
-        if url.endswith("/prove/location-distance"):
-            return {
-                "proof_id": "local-self-check-location-distance",
-                "wallet_id": str(payload["wallet_id"]),
-                "proof_type": "location_distance",
-                "statement": payload["statement"],
-                "verifier_id": "local-self-check-verifier-v1",
-                "public_inputs": payload["public_inputs"],
-                "proof_hash": "local-self-check-distance-hash",
-                "witness_record_ids": payload["witness_record_ids"],
-                "is_simulated": False,
-                "proof_system": "groth16",
-                "circuit_id": "local-self-check-location-v1",
-                "verification_status": "verified",
-            }
-        return {"verified": True}
-
     with tempfile.TemporaryDirectory(prefix="wallet-readiness-self-check-") as tmp:
         root = Path(tmp)
         repository_root = root / "wallet-repository"
@@ -998,13 +1057,7 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
         service = WalletInterfaceService(
             repository_root=repository_root,
             storage_config={"primary": {"type": "local", "root": str(storage_root)}},
-            proof_backend=HttpLocationRegionProofBackend(
-                base_url="http://127.0.0.1/local-self-check-verifier",
-                verifier_id="local-self-check-verifier-v1",
-                proof_system="groth16",
-                circuit_id="local-self-check-location-v1",
-                request_json=fake_request_json,
-            ),
+            proof_backend=_local_self_check_http_proof_backend(),
             allow_simulated_proofs=False,
         )
         env = {
@@ -1301,21 +1354,29 @@ def main(argv: Sequence[str] | None = None) -> int:
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
-        service = WalletInterfaceService(repository_root=args.repository_root)
         if args.validate_proof_contract:
-            report = validate_proof_contract(service)
+            if args.repository_root is None and not _has_target_proof_contract_environment():
+                report = validate_local_proof_contract_self_check()
+            else:
+                service = WalletInterfaceService(repository_root=args.repository_root)
+                report = validate_proof_contract(service)
             target_output = output or sys.stdout
             target_output.write(json.dumps(report, sort_keys=True))
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
         if args.validate_distance_proof_contract:
-            report = validate_distance_proof_contract(service)
+            if args.repository_root is None and not _has_target_proof_contract_environment():
+                report = validate_local_distance_proof_contract_self_check()
+            else:
+                service = WalletInterfaceService(repository_root=args.repository_root)
+                report = validate_distance_proof_contract(service)
             target_output = output or sys.stdout
             target_output.write(json.dumps(report, sort_keys=True))
             target_output.write("\n")
             target_output.flush()
             return 0 if report.get("status") == "ok" else 2
+        service = WalletInterfaceService(repository_root=args.repository_root)
         worker = WalletOpsHealthWorker(
             service=service,
             verify_storage=args.verify_storage,

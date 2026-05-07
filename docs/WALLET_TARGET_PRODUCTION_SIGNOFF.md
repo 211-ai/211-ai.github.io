@@ -53,13 +53,16 @@ launch decision still requires validating the completed target packet path.
 | Proof verifier service URL or private service name |  |
 | Proof verifier ID |  |
 | Proof system |  |
+| Secret-manager reference used for verifier credential injection |  |
 | Release-check evidence artifact |  |
 | Readiness report artifact |  |
 | Ops-health report artifact |  |
-| Proof contract report artifact |  |
+| Location-region proof contract report artifact |  |
+| Location-distance proof contract report artifact |  |
 | Storage retention/deletion dry-run evidence artifact |  |
 | Storage repair evidence artifact |  |
 | Deletion purge/audit evidence artifact |  |
+| Proof Center `location_distance` exposure decision | hidden until archived validation and approval |
 | Retention policy version |  |
 | S3 lifecycle policy ID |  |
 | IPFS pinset policy ID |  |
@@ -67,6 +70,21 @@ launch decision still requires validating the completed target packet path.
 | Backup purge policy ID |  |
 | Alert retention policy ID |  |
 | Incident-response contact path |  |
+
+## Verifier Credential Handoff
+
+Complete this section for the target staging environment before launch review.
+The credential owner and deployment owner should verify the actual verifier
+credential directly in the selected secret manager or deployment platform. This
+checklist records references and evidence IDs only.
+
+| Handoff Check | Required Evidence | Status |
+| --- | --- | --- |
+| Credential provisioned | Verifier bearer token or custom header credential exists in the selected secret manager and has an owner, rotation path, and least-privilege access policy |  |
+| Reference only in repo and packets | `WALLET_PROOF_CREDENTIAL_SECRET_REF` or the equivalent provider reference is recorded; no bearer token, header value, proving key, verifier key, or rendered secret payload is present in repo docs, signoff packets, readiness reports, logs, or tickets |  |
+| Runtime injection | Wallet API and ops worker receive verifier auth material from the secret-manager integration at runtime, and no process env dump is archived |  |
+| Rotation dry run | Staging credential rotation was exercised or explicitly scheduled with rollback owner and artifact ID |  |
+| Staging contract archive | Region and distance contract reports are archived from target staging with `status=ok` and no leaked witness or secret values |  |
 
 ## Required Evidence
 
@@ -78,7 +96,9 @@ launch decision still requires validating the completed target packet path.
 | Encrypted storage replicas | `WALLET_STORAGE_CONFIG` and provider credentials are configured without placeholder values |  |
 | WALLET-190 dry run | Target staging demonstrates encrypted replica creation, replica health checks, repair, grant revocation, key rotation, record deletion, analytics-consent withdrawal, export-bundle retention, and purge/audit evidence |  |
 | Storage repair | `/ops/health?verify_storage=true` plus wallet or record storage repair checks pass with ciphertext/hash evidence only |  |
-| External proof verifier | HTTP verifier health/prove/verify/no-leak contract passes with real staging credentials |  |
+| External location-region verifier | `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` passes in target staging with real runtime-injected credentials and archived JSON evidence |  |
+| External location-distance verifier | `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` passes in target staging with real runtime-injected credentials and archived JSON evidence |  |
+| Proof Center distance exposure | Live Proof Center creation and display surfaces keep `location_distance` hidden until the distance verifier report is archived and security, privacy, ops, and product reviewers approve exposure |  |
 | Secret management | Ops-health, alert, storage, and verifier credentials live in the selected secret manager and are not committed to the repo |  |
 | Alert routing | Warning/error reports reach the approved incident router with authenticated delivery |  |
 | Security architecture | `docs/WALLET_SECURITY_ARCHITECTURE_ADR.md` reviewed for the target deployment boundary |  |
@@ -135,6 +155,9 @@ python -m wallet_interface.ops \
 
 The readiness report must not include secret values. A report that passes only
 with `--skip-proof-contract` is not sufficient for production launch.
+The direct proof-contract commands may report `mode=local_self_check` only in
+repo-local automation without target verifier env vars; launch evidence must be
+from the target staging environment and must not use the local self-check mode.
 
 ## Reviewer Signoff
 
