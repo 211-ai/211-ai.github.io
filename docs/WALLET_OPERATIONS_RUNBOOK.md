@@ -124,6 +124,69 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Partner Pilot Run
+
+Use synthetic data and a staging partner DID. Do not use real client documents,
+real partner credentials, real exact home coordinates, or production analytics
+template changes for this rehearsal.
+
+Preflight:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Target staging must also have the WALLET-170 through WALLET-200 evidence
+available: third-party blackbox results, verifier cutover packet, retention dry
+run, and analytics governance release packet.
+
+Pilot run sequence:
+
+1. Start the staging API and UI with durable repository/blob storage and CORS
+   scoped to the UI origin.
+2. Register a synthetic wallet and open the UI with query parameters for
+   `walletApiBaseUrl`, `walletId`, `actorDid`, `issuerKeyHex`, and
+   `audienceKeyHex`.
+3. Upload a synthetic intake document from Uploads. Capture the returned
+   document record ID and storage status only.
+4. Add a synthetic precise location from Proof Center. Capture the returned
+   location record ID, then confirm the UI does not display precise coordinates
+   after save.
+5. Create a `location_region` proof for the service-area policy. Inspect the
+   Proof Center public-input rows and archived API receipt; no latitude,
+   longitude, target coordinate, or witness value may appear.
+6. Create a partner export bundle from Exports with purpose
+   `partner_case_transfer`. Confirm hash verification, schema verification,
+   storage verification, proof inclusion, and descriptor import.
+7. In Group facts, save consent for an approved analytics template and submit
+   one derived-field contribution. If demonstrating aggregate release, use the
+   approved template endpoint and preserve only release metadata.
+8. In Who can see info, revoke the partner grant and confirm active partner
+   invocations for export, delegated analysis, proof, or coarse-location access
+   fail after revocation.
+9. In Audit, confirm the workflow is visible end to end with `record/add`,
+   `grant/create`, `invocation/issue`, `invocation/verify`, `proof/create`,
+   `export/create`, `analytics/consent_create`, `analytics/contribute`, and
+   `grant/revoke`.
+
+Pass criteria:
+
+- The document and location records are encrypted wallet records backed by
+  `ipfs_datasets_py.wallet`; the UI does not implement crypto, UCAN, proof, or
+  storage policy locally.
+- The partner share is purpose-bound and produces a grant receipt or encrypted
+  export evidence that can be audited.
+- Location eligibility is provable without exposing precise coordinates in
+  proof public inputs, export bundles, aggregate contributions, logs, or audit
+  artifacts.
+- Analytics contribution uses an approved template with consent, nullifier,
+  threshold, privacy-budget, retention, and withdrawal handling already
+  documented in the governance packet.
+- Revocation changes grant receipts to `revoked`, blocks stale invocations, and
+  appears in audit before pilot evidence is archived.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

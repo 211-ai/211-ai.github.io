@@ -36,6 +36,7 @@ import { search211Info } from "../services/graphRagService";
 import type { SearchResult } from "../lib/graphrag";
 import {
   CheckInChannel,
+  AnalyticsStudy,
   AuditEvent,
   DecryptedRecordView,
   DisclosureDataScope,
@@ -80,10 +81,13 @@ import {
   approveAccessRequest,
   approveThresholdApproval,
   addBinaryDocument,
+  addLocationRecord,
   addTextDocument,
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  createWalletAnalyticsConsent,
+  createWalletAnalyticsContribution,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createRedactedGraphRAG,
@@ -98,14 +102,19 @@ import {
   loadWalletAccessState,
   loadExportBundleView,
   loadWalletSnapshot,
+  listAnalyticsTemplates,
   listWalletAuditEvents,
+  listWalletAnalyticsConsents,
   listWalletDocuments,
   listWalletProofReceipts,
   rejectAccessRequest,
   repairRecordStorage,
   revokeAccessRequest,
+  revokeWalletAnalyticsConsent,
+  revokeWalletGrant,
   saveWalletSnapshot,
   verifyWalletSnapshot,
+  WalletAnalyticsConsent,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -696,7 +705,12 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen
+            apiConfig={walletApiConfig}
+            optedIn={analyticsOptIn}
+            refreshWalletAuditEvents={refreshWalletAuditEvents}
+            setOptedIn={setAnalyticsOptIn}
+          />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -2798,6 +2812,24 @@ function RecipientAccessScreen({
     setGrantReceipts(grantReceipts.map((receipt) => (receipt.id.includes(requestId) ? { ...receipt, status: "revoked" } : receipt)));
   }
 
+  async function revokeReceipt(receipt: WalletGrantReceipt) {
+    const actionId = `${receipt.id}:revoke`;
+    setBusyActionIds((ids) => [...ids, actionId]);
+    try {
+      if (apiConfig?.actorDid) {
+        await revokeWalletGrant(apiConfig, receipt.grantId);
+        await refreshWalletAccessState();
+        await refreshWalletAuditEvents();
+        return;
+      }
+      setGrantReceipts(
+        grantReceipts.map((item) => (item.id === receipt.id ? { ...item, status: "revoked" } : item))
+      );
+    } finally {
+      setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
+    }
+  }
+
   async function analyzeReceipt(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
     if (!apiConfig?.actorDid || !receipt.recordId) return;
     const actionId = `${receipt.id}:${mode}`;
@@ -2986,6 +3018,13 @@ function RecipientAccessScreen({
                     </Button>
                     <Button disabled={!canView} onClick={() => void viewReceipt(receipt)} variant="secondary">
                       View document
+                    </Button>
+                    <Button
+                      disabled={receipt.status !== "active" || busyActionIds.includes(`${receipt.id}:revoke`)}
+                      onClick={() => void revokeReceipt(receipt)}
+                      variant="danger"
+                    >
+                      {busyActionIds.includes(`${receipt.id}:revoke`) ? "Revoking" : "Revoke grant"}
                     </Button>
                   </div>
                   {outputLines.length || decrypted ? (
@@ -3196,18 +3235,104 @@ function BenefitsProtectionScreen({
 }
 
 function AnalyticsScreen({
+  apiConfig,
   optedIn,
+  refreshWalletAuditEvents,
   setOptedIn
 }: {
+  apiConfig?: WalletApiConfig;
   optedIn: Record<string, boolean>;
+  refreshWalletAuditEvents: () => Promise<void>;
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
+  const [liveStudies, setLiveStudies] = useState<AnalyticsStudy[]>([]);
+  const [liveConsents, setLiveConsents] = useState<WalletAnalyticsConsent[]>([]);
+  const [busyStudyIds, setBusyStudyIds] = useState<string[]>([]);
+  const [contributedStudyIds, setContributedStudyIds] = useState<string[]>([]);
+  const [analyticsStatus, setAnalyticsStatus] = useState<"idle" | "synced" | "saved" | "contributed" | "revoked" | "failed">(
+    "idle"
+  );
+  const displayedStudies = liveStudies.length ? liveStudies : analyticsStudies;
+
+  async function refreshAnalyticsState() {
+    if (!apiConfig) return;
+    const [templates, consents] = await Promise.all([
+      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl }),
+      listWalletAnalyticsConsents(apiConfig).catch(() => [])
+    ]);
+    setLiveStudies(templates.length ? templates : []);
+    setLiveConsents(consents);
+    setAnalyticsStatus("synced");
+  }
+
+  useEffect(() => {
+    if (!apiConfig) return;
+    refreshAnalyticsState().catch(() => setAnalyticsStatus("failed"));
+  }, [apiConfig]);
+
   function toggleStudy(studyId: string) {
     setOptedIn({ ...optedIn, [studyId]: !isStudySelected(studyId) });
   }
 
   function isStudySelected(studyId: string) {
-    return optedIn[studyId] ?? true;
+    return Boolean(activeConsentForStudy(studyId)) || (optedIn[studyId] ?? true);
+  }
+
+  function activeConsentForStudy(studyId: string) {
+    return liveConsents.find((consent) => consent.templateId === studyId && consent.status === "active");
+  }
+
+  async function saveConsent(study: AnalyticsStudy) {
+    if (!apiConfig?.actorDid) return;
+    setBusyStudyIds((ids) => [...ids, study.id]);
+    try {
+      await createWalletAnalyticsConsent(apiConfig, study.id);
+      setOptedIn({ ...optedIn, [study.id]: true });
+      await refreshAnalyticsState();
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus("saved");
+    } catch {
+      setAnalyticsStatus("failed");
+    } finally {
+      setBusyStudyIds((ids) => ids.filter((id) => id !== study.id));
+    }
+  }
+
+  async function contributeFacts(study: AnalyticsStudy) {
+    const consent = activeConsentForStudy(study.id);
+    if (!apiConfig?.actorDid || !consent) return;
+    setBusyStudyIds((ids) => [...ids, study.id]);
+    try {
+      await createWalletAnalyticsContribution(apiConfig, {
+        consentId: consent.id,
+        fields: analyticsContributionFields(study),
+        templateId: study.id
+      });
+      setContributedStudyIds((ids) => Array.from(new Set([...ids, study.id])));
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus("contributed");
+    } catch {
+      setAnalyticsStatus("failed");
+    } finally {
+      setBusyStudyIds((ids) => ids.filter((id) => id !== study.id));
+    }
+  }
+
+  async function withdrawConsent(study: AnalyticsStudy) {
+    const consent = activeConsentForStudy(study.id);
+    if (!apiConfig?.actorDid || !consent) return;
+    setBusyStudyIds((ids) => [...ids, study.id]);
+    try {
+      await revokeWalletAnalyticsConsent(apiConfig, consent.id);
+      setOptedIn({ ...optedIn, [study.id]: false });
+      await refreshAnalyticsState();
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setAnalyticsStatus("revoked");
+    } catch {
+      setAnalyticsStatus("failed");
+    } finally {
+      setBusyStudyIds((ids) => ids.filter((id) => id !== study.id));
+    }
   }
 
   return (
@@ -3222,9 +3347,19 @@ function AnalyticsScreen({
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
+      {apiConfig ? <StatusBanner tone="success">Wallet analytics is connected.</StatusBanner> : null}
+      {analyticsStatus === "saved" ? <StatusBanner tone="success">Analytics consent saved.</StatusBanner> : null}
+      {analyticsStatus === "contributed" ? (
+        <StatusBanner tone="success">Group facts contribution recorded.</StatusBanner>
+      ) : null}
+      {analyticsStatus === "revoked" ? <StatusBanner tone="success">Analytics consent withdrawn.</StatusBanner> : null}
+      {analyticsStatus === "failed" ? <StatusBanner tone="warning">Analytics action failed.</StatusBanner> : null}
       <div className="analytics-grid">
-        {analyticsStudies.map((study) => {
+        {displayedStudies.map((study) => {
           const selected = isStudySelected(study.id);
+          const activeConsent = activeConsentForStudy(study.id);
+          const busy = busyStudyIds.includes(study.id);
+          const contributed = contributedStudyIds.includes(study.id);
           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
           const titleId = `analytics-title-${study.id}`;
           return (
@@ -3287,12 +3422,36 @@ function AnalyticsScreen({
                   <small>Exact location, files, names, and contact details are not used.</small>
                 </span>
               </label>
+              {apiConfig ? (
+                <div className="row-actions">
+                  <Button disabled={Boolean(activeConsent) || busy} onClick={() => void saveConsent(study)} variant="secondary">
+                    {busy && !activeConsent ? "Saving" : activeConsent ? "Consent saved" : "Save consent"}
+                  </Button>
+                  <Button disabled={!activeConsent || contributed || busy} onClick={() => void contributeFacts(study)} variant="secondary">
+                    {busy && activeConsent ? "Recording" : contributed ? "Group facts recorded" : "Contribute group facts"}
+                  </Button>
+                  <Button disabled={!activeConsent || busy} onClick={() => void withdrawConsent(study)} variant="quiet">
+                    Withdraw
+                  </Button>
+                </div>
+              ) : null}
             </article>
           );
         })}
       </div>
     </div>
   );
+}
+
+function analyticsContributionFields(study: AnalyticsStudy): Record<string, string> {
+  const fields: Record<string, string> = {};
+  for (const field of study.fields) {
+    if (field === "county") fields[field] = "Multnomah";
+    else if (field === "need_category") fields[field] = "housing";
+    else if (field === "region_id") fields[field] = "multnomah_county";
+    else fields[field] = "pilot";
+  }
+  return fields;
 }
 
 function ProofCenterScreen({
@@ -3312,6 +3471,33 @@ function ProofCenterScreen({
   const [regionId, setRegionId] = useState("multnomah_county");
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+  const [locationLat, setLocationLat] = useState("");
+  const [locationLon, setLocationLon] = useState("");
+  const [locationStatus, setLocationStatus] = useState<"idle" | "saving" | "saved" | "failed">("idle");
+  const [lastLocationRecordId, setLastLocationRecordId] = useState("");
+
+  async function saveLocation(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!apiConfig?.actorDid) return;
+    const lat = Number(locationLat);
+    const lon = Number(locationLon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      setLocationStatus("failed");
+      return;
+    }
+    setLocationStatus("saving");
+    try {
+      const record = await addLocationRecord(apiConfig, { lat, lon });
+      setLocationRecordId(record.recordId);
+      setLastLocationRecordId(record.recordId);
+      setLocationLat("");
+      setLocationLon("");
+      await refreshWalletAuditEvents().catch(() => undefined);
+      setLocationStatus("saved");
+    } catch {
+      setLocationStatus("failed");
+    }
+  }
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -3343,6 +3529,44 @@ function ProofCenterScreen({
       <p className="page-note">
         Proof receipts expose public claims and verifier details without showing raw documents or precise location.
       </p>
+      <article className="proof-card" aria-label="Add wallet location">
+        <div className="scope-header">
+          <div>
+            <h3>Add wallet location</h3>
+            <p>Encrypted precise coordinates · coarse/proof outputs only</p>
+          </div>
+          <Badge tone={apiConfig ? "success" : "warning"}>{apiConfig ? "API connected" : "API required"}</Badge>
+        </div>
+        <form className="form-grid" onSubmit={saveLocation}>
+          <Field label="Precise latitude" required>
+            <input
+              inputMode="decimal"
+              onChange={(event) => setLocationLat(event.target.value)}
+              placeholder="45.515232"
+              value={locationLat}
+            />
+          </Field>
+          <Field label="Precise longitude" required>
+            <input
+              inputMode="decimal"
+              onChange={(event) => setLocationLon(event.target.value)}
+              placeholder="-122.678385"
+              value={locationLon}
+            />
+          </Field>
+          <div className="row-actions full-span">
+            <Button disabled={!apiConfig?.actorDid || locationStatus === "saving"} type="submit" variant="secondary">
+              <ShieldCheck size={18} /> {locationStatus === "saving" ? "Saving" : "Add location"}
+            </Button>
+          </div>
+          {locationStatus === "saved" ? (
+            <StatusBanner tone="success">Location record added: {lastLocationRecordId}</StatusBanner>
+          ) : null}
+          {locationStatus === "failed" ? (
+            <StatusBanner tone="warning">Location save failed. Check the coordinates and wallet connection.</StatusBanner>
+          ) : null}
+        </form>
+      </article>
       <article className="proof-card" aria-label="Create location region proof">
         <div className="scope-header">
           <div>

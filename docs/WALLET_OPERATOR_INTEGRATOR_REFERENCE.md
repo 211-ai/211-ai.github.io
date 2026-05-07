@@ -197,6 +197,63 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 pilot staging is a scripted product demonstration over the 211-AI
+UI and public wallet API, backed by `ipfs_datasets_py.wallet`. It is not a
+production approval by itself; it proves the partner-facing workflow is wired
+through the same encrypted records, UCAN-style grants, proof receipts,
+analytics governance, revocation, and audit surfaces that target launch uses.
+
+Required staging setup:
+
+- Durable wallet repository and encrypted blob storage are enabled with
+  `WALLET_AUTO_LOAD_REPOSITORY=true` and `WALLET_AUTO_PERSIST=true`.
+- The UI is configured with `walletApiBaseUrl`, `walletId`, `actorDid`,
+  `issuerKeyHex`, and partner `audienceKeyHex` query parameters.
+- At least one approved analytics template exists through
+  `POST /analytics/templates`; the template must use approved derived fields,
+  a documented purpose, `min_cohort_size`, and epsilon budget from the target
+  analytics governance packet.
+- The proof backend mode matches the pilot claim. Simulated proof mode is
+  acceptable only for local automation; target staging evidence must use the
+  WALLET-180 verifier cutover packet rules.
+
+Pilot UI/API path:
+
+1. Create or select a synthetic wallet with `POST /wallets`.
+2. In the UI Uploads screen, add a document. The API stores it with
+   `POST /wallets/{wallet_id}/documents` or `/documents/text`, and records
+   `record/add`.
+3. In Proof Center, add encrypted precise location coordinates. The API stores
+   them with `POST /wallets/{wallet_id}/locations`, then clears the coordinate
+   inputs from the browser after the record ID is returned.
+4. In Proof Center, create a `location_region` proof for the service-area
+   policy. The proof receipt public inputs may include region and policy
+   identifiers, but must not include latitude, longitude, target coordinates,
+   witness values, or raw location payloads.
+5. In Exports, share a purpose-bound partner bundle. The UI creates an
+   `export/create` grant, signed invocation, encrypted export bundle, hash and
+   schema verification, storage verification, and optional descriptor import.
+   Use a pilot purpose such as `partner_case_transfer`.
+6. In Group facts, save consent for the approved analytics template and submit
+   one derived-field contribution. The contribution records an
+   `analytics_contribution` proof receipt and `analytics/contribute` audit
+   event; names, contact details, files, and precise locations are outside the
+   template field list.
+7. In Who can see info, revoke the active partner grant. Confirm the grant
+   receipt changes to `revoked` and subsequent partner invocations fail.
+8. In Audit, verify the timeline contains `record/add`, `grant/create`,
+   `invocation/issue`, `invocation/verify`, `proof/create`, `export/create`,
+   `analytics/consent_create`, `analytics/contribute`, optional
+   `analytics/query`, and `grant/revoke`.
+
+Pilot evidence must include only record IDs, grant IDs, receipt hashes, bundle
+hashes, proof public inputs, aggregate result metadata, storage status, and
+audit event IDs. It must not include plaintext document content, extracted
+entity text, exact coordinates, proof witnesses, key material, bearer tokens,
+secret-manager resolved values, or decrypted export payloads.
+
 ## API Reference
 
 Run the API with:

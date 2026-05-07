@@ -191,6 +191,16 @@ interface AnalyticsConsentApiRecord {
   status: "active" | "revoked" | string;
 }
 
+interface AnalyticsContributionApiRecord {
+  contribution_id: string;
+  wallet_id: string;
+  template_id: string;
+  consent_id: string;
+  fields: Record<string, unknown>;
+  proof_id: string;
+  created_at: string;
+}
+
 interface AnalyticsConsentsApiResponse {
   consents: AnalyticsConsentApiRecord[];
 }
@@ -240,6 +250,21 @@ export interface WalletAnalyticsConsent {
   createdAt: string;
   expiresAt?: string;
   expiresAtRaw?: string;
+}
+
+export interface WalletAnalyticsContribution {
+  id: string;
+  templateId: string;
+  consentId: string;
+  fields: Record<string, unknown>;
+  proofId: string;
+  createdAt: string;
+}
+
+export interface WalletLocationRecord {
+  recordId: string;
+  dataType: string;
+  status: string;
 }
 
 interface DerivedArtifactApiResponse {
@@ -515,6 +540,28 @@ export async function revokeWalletAnalyticsConsent(
     actor_did: requiredActorDid(config)
   });
   return toWalletAnalyticsConsentView(consent);
+}
+
+export async function createWalletAnalyticsContribution(
+  config: WalletApiConfig,
+  {
+    consentId,
+    templateId,
+    fields
+  }: {
+    consentId: string;
+    templateId: string;
+    fields: Record<string, unknown>;
+  }
+): Promise<WalletAnalyticsContribution> {
+  const url = new URL(`/wallets/${config.walletId}/analytics/contributions`, normalizedBaseUrl(config.apiBaseUrl));
+  const contribution = await postJson<AnalyticsContributionApiRecord>(url, "Analytics contribution", {
+    actor_did: requiredActorDid(config),
+    consent_id: consentId,
+    fields,
+    template_id: templateId
+  });
+  return toWalletAnalyticsContributionView(contribution);
 }
 
 export async function createLocationRegionProof(
@@ -831,6 +878,29 @@ export async function addBinaryDocument(
     throw new Error(`Document upload request failed with status ${response.status}`);
   }
   return toUploadItemViewWithStorage(config, (await response.json()) as WalletRecordApiRecord);
+}
+
+export async function addLocationRecord(
+  config: WalletApiConfig,
+  {
+    lat,
+    lon
+  }: {
+    lat: number;
+    lon: number;
+  }
+): Promise<WalletLocationRecord> {
+  const url = new URL(`/wallets/${config.walletId}/locations`, normalizedBaseUrl(config.apiBaseUrl));
+  const record = await postJson<WalletRecordApiRecord>(url, "Location record", {
+    actor_did: requiredActorDid(config),
+    lat,
+    lon
+  });
+  return {
+    dataType: record.data_type,
+    recordId: record.record_id,
+    status: record.status
+  };
 }
 
 export async function verifyRecordStorage(
@@ -1218,6 +1288,13 @@ export async function createRecordGrant(
     purpose: purpose || "service_matching",
     user_presence_required: userPresenceRequired || undefined,
     caveats: caveats || undefined
+  });
+}
+
+export async function revokeWalletGrant(config: WalletApiConfig, grantId: string): Promise<RecordGrantResponse> {
+  const url = new URL(`/wallets/${config.walletId}/grants/${grantId}/revoke`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<RecordGrantResponse>(url, "Grant revoke", {
+    actor_did: requiredActorDid(config)
   });
 }
 
@@ -1831,6 +1908,17 @@ function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): Walle
     createdAt: formatTimestamp(consent.created_at),
     expiresAt: consent.expires_at ? formatTimestamp(consent.expires_at) : undefined,
     expiresAtRaw: consent.expires_at ?? undefined
+  };
+}
+
+function toWalletAnalyticsContributionView(contribution: AnalyticsContributionApiRecord): WalletAnalyticsContribution {
+  return {
+    id: contribution.contribution_id,
+    templateId: contribution.template_id,
+    consentId: contribution.consent_id,
+    fields: contribution.fields,
+    proofId: contribution.proof_id,
+    createdAt: formatTimestamp(contribution.created_at)
   };
 }
 
