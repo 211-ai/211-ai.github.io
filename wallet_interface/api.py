@@ -354,6 +354,22 @@ class ServicePlanUpdateRequest(BaseModel):
     private_notes_record_id: str | None = None
 
 
+class ServicePlanShareGrantRequest(BaseModel):
+    actor_did: str = ""
+    issuer_did: str = ""
+    audience_did: str = ""
+    worker_did: str = ""
+    scopes: List[str] = Field(default_factory=lambda: ["service_summary"])
+    purpose: str = "service_plan_collaboration"
+    worker_recipient_id: str = ""
+    worker_name: str = ""
+    expires_at: str | None = None
+    approval_id: str | None = None
+    issuer_key_hex: str | None = None
+    audience_key_hex: str | None = None
+    caveats: Dict[str, Any] = Field(default_factory=dict)
+
+
 class ServiceInteractionRequest(BaseModel):
     actor_did: str
     service_doc_id: str
@@ -1037,6 +1053,58 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 private_notes_record_id=request.private_notes_record_id,
             )
             return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/portal/plans/{plan_id}/share-grants")
+    def create_service_plan_share_grant(
+        wallet_id: str,
+        plan_id: str,
+        request: ServicePlanShareGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            result = app_service.create_service_plan_share_grant(
+                wallet_id,
+                plan_id,
+                issuer_did=request.actor_did or request.issuer_did,
+                audience_did=request.audience_did or request.worker_did,
+                scopes=request.scopes,
+                purpose=request.purpose,
+                worker_recipient_id=request.worker_recipient_id,
+                worker_name=request.worker_name,
+                expires_at=request.expires_at,
+                approval_id=request.approval_id,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                extra_caveats=request.caveats,
+            )
+            return result.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/services/{service_doc_id}/share-grants")
+    def create_service_share_grant(
+        wallet_id: str,
+        service_doc_id: str,
+        request: ServicePlanShareGrantRequest,
+    ) -> Dict[str, Any]:
+        try:
+            result = app_service.create_service_share_grant(
+                wallet_id,
+                service_doc_id,
+                issuer_did=request.actor_did or request.issuer_did,
+                audience_did=request.audience_did or request.worker_did,
+                scopes=request.scopes,
+                purpose=request.purpose,
+                worker_recipient_id=request.worker_recipient_id,
+                worker_name=request.worker_name,
+                expires_at=request.expires_at,
+                approval_id=request.approval_id,
+                issuer_secret=_key_from_optional_hex(request.issuer_key_hex),
+                audience_secret=_key_from_optional_hex(request.audience_key_hex),
+                extra_caveats=request.caveats,
+            )
+            return result.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

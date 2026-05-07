@@ -138,6 +138,22 @@ def _flag_from_env(name: str, *, default: bool) -> bool:
 
 PORTAL_STATE_TYPE = "wallet_repository_portal_state_v1"
 PORTAL_STATE_FILENAME = "portal-state.json"
+SERVICE_PLAN_SHARE_DEFAULT_SCOPES = ("service_summary",)
+SERVICE_PLAN_SHARE_SCOPE_FIELDS: Dict[str, List[str]] = {
+    "service_summary": [
+        "service_doc_id",
+        "source_content_cid",
+        "source_page_cid",
+        "service_title",
+        "provider_name",
+        "goal",
+        "status",
+    ],
+    "checklist": ["steps", "documents_needed", "questions_to_ask"],
+    "schedule": ["appointment_at", "reminder_at", "travel_target"],
+    "worker_assignment": ["assigned_worker_recipient_id"],
+    "interaction_history": ["related_interaction_ids"],
+}
 
 
 def _portal_now() -> str:
@@ -162,6 +178,24 @@ def _unique_strings(values: Sequence[str] | None) -> List[str]:
 
 def _portal_resource(wallet_id: str, collection: str, entry_id: str) -> str:
     return f"{resource_for_wallet(wallet_id)}/portal/{collection}/{entry_id}"
+
+
+def _normalize_service_plan_share_scopes(scopes: Sequence[str] | None) -> List[str]:
+    raw_values = list(SERVICE_PLAN_SHARE_DEFAULT_SCOPES if scopes is None else scopes)
+    normalized = _unique_strings(raw_values)
+    if not normalized:
+        raise ValueError("at least one service plan share scope is required")
+    unsupported = [scope for scope in normalized if scope not in SERVICE_PLAN_SHARE_SCOPE_FIELDS]
+    if unsupported:
+        raise ValueError(f"unsupported service plan share scope: {unsupported[0]}")
+    return normalized
+
+
+def _service_plan_share_fields(scopes: Sequence[str]) -> List[str]:
+    fields: List[str] = []
+    for scope in scopes:
+        fields.extend(SERVICE_PLAN_SHARE_SCOPE_FIELDS[scope])
+    return _unique_strings(fields)
 
 
 @dataclass
@@ -387,6 +421,27 @@ class ServiceInteractionRecord:
             updated_at=str(payload.get("updated_at") or ""),
             metadata=dict(payload.get("metadata") or {}),
         )
+
+
+@dataclass
+class ServicePlanShareGrantResult:
+    grant: Any
+    receipt: Any | None
+    plan: ServicePlanRecord
+    interaction: ServiceInteractionRecord
+
+    def to_dict(self) -> Dict[str, Any]:
+        payload = {
+            "grant_id": self.grant.grant_id,
+            "plan_id": self.plan.plan_id,
+            "interaction_id": self.interaction.interaction_id,
+            "grant": self.grant.to_dict(),
+            "plan": self.plan.to_dict(),
+            "interaction": self.interaction.to_dict(),
+        }
+        if self.receipt is not None:
+            payload["receipt"] = self.receipt.to_dict()
+        return payload
 
 
 class WalletInterfaceService:
@@ -1343,6 +1398,189 @@ class WalletInterfaceService:
         if status is not None:
             records = [record for record in records if record.status == status]
         return sorted(records, key=lambda item: (item.updated_at or item.created_at, item.plan_id))
+
+    def create_service_plan_share_grant(
+        self,
+        wallet_id: str,
+        plan_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        scopes: Sequence[str] | None = None,
+        purpose: str = "service_plan_collaboration",
+        worker_recipient_id: str = "",
+        worker_name: str = "",
+        expires_at: str | None = None,
+        approval_id: str | None = None,
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        extra_caveats: Mapping[str, Any] | None = None,
+    ) -> ServicePlanShareGrantResult:
+        self._require_portal_actor(wallet_id, issuer_did)
+        plan = self.service_plans.get(plan_id)
+        if plan is None or plan.wallet_id != wallet_id:
+            raise ValueError("service plan not found")
+        audience = str(audience_did or "").strip()
+        if not audience:
+            raise ValueError("audience_did is required")
+        normalized_scopes = _normalize_service_plan_share_scopes(scopes)
+        resource = _portal_resource(wallet_id, "plans", plan.plan_id)
+        allowed_fields = _service_plan_share_fields(normalized_scopes)
+        caveats: Dict[str, Any] = dict(extra_caveats or {})
+        caveats.update(
+            {
+                "purpose": purpose or caveats.get("purpose") or "service_plan_collaboration",
+                "portal_collection": "service_plans",
+                "service_plan_id": plan.plan_id,
+                "service_doc_id": plan.service_doc_id,
+                "source_content_cid": plan.source_content_cid,
+                "source_page_cid": plan.source_page_cid,
+                "service_plan_scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "redacted_by_default": True,
+                "privacy_level": "restricted",
+            }
+        )
+        if worker_recipient_id:
+            caveats["worker_recipient_id"] = str(worker_recipient_id)
+        if worker_name:
+            caveats["worker_name"] = str(worker_name)
+        if approval_id:
+            caveats["approval_id"] = approval_id
+
+        grant = self.wallet_service.create_grant(
+            wallet_id=wallet_id,
+            issuer_did=issuer_did,
+            audience_did=audience,
+            resources=[resource],
+            abilities=["service_plan/read"],
+            caveats=caveats,
+            expires_at=expires_at,
+            approval_id=approval_id,
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+        )
+        now = _portal_now()
+        interaction = ServiceInteractionRecord(
+            interaction_id=_portal_id("interaction"),
+            wallet_id=wallet_id,
+            service_doc_id=plan.service_doc_id,
+            source_content_cid=plan.source_content_cid,
+            source_page_cid=plan.source_page_cid,
+            provider_name=plan.provider_name,
+            program_name=plan.service_title,
+            interaction_type="shared_service_plan",
+            channel="wallet_grant",
+            actor_did=str(issuer_did),
+            counterparty_name=str(worker_name or worker_recipient_id or audience),
+            counterparty_contact=audience,
+            timestamp=now,
+            status="grant_active",
+            outcome="Scoped service plan grant created",
+            related_grant_ids=[grant.grant_id],
+            privacy_level="restricted",
+            created_at=now,
+            updated_at=now,
+            metadata={
+                "plan_id": plan.plan_id,
+                "resource": resource,
+                "scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "worker_recipient_id": str(worker_recipient_id or ""),
+            },
+        )
+        self.service_interactions[interaction.interaction_id] = interaction
+        plan.assigned_worker_recipient_id = str(worker_recipient_id or plan.assigned_worker_recipient_id or audience)
+        plan.related_interaction_ids = _unique_strings([*plan.related_interaction_ids, interaction.interaction_id])
+        plan.updated_at = now
+        receipt = next(
+            (
+                item
+                for item in self.wallet_service.grant_receipts.values()
+                if item.wallet_id == wallet_id and item.grant_id == grant.grant_id
+            ),
+            None,
+        )
+        self._portal_audit(
+            wallet_id,
+            actor_did=issuer_did,
+            action="interaction/create",
+            resource=_portal_resource(wallet_id, "interactions", interaction.interaction_id),
+            details={
+                "service_doc_id": plan.service_doc_id,
+                "interaction_type": interaction.interaction_type,
+                "channel": interaction.channel,
+                "related_grant_ids": [grant.grant_id],
+            },
+        )
+        self._portal_audit(
+            wallet_id,
+            actor_did=issuer_did,
+            action="service_plan/share",
+            resource=resource,
+            details={
+                "service_doc_id": plan.service_doc_id,
+                "grant_id": grant.grant_id,
+                "audience_did": audience,
+                "worker_recipient_id": worker_recipient_id,
+                "scopes": normalized_scopes,
+                "allowed_fields": allowed_fields,
+                "interaction_id": interaction.interaction_id,
+                "privacy_level": "restricted",
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return ServicePlanShareGrantResult(grant=grant, receipt=receipt, plan=plan, interaction=interaction)
+
+    def create_service_share_grant(
+        self,
+        wallet_id: str,
+        service_doc_id: str,
+        *,
+        issuer_did: str,
+        audience_did: str,
+        scopes: Sequence[str] | None = None,
+        purpose: str = "service_plan_collaboration",
+        worker_recipient_id: str = "",
+        worker_name: str = "",
+        expires_at: str | None = None,
+        approval_id: str | None = None,
+        issuer_secret: bytes | None = None,
+        audience_secret: bytes | None = None,
+        extra_caveats: Mapping[str, Any] | None = None,
+    ) -> ServicePlanShareGrantResult:
+        service_doc = str(service_doc_id or "").strip()
+        if not service_doc:
+            raise ValueError("service_doc_id is required")
+        plan = max(
+            (
+                record
+                for record in self.service_plans.values()
+                if record.wallet_id == wallet_id and record.service_doc_id == service_doc
+            ),
+            key=lambda item: (item.updated_at or item.created_at, item.plan_id),
+            default=None,
+        )
+        if plan is None:
+            raise ValueError("service plan not found")
+        return self.create_service_plan_share_grant(
+            wallet_id,
+            plan.plan_id,
+            issuer_did=issuer_did,
+            audience_did=audience_did,
+            scopes=scopes,
+            purpose=purpose,
+            worker_recipient_id=worker_recipient_id,
+            worker_name=worker_name,
+            expires_at=expires_at,
+            approval_id=approval_id,
+            issuer_secret=issuer_secret,
+            audience_secret=audience_secret,
+            extra_caveats=extra_caveats,
+        )
+
+    def share_service_plan_with_worker(self, wallet_id: str, plan_id: str, **kwargs: Any) -> ServicePlanShareGrantResult:
+        return self.create_service_plan_share_grant(wallet_id, plan_id, **kwargs)
 
     def create_service_interaction(
         self,
