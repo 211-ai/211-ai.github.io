@@ -198,16 +198,26 @@ export function ActionCard({
   title: string;
   detail: string;
   icon: ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
 }) {
-  return (
-    <button className="action-card" onClick={onClick} type="button">
+  const content = (
+    <>
       <span className="action-icon">{icon}</span>
       <span>
         <strong>{title}</strong>
         <small>{detail}</small>
       </span>
       <ChevronRight aria-hidden="true" size={22} />
+    </>
+  );
+
+  if (!onClick) {
+    return <article className="action-card action-card-static">{content}</article>;
+  }
+
+  return (
+    <button className="action-card" onClick={onClick} type="button">
+      {content}
     </button>
   );
 }

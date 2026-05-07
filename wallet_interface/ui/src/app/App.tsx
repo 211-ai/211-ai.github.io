@@ -49,7 +49,9 @@ import {
   ServicePlan,
   ShelterContactRequest,
   UploadItem,
-  ProofReceiptView
+  ProofReceiptView,
+  WalletAccessRequest,
+  WalletGrantReceipt
 } from "../models/abby";
 import {
   analyticsStudies,
@@ -91,6 +93,7 @@ import {
   WalletApiConfig
 } from "../services/walletApi";
 import {
+  appRoutes,
   createDefaultAppState,
   defaultManagedUserDraft,
   defaultShelterChecklist,
@@ -271,19 +274,12 @@ export function App() {
   const [savedServices, setSavedServices] = useState<SavedService[]>([]);
   const [servicePlans, setServicePlans] = useState<ServicePlan[]>([]);
   const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>([]);
-  const [benefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const walletApiConfig = useMemo(readWalletApiConfig, []);
-
-  async function refreshWalletAccessState() {
-    if (!walletApiConfig) return;
-    const state = await loadWalletAccessState(walletApiConfig);
-    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
-    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
-  }
+  const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
 
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
@@ -310,6 +306,13 @@ export function App() {
       refreshWalletDocuments().catch(() => setUploads(initialUploads)),
       refreshWalletProofReceipts().catch(() => setWalletProofReceipts(proofReceipts))
     ]);
+  }
+
+  async function refreshWalletAccessState() {
+    if (!walletApiConfig) return;
+    const state = await loadWalletAccessState(walletApiConfig);
+    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
+    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
   }
 
   const agentRuntime = useMemo<AppActionRuntime>(
@@ -386,6 +389,10 @@ export function App() {
   const agentChat = useAgentChatService(agentRuntime);
 
   useEffect(() => {
+    activeRouteRef.current = activeRoute;
+  }, [activeRoute]);
+
+  useEffect(() => {
     const syncRouteFromHash = () => {
       const detailDocId = getServiceDetailDocIdFromHash();
       const nextRoute = detailDocId ? "social-services" : normalizeAppRoute(getRouteFromHash());
@@ -450,6 +457,14 @@ export function App() {
 
   useEffect(() => {
     if (!walletApiConfig) return;
+    refreshWalletAccessState().catch(() => {
+      setAccessRequests([]);
+      setGrantReceipts([]);
+    });
+  }, [walletApiConfig]);
+
+  useEffect(() => {
+    if (!walletApiConfig) return;
     const demoBundleJson = import.meta.env.VITE_DEMO_EXPORT_BUNDLE_JSON as string | undefined;
     if (!demoBundleJson) return;
 
@@ -503,6 +518,10 @@ export function App() {
     next.setDate(next.getDate() + policy.intervalDays);
     return next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }, [policy.intervalDays, policy.lastCheckInAt]);
+
+  const routes = useMemo(() => primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+  const secondaryNavigationRoutes = useMemo(() => secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+  const navigationRoutes = useMemo(() => appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
 
   if (!signedInUser) {
     return <LoginScreen onSignIn={handleSignIn} />;
@@ -609,6 +628,15 @@ export function App() {
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
+        ) : null}
+        {activeRoute === "recipient-access" ? (
+          <RecipientAccessScreen
+            accessRequests={accessRequests}
+            grantReceipts={grantReceipts}
+          />
+        ) : null}
+        {activeRoute === "benefits-protection" ? (
+          <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
@@ -3290,6 +3318,67 @@ function AuditScreen({ events }: { events: AuditEvent[] }) {
           </article>
         ))}
       </div>
+    </div>
+  );
+}
+
+function RecipientAccessScreen({
+  accessRequests,
+  grantReceipts
+}: {
+  accessRequests: WalletAccessRequest[];
+  grantReceipts: WalletGrantReceipt[];
+}) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Recipient access</p>
+        <h1>Who can see your info</h1>
+      </div>
+      {accessRequests.length === 0 && grantReceipts.length === 0 ? (
+        <p>No access requests or grant receipts yet.</p>
+      ) : null}
+      {accessRequests.length > 0 ? (
+        <Section title="Access requests">
+          {accessRequests.map((req) => (
+            <ActionCard key={req.id} title={req.requesterName} detail={req.purpose} icon={<KeyRound size={18} />} />
+          ))}
+        </Section>
+      ) : null}
+      {grantReceipts.length > 0 ? (
+        <Section title="Grant receipts">
+          {grantReceipts.map((receipt) => (
+            <ActionCard key={receipt.id} title={receipt.audienceName} detail={receipt.purpose} icon={<ShieldCheck size={18} />} />
+          ))}
+        </Section>
+      ) : null}
+    </div>
+  );
+}
+
+function BenefitsProtectionScreen({
+  optedIn,
+  setOptedIn
+}: {
+  optedIn: boolean;
+  setOptedIn: (optedIn: boolean) => void;
+}) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Benefits protection</p>
+        <h1>Protect your benefits</h1>
+      </div>
+      <Section title="Benefits opt-in">
+        <label>
+          <input
+            type="checkbox"
+            checked={optedIn}
+            onChange={(e) => setOptedIn(e.target.checked)}
+          />
+          {" "}Enable benefits protection
+        </label>
+      </Section>
     </div>
   );
 }
