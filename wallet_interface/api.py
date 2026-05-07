@@ -41,6 +41,13 @@ def _cors_origins_from_env() -> list[str]:
     return origins
 
 
+def _wallet_interface_service_from_env() -> WalletInterfaceService:
+    services_jsonl = str(os.environ.get("WALLET_SERVICES_JSONL") or "").strip()
+    if services_jsonl:
+        return WalletInterfaceService.from_services_jsonl(services_jsonl)
+    return WalletInterfaceService()
+
+
 class CreateWalletRequest(BaseModel):
     owner_did: str
     controller_dids: List[str] = Field(default_factory=list)
@@ -549,7 +556,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
     if FastAPI is None:  # pragma: no cover
         raise RuntimeError("FastAPI is required to create the wallet interface API")
 
-    app_service = service or WalletInterfaceService()
+    app_service = service or _wallet_interface_service_from_env()
     app = FastAPI(title="211-AI Wallet Interface", version="0.1.0")
     cors_origins = _cors_origins_from_env()
     if cors_origins:

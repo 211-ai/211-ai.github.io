@@ -54,6 +54,10 @@ Optional production settings:
 - `WALLET_STORAGE_ROOT`, `WALLET_STORAGE_BUCKET`, `WALLET_STORAGE_PREFIX`,
   `WALLET_STORAGE_PIN`, and `WALLET_STORAGE_MIRRORS` can build
   `WALLET_STORAGE_CONFIG` from individual environment variables.
+- `WALLET_SERVICES_JSONL` points the ASGI API at a JSONL service directory.
+  Each row should match the public service record fields used by
+  `/wallets/{wallet_id}/services/match`: `id`, `name`, `description`,
+  `categories`, `city`, `state`, `zip`, `phone`, `website`, and `source_url`.
 - `WALLET_PROOF_PROVE_PATH`, `WALLET_PROOF_DISTANCE_PROVE_PATH`, and
   `WALLET_PROOF_VERIFY_PATH` override the HTTP proof backend endpoints.
 - `WALLET_PROOF_BEARER_TOKEN` or
@@ -307,6 +311,12 @@ safe output.
 | `POST` | `/wallets/{wallet_id}/services/match` | Match services using wallet coarse/proven data. |
 | `POST` | `/services/match-derived` | Match services from caller-provided derived/coarse facts. |
 
+For deployed ASGI instances, set `WALLET_SERVICES_JSONL` to load the service
+directory used by the matching endpoints. The matching API accepts wallet
+location records only through owner access, scoped coarse-location grants, or
+signed coarse-location invocation tokens; it rejects precise caller-provided
+coordinates on `/services/match-derived`.
+
 ### Exports
 
 | Method | Path | Purpose |
@@ -493,6 +503,11 @@ checks, UCAN delegate decrypt/export grants, signed invocations, encrypted
 export hash/schema verification/import/storage checks, grant revocation,
 analytics, ops health, repository reload after restart, and matching wallet CLI
 subprocess flows for sharing, export, analytics, import merge, and revocation.
+`tests/test_wallet_third_party_blackbox.py` is the focused third-party sharing
+harness. It runs only through public API endpoints, seeds service matching via
+`WALLET_SERVICES_JSONL`, and exercises scoped UCAN grants for document-derived
+analysis, coarse-location matching, proof-only location claims, encrypted
+export bundles, and revocation blocking.
 `ipfs_datasets_py/tests/mcp/test_wallet_tools.py` covers the same
 share/export/import/revoke path and redacted analysis/form/extraction/vector/
 GraphRAG path plus analytics template/consent/contribution/private-count
