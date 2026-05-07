@@ -119,10 +119,94 @@ CLI through separate subprocesses for the same sharing/export/analytics
 persistence path, validates a completed signoff JSON packet, and verifies that a
 verifier returning witness data fails the release gate.
 The full-stack Playwright test starts a live wallet API with local durable
-storage, seeds wallet records over HTTP, and drives the 211-AI export UI through
-grant, invocation, encrypted bundle creation, verification, storage status,
-descriptor import, and audit confirmation from desktop and mobile browser
-projects.
+storage, seeds wallet records over HTTP or the browser upload surface, and
+drives the 211-AI export UI, recipient-access UI, Proof Center, analytics
+choice screen, and Audit UI through partner-pilot checks from desktop and
+mobile browser projects.
+
+## WALLET-210 211 Service Partner Pilot Readiness Drill
+
+Run this drill in staging before inviting a 211 service partner into a pilot,
+after the WALLET-170, WALLET-180, WALLET-190, and WALLET-200 evidence packages
+are complete for the same environment. Use synthetic data only.
+
+Validation commands:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Required setup:
+
+- The API is backed by `ipfs_datasets_py.wallet` with durable repository and
+  encrypted blob storage configured.
+- The UI origin is allowed by `WALLET_API_CORS_ORIGINS`.
+- The target proof backend matches the WALLET-180 cutover packet. Development
+  simulated proofs are acceptable only for local automation, not target launch
+  evidence.
+- The analytics template used in the drill is approved under WALLET-200 and
+  names allowed derived fields, minimum cohort size, epsilon budget, nullifier
+  handling, retention mapping, and reviewer role.
+- The operator has synthetic owner, service-partner, and reviewer DIDs plus
+  test keys; never use real client documents or exact home coordinates.
+
+Drill sequence:
+
+1. Add the synthetic document from `#/uploads` and confirm the UI shows the file
+   as stored and saved. Archive the document record ID and storage status only.
+2. Add one synthetic location through the staging seed tool or
+   `POST /wallets/{wallet_id}/locations`. Archive only the location record ID.
+3. Create a partner grant for the document with explicit `purpose`, partner DID,
+   abilities, output types, and user-presence caveat. In `#/recipient-access`,
+   sign in as the partner and create a redacted analysis artifact. Confirm the
+   output contains allowed derived facts and no email, phone, SSN, person name,
+   plaintext document text, or precise location.
+4. Create a location-region proof grant for the partner. In `#/proof-center`,
+   enter the location record ID, region ID, and grant ID, then create the proof.
+   Confirm the visible proof and API public inputs include only public claim
+   fields such as `region_id`, `claim`, and policy hash.
+5. Create consent from the approved analytics template, submit derived fields
+   such as county and need category, and run the approved aggregate endpoint.
+   Confirm the released result uses the configured k-threshold and privacy
+   budget and does not expose direct identifiers, plaintext, or precise
+   coordinates.
+6. Revoke the document and proof grants with
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`. Reload
+   `#/recipient-access` as the partner and confirm grant receipts show
+   `revoked`. Repeat a partner analysis or proof call and confirm it fails
+   closed.
+7. Open `#/audit` and confirm the timeline contains `record/add`,
+   `grant/create`, `invocation/issue`, `invocation/verify`,
+   `record/analyze_redacted`, `proof/create`, `analytics/consent_create`,
+   `analytics/contribute`, `analytics/query`, and `grant/revoke`.
+
+Pass criteria:
+
+- No pilot evidence artifact contains wallet plaintext, key material, verifier
+  credentials, proof witness values, precise coordinates, emails, phone numbers,
+  SSNs, or person-name strings.
+- Partner access is purpose-bound and revocable, and revoked partner calls fail
+  through public API routes.
+- Location eligibility is demonstrable from proof public inputs without
+  disclosing precise coordinates.
+- Analytics contribution and aggregate release are tied to an approved template,
+  consent, nullifier, k-threshold, privacy budget, retention mapping, and audit
+  event.
+- UI and API evidence agree on the same wallet ID, record IDs, grant IDs, proof
+  IDs, consent ID, contribution ID, aggregate result ID, and audit timeline.
+
+Launch blockers:
+
+- Missing WALLET-180 non-simulated verifier evidence for target staging.
+- Missing WALLET-190 retention, deletion, revoke, repair, or purge evidence.
+- Analytics template missing WALLET-200 approval details or using fields outside
+  the approved derived-field list.
+- Any UI, API response, logs, screenshots, or evidence packet that exposes
+  plaintext, secrets, proof witnesses, or precise coordinates.
+- Revocation leaves a partner grant active or allows a repeated partner call to
+  succeed.
 
 ## Lost Key Or Device
 

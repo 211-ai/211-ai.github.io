@@ -197,6 +197,62 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 is the staging pilot script for a 211 partner demonstration. Run it
+only after the WALLET-170 third-party blackbox, WALLET-180 verifier cutover,
+WALLET-190 retention dry run, and WALLET-200 analytics governance evidence are
+available for the same staging environment.
+
+Pilot actors:
+
+- Wallet owner: the user or navigator acting as wallet controller.
+- Service partner: the partner DID receiving purpose-bound access.
+- Analytics reviewer: the accountable role that approved the template used in
+  the pilot.
+- Operator: the person archiving evidence and checking for disclosure leaks.
+
+Pilot route and API map:
+
+| Pilot step | UI surface | API surface | Evidence boundary |
+| --- | --- | --- | --- |
+| Add a document | `#/uploads` | `POST /wallets/{wallet_id}/documents` or `/documents/text` | Show record ID, storage status, and audit event; do not archive plaintext. |
+| Add location | Proof Center setup or staging API seed | `POST /wallets/{wallet_id}/locations` | Precise coordinates stay encrypted; evidence may include the location record ID only. |
+| Share partner access | `#/recipient-access` | `POST /wallets/{wallet_id}/records/{record_id}/grants` | Grant must name partner DID, purpose, abilities, output types, and user-presence caveats. |
+| Prove location eligibility | `#/proof-center` | `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs` | Public inputs may include `region_id`, `claim`, and policy hash; no latitude, longitude, target coordinate, witness, or secret value. |
+| Contribute aggregate analytics | `#/analytics` plus approved release API | `/analytics/templates`, `/analytics/consents`, `/analytics/contributions`, `/analytics/{template_id}/count-by-fields` | Template approval, consent, nullifier, privacy budget, k-threshold, and released aggregate IDs only. |
+| Revoke access | `#/recipient-access` | `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` | Receipt status changes to `revoked`; repeated partner calls fail closed. |
+| Audit workflow | `#/audit` | `GET /wallets/{wallet_id}/audit` | Timeline includes `record/add`, `grant/create`, `invocation/issue`, `invocation/verify`, `record/analyze_redacted`, `proof/create`, `analytics/consent_create`, `analytics/contribute`, `analytics/query`, and `grant/revoke`. |
+
+Run the browser pilot check with the same command operators use locally:
+
+```bash
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+The `211 service partner pilot readiness workflow is auditable end to end`
+scenario starts a live wallet API backed by local `ipfs_datasets_py.wallet`
+repository and encrypted blob storage, uploads a document through the UI, seeds
+an encrypted location through the API, creates a partner grant, drives partner
+redacted analysis, creates a location-region proof from Proof Center, submits an
+approved analytics contribution and private aggregate query, revokes the partner
+grant, proves a repeated partner call is blocked, and confirms the workflow on
+the Audit UI.
+
+Pass criteria:
+
+- The partner can see only the purpose-bound receipt and approved derived
+  output types.
+- Redacted analysis and analytics output do not contain emails, phone numbers,
+  SSNs, names, plaintext document text, or precise coordinates.
+- Proof UI and proof public inputs do not contain latitude, longitude, target
+  coordinate, witness, or credential values.
+- Analytics release uses an approved template and records consent, nullifier,
+  privacy-budget, and query audit evidence.
+- Revocation flips grant receipts to `revoked` and subsequent partner use fails.
+- The final audit timeline links every step without exposing wallet secrets,
+  plaintext, or precise coordinates.
+
 ## API Reference
 
 Run the API with:
@@ -519,9 +575,10 @@ storage status, and descriptor import, and covers recipient delegated document
 analysis for safe summaries, redacted analysis, extraction, form analysis,
 vector profiles, and GraphRAG.
 `wallet_interface/ui/tests/fullstack-wallet.spec.ts` starts a real wallet API
-with local repository/blob storage, seeds wallet records through HTTP, and
-drives the 211-AI export center and recipient delegated analysis workflows
-against that live API from desktop and mobile browser projects.
+with local repository/blob storage, seeds wallet records through HTTP or the
+browser upload surface, and drives the 211-AI export center, recipient
+delegated analysis, and WALLET-210 partner pilot readiness workflows against
+that live API from desktop and mobile browser projects.
 
 Also run `GET /ops/health?verify_storage=true` against the target environment
 after deployment and confirm no check has `status=error`. When
