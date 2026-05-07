@@ -3160,6 +3160,11 @@ function RecipientAccessScreen({
                     <p>{request.resourceLabel}</p>
                     <div className="badge-row">
                       <Badge>{request.status}</Badge>
+                      {request.grantStatus ? (
+                        <Badge tone={request.grantStatus === "active" ? "success" : "warning"}>
+                          grant {request.grantStatus}
+                        </Badge>
+                      ) : null}
                       <Badge>{capabilitySummary(request.abilities)}</Badge>
                       {needsApproval ? <Badge tone="warning">controller approval needed</Badge> : null}
                     </div>

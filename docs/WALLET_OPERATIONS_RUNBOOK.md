@@ -124,6 +124,68 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Service Partner Pilot Drill
+
+Run this drill in staging before a 211 service partner pilot demo and after any
+change to wallet UI routes, partner grant handling, proof configuration,
+analytics templates, or audit rendering. Use synthetic data only.
+
+Prerequisites:
+
+- WALLET-170 third-party sharing blackbox evidence is current for the staging
+  API and selected service partner role.
+- WALLET-180 verifier cutover evidence is current when the proof path is
+  non-simulated. In development-mode rehearsals, mark proof receipts as
+  simulated and do not present them as target verifier evidence.
+- WALLET-190 storage dry-run evidence is current for the staging repository and
+  encrypted blob topology.
+- WALLET-200 analytics governance evidence lists the template used by the pilot
+  or declares that no live production analytics templates are enabled.
+
+Run the local regression first:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Staging pilot sequence:
+
+1. Create a synthetic wallet, text document, and location record through the
+   API. Record only wallet ID, record IDs, ciphertext/storage hashes, and the
+   staging evidence ticket. Do not archive plaintext, precise coordinates, or
+   key material.
+2. Open the 211-AI Uploads and Proof Center routes with the staging wallet query
+   parameters. Confirm the browser shows document descriptors and the location
+   record ID, not decrypted values or exact coordinates.
+3. Create or approve a partner access request for one document with a specific
+   pilot purpose, partner DID, expiry, resource ID, and output policy. Confirm
+   Recipient Access shows the partner grant as active.
+4. Have the partner run a redacted analysis or summary from Recipient Access.
+   Confirm the output omits names, emails, phone numbers, SSNs, exact location,
+   and raw document text unless the approved pilot explicitly grants plaintext.
+5. Create a `location_region` proof for the staging eligibility region. Confirm
+   the Proof Center card and `GET /wallets/{wallet_id}/proofs` show public
+   inputs such as `region_id`, `claim`, and policy hash only.
+6. Create consent from the approved analytics template and submit one derived
+   contribution using fields such as `county` and `need_category`. If the demo
+   releases an aggregate, add enough synthetic cohort members to meet the
+   approved threshold and use `/analytics/{template_id}/count-by-fields`.
+7. Revoke the access request or grant from Recipient Access or the grant revoke
+   API. Confirm grant receipts show `revoked` and that the partner can no longer
+   analyze, decrypt, export, prove, or service-match through the revoked grant.
+8. Open the Audit route and verify the timeline includes `access/request`,
+   `access/approve`, partner analysis or invocation, `proof/create`,
+   `analytics/contribute`, `analytics/query` when an aggregate was run,
+   `grant/revoke`, and the failed post-revocation call evidence.
+
+The drill passes only when proof outputs and archived evidence do not contain
+precise coordinates, document plaintext, direct identifiers, proof witnesses,
+credential values, bearer tokens, custom verifier headers, storage credentials,
+or staging key material. Treat any such value in UI screenshots, logs, audit
+exports, alert payloads, or evidence tickets as a privacy incident.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

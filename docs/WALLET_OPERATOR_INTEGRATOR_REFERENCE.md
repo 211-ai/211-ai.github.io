@@ -197,6 +197,41 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Reference
+
+WALLET-210 pilot readiness is a staging demonstration, not a substitute for the
+target launch evidence required by WALLET-170, WALLET-180, WALLET-190, and
+WALLET-200. Run the pilot only after the third-party sharing harness, verifier
+cutover packet, storage retention dry run, and analytics governance review have
+current passing evidence for the same staging environment.
+
+Use synthetic data and one approved service partner DID. The pilot should
+exercise these API surfaces while the browser shows the matching 211-AI UI
+screens:
+
+| Pilot step | API surface | UI surface | Required privacy check |
+| --- | --- | --- | --- |
+| Create wallet data | `POST /wallets`, `POST /wallets/{wallet_id}/documents/text`, `POST /wallets/{wallet_id}/locations` | Uploads, Proof Center, Audit | Record lists expose descriptors and record IDs, not plaintext or precise coordinates. |
+| Share purpose-bound partner access | `POST /wallets/{wallet_id}/access-requests`, `POST /wallets/{wallet_id}/access-requests/{request_id}/approve`, grant receipts | Recipient access | Grant caveats include the pilot purpose, partner DID, resource IDs, expiry, and output limits when configured. |
+| Prove eligibility without coordinates | `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs`, `GET /wallets/{wallet_id}/proofs` | Proof Center | Public inputs contain region claim fields only; `lat`, `lon`, witness values, and verifier secrets are absent. |
+| Contribute approved aggregate facts | `POST /analytics/templates`, `POST /wallets/{wallet_id}/analytics/consents/from-template`, `POST /wallets/{wallet_id}/analytics/contributions`, `/analytics/{template_id}/count-by-fields` | Group facts, Audit | Contributions use approved derived fields only and aggregates release only at the approved threshold. |
+| Revoke partner access | `POST /wallets/{wallet_id}/access-requests/{request_id}/revoke` or `POST /wallets/{wallet_id}/grants/{grant_id}/revoke` | Recipient access, Audit | Revoked grants and receipts show `status=revoked`; later partner analysis, decrypt, proof, export, or service-match calls fail. |
+| Audit the workflow | `GET /wallets/{wallet_id}/audit` | Audit | Timeline includes data add, access request, approval, invocation or analysis, proof, analytics, revocation, and denial evidence. |
+
+Pilot API clients should use the same origin and CORS allow-list as the browser
+UI. Browser routes accept `walletApiBaseUrl`, `walletId`, `actorDid`,
+`issuerKeyHex`, and `audienceKeyHex` query parameters for staging-only demos.
+Do not log or archive those query strings when they contain staging key
+material. For partner demos, prefer short-lived synthetic keys and delete the
+temporary wallet repository after the run.
+
+The full browser/API regression is
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
+API backed by `ipfs_datasets_py.wallet`, creates synthetic documents and
+location records, approves partner access through the UI, proves region
+eligibility, contributes to approved aggregate analytics, revokes the partner
+grant, and verifies the audit timeline and no-coordinate proof outputs.
+
 ## API Reference
 
 Run the API with:
