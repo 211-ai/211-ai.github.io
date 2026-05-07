@@ -11,6 +11,17 @@ The target remote currently exposes only:
 
 Local remote-tracking refs such as `origin/rescue/*` are historical and should not be treated as proof that those branches exist on the new remote.
 
+<<<<<<< HEAD
+=======
+## Reduction result
+
+An ancestry and diff-equivalence pass was run across the non-merged local rescue/history branches.
+
+- No duplicate effective diffs were found among the non-merged rescue/history branches.
+- `rescue/wallet-210-attempt-19-1778188297-failed-validation` is covered by `rescue/wallet-210-attempt-21-1778191683-failed-validation` and does not need to be pushed separately.
+- Aside from that single covered branch, the Phase 2 rescue/history list is already the smallest content-preserving branch set.
+
+>>>>>>> 59df02f3 (Refine minimal branch migration set)
 ## Phase 1: Push immediately
 
 These branches should be pushed first because they preserve the current intended state and the archived uncommitted worktree deltas.
@@ -60,6 +71,10 @@ These branches contain commits not reachable from local `main` and should be pre
 - `rescue/wallet-210-attempt-16-1778181952-failed-validation`
 - `rescue/wallet-210-attempt-17-1778183571-failed-validation`
 - `rescue/wallet-210-attempt-18-1778187037-failed-validation`
+<<<<<<< HEAD
+=======
+- `rescue/wallet-210-attempt-21-1778191683-failed-validation`
+>>>>>>> 59df02f3 (Refine minimal branch migration set)
 - `rescue/wallet-210-attempt-20-1778190099-failed-validation`
 - `rescue/worktree-artifacts`
 
@@ -98,6 +113,10 @@ git -C /home/barberb/211-AI push origin \
   rescue/wallet-210-attempt-16-1778181952-failed-validation \
   rescue/wallet-210-attempt-17-1778183571-failed-validation \
   rescue/wallet-210-attempt-18-1778187037-failed-validation \
+<<<<<<< HEAD
+=======
+  rescue/wallet-210-attempt-21-1778191683-failed-validation \
+>>>>>>> 59df02f3 (Refine minimal branch migration set)
   rescue/wallet-210-attempt-20-1778190099-failed-validation \
   rescue/worktree-artifacts
 ```
@@ -116,7 +135,11 @@ Push them only if you want the old PR-local naming retained on the new remote.
 These branch tips are already reachable from local `main`, so pushing them does not preserve additional committed content.
 
 - `implementation/*`
+<<<<<<< HEAD
 - `rescue/wallet-210-attempt-19-1778188297-failed-validation`
+=======
+- `rescue/wallet-210-attempt-19-1778188297-failed-validation` is covered by `rescue/wallet-210-attempt-21-1778191683-failed-validation`
+>>>>>>> 59df02f3 (Refine minimal branch migration set)
 - `implementation/wallet-210-attempt-21-1778191683`
 - `backup/pre-merge-20260504-0001`
 - `backup/pre-merge-20260504-0002`
