@@ -197,6 +197,59 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Workflow
+
+WALLET-210 staging pilots must demonstrate the workflow through the 211-AI UI
+and public wallet API backed by `ipfs_datasets_py.wallet`. Use synthetic users,
+synthetic partner DIDs, and the staging service directory. Do not use live
+client records for pilot evidence.
+
+Pilot sequence:
+
+1. Create a wallet, add one document from the Uploads screen, and add one
+   precise location record through `POST /wallets/{wallet_id}/locations`.
+   Evidence may include record IDs, storage status, and audit event IDs only.
+2. Create a partner grant by calling
+   `POST /wallets/{wallet_id}/records/{record_id}/grants`. The grant must
+   include a specific `purpose`, explicit abilities, and output-type caveats. The
+   recipient-access UI must show the partner receipt, purpose, receipt hash, and
+   safe derived output without plaintext identifiers.
+3. For service navigation, issue a coarse-location grant and invocation, then
+   call `POST /wallets/{wallet_id}/services/match`. The response must not
+   include latitude, longitude, witness data, or precise-coordinate strings.
+4. For eligibility, issue a location-region proof grant and create the proof
+   from the Proof Center using the location record ID, region ID, and grant ID.
+   The proof receipt may expose `claim`, `region_id`, and policy/verifier
+   metadata; it must not expose precise coordinates or witness values.
+5. Register or select an approved analytics template, create wallet consent,
+   submit one derived-field contribution, and run an aggregate query only
+   through `/analytics/{template_id}/count` or
+   `/analytics/{template_id}/count-by-fields`. Contributions must use approved
+   derived fields such as `county` and `need_category`, never raw document text
+   or precise coordinates.
+6. Revoke the partner grant from the recipient-access UI or
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`, then prove the old
+   grant or invocation cannot analyze, decrypt, match, prove, or export.
+7. Open the Audit screen and export or archive the wallet audit timeline. The
+   evidence must include `record/add`, `grant/create`, `invocation/issue`,
+   `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`,
+   `proof/create`, `analytics/consent_create`, `analytics/contribute`,
+   `analytics/query`, and `grant/revoke`.
+
+Run the pilot browser/API harness before staging signoff:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Pass criteria: the staging pilot can show document upload, location capture,
+purpose-bound partner access, proof-only location eligibility, approved
+aggregate analytics contribution, revocation blocking, and audit review without
+revealing plaintext secrets, precise coordinates, proof witnesses, credential
+values, or raw analytics queries.
+
 ## API Reference
 
 Run the API with:

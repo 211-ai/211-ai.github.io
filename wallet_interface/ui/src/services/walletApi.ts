@@ -1307,6 +1307,13 @@ export async function revokeAccessRequest(
   return toAccessRequestView(data);
 }
 
+export async function revokeGrant(config: WalletApiConfig, grantId: string): Promise<DelegatedGrantResponse> {
+  const url = new URL(`/wallets/${config.walletId}/grants/${grantId}/revoke`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<DelegatedGrantResponse>(url, "Grant revoke", {
+    actor_did: requiredActorDid(config)
+  });
+}
+
 export async function approveThresholdApproval(
   config: WalletApiConfig,
   approvalId: string

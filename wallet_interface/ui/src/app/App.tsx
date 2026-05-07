@@ -114,6 +114,7 @@ import {
   listWalletServicePlans,
   rejectAccessRequest,
   repairRecordStorage,
+  revokeGrant,
   revokeAccessRequest,
   saveWalletService,
   saveWalletSnapshot,
@@ -3005,6 +3006,24 @@ function RecipientAccessScreen({
     setGrantReceipts(grantReceipts.map((receipt) => (receipt.id.includes(requestId) ? { ...receipt, status: "revoked" } : receipt)));
   }
 
+  async function revokeReceipt(receipt: WalletGrantReceipt) {
+    const actionId = `${receipt.id}:revoke`;
+    if (apiConfig?.actorDid) {
+      setBusyActionIds((ids) => [...ids, actionId]);
+      try {
+        await revokeGrant(apiConfig, receipt.grantId);
+        await refreshWalletAccessState();
+        await refreshWalletAuditEvents();
+        return;
+      } catch {
+        // Keep the local demo path responsive if a configured API is unavailable.
+      } finally {
+        setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
+      }
+    }
+    setGrantReceipts(grantReceipts.map((item) => (item.id === receipt.id ? { ...item, status: "revoked" } : item)));
+  }
+
   async function analyzeReceipt(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
     if (!apiConfig?.actorDid || !receipt.recordId) return;
     const actionId = `${receipt.id}:${mode}`;
@@ -3152,9 +3171,10 @@ function RecipientAccessScreen({
               const draft = delegationDrafts[receipt.id] ?? { audienceDid: "", purpose: receipt.purpose };
               const outputLines = derivedArtifactsByReceiptId[receipt.id] ?? [];
               const decrypted = decryptedRecordsByReceiptId[receipt.id];
-              const canAnalyze = receiptHasAbility(receipt, "record/analyze") && receipt.recordId;
-              const canView = receiptHasAbility(receipt, "record/decrypt") && receipt.recordId;
-              const canDelegate = receiptHasAbility(receipt, "record/share") && receipt.resources.length > 0;
+              const active = receipt.status === "active";
+              const canAnalyze = active && receiptHasAbility(receipt, "record/analyze") && receipt.recordId;
+              const canView = active && receiptHasAbility(receipt, "record/decrypt") && receipt.recordId;
+              const canDelegate = active && receiptHasAbility(receipt, "record/share") && receipt.resources.length > 0;
 
               return (
                 <article aria-labelledby={`grant-receipt-${receipt.id}`} className="list-item recipient-list-item" key={receipt.id}>
@@ -3166,7 +3186,7 @@ function RecipientAccessScreen({
                       <Badge>{receipt.receiptHash}</Badge>
                       <Badge>Share proof code</Badge>
                     </div>
-                    <small>{receipt.abilities.map(plainCapabilityLabel).join(", ")}</small>
+                    <small>{receipt.abilities.map(plainCapabilityLabel).join(", ")} · {receipt.purpose}</small>
                   </div>
                   <div className="row-actions">
                     <Button
@@ -3193,6 +3213,13 @@ function RecipientAccessScreen({
                     </Button>
                     <Button disabled={!canView} onClick={() => void viewReceipt(receipt)} variant="secondary">
                       View document
+                    </Button>
+                    <Button
+                      disabled={!active || busyActionIds.includes(`${receipt.id}:revoke`)}
+                      onClick={() => void revokeReceipt(receipt)}
+                      variant="danger"
+                    >
+                      {busyActionIds.includes(`${receipt.id}:revoke`) ? "Revoking" : "Revoke access"}
                     </Button>
                   </div>
                   {outputLines.length || decrypted ? (

@@ -124,6 +124,65 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Partner Pilot Drill
+
+Run this drill in staging before a 211 service partner pilot, after verifier or
+analytics-template changes, and after any UI change to Uploads, recipient
+access, Proof Center, Analytics, or Audit. Use synthetic wallet records and
+synthetic partner DIDs only.
+
+Required setup:
+
+- The API is backed by `ipfs_datasets_py.wallet` with durable repository and
+  encrypted storage configured.
+- `WALLET_SERVICES_JSONL` points at the staging 211 service directory.
+- The selected proof backend has completed the WALLET-180 verifier cutover gate
+  before any non-simulated proof path is shown to users.
+- The analytics template used for the drill is approved under the WALLET-200
+  governance workflow.
+
+Drill sequence:
+
+1. Create or select a synthetic wallet. Upload one synthetic document from the
+   Uploads screen, then add one precise location through
+   `POST /wallets/{wallet_id}/locations`.
+2. Create a purpose-bound partner grant for the document with explicit
+   abilities and output-type caveats. Open recipient access as the partner and
+   run redacted analysis. Confirm names, emails, phone numbers, SSNs, raw
+   document text, and unrelated abilities are absent from the displayed output.
+3. Create a coarse-location grant and invocation for service matching. Call
+   `/wallets/{wallet_id}/services/match` and confirm results contain service
+   records and coarse reasons only, with no precise-coordinate strings.
+4. Create a location-region proof grant. In Proof Center, create the proof using
+   the location record ID, region ID, and grant ID. Confirm public inputs do not
+   include `lat`, `lon`, coordinate values, witness data, or verifier secrets.
+5. Create wallet consent for the approved analytics template, submit one
+   derived-field contribution, and run the approved aggregate endpoint. Confirm
+   the contribution contains a proof ID/nullifier and that the aggregate follows
+   the template k-threshold and privacy-budget policy.
+6. Revoke the partner grant from recipient access or through
+   `/wallets/{wallet_id}/grants/{grant_id}/revoke`. Re-run the old partner
+   action and confirm it is blocked.
+7. Open Audit and archive the timeline event IDs for the full flow:
+   `record/add`, `grant/create`, `invocation/issue`, `invocation/verify`,
+   `record/analyze_redacted`, `location/read_coarse`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `analytics/query`, and
+   `grant/revoke`.
+
+Validation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Archive the command output, wallet ID, synthetic partner DIDs, grant IDs, proof
+IDs, analytics template/consent/contribution IDs, aggregate result ID, revoked
+grant receipt, and audit event IDs. Do not archive plaintext document contents,
+precise coordinates, witness payloads, secret values, bearer tokens, or raw
+analytics extracts.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or
