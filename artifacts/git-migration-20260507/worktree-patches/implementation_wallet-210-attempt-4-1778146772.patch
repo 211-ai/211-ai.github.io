@@ -1,0 +1,1014 @@
+diff --git a/docs/WALLET_OPERATIONS_RUNBOOK.md b/docs/WALLET_OPERATIONS_RUNBOOK.md
+index 2fcd0a8d..e23670e6 100644
+--- a/docs/WALLET_OPERATIONS_RUNBOOK.md
++++ b/docs/WALLET_OPERATIONS_RUNBOOK.md
+@@ -124,6 +124,66 @@ grant, invocation, encrypted bundle creation, verification, storage status,
+ descriptor import, and audit confirmation from desktop and mobile browser
+ projects.
+ 
++## WALLET-210 211 Service Partner Pilot Readiness Drill
++
++Run this drill in staging before a 211 partner walkthrough, after UI/API changes
++to wallet surfaces, and after verifier or analytics-governance changes. Use
++synthetic records only. The drill is not target-production signoff; it proves
++that the staged partner path is coherent and auditable.
++
++Required setup:
++
++- The API is backed by durable `ipfs_datasets_py.wallet` repository/storage
++  paths and `WALLET_AUTO_LOAD_REPOSITORY=true`,
++  `WALLET_AUTO_PERSIST=true`.
++- A synthetic wallet owner DID, partner DID, and analytics reviewer DID are
++  named in the evidence ticket.
++- The analytics template used for the demo is `approved`, has reviewer evidence
++  in the target signoff packet or staging evidence system, and allows only
++  derived/coarse fields such as `county` and `need_category`.
++- The proof center is configured for the environment's allowed proof mode. In
++  production-like staging, run the WALLET-180 verifier cutover checks before the
++  walkthrough.
++
++Drill sequence:
++
++1. Open the UI with `walletApiBaseUrl`, `walletId`, `actorDid`, and the needed
++   local key parameters. Confirm the user is signed in as the synthetic owner.
++2. In `Uploads`, add a synthetic intake document and save a precise location.
++   Record the generated document and location record IDs. Evidence may include
++   record IDs, data types, storage status, and ciphertext hashes only.
++3. Grant the partner purpose-bound access to the document. The grant must name
++   the partner DID, purpose, abilities, output caveats, and expiration or
++   staging-only rationale.
++4. Open `Recipient access` as the partner and run redacted analysis. Confirm
++   output is derived-only and does not contain source document text, direct
++   identifiers, or precise coordinates.
++5. Open `Proofs` as the owner and create a location-region eligibility proof.
++   Confirm public inputs contain the claim and region policy fields, and do not
++   contain `lat`, `lon`, target coordinates, or witness values.
++6. Open `Group facts`, submit consent for the approved template, and contribute
++   approved derived fields. Confirm an `analytics_contribution` proof receipt
++   and `analytics/contribute` audit event exist.
++7. Revoke the partner grant from `Recipient access`. Re-run or attempt the
++   partner invocation and confirm it fails closed.
++8. Open `Audit` and verify the full workflow appears with at least:
++   `record/add`, `grant/create`, `invocation/issue`, `invocation/verify`,
++   `record/analyze_redacted`, `proof/create`, `analytics/consent_create`,
++   `analytics/contribute`, and `grant/revoke`.
++
++Repository validation:
++
++```bash
++pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
++npm --prefix wallet_interface/ui run build
++npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
++```
++
++Archive the passing command output, the staging wallet ID, partner DID, grant
++ID, proof ID, analytics template ID, contribution proof ID, and audit hash head.
++Do not archive plaintext documents, precise coordinates, proof witnesses,
++private keys, bearer tokens, or secret-manager resolved values.
++
+ ## Lost Key Or Device
+ 
+ 1. Identify the wallet ID and current controller DID from the Security screen or
+diff --git a/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md b/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
+index 22c72886..33c531e0 100644
+--- a/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
++++ b/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
+@@ -197,6 +197,54 @@ If no production analytics templates are live, set
+ packet and keep `/analytics/templates` free of approved production templates for
+ that environment.
+ 
++## 211 Service Partner Pilot Reference
++
++The WALLET-210 staging pilot is the end-to-end operator demo for a 211 service
++partner. It must run against the deployed `wallet_interface` API/UI backed by
++`ipfs_datasets_py.wallet`, not a browser-only mock. Use synthetic participant
++data and a named staging partner DID.
++
++Pilot UI/API sequence:
++
++1. Create or load the staging wallet through `POST /wallets` and open the Abby
++   UI with `walletApiBaseUrl`, `walletId`, `actorDid`, and the appropriate key
++   parameters.
++2. In `Uploads`, add a document and save a precise location. The UI sends the
++   document to `/wallets/{wallet_id}/documents` or
++   `/wallets/{wallet_id}/documents/text` and the location to
++   `/wallets/{wallet_id}/locations`. Operators may show record IDs and storage
++   status, but not plaintext coordinates outside the user's own entry form.
++3. Create a purpose-bound partner grant with
++   `POST /wallets/{wallet_id}/records/{record_id}/grants`. For the pilot, use a
++   specific partner DID, purpose such as `211_partner_navigation`, the minimum
++   needed abilities, and output caveats such as `redacted_derived_only`.
++4. Open `Recipient access` as the partner and run the redacted analysis action.
++   The UI issues any required invocation through
++   `/records/{record_id}/analysis-invocations` and calls
++   `/records/{record_id}/analyze/redacted`. The partner view must not display
++   emails, phone numbers, SSNs, full document text, or precise coordinates.
++5. Open `Proofs` as the wallet owner and create a `location_region` proof for
++   the saved location. The receipt may show `claim`, `region_id`, verifier
++   metadata, proof hash, and public input names. It must not expose `lat`, `lon`,
++   target coordinates, witness values, or private location payloads.
++6. Register or select an approved analytics template, then use `Group facts` to
++   submit consent and contribute only approved derived fields through
++   `/wallets/{wallet_id}/analytics/contributions`. Contributions should create
++   an `analytics_contribution` proof receipt and an `analytics/contribute` audit
++   event.
++7. Return to `Recipient access` as the owner and revoke the partner grant. A
++   subsequent partner invocation must fail, grant receipts must show `revoked`,
++   and audit must include `grant/revoke`.
++8. Open `Audit` and confirm the timeline includes `record/add`, `grant/create`,
++   `invocation/issue`, `invocation/verify`, `record/analyze_redacted`,
++   `proof/create`, `analytics/consent_create`, `analytics/contribute`, and
++   `grant/revoke`.
++
++The repository-level browser regression for this pilot is
++`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. It starts a live wallet
++API with local encrypted storage, drives the UI workflow above, and asserts the
++same API privacy and audit boundaries used by the third-party blackbox harness.
++
+ ## API Reference
+ 
+ Run the API with:
+diff --git a/wallet_interface/ui/package.json b/wallet_interface/ui/package.json
+index 068771b4..1ffa4365 100644
+--- a/wallet_interface/ui/package.json
++++ b/wallet_interface/ui/package.json
+@@ -6,7 +6,7 @@
+   "scripts": {
+     "dev": "vite --host 0.0.0.0",
+     "build": "tsc && vite build --configLoader runner",
+-    "preview": "vite preview --host 0.0.0.0 --configLoader runner",
++    "preview": "vite preview --host 127.0.0.1 --configLoader runner",
+     "clean:visual-artifacts": "node scripts/clean_visual_artifacts.cjs",
+     "pretest": "npm run clean:visual-artifacts",
+     "test": "node scripts/run_playwright_tests.cjs",
+diff --git a/wallet_interface/ui/src/app/App.tsx b/wallet_interface/ui/src/app/App.tsx
+index 3a1f0f47..99404bcc 100644
+--- a/wallet_interface/ui/src/app/App.tsx
++++ b/wallet_interface/ui/src/app/App.tsx
+@@ -1,4 +1,4 @@
+-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
++import { ChangeEvent, Dispatch, FormEvent, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
+ import {
+   Archive,
+   Bell,
+@@ -43,6 +43,7 @@ import { search211Info } from "../services/graphRagService";
+ import type { SearchResult } from "../lib/graphrag";
+ import {
+   CheckInChannel,
++  AnalyticsStudy,
+   AuditEvent,
+   DecryptedRecordView,
+   DisclosureDataScope,
+@@ -87,10 +88,13 @@ import {
+   approveAccessRequest,
+   approveThresholdApproval,
+   addBinaryDocument,
++  addLocationRecord,
+   addTextDocument,
+   analyzeRecordFormRedactedWithGrant,
+   analyzeRecordRedactedWithGrant,
+   analyzeRecordWithGrant,
++  createWalletAnalyticsConsent,
++  createWalletAnalyticsContribution,
+   createRecordVectorProfileWithGrant,
+   createLocationRegionProof,
+   createRedactedGraphRAG,
+@@ -101,7 +105,9 @@ import {
+   importExportBundleView,
+   issueRecordAnalysisInvocation,
+   issueRecordDecryptInvocation,
++  listAnalyticsTemplates,
+   listWalletSnapshots,
++  listWalletAnalyticsConsents,
+   loadWalletAccessState,
+   loadExportBundleView,
+   loadWalletSnapshot,
+@@ -114,9 +120,12 @@ import {
+   rejectAccessRequest,
+   repairRecordStorage,
+   revokeAccessRequest,
++  revokeWalletAnalyticsConsent,
++  revokeWalletGrant,
+   saveWalletService,
+   saveWalletSnapshot,
+   verifyWalletSnapshot,
++  WalletAnalyticsConsent,
+   WalletSnapshotVerification,
+   WalletApiConfig
+ } from "../services/walletApi";
+@@ -799,7 +808,12 @@ export function App() {
+           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
+         ) : null}
+         {activeRoute === "analytics" ? (
+-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
++          <AnalyticsScreen
++            apiConfig={walletApiConfig}
++            optedIn={analyticsOptIn}
++            refreshWalletAuditEvents={refreshWalletAuditEvents}
++            setOptedIn={setAnalyticsOptIn}
++          />
+         ) : null}
+         {activeRoute === "proof-center" ? (
+           <ProofCenterScreen
+@@ -1883,9 +1897,11 @@ function UploadsScreen({
+   apiConfig?: WalletApiConfig;
+   refreshWalletAuditEvents: () => Promise<void>;
+   uploads: UploadItem[];
+-  setUploads: (uploads: UploadItem[]) => void;
++  setUploads: Dispatch<SetStateAction<UploadItem[]>>;
+ }) {
+   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
++  const [locationDraft, setLocationDraft] = useState({ lat: "", lon: "" });
++  const [locationStatus, setLocationStatus] = useState<"idle" | "saving" | "saved" | "failed">("idle");
+ 
+   async function addUpload(file: File | null) {
+     if (!file) return;
+@@ -1893,7 +1909,7 @@ function UploadsScreen({
+     if (apiConfig?.actorDid) {
+       try {
+         const uploaded = await addBinaryDocument(apiConfig, { file, title: machineSummary });
+-        setUploads([uploaded, ...uploads]);
++        setUploads((current) => [uploaded, ...current.filter((item) => item.id !== uploaded.id)]);
+         await refreshWalletAuditEvents();
+         return;
+       } catch {
+@@ -1903,7 +1919,7 @@ function UploadsScreen({
+             text: await file.text(),
+             title: machineSummary
+           });
+-          setUploads([uploaded, ...uploads]);
++          setUploads((current) => [uploaded, ...current.filter((item) => item.id !== uploaded.id)]);
+           await refreshWalletAuditEvents();
+           return;
+         } catch {
+@@ -1911,8 +1927,8 @@ function UploadsScreen({
+         }
+       }
+     }
+-    setUploads([
+-      ...uploads,
++    setUploads((current) => [
++      ...current,
+       {
+         id: `up-${Date.now()}`,
+         fileName: file.name,
+@@ -1949,6 +1965,30 @@ function UploadsScreen({
+     }
+   }
+ 
++  async function addLocation(event: FormEvent<HTMLFormElement>) {
++    event.preventDefault();
++    if (!apiConfig?.actorDid) {
++      setLocationStatus("failed");
++      return;
++    }
++    const lat = Number(locationDraft.lat);
++    const lon = Number(locationDraft.lon);
++    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
++      setLocationStatus("failed");
++      return;
++    }
++    setLocationStatus("saving");
++    try {
++      const location = await addLocationRecord(apiConfig, { lat, lon });
++      setUploads((current) => [location, ...current.filter((upload) => upload.id !== location.id)]);
++      setLocationDraft({ lat: "", lon: "" });
++      await refreshWalletAuditEvents();
++      setLocationStatus("saved");
++    } catch {
++      setLocationStatus("failed");
++    }
++  }
++
+   return (
+     <div className="screen">
+       <div className="page-title">
+@@ -1970,6 +2010,41 @@ function UploadsScreen({
+           />
+         </label>
+       </Section>
++      <Section title="Add location">
++        {!apiConfig ? <StatusBanner tone="warning">Connect Abby before saving a live wallet location.</StatusBanner> : null}
++        {locationStatus === "saved" ? <StatusBanner tone="success">Location saved to wallet.</StatusBanner> : null}
++        {locationStatus === "failed" ? (
++          <StatusBanner tone="warning">Location could not be saved. Check the coordinates and wallet connection.</StatusBanner>
++        ) : null}
++        <form className="form-grid" onSubmit={addLocation}>
++          <Field label="Latitude" required>
++            <input
++              inputMode="decimal"
++              onChange={(event) => setLocationDraft({ ...locationDraft, lat: event.target.value })}
++              placeholder="45.515232"
++              step="any"
++              type="number"
++              value={locationDraft.lat}
++            />
++          </Field>
++          <Field label="Longitude" required>
++            <input
++              inputMode="decimal"
++              onChange={(event) => setLocationDraft({ ...locationDraft, lon: event.target.value })}
++              placeholder="-122.678385"
++              step="any"
++              type="number"
++              value={locationDraft.lon}
++            />
++          </Field>
++          <div className="row-actions full-span">
++            <Button disabled={!apiConfig?.actorDid || locationStatus === "saving"} type="submit" variant="secondary">
++              <ShieldCheck aria-hidden="true" size={18} />
++              {locationStatus === "saving" ? "Saving location" : "Add location"}
++            </Button>
++          </div>
++        </form>
++      </Section>
+       <div className="list-stack">
+         {uploads.map((upload) => (
+           <article className="list-item upload-list-item" key={upload.id}>
+@@ -3019,6 +3094,24 @@ function RecipientAccessScreen({
+     setGrantReceipts(grantReceipts.map((receipt) => (receipt.id.includes(requestId) ? { ...receipt, status: "revoked" } : receipt)));
+   }
+ 
++  async function revokeReceiptGrant(receipt: WalletGrantReceipt) {
++    const actionId = `${receipt.id}:revoke`;
++    setBusyActionIds((ids) => [...ids, actionId]);
++    try {
++      if (apiConfig?.actorDid) {
++        await revokeWalletGrant(apiConfig, receipt.grantId);
++        await refreshWalletAccessState();
++        await refreshWalletAuditEvents();
++        return;
++      }
++      setGrantReceipts(
++        grantReceipts.map((item) => (item.grantId === receipt.grantId ? { ...item, status: "revoked" } : item))
++      );
++    } finally {
++      setBusyActionIds((ids) => ids.filter((id) => id !== actionId));
++    }
++  }
++
+   async function analyzeReceipt(receipt: WalletGrantReceipt, mode: RecipientAnalysisMode) {
+     if (!apiConfig?.actorDid || !receipt.recordId) return;
+     const actionId = `${receipt.id}:${mode}`;
+@@ -3208,6 +3301,13 @@ function RecipientAccessScreen({
+                     <Button disabled={!canView} onClick={() => void viewReceipt(receipt)} variant="secondary">
+                       View document
+                     </Button>
++                    <Button
++                      disabled={receipt.status !== "active" || busyActionIds.includes(`${receipt.id}:revoke`)}
++                      onClick={() => void revokeReceiptGrant(receipt)}
++                      variant="danger"
++                    >
++                      {busyActionIds.includes(`${receipt.id}:revoke`) ? "Revoking" : "Revoke access"}
++                    </Button>
+                   </div>
+                   {outputLines.length || decrypted ? (
+                     <div className="disclosure-package">
+@@ -3417,20 +3517,140 @@ function BenefitsProtectionScreen({
+ }
+ 
+ function AnalyticsScreen({
++  apiConfig,
+   optedIn,
++  refreshWalletAuditEvents,
+   setOptedIn
+ }: {
++  apiConfig?: WalletApiConfig;
+   optedIn: Record<string, boolean>;
++  refreshWalletAuditEvents: () => Promise<void>;
+   setOptedIn: (value: Record<string, boolean>) => void;
+ }) {
++  const [liveStudies, setLiveStudies] = useState<AnalyticsStudy[]>([]);
++  const [consents, setConsents] = useState<WalletAnalyticsConsent[]>([]);
++  const [busyStudyIds, setBusyStudyIds] = useState<string[]>([]);
++  const [contributedStudyIds, setContributedStudyIds] = useState<string[]>([]);
++  const [analyticsStatus, setAnalyticsStatus] = useState<{
++    tone: "success" | "warning";
++    text: string;
++  } | null>(null);
++  const studies = liveStudies.length ? liveStudies : analyticsStudies;
++
++  async function refreshAnalyticsState() {
++    if (!apiConfig) return;
++    const [templates, nextConsents] = await Promise.all([
++      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl, includeInactive: true }),
++      listWalletAnalyticsConsents(apiConfig)
++    ]);
++    setLiveStudies(templates);
++    setConsents(nextConsents);
++  }
++
++  useEffect(() => {
++    if (!apiConfig) return;
++    let cancelled = false;
++    Promise.all([
++      listAnalyticsTemplates({ apiBaseUrl: apiConfig.apiBaseUrl, includeInactive: true }),
++      listWalletAnalyticsConsents(apiConfig)
++    ])
++      .then(([templates, nextConsents]) => {
++        if (cancelled) return;
++        setLiveStudies(templates);
++        setConsents(nextConsents);
++      })
++      .catch(() => {
++        if (!cancelled) {
++          setLiveStudies([]);
++          setConsents([]);
++        }
++      });
++    return () => {
++      cancelled = true;
++    };
++  }, [apiConfig]);
++
+   function toggleStudy(studyId: string) {
+     setOptedIn({ ...optedIn, [studyId]: !isStudySelected(studyId) });
+   }
+ 
+   function isStudySelected(studyId: string) {
++    if (activeConsentForStudy(studyId)) return true;
+     return optedIn[studyId] ?? true;
+   }
+ 
++  function activeConsentForStudy(studyId: string) {
++    return consents.find((consent) => consent.templateId === studyId && consent.status === "active");
++  }
++
++  function setStudyBusy(studyId: string, busy: boolean) {
++    setBusyStudyIds((ids) => (busy ? [...ids, studyId] : ids.filter((id) => id !== studyId)));
++  }
++
++  async function submitConsent(study: AnalyticsStudy) {
++    if (!apiConfig || !isAnalyticsStudyLive(study)) return;
++    setStudyBusy(study.id, true);
++    setAnalyticsStatus(null);
++    try {
++      await createWalletAnalyticsConsent(apiConfig, study.id);
++      setOptedIn({ ...optedIn, [study.id]: true });
++      await refreshAnalyticsState();
++      await refreshWalletAuditEvents().catch(() => undefined);
++      setAnalyticsStatus({ tone: "success", text: `Analytics consent recorded for ${study.title}.` });
++    } catch {
++      setAnalyticsStatus({ tone: "warning", text: `Analytics consent failed for ${study.title}.` });
++    } finally {
++      setStudyBusy(study.id, false);
++    }
++  }
++
++  async function withdrawConsent(study: AnalyticsStudy) {
++    if (!apiConfig) return;
++    const consent = activeConsentForStudy(study.id);
++    if (!consent) return;
++    setStudyBusy(study.id, true);
++    setAnalyticsStatus(null);
++    try {
++      await revokeWalletAnalyticsConsent(apiConfig, consent.id);
++      setOptedIn({ ...optedIn, [study.id]: false });
++      await refreshAnalyticsState();
++      await refreshWalletAuditEvents().catch(() => undefined);
++      setAnalyticsStatus({ tone: "success", text: `Analytics consent withdrawn for ${study.title}.` });
++    } catch {
++      setAnalyticsStatus({ tone: "warning", text: `Analytics consent withdrawal failed for ${study.title}.` });
++    } finally {
++      setStudyBusy(study.id, false);
++    }
++  }
++
++  async function contributeToStudy(study: AnalyticsStudy) {
++    if (!apiConfig) return;
++    const consent = activeConsentForStudy(study.id);
++    if (!consent) {
++      setAnalyticsStatus({ tone: "warning", text: `Submit consent before contributing to ${study.title}.` });
++      return;
++    }
++    setStudyBusy(study.id, true);
++    setAnalyticsStatus(null);
++    try {
++      const contribution = await createWalletAnalyticsContribution(apiConfig, {
++        consentId: consent.id,
++        fields: defaultAnalyticsContributionFields(study),
++        templateId: study.id
++      });
++      setContributedStudyIds((ids) => (ids.includes(study.id) ? ids : [...ids, study.id]));
++      await refreshWalletAuditEvents().catch(() => undefined);
++      setAnalyticsStatus({
++        tone: "success",
++        text: `Aggregate contribution recorded for ${study.title} with proof ${contribution.proofId}.`
++      });
++    } catch {
++      setAnalyticsStatus({ tone: "warning", text: `Aggregate contribution failed for ${study.title}.` });
++    } finally {
++      setStudyBusy(study.id, false);
++    }
++  }
++
+   return (
+     <div className="screen">
+       <div className="page-title">
+@@ -3443,9 +3663,13 @@ function AnalyticsScreen({
+       <StatusBanner tone="warning">
+         A privacy and legal team must review this before real use.
+       </StatusBanner>
++      {analyticsStatus ? <StatusBanner tone={analyticsStatus.tone}>{analyticsStatus.text}</StatusBanner> : null}
+       <div className="analytics-grid">
+-        {analyticsStudies.map((study) => {
++        {studies.map((study) => {
+           const selected = isStudySelected(study.id);
++          const activeConsent = activeConsentForStudy(study.id);
++          const liveStudy = isAnalyticsStudyLive(study);
++          const busy = busyStudyIds.includes(study.id);
+           const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
+           const titleId = `analytics-title-${study.id}`;
+           return (
+@@ -3455,8 +3679,8 @@ function AnalyticsScreen({
+                   <h3 id={titleId}>{study.title}</h3>
+                   <p>{study.purpose}</p>
+                 </div>
+-                <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
+-                  {study.status === "paused" ? "paused" : selected ? "on" : "off"}
++                <Badge tone={!liveStudy ? "warning" : selected ? "success" : "neutral"}>
++                  {activeConsent ? "consented" : !liveStudy ? study.status : selected ? "on" : "off"}
+                 </Badge>
+               </div>
+               <div className="privacy-metrics">
+@@ -3508,6 +3732,31 @@ function AnalyticsScreen({
+                   <small>Exact location, files, names, and contact details are not used.</small>
+                 </span>
+               </label>
++              {apiConfig ? (
++                <div className="row-actions">
++                  <Button
++                    disabled={Boolean(activeConsent) || !liveStudy || busy}
++                    onClick={() => void submitConsent(study)}
++                    variant="secondary"
++                  >
++                    {busy && !activeConsent ? "Submitting" : "Submit consent"}
++                  </Button>
++                  <Button
++                    disabled={!activeConsent || contributedStudyIds.includes(study.id) || busy}
++                    onClick={() => void contributeToStudy(study)}
++                    variant="secondary"
++                  >
++                    {busy && activeConsent ? "Contributing" : "Contribute group facts"}
++                  </Button>
++                  <Button
++                    disabled={!activeConsent || busy}
++                    onClick={() => void withdrawConsent(study)}
++                    variant="danger"
++                  >
++                    Withdraw consent
++                  </Button>
++                </div>
++              ) : null}
+             </article>
+           );
+         })}
+@@ -3516,6 +3765,23 @@ function AnalyticsScreen({
+   );
+ }
+ 
++function isAnalyticsStudyLive(study: AnalyticsStudy) {
++  return !["draft", "paused", "retired"].includes(study.status);
++}
++
++function defaultAnalyticsContributionFields(study: AnalyticsStudy): Record<string, string> {
++  return Object.fromEntries(
++    study.fields.map((field) => {
++      const normalized = field.toLowerCase();
++      if (normalized === "county") return [field, "Multnomah"];
++      if (normalized === "need_category") return [field, "housing"];
++      if (normalized === "region_id") return [field, "multnomah_county"];
++      if (normalized === "state") return [field, "OR"];
++      return [field, "approved"];
++    })
++  );
++}
++
+ function ProofCenterScreen({
+   apiConfig,
+   proofs,
+diff --git a/wallet_interface/ui/src/services/walletApi.ts b/wallet_interface/ui/src/services/walletApi.ts
+index cb9976f3..d243dc96 100644
+--- a/wallet_interface/ui/src/services/walletApi.ts
++++ b/wallet_interface/ui/src/services/walletApi.ts
+@@ -205,6 +205,16 @@ interface AnalyticsConsentsApiResponse {
+   consents: AnalyticsConsentApiRecord[];
+ }
+ 
++interface AnalyticsContributionApiRecord {
++  contribution_id: string;
++  template_id: string;
++  consent_id: string;
++  nullifier: string;
++  fields: Record<string, unknown>;
++  proof_id: string;
++  created_at: string;
++}
++
+ export interface WalletGovernancePolicy {
+   approver_dids?: string[];
+   threshold?: number;
+@@ -252,6 +262,15 @@ export interface WalletAnalyticsConsent {
+   expiresAtRaw?: string;
+ }
+ 
++export interface WalletAnalyticsContribution {
++  id: string;
++  templateId: string;
++  consentId: string;
++  fieldNames: string[];
++  proofId: string;
++  createdAt: string;
++}
++
+ interface DerivedArtifactApiResponse {
+   artifact_id: string;
+   source_record_ids: string[];
+@@ -537,6 +556,28 @@ export async function revokeWalletAnalyticsConsent(
+   return toWalletAnalyticsConsentView(consent);
+ }
+ 
++export async function createWalletAnalyticsContribution(
++  config: WalletApiConfig,
++  {
++    consentId,
++    fields,
++    templateId
++  }: {
++    consentId: string;
++    fields: Record<string, unknown>;
++    templateId: string;
++  }
++): Promise<WalletAnalyticsContribution> {
++  const url = new URL(`/wallets/${config.walletId}/analytics/contributions`, normalizedBaseUrl(config.apiBaseUrl));
++  const contribution = await postJson<AnalyticsContributionApiRecord>(url, "Analytics contribution", {
++    actor_did: requiredActorDid(config),
++    consent_id: consentId,
++    fields,
++    template_id: templateId
++  });
++  return toWalletAnalyticsContributionView(contribution);
++}
++
+ export async function createLocationRegionProof(
+   config: WalletApiConfig,
+   {
+@@ -896,6 +937,25 @@ export async function addBinaryDocument(
+   return toUploadItemViewWithStorage(config, (await response.json()) as WalletRecordApiRecord);
+ }
+ 
++export async function addLocationRecord(
++  config: WalletApiConfig,
++  {
++    lat,
++    lon
++  }: {
++    lat: number;
++    lon: number;
++  }
++): Promise<UploadItem> {
++  const url = new URL(`/wallets/${config.walletId}/locations`, normalizedBaseUrl(config.apiBaseUrl));
++  const record = await postJson<WalletRecordApiRecord>(url, "Location upload", {
++    actor_did: requiredActorDid(config),
++    lat,
++    lon
++  });
++  return toUploadItemViewWithStorage(config, record);
++}
++
+ export async function verifyRecordStorage(
+   config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">,
+   recordId: string
+@@ -1506,6 +1566,13 @@ export async function delegateGrant(
+   });
+ }
+ 
++export async function revokeWalletGrant(config: WalletApiConfig, grantId: string): Promise<RecordGrantResponse> {
++  const url = new URL(`/wallets/${config.walletId}/grants/${grantId}/revoke`, normalizedBaseUrl(config.apiBaseUrl));
++  return postJson<RecordGrantResponse>(url, "Grant revocation", {
++    actor_did: requiredActorDid(config)
++  });
++}
++
+ export async function addWalletController(
+   config: WalletApiConfig,
+   controllerDid: string,
+@@ -1897,6 +1964,17 @@ function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): Walle
+   };
+ }
+ 
++function toWalletAnalyticsContributionView(contribution: AnalyticsContributionApiRecord): WalletAnalyticsContribution {
++  return {
++    id: contribution.contribution_id,
++    templateId: contribution.template_id,
++    consentId: contribution.consent_id,
++    fieldNames: Object.keys(contribution.fields),
++    proofId: contribution.proof_id,
++    createdAt: formatTimestamp(contribution.created_at)
++  };
++}
++
+ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
+   return {
+     id: record.record_id,
+diff --git a/wallet_interface/ui/tests/fullstack-wallet.spec.ts b/wallet_interface/ui/tests/fullstack-wallet.spec.ts
+index 84c9180e..f6d080ca 100644
+--- a/wallet_interface/ui/tests/fullstack-wallet.spec.ts
++++ b/wallet_interface/ui/tests/fullstack-wallet.spec.ts
+@@ -1,4 +1,5 @@
+ import { expect, test, type Page } from "@playwright/test";
++import { Buffer } from "node:buffer";
+ import { spawn, type ChildProcess } from "node:child_process";
+ import { mkdtemp, rm } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+@@ -16,8 +17,27 @@ type WalletRecord = {
+   record_id: string;
+ };
+ 
++type WalletRecordDetails = WalletRecord & {
++  data_type: string;
++  public_descriptor?: string;
++};
++
+ type WalletGrant = {
+   grant_id: string;
++  abilities?: string[];
++  caveats?: Record<string, unknown>;
++  status?: string;
++};
++
++type WalletProofReceipt = {
++  proof_id: string;
++  proof_type: string;
++  public_inputs: Record<string, unknown>;
++};
++
++type WalletGrantReceipt = {
++  grant_id: string;
++  status: string;
+ };
+ 
+ type PageDiagnostics = {
+@@ -63,6 +83,41 @@ async function apiJson<T>(baseUrl: string, method: string, route: string, payloa
+   return body;
+ }
+ 
++async function apiJsonResponse<T>(
++  baseUrl: string,
++  method: string,
++  route: string,
++  payload?: unknown
++): Promise<{ body: T; status: number }> {
++  const response = await fetch(new URL(route, baseUrl), {
++    body: payload === undefined ? undefined : JSON.stringify(payload),
++    headers: payload === undefined ? undefined : { "content-type": "application/json" },
++    method
++  });
++  return {
++    body: (await response.json().catch(() => ({}))) as T,
++    status: response.status
++  };
++}
++
++async function waitForWalletRecords(
++  baseUrl: string,
++  walletId: string,
++  dataTypes: string[]
++): Promise<WalletRecordDetails[]> {
++  const deadline = Date.now() + 15_000;
++  let records: WalletRecordDetails[] = [];
++  while (Date.now() < deadline) {
++    const response = await apiJson<{ records: WalletRecordDetails[] }>(baseUrl, "GET", `/wallets/${walletId}/records`);
++    records = response.records;
++    if (dataTypes.every((dataType) => records.some((record) => record.data_type === dataType))) {
++      return records;
++    }
++    await delay(100);
++  }
++  throw new Error(`Wallet records did not include ${dataTypes.join(", ")}: ${JSON.stringify(records)}`);
++}
++
+ async function startWalletApi(): Promise<ApiServer> {
+   const tempDir = await mkdtemp(path.join(tmpdir(), "abby-wallet-fullstack-"));
+   const port = await freePort();
+@@ -401,3 +456,220 @@ test("recipient access runs live redacted analysis workflows", async ({ page })
+     await stopWalletApi(api);
+   }
+ });
++
++test("211 service partner pilot workflow runs through live wallet UI and API surfaces", async ({ page }) => {
++  const api = await startWalletApi();
++  const ownerDid = "did:key:pilot-wallet-owner";
++  const ownerKeyHex = "55".repeat(32);
++  const partnerDid = "did:key:pilot-partner";
++  const partnerKeyHex = "66".repeat(32);
++  const preciseLat = 45.515232;
++  const preciseLon = -122.678385;
++  const intakeText = [
++    "Jane Example needs rent help, SNAP screening, and clinic navigation.",
++    "Email jane@example.org and phone 503-555-1212 are private.",
++    "SSN 123-45-6789 must stay out of partner analytics and proofs."
++  ].join("\n");
++
++  try {
++    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
++    const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
++    await apiJson(api.baseUrl, "POST", "/analytics/templates", {
++      allowed_derived_fields: ["county", "need_category"],
++      allowed_record_types: ["location", "need"],
++      created_by: "did:key:pilot-analytics-reviewer",
++      epsilon_budget: 0.5,
++      min_cohort_size: 2,
++      purpose: "Approved staging pilot service-gap planning",
++      status: "approved",
++      template_id: "pilot_housing_gap_v1",
++      title: "Pilot housing gap"
++    });
++
++    await page.goto(
++      walletRoute("uploads", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Saved files and info/i, diagnostics);
++    await page.getByLabel(/Choose file to upload/i).setInputFiles({
++      buffer: Buffer.from(intakeText),
++      mimeType: "text/plain",
++      name: "pilot-intake.txt"
++    });
++    await page.getByLabel(/Latitude/i).fill(String(preciseLat));
++    await page.getByLabel(/Longitude/i).fill(String(preciseLon));
++    await page.getByRole("button", { name: /Add location/i }).click();
++    await expect(page.getByText(/Location saved to wallet/i)).toBeVisible({ timeout: 15_000 });
++
++    const records = await waitForWalletRecords(api.baseUrl, wallet.wallet_id, ["document", "location"]);
++    const document = records.find((record) => record.data_type === "document");
++    const location = records.find((record) => record.data_type === "location");
++    expect(document?.record_id).toBeTruthy();
++    expect(location?.record_id).toBeTruthy();
++    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
++
++    const grant = await apiJson<WalletGrant>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/records/${document!.record_id}/grants`,
++      {
++        abilities: ["record/analyze"],
++        audience_did: partnerDid,
++        audience_key_hex: partnerKeyHex,
++        issuer_did: ownerDid,
++        issuer_key_hex: ownerKeyHex,
++        output_types: ["redacted_derived_only"],
++        purpose: "211_partner_navigation",
++        user_presence_required: true
++      }
++    );
++    expect(grant.grant_id).toBeTruthy();
++    expect(grant.caveats?.output_types).toEqual(["redacted_derived_only"]);
++
++    await page.goto(
++      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, partnerDid, {
++        audienceKeyHex: partnerKeyHex
++      })
++    );
++    await signInIfNeeded(page, partnerDid);
++    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
++    const partnerReceipt = page
++      .getByRole("article", { name: /Pilot Partner/i })
++      .filter({ hasText: "Share proof code" });
++    await expect(partnerReceipt).toContainText("211_partner_navigation", { timeout: 15_000 });
++    await partnerReceipt.getByRole("button", { name: /Redacted analysis/i }).click();
++    await expect(partnerReceipt).toContainText("redacted_document_analysis · redacted_derived_only", {
++      timeout: 15_000
++    });
++    await expect(partnerReceipt.getByText(/jane@example\.org/i)).toHaveCount(0);
++    await expect(partnerReceipt.getByText(/503-555-1212/i)).toHaveCount(0);
++    await expect(partnerReceipt.getByText(/123-45-6789/i)).toHaveCount(0);
++
++    await page.goto(
++      walletRoute("proof-center", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
++    await page.getByLabel(/Location record ID/i).fill(location!.record_id);
++    await page.getByLabel(/Region ID/i).fill("multnomah_county");
++    await page.getByRole("button", { name: /Create proof/i }).click();
++    await expect(page.getByText(/Proof receipt created/i)).toBeVisible({ timeout: 15_000 });
++    const proofCard = page.getByRole("article", { name: /location_in_region/i }).first();
++    await expect(proofCard).toContainText("region_id");
++    await expect(proofCard).not.toContainText(String(preciseLat));
++    await expect(proofCard).not.toContainText(String(preciseLon));
++    const proofs = await apiJson<{ proofs: WalletProofReceipt[] }>(
++      api.baseUrl,
++      "GET",
++      `/wallets/${wallet.wallet_id}/proofs`
++    );
++    const regionProof = proofs.proofs.find((proof) => proof.proof_type === "location_region");
++    expect(JSON.stringify(regionProof?.public_inputs ?? {}).toLowerCase()).not.toContain("lat");
++    expect(JSON.stringify(regionProof?.public_inputs ?? {}).toLowerCase()).not.toContain("lon");
++    expect(JSON.stringify(regionProof?.public_inputs ?? {}).toLowerCase()).not.toContain("witness");
++
++    await page.goto(
++      walletRoute("analytics", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Share group facts, not your name/i, diagnostics);
++    const analyticsCard = page.getByRole("article", { name: /Pilot housing gap/i });
++    await expect(analyticsCard).toBeVisible({ timeout: 15_000 });
++    await analyticsCard.getByRole("button", { name: /Submit consent/i }).click();
++    await expect(page.getByText(/Analytics consent recorded for Pilot housing gap/i)).toBeVisible({
++      timeout: 15_000
++    });
++    await analyticsCard.getByRole("button", { name: /Contribute group facts/i }).click();
++    await expect(page.getByText(/Aggregate contribution recorded for Pilot housing gap/i)).toBeVisible({
++      timeout: 15_000
++    });
++
++    await page.goto(
++      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
++    const ownerReceipt = page
++      .getByRole("article", { name: /Pilot Partner/i })
++      .filter({ hasText: "Share proof code" });
++    await ownerReceipt.getByRole("button", { name: /Revoke access/i }).click();
++    await expect(ownerReceipt.getByText(/revoked/i).first()).toBeVisible({ timeout: 15_000 });
++    await expect
++      .poll(async () => {
++        const receipts = await apiJson<{ receipts: WalletGrantReceipt[] }>(
++          api.baseUrl,
++          "GET",
++          `/wallets/${wallet.wallet_id}/grant-receipts?status=revoked`
++        );
++        return receipts.receipts.some((receipt) => receipt.grant_id === grant.grant_id);
++      })
++      .toBe(true);
++    const blockedInvocation = await apiJsonResponse(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/records/${document!.record_id}/analysis-invocations`,
++      {
++        actor_did: partnerDid,
++        actor_key_hex: partnerKeyHex,
++        grant_id: grant.grant_id,
++        output_types: ["redacted_derived_only"],
++        purpose: "211_partner_navigation",
++        user_present: true
++      }
++    );
++    expect(blockedInvocation.status).toBe(400);
++
++    await page.goto(
++      walletRoute("audit", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Consent and access history/i, diagnostics);
++    for (const action of [
++      "record/add",
++      "grant/create",
++      "invocation/issue",
++      "invocation/verify",
++      "record/analyze_redacted",
++      "proof/create",
++      "analytics/consent_create",
++      "analytics/contribute",
++      "grant/revoke"
++    ]) {
++      await expect(page.getByText(action).first()).toBeVisible({ timeout: 15_000 });
++    }
++    await expect
++      .poll(async () => {
++        const audit = await apiJson<{ events: Array<{ action: string }> }>(
++          api.baseUrl,
++          "GET",
++          `/wallets/${wallet.wallet_id}/audit`
++        );
++        return audit.events.map((event) => event.action);
++      })
++      .toEqual(
++        expect.arrayContaining([
++          "record/add",
++          "grant/create",
++          "invocation/issue",
++          "invocation/verify",
++          "record/analyze_redacted",
++          "proof/create",
++          "analytics/consent_create",
++          "analytics/contribute",
++          "grant/revoke"
++        ])
++      );
++  } finally {
++    await stopWalletApi(api);
++  }
++});

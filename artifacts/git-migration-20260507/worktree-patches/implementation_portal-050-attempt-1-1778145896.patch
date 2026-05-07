@@ -1,0 +1,262 @@
+diff --git a/wallet_interface/ui/src/agent/commandSchemas.ts b/wallet_interface/ui/src/agent/commandSchemas.ts
+index 6631d803..5c5f9bca 100644
+--- a/wallet_interface/ui/src/agent/commandSchemas.ts
++++ b/wallet_interface/ui/src/agent/commandSchemas.ts
+@@ -97,6 +97,7 @@ const routeIds = [
+   "sharing-rules",
+   "uploads",
+   "social-services",
++  "interactions",
+   "shelter",
+   "recipient-access",
+   "benefits-protection",
+diff --git a/wallet_interface/ui/src/agent/promptGuards.ts b/wallet_interface/ui/src/agent/promptGuards.ts
+index 7de33e0d..dc6d3aa1 100644
+--- a/wallet_interface/ui/src/agent/promptGuards.ts
++++ b/wallet_interface/ui/src/agent/promptGuards.ts
+@@ -94,6 +94,7 @@ const privateRouteSummaryRoutes = new Set<SurfaceContext["route"]>([
+   "contacts",
+   "sharing-rules",
+   "uploads",
++  "interactions",
+   "recipient-access",
+   "analytics",
+   "proof-center",
+diff --git a/wallet_interface/ui/src/agent/surfaceRegistry.ts b/wallet_interface/ui/src/agent/surfaceRegistry.ts
+index 5d657cc6..3524667d 100644
+--- a/wallet_interface/ui/src/agent/surfaceRegistry.ts
++++ b/wallet_interface/ui/src/agent/surfaceRegistry.ts
+@@ -50,6 +50,7 @@ const allRoutes = [
+   "sharing-rules",
+   "uploads",
+   "social-services",
++  "interactions",
+   "shelter",
+   "recipient-access",
+   "benefits-protection",
+@@ -68,6 +69,7 @@ const routeLabels: Record<RouteId, string> = {
+   "sharing-rules": "Sharing",
+   uploads: "Uploads",
+   "social-services": "Services",
++  interactions: "Interactions",
+   shelter: "Shelter",
+   "recipient-access": "Who can see info",
+   "benefits-protection": "Benefits",
+@@ -149,6 +151,7 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
+     "set_service_plan_reminder",
+     "record_service_interaction"
+   ],
++  interactions: [...commonReadTools, "record_service_interaction"],
+   shelter: [
+     ...commonReadTools,
+     "search_211_services",
+@@ -207,6 +210,7 @@ const contextProvidersByRoute: Record<RouteId, SurfaceContextProviderDefinition[
+   "sharing-rules": [publicContext, appStateContext, walletMetadataContext],
+   uploads: [publicContext, appStateContext, walletMetadataContext],
+   "social-services": [publicContext, appStateContext],
++  interactions: [publicContext, appStateContext, walletMetadataContext],
+   shelter: [publicContext, appStateContext],
+   "recipient-access": [publicContext, appStateContext, walletMetadataContext],
+   "benefits-protection": [publicContext, appStateContext, walletMetadataContext],
+@@ -306,7 +310,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
+   record_service_interaction: {
+     title: "Record service interaction",
+     permissionLevel: "wallet_write",
+-    surfaces: ["social-services"],
++    surfaces: ["social-services", "interactions"],
+     requiresConfirmation: true,
+     requiresWalletUnlock: true,
+     requiresUserPresence: true,
+diff --git a/wallet_interface/ui/src/agent/tools/navigationTools.ts b/wallet_interface/ui/src/agent/tools/navigationTools.ts
+index 5a90b373..a5a602ba 100644
+--- a/wallet_interface/ui/src/agent/tools/navigationTools.ts
++++ b/wallet_interface/ui/src/agent/tools/navigationTools.ts
+@@ -28,6 +28,7 @@ const extraRouteAliases = {
+   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
+   uploads: ["documents", "files", "records"],
+   "social-services": ["service", "services", "service navigator", "211", "211 services"],
++  interactions: ["interaction timeline", "interactions", "service history", "follow ups", "follow-ups"],
+   shelter: ["shelters", "shelter services", "beds"],
+   "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
+   "benefits-protection": ["benefits", "benefits protection", "public benefits"],
+@@ -50,6 +51,7 @@ const routeSummaries = {
+   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
+   uploads: (state) => `${state.uploads.length} uploads are visible.`,
+   "social-services": () => "Services search and public 211 guidance are active.",
++  interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
+   shelter: (state) =>
+     `Shelter workspace is active with ${state.shelterStaffAccounts?.length ?? 0} staff accounts, ${
+       state.shelterUserAccounts?.length ?? 0
+@@ -404,7 +406,7 @@ function getVisibleServiceDocIds(route: RouteId): string[] | undefined {
+ }
+ 
+ function isServiceRoute(route: RouteId): boolean {
+-  return route === "social-services" || route === "shelter" || route === "benefits-protection";
++  return route === "social-services" || route === "interactions" || route === "shelter" || route === "benefits-protection";
+ }
+ 
+ function routeHasVisibleWalletRecords(route: RouteId): boolean {
+diff --git a/wallet_interface/ui/src/agent/types.ts b/wallet_interface/ui/src/agent/types.ts
+index e24e595e..bf22755e 100644
+--- a/wallet_interface/ui/src/agent/types.ts
++++ b/wallet_interface/ui/src/agent/types.ts
+@@ -298,6 +298,7 @@ export function isRouteId(value: unknown): value is RouteId {
+       "sharing-rules",
+       "uploads",
+       "social-services",
++      "interactions",
+       "shelter",
+       "recipient-access",
+       "benefits-protection",
+diff --git a/wallet_interface/ui/src/app/App.tsx b/wallet_interface/ui/src/app/App.tsx
+index 3a1f0f47..9a80a2a5 100644
+--- a/wallet_interface/ui/src/app/App.tsx
++++ b/wallet_interface/ui/src/app/App.tsx
+@@ -9,6 +9,7 @@ import {
+   ContactRound,
+   FileUp,
+   HeartHandshake,
++  History,
+   Home,
+   KeyRound,
+   Landmark,
+@@ -39,6 +40,7 @@ import {
+   setLocationServicePlanHash
+ } from "./ServicePlanScreen";
+ import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
++import { InteractionsScreen } from "./InteractionsScreen";
+ import { search211Info } from "../services/graphRagService";
+ import type { SearchResult } from "../lib/graphrag";
+ import {
+@@ -151,6 +153,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
+   "sharing-rules": ShieldCheck,
+   uploads: FileUp,
+   "social-services": HeartHandshake,
++  interactions: History,
+   shelter: UsersRound,
+   "recipient-access": KeyRound,
+   "benefits-protection": Landmark,
+@@ -767,6 +770,18 @@ export function App() {
+             walletPortalLoading={walletPortalLoading}
+           />
+         ) : null}
++        {activeRoute === "interactions" ? (
++          <InteractionsScreen
++            error={walletPortalError}
++            interactions={serviceInteractions}
++            loading={walletPortalLoading}
++            onOpenService={openServiceDetailFromServices}
++            onRefresh={refreshWalletPortalState}
++            recipients={recipients}
++            savedServices={savedServices}
++            servicePlans={servicePlans}
++          />
++        ) : null}
+         {activeRoute === "shelter" ? (
+           <ShelterScreen
+             checklist={shelterChecklist}
+diff --git a/wallet_interface/ui/src/app/appState.ts b/wallet_interface/ui/src/app/appState.ts
+index 868d6600..a47d4f84 100644
+--- a/wallet_interface/ui/src/app/appState.ts
++++ b/wallet_interface/ui/src/app/appState.ts
+@@ -27,6 +27,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
+   { id: "contacts", label: "Contacts" },
+   { id: "sharing-rules", label: "Sharing" },
+   { id: "social-services", label: "Services" },
++  { id: "interactions", label: "Interactions" },
+   { id: "uploads", label: "Uploads" },
+   { id: "shelter", label: "Shelter" }
+ ];
+diff --git a/wallet_interface/ui/src/models/abby.ts b/wallet_interface/ui/src/models/abby.ts
+index dadec505..832f3bdf 100644
+--- a/wallet_interface/ui/src/models/abby.ts
++++ b/wallet_interface/ui/src/models/abby.ts
+@@ -6,6 +6,7 @@ export type RouteId =
+   | "sharing-rules"
+   | "uploads"
+   | "social-services"
++  | "interactions"
+   | "shelter"
+   | "recipient-access"
+   | "benefits-protection"
+diff --git a/wallet_interface/ui/src/styles/global.css b/wallet_interface/ui/src/styles/global.css
+index 9ae91cf2..a843493d 100644
+--- a/wallet_interface/ui/src/styles/global.css
++++ b/wallet_interface/ui/src/styles/global.css
+@@ -938,6 +938,10 @@ body.playful-pulse .decor-shape {
+   gap: 12px;
+ }
+ 
++.interaction-filter-grid {
++  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
++}
++
+ .review-row,
+ .review-panel,
+ .guided-intake-panel,
+@@ -978,6 +982,65 @@ body.playful-pulse .decor-shape {
+   gap: 12px;
+ }
+ 
++.interaction-timeline-event {
++  display: grid;
++  gap: 12px;
++}
++
++.interaction-timeline-header {
++  align-items: flex-start;
++  display: flex;
++  flex-wrap: wrap;
++  gap: 14px;
++  justify-content: space-between;
++}
++
++.interaction-timeline-header > div {
++  min-width: 0;
++}
++
++.interaction-timeline-header time {
++  align-items: center;
++  color: #4b5563;
++  display: inline-flex;
++  flex-shrink: 0;
++  gap: 6px;
++  font-size: 13px;
++  font-weight: 700;
++  white-space: nowrap;
++}
++
++.interaction-metadata-grid {
++  display: grid;
++  gap: 10px;
++  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
++  margin: 0;
++}
++
++.interaction-metadata-grid div {
++  background: #f8fafc;
++  border: 1px solid #d8dee6;
++  border-radius: 8px;
++  display: grid;
++  gap: 4px;
++  min-width: 0;
++  padding: 10px;
++}
++
++.interaction-metadata-grid dt {
++  color: #5b6776;
++  font-size: 12px;
++  font-weight: 800;
++}
++
++.interaction-metadata-grid dd {
++  color: #17202a;
++  font-size: 14px;
++  font-weight: 700;
++  margin: 0;
++  overflow-wrap: anywhere;
++}
++
+ .review-panel > div:first-child,
+ .guided-intake-panel {
+   min-width: 0;

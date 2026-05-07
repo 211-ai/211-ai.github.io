@@ -1,0 +1,636 @@
+diff --git a/docs/WALLET_OPERATIONS_RUNBOOK.md b/docs/WALLET_OPERATIONS_RUNBOOK.md
+index 2fcd0a8d..65ae1f68 100644
+--- a/docs/WALLET_OPERATIONS_RUNBOOK.md
++++ b/docs/WALLET_OPERATIONS_RUNBOOK.md
+@@ -124,6 +124,149 @@ grant, invocation, encrypted bundle creation, verification, storage status,
+ descriptor import, and audit confirmation from desktop and mobile browser
+ projects.
+ 
++## WALLET-210 Service Partner Pilot Rehearsal
++
++Run this rehearsal in staging with synthetic data before any partner pilot
++session. The environment must already have the WALLET-170 public API blackbox,
++WALLET-180 proof verifier, WALLET-190 retention/deletion, and WALLET-200
++analytics governance evidence archived for the same deployment.
++
++Required setup:
++
++- `WALLET_API_ORIGIN` points to the staging wallet API.
++- `WALLET_UI_ORIGIN` points to the matching 211-AI UI.
++- `WALLET_ID`, `WALLET_OWNER_DID`, `WALLET_OWNER_KEY_HEX`,
++  `PILOT_PARTNER_DID`, `PILOT_PARTNER_KEY_HEX`, and
++  `PILOT_ANALYST_DID` are synthetic pilot values.
++- `WALLET_SERVICES_JSONL` is loaded with the staging 211 service directory.
++- The analytics template has WALLET-200 approval evidence and only allows
++  derived fields such as `county` and `need_category`.
++
++Pilot sequence:
++
++1. Add one document and one location.
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"key_hex\":\"${WALLET_OWNER_KEY_HEX}\",\"filename\":\"pilot-intake.txt\",\"text\":\"Synthetic rent and SNAP support note\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/documents/text"
++
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"lat\":45.515232,\"lon\":-122.678385}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations"
++   ```
++
++   Open
++   `${WALLET_UI_ORIGIN}/?walletApiBaseUrl=${WALLET_API_ORIGIN}&walletId=${WALLET_ID}&actorDid=${WALLET_OWNER_DID}#/uploads`
++   and confirm the upload is listed with storage status and no plaintext
++   contact details or coordinates.
++
++2. Share purpose-bound access with the partner.
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"record_id\":\"${DOCUMENT_RECORD_ID}\",\"requester_did\":\"${PILOT_PARTNER_DID}\",\"ability\":\"record/analyze\",\"purpose\":\"benefits_navigation\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/access-requests"
++   ```
++
++   Open `#/recipient-access` as the owner, confirm the helper, approve the
++   request, and record the active grant receipt. The receipt must show the
++   partner DID, `record/analyze`, `benefits_navigation`, and `status=active`.
++
++3. Verify partner use is bounded.
++
++   Open `#/recipient-access` as `PILOT_PARTNER_DID` with
++   `audienceKeyHex=${PILOT_PARTNER_KEY_HEX}` and run redacted analysis. The
++   result may show derived need categories and an encrypted artifact reference;
++   it must not show names, emails, phone numbers, SSNs, or document text.
++
++4. Match services from coarse location only.
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"issuer_did\":\"${WALLET_OWNER_DID}\",\"issuer_key_hex\":\"${WALLET_OWNER_KEY_HEX}\",\"audience_did\":\"${PILOT_PARTNER_DID}\",\"audience_key_hex\":\"${PILOT_PARTNER_KEY_HEX}\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations/${LOCATION_RECORD_ID}/coarse-grants"
++
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"grant_id\":\"${COARSE_GRANT_ID}\",\"actor_did\":\"${PILOT_PARTNER_DID}\",\"actor_key_hex\":\"${PILOT_PARTNER_KEY_HEX}\",\"purpose\":\"service_matching\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations/${LOCATION_RECORD_ID}/coarse-invocations"
++
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"location_record_id\":\"${LOCATION_RECORD_ID}\",\"actor_did\":\"${PILOT_PARTNER_DID}\",\"actor_key_hex\":\"${PILOT_PARTNER_KEY_HEX}\",\"invocation_token\":\"${COARSE_INVOCATION_TOKEN}\",\"need_terms\":[\"housing\"],\"limit\":5}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/services/match"
++   ```
++
++   Pass criteria: service reasons reference need terms and coarse location
++   eligibility only; exact latitude/longitude values are absent from output and
++   logs.
++
++5. Prove service-area eligibility without precise coordinates.
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"issuer_did\":\"${WALLET_OWNER_DID}\",\"audience_did\":\"${PILOT_PARTNER_DID}\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations/${LOCATION_RECORD_ID}/region-proof-grants"
++   ```
++
++   Open `#/proof-center` as the partner, enter `LOCATION_RECORD_ID`,
++   `REGION_GRANT_ID`, and `multnomah_county`, then create the proof. Archive
++   the proof receipt from `GET /wallets/${WALLET_ID}/proofs`. Public inputs
++   must include claim, region ID, and region policy hash only.
++
++6. Contribute to approved aggregate analytics.
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"template_id\":\"${PILOT_TEMPLATE_ID}\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/from-template"
++
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"consent_id\":\"${CONSENT_ID}\",\"template_id\":\"${PILOT_TEMPLATE_ID}\",\"fields\":{\"county\":\"Multnomah\",\"need_category\":\"housing\"}}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/contributions"
++
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${PILOT_ANALYST_DID}\",\"epsilon\":0.25,\"min_cohort_size\":2}" \
++     "${WALLET_API_ORIGIN}/analytics/${PILOT_TEMPLATE_ID}/count"
++   ```
++
++   Pass criteria: the aggregate is released only when the approved cohort
++   threshold is met, raw counts remain suppressed when policy requires noisy
++   counts, and the privacy-budget spend is recorded.
++
++7. Revoke and prove revocation.
++
++   Revoke from `#/recipient-access` as the owner or call:
++
++   ```bash
++   curl -fsS -X POST -H "content-type: application/json" \
++     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"reason\":\"pilot complete\"}" \
++     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/access-requests/${ACCESS_REQUEST_ID}/revoke"
++   ```
++
++   Re-run the partner analysis invocation and service-matching invocation. Both
++   must fail with a revoked or inactive grant error. If analytics participation
++   is ending, also revoke the analytics consent and confirm future
++   contributions for that consent are rejected.
++
++8. Audit the full workflow.
++
++   Open `#/audit` as the owner and archive `GET /wallets/${WALLET_ID}/audit`.
++   Required actions include `record/add`, `access/request`, `access/approve`,
++   `invocation/issue`, `invocation/verify`, `record/analyze_redacted`,
++   `location/read_coarse`, `proof/create`, `analytics/consent_create`,
++   `analytics/contribute`, `analytics/query`, and `access/revoke`. Evidence
++   must contain record IDs, grant IDs, proof IDs, template IDs, and status
++   metadata only.
++
++Local automation equivalent:
++
++```bash
++npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
++```
++
++The fullstack spec includes the WALLET-210 browser/API pilot path and should be
++archived with the staging pilot readiness packet.
++
+ ## Lost Key Or Device
+ 
+ 1. Identify the wallet ID and current controller DID from the Security screen or
+diff --git a/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md b/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
+index 22c72886..becb58de 100644
+--- a/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
++++ b/docs/WALLET_OPERATOR_INTEGRATOR_REFERENCE.md
+@@ -197,6 +197,53 @@ If no production analytics templates are live, set
+ packet and keep `/analytics/templates` free of approved production templates for
+ that environment.
+ 
++## 211 Service Partner Pilot Reference
++
++Use this flow for a WALLET-210 staging pilot only after the WALLET-170
++third-party blackbox harness, WALLET-180 verifier cutover packet, WALLET-190
++retention dry run, and WALLET-200 analytics governance review have passing or
++archived evidence for the same staging environment.
++
++Pilot actors:
++
++| Actor | DID role | Allowed purpose |
++| --- | --- | --- |
++| Wallet owner | `owner_did` / active controller | Add records, approve and revoke grants, review audit. |
++| 211 service partner | `audience_did` / requester | Use purpose-bound document analysis, coarse location matching, and proof creation only. |
++| Analytics reviewer | service DID or reviewer DID | Run approved aggregate templates after consent and contribution. |
++
++Required UI/API surfaces:
++
++| Pilot step | UI surface | API surface | Privacy evidence |
++| --- | --- | --- | --- |
++| Add documents | `#/uploads` | `POST /wallets/{wallet_id}/documents` or `/documents/text` | Record list shows descriptors and storage status, not plaintext. |
++| Add location | staging setup/API | `POST /wallets/{wallet_id}/locations` | Precise coordinates remain encrypted. |
++| Share partner access | `#/recipient-access` | `/access-requests`, `/access-requests/{request_id}/approve`, `/grant-receipts` | Grant receipt records purpose, resource, ability, and status. |
++| Service matching | partner workflow/API | `/locations/{record_id}/coarse-grants`, `/coarse-invocations`, `/services/match` | Match output contains service reasons and no precise coordinates. |
++| Eligibility proof | `#/proof-center` | `/locations/{record_id}/region-proof-grants`, `/region-proofs`, `/proofs` | Public inputs include claim, region ID, and policy hash only. |
++| Aggregate analytics | `#/analytics` and reviewer API | `/analytics/templates`, `/analytics/consents/from-template`, `/analytics/contributions`, `/analytics/{template_id}/count` | Template is approved; contribution uses derived fields; release obeys k-threshold and budget. |
++| Revoke partner access | `#/recipient-access` | `/access-requests/{request_id}/revoke` or `/grants/{grant_id}/revoke` | Revoked grants block later invocation, decrypt, analyze, proof, match, or export attempts. |
++| Audit workflow | `#/audit` | `GET /wallets/{wallet_id}/audit` | Timeline contains record add, access, invocation, proof, analytics, revocation, and query events. |
++
++Pilot pass criteria:
++
++- The partner can complete only the approved purpose-bound action. A mismatched
++  purpose, revoked grant, expired grant, wrong actor DID, or disallowed output
++  type fails closed.
++- Browser views for uploads, proof center, analytics, recipient access, and
++  audit do not render plaintext documents, emails, phone numbers, SSNs, precise
++  coordinates, proof witnesses, key material, bearer tokens, or verifier
++  credentials.
++- Location eligibility is demonstrated with `location_region` proof receipts.
++  `location_distance` remains outside the visible Proof Center until the
++  distance verifier evidence is separately approved.
++- Aggregate analytics is released only through approved template IDs with
++  consent, nullifier, k-threshold, privacy-budget, retention, and reviewer
++  evidence from WALLET-200.
++- Archive the UI test run, API audit timeline, proof receipts, aggregate result
++  summary, revoked receipt list, and blocked post-revocation call as the pilot
++  readiness artifact.
++
+ ## API Reference
+ 
+ Run the API with:
+diff --git a/wallet_interface/ui/tests/fullstack-wallet.spec.ts b/wallet_interface/ui/tests/fullstack-wallet.spec.ts
+index 84c9180e..2d890eef 100644
+--- a/wallet_interface/ui/tests/fullstack-wallet.spec.ts
++++ b/wallet_interface/ui/tests/fullstack-wallet.spec.ts
+@@ -1,6 +1,6 @@
+ import { expect, test, type Page } from "@playwright/test";
+ import { spawn, type ChildProcess } from "node:child_process";
+-import { mkdtemp, rm } from "node:fs/promises";
++import { mkdtemp, rm, writeFile } from "node:fs/promises";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { createServer } from "node:net";
+@@ -50,21 +50,55 @@ function freePort(): Promise<number> {
+   });
+ }
+ 
+-async function apiJson<T>(baseUrl: string, method: string, route: string, payload?: unknown): Promise<T> {
++async function apiResponse<T>(
++  baseUrl: string,
++  method: string,
++  route: string,
++  payload?: unknown
++): Promise<{ body: T; status: number }> {
+   const response = await fetch(new URL(route, baseUrl), {
+     body: payload === undefined ? undefined : JSON.stringify(payload),
+     headers: payload === undefined ? undefined : { "content-type": "application/json" },
+     method
+   });
+-  const body = (await response.json()) as T;
+-  if (!response.ok) {
+-    throw new Error(`${method} ${route} failed with ${response.status}: ${JSON.stringify(body)}`);
++  const text = await response.text();
++  const body = (text ? JSON.parse(text) : {}) as T;
++  return { body, status: response.status };
++}
++
++async function apiJson<T>(baseUrl: string, method: string, route: string, payload?: unknown): Promise<T> {
++  const { body, status } = await apiResponse<T>(baseUrl, method, route, payload);
++  if (status < 200 || status >= 300) {
++    throw new Error(`${method} ${route} failed with ${status}: ${JSON.stringify(body)}`);
+   }
+   return body;
+ }
+ 
+ async function startWalletApi(): Promise<ApiServer> {
+   const tempDir = await mkdtemp(path.join(tmpdir(), "abby-wallet-fullstack-"));
++  const servicesJsonl = path.join(tempDir, "services.jsonl");
++  await writeFile(
++    servicesJsonl,
++    [
++      {
++        categories: "housing shelter rent case management",
++        city: "Portland",
++        description: "Rent assistance, shelter placement, and housing case management.",
++        id: "housing-navigation",
++        name: "Portland Housing Navigation",
++        state: "OR"
++      },
++      {
++        categories: "food snap benefits",
++        city: "Portland",
++        description: "SNAP screening and grocery support.",
++        id: "food-benefits",
++        name: "Food Benefits Desk",
++        state: "OR"
++      }
++    ].map((row) => JSON.stringify(row)).join("\n") + "\n",
++    "utf8"
++  );
+   const port = await freePort();
+   const baseUrl = `http://127.0.0.1:${port}`;
+   const pythonPath = [path.join(repoRoot, "ipfs_datasets_py"), repoRoot, process.env.PYTHONPATH]
+@@ -92,7 +126,10 @@ async function startWalletApi(): Promise<ApiServer> {
+       WALLET_API_CORS_ORIGINS: uiOrigin,
+       WALLET_AUTO_LOAD_REPOSITORY: "true",
+       WALLET_AUTO_PERSIST: "true",
++      WALLET_ALLOW_SIMULATED_PROOFS: "true",
++      WALLET_PROOF_MODE: "development",
+       WALLET_REPOSITORY_ROOT: path.join(tempDir, "wallet-repository"),
++      WALLET_SERVICES_JSONL: servicesJsonl,
+       WALLET_STORAGE_CONFIG: JSON.stringify({
+         primary: { type: "local", root: path.join(tempDir, "wallet-blobs") }
+       })
+@@ -204,6 +241,13 @@ async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics
+     });
+ }
+ 
++function expectSerializedValueToHide(rawValue: unknown, forbiddenValues: string[]) {
++  const serialized = JSON.stringify(rawValue);
++  for (const value of forbiddenValues) {
++    expect(serialized).not.toContain(value);
++  }
++}
++
+ test("export center works against a live wallet API", async ({ page }) => {
+   const api = await startWalletApi();
+   const ownerDid = "did:key:fullstack-owner";
+@@ -401,3 +445,326 @@ test("recipient access runs live redacted analysis workflows", async ({ page })
+     await stopWalletApi(api);
+   }
+ });
++
++test("211 service partner pilot workflow is ready across live wallet UI and API", async ({ page }) => {
++  const api = await startWalletApi();
++  const ownerDid = "did:key:pilot-owner";
++  const ownerKeyHex = "55".repeat(32);
++  const partnerDid = "did:key:pilot-partner";
++  const partnerKeyHex = "66".repeat(32);
++  const analystDid = "did:key:pilot-analytics-reviewer";
++  const preciseCoordinates = ["45.515232", "-122.678385"];
++
++  try {
++    const diagnostics = collectPageDiagnostics(page, api.baseUrl);
++    const wallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", { owner_did: ownerDid });
++    const document = await apiJson<WalletRecord>(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/documents/text`, {
++      actor_did: ownerDid,
++      filename: "pilot-intake.txt",
++      key_hex: ownerKeyHex,
++      text: [
++        "Jane Example is seeking rent help, SNAP screening, and a clinic referral.",
++        "Email jane@example.org and phone 503-555-1212 must stay out of partner analytics."
++      ].join("\n"),
++      title: "Pilot rent and SNAP packet"
++    });
++    const location = await apiJson<WalletRecord>(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/locations`, {
++      actor_did: ownerDid,
++      lat: 45.515232,
++      lon: -122.678385
++    });
++
++    await page.goto(
++      walletRoute("uploads", api.baseUrl, wallet.wallet_id, ownerDid, {
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Saved files and info/i, diagnostics);
++    const uploadCard = page.locator("article").filter({ hasText: "pilot-intake.txt" }).first();
++    await expect(uploadCard).toBeVisible({ timeout: 15_000 });
++    await expect(uploadCard.getByText(/saved/i)).toBeVisible();
++    await expect(page.locator("body")).not.toContainText("jane@example.org");
++    await expect(page.locator("body")).not.toContainText(preciseCoordinates[0]);
++
++    const accessRequest = await apiJson<{ request_id: string }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/access-requests`,
++      {
++        ability: "record/analyze",
++        purpose: "benefits_navigation",
++        record_id: document.record_id,
++        requester_did: partnerDid
++      }
++    );
++
++    await page.goto(
++      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, ownerDid, {
++        audienceKeyHex: partnerKeyHex,
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
++    await page.getByLabel(/Confirm I recognize this helper/i).check();
++    const requestCard = page.locator("article").filter({ hasText: "Pilot Partner" }).first();
++    await expect(requestCard.getByText(/pending/i)).toBeVisible({ timeout: 15_000 });
++    await requestCard.getByRole("button", { name: /^Approve$/i }).click();
++
++    let accessGrantId = "";
++    await expect
++      .poll(async () => {
++        const grantReceipts = await apiJson<{
++          receipts: Array<{
++            abilities: string[];
++            audience_did: string;
++            grant_id: string;
++            purpose: string | null;
++            status: string;
++          }>;
++        }>(api.baseUrl, "GET", `/wallets/${wallet.wallet_id}/grant-receipts?status=active`);
++        const receipt = grantReceipts.receipts.find(
++          (item) => item.audience_did === partnerDid && item.status === "active"
++        );
++        accessGrantId = receipt?.grant_id ?? "";
++        return receipt
++          ? {
++              abilities: receipt.abilities,
++              purpose: receipt.purpose,
++              status: receipt.status
++            }
++          : null;
++      })
++      .toMatchObject({
++        abilities: ["record/analyze"],
++        purpose: "benefits_navigation",
++        status: "active"
++      });
++    expect(accessGrantId).toBeTruthy();
++
++    await page.goto(
++      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, partnerDid, {
++        audienceKeyHex: partnerKeyHex
++      })
++    );
++    await signInIfNeeded(page, partnerDid);
++    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
++    const partnerReceipt = page.getByRole("article", { name: /Pilot Partner/i }).filter({ hasText: "Share proof code" });
++    await expect(partnerReceipt).toBeVisible({ timeout: 15_000 });
++    await partnerReceipt.getByRole("button", { name: /Redacted analysis/i }).click();
++    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
++    await expect(partnerReceipt).toContainText("redacted_document_analysis · redacted_derived_only", {
++      timeout: 15_000
++    });
++    await expect(partnerReceipt.getByText(/jane@example\.org/i)).toHaveCount(0);
++    await expect(partnerReceipt.getByText(/503-555-1212/i)).toHaveCount(0);
++
++    const coarseLocationGrant = await apiJson<WalletGrant>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/locations/${location.record_id}/coarse-grants`,
++      {
++        audience_did: partnerDid,
++        audience_key_hex: partnerKeyHex,
++        issuer_did: ownerDid,
++        issuer_key_hex: ownerKeyHex
++      }
++    );
++    const coarseInvocation = await apiJson<{ token: string }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/locations/${location.record_id}/coarse-invocations`,
++      {
++        actor_did: partnerDid,
++        actor_key_hex: partnerKeyHex,
++        grant_id: coarseLocationGrant.grant_id,
++        purpose: "service_matching"
++      }
++    );
++    const serviceMatches = await apiJson<{ matches: Array<{ service: { id: string }; reasons: string[] }> }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/services/match`,
++      {
++        actor_did: partnerDid,
++        actor_key_hex: partnerKeyHex,
++        invocation_token: coarseInvocation.token,
++        limit: 5,
++        location_record_id: location.record_id,
++        need_terms: ["housing"]
++      }
++    );
++    expect(serviceMatches.matches[0].service.id).toBe("housing-navigation");
++    expect(serviceMatches.matches[0].reasons).toContain("matches need:housing");
++    expectSerializedValueToHide(serviceMatches, preciseCoordinates);
++
++    const regionGrant = await apiJson<WalletGrant>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/locations/${location.record_id}/region-proof-grants`,
++      {
++        audience_did: partnerDid,
++        issuer_did: ownerDid
++      }
++    );
++
++    await page.goto(walletRoute("proof-center", api.baseUrl, wallet.wallet_id, partnerDid, {}));
++    await signInIfNeeded(page, partnerDid);
++    await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
++    await page.getByLabel(/Location record ID/i).fill(location.record_id);
++    await page.getByLabel(/Grant ID/i).fill(regionGrant.grant_id);
++    await page.getByRole("button", { name: /Create proof/i }).click();
++    await expect(page.getByText(/Proof receipt created/i)).toBeVisible({ timeout: 15_000 });
++    const proofCard = page.getByRole("article", { name: /location_in_region/i }).first();
++    await expect(proofCard.getByText(/multnomah_county/i)).toBeVisible();
++    await expect(proofCard.getByText(/^lat$/i)).toHaveCount(0);
++    await expect(proofCard.getByText(/^lon$/i)).toHaveCount(0);
++    await expect(page.locator("body")).not.toContainText(preciseCoordinates[0]);
++
++    const proofs = await apiJson<{
++      proofs: Array<{ proof_type: string; public_inputs: Record<string, unknown> }>;
++    }>(api.baseUrl, "GET", `/wallets/${wallet.wallet_id}/proofs`);
++    const regionProof = proofs.proofs.find((proof) => proof.proof_type === "location_region");
++    expect(regionProof?.public_inputs).toMatchObject({
++      claim: "location_in_region",
++      region_id: "multnomah_county"
++    });
++    expectSerializedValueToHide(regionProof, preciseCoordinates);
++
++    const templateId = "pilot_housing_gap_v1";
++    await apiJson(api.baseUrl, "POST", "/analytics/templates", {
++      allowed_derived_fields: ["county", "need_category"],
++      allowed_record_types: ["location", "need"],
++      created_by: analystDid,
++      epsilon_budget: 0.5,
++      min_cohort_size: 2,
++      purpose: "Approved pilot housing-gap planning",
++      status: "approved",
++      template_id: templateId,
++      title: "Pilot housing gaps"
++    });
++    const pilotConsent = await apiJson<{ consent_id: string; status: string }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/analytics/consents/from-template`,
++      {
++        actor_did: ownerDid,
++        template_id: templateId
++      }
++    );
++    await apiJson(api.baseUrl, "POST", `/wallets/${wallet.wallet_id}/analytics/contributions`, {
++      actor_did: ownerDid,
++      consent_id: pilotConsent.consent_id,
++      fields: { county: "Multnomah", need_category: "housing" },
++      template_id: templateId
++    });
++
++    const cohortWallet = await apiJson<{ wallet_id: string }>(api.baseUrl, "POST", "/wallets", {
++      owner_did: "did:key:pilot-cohort-owner"
++    });
++    const cohortConsent = await apiJson<{ consent_id: string }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${cohortWallet.wallet_id}/analytics/consents/from-template`,
++      {
++        actor_did: "did:key:pilot-cohort-owner",
++        template_id: templateId
++      }
++    );
++    await apiJson(api.baseUrl, "POST", `/wallets/${cohortWallet.wallet_id}/analytics/contributions`, {
++      actor_did: "did:key:pilot-cohort-owner",
++      consent_id: cohortConsent.consent_id,
++      fields: { county: "Multnomah", need_category: "housing" },
++      template_id: templateId
++    });
++    const aggregate = await apiJson<{
++      count: number | null;
++      noisy_count: number | null;
++      privacy_budget_spent: number;
++      released: boolean;
++    }>(api.baseUrl, "POST", `/analytics/${templateId}/count`, {
++      actor_did: analystDid,
++      epsilon: 0.25,
++      min_cohort_size: 2
++    });
++    expect(aggregate.released).toBe(true);
++    expect(aggregate.count).toBeNull();
++    expect(aggregate.noisy_count).not.toBeNull();
++    expect(aggregate.privacy_budget_spent).toBe(0.25);
++    expectSerializedValueToHide(aggregate, preciseCoordinates);
++
++    await page.goto(walletRoute("analytics", api.baseUrl, wallet.wallet_id, ownerDid, {}));
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Share group facts, not your name/i, diagnostics);
++    const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
++    await expect(housingStudy.getByText("county", { exact: true })).toBeVisible();
++    await expect(housingStudy.getByText("need type", { exact: true })).toBeVisible();
++
++    await apiJson(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/analytics/consents/${pilotConsent.consent_id}/revoke`,
++      {
++        actor_did: ownerDid
++      }
++    );
++
++    await page.goto(
++      walletRoute("recipient-access", api.baseUrl, wallet.wallet_id, ownerDid, {
++        audienceKeyHex: partnerKeyHex,
++        issuerKeyHex: ownerKeyHex
++      })
++    );
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Requests to see my info/i, diagnostics);
++    await page.locator("article").filter({ hasText: "Pilot Partner" }).first().getByRole("button", { name: /Revoke/i }).click();
++    await expect
++      .poll(async () => {
++        const revoked = await apiJson<{ requests: Array<{ request_id: string }> }>(
++          api.baseUrl,
++          "GET",
++          `/wallets/${wallet.wallet_id}/access-requests?status=revoked`
++        );
++        return revoked.requests.some((request) => request.request_id === accessRequest.request_id);
++      })
++      .toBe(true);
++
++    const blocked = await apiResponse<{ detail: string }>(
++      api.baseUrl,
++      "POST",
++      `/wallets/${wallet.wallet_id}/records/${document.record_id}/analyze/redacted`,
++      {
++        actor_did: partnerDid,
++        actor_key_hex: partnerKeyHex,
++        grant_id: accessGrantId
++      }
++    );
++    expect(blocked.status).toBe(400);
++    expect(blocked.body.detail).toMatch(/not active|revoked/i);
++
++    await page.goto(walletRoute("audit", api.baseUrl, wallet.wallet_id, ownerDid, {}));
++    await signInIfNeeded(page, ownerDid);
++    await visibleHeadingOrDiagnostics(page, /Consent and access history/i, diagnostics);
++    const auditBody = page.locator("body");
++    for (const action of [
++      "record/add",
++      "access/request",
++      "access/approve",
++      "record/analyze_redacted",
++      "location/read_coarse",
++      "proof/create",
++      "analytics/consent_create",
++      "analytics/contribute",
++      "analytics/query",
++      "analytics/consent_revoke",
++      "access/revoke"
++    ]) {
++      await expect(auditBody).toContainText(action);
++    }
++    await expect.poll(() => diagnostics.browserErrors).toEqual([]);
++    await expect.poll(() => diagnostics.apiErrors).toEqual([]);
++  } finally {
++    await stopWalletApi(api);
++  }
++});
