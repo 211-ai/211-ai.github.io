@@ -124,6 +124,79 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Service Partner Pilot Drill
+
+Run this drill in target staging before a 211 service-partner pilot, after
+verifier or storage changes, and after analytics-template changes. Use
+synthetic wallet data only. The drill proves that the UI and API can complete a
+partner workflow backed by `ipfs_datasets_py.wallet` without leaking private
+document text, precise coordinates, proof witnesses, or credential values.
+
+Preflight gates:
+
+- `python -m wallet_interface.ops --validate-production-readiness` passes for
+  the staging deployment.
+- The completed target signoff packet references the WALLET-180 verifier
+  cutover packet, WALLET-190 retention/deletion dry-run evidence, and WALLET-200
+  approved analytics template review.
+- Browser origin, API origin, wallet repository, encrypted storage, verifier,
+  ops-health secret, alert route, and secret-manager references match the
+  staging environment under review.
+
+Local automation:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Manual staging drill:
+
+1. Create a synthetic wallet and sign in to the staging UI with that wallet ID,
+   owner DID, and owner test key.
+2. Add a document from the Uploads screen. Confirm the API audit has
+   `record/add` and storage verification returns only ciphertext hashes/status.
+3. Add a precise location through the wallet API. Do not paste the coordinates
+   into screenshots, tickets, or shared logs.
+4. Create a partner access request for the document with a named purpose, then
+   approve it from Recipient Access. Confirm the grant receipt shows active
+   status and the purpose caveat in API evidence.
+5. Sign in as the partner and run the allowed analysis from Recipient Access.
+   Confirm the result is a derived artifact and does not show disallowed
+   plaintext.
+6. Run service matching from the location record using owner access or a
+   coarse-location invocation. Confirm response JSON contains service IDs,
+   coarse reasons, and no latitude/longitude values.
+7. Create a location-region proof from Proof Center. Confirm public inputs
+   contain the service-region claim and policy hash, and no precise
+   coordinates, witness payload, verifier credential, or address.
+8. Submit one analytics contribution against an approved template and run the
+   approved aggregate release endpoint. Confirm the template ID, consent ID,
+   contribution ID, nullifier policy, k-threshold, epsilon spend, and result ID
+   are captured without wallet identifiers in released aggregate output.
+9. Revoke the partner access from Recipient Access, then retry the partner
+   analysis, coarse-location, proof, and export paths that depended on the
+   revoked grant or invocation. Each retry must fail closed.
+10. Open Audit and verify the timeline includes the full workflow:
+   `record/add`, `grant/create`, `access/approve`, `record/analyze`,
+   `location/read_coarse`, `proof/create`, `analytics/consent_create`,
+   `analytics/contribute`, `analytics/query`, `grant/revoke`, and
+   `access/revoke` where those actions were used.
+
+Pass criteria:
+
+- UI screenshots show document upload, partner access, proof receipt, analytics
+  choice or contribution evidence, revocation, and audit timeline.
+- API evidence shows wallet-backed records, grants, proofs, analytics
+  contributions, aggregate releases, revocations, and audit events.
+- Evidence contains no raw document text, names, emails, phone numbers, SSNs,
+  exact coordinates, addresses, proof witnesses, bearer tokens, header values,
+  secret-manager resolved values, key material, or decrypted wallet payloads.
+- Revoked grants and invocations fail on re-use.
+- Operators can identify the rollback step, affected route, and responsible
+  partner contact from the archived pilot ticket.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

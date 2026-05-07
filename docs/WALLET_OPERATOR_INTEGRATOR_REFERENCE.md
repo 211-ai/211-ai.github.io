@@ -197,6 +197,72 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Readiness
+
+WALLET-210 partner pilots must demonstrate the whole service-partner workflow
+against a staging wallet API backed by `ipfs_datasets_py.wallet`; static UI
+screens or local-only browser state are not enough. Use synthetic user data and
+archive only record IDs, proof IDs, grant IDs, bundle hashes, aggregate result
+IDs, audit event IDs, storage hashes, and command status.
+
+Pilot prerequisites:
+
+- WALLET-170 third-party sharing blackbox has passed for the target API build.
+- WALLET-180 verifier cutover evidence is archived before any non-simulated
+  proof UI is shown to a user or partner.
+- WALLET-190 retention/deletion dry-run evidence covers the staging storage
+  topology used by the pilot.
+- WALLET-200 analytics governance approval exists for every template used by
+  the pilot; unapproved analytics templates must stay `draft`, `paused`, or
+  absent.
+- `WALLET_API_CORS_ORIGINS` allows the staging UI origin, and browser requests
+  include only the configured wallet ID, actor DID, and local test keys.
+
+Reference pilot sequence:
+
+1. Create or load a synthetic wallet through `POST /wallets`.
+2. Add one document from the Uploads UI or `POST /wallets/{wallet_id}/documents`
+   and add one location through `POST /wallets/{wallet_id}/locations`.
+3. Create a partner access request with
+   `POST /wallets/{wallet_id}/access-requests` using a specific purpose such as
+   `partner_intake_triage`, then approve it from the Recipient Access UI.
+4. Have the partner open Recipient Access and run an allowed derived analysis.
+   The result must be a derived artifact, not raw plaintext, unless the grant
+   explicitly includes `record/decrypt`.
+5. Run coarse-location service matching through
+   `POST /wallets/{wallet_id}/services/match` using owner access or a scoped
+   coarse-location invocation. Responses must not include precise coordinates.
+6. Create a location eligibility proof from the Proof Center UI. Public inputs
+   may include `region_id`, `claim`, policy hash, verifier ID, and circuit
+   metadata; they must not include latitude, longitude, address, target
+   coordinates, witness data, or credential values.
+7. Create analytics consent from an approved template, submit allowed derived
+   fields, and release only approved aggregate results through
+   `/analytics/{template_id}/count` or `/count-by-fields`.
+8. Revoke the partner access from the Recipient Access UI or grant API and
+   prove the revoked grant or invocation can no longer analyze, decrypt, match,
+   prove, or export.
+9. Open the Audit UI and verify the timeline includes `record/add`,
+   `grant/create`, `access/approve`, `invocation/issue` when used,
+   `record/analyze`, `location/read_coarse`, `proof/create`,
+   `analytics/consent_create`, `analytics/contribute`, `analytics/query`,
+   `grant/revoke`, and `access/revoke` as applicable.
+
+The browser regression for this walkthrough is
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`. Run it with the backend
+API tests before staging pilot signoff:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Passing local automation is launch evidence for the code path only. A real
+staging pilot still needs the completed target signoff packet and archived
+environment evidence for verifier health, retention controls, analytics
+review, alert routing, and operator rollback.
+
 ## API Reference
 
 Run the API with:
