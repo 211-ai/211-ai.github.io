@@ -136,11 +136,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_false",
         help="Only supervise backlog state; do not invoke the implementation agent",
     )
-    parser.set_defaults(implement=False)
+    parser.set_defaults(implement=True)
     parser.add_argument(
         "--implementation-command",
         default="",
-        help="Command used for implementation. Defaults to codex exec --full-auto.",
+        help="Command used for implementation. Defaults to codex exec with local Copilot CLI fallback when available.",
     )
     parser.add_argument("--implementation-timeout", type=float, default=1800.0)
     parser.add_argument(

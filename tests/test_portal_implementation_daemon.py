@@ -14,6 +14,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.portal_implementation_daemon import PortalImplementationDaemon, PortalTaskState, parse_task_file
 import scripts.agent_chat_implementation_daemon as agent_daemon_module
 import scripts.portal_implementation_supervisor as supervisor_module
+import ipfs_datasets_py.optimizers.todo_daemon.implementation_daemon as implementation_daemon_module
 from scripts.portal_implementation_supervisor import PortalImplementationSupervisor, PortalSupervisorConfig
 from ipfs_datasets_py.optimizers.todo_daemon import (
     ManagedDaemonSpec,
@@ -409,6 +410,32 @@ Path("docs/agent.md").write_text("implemented", encoding="utf-8")
     assert state.implementation_attempts["AGENT-000"] == 1
     assert state.last_implementation_task_id == "AGENT-000"
     assert output.read_text(encoding="utf-8") == "implemented"
+
+
+def test_daemon_default_command_uses_codex_with_copilot_fallback(tmp_path, monkeypatch):
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir(parents=True)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=repo_root / "agent_todo.md",
+        state_path=tmp_path / "state" / "agent_chat_task_state.json",
+        strategy_path=tmp_path / "state" / "agent_chat_strategy.json",
+        events_path=tmp_path / "state" / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+    )
+    monkeypatch.setattr(
+        implementation_daemon_module.shutil,
+        "which",
+        lambda name: {"codex": "/usr/local/bin/codex", "copilot": "/usr/local/bin/copilot"}.get(name),
+    )
+
+    command = daemon._build_implementation_command(repo_root)
+
+    assert command[:2] == ["bash", "-lc"]
+    assert "codex exec failed with exit %s; falling back to copilot" in command[2]
+    assert command[4:] == ["/usr/local/bin/codex", "/usr/local/bin/copilot", str(repo_root)]
 
 
 def test_daemon_runs_implementation_in_worktree_branch_and_merges_main(tmp_path):

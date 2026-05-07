@@ -175,7 +175,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_false",
         help="Only monitor daemon state; do not invoke implementation commands.",
     )
-    parser.set_defaults(implement=False)
+    parser.set_defaults(implement=True)
     parser.add_argument(
         "--implementation-command",
         default="",
