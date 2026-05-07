@@ -12,7 +12,7 @@ This directory captures the current local Git state for migration to `https://gi
 
 ## Preserved artifacts
 
-- `211-AI-all-refs-20260507.bundle`: offline bundle containing all committed refs.
+- Offline bundle containing all committed refs: `/home/barberb/git-migration-artifacts/211-AI-all-refs-20260507.bundle`
 - `branch-inventory.txt`: local and remote refs with tip SHAs and subjects.
 - `origin-heads.txt`: branch heads currently visible on the new origin.
 - `worktree-list.txt`: registered worktrees.
