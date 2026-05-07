@@ -398,6 +398,89 @@ Dry-run sequence:
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
 
+## WALLET-210 Service Partner Pilot Readiness Drill
+
+Run this drill after WALLET-170, WALLET-180, WALLET-190, and WALLET-200 evidence
+is approved and before a 211 service partner uses staging. Use synthetic data
+that resembles the pilot workflow but contains no real client information.
+
+Required staging setup:
+
+- `WALLET_API_ORIGIN` points to the staging wallet API.
+- The UI origin is in `WALLET_API_CORS_ORIGINS`.
+- `WALLET_REPOSITORY_ROOT`, `WALLET_STORAGE_CONFIG`,
+  `WALLET_AUTO_LOAD_REPOSITORY`, and `WALLET_AUTO_PERSIST` are set.
+- Proof mode and verifier variables match the approved WALLET-180 cutover
+  packet for the proof type being demonstrated.
+- The analytics template used by the drill is present in the WALLET-200 signoff
+  packet with reviewer approval, consent copy, k-threshold, epsilon budget, and
+  retention mapping.
+
+Pilot drill sequence:
+
+1. Open the 211-AI Uploads screen as the synthetic user and upload a document.
+   Confirm the UI shows the record as saved and the API returns the document
+   record from `/wallets/{wallet_id}/records?data_type=document`.
+2. Add a location through
+   `POST /wallets/{wallet_id}/locations` using synthetic precise coordinates.
+   Archive only the location record ID and storage/audit status; do not archive
+   the coordinates.
+3. Create a partner grant with
+   `POST /wallets/{wallet_id}/records/{record_id}/grants` using a named
+   purpose such as `211_partner_pilot_intake_review`, only the required
+   abilities, and explicit output-type caveats.
+4. Open Recipient Access as the partner DID and run the approved derived
+   action. Pass criteria: output is redacted, the grant receipt is visible, the
+   API grant purpose is recorded, and direct identifiers from the source
+   document are absent.
+5. Create a location-region proof grant and create the proof in Proof Center.
+   Pass criteria: public inputs contain the claim and region policy metadata,
+   and do not contain `lat`, `lon`, exact coordinates, target coordinates,
+   witness data, or location plaintext.
+6. Create analytics consent from the approved template and submit only derived
+   fields, such as `county` and `need_category`. Run the approved aggregate
+   release endpoint. Pass criteria: the release obeys the template cohort
+   threshold, privacy budget, sparse-cell suppression, and nullifier policy.
+7. Revoke the partner grant through
+   `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`; withdraw analytics
+   consent if the pilot script includes withdrawal. Confirm the partner receipt
+   shows `revoked` and future grant or invocation use fails closed.
+8. Open the Audit screen and export the API audit timeline. Pass criteria: the
+   timeline includes document add, grant create, derived analysis, proof create,
+   analytics consent/contribution/query, consent withdrawal when used, and grant
+   revoke events.
+
+Validation commands:
+
+```bash
+pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+npm --prefix wallet_interface/ui run build
+npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+```
+
+Evidence to archive:
+
+- Command output or CI links for the validation commands.
+- Playwright trace or screenshots for Uploads, Recipient Access, Proof Center,
+  Analytics, revoked receipt, and Audit.
+- Redacted API IDs for wallet, document, location, grant, proof, analytics
+  consent, aggregate result, revoked receipt, and audit export.
+- Reviewer leak check stating that evidence contains no plaintext document
+  contents, names, emails, phone numbers, SSNs, precise coordinates, proof
+  witnesses, bearer tokens, secret refs resolved to values, or raw export
+  payloads.
+
+Launch blockers:
+
+- Any UI/API path displays precise coordinates after location capture.
+- Proof public inputs, verifier logs, or errors contain witness data.
+- Analytics can run outside approved templates or below the approved cohort
+  threshold.
+- Revoked grants or old invocation tokens still allow derived analysis, proof
+  creation, decrypt, export, or service matching.
+- The audit timeline omits consent, access, proof, analytics, or revocation
+  events needed to reconstruct the pilot workflow.
+
 ## Privacy Incident
 
 1. Pause affected analytics templates by changing their status to `paused` or
