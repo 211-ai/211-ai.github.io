@@ -1323,7 +1323,7 @@ def test_daemon_initializes_declared_worktree_submodules_before_validation(tmp_p
     ]
 
 
-def test_daemon_links_local_declared_submodule_into_worktree(tmp_path):
+def test_daemon_creates_local_declared_submodule_worktree(tmp_path):
     repo_root = tmp_path / "repo"
     todo_path = repo_root / "agent_todo.md"
     state_dir = tmp_path / "agent_state"
@@ -1331,9 +1331,11 @@ def test_daemon_links_local_declared_submodule_into_worktree(tmp_path):
     repo_root.mkdir(parents=True)
     worktree.mkdir(parents=True)
     write_agent_todo(todo_path)
-    local_submodule = repo_root / "ipfs_datasets_py" / "ipfs_datasets_py" / "wallet"
-    local_submodule.mkdir(parents=True)
-    (local_submodule / "__init__.py").write_text("", encoding="utf-8")
+    local_submodule = repo_root / "ipfs_datasets_py"
+    wallet_package = local_submodule / "ipfs_datasets_py" / "wallet"
+    wallet_package.mkdir(parents=True)
+    (wallet_package / "__init__.py").write_text("", encoding="utf-8")
+    init_git_repo(local_submodule)
     (worktree / ".gitmodules").write_text(
         """
 [submodule "ipfs_datasets_py"]
@@ -1352,12 +1354,107 @@ def test_daemon_links_local_declared_submodule_into_worktree(tmp_path):
         task_header_prefix="AGENT-",
     )
 
-    daemon._initialize_worktree_submodules(worktree)
+    daemon._initialize_worktree_submodules(worktree, branch_name="implementation/test")
 
     target = worktree / "ipfs_datasets_py"
-    assert target.is_symlink()
-    assert target.resolve() == (repo_root / "ipfs_datasets_py").resolve()
+    assert not target.is_symlink()
+    assert daemon._is_git_worktree(target)
+    assert subprocess.run(
+        ["git", "branch", "--show-current"],
+        cwd=target,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip() == "implementation/test-submodule-ipfs_datasets_py"
     assert (target / "ipfs_datasets_py" / "wallet" / "__init__.py").exists()
+
+
+def test_daemon_commits_and_merges_local_submodule_worktree_changes(tmp_path):
+    repo_root = tmp_path / "repo"
+    submodule_repo = tmp_path / "ipfs_datasets_py_source"
+    todo_path = repo_root / "agent_todo.md"
+    state_dir = tmp_path / "agent_state"
+    fake_worker = repo_root / "fake_worker.py"
+    worktree_root = tmp_path / "worktrees"
+    submodule_file = submodule_repo / "ipfs_datasets_py" / "wallet" / "ucan.py"
+    submodule_file.parent.mkdir(parents=True)
+    submodule_file.write_text("original\n", encoding="utf-8")
+    init_git_repo(submodule_repo)
+
+    repo_root.mkdir(parents=True)
+    subprocess.run(["git", "init"], cwd=repo_root, check=True, capture_output=True, text=True)
+    subprocess.run(["git", "config", "user.name", "Test User"], cwd=repo_root, check=True)
+    subprocess.run(["git", "config", "user.email", "test@example.invalid"], cwd=repo_root, check=True)
+    subprocess.run(
+        ["git", "-c", "protocol.file.allow=always", "submodule", "add", str(submodule_repo), "ipfs_datasets_py"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    write_agent_todo(todo_path)
+    fake_worker.write_text(
+        """
+from pathlib import Path
+
+Path("ipfs_datasets_py/ipfs_datasets_py/wallet/ucan.py").write_text("updated\\n", encoding="utf-8")
+""".strip()
+        + "\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", "-A"], cwd=repo_root, check=True)
+    subprocess.run(["git", "commit", "-m", "initial"], cwd=repo_root, check=True, capture_output=True, text=True)
+
+    daemon = PortalImplementationDaemon(
+        todo_path=todo_path,
+        state_path=state_dir / "agent_chat_task_state.json",
+        strategy_path=state_dir / "agent_chat_strategy.json",
+        events_path=state_dir / "agent_chat_events.jsonl",
+        repo_root=repo_root,
+        task_header_prefix="AGENT-",
+        implement=True,
+        implementation_command=f"python {fake_worker}",
+        implementation_timeout=10,
+        use_ephemeral_worktree=True,
+        worktree_root=worktree_root,
+    )
+
+    result = daemon.run_once()
+    implementation = result["implementation_result"]
+    submodule_branch = f"{implementation['branch']}-submodule-ipfs_datasets_py"
+
+    assert implementation["returncode"] == 0
+    assert implementation["validation_result"]["passed"] is True
+    assert implementation["commit_result"]["committed"] is True
+    assert implementation["commit_result"]["submodule_results"][0]["committed"] is True
+    assert implementation["merge_result"]["merged"] is True
+    assert implementation["merge_result"]["submodule_merge_results"][0]["merged"] is True
+    assert implementation["cleanup_result"]["cleaned"] is True
+    assert (repo_root / "ipfs_datasets_py" / "ipfs_datasets_py" / "wallet" / "ucan.py").read_text(
+        encoding="utf-8"
+    ) == "updated\n"
+    parent_gitlink = subprocess.run(
+        ["git", "ls-tree", "HEAD", "ipfs_datasets_py"],
+        cwd=repo_root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.split()[2]
+    submodule_head = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=repo_root / "ipfs_datasets_py",
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    assert parent_gitlink == submodule_head
+    assert subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", submodule_branch],
+        cwd=repo_root / "ipfs_datasets_py",
+        capture_output=True,
+        text=True,
+        check=False,
+    ).returncode != 0
 
 
 def test_daemon_worktree_starts_from_committed_head_without_dirty_workspace_seed(tmp_path):
