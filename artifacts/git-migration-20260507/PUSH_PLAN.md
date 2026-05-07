@@ -64,7 +64,16 @@ Post-push verification:
 artifacts/git-migration-20260507/verify-compact-migration.sh
 ```
 
+<<<<<<< HEAD
 >>>>>>> 92d64eeb (Add compact migration verification script)
+=======
+Auth diagnosis:
+
+```bash
+artifacts/git-migration-20260507/check-github-auth.sh
+```
+
+>>>>>>> 95db9108 (Document GitHub auth blocker)
 ## Phase 1: Push immediately
 
 These branches should be pushed first if you are using the full-fidelity branch-preservation path instead of the compact option above.
