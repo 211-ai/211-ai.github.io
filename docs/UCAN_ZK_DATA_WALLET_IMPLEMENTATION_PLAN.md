@@ -26,7 +26,7 @@ Control plane:
 
 - `scripts/wallet_implementation_daemon.py`
 - `scripts/wallet_implementation_supervisor.py`
-- `python scripts/manage_implementation_services.py start wallet --no-implement`
+- `python scripts/manage_implementation_services.py start wallet`
 
 The wallet control plane uses the shared
 `ipfs_datasets_py.optimizers.todo_daemon` daemon and supervisor stack. The
@@ -190,11 +190,12 @@ optimizer todo-daemon primitives:
   wallet task prefix, state prefix, and backlog path.
 - `scripts/manage_implementation_services.py status wallet` reports wrapper,
   supervisor, daemon, and task-state health.
+- `scripts/manage_implementation_services.py start wallet`
+  starts unattended implementation supervision with the default implementation
+  command path.
 - `scripts/manage_implementation_services.py start wallet --no-implement`
-  starts monitor-only supervision.
-- `scripts/manage_implementation_services.py start wallet --implement` is the
-  explicit mode for unattended implementation attempts after a human has
-  reviewed the active `WALLET-` task and the current worktree state.
+  is the explicit monitor-only mode when a human wants queue visibility without
+  launching autonomous implementation attempts.
 
 Backlog ownership:
 
@@ -209,20 +210,24 @@ Backlog ownership:
 
 Working protocol:
 
-- Start or confirm monitor-only supervision with
+- Start or confirm implementation supervision with
   `python scripts/manage_implementation_services.py start wallet`. The manager
-  defaults to monitor-only mode and passes `--no-implement` to the wallet
-  supervisor.
+  now defaults to implementation mode and passes `--implement` to the wallet
+  supervisor unless `--no-implement` is supplied.
+- Use `python scripts/manage_implementation_services.py start wallet --no-implement`
+  when you want monitor-only supervision.
 - Inspect the active task with
   `python scripts/manage_implementation_services.py status wallet`. The
   `active_task_id`, ready/waiting counts, wrapper command, supervisor command,
   and daemon command are reported from
   `data/wallet_implementation/state/`.
-- Use autonomous implementation mode only after reviewing the active task,
-  current worktree, and validation commands:
-  `python scripts/manage_implementation_services.py restart wallet --implement`.
-  Both wrapper and daemon command lines must include `--implement` before the
-  manager reports `implementation_enabled=true`.
+- After reviewing the active task, current worktree, and validation commands,
+  confirm both wrapper and daemon command lines include `--implement` before
+  relying on unattended execution. Use
+  `python scripts/manage_implementation_services.py restart wallet --implement`
+  to force an implementation-enabled restart, or
+  `python scripts/manage_implementation_services.py restart wallet --no-implement`
+  to force monitor-only mode.
 - Stop the wallet queue with
   `python scripts/manage_implementation_services.py stop wallet`. The manager
   rechecks through the wrapper restart window so stale `nohup_loop` wrappers do

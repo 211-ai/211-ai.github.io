@@ -47,16 +47,16 @@ def test_service_command_requires_explicit_implementation_mode():
     assert "--no-ephemeral-worktree" in command
 
 
-def test_parser_defaults_to_monitor_only_mode():
+def test_parser_defaults_to_implementation_mode():
     args = manager.parse_args(["start", "agent"])
 
-    assert args.implement is False
+    assert args.implement is True
 
 
-def test_restart_parser_defaults_to_monitor_only_mode():
+def test_restart_parser_defaults_to_implementation_mode():
     args = manager.parse_args(["restart", "all"])
 
-    assert args.implement is False
+    assert args.implement is True
 
 
 def test_parser_accepts_explicit_implementation_mode():
@@ -125,14 +125,14 @@ def test_status_mode_detects_requested_implementation_mode():
     )
 
 
-def test_supervisor_entrypoints_default_to_monitor_only_mode():
+def test_supervisor_entrypoints_default_to_implementation_mode():
     for module in (
         portal_supervisor,
         agent_supervisor,
         graphrag_supervisor,
         wallet_supervisor,
     ):
-        assert module.parse_args(["--once"]).implement is False
+        assert module.parse_args(["--once"]).implement is True
         assert module.parse_args(["--once", "--implement"]).implement is True
 
 
