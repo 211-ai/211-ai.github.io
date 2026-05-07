@@ -298,6 +298,7 @@ export function isRouteId(value: unknown): value is RouteId {
       "sharing-rules",
       "uploads",
       "social-services",
+      "interactions",
       "shelter",
       "recipient-access",
       "benefits-protection",

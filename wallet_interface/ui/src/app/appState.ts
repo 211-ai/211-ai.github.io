@@ -27,6 +27,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "contacts", label: "Contacts" },
   { id: "sharing-rules", label: "Sharing" },
   { id: "social-services", label: "Services" },
+  { id: "interactions", label: "Interactions" },
   { id: "uploads", label: "Uploads" },
   { id: "shelter", label: "Shelter" }
 ];
