@@ -47,6 +47,25 @@ def test_service_command_requires_explicit_implementation_mode():
     assert "--no-ephemeral-worktree" in command
 
 
+def test_service_command_preserves_copilot_implementation_command():
+    spec = manager.SERVICES["portal"]
+
+    command = spec.command(
+        log_level="INFO",
+        check_interval=60.0,
+        daemon_interval=300.0,
+        implement=True,
+        implementation_command="copilot --silent --allow-all-tools --allow-all-paths --no-ask-user --autopilot --prompt '{prompt}'",
+        implementation_timeout=1800.0,
+        use_ephemeral_worktree=True,
+    )
+
+    assert "--implement" in command
+    assert command[command.index("--implementation-command") + 1] == (
+        "copilot --silent --allow-all-tools --allow-all-paths --no-ask-user --autopilot --prompt '{prompt}'"
+    )
+
+
 def test_parser_defaults_to_implementation_mode():
     args = manager.parse_args(["start", "agent"])
 
