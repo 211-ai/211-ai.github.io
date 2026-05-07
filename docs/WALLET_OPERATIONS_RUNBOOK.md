@@ -124,6 +124,130 @@ grant, invocation, encrypted bundle creation, verification, storage status,
 descriptor import, and audit confirmation from desktop and mobile browser
 projects.
 
+## WALLET-210 Staging Partner Pilot Drill
+
+Run this drill in staging before a 211 service partner walkthrough, after UI
+changes to wallet surfaces, and after wallet API or `ipfs_datasets_py.wallet`
+updates that touch grants, proofs, analytics, revocation, storage, or audit.
+Use synthetic data and partner DIDs. Archive evidence IDs, hashes, audit actions,
+proof public inputs, and command output only.
+
+Required setup:
+
+- Staging API uses durable `WALLET_REPOSITORY_ROOT`, `WALLET_STORAGE_CONFIG`,
+  `WALLET_AUTO_LOAD_REPOSITORY=true`, and `WALLET_AUTO_PERSIST=true`.
+- `WALLET_SERVICES_JSONL` points at the service directory used for the partner
+  match demonstration.
+- WALLET-180 verifier evidence is archived before any non-simulated proof path
+  is shown. `location_distance` remains out of the visible Proof Center until
+  its separate staging gate passes.
+- The analytics template is approved under the WALLET-200 governance workflow,
+  with reviewer role/name, allowed fields, k-threshold, privacy budget,
+  nullifier policy, retention mapping, and withdrawal handling recorded.
+
+Drill sequence:
+
+1. Create or load a synthetic wallet and open `#/uploads` with
+   `walletApiBaseUrl`, `walletId`, `actorDid`, and `issuerKeyHex`. Upload a
+   synthetic document and confirm the API audit includes `record/add`.
+
+2. Add a synthetic location through the approved staging intake surface or:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"lat\":45.515232,\"lon\":-122.678385}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/locations"
+   ```
+
+   Treat any precise coordinate shown in UI receipts, proof public inputs,
+   service matches, analytics output, logs, or evidence packets as a privacy
+   incident.
+
+3. Create a partner analysis grant for the document:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-partner-analysis-grant.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/records/${DOCUMENT_RECORD_ID}/grants"
+   ```
+
+   The JSON must include the partner DID, `record/analyze`, purpose such as
+   `housing_navigation_referral`, `output_types=["redacted_derived_only"]`,
+   user-presence handling when required, and no plaintext document content.
+
+4. Open `#/recipient-access` as the partner DID, run redacted analysis, and
+   confirm output contains derived needs only. Email, phone, SSN, person-name
+   strings, document text, and direct identifiers must not appear.
+
+5. Create a coarse-location grant/invocation for the partner and call
+   `/wallets/${WALLET_ID}/services/match` with approved need terms. Confirm the
+   result references service IDs/reasons only and does not contain precise
+   coordinates.
+
+6. Open `#/proof-center`, create a `location_region` proof for the staging
+   service area, and archive the proof ID, verifier metadata, and public inputs.
+   Public inputs may include region ID, claim, and policy hash; they must not
+   include lat/lon, target coordinates, witness values, or raw location records.
+
+7. Create analytics consent from the approved template and submit a derived
+   contribution:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\",\"template_id\":\"${ANALYTICS_TEMPLATE_ID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/from-template"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d @/path/to/redacted-analytics-contribution.json \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/contributions"
+   ```
+
+   Contribution fields must be approved derived fields such as county and need
+   category. Run the approved aggregate endpoint only after the configured
+   k-threshold is met.
+
+8. Revoke the partner grants and withdraw the analytics consent if the drill
+   includes consent withdrawal:
+
+   ```bash
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/grants/${GRANT_ID}/revoke"
+
+   curl -fsS -X POST \
+     -H "content-type: application/json" \
+     -d "{\"actor_did\":\"${WALLET_OWNER_DID}\"}" \
+     "${WALLET_API_ORIGIN}/wallets/${WALLET_ID}/analytics/consents/${CONSENT_ID}/revoke"
+   ```
+
+   Re-run the partner analysis or service-match request and confirm it fails
+   after grant revocation. Refresh `#/recipient-access` and confirm the receipt
+   status is revoked.
+
+9. Open `#/audit` and fetch `GET /wallets/${WALLET_ID}/audit`. The pilot audit
+   should show, as applicable, `record/add`, `grant/create`,
+   `invocation/issue`, `invocation/verify`, `record/analyze_redacted`,
+   `location/read_coarse`, `proof/create`, `analytics/consent_create`,
+   `analytics/contribute`, `analytics/consent_revoke`, and `grant/revoke`.
+
+10. Run validation:
+
+    ```bash
+    pytest tests/test_wallet_interface_api.py tests/test_wallet_third_party_blackbox.py -q
+    npm --prefix wallet_interface/ui run build
+    npm --prefix wallet_interface/ui test -- tests/fullstack-wallet.spec.ts
+    ```
+
+The drill passes only if the browser flow, public API responses, aggregate
+release checks, revoked-access checks, and audit timeline all pass without
+exposing plaintext documents, precise coordinates, proof witnesses, private
+keys, secret values, or unapproved analytics fields.
+
 ## Lost Key Or Device
 
 1. Identify the wallet ID and current controller DID from the Security screen or

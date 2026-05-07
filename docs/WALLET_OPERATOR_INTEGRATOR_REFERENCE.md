@@ -197,6 +197,35 @@ If no production analytics templates are live, set
 packet and keep `/analytics/templates` free of approved production templates for
 that environment.
 
+## 211 Service Partner Pilot Reference
+
+WALLET-210 pilot readiness is a staging demonstration, not a launch approval.
+Run it with synthetic user data, a named partner DID, durable staging wallet
+storage, the approved analytics template packet, and archived verifier evidence
+from the WALLET-180 cutover packet.
+
+Pilot UI/API surfaces:
+
+| Step | User or operator surface | Wallet API and capability boundary |
+| --- | --- | --- |
+| Add a document | `#/uploads` with `walletApiBaseUrl`, `walletId`, `actorDid`, and `issuerKeyHex` query params | `POST /wallets/{wallet_id}/documents` or `/documents/text`; audit action `record/add`; storage report contains ciphertext refs only. |
+| Add location | Target staging API or approved intake UI calling `POST /wallets/{wallet_id}/locations` | Precise coordinates are encrypted; downstream views use coarse claims or proofs. |
+| Share with partner | `#/recipient-access` for receipt review, backed by grant receipts | `POST /wallets/{wallet_id}/records/{record_id}/grants` with purpose such as `housing_navigation_referral`, `record/analyze`, `output_types=["redacted_derived_only"]`, recipient DID, expiration if applicable, and user-presence caveats. |
+| Partner analysis | `#/recipient-access` redacted analysis action | `analysis-invocations` then `/analyze/redacted`; output must omit person names, email, phone, SSN, document text, and direct identifiers. |
+| Service matching | Partner API integration | Coarse-location grant/invocation plus `/wallets/{wallet_id}/services/match`; responses must not contain precise wallet coordinates. |
+| Location eligibility proof | `#/proof-center` location-region proof creation | `/locations/{location_record_id}/region-proofs`; public inputs expose `region_id`, claim, and policy hash only. `location_distance` stays hidden from live UI until its staging verifier gate is archived. |
+| Approved aggregate analytics | Operator/API workflow | `/analytics/templates`, `/analytics/consents/from-template`, `/analytics/contributions`, and `/analytics/{template_id}/count-by-fields`; use only approved fields, k-thresholds, nullifiers, and budget limits. |
+| Revoke | Partner receipt refresh in `#/recipient-access` plus API checks | `/grants/{grant_id}/revoke` and optional `/analytics/consents/{consent_id}/revoke`; revoked grants must block later analysis, matching, proof, export, and invocation use. |
+| Audit | `#/audit` and `GET /wallets/{wallet_id}/audit` | Timeline must include `record/add`, `grant/create`, `invocation/issue`, `invocation/verify`, `record/analyze_redacted`, `location/read_coarse`, `proof/create`, `analytics/consent_create`, `analytics/contribute`, `analytics/consent_revoke`, and `grant/revoke` for the pilot wallet where applicable. |
+
+Pilot evidence must include the browser test output for
+`wallet_interface/ui/tests/fullstack-wallet.spec.ts`, the API audit timeline,
+the proof receipt public inputs, analytics template ID and reviewer/evidence
+references, grant IDs and revocation statuses, and storage/proof health
+summaries. Do not archive plaintext documents, precise coordinates, proof
+witnesses, private keys, bearer tokens, resolved secret values, or raw
+analytics contribution payloads with direct identifiers.
+
 ## API Reference
 
 Run the API with:
