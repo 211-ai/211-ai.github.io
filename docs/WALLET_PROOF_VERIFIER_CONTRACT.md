@@ -10,7 +10,11 @@ The first production readiness gate validates `location_region`. The same
 backend also defines the next proof-family contract, `location_distance`,
 through `POST /prove/location-distance`; distance proof verifiers should pass
 `python -m wallet_interface.ops --validate-distance-proof-contract` before UI
-exposure.
+exposure. For WALLET-140 handoff, real verifier credentials are handled only
+through the selected secret manager. Committed configuration, readiness
+reports, and signoff packets may name the secret-manager reference, but must
+not contain bearer tokens, custom header values, proving keys, verifier keys,
+or circuit secret material.
 
 ## Configuration
 
@@ -23,6 +27,7 @@ WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 WALLET_PROOF_VERIFIER_ID=verifier-http-v1
 WALLET_PROOF_SYSTEM=groth16
 WALLET_PROOF_CIRCUIT_ID=location-region-v1
+WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://wallet/prod/proof-verifier
 ```
 
 Optional:
@@ -31,11 +36,16 @@ Optional:
 WALLET_PROOF_PROVE_PATH=/prove/location-region
 WALLET_PROOF_DISTANCE_PROVE_PATH=/prove/location-distance
 WALLET_PROOF_VERIFY_PATH=/verify
-WALLET_PROOF_BEARER_TOKEN=...
 WALLET_PROOF_HTTP_HEADER_NAME=x-wallet-proof-key
-WALLET_PROOF_HTTP_HEADER_VALUE=...
 WALLET_PROOF_TIMEOUT_SECONDS=30
 ```
+
+If the target uses bearer or custom-header authentication, the deployment
+platform injects runtime-only `WALLET_PROOF_BEARER_TOKEN` or
+`WALLET_PROOF_HTTP_HEADER_VALUE` from `WALLET_PROOF_CREDENTIAL_SECRET_REF`.
+Those values are intentionally not shown as env assignments here. Do not commit
+them to env examples, signoff packets, readiness reports, logs, or ticket
+comments.
 
 ## Authentication
 
@@ -46,6 +56,26 @@ The wallet backend sends JSON `POST` requests. If configured, it also sends:
 
 Production verifier deployments should require at least one authenticated
 channel and should be reachable only from the wallet API/ops worker network.
+
+## Credential Handoff
+
+The target owner provisions the verifier credential in the selected secret
+manager before staging validation. The wallet deployment receives only:
+
+- `WALLET_PROOF_CREDENTIAL_SECRET_REF`, the secret-manager path or provider
+  identifier for the verifier credential.
+- Runtime-injected `WALLET_PROOF_BEARER_TOKEN` or
+  `WALLET_PROOF_HTTP_HEADER_VALUE`, available only inside the wallet API and
+  ops worker process environment.
+- Non-secret verifier metadata: `WALLET_PROOF_SERVICE_URL`,
+  `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`, circuit IDs, and endpoint
+  paths.
+
+The completed target signoff packet should archive the credential reference
+and validation artifact IDs only. It should not archive a rendered process
+environment, request headers, Kubernetes Secret contents, ExternalSecret
+resolved values, CI masked-secret screenshots, or verifier private key
+material.
 
 ## Health Endpoint
 
@@ -320,6 +350,13 @@ python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-erro
 python -m wallet_interface.ops --validate-production-readiness
 ```
 
+When these commands are run without target `WALLET_*` verifier environment
+variables, the CLI performs a local synthetic self-check so repository release
+automation can exercise the contract scanner. Any configured target
+environment runs the strict external verifier check and fails closed when the
+HTTP backend, verifier credentials, secret-manager references, health endpoint,
+prove endpoint, verify endpoint, or no-leak scan is not valid.
+
 The first command performs a non-user location-region staging contract check:
 
 - `POST /health`
@@ -332,6 +369,11 @@ against `POST /prove/location-distance`. The production-readiness gate runs
 both verifier checks unless explicitly skipped, and also validates
 secret-manager references for proof, storage, ops-health, and alert
 credentials without printing secret values.
+
+Archive the target staging JSON output for all three commands. The archived
+region and distance contract reports must show `status=ok`, the expected
+verifier ID and proof system, successful `health`, `prove`,
+`public_input_safety`, and `verify` checks, and no secret values in the report.
 
 Expected proof check:
 
@@ -366,7 +408,10 @@ Before enabling location-distance proof UI in production, run the same workflow
 with a `location/prove_distance` grant and confirm the receipt has
 `proof_type=location_distance`, `is_simulated=false`, expected verifier
 metadata, and no precise wallet or target coordinates in `statement`,
-`public_inputs`, or logs.
+`public_inputs`, verifier responses, wallet logs, verifier logs, or archived
+evidence. Until that target staging validation is archived and approved in
+`docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`, `location_distance` remains hidden
+from live Proof Center creation and display surfaces.
 
 ## Security Requirements
 

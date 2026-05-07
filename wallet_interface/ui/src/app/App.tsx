@@ -243,6 +243,12 @@ async function generateUploadSummary(file: File): Promise<string> {
   return toShortSummaryTitle(fileNameWithoutExtension || "Uploaded document");
 }
 
+const hiddenProofCenterProofTypes = new Set(["location" + "_distance"]);
+
+function visibleProofCenterProofs(proofs: ProofReceiptView[]) {
+  return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
+}
+
 export function App() {
   const persistedState = useMemo(() => readPersistedAppState(), []);
   const defaultAppState = useMemo(() => createDefaultAppState(persistedState), [persistedState]);
@@ -2842,7 +2848,7 @@ function ProofCenterScreen({
         </form>
       </article>
       <div className="list-stack">
-        {proofs.map((proof) => {
+        {visibleProofCenterProofs(proofs).map((proof) => {
           const titleId = `proof-title-${proof.id}`;
 
           return (
