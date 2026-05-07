@@ -306,7 +306,7 @@ export function App() {
   }
 
   async function refreshWalletAccessState() {
-    // Placeholder: fetch access requests and grant receipts if wallet API is configured
+    // TODO: fetch access requests and grant receipts from wallet API when available
   }
 
   const agentRuntime = useMemo<AppActionRuntime>(
@@ -490,13 +490,13 @@ export function App() {
     return next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   }, [policy.intervalDays, policy.lastCheckInAt]);
 
+  const routes = useMemo(() => primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+  const secondaryNavigationRoutes = useMemo(() => secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+  const navigationRoutes = useMemo(() => appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] })), []);
+
   if (!signedInUser) {
     return <LoginScreen onSignIn={handleSignIn} />;
   }
-
-  const routes = primaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
-  const secondaryNavigationRoutes = secondaryRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
-  const navigationRoutes = appRoutes.map((route) => ({ ...route, icon: routeIcons[route.id] }));
 
   return (
     <div className={`app ${agentChatOpen ? "app-chat-open" : ""}`}>
@@ -3286,15 +3286,6 @@ function RecipientAccessScreen({
   verified: boolean;
   setVerified: (verified: boolean) => void;
 }) {
-  void apiConfig;
-  void recipients;
-  void refreshWalletAuditEvents;
-  void refreshWalletAccessState;
-  void setAccessRequests;
-  void setGrantReceipts;
-  void verified;
-  void setVerified;
-
   return (
     <div className="screen">
       <div className="page-title">
