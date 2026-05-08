@@ -1,4 +1,4 @@
-import { env, pipeline } from "@huggingface/transformers";
+import { LogLevel, env, pipeline } from "@huggingface/transformers";
 import ortWasmJsepMjsUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs?url";
 import ortWasmJsepWasmUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm?url";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
@@ -7,7 +7,31 @@ import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/wa
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 env.useWasmCache = true;
+env.logLevel = LogLevel.ERROR;
 installWarningSuppression();
+
+type ClientLlmDevice = "wasm" | "webgpu" | "auto";
+
+interface LlmCapabilities {
+  webGPU: boolean;
+  webGPUError?: string;
+  webGPUAdapter?: {
+    vendor?: string;
+    architecture?: string;
+    device?: string;
+    description?: string;
+  };
+  simd: boolean;
+  wasmThreads: boolean;
+  crossOriginIsolated: boolean;
+  sharedArrayBuffer: boolean;
+}
+
+interface WebGpuDetectionResult {
+  available: boolean;
+  error?: string;
+  adapterInfo?: LlmCapabilities["webGPUAdapter"];
+}
 
 type LlmWorkerRequest =
   | {
@@ -34,8 +58,14 @@ interface LlmWorkerResponse {
     modelName?: string;
     capabilities?: {
       webGPU: boolean;
+      webGPUError?: string;
+      webGPUAdapter?: LlmCapabilities["webGPUAdapter"];
       simd: boolean;
+      wasmThreads: boolean;
+      crossOriginIsolated: boolean;
+      sharedArrayBuffer: boolean;
     };
+    device?: ClientLlmDevice;
     isInitialized?: boolean;
   };
   error?: string;
@@ -43,10 +73,13 @@ interface LlmWorkerResponse {
 
 let textGenerator: any = null;
 let currentModelName = LLM_CONFIG.defaultModel;
+let currentDevice: ClientLlmDevice = "wasm";
 let isInitialized = false;
 let initializePromise: Promise<void> | null = null;
 let initializingModelName: string | null = null;
-let capabilities = { webGPU: false, simd: false };
+let capabilities: LlmCapabilities = createUnavailableCapabilities();
+let webGPUDetectionCache: { result: WebGpuDetectionResult; timestamp: number } | null = null;
+const WEBGPU_DETECTION_CACHE_MS = 5 * 60 * 1000;
 
 self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
   const { id, type, data } = event.data;
@@ -57,7 +90,7 @@ self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
       postResponse({
         id,
         success: true,
-        data: { capabilities, modelName: currentModelName, isInitialized },
+        data: { capabilities, device: currentDevice, modelName: currentModelName, isInitialized },
       });
       return;
     }
@@ -68,7 +101,7 @@ self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
       postResponse({
         id,
         success: true,
-        data: { capabilities, modelName: currentModelName, isInitialized },
+        data: { capabilities, device: currentDevice, modelName: currentModelName, isInitialized },
       });
       return;
     }
@@ -79,7 +112,7 @@ self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
       postResponse({
         id,
         success: true,
-        data: { text, capabilities, modelName: currentModelName, isInitialized },
+        data: { text, capabilities, device: currentDevice, modelName: currentModelName, isInitialized },
       });
       return;
     }
@@ -138,23 +171,27 @@ async function initializePipeline(modelName: string): Promise<void> {
 async function loadPipeline(requestedModelName: string): Promise<void> {
   const modelInfo = getClientLlmModelInfo(requestedModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
   if (modelInfo.requiresWebGPU && !capabilities.webGPU) {
-    throw new Error(`${modelInfo.name} requires WebGPU. Use a WASM-compatible model on this browser.`);
+    throw new Error(
+      `${modelInfo.name} requires WebGPU. ${capabilities.webGPUError || "Use a WASM-compatible model on this browser."}`,
+    );
   }
 
   const device = selectModelDevice(modelInfo);
-  const options: Record<string, unknown> = {
-    dtype: modelInfo.dtype,
-    device,
-  };
+  const options = buildPipelineOptions(modelInfo, device);
 
   try {
+    console.info(
+      `[Worker] Loading ${modelInfo.name} with Transformers.js device=${device}, dtype=${String(modelInfo.dtype)}.`,
+    );
     textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
+    currentDevice = device;
   } catch (error) {
     if (options.device === "webgpu" || options.device === "auto") {
-      textGenerator = await pipeline(modelInfo.task, requestedModelName, {
-        dtype: modelInfo.dtype,
-        device: "wasm",
-      } as any);
+      console.warn(
+        `[Worker] WebGPU initialization failed for ${modelInfo.name}; falling back to WASM. ${formatError(error)}`,
+      );
+      textGenerator = await pipeline(modelInfo.task, requestedModelName, buildPipelineOptions(modelInfo, "wasm"));
+      currentDevice = "wasm";
     } else {
       throw error;
     }
@@ -181,15 +218,30 @@ async function generateText(prompt: string, maxTokens: number): Promise<string> 
 
 function selectModelDevice(modelInfo: ReturnType<typeof getClientLlmModelInfo>): "wasm" | "webgpu" | "auto" {
   if (!modelInfo) return "wasm";
-  const configuredDevice = modelInfo.device as "wasm" | "webgpu" | "auto";
+  const configuredDevice = modelInfo.device as ClientLlmDevice;
   if (modelInfo.requiresWebGPU) return "webgpu";
   if (configuredDevice === "auto" && modelInfo.preferWebGPU && capabilities.webGPU && LLM_CONFIG.enableWebGPU) {
-    return "auto";
+    return "webgpu";
   }
   if (configuredDevice === "webgpu" && capabilities.webGPU && LLM_CONFIG.enableWebGPU) {
     return "webgpu";
   }
   return "wasm";
+}
+
+function buildPipelineOptions(
+  modelInfo: NonNullable<ReturnType<typeof getClientLlmModelInfo>>,
+  device: ClientLlmDevice,
+): Record<string, unknown> {
+  return {
+    dtype: modelInfo.dtype,
+    device,
+    session_options: {
+      log_severity_level: 3,
+      log_verbosity_level: 0,
+      enable_profiling: false,
+    },
+  };
 }
 
 function buildChatGenerationMessages(prompt: string): Array<{ role: "system" | "user"; content: string }> {
@@ -273,28 +325,56 @@ function extractGeneratedText(output: unknown): string {
   return String(output || "").trim();
 }
 
-async function detectCapabilities(): Promise<{ webGPU: boolean; simd: boolean }> {
+async function detectCapabilities(): Promise<LlmCapabilities> {
+  const webGPU = await detectWebGPU();
+  const sharedArrayBuffer = typeof SharedArrayBuffer !== "undefined";
+  const crossOriginIsolated = Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated);
   return {
-    webGPU: await detectWebGPU(),
+    webGPU: webGPU.available,
+    webGPUError: webGPU.error,
+    webGPUAdapter: webGPU.adapterInfo,
     simd: detectWasmSimd(),
+    wasmThreads: sharedArrayBuffer && crossOriginIsolated && typeof Worker !== "undefined",
+    crossOriginIsolated,
+    sharedArrayBuffer,
   };
 }
 
-async function detectWebGPU(): Promise<boolean> {
+async function detectWebGPU(): Promise<WebGpuDetectionResult> {
+  const cached = webGPUDetectionCache;
+  if (cached && Date.now() - cached.timestamp < WEBGPU_DETECTION_CACHE_MS) {
+    return cached.result;
+  }
+
+  const result = await detectWebGPUUncached();
+  webGPUDetectionCache = { result, timestamp: Date.now() };
+  return result;
+}
+
+async function detectWebGPUUncached(): Promise<WebGpuDetectionResult> {
   try {
-    const gpu = (navigator as Navigator & { gpu?: { requestAdapter: (options?: unknown) => Promise<any> } }).gpu;
+    const gpu = typeof navigator !== "undefined"
+      ? (navigator as Navigator & { gpu?: { requestAdapter: (options?: unknown) => Promise<any> } }).gpu
+      : undefined;
     if (!gpu?.requestAdapter) {
-      return false;
+      return { available: false, error: "navigator.gpu is unavailable in this browser context." };
     }
-    const adapter = await gpu.requestAdapter({ powerPreference: "high-performance" });
+    const adapter =
+      (await gpu.requestAdapter({ powerPreference: "high-performance", forceFallbackAdapter: false })) ||
+      (await gpu.requestAdapter());
     if (!adapter) {
-      return false;
+      return { available: false, error: "No WebGPU adapter was returned for this browser and device." };
     }
+    const adapterInfo = extractWebGpuAdapterInfo(adapter);
     const device = await adapter.requestDevice();
-    device.destroy();
-    return true;
-  } catch {
-    return false;
+    if (!device?.queue) {
+      device?.destroy?.();
+      return { available: false, error: "WebGPU device was created without a command queue.", adapterInfo };
+    }
+    device.destroy?.();
+    return { available: true, adapterInfo };
+  } catch (error) {
+    return { available: false, error: `WebGPU device test failed: ${formatError(error)}` };
   }
 }
 
@@ -312,6 +392,9 @@ function detectWasmSimd(): boolean {
 function configureTransformersRuntime(): void {
   const backends = env.backends as unknown as {
     onnx?: {
+      setLogLevel?: (logLevel: number) => void;
+      logLevel?: string;
+      logVerbosityLevel?: number;
       wasm?: {
         numThreads?: number;
         simd?: boolean;
@@ -321,12 +404,34 @@ function configureTransformersRuntime(): void {
         };
         wasmBinary?: ArrayBuffer;
       };
+      webgpu?: {
+        powerPreference?: "low-power" | "high-performance";
+        forceFallbackAdapter?: boolean;
+        validateInputContent?: boolean;
+        profiling?: {
+          mode?: "off" | "default";
+        };
+      };
     };
   };
-  if (backends.onnx?.wasm) {
-    backends.onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
-    backends.onnx.wasm.simd = capabilities.simd && LLM_CONFIG.enableSIMD;
-    backends.onnx.wasm.wasmPaths = {
+  const onnx = backends.onnx;
+  onnx?.setLogLevel?.(LogLevel.ERROR);
+  if (onnx) {
+    onnx.logLevel = "error";
+    onnx.logVerbosityLevel = 0;
+  }
+  if (onnx?.webgpu && capabilities.webGPU && LLM_CONFIG.enableWebGPU) {
+    onnx.webgpu.powerPreference = "high-performance";
+    onnx.webgpu.forceFallbackAdapter = false;
+    onnx.webgpu.validateInputContent = false;
+    if (onnx.webgpu.profiling) {
+      onnx.webgpu.profiling.mode = "off";
+    }
+  }
+  if (onnx?.wasm) {
+    onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
+    onnx.wasm.simd = capabilities.simd && LLM_CONFIG.enableSIMD;
+    onnx.wasm.wasmPaths = {
       mjs: ortWasmJsepMjsUrl,
       wasm: ortWasmJsepWasmUrl,
     };
@@ -335,4 +440,34 @@ function configureTransformersRuntime(): void {
 
 function postResponse(response: LlmWorkerResponse): void {
   self.postMessage(response);
+}
+
+function createUnavailableCapabilities(): LlmCapabilities {
+  return {
+    webGPU: false,
+    simd: false,
+    wasmThreads: false,
+    crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
+    sharedArrayBuffer: typeof SharedArrayBuffer !== "undefined",
+  };
+}
+
+function extractWebGpuAdapterInfo(adapter: any): LlmCapabilities["webGPUAdapter"] {
+  const info = adapter?.info;
+  if (!info || typeof info !== "object") {
+    return undefined;
+  }
+  return {
+    vendor: typeof info.vendor === "string" ? info.vendor : undefined,
+    architecture: typeof info.architecture === "string" ? info.architecture : undefined,
+    device: typeof info.device === "string" ? info.device : undefined,
+    description: typeof info.description === "string" ? info.description : undefined,
+  };
+}
+
+function formatError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error || "Unknown error");
 }

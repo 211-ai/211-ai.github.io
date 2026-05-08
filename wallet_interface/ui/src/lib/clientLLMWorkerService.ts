@@ -10,8 +10,19 @@ interface LlmWorkerResponse {
   modelName?: string;
   capabilities?: {
     webGPU: boolean;
+    webGPUError?: string;
+    webGPUAdapter?: {
+      vendor?: string;
+      architecture?: string;
+      device?: string;
+      description?: string;
+    };
     simd: boolean;
+    wasmThreads: boolean;
+    crossOriginIsolated: boolean;
+    sharedArrayBuffer: boolean;
   };
+  device?: "wasm" | "webgpu" | "auto";
   isInitialized?: boolean;
 }
 
@@ -39,7 +50,14 @@ class ClientLLMWorkerService {
   private requestCounter = 0;
   private pendingRequests = new Map<string, PendingRequest<LlmWorkerResponse>>();
   private currentModel = LLM_CONFIG.defaultModel;
-  private capabilities = { webGPU: false, simd: false };
+  private currentDevice: "wasm" | "webgpu" | "auto" = "wasm";
+  private capabilities = {
+    webGPU: false,
+    simd: false,
+    wasmThreads: false,
+    crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
+    sharedArrayBuffer: typeof SharedArrayBuffer !== "undefined",
+  };
 
   constructor() {
     this.initializeWorker();
@@ -61,6 +79,7 @@ class ClientLLMWorkerService {
       const result = await this.sendWorkerRequest("initialize", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
       this.isInitialized = Boolean(result.isInitialized ?? true);
       this.currentModel = result.modelName || modelName;
+      this.currentDevice = result.device || this.currentDevice;
       this.capabilities = result.capabilities || this.capabilities;
     } finally {
       this.isInitializing = false;
@@ -70,6 +89,7 @@ class ClientLLMWorkerService {
   async switchModel(modelName: string): Promise<void> {
     const result = await this.sendWorkerRequest("switchModel", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
     this.currentModel = result.modelName || modelName;
+    this.currentDevice = result.device || this.currentDevice;
     this.capabilities = result.capabilities || this.capabilities;
     this.isInitialized = true;
   }
@@ -127,6 +147,7 @@ class ClientLLMWorkerService {
     } catch {
       return {
         modelName: this.currentModel,
+        device: this.currentDevice,
         capabilities: this.capabilities,
         isInitialized: this.isInitialized,
       };
@@ -139,6 +160,7 @@ class ClientLLMWorkerService {
       isInitializing: this.isInitializing,
       hasWorker: this.worker !== null,
       currentModel: this.currentModel,
+      currentDevice: this.currentDevice,
       capabilities: this.capabilities,
     };
   }
@@ -184,6 +206,9 @@ class ClientLLMWorkerService {
       }
       if (data?.capabilities) {
         this.capabilities = data.capabilities;
+      }
+      if (data?.device) {
+        this.currentDevice = data.device;
       }
       pending.resolve(data || {});
     } else {

@@ -24,7 +24,7 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
     inputMode: "chat",
     requiresWebGPU: false,
     preferWebGPU: true,
-    device: "auto",
+    device: "webgpu",
     dtype: "q4",
     contextLength: 32768,
     description: "Chat-tuned Transformers.js ONNX model for browser assistant responses and tool routing.",

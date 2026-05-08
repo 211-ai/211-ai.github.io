@@ -63,6 +63,28 @@ export interface GraphRagRuntimeStatus {
     benchmarks: BackendDetectionStatus["benchmarks"];
     error?: string;
   };
+  llm: {
+    hasWorker: boolean;
+    isInitialized: boolean;
+    isInitializing: boolean;
+    currentModel: string;
+    currentDevice: "wasm" | "webgpu" | "auto";
+    capabilities: {
+      webGPU: boolean;
+      webGPUError?: string;
+      webGPUAdapter?: {
+        vendor?: string;
+        architecture?: string;
+        device?: string;
+        description?: string;
+      };
+      simd: boolean;
+      wasmThreads: boolean;
+      crossOriginIsolated: boolean;
+      sharedArrayBuffer: boolean;
+    };
+    error?: string;
+  };
 }
 
 export interface ServiceSourceSpan {
@@ -356,11 +378,12 @@ export function build211InfoFallbackSummary(evidence: GraphRagEvidence): string 
 
 export async function get211InfoRuntimeStatus(): Promise<GraphRagRuntimeStatus> {
   const corpusBaseUrl = get211CorpusBaseUrl();
-  const [corpus, retrievalWorker, embeddingWorker, backend] = await Promise.all([
+  const [corpus, retrievalWorker, embeddingWorker, backend, llm] = await Promise.all([
     getCorpusStatus(),
     ragSearchWorkerService.getStatus(),
     clientEmbeddingWorkerService.getStatus(),
     getBackendStatus(),
+    getLlmStatus(),
   ]);
   return {
     corpusBaseUrl,
@@ -368,6 +391,7 @@ export async function get211InfoRuntimeStatus(): Promise<GraphRagRuntimeStatus> 
     retrievalWorker,
     embeddingWorker,
     backend,
+    llm,
   };
 }
 
@@ -463,6 +487,29 @@ async function getCorpusStatus(): Promise<GraphRagRuntimeStatus["corpus"]> {
 
 async function getBackendStatus(): Promise<GraphRagRuntimeStatus["backend"]> {
   return backendDetectionWorkerService.getStatus();
+}
+
+async function getLlmStatus(): Promise<GraphRagRuntimeStatus["llm"]> {
+  try {
+    const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
+    return clientLLMWorkerService.getStatus();
+  } catch (error) {
+    return {
+      hasWorker: false,
+      isInitialized: false,
+      isInitializing: false,
+      currentModel: "",
+      currentDevice: "wasm",
+      capabilities: {
+        webGPU: false,
+        simd: false,
+        wasmThreads: false,
+        crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
+        sharedArrayBuffer: typeof SharedArrayBuffer !== "undefined",
+      },
+      error: error instanceof Error ? error.message : "LLM runtime status unavailable",
+    };
+  }
 }
 
 function append211InfoSources(answer: string, results: SearchResult[]): string {
