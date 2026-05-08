@@ -4,8 +4,12 @@ export const AUDIO_CHAT_CONFIG = {
   fallbackVoiceModel: "browser-speech-synthesis",
   enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
-  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "90000", 10),
+  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "240000", 10),
   maxPromptCharacters: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_PROMPT_CHARS || "1200", 10),
+  maxAudioFrames: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_FRAMES || "160", 10),
+  liquidAudioRunnerBaseUrl:
+    (import.meta.env?.VITE_LIQUID_AUDIO_RUNNER_BASE_URL as string | undefined) ||
+    "https://huggingface.co/spaces/LiquidAI/LFM2.5-Audio-1.5B-transformers-js/raw/main",
 } as const;
 
 export type ClientAudioPipelineTask = "text-to-audio";
