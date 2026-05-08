@@ -10,6 +10,7 @@ import type {
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentMessageList } from "./AgentMessageList";
+import { AgentRuntimeStatus } from "./AgentRuntimeStatus";
 
 export function AgentChatBottomSheet({
   activeRouteLabel,
@@ -106,6 +107,7 @@ export function AgentChatBottomSheet({
             <small>Read-only chat</small>
             <span>Ask questions while continuing to use the app.</span>
           </div>
+          <AgentRuntimeStatus open={open} />
 
           <div className="agent-chat-bottom-sheet-body" id="agent-chat-bottom-sheet-body">
             <AgentMessageList

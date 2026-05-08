@@ -10,6 +10,7 @@ import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentChatBottomSheet } from "./AgentChatBottomSheet";
 import { AgentMessageList } from "./AgentMessageList";
+import { AgentRuntimeStatus } from "./AgentRuntimeStatus";
 
 export function AgentChatDrawer({
   activeRouteLabel,
@@ -95,6 +96,7 @@ export function AgentChatDrawer({
               <small>App-aware chat</small>
               <span>Ask questions, move between screens, and review before wallet changes.</span>
             </div>
+            <AgentRuntimeStatus open={open} />
 
             <AgentMessageList
               confirmations={confirmations}
