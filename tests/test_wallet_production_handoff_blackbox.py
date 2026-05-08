@@ -299,6 +299,13 @@ def _completed_signoff_packet(verifier_url: str) -> dict[str, Any]:
             "product_owner": dict(review),
         },
         "analytics_privacy_review": {
+            "production_query_policy": "CI analytics releases only approved template IDs through aggregate routes",
+            "approved_aggregate_routes": [
+                "/analytics/{template_id}/count",
+                "/analytics/{template_id}/count-by-fields",
+            ],
+            "approved_template_registry_evidence": "evidence://ci/wallet/analytics/registry/2026-05-05",
+            "raw_query_block_evidence": "evidence://ci/wallet/analytics/no-raw-query-surface/2026-05-05",
             "approved_templates": [
                 {
                     "template_id": "ci_needs_by_region_v1",

@@ -105,6 +105,24 @@ _SIGNOFF_REQUIRED_ANALYTICS_TEMPLATE_LIST_FIELDS = (
     "proof_statements",
 )
 
+_SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS = (
+    "production_query_policy",
+    "approved_template_registry_evidence",
+    "raw_query_block_evidence",
+)
+
+_SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS = (
+    "approved_aggregate_routes",
+)
+
+_SIGNOFF_FORBIDDEN_ANALYTICS_ROUTE_MARKERS = (
+    "raw",
+    "sql",
+    "notebook",
+    "export",
+    "graphrag",
+)
+
 _SIGNOFF_REQUIRED_ANALYTICS_PRIVACY_BUDGET_FIELDS = (
     "epsilon_budget",
     "per_query_epsilon",
@@ -283,6 +301,23 @@ def _missing_or_placeholder_mapping_fields(payload: Mapping[str, Any], names: Se
         if _has_placeholder_value(value):
             missing.append(name)
     return missing
+
+
+def _unexpected_analytics_routes(routes: Any) -> list[str]:
+    if not isinstance(routes, list):
+        return ["approved_aggregate_routes"]
+    unexpected: list[str] = []
+    for route in routes:
+        route_text = str(route or "").strip()
+        lowered = route_text.lower()
+        if (
+            _is_placeholder(route_text)
+            or "{template_id}" not in route_text
+            or not route_text.startswith("/analytics/")
+            or any(marker in lowered for marker in _SIGNOFF_FORBIDDEN_ANALYTICS_ROUTE_MARKERS)
+        ):
+            unexpected.append(route_text or "approved_aggregate_routes")
+    return unexpected
 
 
 _STORAGE_REPAIR_REPORT_ALLOWED_KEYS = frozenset(
@@ -610,6 +645,21 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
     no_live_templates = bool(analytics_review.get("no_live_analytics_templates"))
     reviewed_templates = analytics_review.get("approved_templates")
     reviewed_templates = reviewed_templates if isinstance(reviewed_templates, list) else []
+    missing_analytics_workflow_fields = _missing_or_placeholder_fields(
+        analytics_review,
+        _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS,
+    )
+    missing_analytics_workflow_fields.extend(
+        _missing_or_placeholder_list_fields(
+            analytics_review,
+            _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS,
+        )
+    )
+    unexpected_aggregate_routes = _unexpected_analytics_routes(
+        analytics_review.get("approved_aggregate_routes")
+    )
+    if unexpected_aggregate_routes:
+        missing_analytics_workflow_fields.append("approved_aggregate_routes")
     incomplete_templates: list[str] = []
     for index, item in enumerate(reviewed_templates):
         template = item if isinstance(item, dict) else {}
@@ -670,8 +720,11 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
         if not isinstance(template.get("allowed_dimensions"), list) or not template.get("allowed_dimensions"):
             incomplete_templates.append(template_id)
     analytics_status = "ok"
-    analytics_summary = "Analytics privacy review is complete for approved templates."
-    if not no_live_templates and not reviewed_templates:
+    analytics_summary = "Analytics privacy review is template-bound and complete for approved templates."
+    if missing_analytics_workflow_fields:
+        analytics_status = "error"
+        analytics_summary = "Analytics privacy review is missing template-bound release workflow evidence."
+    elif not no_live_templates and not reviewed_templates:
         analytics_status = "error"
         analytics_summary = "Analytics privacy review must list approved templates or declare no live analytics templates."
     elif incomplete_templates:
@@ -684,6 +737,8 @@ def validate_target_signoff_packet(packet_path: str | Path) -> dict[str, Any]:
         {
             "no_live_analytics_templates": no_live_templates,
             "approved_template_count": len(reviewed_templates),
+            "missing_workflow_fields": missing_analytics_workflow_fields,
+            "unexpected_aggregate_routes": unexpected_aggregate_routes,
             "incomplete_templates": sorted(set(incomplete_templates)),
         },
     )
@@ -853,6 +908,23 @@ def validate_target_signoff_packet_template(
 
         analytics_review = payload.get("analytics_privacy_review")
         analytics_review = analytics_review if isinstance(analytics_review, dict) else {}
+        missing_analytics_workflow_fields = [
+            field for field in _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_FIELDS if field not in analytics_review
+        ]
+        missing_analytics_workflow_fields.extend(
+            field for field in _SIGNOFF_REQUIRED_ANALYTICS_REVIEW_LIST_FIELDS if field not in analytics_review
+        )
+        add_check(
+            "template_analytics_release_workflow_fields",
+            "error" if missing_analytics_workflow_fields else "ok",
+            (
+                "Analytics review template records template-only production routes and raw-query block evidence."
+                if not missing_analytics_workflow_fields
+                else "Analytics review template is missing WALLET-200 release workflow fields."
+            ),
+            {"missing": missing_analytics_workflow_fields},
+        )
+
         approved_templates = analytics_review.get("approved_templates")
         first_template = approved_templates[0] if isinstance(approved_templates, list) and approved_templates else {}
         first_template = first_template if isinstance(first_template, dict) else {}

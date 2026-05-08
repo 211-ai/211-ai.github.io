@@ -164,6 +164,14 @@ plaintext documents, or direct identifiers. The production API surface releases
 aggregates only through approved template IDs via `/analytics/{template_id}/count`
 and `/analytics/{template_id}/count-by-fields`.
 
+The target signoff packet must record the release-workflow evidence that proves
+that boundary: `analytics_privacy_review.production_query_policy`,
+`analytics_privacy_review.approved_aggregate_routes`,
+`analytics_privacy_review.approved_template_registry_evidence`, and
+`analytics_privacy_review.raw_query_block_evidence`. Use those fields to link
+the deployed template registry review, API route allow-list, and raw-query
+surface review before production analytics is enabled.
+
 Before setting an analytics template to `approved` or allowing it to remain live
 in a target environment:
 
