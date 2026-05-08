@@ -139,6 +139,7 @@ export function cleanLocalLlmAssistantResponse(text: string): string {
 
   return raw
     .split(/\n(?:User message|User|Conversation history|Safe app context)\s*:/i)[0]
+    .replace(/^["']|["']$/g, "")
     .trim();
 }
 
@@ -147,6 +148,9 @@ function isUsableLocalLlmAssistantResponse(text: string): boolean {
   if (/^no_tool$/i.test(text)) return false;
   if (/^\{[\s\S]*\}$/.test(text)) return false;
   if (/^ACTION\s*:/i.test(text)) return false;
+  if (/\b(the assistant message is|the instruction is|use only the safe app context|assistant inside a 211)\b/i.test(text)) {
+    return false;
+  }
   return true;
 }
 

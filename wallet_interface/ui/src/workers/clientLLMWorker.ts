@@ -42,6 +42,7 @@ let textGenerator: any = null;
 let currentModelName = LLM_CONFIG.defaultModel;
 let isInitialized = false;
 let initializePromise: Promise<void> | null = null;
+let initializingModelName: string | null = null;
 let capabilities = { webGPU: false, simd: false };
 
 self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
@@ -96,14 +97,22 @@ async function initialize(modelName: string): Promise<void> {
   }
   if (initializePromise) {
     await initializePromise;
+    if (textGenerator && isInitialized && currentModelName === modelName) {
+      return;
+    }
+    if (initializingModelName !== modelName) {
+      return initialize(modelName);
+    }
     return;
   }
 
+  initializingModelName = modelName;
   initializePromise = initializePipeline(modelName);
   try {
     await initializePromise;
   } finally {
     initializePromise = null;
+    initializingModelName = null;
   }
 }
 
@@ -111,8 +120,20 @@ async function initializePipeline(modelName: string): Promise<void> {
   capabilities = await detectCapabilities();
   configureTransformersRuntime();
 
-  const modelInfo = getClientLlmModelInfo(modelName) || SUPPORTED_CLIENT_LLM_MODELS["Xenova/distilgpt2"];
-  const requestedModelName = getClientLlmModelInfo(modelName) ? modelName : "Xenova/distilgpt2";
+  const requestedModelName = getClientLlmModelInfo(modelName) ? modelName : LLM_CONFIG.fallbackModel;
+  try {
+    await loadPipeline(requestedModelName);
+  } catch (error) {
+    if (requestedModelName === LLM_CONFIG.fallbackModel) {
+      throw error;
+    }
+    console.warn(`211 LLM model ${requestedModelName} unavailable; falling back to ${LLM_CONFIG.fallbackModel}.`, error);
+    await loadPipeline(LLM_CONFIG.fallbackModel);
+  }
+}
+
+async function loadPipeline(requestedModelName: string): Promise<void> {
+  const modelInfo = getClientLlmModelInfo(requestedModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
   if (modelInfo.requiresWebGPU && !capabilities.webGPU) {
     throw new Error(`${modelInfo.name} requires WebGPU. Use a WASM-compatible model on this browser.`);
   }
@@ -128,10 +149,10 @@ async function initializePipeline(modelName: string): Promise<void> {
   }
 
   try {
-    textGenerator = await pipeline("text-generation", requestedModelName, options);
+    textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
   } catch (error) {
     if (options.device === "webgpu") {
-      textGenerator = await pipeline("text-generation", requestedModelName, {
+      textGenerator = await pipeline(modelInfo.task, requestedModelName, {
         quantized: true,
         device: "wasm",
       } as any);

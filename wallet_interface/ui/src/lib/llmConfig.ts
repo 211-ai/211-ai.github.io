@@ -1,6 +1,7 @@
 export const LLM_CONFIG = {
   inferenceMode: (import.meta.env?.VITE_LLM_INFERENCE_MODE as "client" | "server" | undefined) || "client",
-  defaultModel: (import.meta.env?.VITE_CLIENT_LLM_MODEL as string | undefined) || "Xenova/distilgpt2",
+  defaultModel: (import.meta.env?.VITE_CLIENT_LLM_MODEL as string | undefined) || "Xenova/LaMini-Flan-T5-77M",
+  fallbackModel: "Xenova/distilgpt2",
   defaultEmbeddingModel:
     (import.meta.env?.VITE_DEFAULT_EMBEDDING_MODEL as string | undefined) || "Xenova/bge-small-en-v1.5",
   requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_REQUEST_TIMEOUT || "45000", 10),
@@ -9,10 +10,40 @@ export const LLM_CONFIG = {
   enableSIMD: import.meta.env?.VITE_ENABLE_SIMD !== "false",
 } as const;
 
+export type ClientLlmPipelineTask = "text-generation" | "text2text-generation";
+
 export const SUPPORTED_CLIENT_LLM_MODELS = {
+  "Xenova/LaMini-Flan-T5-77M": {
+    name: "LaMini-Flan-T5 77M",
+    size: "small",
+    task: "text2text-generation",
+    requiresWebGPU: false,
+    contextLength: 1024,
+    description: "Instruction-tuned WASM model for browser chat and tool routing.",
+    quantized: true,
+  },
+  "Xenova/LaMini-Flan-T5-248M": {
+    name: "LaMini-Flan-T5 248M",
+    size: "medium",
+    task: "text2text-generation",
+    requiresWebGPU: false,
+    contextLength: 1024,
+    description: "Higher-quality WASM model for grounded 211 answers.",
+    quantized: true,
+  },
+  "Xenova/LaMini-Flan-T5-783M": {
+    name: "LaMini-Flan-T5 783M",
+    size: "large",
+    task: "text2text-generation",
+    requiresWebGPU: false,
+    contextLength: 1024,
+    description: "Largest WASM-compatible instruction model; slower initial load.",
+    quantized: true,
+  },
   "Xenova/distilgpt2": {
     name: "DistilGPT-2",
     size: "82MB",
+    task: "text-generation",
     requiresWebGPU: false,
     contextLength: 1024,
     description: "Small WASM-compatible fallback model.",
@@ -21,26 +52,11 @@ export const SUPPORTED_CLIENT_LLM_MODELS = {
   "Xenova/LaMini-GPT-774M": {
     name: "LaMini-GPT 774M",
     size: "310MB",
+    task: "text-generation",
     requiresWebGPU: false,
     contextLength: 1024,
     description: "Larger WASM-capable model for better short summaries.",
     quantized: true,
-  },
-  "onnx-community/Llama-3.2-1B-Instruct": {
-    name: "Llama 3.2 1B Instruct",
-    size: "637MB",
-    requiresWebGPU: true,
-    contextLength: 2048,
-    description: "Instruction model for WebGPU-capable browsers.",
-    quantized: false,
-  },
-  "onnx-community/Llama-3.2-3B-Instruct": {
-    name: "Llama 3.2 3B Instruct",
-    size: "1.9GB",
-    requiresWebGPU: true,
-    contextLength: 2048,
-    description: "Higher-quality instruction model for machines with enough GPU memory.",
-    quantized: false,
   },
 } as const;
 

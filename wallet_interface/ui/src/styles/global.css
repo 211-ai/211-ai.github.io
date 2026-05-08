@@ -3223,3 +3223,551 @@ a {
     transform: none !important;
   }
 }
+
+/* ABBY comprehensive asset alignment */
+:root {
+  --abby-logo-mark: url("/assets/abby-logo-mark.svg");
+  --abby-logo-lockup: url("/assets/abby-logo-lockup.svg");
+  --abby-watercolor-page: url("/assets/png/from-reference/reference-mountain-wash-clean.png");
+  --abby-watercolor-landscape: url("/assets/png/from-reference/reference-landscape-clean.png");
+  --abby-watercolor-bridge: url("/assets/png/from-reference/reference-bridge-skyline-clean.png");
+  --abby-watercolor-evergreens: url("/assets/png/from-reference/reference-evergreens-clean.png");
+  --abby-header-asset: url("/assets/png/from-preview/preview-header-landscape.png");
+  --abby-card-asset: url("/assets/png/from-preview/preview-card-wash-right.png");
+  --abby-sidebar-wash: url("/assets/png/from-preview/preview-sidebar-wash.png");
+  --abby-sidebar-evergreens: url("/assets/png/from-preview/preview-sidebar-evergreens.png");
+  --abby-quick-action-asset: url("/assets/png/from-preview/preview-quick-action-wash.png");
+  --abby-support-asset: url("/assets/png/from-preview/preview-support-bridge-watermark.png");
+  --abby-support-badge: url("/assets/png/from-preview/preview-support-badge.png");
+  --abby-radius-lg: 8px;
+  --abby-control-height: 46px;
+}
+
+html {
+  background: var(--abby-off-white);
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.82), rgba(243, 248, 246, 0.94)),
+    var(--abby-watercolor-page) center top / min(1000px, 92vw) auto no-repeat,
+    linear-gradient(135deg, #fafbf8 0%, #f5f9f7 48%, #eaf5f8 100%);
+  color: var(--abby-ink);
+  overflow-x: hidden;
+}
+
+.app {
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.78), rgba(243, 248, 246, 0.86)),
+    var(--abby-card-asset) right bottom / min(560px, 54vw) auto no-repeat;
+  isolation: isolate;
+}
+
+.app::before {
+  background: var(--abby-watercolor-landscape) right bottom / min(620px, 48vw) auto no-repeat;
+  bottom: 0;
+  content: "";
+  height: min(360px, 42vh);
+  opacity: 0.11;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  width: min(760px, 58vw);
+  z-index: 0;
+}
+
+.main {
+  background:
+    linear-gradient(90deg, rgba(250, 251, 248, 0.1), rgba(255, 255, 255, 0)),
+    linear-gradient(180deg, rgba(250, 251, 248, 0.44), rgba(243, 248, 246, 0.24));
+}
+
+.screen {
+  gap: clamp(16px, 2vw, 24px);
+  max-width: 1140px;
+  padding: clamp(24px, 3vw, 42px) clamp(18px, 3.2vw, 44px) clamp(48px, 5vw, 72px);
+}
+
+.screen > .page-title {
+  isolation: isolate;
+  min-height: 104px;
+  padding: 20px 0 26px;
+  position: relative;
+}
+
+.screen > .page-title::after {
+  background: var(--abby-header-asset) right top / contain no-repeat;
+  content: "";
+  height: 136px;
+  opacity: 0.46;
+  pointer-events: none;
+  position: absolute;
+  right: -10px;
+  top: -6px;
+  width: min(610px, 64vw);
+  z-index: -1;
+}
+
+.home-hero::after {
+  opacity: 0.72;
+}
+
+.page-title h1,
+.section-heading h2,
+.card-heading h3,
+.dialog-heading h2,
+.action-card strong,
+.support-card h2,
+.login-brand h1 {
+  color: var(--abby-navy);
+  font-family: var(--abby-display-family);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.page-title h1 {
+  font-size: clamp(34px, 4.8vw, 54px);
+  line-height: 0.98;
+}
+
+.eyebrow,
+.agent-current-task small {
+  color: var(--abby-teal);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.brand-mark,
+.login-mark {
+  background: var(--abby-logo-mark) center / 100% 100% no-repeat;
+  border: 0;
+  box-shadow: none;
+  color: transparent;
+  font-size: 0;
+  overflow: hidden;
+}
+
+.brand-mark {
+  height: 46px;
+  width: 46px;
+}
+
+.login-mark {
+  height: 52px;
+  width: 52px;
+}
+
+.brand {
+  align-items: center;
+  gap: 12px;
+}
+
+.brand strong {
+  font-size: 24px;
+}
+
+.topbar {
+  min-height: 76px;
+  padding: 10px 14px;
+}
+
+.topbar .button-quiet {
+  border-radius: 8px;
+  color: var(--abby-navy);
+}
+
+.topbar .button-quiet:hover,
+.button-quiet:hover {
+  background: rgba(220, 232, 226, 0.64);
+}
+
+.mobile-nav-panel {
+  max-height: calc(100dvh - 76px);
+  overflow-y: auto;
+  padding: 14px 18px 18px;
+}
+
+.mobile-nav-panel .nav-button {
+  font-size: 18px;
+  min-height: 54px;
+}
+
+.sidebar {
+  color: var(--abby-navy);
+}
+
+.nav-button {
+  outline-offset: 3px;
+}
+
+.nav-button svg,
+.topbar svg,
+.button svg {
+  flex: 0 0 auto;
+}
+
+.login-page {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.22), rgba(250, 251, 248, 0.94) 55%),
+    var(--abby-watercolor-page) center 4% / min(1020px, 96vw) auto no-repeat;
+  padding: clamp(24px, 7vh, 72px) 18px;
+}
+
+.login-panel {
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.97), rgba(250, 251, 248, 0.94)),
+    var(--abby-support-asset) right bottom / 78% auto no-repeat;
+  border-color: rgba(127, 174, 180, 0.62);
+  border-radius: var(--abby-radius-lg);
+  box-shadow: 0 28px 80px rgba(7, 49, 74, 0.11);
+  gap: 18px;
+  max-width: 500px;
+  padding: clamp(22px, 3vw, 30px);
+  width: min(100%, 500px);
+}
+
+.login-panel::before {
+  background: var(--abby-watercolor-evergreens) right bottom / 170px auto no-repeat;
+  bottom: 4px;
+  content: "";
+  height: 180px;
+  opacity: 0.16;
+  pointer-events: none;
+  position: absolute;
+  right: -16px;
+  width: 210px;
+  z-index: -1;
+}
+
+.login-panel::after {
+  opacity: 0.18;
+}
+
+.login-brand {
+  align-items: center;
+  gap: 14px;
+}
+
+.login-brand h1 {
+  font-size: clamp(34px, 7vw, 44px);
+  line-height: 0.98;
+}
+
+.login-assistant-entry {
+  border-top-color: rgba(127, 174, 180, 0.42);
+}
+
+.login-assistant-entry h2 {
+  color: var(--abby-navy);
+  font-size: 22px;
+}
+
+.login-assistant-entry p {
+  color: var(--abby-color-muted);
+  line-height: 1.42;
+}
+
+.button {
+  min-height: var(--abby-control-height);
+}
+
+.button-primary {
+  background: linear-gradient(180deg, #126b49, var(--abby-forest));
+  border-color: rgba(14, 90, 60, 0.85);
+  box-shadow: 0 12px 28px rgba(14, 90, 60, 0.18);
+}
+
+.button-secondary {
+  background: rgba(250, 251, 248, 0.94);
+  border-color: rgba(127, 174, 180, 0.78);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.nav-button:focus-visible {
+  outline: 3px solid rgba(15, 124, 115, 0.86);
+  outline-offset: 3px;
+}
+
+.action-card,
+.review-row,
+.review-panel,
+.guided-intake-panel,
+.list-item,
+.scope-editor,
+.analytics-card,
+.timeline-event,
+.liaison-panel,
+.schedule-preview,
+.card,
+.checklist,
+.capability-preview,
+.empty-state,
+.shelter-staff-panel,
+.identity-fieldset,
+.upload-camera-option,
+.recipient-edit-panel,
+.agent-evidence-panel,
+.agent-confirmation-card,
+.agent-tool-result-card,
+.dialog,
+.agent-chat-drawer,
+.agent-chat-bottom-sheet {
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.95), rgba(250, 251, 248, 0.9)),
+    var(--abby-card-asset) right bottom / 240px auto no-repeat;
+  border-color: rgba(127, 174, 180, 0.58);
+  border-radius: var(--abby-radius-lg);
+  box-shadow: 0 10px 26px rgba(7, 49, 74, 0.06);
+}
+
+.review-row,
+.list-item,
+.schedule-preview {
+  min-height: 72px;
+}
+
+.action-card {
+  border-color: rgba(127, 174, 180, 0.68);
+  min-height: 112px;
+}
+
+.action-card::after {
+  opacity: 0.18;
+}
+
+.action-card strong {
+  font-size: 22px;
+}
+
+.action-card small,
+.status-panel small,
+.home-footer-stat small {
+  color: var(--abby-color-muted);
+}
+
+.action-icon,
+.agent-chat-mark,
+.agent-message-user .agent-message-icon,
+.agent-citation-label,
+.checkin-panel-icon {
+  background: rgba(220, 232, 226, 0.96);
+  color: var(--abby-teal);
+}
+
+.checkin-panel {
+  background:
+    linear-gradient(90deg, rgba(220, 232, 226, 0.98), rgba(183, 211, 213, 0.6)),
+    var(--abby-quick-action-asset) center / min(560px, 72%) auto no-repeat;
+  border-color: rgba(15, 124, 115, 0.9);
+}
+
+.checkin-panel-cta {
+  background: rgba(250, 251, 248, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(15, 124, 115, 0.16);
+}
+
+.support-card {
+  background:
+    linear-gradient(90deg, rgba(243, 248, 246, 0.97), rgba(250, 251, 248, 0.88)),
+    var(--abby-support-asset) right bottom / min(520px, 50%) auto no-repeat;
+  border-color: rgba(127, 174, 180, 0.68);
+}
+
+.support-card::after {
+  display: none;
+}
+
+.support-card-badge {
+  background-image: var(--abby-support-badge);
+}
+
+.home-footer {
+  background: rgba(250, 251, 248, 0.48);
+  border-bottom: 1px solid rgba(127, 174, 180, 0.3);
+  padding-bottom: 16px;
+}
+
+.field input,
+.field select,
+.field textarea,
+.agent-composer textarea {
+  min-height: var(--abby-control-height);
+}
+
+.field input,
+.field select,
+.field textarea,
+.upload-dropzone,
+.choice-chip,
+.captcha-box,
+.consent-box,
+.scope-option,
+.category-tile,
+.tool-tile {
+  border-color: rgba(87, 118, 132, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.scope-option:has(input:checked),
+.consent-box:has(input:checked),
+.captcha-box:has(input:checked),
+.checklist label:has(input:checked) {
+  background: rgba(220, 232, 226, 0.72);
+  border-color: rgba(15, 124, 115, 0.62);
+}
+
+.status-panel {
+  border-left-width: 5px;
+}
+
+.status-panel strong {
+  color: var(--abby-navy);
+}
+
+.upload-dropzone {
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.92), rgba(243, 248, 246, 0.82)),
+    var(--abby-watercolor-bridge) center bottom / min(420px, 80%) auto no-repeat;
+}
+
+.agent-chat-toggle,
+.agent-chat-bottom-sheet-toggle {
+  background: linear-gradient(180deg, #126b49, var(--abby-forest));
+  border-color: var(--abby-forest);
+}
+
+@media (min-width: 760px) {
+  .sidebar {
+    background:
+      linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(243, 248, 246, 0.9)),
+      var(--abby-sidebar-wash) left top / 100% 100% no-repeat;
+  }
+
+  .sidebar::before {
+    background: var(--abby-watercolor-bridge) 12px bottom / 250px auto no-repeat;
+    bottom: 0;
+    content: "";
+    height: 220px;
+    left: 0;
+    opacity: 0.09;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  .sidebar::after {
+    background: var(--abby-sidebar-evergreens) bottom center / contain no-repeat;
+    opacity: 0.42;
+  }
+
+  .home-hero {
+    min-height: 188px;
+    padding-top: 38px;
+  }
+
+  .home-hero::after {
+    height: 202px;
+    width: min(690px, 62vw);
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --abby-control-height: 48px;
+  }
+
+  .topbar {
+    min-height: 68px;
+    padding: 8px 12px;
+  }
+
+  .topbar strong {
+    font-size: 24px;
+  }
+
+  .topbar small {
+    font-size: 12px;
+  }
+
+  .topbar .button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .login-page {
+    align-items: start;
+    background-size: 920px auto;
+    padding: 72px 16px 28px;
+  }
+
+  .login-panel {
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .login-mark {
+    height: 48px;
+    width: 48px;
+  }
+
+  .login-brand h1 {
+    font-size: 36px;
+  }
+
+  .screen {
+    padding: 22px 16px 96px;
+  }
+
+  .screen > .page-title {
+    min-height: 92px;
+    padding: 14px 0 18px;
+  }
+
+  .screen > .page-title::after {
+    bottom: 0;
+    height: 88px;
+    left: 0;
+    opacity: 0.25;
+    right: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .page-title h1 {
+    font-size: clamp(30px, 8.8vw, 36px);
+    line-height: 1.03;
+  }
+
+  .section-heading h2 {
+    font-size: 23px;
+  }
+
+  .mobile-nav-panel .nav-button {
+    font-size: 17px;
+    min-height: 50px;
+  }
+
+  .action-card {
+    grid-template-columns: 52px minmax(0, 1fr) 22px;
+    min-height: 108px;
+    padding: 16px;
+  }
+
+  .action-card strong {
+    font-size: 24px;
+  }
+
+  .support-card {
+    background-size: 94% auto;
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .support-card .button {
+    width: 100%;
+  }
+}

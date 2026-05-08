@@ -17,11 +17,15 @@ test("home screen uses ABBY watercolor styling and captures a review screenshot"
 
   const theme = await page.evaluate(() => {
     const root = getComputedStyle(document.documentElement);
+    const brandMark = document.querySelector(".brand-mark");
     const hero = getComputedStyle(document.querySelector(".home-hero")!, "::after");
     const checkIn = getComputedStyle(document.querySelector(".checkin-panel")!);
-    const support = getComputedStyle(document.querySelector(".support-card")!, "::after");
+    const support = getComputedStyle(document.querySelector(".support-card")!);
     return {
       fontFamily: root.getPropertyValue("--abby-font-family"),
+      brandMarkBackground: brandMark
+        ? getComputedStyle(brandMark).backgroundImage
+        : root.getPropertyValue("--abby-logo-mark"),
       heroBackground: hero.backgroundImage,
       checkInBackground: checkIn.backgroundImage,
       supportBackground: support.backgroundImage
@@ -29,11 +33,46 @@ test("home screen uses ABBY watercolor styling and captures a review screenshot"
   });
 
   expect(theme.fontFamily).not.toContain("Comic");
+  expect(theme.brandMarkBackground).toContain("abby-logo-mark.svg");
   expect(theme.heroBackground).toContain("preview-header-landscape.png");
   expect(theme.checkInBackground).toContain("preview-quick-action-wash.png");
   expect(theme.supportBackground).toContain("preview-support-bridge-watermark.png");
 
   await page.screenshot({ fullPage: true, path: testInfo.outputPath("abby-home-style.png") });
+});
+
+test("login and inner route chrome use production ABBY assets", async ({ page }, testInfo) => {
+  await page.goto("/");
+
+  const loginTheme = await page.evaluate(() => {
+    const loginMark = getComputedStyle(document.querySelector(".login-mark")!);
+    const loginPanel = getComputedStyle(document.querySelector(".login-panel")!);
+    const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    return {
+      loginMarkBackground: loginMark.backgroundImage,
+      loginPanelBackground: loginPanel.backgroundImage,
+      faviconHref: favicon?.getAttribute("href") ?? ""
+    };
+  });
+
+  expect(loginTheme.loginMarkBackground).toContain("abby-logo-mark.svg");
+  expect(loginTheme.loginPanelBackground).toContain("preview-support-bridge-watermark.png");
+  expect(loginTheme.faviconHref).toContain("assets/favicon.svg");
+
+  await page.screenshot({ fullPage: true, path: testInfo.outputPath("abby-login-style.png") });
+
+  await signIn(page);
+  await page.goto("/#/register");
+  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible();
+
+  const routeTheme = await page.evaluate(() => {
+    const routeHeader = getComputedStyle(document.querySelector(".screen > .page-title")!, "::after");
+    return {
+      routeHeaderBackground: routeHeader.backgroundImage
+    };
+  });
+
+  expect(routeTheme.routeHeaderBackground).toContain("preview-header-landscape.png");
 });
 
 test("mobile navigation keeps the ABBY palette and current route set", async ({ page }) => {

@@ -1,9 +1,11 @@
 import type { AppActionResult } from "../app/appActions";
+import type { ClientLlmRuntimeService } from "../lib/clientLLMWorkerService";
 import type { RouteId } from "../models/abby";
 import type { AgentCommandName } from "./commandSchemas";
 import { isAgentCommandName } from "./commandSchemas";
 import { planAgentTurn, type AgentPlannedTool, type AgentPlannedTurn } from "./agentPlanner";
 import { selectLocalLlmTool } from "./localLlmToolSelector";
+import { generateLocalLlmAssistantResponse } from "./localLlmResponder";
 import type { AgentSurfaceApi } from "./surfaceApi";
 import { getToolDefinition } from "./surfaceRegistry";
 import { confirmationRiskForGate, getAgentToolPermissionPolicy } from "./permissionPolicy";
@@ -68,6 +70,8 @@ export interface AgentChatControllerOptions {
   privateContextAllowed?: boolean;
   initialMessages?: AgentMessage[];
   enableLocalLlmToolSelection?: boolean;
+  enableLocalLlmResponses?: boolean;
+  localLlmService?: ClientLlmRuntimeService;
   now?: () => string;
   createId?: (prefix: string) => string;
 }
@@ -99,6 +103,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     options.createId ??
     ((prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`);
   const listeners = new Set<() => void>();
+  const enableLocalLlmToolSelection = options.enableLocalLlmToolSelection ?? true;
+  const enableLocalLlmResponses = options.enableLocalLlmResponses ?? true;
   const initialContext = options.surfaceApi.getContext(false);
   const sessionId = options.sessionId ?? createId("agent-session");
   let responding = false;
@@ -273,19 +279,39 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
     }
-    if (options.enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
+    let localLlmUnavailable = false;
+    if (enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
       const pendingConfirmations = session.confirmations.filter((confirmation) => confirmation.status === "pending");
       const selection = await selectLocalLlmTool({
         content,
         context,
         session,
         deterministicTurn: turn,
-        pendingConfirmations
+        pendingConfirmations,
+        llmService: options.localLlmService
       });
       if (selection.source === "local_llm") {
         pushProgress("planning", `Selected ${selection.turn.tools[0]?.title ?? "a tool"} with the local model.`);
+      } else {
+        localLlmUnavailable = isLocalLlmUnavailableReason(selection.reason);
       }
       turn = selection.turn;
+    }
+    if (enableLocalLlmResponses && !localLlmUnavailable && shouldTryLocalLlmResponse(turn)) {
+      pushProgress("responding", "Drafting response with the local model.");
+      const response = await generateLocalLlmAssistantResponse({
+        content,
+        context,
+        session,
+        llmService: options.localLlmService
+      });
+      if (response.ok) {
+        turn = {
+          ...turn,
+          summary: "Respond from local model.",
+          response: response.text
+        };
+      }
     }
     await executeToolPlan(turn, context);
   }
@@ -856,6 +882,14 @@ function fallbackResponse(context: SurfaceContext): string {
 
 function shouldTryLocalLlmToolSelection(turn: AgentPlannedTurn): boolean {
   return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function shouldTryLocalLlmResponse(turn: AgentPlannedTurn): boolean {
+  return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function isLocalLlmUnavailableReason(reason: string | undefined): boolean {
+  return Boolean(reason && /\b(unavailable|worker|timeout|timed out|initialize|model|download|network)\b/i.test(reason));
 }
 
 function toChatError(error: unknown): AgentChatError {

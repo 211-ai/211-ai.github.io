@@ -237,6 +237,16 @@ test.describe("agent unit contracts", () => {
       confirmationId: "confirmation-save",
       approved: true,
     });
+
+    const serviceAnswerTurn = planAgentTurn({
+      content: "Do you know about eviction help?",
+      context: createSurfaceContext("social-services"),
+    });
+    expect(serviceAnswerTurn.tools.map((tool) => tool.name)).toEqual(["answer_211_question"]);
+    expect(serviceAnswerTurn.tools[0].input).toEqual({
+      question: "Do you know about eviction help?",
+      useLocalModel: true,
+    });
   });
 
   test("enforces permission gates before tools can run", () => {
@@ -481,5 +491,71 @@ test.describe("agent unit contracts", () => {
     expect(updated).not.toBe(initial);
     expect(updated.session.activeRoute).toBe("exports");
     expect(controller.getSnapshot()).toBe(updated);
+  });
+
+  test("uses the local LLM service for general assistant chat responses", async () => {
+    const invoked: AgentToolCall[] = [];
+    const prompts: string[] = [];
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      enableLocalLlmToolSelection: false,
+      enableLocalLlmResponses: true,
+      localLlmService: {
+        tryGenerateText: async (prompt) => {
+          prompts.push(prompt);
+          return {
+            ok: true,
+            text: "Abby: I can explain this screen and help you move to the right app surface.",
+            modelName: "test-local-model",
+          };
+        },
+        generateStructuredText: async () => ({
+          ok: false,
+          text: "",
+          error: "not used",
+        }),
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("hello there");
+
+    expect(invoked).toEqual([]);
+    expect(prompts[0]).toContain("Safe app context");
+    expect(controller.getSnapshot().messages.at(-1)?.content).toBe(
+      "I can explain this screen and help you move to the right app surface.",
+    );
+  });
+
+  test("uses local LLM tool selection by default before falling back to deterministic responses", async () => {
+    const invoked: AgentToolCall[] = [];
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      localLlmService: {
+        tryGenerateText: async () => ({
+          ok: true,
+          text: "not used",
+        }),
+        generateStructuredText: async () => ({
+          ok: true,
+          text: "{\"action\":\"call_tool\",\"tool\":\"navigate\",\"input\":{\"route\":\"exports\"},\"message\":\"Open Exports.\"}",
+          json: {
+            action: "call_tool",
+            tool: "navigate",
+            input: { route: "exports" },
+            message: "Open Exports.",
+          },
+          modelName: "test-local-model",
+        }),
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("organize my verified packet");
+
+    expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate"]);
+    expect(invoked[0].input).toEqual({ route: "exports" });
   });
 });

@@ -27,6 +27,11 @@ export interface ClientLlmStructuredTextResult extends ClientLlmTextGenerationRe
   parseError?: string;
 }
 
+export interface ClientLlmRuntimeService {
+  tryGenerateText: (prompt: string, maxTokens?: number) => Promise<ClientLlmTextGenerationResult>;
+  generateStructuredText: (prompt: string, maxTokens?: number) => Promise<ClientLlmStructuredTextResult>;
+}
+
 class ClientLLMWorkerService {
   private worker: Worker | null = null;
   private isInitialized = false;

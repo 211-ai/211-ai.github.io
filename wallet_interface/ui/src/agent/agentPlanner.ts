@@ -215,7 +215,7 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
       tools: withToolSurface(input.context, [
         {
           name: toolName,
-          input: toolName === "search_211_services" ? { query: content, limit: 8 } : { question: content, useLocalModel: false },
+          input: toolName === "search_211_services" ? { query: content, limit: 8 } : { question: content, useLocalModel: true },
           title: getToolDefinition(toolName).title
         }
       ])
