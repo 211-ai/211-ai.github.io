@@ -8,15 +8,33 @@ installWarningSuppression();
 
 type AudioWorkerRequest = {
   id: string;
-  type: "generateAudio";
+  type: "generateAudio" | "warmUp";
   data: {
-    text: string;
+    text?: string;
     modelName?: string;
   };
 };
 
+type AudioProgressPhase =
+  | "queued"
+  | "loading-runtime"
+  | "downloading-model"
+  | "warming-up"
+  | "ready"
+  | "generating"
+  | "decoding";
+
+interface AudioWorkerProgress {
+  phase: AudioProgressPhase;
+  progress: number;
+  status: string;
+  file?: string;
+  modelName?: string;
+}
+
 interface AudioWorkerResponse {
   id: string;
+  type?: "progress";
   success: boolean;
   data?: {
     audioBlob?: Blob;
@@ -78,13 +96,41 @@ self.onmessage = (event: MessageEvent<AudioWorkerRequest>) => {
 
 async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
   try {
-    if (request.type !== "generateAudio") {
+    if (request.type !== "generateAudio" && request.type !== "warmUp") {
       throw new Error(`Unknown audio worker request: ${request.type}`);
     }
 
     const modelName = request.data.modelName || AUDIO_CHAT_CONFIG.defaultModel;
-    const model = await initialize(modelName);
-    const generation = await model.generateSpeech(request.data.text, {
+    postProgress(request.id, {
+      phase: "queued",
+      progress: 0,
+      status: "Preparing LiquidAI audio model.",
+      modelName,
+    });
+    const model = await initialize(modelName, (progress) => postProgress(request.id, progress));
+    if (request.type === "warmUp") {
+      postResponse({
+        id: request.id,
+        success: true,
+        data: {
+          modelName: currentModelName,
+          provider: "local-liquidai",
+        },
+      });
+      return;
+    }
+
+    const text = request.data.text?.trim();
+    if (!text) {
+      throw new Error("Audio generation text is empty.");
+    }
+    postProgress(request.id, {
+      phase: "generating",
+      progress: 90,
+      status: "Generating speech audio.",
+      modelName,
+    });
+    const generation = await model.generateSpeech(text, {
       maxNewTokens: AUDIO_CHAT_CONFIG.maxAudioFrames,
       systemPrompt: "Perform TTS. Use the UK female voice.",
       textTemperature: 0.7,
@@ -94,8 +140,20 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
     if (!generation.audioCodes.length) {
       throw new Error("LiquidAI audio model completed without audio frames.");
     }
+    postProgress(request.id, {
+      phase: "decoding",
+      progress: 97,
+      status: "Decoding generated audio.",
+      modelName,
+    });
     const waveform = await model.decodeAudioCodes(generation.audioCodes);
     const audioBlob = createWavBlob(waveform, 24000);
+    postProgress(request.id, {
+      phase: "ready",
+      progress: 100,
+      status: "Audio reply ready.",
+      modelName,
+    });
     postResponse({
       id: request.id,
       success: true,
@@ -115,17 +173,35 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
   }
 }
 
-async function initialize(modelName: string): Promise<LiquidAudioModel> {
+async function initialize(modelName: string, onProgress: (progress: AudioWorkerProgress) => void): Promise<LiquidAudioModel> {
   if (audioModel && currentModelName === modelName) {
+    onProgress({
+      phase: "ready",
+      progress: 100,
+      status: "Audio model ready.",
+      modelName,
+    });
     return audioModel;
   }
   if (initializePromise) {
+    onProgress({
+      phase: "warming-up",
+      progress: 5,
+      status: "Waiting for the audio model to finish warming up.",
+      modelName,
+    });
     await initializePromise;
     if (audioModel && currentModelName === modelName) {
+      onProgress({
+        phase: "ready",
+        progress: 100,
+        status: "Audio model ready.",
+        modelName,
+      });
       return audioModel;
     }
   }
-  initializePromise = initializePipeline(modelName);
+  initializePromise = initializePipeline(modelName, onProgress);
   try {
     await initializePromise;
   } finally {
@@ -137,7 +213,7 @@ async function initialize(modelName: string): Promise<LiquidAudioModel> {
   return audioModel;
 }
 
-async function initializePipeline(modelName: string): Promise<void> {
+async function initializePipeline(modelName: string, onProgress: (progress: AudioWorkerProgress) => void): Promise<void> {
   const modelInfo = getClientAudioModelInfo(modelName);
   if (!modelInfo) {
     throw new Error(`Unsupported audio chat model: ${modelName}`);
@@ -146,7 +222,19 @@ async function initializePipeline(modelName: string): Promise<void> {
     throw new Error(`${modelInfo.name} requires browser WebGPU for local audio generation.`);
   }
 
+  onProgress({
+    phase: "loading-runtime",
+    progress: 3,
+    status: "Loading LiquidAI audio runtime.",
+    modelName,
+  });
   const runtime = await loadLiquidAudioRuntime();
+  onProgress({
+    phase: "warming-up",
+    progress: 12,
+    status: "Starting local audio model.",
+    modelName,
+  });
   const model = new runtime.AudioModel();
   await model.load(`https://huggingface.co/${modelName}/resolve/main`, {
     device: "webgpu",
@@ -160,7 +248,14 @@ async function initializePipeline(modelName: string): Promise<void> {
     loadAudioEncoder: false,
     progressCallback: (progress) => {
       console.info("[AudioWorker] LiquidAI audio load", progress);
+      onProgress(formatLiquidAudioLoadProgress(progress, modelName));
     },
+  });
+  onProgress({
+    phase: "ready",
+    progress: 100,
+    status: "Audio model ready.",
+    modelName,
   });
   audioModel = model;
   currentModelName = modelName;
@@ -317,8 +412,42 @@ function hasWebGPU(): boolean {
   return AUDIO_CHAT_CONFIG.enableWebGPU && typeof navigator !== "undefined" && Boolean((navigator as { gpu?: unknown }).gpu);
 }
 
+function postProgress(id: string, progress: AudioWorkerProgress): void {
+  self.postMessage({
+    id,
+    type: "progress",
+    progress: {
+      ...progress,
+      progress: clampProgress(progress.progress),
+    },
+    success: false,
+  });
+}
+
 function postResponse(response: AudioWorkerResponse): void {
   self.postMessage(response);
+}
+
+function formatLiquidAudioLoadProgress(
+  progress: { status: string; progress: number; file?: string },
+  modelName: string,
+): AudioWorkerProgress {
+  const rawProgress = Number.isFinite(progress.progress) ? progress.progress : 0;
+  const normalizedProgress = rawProgress <= 1 ? rawProgress * 100 : rawProgress;
+  const scaledProgress = 15 + normalizedProgress * 0.7;
+  const fileDetail = progress.file ? ` ${progress.file}` : "";
+  return {
+    phase: "downloading-model",
+    progress: scaledProgress,
+    status: `Downloading audio model${fileDetail}.`,
+    file: progress.file,
+    modelName,
+  };
+}
+
+function clampProgress(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
 }
 
 function formatError(error: unknown): string {

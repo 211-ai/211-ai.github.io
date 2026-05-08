@@ -215,7 +215,7 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
   await expect(mobileNav.getByRole("button", { name: /Who can see info/i })).toHaveCount(0);
   await expectFirstAboveSecond(
     mobileNav.getByRole("button", { name: /Services/i }),
-    mobileNav.getByRole("button", { name: /Uploads/i })
+    mobileNav.getByRole("button", { name: /Wallet/i })
   );
   await mobileNav.getByRole("button", { name: /Contacts/i }).click();
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible();
@@ -817,6 +817,44 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
   await expect(page.getByText(/storage\/repair/i)).toBeVisible();
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i)).toBeVisible();
   expect(repairRequests).toBe(1);
+});
+
+test("wallet file uploads can use a configured IPFS and Filecoin backend", async ({ page }) => {
+  let storageRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    storageRequests += 1;
+    expect(route.request().method()).toBe("POST");
+    expect(route.request().headers()["content-type"]).toContain("multipart/form-data");
+    await route.fulfill({
+      json: {
+        filecoinDealId: "42",
+        filecoinPieceCid: "baga-wallet-piece",
+        ipfsCid: "bafywallet",
+        message: "Pinned through Synapse.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  await expect(walletFile.getByText(/bafywallet/i)).toBeVisible();
+  await expect(walletFile.getByText(/Pinned through Synapse/i)).toBeVisible();
+  expect(storageRequests).toBe(1);
 });
 
 test("recipient receipt can create an encrypted derived analysis artifact", async ({ page }) => {

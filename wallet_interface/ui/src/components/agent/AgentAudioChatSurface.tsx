@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage } from "../../agent/types";
+import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import { Button } from "../ui";
 
@@ -46,9 +47,11 @@ export function AgentAudioChatSurface({
 }) {
   const [sessionState, setSessionState] = useState<AudioSessionState>("ready");
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [modelProgress, setModelProgress] = useState<ClientAudioProgress | null>(null);
   const [muted, setMuted] = useState(false);
   const [statusDetail, setStatusDetail] = useState("");
   const finalTranscriptRef = useRef("");
+  const audioProgressRequestIdRef = useRef(0);
   const lastSpokenAssistantIdRef = useRef<string | undefined>(getLastAssistantMessage(messages)?.id);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -63,12 +66,33 @@ export function AgentAudioChatSurface({
       setStatusDetail("");
     }
     if (!open && openRef.current) {
+      audioProgressRequestIdRef.current += 1;
       cancelListening();
       stopPlayback();
       setInterimTranscript("");
+      setModelProgress(null);
     }
     openRef.current = open;
   }, [messages, open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const requestId = ++audioProgressRequestIdRef.current;
+    void clientAudioReplyService
+      .warmUp({
+        onProgress: (progress) => updateModelProgress(requestId, progress),
+      })
+      .then((result) => {
+        if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
+        setModelProgress(null);
+        setStatusDetail(result.kind === "local-ready" ? "Audio model ready." : "Browser speech output ready.");
+      })
+      .catch((error) => {
+        if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
+        setModelProgress(null);
+        setStatusDetail(error instanceof Error ? error.message : "Audio model warmup failed.");
+      });
+  }, [open]);
 
   useEffect(() => {
     if (!open || muted || responding) return;
@@ -168,8 +192,18 @@ export function AgentAudioChatSurface({
     stopPlayback();
     setSessionState("speaking");
     setStatusDetail("");
+    const requestId = ++audioProgressRequestIdRef.current;
+    setModelProgress({
+      phase: "queued",
+      progress: 0,
+      status: "Preparing audio reply.",
+    });
     try {
-      const result = await clientAudioReplyService.generateAudio(message.content);
+      const result = await clientAudioReplyService.generateAudio(message.content, {
+        onProgress: (progress) => updateModelProgress(requestId, progress),
+      });
+      if (audioProgressRequestIdRef.current !== requestId) return;
+      setModelProgress(null);
       if (!openRef.current || muted) return;
       if (result.kind === "audio") {
         const audioUrl = URL.createObjectURL(result.audioBlob);
@@ -188,11 +222,19 @@ export function AgentAudioChatSurface({
         await audio.play();
         return;
       }
+      setStatusDetail("Using browser speech output.");
       playBrowserSpeech(result.text);
     } catch (error) {
+      if (audioProgressRequestIdRef.current === requestId) setModelProgress(null);
       setStatusDetail(error instanceof Error ? error.message : "Audio reply failed.");
       setSessionState("ready");
     }
+  }
+
+  function updateModelProgress(requestId: number, progress: ClientAudioProgress) {
+    if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
+    setModelProgress(progress);
+    setStatusDetail(progress.status);
   }
 
   function playBrowserSpeech(text: string) {
@@ -245,6 +287,7 @@ export function AgentAudioChatSurface({
   const isListening = sessionState === "listening";
   const isBusy = responding || sessionState === "thinking";
   const statusLabel = getAudioSessionStatusLabel(sessionState, responding);
+  const progressValue = modelProgress ? clampProgress(modelProgress.progress) : 0;
 
   return (
     <div className="agent-audio-chat-content">
@@ -252,6 +295,24 @@ export function AgentAudioChatSurface({
         <small>Voice chat</small>
         <span>{statusDetail || statusLabel}</span>
       </div>
+
+      {modelProgress ? (
+        <div
+          aria-label="Audio model progress"
+          aria-live="polite"
+          className="agent-audio-model-progress"
+          role="status"
+        >
+          <div className="agent-audio-model-progress-header">
+            <strong>{formatProgressPhase(modelProgress.phase)}</strong>
+            <span>{progressValue}%</span>
+          </div>
+          <progress max={100} value={progressValue}>
+            {progressValue}%
+          </progress>
+          <small>{formatProgressDetail(modelProgress)}</small>
+        </div>
+      ) : null}
 
       <div className={`agent-audio-stage agent-audio-stage-${sessionState}`}>
         <button
@@ -338,4 +399,24 @@ function formatSpeechRecognitionError(error?: string): string {
   if (error === "no-speech") return "No speech was detected.";
   if (error === "audio-capture") return "Microphone input is unavailable.";
   return "Voice input stopped.";
+}
+
+function formatProgressPhase(phase: ClientAudioProgress["phase"]): string {
+  if (phase === "loading-runtime") return "Loading runtime";
+  if (phase === "downloading-model") return "Downloading model";
+  if (phase === "warming-up") return "Warming up";
+  if (phase === "generating") return "Generating audio";
+  if (phase === "decoding") return "Decoding audio";
+  if (phase === "ready") return "Audio ready";
+  if (phase === "fallback") return "Fallback ready";
+  return "Preparing audio";
+}
+
+function formatProgressDetail(progress: ClientAudioProgress): string {
+  return progress.status;
+}
+
+function clampProgress(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.min(100, Math.round(value)));
 }

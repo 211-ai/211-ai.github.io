@@ -55,6 +55,33 @@ test("assistant launchers expose separate text and voice chat surfaces", async (
   await expect(visibleAssistant(page).getByLabel(/Message Abby assistant/i)).toBeVisible();
 });
 
+test("front page assistant button opens voice chat", async ({ page }) => {
+  await page.goto("/");
+  await clearPwaState(page);
+  await page.goto("/");
+
+  await page.getByRole("button", { name: /Open assistant/i }).click();
+  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
+
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant).toBeVisible();
+  await expect(voiceAssistant.getByRole("button", { name: /Start voice chat/i })).toBeVisible();
+});
+
+test("voice chat shows local audio model warmup progress", async ({ page }) => {
+  await installFakeAudioWorker(page);
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  const progressRegion = voiceAssistant.getByRole("status", { name: /Audio model progress/i });
+
+  await expect(progressRegion).toBeVisible({ timeout: 5000 });
+  await expect(progressRegion.getByText(/Downloading model|Loading runtime|Warming up/i)).toBeVisible();
+  await expect(progressRegion.locator(".agent-audio-model-progress-header span")).toHaveText("38%");
+  await expect(progressRegion.getByText(/decoder_model_quantized\.onnx/i)).toBeVisible();
+});
+
 function visibleAssistant(page: Page): Locator {
   return page.locator('aside[aria-label="Abby text assistant"]:visible, aside[aria-label="Abby assistant"]:visible');
 }
@@ -100,6 +127,71 @@ async function clearPwaState(page: Page): Promise<void> {
     }
     window.localStorage.clear();
     window.sessionStorage.clear();
+  });
+}
+
+async function installFakeAudioWorker(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "gpu", {
+      configurable: true,
+      value: {},
+    });
+
+    const RealWorker = window.Worker;
+    class FakeAudioWorker {
+      onmessage: ((event: MessageEvent) => void) | null = null;
+      onerror: ((event: ErrorEvent) => void) | null = null;
+      private readonly realWorker?: Worker;
+
+      constructor(scriptUrl: string | URL, options?: WorkerOptions) {
+        if (!String(scriptUrl).includes("clientAudioWorker")) {
+          this.realWorker = new RealWorker(scriptUrl, options);
+          return this.realWorker;
+        }
+      }
+
+      postMessage(message: { id: string; type: string; data?: { modelName?: string } }) {
+        const modelName = message.data?.modelName || "LiquidAI/LFM2.5-Audio-1.5B-ONNX";
+        window.setTimeout(() => {
+          this.onmessage?.({
+            data: {
+              id: message.id,
+              type: "progress",
+              progress: {
+                phase: "loading-runtime",
+                progress: 4,
+                status: "Loading LiquidAI audio runtime.",
+                modelName,
+              },
+            },
+          } as MessageEvent);
+        }, 25);
+        window.setTimeout(() => {
+          this.onmessage?.({
+            data: {
+              id: message.id,
+              type: "progress",
+              progress: {
+                phase: "downloading-model",
+                progress: 38,
+                status: "Downloading audio model decoder_model_quantized.onnx.",
+                file: "decoder_model_quantized.onnx",
+                modelName,
+              },
+            },
+          } as MessageEvent);
+        }, 50);
+      }
+
+      terminate() {
+        this.realWorker?.terminate();
+      }
+    }
+
+    Object.defineProperty(window, "Worker", {
+      configurable: true,
+      value: FakeAudioWorker,
+    });
   });
 }
 

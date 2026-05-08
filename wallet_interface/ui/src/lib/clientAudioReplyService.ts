@@ -5,6 +5,7 @@ type ClientAudioProvider = "local-liquidai" | "browser-speech";
 interface PendingRequest<T> {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
+  onProgress?: (progress: ClientAudioProgress) => void;
 }
 
 interface AudioWorkerResponse {
@@ -12,6 +13,33 @@ interface AudioWorkerResponse {
   mimeType?: string;
   modelName?: string;
   provider?: ClientAudioProvider;
+}
+
+interface AudioWorkerMessage {
+  id: string;
+  type?: "progress";
+  success?: boolean;
+  data?: AudioWorkerResponse;
+  error?: string;
+  progress?: ClientAudioProgress;
+}
+
+export type ClientAudioProgressPhase =
+  | "queued"
+  | "loading-runtime"
+  | "downloading-model"
+  | "warming-up"
+  | "ready"
+  | "generating"
+  | "decoding"
+  | "fallback";
+
+export interface ClientAudioProgress {
+  phase: ClientAudioProgressPhase;
+  progress: number;
+  status: string;
+  file?: string;
+  modelName?: string;
 }
 
 export type ClientAudioReplyResult =
@@ -30,6 +58,23 @@ export type ClientAudioReplyResult =
       fallbackForModel: string;
       fallbackReason: string;
     };
+
+export type ClientAudioWarmupResult =
+  | {
+      kind: "local-ready";
+      modelName: string;
+      provider: "local-liquidai";
+    }
+  | {
+      kind: "fallback";
+      modelName: string;
+      provider: "browser-speech";
+      fallbackReason: string;
+    };
+
+interface ClientAudioProgressOptions {
+  onProgress?: (progress: ClientAudioProgress) => void;
+}
 
 interface ClientAudioReplyServiceOptions {
   createWorker?: () => Worker;
@@ -52,7 +97,52 @@ export class ClientAudioReplyService {
     this.hasSpeechSynthesis = options.hasSpeechSynthesis ?? defaultHasSpeechSynthesis;
   }
 
-  async generateAudio(text: string): Promise<ClientAudioReplyResult> {
+  async warmUp(options: ClientAudioProgressOptions = {}): Promise<ClientAudioWarmupResult> {
+    const modelName = AUDIO_CHAT_CONFIG.defaultModel;
+    if (this.canAttemptLocalAudio()) {
+      try {
+        options.onProgress?.({
+          phase: "queued",
+          progress: 0,
+          status: "Preparing local audio model.",
+          modelName,
+        });
+        await this.sendWorkerRequest(
+          "warmUp",
+          { modelName },
+          AUDIO_CHAT_CONFIG.requestTimeoutMs,
+          options.onProgress,
+        );
+        return {
+          kind: "local-ready",
+          modelName,
+          provider: "local-liquidai",
+        };
+      } catch (error) {
+        this.localAudioUnavailableReason = formatError(error);
+        this.restartWorker();
+      }
+    }
+
+    const fallbackReason = this.getLocalAudioFallbackReason(modelName);
+    if (!this.hasSpeechSynthesis()) {
+      throw new Error(fallbackReason);
+    }
+    options.onProgress?.({
+      phase: "fallback",
+      progress: 100,
+      status: "Using browser speech output.",
+      modelName,
+    });
+    return {
+      kind: "fallback",
+      modelName: AUDIO_CHAT_CONFIG.fallbackVoiceModel,
+      provider: "browser-speech",
+      fallbackReason,
+    };
+  }
+
+  async generateAudio(text: string, options: ClientAudioProgressOptions = {}): Promise<ClientAudioReplyResult> {
     const normalizedText = text.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
     if (!normalizedText) {
       throw new Error("Audio reply text is empty.");
@@ -65,6 +155,7 @@ export class ClientAudioReplyService {
           "generateAudio",
           { text: normalizedText, modelName },
           AUDIO_CHAT_CONFIG.requestTimeoutMs,
+          options.onProgress,
         );
         if (result.audioBlob) {
           return {
@@ -125,24 +216,26 @@ export class ClientAudioReplyService {
   }
 
   private sendWorkerRequest(
-    type: "generateAudio",
-    data: { text: string; modelName: string },
+    type: "generateAudio" | "warmUp",
+    data: { text?: string; modelName: string },
     timeoutMs: number,
+    onProgress?: (progress: ClientAudioProgress) => void,
   ): Promise<AudioWorkerResponse> {
     this.ensureWorker();
     const requestId = `audio-${++this.requestCounter}`;
     return new Promise((resolve, reject) => {
-      const timeout = window.setTimeout(() => {
+      const timeout = globalThis.setTimeout(() => {
         this.pendingRequests.delete(requestId);
         reject(new Error("Audio generation timed out."));
       }, timeoutMs);
       this.pendingRequests.set(requestId, {
+        onProgress,
         resolve: (value) => {
-          window.clearTimeout(timeout);
+          globalThis.clearTimeout(timeout);
           resolve(value);
         },
         reject: (reason) => {
-          window.clearTimeout(timeout);
+          globalThis.clearTimeout(timeout);
           reject(reason);
         },
       });
@@ -153,9 +246,14 @@ export class ClientAudioReplyService {
   private ensureWorker(): void {
     if (this.worker) return;
     this.worker = this.createWorker();
-    this.worker.onmessage = (event: MessageEvent<{ id: string; success: boolean; data?: AudioWorkerResponse; error?: string }>) => {
+    this.worker.onmessage = (event: MessageEvent<AudioWorkerMessage>) => {
       const pending = this.pendingRequests.get(event.data.id);
       if (!pending) return;
+      if (event.data.type === "progress") {
+        if (event.data.progress) pending.onProgress?.(event.data.progress);
+        return;
+      }
+      if (typeof event.data.success !== "boolean") return;
       this.pendingRequests.delete(event.data.id);
       if (event.data.success) {
         pending.resolve(event.data.data || {});

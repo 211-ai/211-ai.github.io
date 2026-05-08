@@ -45,6 +45,12 @@ import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { search211Info } from "../services/graphRagService";
 import type { SearchResult } from "../lib/graphrag";
 import {
+  getFilecoinStorageConfig,
+  toFilecoinStoragePatch,
+  uploadFileToFilecoinStorage,
+  uploadWalletRecordToFilecoinStorage
+} from "../services/filecoinStorage";
+import {
   CheckInChannel,
   AuditEvent,
   DecryptedRecordView,
@@ -704,7 +710,7 @@ export function App() {
       <LoginScreen
         onOpenAssistant={() => {
           handleSignIn("abby");
-          openAgentChatMode("text");
+          openAgentChatMode("audio");
         }}
         onAuthenticated={(portal, contact) => {
           handleSignIn(`${portal}:${contact}`);
@@ -849,6 +855,7 @@ export function App() {
           <UploadsScreen
             apiConfig={walletApiConfig}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
+            recipients={recipients}
             uploads={uploads}
             setUploads={setUploads}
           />
@@ -2242,42 +2249,59 @@ function ContactsScreen({
 function UploadsScreen({
   apiConfig,
   refreshWalletAuditEvents,
+  recipients,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
   refreshWalletAuditEvents: () => Promise<void>;
+  recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
+  const [filecoinUploadIds, setFilecoinUploadIds] = useState<string[]>([]);
+  const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(false);
+  const uploadsRef = useRef(uploads);
+  const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
+  const filecoinStorageReady = Boolean(filecoinStorageConfig);
+  const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
+
+  useEffect(() => {
+    uploadsRef.current = uploads;
+  }, [uploads]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
     const machineSummary = await generateUploadSummary(file);
     if (apiConfig?.actorDid) {
       try {
-        const uploaded = await addBinaryDocument(apiConfig, { file, title: machineSummary });
-        setUploads([uploaded, ...uploads]);
+        const uploaded = normalizeWalletUpload(await addBinaryDocument(apiConfig, { file, title: machineSummary }), file.name);
+        prependUpload(uploaded);
         await refreshWalletAuditEvents();
+        if (storeNewFilesOnFilecoin) {
+          void storeFileUploadOnFilecoin(uploaded, file);
+        }
         return;
       } catch {
         try {
-          const uploaded = await addTextDocument(apiConfig, {
+          const uploaded = normalizeWalletUpload(await addTextDocument(apiConfig, {
             filename: file.name,
             text: await file.text(),
             title: machineSummary
-          });
-          setUploads([uploaded, ...uploads]);
+          }), file.name);
+          prependUpload(uploaded);
           await refreshWalletAuditEvents();
+          if (storeNewFilesOnFilecoin) {
+            void storeFileUploadOnFilecoin(uploaded, file);
+          }
           return;
         } catch {
           // Keep local document capture available if the configured API is unavailable.
         }
       }
     }
-    setUploads([
-      ...uploads,
+    const localUpload = normalizeWalletUpload(
       {
         id: `up-${Date.now()}`,
         fileName: file.name,
@@ -2286,8 +2310,13 @@ function UploadsScreen({
         sensitivity: "high",
         status: "stored",
         shared: false
-      }
-    ]);
+      },
+      file.name
+    );
+    prependUpload(localUpload);
+    if (storeNewFilesOnFilecoin) {
+      void storeFileUploadOnFilecoin(localUpload, file);
+    }
   }
 
   async function repairUploadStorage(upload: UploadItem) {
@@ -2295,36 +2324,166 @@ function UploadsScreen({
     setRepairingUploadIds((uploadIds) => [...uploadIds, upload.id]);
     try {
       const storageOk = await repairRecordStorage(apiConfig, upload.recordId);
-      setUploads(
-        uploads.map((item) =>
-          item.id === upload.id
-            ? {
-                ...item,
-                status: storageOk ? "stored" : item.status,
-                storageOk
-              }
-            : item
-        )
-      );
+      updateUpload(upload.id, {
+        status: storageOk ? "stored" : upload.status,
+        storageOk
+      });
       await refreshWalletAuditEvents();
     } catch {
-      setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, storageOk: false } : item)));
+      updateUpload(upload.id, { storageOk: false });
     } finally {
       setRepairingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
   }
 
+  async function storeFileUploadOnFilecoin(upload: UploadItem, file: File) {
+    if (!filecoinStorageConfig) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: "Connect a backend Filecoin storage endpoint before uploading.",
+        decentralizedStorageStatus: "not_configured"
+      });
+      return;
+    }
+    setFilecoinUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    updateUpload(upload.id, {
+      decentralizedStorageMessage: "Uploading through the configured backend.",
+      decentralizedStorageStatus: "uploading"
+    });
+    try {
+      const result = await uploadFileToFilecoinStorage(file, {
+        allowedRecipientIds: upload.allowedRecipientIds ?? [],
+        clientConfig: filecoinStorageConfig,
+        upload,
+        walletConfig: apiConfig
+      });
+      updateUpload(upload.id, toFilecoinStoragePatch(result));
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
+        decentralizedStorageStatus: "failed"
+      });
+    } finally {
+      setFilecoinUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function storeWalletRecordOnFilecoin(upload: UploadItem) {
+    if (!filecoinStorageConfig) return;
+    setFilecoinUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    updateUpload(upload.id, {
+      decentralizedStorageMessage: "Sending wallet record to the storage backend.",
+      decentralizedStorageStatus: "uploading"
+    });
+    try {
+      const result = await uploadWalletRecordToFilecoinStorage(upload, {
+        clientConfig: filecoinStorageConfig,
+        walletConfig: apiConfig
+      });
+      updateUpload(upload.id, toFilecoinStoragePatch(result));
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
+        decentralizedStorageStatus: "failed"
+      });
+    } finally {
+      setFilecoinUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  function normalizeWalletUpload(upload: UploadItem, fileName: string): UploadItem {
+    return {
+      ...upload,
+      allowedRecipientIds: upload.allowedRecipientIds ?? [],
+      decentralizedStorageProvider: upload.decentralizedStorageProvider ?? (upload.recordId ? "wallet-api" : "local"),
+      decentralizedStorageStatus: upload.decentralizedStorageStatus ?? (filecoinStorageReady ? "ready" : "not_configured"),
+      fileName,
+      shared: upload.shared ?? false,
+      sharingMode: upload.sharingMode ?? "private"
+    };
+  }
+
+  function prependUpload(upload: UploadItem) {
+    replaceUploads([upload, ...uploadsRef.current]);
+  }
+
+  function replaceUploads(nextUploads: UploadItem[]) {
+    uploadsRef.current = nextUploads;
+    setUploads(nextUploads);
+  }
+
+  function updateUpload(uploadId: string, patch: Partial<UploadItem>) {
+    replaceUploads(uploadsRef.current.map((item) => (item.id === uploadId ? { ...item, ...patch } : item)));
+  }
+
+  function allowSharing(upload: UploadItem) {
+    const selectedRecipients =
+      upload.allowedRecipientIds?.length
+        ? upload.allowedRecipientIds
+        : (verifiedRecipients.length ? verifiedRecipients : recipients).slice(0, 2).map((recipient) => recipient.id);
+    updateUpload(upload.id, {
+      allowedRecipientIds: selectedRecipients,
+      shared: selectedRecipients.length > 0,
+      sharingMode: "selected_contacts"
+    });
+  }
+
+  function makePrivate(upload: UploadItem) {
+    updateUpload(upload.id, {
+      allowedRecipientIds: [],
+      shared: false,
+      sharingMode: "private"
+    });
+  }
+
+  function toggleSharingRecipient(upload: UploadItem, recipientId: string) {
+    const currentRecipients = upload.allowedRecipientIds ?? [];
+    const allowedRecipientIds = currentRecipients.includes(recipientId)
+      ? currentRecipients.filter((id) => id !== recipientId)
+      : [...currentRecipients, recipientId];
+    updateUpload(upload.id, {
+      allowedRecipientIds,
+      shared: allowedRecipientIds.length > 0,
+      sharingMode: allowedRecipientIds.length > 0 ? "selected_contacts" : "private"
+    });
+  }
+
   return (
-    <div className="screen">
+    <div className="screen wallet-screen">
       <div className="page-title">
-        <p className="eyebrow">Uploads</p>
-        <h1>Saved files and info</h1>
+        <p className="eyebrow">Wallet</p>
+        <h1>Wallet</h1>
       </div>
-      <Section title="Add information">
+      <Section
+        title="Add wallet file"
+        actions={
+          <Badge tone={filecoinStorageReady ? "success" : "warning"}>
+            {filecoinStorageReady ? "IPFS/Filecoin ready" : "Backend required"}
+          </Badge>
+        }
+      >
+        <div className="wallet-storage-panel">
+          <div>
+            <strong>Storage destination</strong>
+            <small>
+              {filecoinStorageReady
+                ? "New files can be sent to a backend that pins to IPFS/Filecoin."
+                : "Set VITE_FILECOIN_STORAGE_UPLOAD_URL or local runtime config for IPFS/Filecoin storage."}
+            </small>
+          </div>
+          <label className="wallet-filecoin-toggle">
+            <input
+              checked={storeNewFilesOnFilecoin}
+              disabled={!filecoinStorageReady}
+              onChange={(event) => setStoreNewFilesOnFilecoin(event.target.checked)}
+              type="checkbox"
+            />
+            <span>Store new wallet files on IPFS/Filecoin</span>
+          </label>
+        </div>
         <label className="upload-dropzone">
           <Upload aria-hidden="true" size={28} />
-          <span>Choose a file or photo</span>
-          <small>Files stay private until you choose to share them.</small>
+          <span>Choose a wallet file or photo</span>
+          <small>Wallet files stay private until sharing is allowed.</small>
           <span className="upload-picker">
             <FileUp aria-hidden="true" size={18} /> Select file
           </span>
@@ -2337,7 +2496,7 @@ function UploadsScreen({
       </Section>
       <div className="list-stack">
         {uploads.map((upload) => (
-          <article className="list-item upload-list-item" key={upload.id}>
+          <article aria-label={`${upload.fileName} wallet file`} className="list-item upload-list-item wallet-list-item" key={upload.id}>
             <div>
               <h3>{upload.fileName}</h3>
               <p>{upload.category}</p>
@@ -2349,10 +2508,17 @@ function UploadsScreen({
                     {upload.storageOk ? "saved" : "save needs fix"}
                   </Badge>
                 ) : null}
-                <Badge>{upload.shared ? "Shared" : "Private"}</Badge>
+                <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload)}</Badge>
+                <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload)}</Badge>
               </div>
+              {upload.ipfsCid ? (
+                <small className="wallet-storage-reference">IPFS CID: <code>{shortStorageId(upload.ipfsCid)}</code></small>
+              ) : null}
+              {upload.decentralizedStorageMessage ? (
+                <small className="wallet-storage-reference">{upload.decentralizedStorageMessage}</small>
+              ) : null}
             </div>
-            <div className="row-actions list-item-action">
+            <div className="row-actions list-item-action wallet-file-actions">
               {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
                 <Button
                   disabled={repairingUploadIds.includes(upload.id)}
@@ -2363,20 +2529,93 @@ function UploadsScreen({
                   {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
                 </Button>
               ) : null}
+              {filecoinStorageReady && upload.recordId && upload.decentralizedStorageStatus !== "stored" ? (
+                <Button
+                  disabled={filecoinUploadIds.includes(upload.id)}
+                  onClick={() => void storeWalletRecordOnFilecoin(upload)}
+                  variant="secondary"
+                >
+                  <Upload aria-hidden="true" size={18} />
+                  {filecoinUploadIds.includes(upload.id) ? "Storing" : "Store on IPFS/Filecoin"}
+                </Button>
+              ) : null}
               <Button
-                onClick={() =>
-                  setUploads(uploads.map((item) => (item.id === upload.id ? { ...item, shared: !item.shared } : item)))
-                }
+                onClick={() => (upload.shared ? makePrivate(upload) : allowSharing(upload))}
                 variant="secondary"
               >
                 {upload.shared ? "Make private" : "Allow sharing"}
               </Button>
+            </div>
+            <div className="wallet-sharing-controls" aria-label={`Sharing controls for ${upload.fileName}`}>
+              <div className="wallet-sharing-mode">
+                <button
+                  aria-pressed={(upload.sharingMode ?? "private") === "private"}
+                  className="choice-chip"
+                  onClick={() => makePrivate(upload)}
+                  type="button"
+                >
+                  Private
+                </button>
+                <button
+                  aria-pressed={(upload.sharingMode ?? "private") === "selected_contacts"}
+                  className="choice-chip"
+                  onClick={() => allowSharing(upload)}
+                  type="button"
+                >
+                  Selected contacts
+                </button>
+              </div>
+              {(upload.sharingMode ?? "private") === "selected_contacts" ? (
+                <div className="wallet-recipient-grid">
+                  {recipients.length ? (
+                    recipients.map((recipient) => (
+                      <label className="wallet-recipient-option" key={recipient.id}>
+                        <input
+                          checked={(upload.allowedRecipientIds ?? []).includes(recipient.id)}
+                          onChange={() => toggleSharingRecipient(upload, recipient.id)}
+                          type="checkbox"
+                        />
+                        <span>
+                          {recipient.displayName}
+                          <small>{recipient.verified ? "verified" : "not verified"} · {recipient.relationship || recipient.agencyName || "contact"}</small>
+                        </span>
+                      </label>
+                    ))
+                  ) : (
+                    <small className="upload-machine-summary">Add contacts before allowing wallet-file sharing.</small>
+                  )}
+                </div>
+              ) : null}
             </div>
           </article>
         ))}
       </div>
     </div>
   );
+}
+
+function sharingBadge(upload: UploadItem): string {
+  const count = upload.allowedRecipientIds?.length ?? 0;
+  if (!upload.shared || count === 0) return "Private";
+  return `${count} selected`;
+}
+
+function filecoinBadge(upload: UploadItem): string {
+  if (upload.decentralizedStorageStatus === "stored") return "IPFS/Filecoin";
+  if (upload.decentralizedStorageStatus === "uploading") return "storing";
+  if (upload.decentralizedStorageStatus === "failed") return "storage failed";
+  return "wallet storage";
+}
+
+function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
+  if (upload.decentralizedStorageStatus === "stored") return "success";
+  if (upload.decentralizedStorageStatus === "uploading") return "info";
+  if (upload.decentralizedStorageStatus === "failed") return "danger";
+  return "neutral";
+}
+
+function shortStorageId(value: string): string {
+  return value.length > 18 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
 }
 
 function SocialServicesScreen({

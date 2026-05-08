@@ -67,7 +67,7 @@ const routeLabels: Record<RouteId, string> = {
   "check-in": "Check in",
   contacts: "Contacts",
   "sharing-rules": "Sharing",
-  uploads: "Uploads",
+  uploads: "Wallet",
   "social-services": "Services",
   interactions: "Interactions",
   shelter: "Shelter staff",

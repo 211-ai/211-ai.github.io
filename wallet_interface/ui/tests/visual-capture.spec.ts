@@ -273,23 +273,23 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "uploads",
     path: "/#/uploads",
-    title: "Saved files and info",
+    title: "Wallet",
     state: "default",
     goals: [
-      "Upload affordance should work for camera/mobile and desktop file upload.",
-      "Private versus sharing-eligible status should be visually distinct.",
-      "The vault should not show or ask for a document sensitivity level."
+      "The wallet upload affordance should work for camera/mobile and desktop file upload.",
+      "Per-file sharing controls should make private versus selected-contact access visually distinct.",
+      "The wallet should show IPFS/Filecoin backend readiness without exposing credentials."
     ]
   },
   {
     id: "uploads-new-file",
     path: "/#/uploads",
-    title: "Saved files after adding a document",
+    title: "Wallet after adding a file",
     state: "new file added",
     goals: [
       "The newly added file should be visible without exposing document contents.",
-      "Private versus share-eligible status should remain easy to scan.",
-      "The upload area should still be available after a file is added."
+      "Private versus selected-contact sharing status should remain easy to scan.",
+      "The wallet upload area should still be available after a file is added."
     ],
     prepare: async (page) => {
       await page.getByLabel(/Choose file to upload/i).setInputFiles({
@@ -478,7 +478,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/security": /Account safety/i,
   "/#/shelter": /Assisted access/i,
   "/#/social-services": /Find support/i,
-  "/#/uploads": /Saved files and info/i,
+  "/#/uploads": /^Wallet$/i,
   "/#/audit": /Consent and access history/i
 };
 

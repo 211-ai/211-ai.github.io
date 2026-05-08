@@ -1738,7 +1738,7 @@ body.playful-pulse .decor-shape {
 .agent-audio-chat-content {
   display: grid;
   gap: 12px;
-  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr);
   height: 100%;
   min-height: 0;
   overflow: hidden;
@@ -1747,6 +1747,40 @@ body.playful-pulse .decor-shape {
 
 .agent-audio-session-status {
   margin: 0;
+}
+
+.agent-audio-model-progress {
+  background: #ffffff;
+  border: 1px solid rgba(127, 174, 180, 0.46);
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  padding: 10px 12px;
+}
+
+.agent-audio-model-progress-header {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.agent-audio-model-progress-header strong {
+  color: var(--abby-ink);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.agent-audio-model-progress-header span,
+.agent-audio-model-progress small {
+  color: #5b6776;
+  font-size: 12px;
+}
+
+.agent-audio-model-progress progress {
+  accent-color: var(--abby-teal);
+  height: 10px;
+  width: 100%;
 }
 
 .agent-audio-stage {
@@ -2490,8 +2524,12 @@ body.playful-pulse .decor-shape {
   margin-bottom: 12px;
 }
 
-.upload-dropzone input {
-  max-width: 230px;
+.upload-dropzone input[type="file"] {
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
 }
 
 .upload-camera-option {
@@ -2510,6 +2548,102 @@ body.playful-pulse .decor-shape {
 .upload-camera-option span {
   display: grid;
   gap: 3px;
+}
+
+.wallet-storage-panel {
+  align-items: center;
+  background: rgba(250, 251, 248, 0.92);
+  border: 1px solid rgba(127, 174, 180, 0.42);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.wallet-storage-panel div {
+  display: grid;
+  gap: 3px;
+}
+
+.wallet-storage-panel small,
+.wallet-storage-reference {
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+.wallet-filecoin-toggle,
+.wallet-recipient-option {
+  align-items: center;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.wallet-filecoin-toggle {
+  background: #ffffff;
+  font-weight: 800;
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.wallet-file-actions {
+  align-content: start;
+}
+
+.wallet-list-item {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.wallet-list-item > .wallet-sharing-controls {
+  grid-column: 1 / -1;
+}
+
+.wallet-sharing-controls {
+  background: rgba(248, 250, 252, 0.84);
+  border: 1px solid rgba(127, 174, 180, 0.36);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.wallet-sharing-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wallet-recipient-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.wallet-recipient-option {
+  background: #ffffff;
+  padding: 10px;
+}
+
+.wallet-recipient-option span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.wallet-recipient-option small {
+  color: #5b6776;
+}
+
+.wallet-storage-reference {
+  display: block;
+  margin-top: 6px;
 }
 
 .empty-state {
@@ -3394,6 +3528,16 @@ textarea {
 .badge-warning {
   background: #fff3c8;
   color: #755a08;
+}
+
+.badge-info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .upload-dropzone {
@@ -4360,8 +4504,9 @@ textarea:focus-visible,
   aspect-ratio: 1;
   display: block;
   height: auto;
+  max-width: 70vw;
   object-fit: contain;
-  width: min(164px, 54vw);
+  width: 256px;
 }
 
 .login-portal-actions,
@@ -4456,10 +4601,6 @@ textarea:focus-visible,
     padding: 20px;
   }
 
-  .login-logo {
-    width: 148px;
-  }
-
   .login-portal-actions,
   .login-challenge-actions,
   .login-code-display {
@@ -4473,10 +4614,6 @@ textarea:focus-visible,
 }
 
 @media (min-width: 760px) {
-  .login-logo {
-    width: 172px;
-  }
-
   .sidebar {
     align-self: start;
     display: grid;
@@ -4545,6 +4682,20 @@ textarea:focus-visible,
 
 @media (max-width: 520px) {
   .login-portal-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .wallet-storage-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-filecoin-toggle {
+    width: 100%;
+  }
+
+  .wallet-list-item {
     grid-template-columns: 1fr;
   }
 }

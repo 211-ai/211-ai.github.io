@@ -1906,7 +1906,11 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     category: record.public_descriptor || record.data_type,
     sensitivity: record.sensitivity,
     status: record.status === "active" ? "stored" : "failed",
-    shared: false
+    shared: false,
+    sharingMode: "private",
+    allowedRecipientIds: [],
+    decentralizedStorageStatus: "ready",
+    decentralizedStorageProvider: "wallet-api"
   };
 }
 

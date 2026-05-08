@@ -26,7 +26,7 @@ const extraRouteAliases = {
   "check-in": ["reminder", "reminders", "checkins"],
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
-  uploads: ["documents", "files", "records"],
+  uploads: ["wallet", "documents", "files", "records"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
   interactions: ["interaction history", "service history", "service interactions", "timeline"],
   shelter: ["shelters", "shelter services", "beds"],
@@ -49,7 +49,7 @@ const routeSummaries = {
     `Check-in is configured every ${state.policy.intervalDays} days through ${state.policy.reminderChannels.length} channels.`,
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
-  uploads: (state) => `${state.uploads.length} uploads are visible.`,
+  uploads: (state) => `${state.uploads.length} wallet files are visible.`,
   "social-services": () => "Services search and public 211 guidance are active.",
   interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
   shelter: (state) =>

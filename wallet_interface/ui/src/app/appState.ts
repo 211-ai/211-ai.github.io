@@ -28,7 +28,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "sharing-rules", label: "Sharing" },
   { id: "social-services", label: "Services" },
   { id: "interactions", label: "Interactions" },
-  { id: "uploads", label: "Uploads" },
+  { id: "uploads", label: "Wallet" },
   { id: "shelter", label: "Shelter staff" }
 ];
 
@@ -133,7 +133,7 @@ export const disclosureScopes: Array<{ id: DisclosureDataScope; label: string; d
   { id: "profile", label: "Profile", detail: "Basic profile details and help needs" },
   { id: "photo", label: "Photo or ID file", detail: "The setup file you chose, like an image or PDF" },
   { id: "current_location", label: "Current location", detail: "Most recent safe place or shelter" },
-  { id: "uploaded_documents", label: "Uploads", detail: "Files the person chooses to include" },
+  { id: "uploaded_documents", label: "Wallet files", detail: "Files the person chooses to include" },
   { id: "missed_check_in", label: "Missed check-in", detail: "Whether a check-in was missed" },
   { id: "found_permanent_housing", label: "Found permanent housing", detail: "Whether stable housing was reported" },
   { id: "medical_notes", label: "Medical notes", detail: "Sensitive health notes" },

@@ -1,7 +1,8 @@
-const CACHE_VERSION = "portal-072-v1";
+const CACHE_VERSION = "portal-073-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const APP_CACHE_PREFIX = "abby-";
+const SHELL_CACHE_PREFIX = "abby-shell-";
 
 const PUBLIC_SERVICE_DETAIL_ASSETS = new Set([
   "corpus/211-info/current/artifacts.manifest.json",
@@ -85,7 +86,7 @@ sw.addEventListener("fetch", (event) => {
   }
 
   if (isPublicShellAsset(request)) {
-    event.respondWith(cacheFirst(request, SHELL_CACHE));
+    event.respondWith(cacheFirstShellAsset(request));
   }
 });
 
@@ -120,7 +121,7 @@ async function deleteOldCaches(): Promise<void> {
   const keys = await caches.keys();
   await Promise.all(
     keys
-      .filter((key) => key.startsWith(APP_CACHE_PREFIX) && !currentCaches.has(key))
+      .filter((key) => key.startsWith(APP_CACHE_PREFIX) && !currentCaches.has(key) && !key.startsWith(SHELL_CACHE_PREFIX))
       .map((key) => caches.delete(key))
   );
 }
@@ -165,6 +166,104 @@ async function cacheFirst(request: Request, cacheName: string): Promise<Response
     await cache.put(request, response.clone());
   }
   return response;
+}
+
+async function cacheFirstShellAsset(request: Request): Promise<Response> {
+  const cached = await matchShellAsset(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    if (isCacheableResponse(response)) {
+      const cache = await caches.open(SHELL_CACHE);
+      await cache.put(request, response.clone());
+      return response;
+    }
+    return recoverMissingAppBuildAsset(request) ?? response;
+  } catch (error) {
+    const recovery = recoverMissingAppBuildAsset(request);
+    if (recovery) return recovery;
+    throw error;
+  }
+}
+
+async function matchShellAsset(request: Request): Promise<Response | undefined> {
+  const currentCache = await caches.open(SHELL_CACHE);
+  const currentCached = await currentCache.match(request, { ignoreSearch: false });
+  if (currentCached) return currentCached;
+
+  const legacyCacheNames = (await caches.keys())
+    .filter((key) => key.startsWith(SHELL_CACHE_PREFIX) && key !== SHELL_CACHE)
+    .sort()
+    .reverse();
+
+  for (const cacheName of legacyCacheNames) {
+    const cache = await caches.open(cacheName);
+    const cached = await cache.match(request, { ignoreSearch: false });
+    if (cached) return cached;
+  }
+
+  return undefined;
+}
+
+function recoverMissingAppBuildAsset(request: Request): Response | undefined {
+  const url = new URL(request.url);
+  const relativePath = scopeRelativePath(url);
+  if (!/^assets\/app-[A-Za-z0-9_-]+\.(?:css|js|mjs)$/.test(relativePath)) return undefined;
+
+  if (relativePath.endsWith(".css")) {
+    return new Response("/* Abby stale app CSS compatibility stub. */\n", {
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "text/css; charset=utf-8"
+      }
+    });
+  }
+
+  return new Response(buildStaleAppScriptRecovery(), {
+    headers: {
+      "Cache-Control": "no-store",
+      "Content-Type": "application/javascript; charset=utf-8"
+    }
+  });
+}
+
+function buildStaleAppScriptRecovery(): string {
+  return `
+(async () => {
+  const selfUrl = new URL(import.meta.url);
+  const appRoot = new URL("../", selfUrl);
+  const response = await fetch(new URL("index.html?abby-cache-recover=" + Date.now(), appRoot), { cache: "no-store" });
+  if (!response.ok) throw new Error("Unable to load the current Abby app shell.");
+  const html = await response.text();
+  const assetPattern = /\\b(?:href|src)=["']([^"']+)["']/gi;
+  const assetUrls = [];
+  let match;
+  while ((match = assetPattern.exec(html))) {
+    if (match[1] && !match[1].startsWith("data:") && !match[1].startsWith("blob:")) {
+      assetUrls.push(new URL(match[1], appRoot));
+    }
+  }
+  for (const url of assetUrls.filter((candidate) => /\\/assets\\/app-[^/]+\\.css(?:$|\\?)/.test(candidate.href))) {
+    if (!document.querySelector('link[href="' + url.href + '"]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = url.href;
+      document.head.appendChild(link);
+    }
+  }
+  const currentScript = assetUrls.find((candidate) => /\\/assets\\/app-[^/]+\\.js(?:$|\\?)/.test(candidate.href) && candidate.href !== selfUrl.href);
+  if (!currentScript) throw new Error("Unable to find the current Abby app bundle.");
+  await import(currentScript.href);
+})().catch((error) => {
+  console.error("[Abby] stale app asset recovery failed", error);
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("abbyCacheRecover")) {
+    url.searchParams.set("abbyCacheRecover", String(Date.now()));
+    window.location.replace(url.href);
+  }
+});
+`;
 }
 
 function isHttpRequest(request: Request): boolean {

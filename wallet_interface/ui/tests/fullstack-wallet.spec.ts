@@ -468,7 +468,7 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
       })
     );
     await signInIfNeeded(page, ownerDid);
-    await visibleHeadingOrDiagnostics(page, /Saved files and info/i, diagnostics);
+    await visibleHeadingOrDiagnostics(page, /^Wallet$/i, diagnostics);
     await page.getByLabel(/Choose file to upload/i).setInputFiles({
       buffer: Buffer.from(intakeText),
       mimeType: "text/plain",

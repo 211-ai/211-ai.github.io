@@ -110,7 +110,11 @@ export const initialUploads: UploadItem[] = [
     category: "Identity",
     sensitivity: "high",
     status: "stored",
-    shared: false
+    shared: false,
+    sharingMode: "private",
+    allowedRecipientIds: [],
+    decentralizedStorageStatus: "not_configured",
+    decentralizedStorageProvider: "wallet-api"
   }
 ];
 

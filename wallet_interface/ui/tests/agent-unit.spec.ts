@@ -45,7 +45,7 @@ import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../s
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
-import { ClientAudioReplyService } from "../src/lib/clientAudioReplyService";
+import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 
@@ -216,6 +216,38 @@ function installMemoryLocalStorage() {
   };
 }
 
+interface TestAudioWorkerRequest {
+  id: string;
+  type: "generateAudio" | "warmUp";
+  data: {
+    modelName?: string;
+    text?: string;
+  };
+}
+
+interface TestAudioWorkerStub {
+  onmessage: ((event: MessageEvent) => void) | null;
+  onerror: ((event: ErrorEvent) => void) | null;
+  postMessage: (message: TestAudioWorkerRequest) => void;
+  terminate: () => void;
+}
+
+function createAudioWorkerStub(
+  handler: (message: TestAudioWorkerRequest, worker: TestAudioWorkerStub) => void,
+): TestAudioWorkerStub {
+  const worker: TestAudioWorkerStub = {
+    onmessage: null,
+    onerror: null,
+    postMessage: (message) => handler(message, worker),
+    terminate: () => undefined,
+  };
+  return worker;
+}
+
+function emitAudioWorkerMessage(worker: TestAudioWorkerStub, data: unknown) {
+  worker.onmessage?.({ data } as MessageEvent);
+}
+
 test.describe("agent unit contracts", () => {
   test("uses LiquidAI ONNX text-chat models for the default WebGPU client LLM path", () => {
     const defaultModelName = LLM_CONFIG.defaultModel as ClientLlmModel;
@@ -275,6 +307,125 @@ test.describe("agent unit contracts", () => {
       fallbackForModel: AUDIO_CHAT_CONFIG.defaultModel,
     });
     expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("test audio worker unavailable");
+  });
+
+  test("reports LiquidAI audio model warmup progress from the worker", async () => {
+    const progressEvents: ClientAudioProgress[] = [];
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        type: "progress",
+        progress: {
+          phase: "loading-runtime",
+          progress: 4,
+          status: "Loading LiquidAI audio runtime.",
+          modelName: message.data.modelName,
+        },
+      });
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        type: "progress",
+        progress: {
+          phase: "downloading-model",
+          progress: 42,
+          status: "Downloading audio model.",
+          file: "decoder_model_quantized.onnx",
+          modelName: message.data.modelName,
+        },
+      });
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        success: true,
+        data: {
+          modelName: message.data.modelName,
+          provider: "local-liquidai",
+        },
+      });
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => false,
+    });
+
+    const result = await service.warmUp({ onProgress: (progress) => progressEvents.push(progress) });
+
+    expect(result).toMatchObject({
+      kind: "local-ready",
+      modelName: AUDIO_CHAT_CONFIG.defaultModel,
+      provider: "local-liquidai",
+    });
+    expect(progressEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ phase: "queued", progress: 0 }),
+        expect.objectContaining({ phase: "loading-runtime", progress: 4 }),
+        expect.objectContaining({
+          phase: "downloading-model",
+          progress: 42,
+          file: "decoder_model_quantized.onnx",
+        }),
+      ]),
+    );
+  });
+
+  test("reports LiquidAI audio generation progress before returning a playable blob", async () => {
+    const progressEvents: ClientAudioProgress[] = [];
+    const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        type: "progress",
+        progress: {
+          phase: "generating",
+          progress: 90,
+          status: "Generating speech audio.",
+          modelName: message.data.modelName,
+        },
+      });
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        type: "progress",
+        progress: {
+          phase: "decoding",
+          progress: 97,
+          status: "Decoding generated audio.",
+          modelName: message.data.modelName,
+        },
+      });
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        success: true,
+        data: {
+          audioBlob,
+          mimeType: "audio/wav",
+          modelName: message.data.modelName,
+          provider: "local-liquidai",
+        },
+      });
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => false,
+    });
+
+    const result = await service.generateAudio("Please speak this reply.", {
+      onProgress: (progress) => progressEvents.push(progress),
+    });
+
+    expect(result).toMatchObject({
+      kind: "audio",
+      audioBlob,
+      mimeType: "audio/wav",
+      modelName: AUDIO_CHAT_CONFIG.defaultModel,
+      provider: "local-liquidai",
+    });
+    expect(progressEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ phase: "generating", progress: 90 }),
+        expect.objectContaining({ phase: "decoding", progress: 97 }),
+      ]),
+    );
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {
