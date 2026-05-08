@@ -90,6 +90,24 @@ checklist records references and evidence IDs only.
 | Rotation dry run | Staging credential rotation was exercised or explicitly scheduled with rollback owner and artifact ID |  |
 | Staging contract archive | Region and distance contract reports are archived from target staging with `status=ok` and no leaked witness or secret values |  |
 
+## WALLET-140 Completion Rule
+
+Record the WALLET-140 verifier handoff decision here before any launch review.
+This is a target-staging evidence gate, not a local self-check. Every artifact
+reference must point to the target evidence system and must omit bearer tokens,
+custom header values, proving keys, verifier keys, witness payloads, precise
+wallet coordinates, target coordinates, exact addresses, nonces, process
+environment dumps, and resolved secret-manager payloads.
+
+| Gate | Required Evidence | Status |
+| --- | --- | --- |
+| Credential reference only | Readiness report, signoff packet, deployment config, and reviewer notes record only `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent for verifier credentials |  |
+| Region contract pass | Target-staging `--validate-proof-contract --fail-on-error` artifact shows `status=ok`, `health`, `prove`, `public_input_safety`, and `verify` checks all `ok`, `proof_type=location_region`, and `is_simulated=false` |  |
+| Distance contract pass | Target-staging `--validate-distance-proof-contract --fail-on-error` artifact shows `status=ok`, `health`, `prove`, `public_input_safety`, and `verify` checks all `ok`, `proof_type=location_distance`, and `is_simulated=false` |  |
+| Production readiness pass | Target-staging `--validate-production-readiness` artifact shows `proof_contract=ok`, `distance_proof_contract=ok`, `proof_credentials=ok`, and `secret_manager_references=ok` without either proof-contract skip flag |  |
+| No-leak review | API/verifier log-review artifact confirms no credential value, secret-manager payload, witness payload, precise wallet coordinate, target coordinate, exact address, or nonce appears in logs, reports, tickets, or evidence bundles |  |
+| Proof Center holdback | Live Proof Center creation and display surfaces keep `location_distance` hidden until the distance contract artifact is archived and security, privacy, operations, and product reviewers approve exposure |  |
+
 ## WALLET-180 Non-Simulated Verifier Cutover Packet
 
 Complete this packet after WALLET-140 verifier credential handoff and before

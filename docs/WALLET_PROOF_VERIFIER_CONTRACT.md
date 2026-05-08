@@ -77,6 +77,42 @@ environment, request headers, Kubernetes Secret contents, ExternalSecret
 resolved values, CI masked-secret screenshots, or verifier private key
 material.
 
+## WALLET-140 Target Handoff Gate
+
+WALLET-140 is complete only when the target staging environment proves the
+selected verifier contract with real runtime-injected credentials while keeping
+credential material in the secret manager. The handoff evidence must show:
+
+- `WALLET_PROOF_CREDENTIAL_SECRET_REF` or the provider equivalent is the only
+  credential value recorded in committed files, readiness reports, signoff
+  packets, tickets, and archived command output.
+- The API and ops worker receive verifier auth material only from the target
+  secret-manager integration at runtime. Archive credential rotation and
+  deployment artifact IDs, not rendered process environments or resolved
+  secret payloads.
+- `python -m wallet_interface.ops --validate-proof-contract --fail-on-error`
+  passes from target staging against the selected `location_region` verifier.
+- `python -m wallet_interface.ops --validate-distance-proof-contract
+  --fail-on-error` passes from target staging against the selected
+  `location_distance` verifier.
+- `python -m wallet_interface.ops --validate-production-readiness` passes in
+  target staging without `--skip-proof-contract` or
+  `--skip-distance-proof-contract`.
+- The archived region and distance reports show `status=ok`,
+  `checks.health.status=ok`, `checks.prove.status=ok`,
+  `checks.public_input_safety.status=ok`, `checks.verify.status=ok`,
+  `receipt.is_simulated=false`, and the expected verifier metadata.
+- The no-leak review covers both command output and target API/verifier logs:
+  no bearer token, custom header value, proving key, verifier key, witness,
+  precise wallet coordinate, target coordinate, exact address, nonce, or
+  resolved secret payload is present.
+
+A repo-local `mode=local_self_check` report can validate the release tooling,
+but it is not target handoff evidence. A handoff with only `location_region`
+evidence is also incomplete: `location_distance` must remain hidden from live
+Proof Center creation and display surfaces until its target staging validation
+is archived and approved in `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`.
+
 ## Non-Simulated Cutover Evidence
 
 Before any user-facing non-simulated proof path is exposed, the target
