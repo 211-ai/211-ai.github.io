@@ -33,6 +33,8 @@ jobs:
           cache-dependency-path: wallet_interface/ui/package-lock.json
 
       - name: Install dependencies
+        env:
+          ONNXRUNTIME_NODE_INSTALL: skip
         run: npm ci
 
       - name: Install Playwright browsers
