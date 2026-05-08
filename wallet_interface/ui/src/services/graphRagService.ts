@@ -3,6 +3,7 @@ import {
   build211GraphRagPrompt,
   buildEvidenceSummary,
   clean211GraphRagModelAnswer,
+  DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
   get211CorpusBaseUrl,
   isGrounded211GraphRagAnswer,
   load211ArtifactManifest,
@@ -410,7 +411,7 @@ export async function answer211InfoQuestion(
     const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
     const rawAnswer = await clientLLMWorkerService.generateText(
       build211GraphRagPrompt(trimmedQuestion, evidence),
-      options.maxTokens || 220,
+      options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
     );
     const answer = clean211GraphRagModelAnswer(rawAnswer);
     const grounded = isGrounded211GraphRagAnswer(answer);

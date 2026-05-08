@@ -9,6 +9,15 @@ export interface GraphRagAnswer {
   usedLocalModel: boolean;
 }
 
+export const DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS = 150;
+
+interface GraphRagPromptOptions {
+  maxResults?: number;
+  excerptCharacters?: number;
+  graphNodeLimit?: number;
+  graphEdgeLimit?: number;
+}
+
 export async function build211GraphRagEvidence(
   query: string,
   options: {
@@ -70,7 +79,7 @@ export async function answerWith211GraphRag(
     const { clientLLMWorkerService } = await import("../clientLLMWorkerService");
     const rawAnswer = await clientLLMWorkerService.generateText(
       build211GraphRagPrompt(trimmedQuestion, evidence),
-      options.maxTokens || 220,
+      options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
     );
     const answer = clean211GraphRagModelAnswer(rawAnswer);
     return {
@@ -90,37 +99,51 @@ export async function answerWith211GraphRag(
   }
 }
 
-export function build211GraphRagPrompt(question: string, evidence: GraphRagEvidence): string {
+export function build211GraphRagPrompt(
+  question: string,
+  evidence: GraphRagEvidence,
+  options: GraphRagPromptOptions = {},
+): string {
+  const maxResults = options.maxResults ?? 4;
+  const excerptCharacters = options.excerptCharacters ?? 420;
   const evidenceBlock = evidence.results
+    .slice(0, maxResults)
     .map((result, index) => {
       const document = result.document;
-      return `[${index + 1}] ${document.title || document.provider_name || document.doc_id}
-Type: ${document.doc_type}
-Provider: ${document.provider_name || "not listed"}
-Program: ${document.program_name || "not listed"}
-Categories: ${document.categories || "not listed"}
-Location: ${[document.city, document.state].filter(Boolean).join(", ") || "not listed"}
-Source: ${document.source_url}
-Content CID: ${document.source_content_cid}
-Excerpt: ${cleanExcerpt(result.snippet || document.text.slice(0, 900))}`;
+      const label = document.provider_name || document.program_name || document.title || document.doc_id;
+      return [
+        `[${index + 1}] ${label}`,
+        `Program: ${document.program_name || "not listed"}`,
+        `Categories: ${document.categories || "not listed"}`,
+        `Location: ${[document.city, document.state].filter(Boolean).join(", ") || "not listed"}`,
+        `Source: ${document.source_url || document.source_content_cid || document.doc_id}`,
+        `Excerpt: ${cleanExcerpt(result.snippet || document.text, excerptCharacters)}`,
+      ].join("\n");
     })
     .join("\n\n");
 
-  return `You answer questions about local social services using only the 211 corpus evidence below.
-This is service navigation information, not emergency assistance, medical advice, legal advice, or eligibility approval.
-If the evidence is incomplete, say what is missing and recommend contacting 211 or the listed provider.
-Every factual sentence must cite at least one evidence number like [1] or [2].
-Do not invent phone numbers, hours, addresses, eligibility rules, or application steps.
+  return `You are Abby, answering a public 211 service-navigation question.
+Use only the evidence below. Do not use outside knowledge.
+Do not invent phone numbers, hours, addresses, eligibility rules, availability, or application steps.
+This is not emergency, medical, legal, or eligibility advice.
 
 Question: ${question}
 
 Evidence:
 ${evidenceBlock}
 
-Knowledge graph context:
-${formatGraphContext(evidence.nodes, evidence.edges)}
+Related graph hints:
+${formatGraphContext(evidence.nodes, evidence.edges, {
+  nodeLimit: options.graphNodeLimit ?? 8,
+  edgeLimit: options.graphEdgeLimit ?? 8,
+})}
 
-Answer:`;
+Write the answer in this format:
+- Direct answer: 1-2 short sentences. Cite each factual sentence with [1], [2], etc.
+- Best matches: up to 3 bullets with the provider/program and why it matches. Cite every bullet.
+- Missing or confirm: one short sentence naming details the evidence does not prove, if any.
+
+Keep it under 120 words. Return only the answer.`;
 }
 
 export function buildEvidenceSummary(results: SearchResult[]): string {
@@ -136,16 +159,22 @@ export function buildEvidenceSummary(results: SearchResult[]): string {
   return `The strongest local 211 corpus matches are:\n\n${lead}\n\nUse the cited source pages or contact 211/the listed provider to confirm current availability and eligibility.`;
 }
 
-function formatGraphContext(nodes: GraphNode[], edges: GraphEdge[]): string {
-  const nodeLabels = new Map(nodes.map((node) => [node.node_id, `${node.label} (${node.node_type})`]));
+function formatGraphContext(
+  nodes: GraphNode[],
+  edges: GraphEdge[],
+  options: { nodeLimit?: number; edgeLimit?: number } = {},
+): string {
+  const visibleNodes = nodes.slice(0, options.nodeLimit ?? 18);
+  const visibleNodeIds = new Set(visibleNodes.map((node) => node.node_id));
+  const nodeLabels = new Map(visibleNodes.map((node) => [node.node_id, `${node.label} (${node.node_type})`]));
   const nodeLines =
-    nodes
-      .slice(0, 18)
+    visibleNodes
       .map((node) => `- ${nodeLabels.get(node.node_id)}`)
       .join("\n") || "- None retrieved.";
   const edgeLines =
     edges
-      .slice(0, 18)
+      .filter((edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target))
+      .slice(0, options.edgeLimit ?? 18)
       .map((edge) => {
         const source = nodeLabels.get(edge.source) || edge.source;
         const target = nodeLabels.get(edge.target) || edge.target;
@@ -173,6 +202,9 @@ export function isGrounded211GraphRagAnswer(answer: string): boolean {
   return answer.length >= 24 && /\[[1-6]\]/.test(answer);
 }
 
-function cleanExcerpt(excerpt: string): string {
-  return excerpt.replace(/\s+/g, " ").trim();
+function cleanExcerpt(excerpt: string, maxCharacters = 500): string {
+  const normalized = excerpt.replace(/\s+/g, " ").trim();
+  if (normalized.length <= maxCharacters) return normalized;
+  const truncated = normalized.slice(0, maxCharacters).replace(/\s+\S*$/, "").trim();
+  return `${truncated}...`;
 }

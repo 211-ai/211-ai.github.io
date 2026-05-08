@@ -41,7 +41,8 @@ import type {
 } from "../src/agent/types";
 import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
-import type { SearchResult } from "../src/lib/graphrag";
+import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
+import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 
@@ -460,6 +461,41 @@ test.describe("agent unit contracts", () => {
       "Try a more specific service type, neighborhood, or eligibility term.",
       "For urgent service navigation, contact 211 directly.",
     ]);
+  });
+
+  test("keeps GraphRAG prompts compact and citation-oriented for browser inference", () => {
+    const longSnippet = "Food pantry intake and grocery pickup details. ".repeat(40);
+    const results = Array.from({ length: 6 }, (_, index) => {
+      const result = createSearchResult(`svc-food-${index + 1}`, `Provider ${index + 1}`);
+      result.snippet = longSnippet;
+      return result;
+    });
+    const evidence: GraphRagEvidence = {
+      query: "food pantry near Portland",
+      results,
+      nodes: Array.from({ length: 12 }, (_, index) => ({
+        node_id: `node-${index + 1}`,
+        node_type: "category",
+        label: `Graph node ${index + 1}`,
+      })),
+      edges: Array.from({ length: 12 }, (_, index) => ({
+        source: `node-${index + 1}`,
+        target: `node-${Math.min(index + 2, 12)}`,
+        relation: "RELATED_TO",
+        edge_cid: `edge-${index + 1}`,
+      })),
+    };
+
+    const prompt = build211GraphRagPrompt("Which food pantry should I try?", evidence);
+
+    expect(DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS).toBeLessThanOrEqual(160);
+    expect(prompt).toContain("Keep it under 120 words");
+    expect(prompt).toContain("Cite every bullet");
+    expect(prompt).toContain("[4] Provider 4");
+    expect(prompt).not.toContain("[5] Provider 5");
+    expect(prompt).toContain("Graph node 8");
+    expect(prompt).not.toContain("Graph node 9");
+    expect(prompt.length).toBeLessThan(5200);
   });
 
   test("keeps every registered tool tied to a concrete permission policy", () => {
