@@ -1554,8 +1554,10 @@ function ContactsScreen({
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
+  const [contactCategory, setContactCategory] = useState<"person" | "shelter">("person");
   const [draft, setDraft] = useState({
-    displayName: "",
+    firstName: "",
+    lastName: "",
     relationship: "",
     email: "",
     phone: "",
@@ -1609,19 +1611,24 @@ function ContactsScreen({
 
   function addRecipient(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!draft.displayName) return;
+    if (!draft.firstName) return;
+    const displayName = [draft.firstName, draft.lastName].filter(Boolean).join(" ");
     setRecipients([
       ...recipients,
       {
         id: `rec-${Date.now()}`,
-        ...draft,
+        displayName,
+        relationship: draft.relationship,
+        email: draft.email,
+        phone: draft.phone,
+        type: draft.type,
         agencyName: "",
         precinctName: "",
         verified: false,
         allowedScopes: [...draftScopes]
       }
     ]);
-    setDraft({ displayName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
+    setDraft({ firstName: "", lastName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
     setDraftScopes([...defaultDisclosureScopes]);
   }
 
@@ -1706,108 +1713,135 @@ function ContactsScreen({
       <p className="page-note">
         Sharing choices live with each saved contact. Open a contact below to change what they can see.
       </p>
-      <Section title="Add shelter or group">
-        <p className="section-note">
-          A shelter is added only after the other side says yes. It starts with Minimum identity only.
-        </p>
-        <form className="form-grid" onSubmit={requestShelterContact}>
-          <Field label="Shelter">
-            <select value={requestedShelter} onChange={(event) => setRequestedShelter(event.target.value)}>
-              {shelterOptions.map((shelter) => (
-                <option key={shelter} value={shelter}>
-                  {shelter}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <div className="full-span centered-action">
-            <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
-              <MessageSquare aria-hidden="true" size={18} /> Ask to add shelter
-            </Button>
-          </div>
-          {hasPendingRequestedShelter ? (
-            <small className="full-span pin-request-note">
-              A request is already waiting for this shelter and person.
-            </small>
-          ) : null}
-        </form>
-        <div className="list-stack">
-          {incomingShelterNudges.map((request) => (
-            <article className="list-item access-request-item" key={request.id}>
-              <div>
-                <h3>{request.shelterName}</h3>
-                <p>{request.staffName || "Shelter staff"} asked to be added to your contacts.</p>
-                <Badge>{request.status}</Badge>
-              </div>
-              <div className="row-actions">
-                <Button onClick={() => decideShelterNudge(request.id, "approved")} variant="secondary">
-                  Approve
-                </Button>
-                <Button onClick={() => decideShelterNudge(request.id, "denied")} variant="danger">
-                  Deny
-                </Button>
-              </div>
-            </article>
-          ))}
-          {userShelterRequests.map((request) => (
-            <article className="list-item" key={`status-${request.id}`}>
-              <div>
-                <h3>{request.shelterName}</h3>
-                <p>{request.direction === "user_to_shelter" ? "You asked this shelter." : "Shelter asked you."}</p>
-              </div>
-              <div className="row-actions">
-                <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
-                  {request.status}
-                </Badge>
-                {request.direction === "user_to_shelter" && request.status === "pending" ? (
-                  <Button onClick={() => cancelShelterRequest(request.id)} variant="secondary">
-                    Cancel
-                  </Button>
-                ) : null}
-              </div>
-            </article>
-          ))}
+      <Section title="Add contact">
+        <div className="contact-type-toggle">
+          <label className={`contact-type-option${contactCategory === "person" ? " contact-type-option--active" : ""}`}>
+            <input
+              checked={contactCategory === "person"}
+              name="contactCategory"
+              onChange={() => setContactCategory("person")}
+              type="radio"
+              value="person"
+            />
+            Person
+          </label>
+          <label className={`contact-type-option${contactCategory === "shelter" ? " contact-type-option--active" : ""}`}>
+            <input
+              checked={contactCategory === "shelter"}
+              name="contactCategory"
+              onChange={() => setContactCategory("shelter")}
+              type="radio"
+              value="shelter"
+            />
+            Shelter or group
+          </label>
         </div>
-      </Section>
-      <Section title="Add person">
-        <form className="form-grid" onSubmit={addRecipient}>
-          <Field label="Name or group" required>
-            <input value={draft.displayName} onChange={(event) => setDraft({ ...draft, displayName: event.target.value })} />
-          </Field>
-          <Field label="Relationship or role">
-            <input value={draft.relationship} onChange={(event) => setDraft({ ...draft, relationship: event.target.value })} />
-          </Field>
-          <Field label="Phone">
-            <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
-          </Field>
-          <Field label="Email">
-            <input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} />
-          </Field>
-          <Field label="Type">
-            <select
-              value={draft.type}
-              onChange={(event) => setDraft({ ...draft, type: event.target.value as DisclosureRecipientType })}
-            >
-              <option value="emergency_contact">Emergency contact</option>
-              <option value="social_worker">Social worker</option>
-              <option value="police_precinct">Police precinct</option>
-              <option value="shelter_staff">Shelter staff</option>
-              <option value="government_liaison">Government help</option>
-              <option value="benefits_agency">Benefits agency</option>
-            </select>
-          </Field>
-          <SharingScopeChecklist
-            help="These start on. Turn off anything this person should not see."
-            label="Sharing choices for this person"
-            onToggle={(scope) => setDraftScopes(toggleScopeSelection(draftScopes, scope))}
-            scopes={draftScopes}
-          />
-          <div className="full-span centered-action">
-            <Button type="submit">
-              <UsersRound aria-hidden="true" size={18} /> Add person
-            </Button>
-          </div>
-        </form>
+        {contactCategory === "person" ? (
+          <form className="form-grid" onSubmit={addRecipient}>
+            <Field label="First name" required>
+              <input value={draft.firstName} onChange={(event) => setDraft({ ...draft, firstName: event.target.value })} />
+            </Field>
+            <Field label="Last name">
+              <input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} />
+            </Field>
+            <Field label="Relationship or role">
+              <input value={draft.relationship} onChange={(event) => setDraft({ ...draft, relationship: event.target.value })} />
+            </Field>
+            <Field label="Phone">
+              <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
+            </Field>
+            <Field label="Email">
+              <input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} />
+            </Field>
+            <Field label="Type">
+              <select
+                value={draft.type}
+                onChange={(event) => setDraft({ ...draft, type: event.target.value as DisclosureRecipientType })}
+              >
+                <option value="emergency_contact">Emergency contact</option>
+                <option value="social_worker">Social worker</option>
+                <option value="police_precinct">Police precinct</option>
+                <option value="government_liaison">Government help</option>
+                <option value="benefits_agency">Benefits agency</option>
+              </select>
+            </Field>
+            <SharingScopeChecklist
+              help="These start on. Turn off anything this person should not see."
+              label="Sharing choices for this person"
+              onToggle={(scope) => setDraftScopes(toggleScopeSelection(draftScopes, scope))}
+              scopes={draftScopes}
+            />
+            <div className="full-span centered-action">
+              <Button type="submit">
+                <UsersRound aria-hidden="true" size={18} /> Add person
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <p className="section-note">
+              A shelter is added only after the other side says yes. It starts with Minimum identity only.
+            </p>
+            <form className="form-grid" onSubmit={requestShelterContact}>
+              <Field label="Shelter name">
+                <select value={requestedShelter} onChange={(event) => setRequestedShelter(event.target.value)}>
+                  {shelterOptions.map((shelter) => (
+                    <option key={shelter} value={shelter}>
+                      {shelter}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <div className="full-span centered-action">
+                <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
+                  <MessageSquare aria-hidden="true" size={18} /> Ask to add shelter
+                </Button>
+              </div>
+              {hasPendingRequestedShelter ? (
+                <small className="full-span pin-request-note">
+                  A request is already waiting for this shelter and person.
+                </small>
+              ) : null}
+            </form>
+            <div className="list-stack">
+              {incomingShelterNudges.map((request) => (
+                <article className="list-item access-request-item" key={request.id}>
+                  <div>
+                    <h3>{request.shelterName}</h3>
+                    <p>{request.staffName || "Shelter staff"} asked to be added to your contacts.</p>
+                    <Badge>{request.status}</Badge>
+                  </div>
+                  <div className="row-actions">
+                    <Button onClick={() => decideShelterNudge(request.id, "approved")} variant="secondary">
+                      Approve
+                    </Button>
+                    <Button onClick={() => decideShelterNudge(request.id, "denied")} variant="danger">
+                      Deny
+                    </Button>
+                  </div>
+                </article>
+              ))}
+              {userShelterRequests.map((request) => (
+                <article className="list-item" key={`status-${request.id}`}>
+                  <div>
+                    <h3>{request.shelterName}</h3>
+                    <p>{request.direction === "user_to_shelter" ? "You asked this shelter." : "Shelter asked you."}</p>
+                  </div>
+                  <div className="row-actions">
+                    <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
+                      {request.status}
+                    </Badge>
+                    {request.direction === "user_to_shelter" && request.status === "pending" ? (
+                      <Button onClick={() => cancelShelterRequest(request.id)} variant="secondary">
+                        Cancel
+                      </Button>
+                    ) : null}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
       </Section>
       <Section title="Saved contacts">
         {recipients.length === 0 ? (
