@@ -528,6 +528,36 @@ test.describe("agent unit contracts", () => {
     );
   });
 
+  test("falls back when local LLM capability answers are too generic", async () => {
+    const invoked: AgentToolCall[] = [];
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      enableLocalLlmToolSelection: false,
+      enableLocalLlmResponses: true,
+      localLlmService: {
+        tryGenerateText: async () => ({
+          ok: true,
+          text: "Sure! What can I assist you with today?",
+          modelName: "test-local-model",
+        }),
+        generateStructuredText: async () => ({
+          ok: false,
+          text: "",
+          error: "not used",
+        }),
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("What can you help me with?");
+
+    expect(invoked).toEqual([]);
+    expect(controller.getSnapshot().messages.at(-1)?.content).toMatch(
+      /I can explain this screen, navigate the app, answer public 211 service questions, and ask for confirmation before changing wallet data\./,
+    );
+  });
+
   test("uses local LLM tool selection by default before falling back to deterministic responses", async () => {
     const invoked: AgentToolCall[] = [];
     const controller = createAgentChatController({

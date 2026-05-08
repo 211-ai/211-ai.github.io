@@ -29,6 +29,6 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    exclude: ["@xenova/transformers", "onnxruntime-web"]
+    exclude: ["@huggingface/transformers", "@xenova/transformers", "onnxruntime-web"]
   }
 });

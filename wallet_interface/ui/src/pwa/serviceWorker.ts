@@ -1,4 +1,4 @@
-const CACHE_VERSION = "portal-070-v1";
+const CACHE_VERSION = "portal-071-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const APP_CACHE_PREFIX = "abby-";
@@ -203,7 +203,7 @@ function isPublicShellAsset(request: Request): boolean {
 
   return (
     relativePath.startsWith("assets/") &&
-    /\.(?:css|gif|ico|jpe?g|js|mjs|png|svg|webp|woff2?)$/i.test(relativePath)
+    /\.(?:css|gif|ico|jpe?g|js|mjs|png|svg|wasm|webp|woff2?)$/i.test(relativePath)
   );
 }
 

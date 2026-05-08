@@ -1,9 +1,12 @@
-import { env, pipeline } from "@xenova/transformers";
+import { env, pipeline } from "@huggingface/transformers";
+import ortWasmJsepMjsUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs?url";
+import ortWasmJsepWasmUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm?url";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
+env.useWasmCache = true;
 installWarningSuppression();
 
 type LlmWorkerRequest =
@@ -138,22 +141,18 @@ async function loadPipeline(requestedModelName: string): Promise<void> {
     throw new Error(`${modelInfo.name} requires WebGPU. Use a WASM-compatible model on this browser.`);
   }
 
+  const device = selectModelDevice(modelInfo);
   const options: Record<string, unknown> = {
-    quantized: modelInfo.quantized,
+    dtype: modelInfo.dtype,
+    device,
   };
-  if (modelInfo.requiresWebGPU && LLM_CONFIG.enableWebGPU) {
-    options.device = "webgpu";
-    options.dtype = "fp16";
-  } else {
-    options.device = "wasm";
-  }
 
   try {
     textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
   } catch (error) {
-    if (options.device === "webgpu") {
+    if (options.device === "webgpu" || options.device === "auto") {
       textGenerator = await pipeline(modelInfo.task, requestedModelName, {
-        quantized: true,
+        dtype: modelInfo.dtype,
         device: "wasm",
       } as any);
     } else {
@@ -170,17 +169,107 @@ async function generateText(prompt: string, maxTokens: number): Promise<string> 
     throw new Error("LLM is not initialized");
   }
 
-  const output = await textGenerator(prompt, {
+  const modelInfo = getClientLlmModelInfo(currentModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
+  const input = modelInfo.inputMode === "chat" ? buildChatGenerationMessages(prompt) : prompt;
+  const output = await textGenerator(input, {
     max_new_tokens: maxTokens,
     do_sample: false,
     return_full_text: false,
   });
-  if (Array.isArray(output) && output[0]?.generated_text) {
-    return String(output[0].generated_text).trim();
+  return extractGeneratedText(output);
+}
+
+function selectModelDevice(modelInfo: ReturnType<typeof getClientLlmModelInfo>): "wasm" | "webgpu" | "auto" {
+  if (!modelInfo) return "wasm";
+  const configuredDevice = modelInfo.device as "wasm" | "webgpu" | "auto";
+  if (modelInfo.requiresWebGPU) return "webgpu";
+  if (configuredDevice === "auto" && modelInfo.preferWebGPU && capabilities.webGPU && LLM_CONFIG.enableWebGPU) {
+    return "auto";
   }
-  if (typeof output?.generated_text === "string") {
-    return output.generated_text.trim();
+  if (configuredDevice === "webgpu" && capabilities.webGPU && LLM_CONFIG.enableWebGPU) {
+    return "webgpu";
   }
+  return "wasm";
+}
+
+function buildChatGenerationMessages(prompt: string): Array<{ role: "system" | "user"; content: string }> {
+  const assistantPrompt = parseAbbyAssistantResponsePrompt(prompt);
+  if (assistantPrompt) {
+    return [
+      {
+        role: "system",
+        content: [
+          "You are Abby, a concise assistant inside a 211 service navigation and wallet app.",
+          "If the user asks what you can do, mention screen help, app navigation, public 211 service search, evidence summaries, and confirmation before wallet changes.",
+          "Use the safe app context and conversation history. Do not invent service facts or completed app actions.",
+          "Return only the assistant message text.",
+          "",
+          assistantPrompt.systemContext,
+        ].join("\n"),
+      },
+      {
+        role: "user",
+        content: assistantPrompt.userMessage,
+      },
+    ];
+  }
+
+  const jsonMode = /\bReturn only one JSON object\b/i.test(prompt);
+  return [
+    {
+      role: "system",
+      content: jsonMode
+        ? "You are Abby's app tool router. Follow the prompt exactly and return only the requested JSON object."
+        : "You are Abby, a concise assistant inside a 211 service navigation and wallet app. Follow the user's prompt exactly and return only the assistant message text.",
+    },
+    {
+      role: "user",
+      content: prompt,
+    },
+  ];
+}
+
+function parseAbbyAssistantResponsePrompt(prompt: string): { systemContext: string; userMessage: string } | undefined {
+  if (!/^Answer as Abby\b/i.test(prompt.trim())) {
+    return undefined;
+  }
+
+  const marker = "\nUser message:\n";
+  const markerIndex = prompt.lastIndexOf(marker);
+  if (markerIndex < 0) {
+    return undefined;
+  }
+
+  const systemContext = prompt.slice(0, markerIndex).trim();
+  const userMessage = prompt
+    .slice(markerIndex + marker.length)
+    .replace(/\n\s*Abby\s*:\s*$/i, "")
+    .trim();
+  if (!systemContext || !userMessage) {
+    return undefined;
+  }
+
+  return { systemContext, userMessage };
+}
+
+function extractGeneratedText(output: unknown): string {
+  const first = Array.isArray(output) ? output[0] : output;
+  if (first && typeof first === "object" && "generated_text" in first) {
+    const generatedText = (first as { generated_text?: unknown }).generated_text;
+    if (Array.isArray(generatedText)) {
+      const lastMessage = [...generatedText]
+        .reverse()
+        .find((message) => message && typeof message === "object" && (message as { role?: unknown }).role === "assistant");
+      const content = lastMessage && typeof (lastMessage as { content?: unknown }).content === "string"
+        ? (lastMessage as { content: string }).content
+        : undefined;
+      if (content) return content.trim();
+    }
+    if (typeof generatedText === "string") {
+      return generatedText.trim();
+    }
+  }
+  if (typeof first === "string") return first.trim();
   return String(output || "").trim();
 }
 
@@ -226,12 +315,21 @@ function configureTransformersRuntime(): void {
       wasm?: {
         numThreads?: number;
         simd?: boolean;
+        wasmPaths?: {
+          mjs: string;
+          wasm: string;
+        };
+        wasmBinary?: ArrayBuffer;
       };
     };
   };
   if (backends.onnx?.wasm) {
     backends.onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
     backends.onnx.wasm.simd = capabilities.simd && LLM_CONFIG.enableSIMD;
+    backends.onnx.wasm.wasmPaths = {
+      mjs: ortWasmJsepMjsUrl,
+      wasm: ortWasmJsepWasmUrl,
+    };
   }
 }
 

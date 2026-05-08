@@ -52,7 +52,7 @@ export async function generateLocalLlmAssistantResponse(
   }
 
   const text = cleanLocalLlmAssistantResponse(generated.text);
-  if (!isUsableLocalLlmAssistantResponse(text)) {
+  if (!isUsableLocalLlmAssistantResponse(text, input.content)) {
     return {
       ok: false,
       text: "",
@@ -143,7 +143,7 @@ export function cleanLocalLlmAssistantResponse(text: string): string {
     .trim();
 }
 
-function isUsableLocalLlmAssistantResponse(text: string): boolean {
+function isUsableLocalLlmAssistantResponse(text: string, userContent: string): boolean {
   if (text.length < 2) return false;
   if (/^no_tool$/i.test(text)) return false;
   if (/^\{[\s\S]*\}$/.test(text)) return false;
@@ -151,7 +151,18 @@ function isUsableLocalLlmAssistantResponse(text: string): boolean {
   if (/\b(the assistant message is|the instruction is|use only the safe app context|assistant inside a 211)\b/i.test(text)) {
     return false;
   }
+  if (isCapabilityQuestion(userContent) && !mentionsAppCapability(text)) {
+    return false;
+  }
   return true;
+}
+
+function isCapabilityQuestion(userContent: string): boolean {
+  return /\b(what can you do|what can you help|how can you help|what do you do)\b/i.test(userContent);
+}
+
+function mentionsAppCapability(text: string): boolean {
+  return /\b(211|service|screen|navigate|navigation|wallet|confirmation|evidence|search|app)\b/i.test(text);
 }
 
 function errorMessage(error: unknown): string | undefined {
