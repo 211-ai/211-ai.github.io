@@ -159,9 +159,10 @@ an operator executes approved incident cleanup:
 
 Each analytics template must carry a retention decision before approval, and the
 decision must be copied into the completed target signoff packet. The template
-definition, user-facing consent language, data-field review, sparse-cell risk
-review, retention mapping, reviewer decision, withdrawal plan, and audit plan
-are retained together as the production analytics review packet.
+definition, purpose, user-facing consent language, data-field review, cohort
+threshold, privacy budget, sparse-cell risk review, retention mapping, reviewer
+decision, withdrawal plan, and audit plan are retained together as the
+production analytics review packet.
 
 Production analytics must not be approved as arbitrary raw queries. The retained
 review packet is the release record for each approved template ID and must name
@@ -171,9 +172,18 @@ privacy budget, reviewer name or role, and withdrawal handling. If any of those
 fields changes, the prior packet remains audit evidence and the replacement
 template requires a new retention mapping before it can run.
 
+A target signoff packet is incomplete when an approved production template is
+missing any WALLET-160 review component: documented purpose, data fields,
+consent language, retention mapping, cohort threshold, privacy budget,
+sparse-cell risk review, reviewer decision, or withdrawal and audit handling
+plan. Retain those components as one packet so reviewers can reconstruct the
+approved question, authorized fields, privacy controls, release decision, and
+withdrawal behavior without reading source code, ad hoc queries, or raw wallet
+payloads.
+
 | Review Packet Component | Retention Mapping | Withdrawal and Purge Handling |
 | --- | --- | --- |
-| Template definition, purpose, approved record types, approved derived fields, and approved dimensions | Retain while the template is active plus the approved audit-retention period. Map this to `analytics_privacy_review.approved_templates[]` and the target `retention_mapping.policy_version`. | Template changes that add fields or dimensions require a new review packet. Paused or retired templates block new consent, contribution, and aggregate query creation while preserving prior audit history. |
+| Template definition, purpose, approved record types, approved derived fields, approved dimensions, and rejected data fields | Retain while the template is active plus the approved audit-retention period. Map this to `analytics_privacy_review.approved_templates[]` and the target `retention_mapping.policy_version`. | Template changes that add fields, dimensions, joins, or raw-query access require a new review packet. Paused or retired templates block new consent, contribution, and aggregate query creation while preserving prior audit history. |
 | Consent language and copy artifact | Retain the approved consent copy/version for the consent lifetime plus the audit-retention period so users and reviewers can reconstruct what was authorized. | Consent withdrawal must preserve the consent copy, withdrawal time, actor, and support path without retaining raw contribution values. |
 | Public proof statements and verifier or proof-mode decision | Retain with the template approval record and contribution proof audit trail. The retained statement must describe the approved `analytics_contribution` public inputs and confirm that proof public inputs do not include raw record payloads, precise location, plaintext document fields, or direct identifiers. | If proof semantics change, retire or pause the template until reviewers approve a new statement and retention mapping. Rejected or failed proof receipts are audit events and should not retain witness material. |
 | Nullifier policy and duplicate-rejection evidence | Retain the nullifier scope, duplicate-rejection rule, nullifier retention period, and regression evidence with the template packet and released aggregate audit trail. | Consent withdrawal blocks future contributions but retains nullifier evidence only as long as needed to prevent duplicate counting and explain prior releases. Nullifiers must not be exported as wallet identifiers. |

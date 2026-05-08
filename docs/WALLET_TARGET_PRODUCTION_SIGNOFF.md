@@ -239,9 +239,24 @@ and a passing packet validation run.
 
 Production analytics register:
 
-| Template ID | Purpose Evidence | Allowed Fields and Dimensions | Consent Copy Artifact | Proof Statements and Nullifier Policy | Retention Mapping | K-Threshold and Privacy Budget | Reviewer Names or Roles | Withdrawal and Audit Plan |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |  |  |
+| Template ID | Purpose | Data Fields | Consent Language | Proof and Nullifier Controls | Retention Mapping | Cohort Threshold | Privacy Budget | Sparse-Cell Risk Review | Reviewer Decision | Withdrawal and Audit Plan |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |  |  |
+
+Approved template packet worksheet:
+
+| Field | Required Review Record |
+| --- | --- |
+| Template ID and status | Template ID, title, owner, approved template definition artifact, status, approval date, expiration or renewal date, and evidence that only this template ID is enabled in production analytics routes. |
+| Purpose | Specific operational or study question, target decision supported by the aggregate, why production wallet analytics is necessary, and why less sensitive or public data is insufficient. |
+| Data fields | Approved record types, approved derived fields, approved dimensions, rejected fields, and explicit exclusions for raw payloads, precise location, plaintext document fields, direct identifiers, arbitrary SQL, ad hoc prompts, notebook filters, and export jobs. |
+| Consent language | Consent copy artifact ID and user-facing wording that covers purpose, data categories, derived fields, aggregation behavior, retention summary, withdrawal behavior, support path, and the fact that suppressed aggregates may still be retained as audit metadata. |
+| Retention mapping | Template-specific mapping to `docs/WALLET_RETENTION_POLICY.md` for template definition, consent copy, consents and withdrawals, contributions, nullifiers, query-budget ledger, sparse-cell review, released aggregates, and audit events. |
+| Cohort threshold | `min_cohort_size`, `k_threshold`, any stricter per-dimension rule, behavior when thresholds are not met, and evidence that `count-by-fields` suppression does not leak suppressed labels or rare dimensions. |
+| Privacy budget | Epsilon budget, per-query epsilon, sensitivity, budget key, budget limit, budget-exhaustion behavior, and reviewer rationale for the selected budget. |
+| Sparse-cell risk review | Reviewed dimensions, joins, rare condition or rare region notes, suppression test evidence, duplicate-nullifier rejection evidence, and tracked exceptions with expiry or re-review date. |
+| Reviewer decision | Reviewer name or accountable role, decision, decision date, evidence ID, tracked exceptions, and confirmation that `deferred` blocks production approval for this template. |
+| Withdrawal and audit handling | How withdrawal blocks future contributions, how prior released aggregates are treated, which nullifier/query-budget/audit records remain, and how `paused` or `retired` status blocks new consent, contribution, and aggregate query creation. |
 
 Re-run the review packet before approving any change that adds data fields or
 dimensions, lowers cohort thresholds, increases epsilon, changes consent or
