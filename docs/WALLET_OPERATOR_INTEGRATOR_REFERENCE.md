@@ -138,6 +138,17 @@ Cutover sequence:
    `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` and in the completed target
    signoff JSON packet evidence repository record.
 
+The archived packet must contain one index row for each required artifact:
+
+| Artifact | Proof Family | Operator Check |
+| --- | --- | --- |
+| Contract health/prove/verify report | `location_region` | `status=ok`, `checks.health.status=ok`, `checks.prove.status=ok`, `checks.public_input_safety.status=ok`, `checks.verify.status=ok`, `receipt.is_simulated=false`, and selected verifier metadata matches the deployment. |
+| Contract health/prove/verify report | `location_distance` | Same checks as region, from `--validate-distance-proof-contract`, with `receipt.proof_type=location_distance` and distance circuit metadata. |
+| Credential-reference review | both | Evidence records only `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent, owner, rotation path, and access-policy reference. |
+| No-leak review | both | Contract output, readiness output, API logs, verifier logs, tickets, and screenshots contain no bearer token, custom header value, key material, witness value, precise coordinate, address, nonce, rendered env dump, or resolved secret payload. |
+| Failure-mode drill | both | Target staging fails closed for invalid credential, unhealthy verifier, rejected prove, out-of-policy distance, or `verify=false`; no proof receipt is stored and archived output stays redacted. |
+| Rollback drill | both | Previous deployment reference, rollback command, named operator, expected rollback time, and post-rollback proof behavior are archived; simulated receipts remain rejected. |
+
 `location_distance` remains hidden from live Proof Center creation and display
 until its distance contract report, failure-mode evidence, rollback evidence,
 and security/privacy/ops/product approvals are archived. A `mode=local_self_check`
