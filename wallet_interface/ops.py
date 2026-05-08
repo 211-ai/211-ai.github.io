@@ -129,6 +129,12 @@ _READINESS_TARGET_ENV_VARS = (
     "WALLET_REPOSITORY_ROOT",
     "WALLET_STORAGE_CONFIG",
     "WALLET_STORAGE_TYPE",
+    "WALLET_STORAGE_RETENTION_POLICY_REF",
+    "WALLET_STORAGE_IPFS_PINNING_POLICY_REF",
+    "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF",
+    "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF",
+    "WALLET_BACKUP_PURGE_POLICY_REF",
+    "WALLET_ALERT_RETENTION_POLICY_REF",
     "WALLET_PROOF_MODE",
     "WALLET_PROOF_BACKEND",
     "WALLET_PROOF_SERVICE_URL",
@@ -138,6 +144,15 @@ _READINESS_TARGET_ENV_VARS = (
     "WALLET_OPS_ALERT_SECRET_REF",
     "WALLET_PROOF_CREDENTIAL_SECRET_REF",
     "WALLET_STORAGE_CREDENTIAL_SECRET_REF",
+)
+
+_READINESS_STORAGE_RETENTION_ENV_VARS = (
+    "WALLET_STORAGE_RETENTION_POLICY_REF",
+    "WALLET_STORAGE_IPFS_PINNING_POLICY_REF",
+    "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF",
+    "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF",
+    "WALLET_BACKUP_PURGE_POLICY_REF",
+    "WALLET_ALERT_RETENTION_POLICY_REF",
 )
 
 _PROOF_CONTRACT_TARGET_ENV_VARS = (
@@ -268,6 +283,167 @@ def _missing_or_placeholder_mapping_fields(payload: Mapping[str, Any], names: Se
         if _has_placeholder_value(value):
             missing.append(name)
     return missing
+
+
+_STORAGE_REPAIR_REPORT_ALLOWED_KEYS = frozenset(
+    {
+        "created_at",
+        "error",
+        "failed_replica_count",
+        "metadata",
+        "ok",
+        "payload",
+        "record_count",
+        "record_id",
+        "repaired",
+        "repaired_replica_count",
+        "replica_count",
+        "reports",
+        "role",
+        "sha256",
+        "size_bytes",
+        "storage_type",
+        "storage_types",
+        "uri",
+        "version_id",
+        "wallet_id",
+    }
+)
+
+
+def _unexpected_storage_report_keys(value: Any, *, parent_key: str | None = None) -> list[str]:
+    if isinstance(value, Mapping):
+        if parent_key == "storage_types":
+            return []
+        unexpected: list[str] = []
+        for key, item in value.items():
+            key_text = str(key)
+            if key_text not in _STORAGE_REPAIR_REPORT_ALLOWED_KEYS:
+                unexpected.append(key_text)
+            unexpected.extend(_unexpected_storage_report_keys(item, parent_key=key_text))
+        return sorted(set(unexpected))
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        unexpected = []
+        for item in value:
+            unexpected.extend(_unexpected_storage_report_keys(item, parent_key=parent_key))
+        return sorted(set(unexpected))
+    return []
+
+
+def validate_storage_repair_report_safety() -> dict[str, Any]:
+    """Exercise storage repair reporting with synthetic encrypted data.
+
+    Production readiness must prove that repair output is actionable for
+    operators without making plaintext, proof witnesses, tokens, or secret
+    values visible. This check uses local synthetic replicas so the target gate
+    never mutates production wallet data while validating the same report shape
+    exposed by the API and ops runbook.
+    """
+
+    generated_at = datetime.now(timezone.utc).isoformat()
+    checks: list[dict[str, Any]] = []
+
+    def add_check(name: str, status: str, summary: str, details: dict[str, Any] | None = None) -> None:
+        checks.append(
+            {
+                "name": name,
+                "status": status,
+                "summary": summary,
+                "details": details or {},
+            }
+        )
+
+    sentinel = "wallet-130 repair plaintext sentinel"
+    try:
+        with tempfile.TemporaryDirectory(prefix="wallet-storage-repair-safety-") as tmp:
+            root = Path(tmp)
+            service = WalletInterfaceService(
+                storage_config={
+                    "primary": {"type": "local", "root": str(root / "primary")},
+                    "mirrors": [{"type": "local", "root": str(root / "mirror")}],
+                },
+                auto_load_repository=False,
+                auto_persist=False,
+            )
+            owner_did = "did:key:storage-repair-safety-owner"
+            wallet = service.create_wallet(owner_did)
+            record = service.add_text_document(
+                wallet.wallet_id,
+                actor_did=owner_did,
+                text=sentinel,
+                filename="storage-repair-safety.txt",
+            )
+            version = service.wallet_service.versions[record.current_version_id]
+            mirror = version.encrypted_payload_ref.mirrors[0]
+            if not mirror.uri.startswith("local://"):
+                raise RuntimeError(f"synthetic mirror did not use local storage: {mirror.storage_type}")
+            Path(mirror.uri.removeprefix("local://")).unlink()
+
+            before = service.verify_wallet_storage(wallet.wallet_id).to_dict()
+            repair = service.repair_wallet_storage(wallet.wallet_id, actor_did=owner_did).to_dict()
+            after = service.verify_wallet_storage(wallet.wallet_id).to_dict()
+
+        before_failed = int(before.get("failed_replica_count") or 0)
+        repaired_count = int(repair.get("repaired_replica_count") or 0)
+        after_failed = int(after.get("failed_replica_count") or 0)
+        add_check(
+            "repair_execution",
+            "ok" if before_failed > 0 and repaired_count > 0 and after_failed == 0 else "error",
+            (
+                "Synthetic encrypted replica repair restored failed replicas."
+                if before_failed > 0 and repaired_count > 0 and after_failed == 0
+                else "Synthetic encrypted replica repair did not restore the expected failed replica."
+            ),
+            {
+                "before_failed_replica_count": before_failed,
+                "repaired_replica_count": repaired_count,
+                "after_failed_replica_count": after_failed,
+                "storage_types": repair.get("storage_types", {}),
+            },
+        )
+
+        rendered = json.dumps({"repair": repair, "after": after}, sort_keys=True)
+        forbidden_markers = [
+            sentinel,
+            "proof witness",
+            "bearer token",
+            "credential secret",
+            "storage credential",
+        ]
+        exposed_markers = [marker for marker in forbidden_markers if marker in rendered]
+        add_check(
+            "operator_output_safety",
+            "error" if exposed_markers else "ok",
+            (
+                "Storage repair reports contain replica metadata only."
+                if not exposed_markers
+                else "Storage repair reports exposed forbidden sensitive markers."
+            ),
+            {"exposed_marker_count": len(exposed_markers)},
+        )
+
+        unexpected_keys = _unexpected_storage_report_keys(repair)
+        add_check(
+            "report_schema",
+            "error" if unexpected_keys else "ok",
+            (
+                "Storage repair report schema is limited to ciphertext replica metadata."
+                if not unexpected_keys
+                else "Storage repair report contains unexpected fields."
+            ),
+            {"unexpected_keys": unexpected_keys},
+        )
+    except Exception as exc:
+        add_check("repair_execution", "error", f"Storage repair safety check failed: {exc}", {"error": str(exc)})
+
+    return {
+        "source": "wallet_interface.ops",
+        "generated_at": generated_at,
+        "status": _report_status(checks),
+        "summary": "storage repair report safety validation completed",
+        "check_count": len(checks),
+        "checks": checks,
+    }
 
 
 def _signoff_review_status(review: Mapping[str, Any]) -> str:
@@ -1106,6 +1282,49 @@ def validate_production_readiness(
         },
     )
 
+    storage_retention_values = {
+        name: _env(env, name) for name in _READINESS_STORAGE_RETENTION_ENV_VARS
+    }
+    missing_storage_retention_refs = [
+        name for name, value in storage_retention_values.items() if not value
+    ]
+    placeholder_storage_retention_refs = [
+        name for name, value in storage_retention_values.items() if value and _is_placeholder(value)
+    ]
+    add_check(
+        "storage_retention_controls",
+        "error" if missing_storage_retention_refs or placeholder_storage_retention_refs else "ok",
+        (
+            "Storage retention policy references map IPFS, Filecoin, S3, backup purge, and alert retention controls."
+            if not missing_storage_retention_refs and not placeholder_storage_retention_refs
+            else "Storage retention policy references are missing or placeholders."
+        ),
+        {
+            "missing": missing_storage_retention_refs,
+            "placeholder_vars": placeholder_storage_retention_refs,
+            "configured": [name for name, value in storage_retention_values.items() if value],
+            "required_controls": [
+                "encrypted_replica_retention",
+                "ipfs_pinning",
+                "filecoin_deal_expiration",
+                "s3_lifecycle",
+                "backup_purge",
+                "alert_retention",
+            ],
+        },
+    )
+
+    repair_safety = validate_storage_repair_report_safety()
+    add_check(
+        "storage_repair_safety",
+        str(repair_safety.get("status", "error")),
+        str(repair_safety.get("summary", "storage repair report safety validation completed")),
+        {
+            "check_count": repair_safety.get("check_count"),
+            "checks": repair_safety.get("checks", []),
+        },
+    )
+
     resolved_service = service
     if resolved_service is None:
         try:
@@ -1229,6 +1448,12 @@ def validate_local_production_readiness_self_check(*, verify_storage: bool = Tru
             "WALLET_OPS_ALERT_SECRET_REF": "secret://local-self-check/wallet/ops-alert",
             "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://local-self-check/wallet/proof-verifier",
             "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://local-self-check/wallet/storage",
+            "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@local-self-check",
+            "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://local-self-check/ipfs-pinning",
+            "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://local-self-check/filecoin-deals",
+            "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://local-self-check/s3-lifecycle",
+            "WALLET_BACKUP_PURGE_POLICY_REF": "policy://local-self-check/backup-purge",
+            "WALLET_ALERT_RETENTION_POLICY_REF": "policy://local-self-check/alert-retention",
         }
         report = validate_production_readiness(
             service,

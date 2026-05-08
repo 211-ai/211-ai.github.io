@@ -603,6 +603,8 @@ If no target `WALLET_*` readiness variables are configured,
 `python -m wallet_interface.ops --validate-production-readiness` runs a local
 synthetic verifier self-check so CI can exercise the release-gate code path.
 Any configured target readiness variables switch the command back to strict
-target validation. Running `--validate-target-signoff-packet` without a path
-validates the committed packet template shape; a human launch decision requires
-the completed packet path form shown above.
+target validation. The strict target report must include
+`storage_retention_controls=ok` and `storage_repair_safety=ok` before storage
+signoff. Running `--validate-target-signoff-packet` without a path validates the
+committed packet template shape; a human launch decision requires the completed
+packet path form shown above.

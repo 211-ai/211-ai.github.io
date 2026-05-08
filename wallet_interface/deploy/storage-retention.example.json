@@ -71,6 +71,10 @@
     "api_health_route": "GET /ops/health?verify_storage=true",
     "wallet_repair_route": "POST /wallets/{wallet_id}/storage/repair",
     "record_repair_route": "POST /wallets/{wallet_id}/records/{record_id}/storage/repair",
+    "required_readiness_checks": [
+      "storage_retention_controls=ok",
+      "storage_repair_safety=ok"
+    ],
     "required_result": "storage repair reports pass with failed_replica_count=0 and expose ciphertext hashes/statuses only"
   }
 }
