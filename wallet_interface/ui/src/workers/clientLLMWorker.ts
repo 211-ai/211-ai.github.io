@@ -171,7 +171,7 @@ async function initializePipeline(modelName: string): Promise<void> {
   }
 }
 
-async function loadPipeline(requestedModelName: string): Promise<void> {
+async function loadPipeline(requestedModelName: string, forcedDevice?: ClientLlmDevice): Promise<void> {
   const modelInfo = getClientLlmModelInfo(requestedModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
   if (modelInfo.requiresWebGPU && !capabilities.webGPU) {
     throw new Error(
@@ -179,23 +179,17 @@ async function loadPipeline(requestedModelName: string): Promise<void> {
     );
   }
 
-  const device = selectModelDevice(modelInfo);
-  const options = buildPipelineOptions(modelInfo, device);
+  const device = forcedDevice || selectModelDevice(modelInfo);
 
   try {
-    const dtype = String(options.dtype || modelInfo.dtype);
-    console.info(
-      `[Worker] Loading ${modelInfo.name} with Transformers.js device=${device}, dtype=${dtype}.`,
-    );
-    textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
-    currentDevice = device;
+    await loadPipelineAttempt(requestedModelName, modelInfo, device);
   } catch (error) {
-    if ((options.device === "webgpu" || options.device === "auto") && !modelInfo.requiresWebGPU) {
+    if ((device === "webgpu" || device === "auto") && !modelInfo.requiresWebGPU) {
       console.warn(
         `[Worker] WebGPU initialization failed for ${modelInfo.name}; falling back to WASM. ${formatError(error)}`,
       );
-      textGenerator = await pipeline(modelInfo.task, requestedModelName, buildPipelineOptions(modelInfo, "wasm"));
-      currentDevice = "wasm";
+      capabilities.webGPUError = `WebGPU initialization failed for ${modelInfo.name}; using WASM fallback. ${formatError(error)}`;
+      await loadPipelineAttempt(requestedModelName, modelInfo, "wasm");
     } else {
       throw error;
     }
@@ -205,11 +199,35 @@ async function loadPipeline(requestedModelName: string): Promise<void> {
   isInitialized = true;
 }
 
+async function loadPipelineAttempt(
+  requestedModelName: string,
+  modelInfo: NonNullable<ReturnType<typeof getClientLlmModelInfo>>,
+  device: ClientLlmDevice,
+): Promise<void> {
+  const options = buildPipelineOptions(modelInfo, device);
+  const dtype = String(options.dtype || modelInfo.dtype);
+  console.info(`[Worker] Loading ${modelInfo.name} with Transformers.js device=${device}, dtype=${dtype}.`);
+  await disposeCurrentPipeline();
+  textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
+  currentDevice = device;
+}
+
 async function generateText(prompt: string, maxTokens: number): Promise<string> {
   if (!textGenerator || !isInitialized) {
     throw new Error("LLM is not initialized");
   }
 
+  try {
+    return await runTextGeneration(prompt, maxTokens);
+  } catch (error) {
+    if (currentDevice === "webgpu") {
+      return recoverFromWebGpuGenerationFailure(error, prompt, maxTokens);
+    }
+    throw error;
+  }
+}
+
+async function runTextGeneration(prompt: string, maxTokens: number): Promise<string> {
   const modelInfo = getClientLlmModelInfo(currentModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
   const input = modelInfo.inputMode === "chat" ? buildChatGenerationMessages(prompt) : prompt;
   const output = await textGenerator(input, {
@@ -218,6 +236,30 @@ async function generateText(prompt: string, maxTokens: number): Promise<string> 
     return_full_text: false,
   });
   return extractGeneratedText(output);
+}
+
+async function recoverFromWebGpuGenerationFailure(error: unknown, prompt: string, maxTokens: number): Promise<string> {
+  const failedModelInfo = getClientLlmModelInfo(currentModelName);
+  const failedModelLabel = failedModelInfo?.name || currentModelName;
+  const reason = `WebGPU execution failed for ${failedModelLabel}; using ${SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel].name} on WASM. ${formatError(error)}`;
+  console.warn(`[Worker] ${reason}`, error);
+  capabilities.webGPUError = reason;
+  await loadPipeline(LLM_CONFIG.fallbackModel, "wasm");
+  return runTextGeneration(prompt, maxTokens);
+}
+
+async function disposeCurrentPipeline(): Promise<void> {
+  const previousGenerator = textGenerator;
+  textGenerator = null;
+  isInitialized = false;
+  if (!previousGenerator) {
+    return;
+  }
+  try {
+    await previousGenerator.dispose?.();
+  } catch (error) {
+    console.warn(`[Worker] Failed to dispose previous LLM pipeline. ${formatError(error)}`, error);
+  }
 }
 
 function selectModelDevice(modelInfo: ReturnType<typeof getClientLlmModelInfo>): "wasm" | "webgpu" | "auto" {
