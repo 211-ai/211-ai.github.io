@@ -44,7 +44,7 @@ import type { RouteId } from "../src/models/abby";
 import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
-import { LLM_CONFIG } from "../src/lib/llmConfig";
+import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -174,6 +174,30 @@ function createSearchResult(docId: string, providerName: string): SearchResult {
 }
 
 test.describe("agent unit contracts", () => {
+  test("uses LiquidAI ONNX text-chat models for the default WebGPU client LLM path", () => {
+    const defaultModelName = LLM_CONFIG.defaultModel as ClientLlmModel;
+    const defaultModel = SUPPORTED_CLIENT_LLM_MODELS[defaultModelName];
+    const thinkingModel = SUPPORTED_CLIENT_LLM_MODELS["LiquidAI/LFM2.5-1.2B-Thinking-ONNX"];
+
+    expect(defaultModelName).toBe("LiquidAI/LFM2.5-1.2B-Instruct-ONNX");
+    expect(defaultModel).toMatchObject({
+      task: "text-generation",
+      inputMode: "chat",
+      device: "webgpu",
+      requiresWebGPU: true,
+      dtype: "q4f16",
+      quantized: true,
+    });
+    expect(thinkingModel).toMatchObject({
+      task: "text-generation",
+      inputMode: "chat",
+      device: "webgpu",
+      requiresWebGPU: true,
+      dtype: "q4f16",
+      quantized: true,
+    });
+  });
+
   test("validates command schemas and rejects malformed command payloads", () => {
     expect(validateCommandSchemas()).toEqual([]);
     expect(validateSurfaceRegistry()).toEqual([]);

@@ -1,7 +1,7 @@
 export const LLM_CONFIG = {
   inferenceMode: (import.meta.env?.VITE_LLM_INFERENCE_MODE as "client" | "server" | undefined) || "client",
   defaultModel:
-    (import.meta.env?.VITE_CLIENT_LLM_MODEL as string | undefined) || "onnx-community/Qwen2.5-0.5B-Instruct",
+    (import.meta.env?.VITE_CLIENT_LLM_MODEL as string | undefined) || "LiquidAI/LFM2.5-1.2B-Instruct-ONNX",
   fallbackModel: "Xenova/LaMini-Flan-T5-77M",
   defaultEmbeddingModel:
     (import.meta.env?.VITE_DEFAULT_EMBEDDING_MODEL as string | undefined) || "Xenova/bge-small-en-v1.5",
@@ -17,6 +17,32 @@ export type ClientLlmDevicePreference = "wasm" | "webgpu" | "auto";
 export type ClientLlmDType = "fp32" | "fp16" | "q8" | "q4" | "q4f16";
 
 export const SUPPORTED_CLIENT_LLM_MODELS = {
+  "LiquidAI/LFM2.5-1.2B-Instruct-ONNX": {
+    name: "LFM2.5 1.2B Instruct Q4",
+    size: "1.2B q4f16/q4",
+    task: "text-generation",
+    inputMode: "chat",
+    requiresWebGPU: true,
+    preferWebGPU: true,
+    device: "webgpu",
+    dtype: "q4f16",
+    contextLength: 32768,
+    description: "LiquidAI ONNX text-chat model for browser WebGPU inference; uses q4 when shader-f16 is unavailable.",
+    quantized: true,
+  },
+  "LiquidAI/LFM2.5-1.2B-Thinking-ONNX": {
+    name: "LFM2.5 1.2B Thinking Q4",
+    size: "1.2B q4f16/q4",
+    task: "text-generation",
+    inputMode: "chat",
+    requiresWebGPU: true,
+    preferWebGPU: true,
+    device: "webgpu",
+    dtype: "q4f16",
+    contextLength: 32768,
+    description: "LiquidAI ONNX reasoning-oriented WebGPU model for more deliberate chat responses.",
+    quantized: true,
+  },
   "onnx-community/Qwen2.5-0.5B-Instruct": {
     name: "Qwen2.5 0.5B Instruct",
     size: "large",
