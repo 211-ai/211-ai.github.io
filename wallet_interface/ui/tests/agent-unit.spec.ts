@@ -79,6 +79,7 @@ interface TestableClientLLMWorkerService {
   pendingRequests: Map<string, { reject: (reason?: unknown) => void }>;
   requestCounter: number;
   initialize: (modelName?: string) => Promise<void>;
+  switchModel: (modelName: string) => Promise<void>;
   getCapabilities: () => Promise<TestLlmWorkerResponse>;
   getStatus: () => {
     currentDevice: ClientLlmDevice;
@@ -752,6 +753,15 @@ test.describe("agent unit contracts", () => {
       });
       expect(status.capabilities.webGPUError).toContain("WebGPU execution failed");
       expect(capabilities.capabilities?.webGPUError).toContain("WebGPU execution failed");
+
+      calls.length = 0;
+      await service.switchModel("onnx-community/Llama-3.2-1B-Instruct-ONNX");
+      expect(calls).toEqual([]);
+      expect(service.getStatus()).toMatchObject({
+        currentModel: LLM_CONFIG.fallbackModel,
+        currentDevice: "wasm",
+        isInitialized: true,
+      });
     } finally {
       service.worker = originalState.worker;
       service.isInitialized = originalState.isInitialized;

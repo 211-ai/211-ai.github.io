@@ -82,11 +82,20 @@ let initializePromise: Promise<void> | null = null;
 let initializingModelName: string | null = null;
 let capabilities: LlmCapabilities = createUnavailableCapabilities();
 let webGPUDetectionCache: { result: WebGpuDetectionResult; timestamp: number } | null = null;
+let requestChain: Promise<void> = Promise.resolve();
 const WEBGPU_DETECTION_CACHE_MS = 5 * 60 * 1000;
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
 
-self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
-  const { id, type, data } = event.data;
+self.onmessage = (event: MessageEvent<LlmWorkerRequest>) => {
+  const request = event.data;
+  requestChain = requestChain.then(
+    () => handleWorkerRequest(request),
+    () => handleWorkerRequest(request),
+  );
+};
+
+async function handleWorkerRequest(request: LlmWorkerRequest): Promise<void> {
+  const { id, type, data } = request;
 
   try {
     if (type === "getCapabilities") {
@@ -129,7 +138,7 @@ self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
       error: error instanceof Error ? error.message : "LLM worker failed",
     });
   }
-};
+}
 
 async function initialize(modelName: string): Promise<void> {
   if (textGenerator && isInitialized && currentModelName === modelName) {

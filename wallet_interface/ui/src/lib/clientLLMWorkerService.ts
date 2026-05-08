@@ -1,4 +1,4 @@
-import { LLM_CONFIG } from "./llmConfig";
+import { LLM_CONFIG, getClientLlmModelInfo } from "./llmConfig";
 
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
 
@@ -69,21 +69,26 @@ class ClientLLMWorkerService {
   }
 
   async initialize(modelName = this.currentModel): Promise<void> {
-    if (this.isInitialized && this.currentModel === modelName) {
+    const targetModelName = this.resolveModelNameForSession(modelName);
+    if (this.isInitialized && this.currentModel === targetModelName) {
       return;
     }
     if (this.isInitializing) {
       while (this.isInitializing) {
         await new Promise((resolve) => window.setTimeout(resolve, 100));
       }
-      return;
+      const nextTargetModelName = this.resolveModelNameForSession(modelName);
+      if (this.isInitialized && this.currentModel === nextTargetModelName) {
+        return;
+      }
+      return this.initialize(nextTargetModelName);
     }
 
     this.isInitializing = true;
     try {
       let result: LlmWorkerResponse;
       try {
-        result = await this.sendWorkerRequest("initialize", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+        result = await this.sendWorkerRequest("initialize", { modelName: targetModelName }, LLM_CONFIG.modelDownloadTimeoutMs);
       } catch (error) {
         if (isWorkerRestartRequiredError(error)) {
           await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
@@ -92,7 +97,7 @@ class ClientLLMWorkerService {
         throw error;
       }
       this.isInitialized = Boolean(result.isInitialized ?? true);
-      this.currentModel = result.modelName || modelName;
+      this.currentModel = result.modelName || targetModelName;
       this.currentDevice = result.device || this.currentDevice;
       if (this.currentDevice === "webgpu") {
         this.webGPUFallbackReason = undefined;
@@ -106,9 +111,13 @@ class ClientLLMWorkerService {
   }
 
   async switchModel(modelName: string): Promise<void> {
+    const targetModelName = this.resolveModelNameForSession(modelName);
+    if (this.isInitialized && this.currentModel === targetModelName) {
+      return;
+    }
     let result: LlmWorkerResponse;
     try {
-      result = await this.sendWorkerRequest("switchModel", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+      result = await this.sendWorkerRequest("switchModel", { modelName: targetModelName }, LLM_CONFIG.modelDownloadTimeoutMs);
     } catch (error) {
       if (isWorkerRestartRequiredError(error)) {
         await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
@@ -116,7 +125,7 @@ class ClientLLMWorkerService {
       }
       throw error;
     }
-    this.currentModel = result.modelName || modelName;
+    this.currentModel = result.modelName || targetModelName;
     this.currentDevice = result.device || this.currentDevice;
     if (this.currentDevice === "webgpu") {
       this.webGPUFallbackReason = undefined;
@@ -239,6 +248,17 @@ class ClientLLMWorkerService {
       ...this.capabilities,
       webGPUError: reason,
     };
+  }
+
+  private resolveModelNameForSession(modelName: string): string {
+    if (!this.webGPUFallbackReason) {
+      return modelName;
+    }
+    const modelInfo = getClientLlmModelInfo(modelName);
+    if (modelInfo?.requiresWebGPU || modelInfo?.preferWebGPU || (modelInfo?.device as string | undefined) === "webgpu") {
+      return LLM_CONFIG.fallbackModel;
+    }
+    return modelName;
   }
 
   private applyCapabilities(capabilities: NonNullable<LlmWorkerResponse["capabilities"]>): void {
