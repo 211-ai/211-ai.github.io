@@ -80,6 +80,10 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
   await signIn(page);
   await page.getByRole("button", { name: /Open menu/i }).click();
 
+  const menuButtonBox = await page.getByRole("button", { name: /Close menu/i }).boundingBox();
+  expect(menuButtonBox?.width).toBeLessThanOrEqual(52);
+  expect(menuButtonBox?.height).toBeLessThanOrEqual(52);
+
   const navigation = page.locator("#mobile-navigation");
   await expect(navigation.getByRole("button", { name: "Home", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Register", exact: true })).toBeVisible();

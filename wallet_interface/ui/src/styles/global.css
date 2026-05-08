@@ -3695,8 +3695,16 @@ textarea:focus-visible,
   }
 
   .topbar .button {
+    height: 44px;
     min-height: 44px;
     min-width: 44px;
+    padding: 0;
+    width: 44px;
+  }
+
+  .topbar .button-quiet:hover,
+  .topbar .button-quiet[aria-expanded="true"] {
+    background: rgba(220, 232, 226, 0.78);
   }
 
   .login-page {
