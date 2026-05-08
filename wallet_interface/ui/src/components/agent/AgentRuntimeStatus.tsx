@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cpu, Gauge, RefreshCw, Zap } from "lucide-react";
+import { SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../../lib/llmConfig";
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 
@@ -45,8 +46,9 @@ const initialStatus: ClientLlmRuntimeStatus = {
   capabilities: unavailableCapabilities,
 };
 
-export function AgentRuntimeStatus({ open }: { open: boolean }) {
+export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: boolean; showModelSelector?: boolean }) {
   const [status, setStatus] = useState<ClientLlmRuntimeStatus>(initialStatus);
+  const [selectedModel, setSelectedModel] = useState("");
   const [loading, setLoading] = useState(false);
 
   const refreshStatus = useCallback(async () => {
@@ -57,13 +59,15 @@ export function AgentRuntimeStatus({ open }: { open: boolean }) {
         clientLLMWorkerService.getCapabilities(),
         Promise.resolve(clientLLMWorkerService.getStatus()),
       ]);
-      setStatus({
+      const nextStatus = {
         ...serviceStatus,
         currentDevice: workerCapabilities.device || serviceStatus.currentDevice,
         currentModel: workerCapabilities.modelName || serviceStatus.currentModel,
         isInitialized: Boolean(workerCapabilities.isInitialized ?? serviceStatus.isInitialized),
         capabilities: workerCapabilities.capabilities || serviceStatus.capabilities,
-      });
+      };
+      setStatus(nextStatus);
+      setSelectedModel(nextStatus.currentModel);
     } catch (error) {
       setStatus({
         ...initialStatus,
@@ -73,6 +77,23 @@ export function AgentRuntimeStatus({ open }: { open: boolean }) {
       setLoading(false);
     }
   }, []);
+
+  const switchModel = useCallback(async (modelName: ClientLlmModel) => {
+    setSelectedModel(modelName);
+    setLoading(true);
+    try {
+      const { clientLLMWorkerService } = await import("../../lib/clientLLMWorkerService");
+      await clientLLMWorkerService.switchModel(modelName);
+      await refreshStatus();
+    } catch (error) {
+      setStatus((current) => ({
+        ...current,
+        error: error instanceof Error ? error.message : "Assistant model switch failed",
+      }));
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshStatus]);
 
   useEffect(() => {
     if (!open) {
@@ -110,6 +131,23 @@ export function AgentRuntimeStatus({ open }: { open: boolean }) {
           <dd>{status.capabilities.crossOriginIsolated ? "on" : "off"}</dd>
         </div>
       </dl>
+      {showModelSelector ? (
+        <label className="agent-runtime-model-select">
+          <span>Model</span>
+          <select
+            aria-label="Assistant language model"
+            disabled={loading}
+            onChange={(event) => void switchModel(event.target.value as ClientLlmModel)}
+            value={selectedModel || status.currentModel}
+          >
+            {Object.entries(SUPPORTED_CLIENT_LLM_MODELS).map(([modelName, modelInfo]) => (
+              <option key={modelName} value={modelName}>
+                {modelInfo.name} ({modelInfo.device}{modelInfo.requiresWebGPU ? " required" : ""})
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <button
         aria-label="Refresh assistant runtime status"
         className="agent-runtime-refresh"

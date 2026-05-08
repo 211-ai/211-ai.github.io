@@ -1404,7 +1404,7 @@ body.playful-pulse .decor-shape {
 }
 
 .agent-runtime-status {
-  align-items: center;
+  align-items: start;
   background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   display: grid;
@@ -1473,6 +1473,30 @@ body.playful-pulse .decor-shape {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.agent-runtime-model-select {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+}
+
+.agent-runtime-model-select span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-runtime-model-select select {
+  background: #f8fafc;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 12px;
+  min-height: 34px;
+  padding: 6px 8px;
+  width: 100%;
 }
 
 .agent-runtime-refresh {

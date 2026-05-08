@@ -107,7 +107,7 @@ export function AgentChatBottomSheet({
             <small>Read-only chat</small>
             <span>Ask questions while continuing to use the app.</span>
           </div>
-          <AgentRuntimeStatus open={open} />
+          <AgentRuntimeStatus open={open} showModelSelector={expanded} />
 
           <div className="agent-chat-bottom-sheet-body" id="agent-chat-bottom-sheet-body">
             <AgentMessageList
