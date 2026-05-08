@@ -113,6 +113,22 @@ the evidence artifact IDs in `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md`.
 | Export-bundle retention | Create, verify, storage-check, and expire or retain one encrypted export bundle according to the approved export retention decision. Evidence includes bundle hash, record count, storage status, and retention ticket IDs only. |
 | Purge/audit evidence | Archive provider purge, backup purge, audit timeline, and reviewer evidence. The evidence must contain no plaintext wallet data, proof witnesses, precise coordinates, key material, bearer tokens, webhook credentials, or secret values. |
 
+The archived dry-run evidence bundle must use an allow-list envelope. Required
+fields are the staging environment ID, `retention_policy_version`, storage
+topology ID, storage policy references, synthetic wallet ID, synthetic record
+IDs, storage types, ciphertext refs, `size_bytes`, `sha256`, replica counts,
+health and repair statuses, revoked grant IDs, rotated version IDs, analytics
+consent and withdrawal IDs, export bundle hash, tombstone ID, purge ticket IDs,
+backup purge ticket ID, audit event IDs, reviewer name or role, review date,
+and leak-review decision.
+
+Forbidden fields and values are wallet plaintext, document bodies, extracted
+form values, precise coordinates, proof witnesses, decrypted export bundle
+contents, raw contribution values, private keys, key-encryption keys, bearer
+tokens, webhook credentials, resolved secret-manager payloads, process
+environment dumps, and provider credential values. If any forbidden value is
+present, the dry run fails even when the storage operation itself succeeded.
+
 The privacy reviewer or operations reviewer must inspect the dry-run artifact for
 leaks before approving the retention mapping. A dry-run artifact that reveals
 plaintext or secret values fails the target environment signoff even when all

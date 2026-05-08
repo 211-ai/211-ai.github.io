@@ -284,6 +284,25 @@ Required setup:
   `backup_purge_sla`, IPFS pinset policy, Filecoin deal policy or not-used
   decision, S3 lifecycle policy, and alert-retention policy.
 
+Evidence bundle layout:
+
+| Artifact | Required Contents |
+| --- | --- |
+| `01-replica-creation.json` | Synthetic wallet and record IDs, version ID, primary and mirror ciphertext refs, storage types, `size_bytes`, and `sha256`. |
+| `02-health-repair.json` | Record and wallet storage health, `/ops/health?verify_storage=true`, simulated missing replica, repair report, and post-repair health. |
+| `03-revoke-rotate.json` | Revoked delegate grant ID, blocked descendant decrypt/analyze/export checks, key rotation version ID, key-wrap status counts, and audit event IDs. |
+| `04-consent-export.json` | Analytics consent withdrawal ID, blocked future contribution check, export bundle hash, record count, storage status, and export retention or purge ticket. |
+| `05-delete-purge-audit.json` | Record deletion control used, tombstone ID, manifest/key-wrap removal evidence, provider unpin/delete tickets, backup purge ticket, and audit timeline IDs. |
+| `06-leak-review.json` | Reviewer name or role, review date, checked artifact IDs, forbidden-value scan result, decision, and tracked exceptions. |
+
+The bundle is acceptable only when every artifact uses metadata-only evidence.
+Do not archive plaintext record values, extracted document fields, precise
+coordinates, proof witnesses, decrypted export contents, raw analytics
+contributions, key material, bearer tokens, webhook credentials, resolved
+secret-manager payloads, or process environment dumps. If any artifact contains
+one of those values, stop the dry run, open a privacy incident, and repeat the
+evidence capture after the leak source is removed.
+
 Dry-run sequence:
 
 1. Create an encrypted record and confirm replica creation.
@@ -391,6 +410,13 @@ Dry-run sequence:
    without plaintext. If the target has no record deletion control, record this
    as a launch blocker rather than approving the environment.
 
+   When the deletion control is not an API route, the evidence must still prove
+   the same public contract: the deleted record is absent from record listing
+   and export selection, stale grants cannot access it, active manifests no
+   longer reference its encrypted payload or metadata refs, provider purge
+   actions reference ciphertext IDs only, and the tombstone carries only the
+   record ID, deletion time, actor, reason, and purge ticket references.
+
 8. Run final readiness.
 
    ```bash
@@ -401,6 +427,19 @@ Dry-run sequence:
    Attach the passing readiness report, release-check dry-run manifest,
    provider purge tickets, backup purge ticket, audit timeline, and reviewer
    leak-check result to the WALLET-190 evidence artifact.
+
+Dry-run pass criteria:
+
+- Encrypted replica creation, health checks, repair, grant revocation, key
+  rotation, record deletion, analytics-consent withdrawal, export-bundle
+  retention, purge evidence, and audit evidence are all present.
+- The readiness report has `status=ok`, including
+  `storage_retention_controls=ok` and `storage_repair_safety=ok`.
+- The release-check dry-run manifest resolves without skipped target-specific
+  commands in the target CI plan.
+- The leak-review artifact explicitly approves the evidence bundle as containing
+  no plaintext wallet data, proof witnesses, precise coordinates, key material,
+  bearer tokens, webhook credentials, or secret values.
 
 ## WALLET-210 Staging Partner Pilot Drill
 
