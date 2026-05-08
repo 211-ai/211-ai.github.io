@@ -78,6 +78,13 @@
   },
   "analytics_privacy_review": {
     "no_live_analytics_templates": false,
+    "production_query_policy": "replace-with-template-id-only-policy-disallowing-ad-hoc-sql-notebook-graphrag-export-or-raw-record-queries",
+    "approved_aggregate_routes": [
+      "/analytics/{template_id}/count",
+      "/analytics/{template_id}/count-by-fields"
+    ],
+    "approved_template_registry_evidence": "replace-with-deployed-approved-template-registry-evidence-id",
+    "raw_query_block_evidence": "replace-with-evidence-that-production-analytics-has-no-arbitrary-raw-query-surface",
     "approved_templates": [
       {
         "template_id": "replace-with-template-id",

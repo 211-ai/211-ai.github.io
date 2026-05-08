@@ -552,7 +552,7 @@ def test_storage_repair_report_safety_keeps_operator_output_metadata_only() -> N
     assert "wallet-130 repair plaintext sentinel" not in rendered
 
 
-def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> None:
+def test_validate_target_signoff_packet_accepts_completed_packet_and_rejects_raw_query_routes(tmp_path) -> None:
     packet_path = tmp_path / "target-signoff.json"
     packet = {
         "environment": {
@@ -633,6 +633,13 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
             },
         },
         "analytics_privacy_review": {
+            "production_query_policy": "production analytics releases only approved template IDs through aggregate routes",
+            "approved_aggregate_routes": [
+                "/analytics/{template_id}/count",
+                "/analytics/{template_id}/count-by-fields",
+            ],
+            "approved_template_registry_evidence": "evidence://wallet/analytics/registry/2026-05-05",
+            "raw_query_block_evidence": "evidence://wallet/analytics/no-raw-query-surface/2026-05-05",
             "approved_templates": [
                 {
                     "template_id": "needs_by_zip_v1",
@@ -690,3 +697,15 @@ def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> No
     assert {check["status"] for check in report["checks"]} == {"ok"}
     rendered = json.dumps(report)
     assert "secret://staging/wallet/proof-verifier" not in rendered
+
+    packet["analytics_privacy_review"]["approved_aggregate_routes"] = ["/analytics/raw-sql"]
+    packet_path.write_text(json.dumps(packet), encoding="utf-8")
+
+    raw_query_report = validate_target_signoff_packet(packet_path)
+
+    raw_query_checks = {check["name"]: check for check in raw_query_report["checks"]}
+    assert raw_query_report["status"] == "error"
+    assert raw_query_checks["analytics_privacy_review"]["status"] == "error"
+    assert "approved_aggregate_routes" in raw_query_checks["analytics_privacy_review"]["details"][
+        "missing_workflow_fields"
+    ]

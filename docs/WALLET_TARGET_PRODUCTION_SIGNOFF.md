@@ -222,6 +222,24 @@ payloads. New questions require a new or amended template, consent copy,
 proof statement, privacy-budget decision, retention mapping, reviewer decision,
 and a passing packet validation run.
 
+The completed JSON packet must also record packet-level release-workflow
+evidence in `analytics_privacy_review.production_query_policy`,
+`analytics_privacy_review.approved_aggregate_routes`,
+`analytics_privacy_review.approved_template_registry_evidence`, and
+`analytics_privacy_review.raw_query_block_evidence`. Those fields prove that
+the deployed production analytics surface is limited to approved template IDs
+and that arbitrary raw-query routes, notebooks, export jobs, or prompt-based
+wallet analytics have been blocked or excluded from the target release.
+
+Release workflow evidence:
+
+| Workflow Control | Required Evidence |
+| --- | --- |
+| Template-only production policy | The target environment policy states that production analytics can run only through approved template IDs in `analytics_privacy_review.approved_templates[]`. |
+| Route allow-list | `analytics_privacy_review.approved_aggregate_routes` lists the deployed aggregate-only routes, normally `/analytics/{template_id}/count` and `/analytics/{template_id}/count-by-fields`. |
+| Template registry reconciliation | `analytics_privacy_review.approved_template_registry_evidence` points to evidence that `/analytics/templates` or the deployed registry contains only approved template IDs from the signoff packet, unless `no_live_analytics_templates=true`. |
+| Raw-query block | `analytics_privacy_review.raw_query_block_evidence` points to API/config/code-review evidence that ad hoc SQL, notebooks, raw GraphRAG prompts, export jobs, precise-location filters, plaintext document searches, and direct-identifier queries are not production analytics entry points. |
+
 | Packet Item | Required Content |
 | --- | --- |
 | Template identity | Template ID, title, owner, status, creation or approval date, expiration or renewal date, and evidence artifact for the approved template definition. |

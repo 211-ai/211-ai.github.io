@@ -172,6 +172,17 @@ privacy budget, reviewer name or role, and withdrawal handling. If any of those
 fields changes, the prior packet remains audit evidence and the replacement
 template requires a new retention mapping before it can run.
 
+The retained analytics release record also includes packet-level workflow
+evidence that production analytics is template-bound:
+`analytics_privacy_review.production_query_policy`,
+`analytics_privacy_review.approved_aggregate_routes`,
+`analytics_privacy_review.approved_template_registry_evidence`, and
+`analytics_privacy_review.raw_query_block_evidence`. Retain those controls with
+the template packet so reviewers can prove that approved aggregate routes, not
+raw SQL, notebook filters, GraphRAG prompts, export jobs, precise-location
+filters, plaintext document searches, or direct-identifier queries, were the
+only production analytics path.
+
 A target signoff packet is incomplete when an approved production template is
 missing any WALLET-160 review component: documented purpose, data fields,
 consent language, retention mapping, cohort threshold, privacy budget,
