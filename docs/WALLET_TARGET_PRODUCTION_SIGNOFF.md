@@ -142,7 +142,7 @@ this packet.
 | Gate | Required Evidence | Status |
 | --- | --- | --- |
 | Production readiness | `python -m wallet_interface.ops --validate-production-readiness` returns `status=ok` in the target environment |  |
-| Release-check archive | `python scripts/run_wallet_release_checks.py --playwright-port 5185` passes and its evidence bundle is archived |  |
+| Release-check archive | `python scripts/run_wallet_release_checks.py --playwright-port 5185 --require-local-sockets --require-ui-toolchain` passes in target CI with no sandbox socket/toolchain skip, and its evidence bundle is archived |  |
 | Durable wallet repository | `WALLET_REPOSITORY_ROOT` or equivalent managed datastore is configured, backed up, and covered by lifecycle policy |  |
 | Encrypted storage replicas | `WALLET_STORAGE_CONFIG` and provider credentials are configured without placeholder values |  |
 | WALLET-190 dry run | Target staging demonstrates encrypted replica creation, replica health checks, repair, grant revocation, key rotation, record deletion, analytics-consent withdrawal, export-bundle retention, and purge/audit evidence |  |
@@ -255,6 +255,10 @@ python -m wallet_interface.ops \
   --validate-target-signoff-packet /path/to/target-signoff.json \
   --fail-on-error
 python scripts/run_wallet_release_checks.py --dry-run
+python scripts/run_wallet_release_checks.py \
+  --playwright-port 5185 \
+  --require-local-sockets \
+  --require-ui-toolchain
 ```
 
 The readiness report must not include secret values. A report that passes only
@@ -262,6 +266,9 @@ with `--skip-proof-contract` is not sufficient for production launch.
 The direct proof-contract commands may report `mode=local_self_check` only in
 repo-local automation without target verifier env vars; launch evidence must be
 from the target staging environment and must not use the local self-check mode.
+Release-check evidence that skips local-listener or UI-toolchain checks is
+acceptable only for sandboxed implementation automation, not target launch
+approval.
 Archive the WALLET-180 failure-mode and rollback drill outputs beside the
 passing contract reports; launch evidence is incomplete without both proof
 families and both drill types.

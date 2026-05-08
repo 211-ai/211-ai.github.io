@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -34,11 +35,35 @@ BACKEND_PYTEST_TARGETS = (
     "tests/test_wallet_production_handoff_blackbox.py",
 )
 
+NETWORK_BACKEND_PYTEST_TARGETS = frozenset(
+    {
+        "tests/test_wallet_production_handoff_blackbox.py",
+    }
+)
+
 
 def release_pythonpath(repo_root: Path) -> str:
     """Return the PYTHONPATH needed for root tests plus the submodule package."""
 
     return os.pathsep.join([str(repo_root), str(repo_root / "ipfs_datasets_py")])
+
+
+def local_tcp_bind_available() -> bool:
+    """Return whether this process may bind a local TCP listener."""
+
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.bind(("127.0.0.1", 0))
+    except OSError:
+        return False
+    return True
+
+
+def ui_toolchain_available(ui_root: Path = UI_ROOT) -> bool:
+    """Return whether the checked-out UI has the local build/test toolchain."""
+
+    bin_dir = ui_root / "node_modules" / ".bin"
+    return (bin_dir / "tsc").exists() and (bin_dir / "vite").exists()
 
 
 @dataclass(frozen=True)
@@ -49,6 +74,7 @@ class ReleaseCheckStep:
     command: tuple[str, ...]
     cwd: Path = REPO_ROOT
     env: Mapping[str, str] = field(default_factory=dict)
+    timeout_seconds: int = 900
 
     def manifest(self) -> dict[str, object]:
         return {
@@ -56,6 +82,7 @@ class ReleaseCheckStep:
             "cwd": str(self.cwd),
             "command": list(self.command),
             "env": dict(self.env),
+            "timeout_seconds": self.timeout_seconds,
         }
 
 
@@ -80,6 +107,7 @@ def build_release_check_steps(
     skip_compile: bool = False,
     skip_ui_build: bool = False,
     skip_fullstack: bool = False,
+    skip_network_blackbox: bool = False,
     include_smoke: bool = False,
 ) -> list[ReleaseCheckStep]:
     """Build the ordered local wallet release-check commands."""
@@ -91,9 +119,15 @@ def build_release_check_steps(
         "IPFS_DATASETS_AUTO_INSTALL": "false",
         "IPFS_AUTO_INSTALL": "false",
         "IPFS_DATASETS_PY_MINIMAL_IMPORTS": "1",
+        "PYTEST_PLUGINS": "tests.wallet_testclient_compat",
     }
 
     if not skip_backend:
+        backend_targets = tuple(
+            target
+            for target in BACKEND_PYTEST_TARGETS
+            if not skip_network_blackbox or target not in NETWORK_BACKEND_PYTEST_TARGETS
+        )
         steps.append(
             ReleaseCheckStep(
                 name="backend-wallet-pytest",
@@ -101,11 +135,12 @@ def build_release_check_steps(
                     sys.executable,
                     "-m",
                     "pytest",
-                    *BACKEND_PYTEST_TARGETS,
+                    *backend_targets,
                     "-q",
                 ),
                 cwd=repo_root,
                 env=minimal_import_env,
+                timeout_seconds=900,
             )
         )
 
@@ -122,6 +157,7 @@ def build_release_check_steps(
                     "ipfs_datasets_py/ipfs_datasets_py/wallet",
                 ),
                 cwd=repo_root,
+                timeout_seconds=120,
             )
         )
 
@@ -131,6 +167,7 @@ def build_release_check_steps(
                 name="wallet-ui-build",
                 command=("npm", "run", "build"),
                 cwd=ui_root,
+                timeout_seconds=300,
             )
         )
 
@@ -141,6 +178,7 @@ def build_release_check_steps(
                 command=("npm", "run", "test:smoke"),
                 cwd=ui_root,
                 env={"PLAYWRIGHT_PORT": playwright_port},
+                timeout_seconds=300,
             )
         )
 
@@ -151,6 +189,7 @@ def build_release_check_steps(
                 command=("npm", "run", "test:fullstack"),
                 cwd=ui_root,
                 env={"PLAYWRIGHT_PORT": playwright_port},
+                timeout_seconds=600,
             )
         )
 
@@ -162,6 +201,7 @@ def run_release_check_steps(
     *,
     keep_going: bool = False,
     evidence_dir: Path | None = None,
+    metadata: Mapping[str, object] | None = None,
     runner: Runner = subprocess.run,
 ) -> ReleaseCheckResult:
     """Run release-check commands sequentially and stop on first failure by default."""
@@ -186,23 +226,56 @@ def run_release_check_steps(
         env = os.environ.copy()
         env.update(step.env)
         started_at = datetime.now(timezone.utc)
-        result = runner(
-            list(step.command),
-            cwd=str(step.cwd),
-            env=env,
-            text=True,
-        )
+        stdout = ""
+        stderr = ""
+        timed_out = False
+        try:
+            result = runner(
+                list(step.command),
+                cwd=str(step.cwd),
+                env=env,
+                text=True,
+                capture_output=True,
+                timeout=step.timeout_seconds,
+            )
+            stdout = result.stdout or ""
+            stderr = result.stderr or ""
+        except subprocess.TimeoutExpired as exc:
+            timed_out = True
+            stdout = str(exc.stdout or "")
+            stderr = str(exc.stderr or "")
+            result = subprocess.CompletedProcess(
+                list(step.command),
+                returncode=124,
+                stdout=stdout,
+                stderr=stderr,
+            )
         finished_at = datetime.now(timezone.utc)
+        if stdout:
+            print(stdout, end="" if stdout.endswith("\n") else "\n", flush=True)
+        if stderr:
+            print(stderr, end="" if stderr.endswith("\n") else "\n", file=sys.stderr, flush=True)
+        step_evidence: dict[str, object] = {
+            "name": step.name,
+            "command": list(step.command),
+            "cwd": str(step.cwd),
+            "started_at": started_at.isoformat(),
+            "finished_at": finished_at.isoformat(),
+            "duration_seconds": (finished_at - started_at).total_seconds(),
+            "returncode": result.returncode,
+            "timeout_seconds": step.timeout_seconds,
+            "timed_out": timed_out,
+        }
+        if evidence_path is not None:
+            step_slug = "".join(char if char.isalnum() or char in {"-", "_"} else "-" for char in step.name)
+            stdout_path = evidence_path / f"{step_slug}.stdout.log"
+            stderr_path = evidence_path / f"{step_slug}.stderr.log"
+            stdout_path.write_text(stdout, encoding="utf-8")
+            stderr_path.write_text(stderr, encoding="utf-8")
+            step_evidence["stdout_log"] = stdout_path.name
+            step_evidence["stderr_log"] = stderr_path.name
         evidence_steps.append(
-            {
-                "name": step.name,
-                "command": list(step.command),
-                "cwd": str(step.cwd),
-                "started_at": started_at.isoformat(),
-                "finished_at": finished_at.isoformat(),
-                "duration_seconds": (finished_at - started_at).total_seconds(),
-                "returncode": result.returncode,
-            }
+            step_evidence
         )
         if result.returncode != 0:
             exit_code = result.returncode
@@ -222,6 +295,7 @@ def run_release_check_steps(
                     "exit_code": exit_code,
                     "completed": completed,
                     "failed": failed,
+                    "metadata": dict(metadata or {}),
                     "steps": evidence_steps,
                 },
                 indent=2,
@@ -250,6 +324,21 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--skip-compile", action="store_true", help="Skip compileall check.")
     parser.add_argument("--skip-ui-build", action="store_true", help="Skip wallet UI build.")
     parser.add_argument("--skip-fullstack", action="store_true", help="Skip live full-stack Playwright checks.")
+    parser.add_argument(
+        "--skip-network-blackbox",
+        action="store_true",
+        help="Skip backend blackbox tests that require binding local TCP sockets.",
+    )
+    parser.add_argument(
+        "--require-local-sockets",
+        action="store_true",
+        help="Fail instead of skipping network-backed checks when local TCP binding is unavailable.",
+    )
+    parser.add_argument(
+        "--require-ui-toolchain",
+        action="store_true",
+        help="Fail instead of skipping UI build/browser checks when npm dependencies are unavailable.",
+    )
     parser.add_argument(
         "--include-smoke",
         action="store_true",
@@ -280,19 +369,62 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    tcp_bind_available = local_tcp_bind_available()
+    socket_limited = not tcp_bind_available and not args.require_local_sockets
+    if not tcp_bind_available and args.require_local_sockets:
+        print(
+            "local TCP bind is unavailable; cannot run network-backed wallet release checks",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 2
+    if socket_limited:
+        print(
+            "local TCP bind is unavailable; skipping backend blackbox and Playwright checks "
+            "that require local listeners",
+            file=sys.stderr,
+            flush=True,
+        )
+    ui_toolchain_ready = ui_toolchain_available()
+    ui_toolchain_limited = not args.dry_run and not ui_toolchain_ready and not args.require_ui_toolchain
+    if not ui_toolchain_ready and args.require_ui_toolchain:
+        print(
+            "wallet UI npm toolchain is unavailable; cannot run UI build or browser checks",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 2
+    if ui_toolchain_limited:
+        print(
+            "wallet UI npm toolchain is unavailable; skipping UI build and browser checks",
+            file=sys.stderr,
+            flush=True,
+        )
     steps = build_release_check_steps(
         playwright_port=args.playwright_port,
         skip_backend=args.skip_backend,
         skip_compile=args.skip_compile,
-        skip_ui_build=args.skip_ui_build,
-        skip_fullstack=args.skip_fullstack,
-        include_smoke=args.include_smoke,
+        skip_ui_build=args.skip_ui_build or ui_toolchain_limited,
+        skip_fullstack=args.skip_fullstack or socket_limited or ui_toolchain_limited,
+        skip_network_blackbox=args.skip_network_blackbox or socket_limited,
+        include_smoke=args.include_smoke and not socket_limited and not ui_toolchain_limited,
     )
     if args.dry_run:
         print(json.dumps([step.manifest() for step in steps], indent=2, sort_keys=True))
         return 0
     evidence_dir = None if args.no_evidence else Path(args.evidence_dir)
-    return run_release_check_steps(steps, keep_going=args.keep_going, evidence_dir=evidence_dir).exit_code
+    metadata = {
+        "local_tcp_bind_available": tcp_bind_available,
+        "socket_limited": socket_limited,
+        "ui_toolchain_available": ui_toolchain_ready,
+        "ui_toolchain_limited": ui_toolchain_limited,
+    }
+    return run_release_check_steps(
+        steps,
+        keep_going=args.keep_going,
+        evidence_dir=evidence_dir,
+        metadata=metadata,
+    ).exit_code
 
 
 if __name__ == "__main__":  # pragma: no cover
