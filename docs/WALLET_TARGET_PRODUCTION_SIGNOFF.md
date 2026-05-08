@@ -130,6 +130,18 @@ resolved secret-manager payloads.
 | Exposure scope | Which API/UI paths become available at cutover, with `location_distance` still hidden unless separately approved |  |
 | Rollback owner | Named operator, incident channel, previous deployment reference, and expected rollback time |  |
 
+Cutover artifact index:
+
+| Artifact | Required Contents | Artifact ID |
+| --- | --- | --- |
+| Region contract report | Target-staging JSON from `python -m wallet_interface.ops --validate-proof-contract --fail-on-error` with `status=ok`, `mode` absent or target-specific, `receipt.is_simulated=false`, selected verifier metadata, and no witness or secret values |  |
+| Distance contract report | Target-staging JSON from `python -m wallet_interface.ops --validate-distance-proof-contract --fail-on-error` with `status=ok`, `mode` absent or target-specific, `receipt.is_simulated=false`, selected verifier metadata, and no witness or secret values |  |
+| Production readiness report | Target-staging JSON from `python -m wallet_interface.ops --validate-production-readiness` with `proof_contract=ok`, `distance_proof_contract=ok`, `proof_credentials=ok`, `secret_manager_references=ok`, and no proof-contract skip flags |  |
+| Credential-reference review | Evidence-system record showing the selected `WALLET_PROOF_CREDENTIAL_SECRET_REF` or provider equivalent, owner, rotation path, access policy, and no rendered credential value |  |
+| No-leak review | API, verifier, readiness, contract, ticket, and evidence-bundle review confirming no bearer token, header value, proving key, verifier key, witness field/value, precise coordinate, address, nonce, process env dump, or resolved secret payload |  |
+| Failure-mode drill | Target-staging drill output for both proof families showing invalid credential, unhealthy verifier, rejected prove, out-of-policy distance, or `verify=false` fails closed, returns nonzero validation/readiness output, and stores no proof receipt |  |
+| Rollback drill | Target-staging drill output showing the rollback owner can revert API/UI/ops/verifier deployment or disable proof creation while production proof mode continues to reject simulated receipts |  |
+
 Required evidence matrix:
 
 | Proof Family | Evidence Gate | Required Artifact | Status |

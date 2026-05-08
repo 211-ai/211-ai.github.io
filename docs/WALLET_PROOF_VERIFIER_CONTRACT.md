@@ -140,6 +140,47 @@ Record this verifier selection in the packet:
 - Rollback owner, rollback command or deployment reference, and last known good
   verifier release.
 
+The packet should use this minimum artifact manifest shape so reviewers can
+verify both proof families without opening secret-bearing systems:
+
+```json
+{
+  "wallet_task": "WALLET-180",
+  "environment": "target-staging",
+  "selected_verifier": {
+    "service_ref": "private-service://wallet-proof-verifier",
+    "deployment_artifact": "oci://registry.example/wallet-verifier@sha256:...",
+    "verifier_id": "verifier-http-v1",
+    "proof_system": "groth16",
+    "region_circuit_id": "location-region-v1",
+    "distance_circuit_id": "location-distance-v1",
+    "credential_secret_ref": "secret-manager://wallet/prod/proof-verifier"
+  },
+  "evidence": {
+    "location_region_contract_artifact": "evidence://wallet/proofs/region-contract-ok",
+    "location_distance_contract_artifact": "evidence://wallet/proofs/distance-contract-ok",
+    "production_readiness_artifact": "evidence://wallet/proofs/readiness-ok",
+    "no_leak_review_artifact": "evidence://wallet/proofs/no-leak-review",
+    "failure_mode_artifacts": {
+      "location_region": "evidence://wallet/proofs/region-failure-mode",
+      "location_distance": "evidence://wallet/proofs/distance-failure-mode"
+    },
+    "rollback_artifact": "evidence://wallet/proofs/verifier-rollback"
+  },
+  "approvals": {
+    "security": "",
+    "privacy": "",
+    "operations": "",
+    "product": ""
+  }
+}
+```
+
+Replace the example `evidence://` and `private-service://` values with target
+evidence-system references. Do not replace them with bearer tokens, custom
+header values, rendered env vars, request payloads, witness payloads, or secret
+manager payloads.
+
 Required evidence:
 
 | Proof family | Evidence | Pass condition |
