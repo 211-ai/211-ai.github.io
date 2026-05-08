@@ -7,6 +7,7 @@ type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 interface ClientLlmRuntimeCapabilities {
   webGPU: boolean;
   webGPUError?: string;
+  webGPUShaderF16?: boolean;
   webGPUAdapter?: {
     vendor?: string;
     architecture?: string;
@@ -31,6 +32,7 @@ interface ClientLlmRuntimeStatus {
 
 const unavailableCapabilities: ClientLlmRuntimeCapabilities = {
   webGPU: false,
+  webGPUShaderF16: false,
   simd: false,
   wasmThreads: false,
   crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
@@ -178,7 +180,7 @@ function summarizeRuntime(status: ClientLlmRuntimeStatus): {
   if (status.currentDevice === "webgpu") {
     return {
       backend: "webgpu",
-      detail: formatAdapter(status.capabilities.webGPUAdapter) || "WebGPU active",
+      detail: formatWebGpuDetail(status.capabilities),
       label: "WebGPU",
       tone: "success",
     };
@@ -212,4 +214,9 @@ function formatAdapter(adapter: ClientLlmRuntimeCapabilities["webGPUAdapter"]): 
     return "";
   }
   return [adapter.vendor, adapter.device || adapter.description, adapter.architecture].filter(Boolean).join(" ");
+}
+
+function formatWebGpuDetail(capabilities: ClientLlmRuntimeCapabilities): string {
+  const adapter = formatAdapter(capabilities.webGPUAdapter) || "WebGPU active";
+  return capabilities.webGPUShaderF16 ? `${adapter}; shader-f16` : `${adapter}; no shader-f16`;
 }

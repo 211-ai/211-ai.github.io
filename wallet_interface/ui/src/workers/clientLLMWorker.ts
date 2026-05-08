@@ -1,6 +1,6 @@
 import { LogLevel, env, pipeline } from "@huggingface/transformers";
-import ortWasmJsepMjsUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.mjs?url";
-import ortWasmJsepWasmUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.jsep.wasm?url";
+import ortWasmAsyncifyMjsUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
+import ortWasmAsyncifyWasmUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
@@ -15,6 +15,7 @@ type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 interface LlmCapabilities {
   webGPU: boolean;
   webGPUError?: string;
+  webGPUShaderF16: boolean;
   webGPUAdapter?: {
     vendor?: string;
     architecture?: string;
@@ -30,6 +31,7 @@ interface LlmCapabilities {
 interface WebGpuDetectionResult {
   available: boolean;
   error?: string;
+  shaderF16: boolean;
   adapterInfo?: LlmCapabilities["webGPUAdapter"];
 }
 
@@ -59,6 +61,7 @@ interface LlmWorkerResponse {
     capabilities?: {
       webGPU: boolean;
       webGPUError?: string;
+      webGPUShaderF16: boolean;
       webGPUAdapter?: LlmCapabilities["webGPUAdapter"];
       simd: boolean;
       wasmThreads: boolean;
@@ -180,13 +183,14 @@ async function loadPipeline(requestedModelName: string): Promise<void> {
   const options = buildPipelineOptions(modelInfo, device);
 
   try {
+    const dtype = String(options.dtype || modelInfo.dtype);
     console.info(
-      `[Worker] Loading ${modelInfo.name} with Transformers.js device=${device}, dtype=${String(modelInfo.dtype)}.`,
+      `[Worker] Loading ${modelInfo.name} with Transformers.js device=${device}, dtype=${dtype}.`,
     );
     textGenerator = await pipeline(modelInfo.task, requestedModelName, options);
     currentDevice = device;
   } catch (error) {
-    if (options.device === "webgpu" || options.device === "auto") {
+    if ((options.device === "webgpu" || options.device === "auto") && !modelInfo.requiresWebGPU) {
       console.warn(
         `[Worker] WebGPU initialization failed for ${modelInfo.name}; falling back to WASM. ${formatError(error)}`,
       );
@@ -233,8 +237,9 @@ function buildPipelineOptions(
   modelInfo: NonNullable<ReturnType<typeof getClientLlmModelInfo>>,
   device: ClientLlmDevice,
 ): Record<string, unknown> {
+  const dtype = selectModelDType(modelInfo.dtype, device);
   return {
-    dtype: modelInfo.dtype,
+    dtype,
     device,
     session_options: {
       log_severity_level: 3,
@@ -242,6 +247,13 @@ function buildPipelineOptions(
       enable_profiling: false,
     },
   };
+}
+
+function selectModelDType(dtype: string, device: ClientLlmDevice): string {
+  if (device === "webgpu" && (dtype === "fp16" || dtype === "q4f16") && !capabilities.webGPUShaderF16) {
+    return "q4";
+  }
+  return dtype;
 }
 
 function buildChatGenerationMessages(prompt: string): Array<{ role: "system" | "user"; content: string }> {
@@ -332,6 +344,7 @@ async function detectCapabilities(): Promise<LlmCapabilities> {
   return {
     webGPU: webGPU.available,
     webGPUError: webGPU.error,
+    webGPUShaderF16: webGPU.shaderF16,
     webGPUAdapter: webGPU.adapterInfo,
     simd: detectWasmSimd(),
     wasmThreads: sharedArrayBuffer && crossOriginIsolated && typeof Worker !== "undefined",
@@ -357,24 +370,25 @@ async function detectWebGPUUncached(): Promise<WebGpuDetectionResult> {
       ? (navigator as Navigator & { gpu?: { requestAdapter: (options?: unknown) => Promise<any> } }).gpu
       : undefined;
     if (!gpu?.requestAdapter) {
-      return { available: false, error: "navigator.gpu is unavailable in this browser context." };
+      return { available: false, shaderF16: false, error: "navigator.gpu is unavailable in this browser context." };
     }
     const adapter =
       (await gpu.requestAdapter({ powerPreference: "high-performance", forceFallbackAdapter: false })) ||
       (await gpu.requestAdapter());
     if (!adapter) {
-      return { available: false, error: "No WebGPU adapter was returned for this browser and device." };
+      return { available: false, shaderF16: false, error: "No WebGPU adapter was returned for this browser and device." };
     }
     const adapterInfo = extractWebGpuAdapterInfo(adapter);
+    const shaderF16 = Boolean(adapter.features?.has?.("shader-f16"));
     const device = await adapter.requestDevice();
     if (!device?.queue) {
       device?.destroy?.();
-      return { available: false, error: "WebGPU device was created without a command queue.", adapterInfo };
+      return { available: false, shaderF16, error: "WebGPU device was created without a command queue.", adapterInfo };
     }
     device.destroy?.();
-    return { available: true, adapterInfo };
+    return { available: true, shaderF16, adapterInfo };
   } catch (error) {
-    return { available: false, error: `WebGPU device test failed: ${formatError(error)}` };
+    return { available: false, shaderF16: false, error: `WebGPU device test failed: ${formatError(error)}` };
   }
 }
 
@@ -432,8 +446,8 @@ function configureTransformersRuntime(): void {
     onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
     onnx.wasm.simd = capabilities.simd && LLM_CONFIG.enableSIMD;
     onnx.wasm.wasmPaths = {
-      mjs: ortWasmJsepMjsUrl,
-      wasm: ortWasmJsepWasmUrl,
+      mjs: ortWasmAsyncifyMjsUrl,
+      wasm: ortWasmAsyncifyWasmUrl,
     };
   }
 }
@@ -445,6 +459,7 @@ function postResponse(response: LlmWorkerResponse): void {
 function createUnavailableCapabilities(): LlmCapabilities {
   return {
     webGPU: false,
+    webGPUShaderF16: false,
     simd: false,
     wasmThreads: false,
     crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),

@@ -11,6 +11,7 @@ interface LlmWorkerResponse {
   capabilities?: {
     webGPU: boolean;
     webGPUError?: string;
+    webGPUShaderF16?: boolean;
     webGPUAdapter?: {
       vendor?: string;
       architecture?: string;
@@ -51,8 +52,9 @@ class ClientLLMWorkerService {
   private pendingRequests = new Map<string, PendingRequest<LlmWorkerResponse>>();
   private currentModel = LLM_CONFIG.defaultModel;
   private currentDevice: "wasm" | "webgpu" | "auto" = "wasm";
-  private capabilities = {
+  private capabilities: NonNullable<LlmWorkerResponse["capabilities"]> = {
     webGPU: false,
+    webGPUShaderF16: false,
     simd: false,
     wasmThreads: false,
     crossOriginIsolated: Boolean((globalThis as { crossOriginIsolated?: boolean }).crossOriginIsolated),
