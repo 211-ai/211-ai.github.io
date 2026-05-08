@@ -13,22 +13,28 @@ function walletRoute(route: string, actorDid: string, params: Record<string, str
 }
 
 async function expectLoginForm(page: Page) {
-  await expect(page.getByLabel(/username/i)).toBeVisible({ timeout: 10000 });
-  await expect(page.getByLabel(/password/i)).toBeVisible();
+  await expect(page.locator(".login-page")).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("group", { name: /Choose portal/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Client$/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Service provider/i })).toBeVisible();
+  await expect(page.getByLabel(/Email address or telephone/i)).toBeVisible();
 }
 
 async function signInIfNeeded(page: Page) {
-  const username = page.getByLabel(/username/i).first();
+  const contact = page.getByLabel(/Email address or telephone/i).first();
 
   try {
-    await username.waitFor({ state: "visible", timeout: 1000 });
+    await contact.waitFor({ state: "visible", timeout: 1000 });
   } catch {
     return false;
   }
 
-  await username.fill("abby");
-  await page.getByLabel(/password/i).fill("safety-plan");
-  await page.getByRole("button", { name: /log in|login|sign in|continue/i }).click();
+  await page.getByRole("button", { name: /^Client$/i }).click();
+  await contact.fill("abby@example.org");
+  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  const oneTimePad = (await page.locator('code[aria-label="Generated one-time pad code"]').innerText()).trim();
+  await page.getByRole("textbox", { name: /One-time pad number/i }).fill(oneTimePad);
+  await page.getByRole("button", { name: /Verify code/i }).click();
   return true;
 }
 
@@ -1349,4 +1355,3 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i).first()).toBeVisible();
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
 });
-

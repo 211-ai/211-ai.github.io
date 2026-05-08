@@ -30,6 +30,7 @@ import {
   evidenceBundleFromResults,
 } from "../src/agent/serviceNavigationAgent";
 import { createAgentChatController } from "../src/agent/chatController";
+import { shouldRenderAudioBubble } from "../src/components/agent/AgentMessageList";
 import type { AgentSurfaceApi } from "../src/agent/surfaceApi";
 import type {
   AgentMessage,
@@ -44,6 +45,8 @@ import type { RouteId } from "../src/models/abby";
 import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
+import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
+import { ClientAudioReplyService } from "../src/lib/clientAudioReplyService";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 
@@ -237,6 +240,55 @@ test.describe("agent unit contracts", () => {
       dtype: "q4f16",
       quantized: true,
     });
+  });
+
+  test("configures LiquidAI audio chat separately from text chat models", () => {
+    const audioModel = getClientAudioModelInfo(AUDIO_CHAT_CONFIG.defaultModel);
+
+    expect(AUDIO_CHAT_CONFIG.defaultModel).toBe("LiquidAI/LFM2.5-Audio-1.5B-ONNX");
+    expect(audioModel).toMatchObject({
+      task: "text-to-audio",
+      device: "webgpu",
+      dtype: "q4",
+      requiresWebGPU: true,
+      quantized: true,
+    });
+    expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
+  });
+
+  test("falls back to browser speech when local LiquidAI audio cannot start", async () => {
+    const service = new ClientAudioReplyService({
+      createWorker: () => {
+        throw new Error("test audio worker unavailable");
+      },
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const result = await service.generateAudio("Read this assistant reply aloud.");
+
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      provider: "browser-speech",
+      modelName: AUDIO_CHAT_CONFIG.fallbackVoiceModel,
+      fallbackForModel: AUDIO_CHAT_CONFIG.defaultModel,
+    });
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("test audio worker unavailable");
+  });
+
+  test("adds audio bubbles to completed assistant chat replies", () => {
+    const assistantMessage: AgentMessage = {
+      id: "assistant-audio-test",
+      sessionId: "agent-session-unit",
+      role: "assistant",
+      content: "Here are nearby food pantry options.",
+      createdAt: NOW,
+      status: "complete",
+    };
+
+    expect(shouldRenderAudioBubble(assistantMessage)).toBe(true);
+    expect(shouldRenderAudioBubble({ ...assistantMessage, role: "user" })).toBe(false);
+    expect(shouldRenderAudioBubble({ ...assistantMessage, content: "   " })).toBe(false);
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {

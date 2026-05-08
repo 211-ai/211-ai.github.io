@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Bot, UserRound } from "lucide-react";
 import type { AgentConfirmationRequest, AgentMessage, AgentToolCall, AgentToolResult, EvidenceBundle } from "../../agent/types";
+import { AgentAudioBubble } from "./AgentAudioBubble";
 import { AgentConfirmationCard } from "./AgentConfirmationCard";
 import { AgentEvidencePanel } from "./AgentEvidencePanel";
 import { AgentToolResultCard } from "./AgentToolResultCard";
@@ -48,7 +49,10 @@ export function AgentMessageList({
               <strong>{message.role === "user" ? "You" : "Abby assistant"}</strong>
               <span>{formatMessageTime(message.createdAt)}</span>
             </div>
-            <p>{message.content}</p>
+            <div className="agent-text-bubble">
+              <p>{message.content}</p>
+            </div>
+            {shouldRenderAudioBubble(message) ? <AgentAudioBubble messageId={message.id} text={message.content} /> : null}
             <AgentEvidencePanel
               bundleIds={message.evidenceBundleIds}
               bundles={evidenceBundles}
@@ -116,6 +120,10 @@ function getMessageConfirmationIds(message: AgentMessage): string[] {
     if (typeof confirmationId === "string") ids.add(confirmationId);
   }
   return Array.from(ids);
+}
+
+export function shouldRenderAudioBubble(message: AgentMessage): boolean {
+  return message.role === "assistant" && message.status === "complete" && message.content.trim().length > 0;
 }
 
 function noopConfirmationHandler() {

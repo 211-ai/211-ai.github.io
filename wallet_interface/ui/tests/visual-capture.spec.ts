@@ -27,8 +27,8 @@ const captureScenarios: CaptureScenario[] = [
     title: "Login page",
     state: "signed out",
     goals: [
-      "Username and password fields should be immediately visible.",
-      "The sign-in action should be clear and reachable on mobile.",
+      "Client and service provider portal choices should be immediately visible under the Abby logo.",
+      "The email or telephone login field and code/link action should be clear and reachable on mobile.",
       "The page should feel like the entry point to Abby without extra informational boxes."
     ]
   },
@@ -509,7 +509,8 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
     await page.evaluate((key) => window.localStorage.removeItem(key), appSessionKey);
     await page.reload();
     await expect(page.locator(".login-page")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Sign in/i })).toBeVisible();
+    await expect(page.getByRole("group", { name: /Choose portal/i })).toBeVisible();
+    await expect(page.getByLabel(/Email address or telephone/i)).toBeVisible();
     return;
   }
 

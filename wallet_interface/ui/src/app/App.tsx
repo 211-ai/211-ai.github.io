@@ -144,6 +144,25 @@ const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
+const MAGIC_LOGIN_PARAM = "abbyLogin";
+const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
+const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
+
+type LoginPortal = "client" | "provider";
+
+type MagicLoginPayload = {
+  portal: LoginPortal;
+  contact: string;
+  issuedAt: number;
+  expiresAt: number;
+  salt: string;
+  digest: string;
+};
+
+type LoginChallenge = MagicLoginPayload & {
+  oneTimePad: string;
+  magicLink: string;
+};
 
 const routeIcons: Record<RouteId, typeof Home> = {
   home: Home,
@@ -260,6 +279,70 @@ function toShortSummaryTitle(text: string): string {
     .map((word) => `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`)
     .join(" ");
   return title;
+}
+
+function normalizeLoginContact(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed.includes("@")) return trimmed.toLowerCase();
+  return trimmed.replace(/[^\d+]/g, "");
+}
+
+function isValidLoginContact(value: string): boolean {
+  const normalized = normalizeLoginContact(value);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) || normalized.replace(/\D/g, "").length >= 10;
+}
+
+function randomBase64Url(byteLength: number): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function randomOneTimePad(length = 6): string {
+  const bytes = new Uint8Array(length);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => String(byte % 10)).join("");
+}
+
+function encodeMagicLoginPayload(payload: MagicLoginPayload): string {
+  return btoa(JSON.stringify(payload)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function decodeMagicLoginPayload(token: string): MagicLoginPayload | undefined {
+  try {
+    const padded = token.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(token.length / 4) * 4, "=");
+    const parsed = JSON.parse(atob(padded));
+    if (
+      parsed &&
+      (parsed.portal === "client" || parsed.portal === "provider") &&
+      typeof parsed.contact === "string" &&
+      typeof parsed.issuedAt === "number" &&
+      typeof parsed.expiresAt === "number" &&
+      typeof parsed.salt === "string" &&
+      typeof parsed.digest === "string"
+    ) {
+      return parsed;
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
+async function createMagicLoginDigest({
+  contact,
+  expiresAt,
+  issuedAt,
+  portal,
+  salt
+}: Omit<MagicLoginPayload, "digest">): Promise<string> {
+  const input = [MAGIC_LOGIN_DEMO_SIGNING_CONTEXT, portal, contact, issuedAt, expiresAt, salt].join("|");
+  const hash = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 async function generateUploadSummary(file: File): Promise<string> {
@@ -607,19 +690,14 @@ export function App() {
   if (!signedInUser) {
     return (
       <LoginScreen
-        onOpenClientPortal={() => {
-          handleSignIn("client-demo");
-          navigate("home");
-        }}
         onOpenAssistant={() => {
           handleSignIn("abby");
           setAgentChatOpen(true);
         }}
-        onOpenProviderPortal={() => {
-          handleSignIn("provider-demo");
-          navigate("shelter");
+        onAuthenticated={(portal, contact) => {
+          handleSignIn(`${portal}:${contact}`);
+          navigate(portal === "provider" ? "shelter" : "home");
         }}
-        onSignIn={handleSignIn}
       />
     );
   }
@@ -1007,70 +1085,199 @@ function NavButton({
 }
 
 function LoginScreen({
-  onOpenAssistant,
-  onOpenClientPortal,
-  onOpenProviderPortal,
-  onSignIn
+  onAuthenticated,
+  onOpenAssistant
 }: {
+  onAuthenticated: (portal: LoginPortal, contact: string) => void;
   onOpenAssistant: () => void;
-  onOpenClientPortal: () => void;
-  onOpenProviderPortal: () => void;
-  onSignIn: (username: string) => void;
 }) {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const canSignIn = username.trim().length > 0 && password.trim().length > 0;
+  const [portal, setPortal] = useState<LoginPortal>("client");
+  const [contact, setContact] = useState("");
+  const [challenge, setChallenge] = useState<LoginChallenge | null>(null);
+  const [oneTimePadEntry, setOneTimePadEntry] = useState("");
+  const [loginMessage, setLoginMessage] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [pending, setPending] = useState(false);
+  const canRequestChallenge = isValidLoginContact(contact);
 
-  function submitLogin(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get(MAGIC_LOGIN_PARAM);
+    if (!token) return;
+    void verifyMagicLinkToken(token);
+  }, []);
+
+  function updatePortal(nextPortal: LoginPortal) {
+    setPortal(nextPortal);
+    setChallenge(null);
+    setOneTimePadEntry("");
+    setLoginError("");
+    setLoginMessage("");
+  }
+
+  async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (canSignIn) {
-      onSignIn(username);
+    if (!canRequestChallenge) {
+      setLoginError("Enter a valid email address or telephone number.");
+      return;
     }
+    setPending(true);
+    setLoginError("");
+    setLoginMessage("");
+    try {
+      const issuedAt = Date.now();
+      const expiresAt = issuedAt + MAGIC_LOGIN_TTL_MS;
+      const normalizedContact = normalizeLoginContact(contact);
+      const oneTimePad = randomOneTimePad();
+      const basePayload = {
+        portal,
+        contact: normalizedContact,
+        issuedAt,
+        expiresAt,
+        salt: `${oneTimePad}.${randomBase64Url(18)}`
+      };
+      const digest = await createMagicLoginDigest(basePayload);
+      const payload = { ...basePayload, digest };
+      const magicUrl = new URL(window.location.href);
+      magicUrl.search = "";
+      magicUrl.hash = "#/";
+      magicUrl.searchParams.set(MAGIC_LOGIN_PARAM, encodeMagicLoginPayload(payload));
+      setChallenge({ ...payload, oneTimePad, magicLink: magicUrl.toString() });
+      setOneTimePadEntry("");
+      setLoginMessage("One-time access is ready.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function verifyOneTimePad() {
+    if (!challenge) return;
+    if (Date.now() > challenge.expiresAt) {
+      setLoginError("That one-time code expired. Request a new code.");
+      return;
+    }
+    if (oneTimePadEntry.trim() !== challenge.oneTimePad) {
+      setLoginError("The one-time code does not match.");
+      return;
+    }
+    const digest = await createMagicLoginDigest({
+      contact: challenge.contact,
+      expiresAt: challenge.expiresAt,
+      issuedAt: challenge.issuedAt,
+      portal: challenge.portal,
+      salt: challenge.salt
+    });
+    if (digest !== challenge.digest) {
+      setLoginError("The login proof could not be verified.");
+      return;
+    }
+    completeLogin(challenge.portal, challenge.contact);
+  }
+
+  async function verifyMagicLinkToken(token: string) {
+    const payload = decodeMagicLoginPayload(token);
+    if (!payload) {
+      setLoginError("The magic link is not valid.");
+      return;
+    }
+    if (Date.now() > payload.expiresAt) {
+      setLoginError("That magic link expired. Request a new link.");
+      return;
+    }
+    const digest = await createMagicLoginDigest(payload);
+    if (digest !== payload.digest) {
+      setLoginError("The magic link proof could not be verified.");
+      return;
+    }
+    window.history.replaceState({}, "", `${window.location.pathname}${window.location.hash || "#/"}`);
+    completeLogin(payload.portal, payload.contact);
+  }
+
+  function completeLogin(nextPortal: LoginPortal, normalizedContact: string) {
+    onAuthenticated(nextPortal, normalizedContact);
   }
 
   return (
     <main className="login-page">
       <form className="login-panel" onSubmit={submitLogin}>
         <div className="login-brand">
-          <span className="login-mark">A</span>
-          <div>
-            <p className="eyebrow">Abby</p>
-            <h1>Sign in</h1>
-          </div>
+          <img alt="Abby" className="login-logo" src="/assets/abby-logo.png" />
+          <h1 className="sr-only">Sign in to Abby</h1>
         </div>
-        <Field label="Username" required>
+        <div className="login-portal-actions" aria-label="Choose portal" role="group">
+          <button
+            aria-pressed={portal === "client"}
+            className="login-portal-option"
+            onClick={() => updatePortal("client")}
+            type="button"
+          >
+            <Home aria-hidden="true" size={20} />
+            <span>Client</span>
+          </button>
+          <button
+            aria-pressed={portal === "provider"}
+            className="login-portal-option"
+            onClick={() => updatePortal("provider")}
+            type="button"
+          >
+            <UsersRound aria-hidden="true" size={20} />
+            <span>Service provider</span>
+          </button>
+        </div>
+        <Field label="Email address or telephone" required>
           <input
             autoComplete="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
+            inputMode="email"
+            placeholder="name@example.org or (503) 555-0100"
+            value={contact}
+            onChange={(event) => {
+              setContact(event.target.value);
+              setChallenge(null);
+              setOneTimePadEntry("");
+              setLoginError("");
+              setLoginMessage("");
+            }}
           />
         </Field>
-        <Field label="Password" required>
-          <input
-            autoComplete="current-password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </Field>
-        <Button disabled={!canSignIn} type="submit">
-          <LockKeyhole aria-hidden="true" size={18} /> Sign in
+        <Button disabled={!canRequestChallenge || pending} loading={pending} loadingLabel="Preparing access" type="submit">
+          <KeyRound aria-hidden="true" size={18} /> Send code or magic link
         </Button>
-        <div className="login-assistant-entry">
-          <h2>Your safety plan</h2>
-          <p>Search for services and decide what to save before changing wallet data.</p>
-          <div className="login-portal-actions" aria-label="Portal shortcuts">
-            <Button onClick={onOpenClientPortal} type="button" variant="secondary">
-              <Home aria-hidden="true" size={18} /> Client portal
-            </Button>
-            <Button onClick={onOpenProviderPortal} type="button" variant="secondary">
-              <UsersRound aria-hidden="true" size={18} /> Provider portal
-            </Button>
+        {loginError ? <StatusBanner tone="danger">{loginError}</StatusBanner> : null}
+        {loginMessage ? <StatusBanner tone="success">{loginMessage}</StatusBanner> : null}
+        {challenge ? (
+          <div className="login-challenge-panel">
+            <div className="login-code-display">
+              <small>Demo one-time pad number</small>
+              <code aria-label="Generated one-time pad code">{challenge.oneTimePad}</code>
+            </div>
+            <Field label="One-time pad number" required>
+              <input
+                autoComplete="one-time-code"
+                inputMode="numeric"
+                maxLength={6}
+                value={oneTimePadEntry}
+                onChange={(event) => {
+                  setOneTimePadEntry(event.target.value.replace(/\D/g, "").slice(0, 6));
+                  setLoginError("");
+                }}
+              />
+            </Field>
+            <div className="login-challenge-actions">
+              <Button disabled={oneTimePadEntry.length !== 6} onClick={verifyOneTimePad} type="button">
+                Verify code
+              </Button>
+              <a className="button button-secondary" href={challenge.magicLink}>
+                Open magic link
+              </a>
+            </div>
+            <p className="login-proof-note">
+              Login proof: SHA-256(timestamp + contact + one-time salt). Production should sign this proof with a
+              server-held key before sending the code or link.
+            </p>
           </div>
-          <Button onClick={onOpenAssistant} type="button" variant="secondary">
-            <MessageSquare aria-hidden="true" size={18} /> Open assistant
-          </Button>
-        </div>
+        ) : null}
+        <Button onClick={onOpenAssistant} type="button" variant="secondary">
+          <MessageSquare aria-hidden="true" size={18} /> Open assistant
+        </Button>
       </form>
     </main>
   );

@@ -218,15 +218,18 @@ function collectPageDiagnostics(page: Page, apiBaseUrl: string): PageDiagnostics
 }
 
 async function signInIfNeeded(page: Page, username = "abby"): Promise<void> {
-  const usernameField = page.getByLabel(/username/i).first();
+  const contactField = page.getByLabel(/Email address or telephone/i).first();
   try {
-    await usernameField.waitFor({ state: "visible", timeout: 1_000 });
+    await contactField.waitFor({ state: "visible", timeout: 1_000 });
   } catch {
     return;
   }
-  await usernameField.fill(username);
-  await page.getByLabel(/password/i).fill("safety-plan");
-  await page.getByRole("button", { name: /log in|login|sign in|continue/i }).click();
+  await page.getByRole("button", { name: /^Client$/i }).click();
+  await contactField.fill(`${username.replace(/[^a-z0-9]+/gi, ".").replace(/^\.+|\.+$/g, "") || "abby"}@example.org`);
+  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  const oneTimePad = (await page.locator('code[aria-label="Generated one-time pad code"]').innerText()).trim();
+  await page.getByRole("textbox", { name: /One-time pad number/i }).fill(oneTimePad);
+  await page.getByRole("button", { name: /Verify code/i }).click();
 }
 
 async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics: PageDiagnostics) {

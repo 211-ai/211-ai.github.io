@@ -43,25 +43,38 @@ test("home screen uses ABBY watercolor styling and captures a review screenshot"
 
 test("login and inner route chrome use production ABBY assets", async ({ page }, testInfo) => {
   await page.goto("/");
-  await expect(page.getByRole("button", { name: /Client portal/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Provider portal/i })).toBeVisible();
+  await expect(page.locator(".login-page")).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Client$/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Service provider/i })).toBeVisible();
+  await expect(page.getByLabel(/Email address or telephone/i)).toBeVisible();
+  await expect(page.locator(".login-logo")).toBeVisible();
+  await page.waitForFunction(() => {
+    const logo = document.querySelector<HTMLImageElement>(".login-logo");
+    return Boolean(logo?.complete && logo.naturalWidth > 0);
+  });
 
   const loginTheme = await page.evaluate(() => {
-    const loginMark = getComputedStyle(document.querySelector(".login-mark")!);
-    const loginPanel = getComputedStyle(document.querySelector(".login-panel")!);
+    const loginLogo = document.querySelector<HTMLImageElement>(".login-logo")!;
+    const loginPanelWatermark = getComputedStyle(document.querySelector(".login-panel")!, "::after");
     const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
     return {
-      loginMarkBackground: loginMark.backgroundImage,
-      loginPanelBackground: loginPanel.backgroundImage,
+      loginLogoNaturalWidth: loginLogo.naturalWidth,
+      loginLogoSrc: loginLogo.currentSrc,
+      loginPanelWatermark: loginPanelWatermark.backgroundImage,
       faviconHref: favicon?.getAttribute("href") ?? ""
     };
   });
 
-  expect(loginTheme.loginMarkBackground).toContain("abby-logo-mark.svg");
-  expect(loginTheme.loginPanelBackground).toContain("preview-support-bridge-watermark.png");
+  expect(loginTheme.loginLogoSrc).toContain("/assets/abby-logo.png");
+  expect(loginTheme.loginLogoNaturalWidth).toBeGreaterThan(0);
+  expect(loginTheme.loginPanelWatermark).toContain("preview-header-landscape.png");
   expect(loginTheme.faviconHref).toContain("assets/favicon.svg");
 
   await page.screenshot({ fullPage: true, path: testInfo.outputPath("abby-login-style.png") });
+  await page.getByLabel(/Email address or telephone/i).fill("style-reviewer@example.org");
+  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  await expect(page.locator('code[aria-label="Generated one-time pad code"]')).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open magic link/i })).toBeVisible();
 
   await signIn(page);
   await page.goto("/#/register");
