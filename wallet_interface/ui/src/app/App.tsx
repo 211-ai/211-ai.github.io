@@ -3574,7 +3574,7 @@ function AnalyticsScreen({
   const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
 
   return (
-    <div className="screen">
+    <div className="screen analytics-screen">
       <div className="page-title">
         <p className="eyebrow">Analytics tools</p>
         <h1>Share group facts, not your name</h1>

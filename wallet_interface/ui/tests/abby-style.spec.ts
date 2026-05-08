@@ -89,11 +89,13 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
   const navigation = page.locator("#mobile-navigation");
   await expect(navigation.getByText("Client portal", { exact: true })).toBeVisible();
   await expect(navigation.getByText("Provider portal", { exact: true })).toBeVisible();
-  await expect(navigation.getByText("Trust tools", { exact: true })).toBeVisible();
+  await expect(navigation.getByText("Analytics tools", { exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Home", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Register", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Services", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Shelter staff", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Analytics", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Group facts", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Who can see info", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Benefits", exact: true })).toHaveCount(0);
 
@@ -139,4 +141,19 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
   expect(homeMetrics.brandCaption).toBe("Client portal");
   expect(providerMetrics.appClass).toContain("portal-provider");
   expect(providerMetrics.brandCaption).toBe("Provider workspace");
+});
+
+test("analytics tools expose project and service organization admin introspection", async ({ page }) => {
+  await signIn(page);
+  await page.goto("/#/analytics");
+
+  await expect(page.getByRole("heading", { name: /Share group facts, not your name/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Admin introspection/i })).toBeVisible();
+  await expect(page.getByRole("article", { name: /211-AI project admin analytics introspection/i })).toContainText(
+    "Template status"
+  );
+  await expect(page.getByRole("article", { name: /Service organization admin analytics introspection/i })).toContainText(
+    "Own organization programs"
+  );
+  await expect(page.getByText(/Raw wallet records, names, contact details/i)).toBeVisible();
 });

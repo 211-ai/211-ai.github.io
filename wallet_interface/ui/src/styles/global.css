@@ -419,6 +419,22 @@ body.playful-pulse .decor-shape {
   grid-template-columns: 1fr;
 }
 
+.analytics-admin-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.analytics-admin-card {
+  align-content: start;
+}
+
+@media (min-width: 760px) {
+  .analytics-screen {
+    padding-right: 184px;
+  }
+}
+
 .status-panel {
   border-left: 4px solid;
   border-radius: 8px;

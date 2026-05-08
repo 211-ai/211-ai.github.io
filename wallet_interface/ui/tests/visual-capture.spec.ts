@@ -365,9 +365,11 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "analytics",
     path: "/#/analytics",
-    title: "Group facts choice",
+    title: "Analytics tools and group facts choice",
     state: "default",
     goals: [
+      "The admin introspection area should distinguish project admins from service organization admins.",
+      "Admin tools should make aggregate-only guardrails explicit.",
       "Group facts choices should start checked unless the user saved them as off.",
       "The user should be able to turn off each available choice in plain language.",
       "Safe detail badges should be clearly separated from personal records.",
@@ -377,9 +379,10 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "analytics-consented",
     path: "/#/analytics",
-    title: "Group facts selected study",
+    title: "Analytics tools selected study",
     state: "one choice on",
     goals: [
+      "Admin introspection should stay separate from resident consent choices.",
       "The selected choice should be visually distinct from paused or available choices.",
       "Safe detail badges should remain visible after consent is on.",
       "Privacy-left and group-size limits should stay prominent."
@@ -392,9 +395,10 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "analytics-one-choice-off",
     path: "/#/analytics",
-    title: "Group facts choice with one option off",
+    title: "Analytics tools with one group fact option off",
     state: "one choice off",
     goals: [
+      "Admin introspection should remain aggregate-only when a resident choice is off.",
       "The off choice should be visually clear without making the user feel punished.",
       "Available and paused choices should remain easy to compare.",
       "Group size and privacy-left labels should remain visible."
