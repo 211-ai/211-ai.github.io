@@ -2,6 +2,7 @@ import { LogLevel, env, pipeline } from "@huggingface/transformers";
 import ortWasmAsyncifyMjsUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
 import ortWasmAsyncifyWasmUrl from "../../node_modules/@huggingface/transformers/node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
+import { buildClientLlmChatMessages, buildClientLlmGenerationOptions } from "../lib/clientLlmPrompting";
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 env.allowLocalModels = false;
@@ -245,12 +246,8 @@ async function generateText(prompt: string, maxTokens: number): Promise<string> 
 
 async function runTextGeneration(prompt: string, maxTokens: number): Promise<string> {
   const modelInfo = getClientLlmModelInfo(currentModelName) || SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel];
-  const input = modelInfo.inputMode === "chat" ? buildChatGenerationMessages(prompt) : prompt;
-  const output = await textGenerator(input, {
-    max_new_tokens: maxTokens,
-    do_sample: false,
-    return_full_text: false,
-  });
+  const input = modelInfo.inputMode === "chat" ? buildClientLlmChatMessages(prompt) : prompt;
+  const output = await textGenerator(input, buildClientLlmGenerationOptions(currentModelName, maxTokens));
   return extractGeneratedText(output);
 }
 
@@ -311,66 +308,6 @@ function selectModelDType(dtype: string, device: ClientLlmDevice): string {
     return "q4";
   }
   return dtype;
-}
-
-function buildChatGenerationMessages(prompt: string): Array<{ role: "system" | "user"; content: string }> {
-  const assistantPrompt = parseAbbyAssistantResponsePrompt(prompt);
-  if (assistantPrompt) {
-    return [
-      {
-        role: "system",
-        content: [
-          "You are Abby, a concise assistant inside a 211 service navigation and wallet app.",
-          "If the user asks what you can do, mention screen help, app navigation, public 211 service search, evidence summaries, and confirmation before wallet changes.",
-          "Use the safe app context and conversation history. Do not invent service facts or completed app actions.",
-          "Return only the assistant message text.",
-          "",
-          assistantPrompt.systemContext,
-        ].join("\n"),
-      },
-      {
-        role: "user",
-        content: assistantPrompt.userMessage,
-      },
-    ];
-  }
-
-  const jsonMode = /\bReturn only one JSON object\b/i.test(prompt);
-  return [
-    {
-      role: "system",
-      content: jsonMode
-        ? "You are Abby's app tool router. Follow the prompt exactly and return only the requested JSON object."
-        : "You are Abby, a concise assistant inside a 211 service navigation and wallet app. Follow the user's prompt exactly and return only the assistant message text.",
-    },
-    {
-      role: "user",
-      content: prompt,
-    },
-  ];
-}
-
-function parseAbbyAssistantResponsePrompt(prompt: string): { systemContext: string; userMessage: string } | undefined {
-  if (!/^Answer as Abby\b/i.test(prompt.trim())) {
-    return undefined;
-  }
-
-  const marker = "\nUser message:\n";
-  const markerIndex = prompt.lastIndexOf(marker);
-  if (markerIndex < 0) {
-    return undefined;
-  }
-
-  const systemContext = prompt.slice(0, markerIndex).trim();
-  const userMessage = prompt
-    .slice(markerIndex + marker.length)
-    .replace(/\n\s*Abby\s*:\s*$/i, "")
-    .trim();
-  if (!systemContext || !userMessage) {
-    return undefined;
-  }
-
-  return { systemContext, userMessage };
 }
 
 function extractGeneratedText(output: unknown): string {

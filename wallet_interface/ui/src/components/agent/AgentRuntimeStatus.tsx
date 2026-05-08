@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Cpu, Gauge, RefreshCw, Zap } from "lucide-react";
+import { Check, Cloud, Cpu, Gauge, KeyRound, RefreshCw, Trash2, Zap } from "lucide-react";
 import { SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../../lib/llmConfig";
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
@@ -26,7 +26,19 @@ interface ClientLlmRuntimeStatus {
   isInitializing: boolean;
   currentModel: string;
   currentDevice: ClientLlmDevice;
+  lastGenerationProvider?: "local" | "openrouter";
+  lastGenerationModel?: string;
   capabilities: ClientLlmRuntimeCapabilities;
+  openRouter?: {
+    enabled: boolean;
+    configured: boolean;
+    credentialSource: "browser" | "build" | "proxy" | "none";
+    endpoint: string;
+    model: string;
+    fallbackDelayMs: number;
+    lastError?: string;
+    lastUsedAt?: string;
+  };
   error?: string;
 }
 
@@ -51,6 +63,7 @@ const initialStatus: ClientLlmRuntimeStatus = {
 export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: boolean; showModelSelector?: boolean }) {
   const [status, setStatus] = useState<ClientLlmRuntimeStatus>(initialStatus);
   const [selectedModel, setSelectedModel] = useState("");
+  const [openRouterKeyDraft, setOpenRouterKeyDraft] = useState("");
   const [loading, setLoading] = useState(false);
 
   const refreshStatus = useCallback(async () => {
@@ -97,6 +110,34 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
     }
   }, [refreshStatus]);
 
+  const saveOpenRouterKey = useCallback(async () => {
+    const apiKey = openRouterKeyDraft.trim();
+    if (!apiKey) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const { clientLLMWorkerService } = await import("../../lib/clientLLMWorkerService");
+      const openRouter = clientLLMWorkerService.saveOpenRouterApiKey(apiKey);
+      setStatus((current) => ({ ...current, openRouter }));
+      setOpenRouterKeyDraft("");
+    } finally {
+      setLoading(false);
+    }
+  }, [openRouterKeyDraft]);
+
+  const clearOpenRouterKey = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { clientLLMWorkerService } = await import("../../lib/clientLLMWorkerService");
+      const openRouter = clientLLMWorkerService.clearOpenRouterApiKey();
+      setStatus((current) => ({ ...current, openRouter }));
+      setOpenRouterKeyDraft("");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!open) {
       return;
@@ -134,21 +175,71 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
         </div>
       </dl>
       {showModelSelector ? (
-        <label className="agent-runtime-model-select">
-          <span>Model</span>
-          <select
-            aria-label="Assistant language model"
-            disabled={loading}
-            onChange={(event) => void switchModel(event.target.value as ClientLlmModel)}
-            value={selectedModel || status.currentModel}
-          >
-            {Object.entries(SUPPORTED_CLIENT_LLM_MODELS).map(([modelName, modelInfo]) => (
-              <option key={modelName} value={modelName}>
-                {modelInfo.name} ({modelInfo.device}{modelInfo.requiresWebGPU ? " required" : ""})
-              </option>
-            ))}
-          </select>
-        </label>
+        <>
+          <label className="agent-runtime-model-select">
+            <span>Model</span>
+            <select
+              aria-label="Assistant language model"
+              disabled={loading}
+              onChange={(event) => void switchModel(event.target.value as ClientLlmModel)}
+              value={selectedModel || status.currentModel}
+            >
+              {Object.entries(SUPPORTED_CLIENT_LLM_MODELS).map(([modelName, modelInfo]) => (
+                <option key={modelName} value={modelName}>
+                  {modelInfo.name} ({modelInfo.device}{modelInfo.requiresWebGPU ? " required" : ""})
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="agent-runtime-openrouter">
+            <label>
+              <span>OpenRouter key</span>
+              <div className="agent-runtime-openrouter-control">
+                <input
+                  aria-label="OpenRouter API key"
+                  autoComplete="off"
+                  disabled={loading}
+                  onChange={(event) => setOpenRouterKeyDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void saveOpenRouterKey();
+                    }
+                  }}
+                  placeholder={status.openRouter?.configured ? "OpenRouter key saved" : "sk-or-v1-..."}
+                  type="password"
+                  value={openRouterKeyDraft}
+                />
+                <button
+                  aria-label="Save OpenRouter API key"
+                  className="agent-runtime-key-button"
+                  disabled={loading || !openRouterKeyDraft.trim()}
+                  onClick={() => void saveOpenRouterKey()}
+                  type="button"
+                >
+                  {status.openRouter?.configured ? (
+                    <Check aria-hidden="true" size={14} />
+                  ) : (
+                    <KeyRound aria-hidden="true" size={14} />
+                  )}
+                </button>
+                <button
+                  aria-label="Clear OpenRouter API key"
+                  className="agent-runtime-key-button"
+                  disabled={loading || status.openRouter?.credentialSource !== "browser"}
+                  onClick={() => void clearOpenRouterKey()}
+                  type="button"
+                >
+                  <Trash2 aria-hidden="true" size={14} />
+                </button>
+              </div>
+            </label>
+            <small className={status.openRouter?.configured ? "agent-runtime-cloud-ready" : undefined}>
+              <Cloud aria-hidden="true" size={12} />
+              {formatOpenRouterStatus(status.openRouter)}
+            </small>
+          </div>
+        </>
       ) : null}
       <button
         aria-label="Refresh assistant runtime status"
@@ -219,4 +310,17 @@ function formatAdapter(adapter: ClientLlmRuntimeCapabilities["webGPUAdapter"]): 
 function formatWebGpuDetail(capabilities: ClientLlmRuntimeCapabilities): string {
   const adapter = formatAdapter(capabilities.webGPUAdapter) || "WebGPU active";
   return capabilities.webGPUShaderF16 ? `${adapter}; shader-f16` : `${adapter}; no shader-f16`;
+}
+
+function formatOpenRouterStatus(status: ClientLlmRuntimeStatus["openRouter"]): string {
+  if (!status?.enabled) {
+    return "cloud fallback off";
+  }
+  if (status.lastError) {
+    return "cloud fallback error";
+  }
+  if (status.configured) {
+    return `cloud fallback ready (${status.credentialSource})`;
+  }
+  return "add key for cloud fallback";
 }

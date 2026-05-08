@@ -1,6 +1,15 @@
+import { isPromptEligibleForRemoteLlm } from "./clientLlmPrompting";
 import { LLM_CONFIG, getClientLlmModelInfo } from "./llmConfig";
+import {
+  clearOpenRouterApiKey,
+  generateOpenRouterText,
+  getOpenRouterRuntimeStatus,
+  saveOpenRouterApiKey,
+  type OpenRouterRuntimeStatus,
+} from "./openRouterClient";
 
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
+type ClientLlmProvider = "local" | "openrouter";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -54,7 +63,15 @@ class ClientLLMWorkerService {
   private pendingRequests = new Map<string, PendingRequest<LlmWorkerResponse>>();
   private currentModel = LLM_CONFIG.defaultModel;
   private currentDevice: "wasm" | "webgpu" | "auto" = "wasm";
+  private capabilitiesKnown = false;
   private webGPUFallbackReason: string | undefined;
+  private openRouterFallbackDelayMs = LLM_CONFIG.openRouterFallbackDelayMs;
+  private openRouterLastError: string | undefined;
+  private openRouterLastUsedAt: string | undefined;
+  private lastGenerationModel = LLM_CONFIG.defaultModel;
+  private lastGenerationProvider: ClientLlmProvider = "local";
+  private generationCounter = 0;
+  private generationWinnerId = 0;
   private capabilities: NonNullable<LlmWorkerResponse["capabilities"]> = {
     webGPU: false,
     webGPUShaderF16: false,
@@ -137,23 +154,23 @@ class ClientLLMWorkerService {
   }
 
   async generateText(prompt: string, maxTokens = 180, didRestart = false): Promise<string> {
-    if (!this.isInitialized) {
-      await this.initialize();
-    }
-    let result: LlmWorkerResponse;
-    try {
-      result = await this.sendWorkerRequest("generate", { prompt, maxTokens }, LLM_CONFIG.requestTimeoutMs);
-    } catch (error) {
-      if (!didRestart && isWorkerRestartRequiredError(error)) {
-        await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
-        return this.generateText(prompt, maxTokens, true);
+    const generationId = ++this.generationCounter;
+    const remoteFallbackReason = this.getImmediateOpenRouterFallbackReason(prompt);
+    if (remoteFallbackReason) {
+      try {
+        return await this.generateTextWithOpenRouter(prompt, maxTokens, remoteFallbackReason, generationId);
+      } catch (error) {
+        this.recordOpenRouterError(error);
+        console.warn(`OpenRouter fallback unavailable; using local LLM path. ${formatError(error)}`, error);
       }
-      throw error;
     }
-    if (!result.text) {
-      throw new Error("LLM worker returned an empty response");
+
+    const localPromise = this.generateLocalText(prompt, maxTokens, didRestart, generationId);
+    if (!this.shouldRaceOpenRouterFallback(prompt)) {
+      return localPromise;
     }
-    return result.text;
+
+    return this.raceLocalWithOpenRouterFallback(localPromise, prompt, maxTokens, generationId);
   }
 
   async tryGenerateText(prompt: string, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
@@ -162,13 +179,13 @@ class ClientLLMWorkerService {
       return {
         ok: true,
         text,
-        modelName: this.currentModel
+        modelName: this.lastGenerationModel
       };
     } catch (error) {
       return {
         ok: false,
         text: "",
-        modelName: this.currentModel,
+        modelName: this.lastGenerationModel,
         error: error instanceof Error ? error.message : "LLM worker text generation failed"
       };
     }
@@ -192,9 +209,58 @@ class ClientLLMWorkerService {
     };
   }
 
+  saveOpenRouterApiKey(apiKey: string): OpenRouterRuntimeStatus {
+    saveOpenRouterApiKey(apiKey);
+    this.openRouterLastError = undefined;
+    return this.getOpenRouterStatus();
+  }
+
+  clearOpenRouterApiKey(): OpenRouterRuntimeStatus {
+    clearOpenRouterApiKey();
+    this.openRouterLastError = undefined;
+    return this.getOpenRouterStatus();
+  }
+
+  getOpenRouterStatus(): OpenRouterRuntimeStatus {
+    return getOpenRouterRuntimeStatus({
+      localModelName: this.currentModel,
+      lastError: this.openRouterLastError,
+      lastUsedAt: this.openRouterLastUsedAt,
+    });
+  }
+
+  private async generateLocalText(
+    prompt: string,
+    maxTokens: number,
+    didRestart: boolean,
+    generationId: number,
+  ): Promise<string> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+    let result: LlmWorkerResponse;
+    try {
+      result = await this.sendWorkerRequest("generate", { prompt, maxTokens }, LLM_CONFIG.requestTimeoutMs);
+    } catch (error) {
+      if (!didRestart && isWorkerRestartRequiredError(error)) {
+        await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
+        return this.generateLocalText(prompt, maxTokens, true, generationId);
+      }
+      throw error;
+    }
+    if (!result.text) {
+      throw new Error("LLM worker returned an empty response");
+    }
+    this.markGeneration("local", result.modelName || this.currentModel, generationId);
+    return result.text;
+  }
+
   async getCapabilities(): Promise<LlmWorkerResponse> {
     try {
       const result = await this.sendWorkerRequest("getCapabilities", {}, 5000);
+      if (result.capabilities) {
+        this.applyCapabilities(result.capabilities);
+      }
       return {
         ...result,
         capabilities: result.capabilities ? this.mergeCapabilities(result.capabilities) : this.capabilities,
@@ -216,7 +282,10 @@ class ClientLLMWorkerService {
       hasWorker: this.worker !== null,
       currentModel: this.currentModel,
       currentDevice: this.currentDevice,
+      lastGenerationProvider: this.lastGenerationProvider,
+      lastGenerationModel: this.lastGenerationModel,
       capabilities: this.capabilities,
+      openRouter: this.getOpenRouterStatus(),
     };
   }
 
@@ -262,6 +331,7 @@ class ClientLLMWorkerService {
   }
 
   private applyCapabilities(capabilities: NonNullable<LlmWorkerResponse["capabilities"]>): void {
+    this.capabilitiesKnown = true;
     this.capabilities = this.mergeCapabilities(capabilities);
   }
 
@@ -355,6 +425,104 @@ class ClientLLMWorkerService {
       worker.postMessage({ id, type, data });
     });
   }
+
+  private shouldRaceOpenRouterFallback(prompt: string): boolean {
+    return this.isOpenRouterFallbackUsable(prompt);
+  }
+
+  private getImmediateOpenRouterFallbackReason(prompt: string): string | undefined {
+    if (!this.isOpenRouterFallbackUsable(prompt)) {
+      return undefined;
+    }
+    const modelInfo = getClientLlmModelInfo(this.currentModel) || getClientLlmModelInfo(LLM_CONFIG.defaultModel);
+    if (!this.worker) {
+      return "local_worker_unavailable";
+    }
+    if (this.webGPUFallbackReason) {
+      return "webgpu_runtime_failed";
+    }
+    if (
+      this.capabilitiesKnown &&
+      !this.capabilities.webGPU &&
+      (modelInfo?.requiresWebGPU || modelInfo?.preferWebGPU || (modelInfo?.device as string | undefined) === "webgpu")
+    ) {
+      return "webgpu_unavailable";
+    }
+    return undefined;
+  }
+
+  private isOpenRouterFallbackUsable(prompt: string): boolean {
+    const status = this.getOpenRouterStatus();
+    return status.enabled && status.configured && isPromptEligibleForRemoteLlm(prompt);
+  }
+
+  private async raceLocalWithOpenRouterFallback(
+    localPromise: Promise<string>,
+    prompt: string,
+    maxTokens: number,
+    generationId: number,
+  ): Promise<string> {
+    type RaceResult = { source: "local" | "openrouter"; text: string } | { source: "local" | "openrouter"; error: unknown };
+    const localResult: Promise<RaceResult> = localPromise.then(
+      (text) => ({ source: "local", text }),
+      (error) => ({ source: "local", error }),
+    );
+    const remoteResult: Promise<RaceResult> = wait(this.openRouterFallbackDelayMs)
+      .then(() => this.generateTextWithOpenRouter(prompt, maxTokens, "local_model_warming", generationId))
+      .then(
+        (text) => ({ source: "openrouter", text }),
+        (error) => ({ source: "openrouter", error }),
+      );
+
+    const first = await Promise.race([localResult, remoteResult]);
+    if ("text" in first) {
+      return first.text;
+    }
+    if (first.source === "local") {
+      throw first.error;
+    }
+
+    this.recordOpenRouterError(first.error);
+    const local = await localResult;
+    if ("text" in local) {
+      return local.text;
+    }
+    throw local.error;
+  }
+
+  private async generateTextWithOpenRouter(
+    prompt: string,
+    maxTokens: number,
+    fallbackReason: string,
+    generationId: number,
+  ): Promise<string> {
+    const result = await generateOpenRouterText({
+      prompt,
+      maxTokens,
+      localModelName: this.currentModel,
+      fallbackReason,
+    });
+    this.openRouterLastError = undefined;
+    this.openRouterLastUsedAt = new Date().toISOString();
+    this.markGeneration("openrouter", result.model, generationId);
+    return result.text;
+  }
+
+  private recordOpenRouterError(error: unknown): void {
+    this.openRouterLastError = formatError(error);
+  }
+
+  private markGeneration(provider: ClientLlmProvider, modelName: string, generationId: number): void {
+    if (generationId !== this.generationCounter) {
+      return;
+    }
+    if (this.generationWinnerId === generationId) {
+      return;
+    }
+    this.generationWinnerId = generationId;
+    this.lastGenerationProvider = provider;
+    this.lastGenerationModel = modelName;
+  }
 }
 
 function isWorkerRestartRequiredError(error: unknown): boolean {
@@ -366,6 +534,14 @@ function formatWorkerRestartReason(error: unknown): string {
     return error.message.replace(WORKER_RESTART_REQUIRED_PREFIX, "").trim();
   }
   return "WebGPU runtime failed; using WASM fallback.";
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => globalThis.setTimeout(resolve, Math.max(0, ms)));
+}
+
+function formatError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error || "unknown error");
 }
 
 function extractFirstJsonValue(text: string): { ok: true; value: unknown } | { ok: false; error: string } {

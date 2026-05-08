@@ -1499,6 +1499,73 @@ body.playful-pulse .decor-shape {
   width: 100%;
 }
 
+.agent-runtime-openrouter {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+}
+
+.agent-runtime-openrouter label {
+  display: grid;
+  gap: 4px;
+}
+
+.agent-runtime-openrouter span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-runtime-openrouter-control {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) 32px 32px;
+}
+
+.agent-runtime-openrouter-control input {
+  background: #f8fafc;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 12px;
+  min-height: 34px;
+  min-width: 0;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.agent-runtime-key-button {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  padding: 0;
+  width: 32px;
+}
+
+.agent-runtime-key-button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.agent-runtime-openrouter small {
+  align-items: center;
+  color: #64748b;
+  display: inline-flex;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.agent-runtime-openrouter .agent-runtime-cloud-ready {
+  color: #166534;
+}
+
 .agent-runtime-refresh {
   align-items: center;
   background: transparent;

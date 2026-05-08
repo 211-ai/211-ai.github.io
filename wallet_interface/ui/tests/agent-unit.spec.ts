@@ -45,6 +45,7 @@ import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../s
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
+import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -62,6 +63,7 @@ interface TestLlmCapabilities {
 }
 
 interface TestLlmWorkerResponse {
+  text?: string;
   modelName?: string;
   capabilities?: TestLlmCapabilities;
   device?: ClientLlmDevice;
@@ -74,12 +76,21 @@ interface TestableClientLLMWorkerService {
   isInitializing: boolean;
   currentModel: string;
   currentDevice: ClientLlmDevice;
+  capabilitiesKnown: boolean;
   webGPUFallbackReason?: string;
+  openRouterFallbackDelayMs: number;
+  openRouterLastError?: string;
+  openRouterLastUsedAt?: string;
+  lastGenerationModel: string;
+  lastGenerationProvider: "local" | "openrouter";
+  generationCounter: number;
+  generationWinnerId: number;
   capabilities: TestLlmCapabilities;
   pendingRequests: Map<string, { reject: (reason?: unknown) => void }>;
   requestCounter: number;
   initialize: (modelName?: string) => Promise<void>;
   switchModel: (modelName: string) => Promise<void>;
+  generateText: (prompt: string, maxTokens?: number) => Promise<string>;
   getCapabilities: () => Promise<TestLlmWorkerResponse>;
   getStatus: () => {
     currentDevice: ClientLlmDevice;
@@ -88,7 +99,11 @@ interface TestableClientLLMWorkerService {
     isInitialized: boolean;
   };
   initializeWorker: () => void;
-  sendWorkerRequest: (type: string, data: { modelName?: string }, timeoutMs: number) => Promise<TestLlmWorkerResponse>;
+  sendWorkerRequest: (
+    type: string,
+    data: { modelName?: string; prompt?: string; maxTokens?: number },
+    timeoutMs: number,
+  ) => Promise<TestLlmWorkerResponse>;
 }
 
 function createSurfaceContext(
@@ -170,6 +185,32 @@ function createSearchResult(docId: string, providerName: string): SearchResult {
       city: "Portland",
       state: "OR",
     },
+  };
+}
+
+function installMemoryLocalStorage() {
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  const values = new Map<string, string>();
+  const storage = {
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => values.delete(key),
+    setItem: (key: string, value: string) => values.set(key, value),
+    get length() {
+      return values.size;
+    },
+  } as Storage;
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: storage,
+  });
+  return () => {
+    if (original) {
+      Object.defineProperty(globalThis, "localStorage", original);
+    } else {
+      delete (globalThis as { localStorage?: Storage }).localStorage;
+    }
   };
 }
 
@@ -694,6 +735,219 @@ test.describe("agent unit contracts", () => {
     expect(invoked[0].input).toEqual({ route: "exports" });
   });
 
+  test("uses OpenRouter when WebGPU is unavailable for the default client LLM", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+    };
+    const calls: string[] = [];
+    let requestBody: any;
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "wasm";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.capabilities = {
+        webGPU: false,
+        webGPUError: "navigator.gpu is unavailable",
+        webGPUShaderF16: false,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async (type) => {
+        calls.push(type);
+        throw new Error("local worker should not be used before OpenRouter");
+      };
+      globalThis.fetch = async (_input, init) => {
+        requestBody = JSON.parse(String(init?.body || "{}"));
+        return new Response(
+          JSON.stringify({
+            model: "liquid/lfm-2.5-1.2b-instruct:free",
+            choices: [{ message: { role: "assistant", content: "remote answer" } }],
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 200 },
+        );
+      };
+
+      const text = await service.generateText("What can you do?", 64);
+
+      expect(text).toBe("remote answer");
+      expect(calls).toEqual([]);
+      expect(requestBody.model).toBe("liquid/lfm-2.5-1.2b-instruct:free");
+      expect(requestBody.messages[0]).toMatchObject({ role: "system" });
+      expect(requestBody.max_tokens).toBe(64);
+      expect(requestBody.temperature).toBe(0.1);
+      expect(requestBody.top_k).toBe(50);
+      expect(service.lastGenerationProvider).toBe("openrouter");
+      expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
+  test("uses OpenRouter while the local LLM is still warming up", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterFallbackDelayMs: service.openRouterFallbackDelayMs,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+    };
+    const calls: string[] = [];
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "webgpu";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterFallbackDelayMs = 1;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.capabilities = {
+        webGPU: true,
+        webGPUShaderF16: true,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async (type, data) => {
+        calls.push(`${type}:${data.modelName || ""}`);
+        await new Promise((resolve) => setTimeout(resolve, 25));
+        if (type === "initialize") {
+          service.isInitialized = true;
+          return {
+            isInitialized: true,
+            modelName: data.modelName,
+            device: "webgpu",
+            capabilities: service.capabilities,
+          };
+        }
+        if (type === "generate") {
+          return {
+            text: "local answer",
+            modelName: LLM_CONFIG.defaultModel,
+            device: "webgpu",
+            capabilities: service.capabilities,
+          };
+        }
+        throw new Error(`Unexpected worker request ${type}`);
+      };
+      globalThis.fetch = async () =>
+        new Response(
+          JSON.stringify({
+            model: "liquid/lfm-2.5-1.2b-instruct:free",
+            choices: [{ message: { role: "assistant", content: "remote during warmup" } }],
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 200 },
+        );
+
+      const text = await service.generateText("Summarize housing options.", 80);
+      await new Promise((resolve) => setTimeout(resolve, 60));
+
+      expect(text).toBe("remote during warmup");
+      expect(calls).toContain(`initialize:${LLM_CONFIG.defaultModel}`);
+      expect(service.lastGenerationProvider).toBe("openrouter");
+      expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterFallbackDelayMs = originalState.openRouterFallbackDelayMs;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
   test("restarts the LLM worker before using WASM fallback after WebGPU runtime failure", async () => {
     const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
     const originalState = {
@@ -702,7 +956,14 @@ test.describe("agent unit contracts", () => {
       isInitializing: service.isInitializing,
       currentModel: service.currentModel,
       currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
       webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
       capabilities: service.capabilities,
       pendingRequests: service.pendingRequests,
       requestCounter: service.requestCounter,
@@ -727,7 +988,13 @@ test.describe("agent unit contracts", () => {
       service.isInitializing = false;
       service.currentModel = LLM_CONFIG.defaultModel;
       service.currentDevice = "webgpu";
+      service.capabilitiesKnown = true;
       service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
       service.capabilities = baseCapabilities;
       service.pendingRequests = new Map();
       service.requestCounter = 0;
@@ -792,7 +1059,14 @@ test.describe("agent unit contracts", () => {
       service.isInitializing = originalState.isInitializing;
       service.currentModel = originalState.currentModel;
       service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
       service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
       service.capabilities = originalState.capabilities;
       service.pendingRequests = originalState.pendingRequests;
       service.requestCounter = originalState.requestCounter;
