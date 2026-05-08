@@ -91,7 +91,8 @@ const iterationScenarios: IterationScenario[] = [
       "Recipient type selection should clearly support people, shelters, government help, and benefits agencies."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+      await page.getByLabel(/First name/i).fill("Morgan");
+      await page.getByLabel(/Last name/i).fill("Caseworker");
       await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
       await page.getByLabel(/Phone/i).fill("(503) 555-0188");
       await page.getByLabel(/Email/i).fill("morgan@example.org");

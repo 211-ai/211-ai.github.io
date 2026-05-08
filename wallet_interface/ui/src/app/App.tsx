@@ -171,7 +171,8 @@ const routes = primaryRoutes
 const secondaryNavigationRoutes = secondaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
-const navigationRoutes = [...routes, ...secondaryNavigationRoutes];
+const clientNavigationRoutes = routes.filter((route) => route.id !== "shelter");
+const providerNavigationRoutes = routes.filter((route) => route.id === "shelter");
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
@@ -606,47 +607,58 @@ export function App() {
   if (!signedInUser) {
     return (
       <LoginScreen
+        onOpenClientPortal={() => {
+          handleSignIn("client-demo");
+          navigate("home");
+        }}
         onOpenAssistant={() => {
           handleSignIn("abby");
           setAgentChatOpen(true);
+        }}
+        onOpenProviderPortal={() => {
+          handleSignIn("provider-demo");
+          navigate("shelter");
         }}
         onSignIn={handleSignIn}
       />
     );
   }
 
+  const portalMode = activeRoute === "shelter" ? "provider" : "client";
+  const portalLabel = portalMode === "provider" ? "Provider workspace" : "Client portal";
+
   return (
-    <div className={`app ${agentChatOpen ? "app-chat-open" : ""}`}>
+    <div className={`app portal-${portalMode} ${agentChatOpen ? "app-chat-open" : ""}`}>
       <aside className="sidebar" aria-label="Primary navigation">
         <div className="brand">
           <span className="brand-mark">A</span>
           <div>
             <strong>Abby</strong>
-            <small>Safety and services</small>
+            <small>{portalLabel}</small>
           </div>
         </div>
-        <nav className="nav-list">
-          {routes.map((route) => (
-            <NavButton
-              active={activeRoute === route.id}
-              icon={route.icon}
-              key={route.id}
-              label={route.label}
-              onClick={() => navigate(route.id)}
-            />
-          ))}
+        <nav className="nav-sections" aria-label="Portal navigation">
+          <NavigationGroup
+            activeRoute={activeRoute}
+            label="Client portal"
+            routes={clientNavigationRoutes}
+            onNavigate={navigate}
+          />
+          <NavigationGroup
+            activeRoute={activeRoute}
+            className="nav-group-provider"
+            label="Provider portal"
+            routes={providerNavigationRoutes}
+            onNavigate={navigate}
+          />
+          <NavigationGroup
+            activeRoute={activeRoute}
+            className="nav-group-support"
+            label="Trust tools"
+            routes={secondaryNavigationRoutes}
+            onNavigate={navigate}
+          />
         </nav>
-        <div className="nav-secondary">
-          {secondaryNavigationRoutes.map((route) => (
-            <NavButton
-              active={activeRoute === route.id}
-              icon={route.icon}
-              key={route.id}
-              label={route.label}
-              onClick={() => navigate(route.id)}
-            />
-          ))}
-        </div>
       </aside>
 
       <main className="main">
@@ -662,7 +674,7 @@ export function App() {
           </Button>
           <div>
             <strong>Abby</strong>
-            <small>Next check-in: {nextCheckIn}</small>
+            <small>{portalMode === "client" ? `Next check-in: ${nextCheckIn}` : portalLabel}</small>
           </div>
           <div className="topbar-actions">
             <Button
@@ -682,15 +694,26 @@ export function App() {
 
         {mobileNavOpen ? (
           <nav className="mobile-nav-panel" id="mobile-navigation" aria-label="Mobile navigation">
-            {navigationRoutes.map((route) => (
-              <NavButton
-                active={activeRoute === route.id}
-                icon={route.icon}
-                key={route.id}
-                label={route.label}
-                onClick={() => navigate(route.id)}
-              />
-            ))}
+            <NavigationGroup
+              activeRoute={activeRoute}
+              label="Client portal"
+              routes={clientNavigationRoutes}
+              onNavigate={navigate}
+            />
+            <NavigationGroup
+              activeRoute={activeRoute}
+              className="nav-group-provider"
+              label="Provider portal"
+              routes={providerNavigationRoutes}
+              onNavigate={navigate}
+            />
+            <NavigationGroup
+              activeRoute={activeRoute}
+              className="nav-group-support"
+              label="Trust tools"
+              routes={secondaryNavigationRoutes}
+              onNavigate={navigate}
+            />
           </nav>
         ) : null}
 
@@ -933,6 +956,37 @@ function readStoredWalletApiConfig(): WalletApiConfig | undefined {
   }
 }
 
+function NavigationGroup({
+  activeRoute,
+  className = "",
+  label,
+  routes,
+  onNavigate
+}: {
+  activeRoute: RouteId;
+  className?: string;
+  label: string;
+  routes: Array<{ id: RouteId; label: string; icon: typeof Home }>;
+  onNavigate: (route: RouteId) => void;
+}) {
+  return (
+    <div className={`nav-group ${className}`}>
+      <p className="nav-section-label">{label}</p>
+      <div className="nav-list">
+        {routes.map((route) => (
+          <NavButton
+            active={activeRoute === route.id}
+            icon={route.icon}
+            key={route.id}
+            label={route.label}
+            onClick={() => onNavigate(route.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function NavButton({
   active,
   icon: Icon,
@@ -952,7 +1006,17 @@ function NavButton({
   );
 }
 
-function LoginScreen({ onOpenAssistant, onSignIn }: { onOpenAssistant: () => void; onSignIn: (username: string) => void }) {
+function LoginScreen({
+  onOpenAssistant,
+  onOpenClientPortal,
+  onOpenProviderPortal,
+  onSignIn
+}: {
+  onOpenAssistant: () => void;
+  onOpenClientPortal: () => void;
+  onOpenProviderPortal: () => void;
+  onSignIn: (username: string) => void;
+}) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const canSignIn = username.trim().length > 0 && password.trim().length > 0;
@@ -995,6 +1059,14 @@ function LoginScreen({ onOpenAssistant, onSignIn }: { onOpenAssistant: () => voi
         <div className="login-assistant-entry">
           <h2>Your safety plan</h2>
           <p>Search for services and decide what to save before changing wallet data.</p>
+          <div className="login-portal-actions" aria-label="Portal shortcuts">
+            <Button onClick={onOpenClientPortal} type="button" variant="secondary">
+              <Home aria-hidden="true" size={18} /> Client portal
+            </Button>
+            <Button onClick={onOpenProviderPortal} type="button" variant="secondary">
+              <UsersRound aria-hidden="true" size={18} /> Provider portal
+            </Button>
+          </div>
           <Button onClick={onOpenAssistant} type="button" variant="secondary">
             <MessageSquare aria-hidden="true" size={18} /> Open assistant
           </Button>

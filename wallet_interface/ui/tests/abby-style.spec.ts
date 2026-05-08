@@ -43,6 +43,8 @@ test("home screen uses ABBY watercolor styling and captures a review screenshot"
 
 test("login and inner route chrome use production ABBY assets", async ({ page }, testInfo) => {
   await page.goto("/");
+  await expect(page.getByRole("button", { name: /Client portal/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Provider portal/i })).toBeVisible();
 
   const loginTheme = await page.evaluate(() => {
     const loginMark = getComputedStyle(document.querySelector(".login-mark")!);
@@ -85,9 +87,13 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
   expect(menuButtonBox?.height).toBeLessThanOrEqual(52);
 
   const navigation = page.locator("#mobile-navigation");
+  await expect(navigation.getByText("Client portal", { exact: true })).toBeVisible();
+  await expect(navigation.getByText("Provider portal", { exact: true })).toBeVisible();
+  await expect(navigation.getByText("Trust tools", { exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Home", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Register", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Services", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Shelter staff", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Who can see info", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Benefits", exact: true })).toHaveCount(0);
 
@@ -95,4 +101,42 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
     .getByRole("button", { name: "Home", exact: true })
     .evaluate((node) => getComputedStyle(node).color);
   expect(activeRouteColor).toBe("rgb(15, 124, 115)");
+});
+
+test("desktop sidebar spacing stays stable across long pages and portal modes", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await signIn(page);
+
+  async function sidebarMetrics(routePath: string) {
+    await page.goto(routePath);
+    await expect(page.locator(".screen")).toBeVisible();
+    return page.evaluate(() => {
+      const rect = (selector: string) => {
+        const node = document.querySelector(selector);
+        if (!node) throw new Error(`Missing ${selector}`);
+        const box = node.getBoundingClientRect();
+        return { height: box.height, top: box.top, y: box.y };
+      };
+      return {
+        appClass: document.querySelector(".app")?.className ?? "",
+        brandCaption: document.querySelector(".brand small")?.textContent ?? "",
+        clientTop: rect(".nav-group:not(.nav-group-provider):not(.nav-group-support)").y,
+        providerTop: rect(".nav-group-provider").y,
+        sidebarHeight: rect(".sidebar").height,
+        supportTop: rect(".nav-group-support").y
+      };
+    });
+  }
+
+  const homeMetrics = await sidebarMetrics("/");
+  const proofMetrics = await sidebarMetrics("/#/proof-center");
+  const providerMetrics = await sidebarMetrics("/#/shelter");
+
+  expect(Math.round(homeMetrics.sidebarHeight)).toBe(1000);
+  expect(Math.round(proofMetrics.sidebarHeight)).toBe(1000);
+  expect(Math.abs(homeMetrics.providerTop - proofMetrics.providerTop)).toBeLessThanOrEqual(1);
+  expect(Math.abs(homeMetrics.supportTop - proofMetrics.supportTop)).toBeLessThanOrEqual(1);
+  expect(homeMetrics.brandCaption).toBe("Client portal");
+  expect(providerMetrics.appClass).toContain("portal-provider");
+  expect(providerMetrics.brandCaption).toBe("Provider workspace");
 });

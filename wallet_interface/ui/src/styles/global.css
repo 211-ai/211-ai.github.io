@@ -3946,3 +3946,130 @@ textarea:focus-visible,
     width: 100%;
   }
 }
+
+/* Portal navigation alignment */
+.nav-sections,
+.nav-group,
+.nav-group .nav-list {
+  display: grid;
+  min-width: 0;
+}
+
+.nav-sections {
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-group {
+  gap: 7px;
+}
+
+.nav-group .nav-list {
+  gap: 4px;
+}
+
+.nav-section-label {
+  color: rgba(7, 49, 74, 0.64);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  margin: 0 4px;
+  text-transform: uppercase;
+}
+
+.nav-group-provider,
+.nav-group-support {
+  border-top: 1px solid rgba(127, 174, 180, 0.28);
+  padding-top: 13px;
+}
+
+.portal-provider .brand small,
+.portal-provider .nav-group-provider .nav-section-label {
+  color: var(--abby-teal);
+}
+
+.login-portal-actions {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.login-portal-actions .button {
+  justify-content: center;
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .sidebar {
+    align-self: start;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100dvh;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .brand,
+  .nav-sections {
+    position: relative;
+    z-index: 1;
+  }
+
+  .nav-sections {
+    align-content: start;
+    padding-bottom: 228px;
+  }
+
+  .sidebar::before {
+    background:
+      linear-gradient(180deg, rgba(250, 251, 248, 0), rgba(250, 251, 248, 0.88) 64%),
+      var(--abby-watercolor-bridge) left bottom / 252px auto no-repeat;
+    opacity: 0.14;
+  }
+
+  .sidebar::after {
+    bottom: 18px;
+    left: auto;
+    opacity: 0.34;
+    right: 12px;
+    width: 132px;
+  }
+
+  .portal-provider .sidebar {
+    background:
+      linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(232, 244, 243, 0.92)),
+      var(--abby-watercolor-bridge) left bottom / 284px auto no-repeat,
+      var(--abby-sidebar-wash) left top / 100% 100% no-repeat;
+  }
+}
+
+@media (max-width: 759px) {
+  .mobile-nav-panel {
+    gap: 18px;
+  }
+
+  .mobile-nav-panel .nav-section-label {
+    font-size: 12px;
+    margin-left: 4px;
+  }
+
+  .mobile-nav-panel .nav-group {
+    gap: 9px;
+  }
+
+  .mobile-nav-panel .nav-group-provider,
+  .mobile-nav-panel .nav-group-support {
+    padding-top: 18px;
+  }
+}
+
+@media (max-width: 520px) {
+  .login-portal-actions {
+    grid-template-columns: 1fr;
+  }
+}

@@ -183,7 +183,8 @@ const captureScenarios: CaptureScenario[] = [
       "The new-person sharing checkboxes should be visible and readable before save."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+      await page.getByLabel(/First name/i).fill("Morgan");
+      await page.getByLabel(/Last name/i).fill("Caseworker");
       await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
       await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
       await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
@@ -201,7 +202,8 @@ const captureScenarios: CaptureScenario[] = [
       "The user should be able to review choices before adding the person."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+      await page.getByLabel(/First name/i).fill("Morgan");
+      await page.getByLabel(/Last name/i).fill("Caseworker");
       await page.getByLabel(/Relationship or role/i).fill("Outreach case worker");
       await page.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
       await page.getByLabel("Email", { exact: true }).fill("morgan@example.org");
@@ -256,7 +258,9 @@ const captureScenarios: CaptureScenario[] = [
       "The request history should remain understandable after approval."
     ],
     prepare: async (page) => {
-      const nudge = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" }).first();
+      const addContactSection = page.getByRole("region", { name: "Add contact" });
+      await addContactSection.getByRole("radio", { name: /Shelter or group/i }).check();
+      const nudge = addContactSection.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" }).first();
       await nudge.getByRole("button", { name: /^Approve$/i }).click();
       await expect(page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" })).toBeVisible();
     }

@@ -254,12 +254,14 @@ test("removed standalone sharing, benefits, and recipient routes fall back home"
 test("contacts add flow saves sharing choices and opens edit panel by keyboard", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const addPersonSection = page.getByRole("region", { name: "Add contact" });
+  await addPersonSection.getByRole("radio", { name: /^Person$/i }).check();
   await expectFirstAboveSecond(
     addPersonSection.getByLabel(/Type/i),
     addPersonSection.getByText(/Sharing choices for this person/i)
   );
-  await addPersonSection.getByLabel(/Name or group/i).fill("Morgan Caseworker");
+  await addPersonSection.getByLabel(/First name/i).fill("Morgan");
+  await addPersonSection.getByLabel(/Last name/i).fill("Caseworker");
   await addPersonSection.getByLabel(/Relationship or role/i).fill("Outreach case worker");
   await addPersonSection.getByLabel("Phone", { exact: true }).fill("(503) 555-0188");
   await addPersonSection.getByLabel("Email", { exact: true }).fill("morgan@example.org");
@@ -294,17 +296,17 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
 
 test("contact list shelter nudge requires user approval before adding contact", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
-  const addShelterSection = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
-  const addPersonSection = page.locator('section[aria-labelledby="Add-person"]');
+  const addContactSection = page.getByRole("region", { name: "Add contact" });
   const savedContacts = page.locator('section[aria-labelledby="Saved-contacts"]');
-  await expect(addShelterSection).toBeVisible();
+  await expect(addContactSection).toBeVisible();
   await expect(savedContacts.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" })).toBeVisible();
-  await expect(addPersonSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
-  expect(await addPersonSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
-  await expect(addPersonSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
-  await expect(addPersonSection.getByLabel(/Minimum identity/i)).toBeChecked();
-  await expect(addPersonSection.getByText("name, birthdate and contact status").first()).toBeVisible();
-  const nudge = page.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
+  await expect(addContactSection.locator(".centered-action").getByRole("button", { name: /^Add person$/i })).toBeVisible();
+  expect(await addContactSection.locator(".centered-action").evaluate((node) => getComputedStyle(node).justifyContent)).toBe("center");
+  await expect(addContactSection.locator('option[value="benefits_agency"]')).toHaveText("Benefits agency");
+  await expect(addContactSection.getByLabel(/Minimum identity/i)).toBeChecked();
+  await expect(addContactSection.getByText("name, birthdate and contact status").first()).toBeVisible();
+  await addContactSection.getByRole("radio", { name: /Shelter or group/i }).check();
+  const nudge = addContactSection.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(nudge.getByText(/asked to be added to your contacts/i)).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Approve$/i })).toBeVisible();
   await expect(nudge.getByRole("button", { name: /^Deny$/i })).toBeVisible();
@@ -322,12 +324,13 @@ test("contact list shelter nudge requires user approval before adding contact", 
 test("user can request a shelter contact and shelter staff can approve it", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
   await expect(page.getByRole("heading", { name: /People who can help/i })).toBeVisible({ timeout: 10000 });
-  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
+  const shelterRequests = page.getByRole("region", { name: "Add contact" });
+  await shelterRequests.getByRole("radio", { name: /Shelter or group/i }).check();
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
   await expect(shelterRequests.getByText(/already waiting/i)).toBeVisible();
-  await shelterRequests.locator("select").selectOption("Downtown Outreach Shelter");
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Downtown Outreach Shelter");
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeDisabled();
-  await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Harbor Night Shelter");
   await expect(shelterRequests.getByRole("button", { name: /Ask to add shelter/i })).toBeEnabled();
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   await expect(page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).getByText(/pending/i)).toBeVisible();
@@ -348,8 +351,9 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
 
 test("user can cancel a pending shelter contact request", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
-  const shelterRequests = page.locator('section[aria-labelledby="Add-shelter-or-group"]');
-  await shelterRequests.locator("select").selectOption("Harbor Night Shelter");
+  const shelterRequests = page.getByRole("region", { name: "Add contact" });
+  await shelterRequests.getByRole("radio", { name: /Shelter or group/i }).check();
+  await shelterRequests.getByLabel(/Shelter name/i).selectOption("Harbor Night Shelter");
   await shelterRequests.getByRole("button", { name: /Ask to add shelter/i }).click();
   const request = page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "You asked this shelter." });
   await expect(request.getByText(/pending/i)).toBeVisible();
@@ -1345,5 +1349,4 @@ test("audit screen loads wallet API event chain metadata", async ({ page }) => {
   await expect(page.getByText(/wallet:\/\/wallet-demo\/records\/rec-benefits-letter/i).first()).toBeVisible();
   await expect(page.getByText(/grant-analysis/i)).toBeVisible();
 });
-
 

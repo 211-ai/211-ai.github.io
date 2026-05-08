@@ -70,7 +70,7 @@ const routeLabels: Record<RouteId, string> = {
   uploads: "Uploads",
   "social-services": "Services",
   interactions: "Interactions",
-  shelter: "Shelter",
+  shelter: "Shelter staff",
   "recipient-access": "Who can see info",
   "benefits-protection": "Benefits",
   analytics: "Group facts",

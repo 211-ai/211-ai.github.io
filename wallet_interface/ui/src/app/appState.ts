@@ -29,7 +29,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "social-services", label: "Services" },
   { id: "interactions", label: "Interactions" },
   { id: "uploads", label: "Uploads" },
-  { id: "shelter", label: "Shelter" }
+  { id: "shelter", label: "Shelter staff" }
 ];
 
 export const secondaryRoutes: Array<{ id: RouteId; label: string }> = [
