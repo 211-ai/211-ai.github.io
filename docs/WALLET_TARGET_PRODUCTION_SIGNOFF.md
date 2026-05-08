@@ -226,6 +226,23 @@ before launch and must not reveal plaintext wallet data, proof witnesses,
 precise coordinates, key material, bearer tokens, webhook credentials, or secret
 values.
 
+The archived bundle must include these artifact references:
+
+| Bundle Artifact | Evidence Reference |
+| --- | --- |
+| Replica creation |  |
+| Replica health and repair |  |
+| Grant revocation and key rotation |  |
+| Analytics-consent withdrawal and export retention |  |
+| Record deletion, provider purge, and backup purge |  |
+| Audit timeline and leak-review decision |  |
+
+Launch is blocked if the dry run uses only planned deletion instead of deleting
+a synthetic record in target staging, if any stale grant can still decrypt,
+analyze, export, or contribute with withdrawn data, if export-bundle retention
+has no disposition, or if the evidence bundle includes plaintext, witnesses,
+precise coordinates, key material, credential values, or secret-manager payloads.
+
 | Dry-Run Step | Required Evidence | Status |
 | --- | --- | --- |
 | Encrypted replica creation | Record creation or upload produced encrypted primary and mirror refs with `storage_type`, `size_bytes`, and `sha256` only |  |
