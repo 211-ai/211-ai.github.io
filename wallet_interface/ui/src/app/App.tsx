@@ -654,7 +654,7 @@ export function App() {
           <NavigationGroup
             activeRoute={activeRoute}
             className="nav-group-support"
-            label="Trust tools"
+            label="Analytics tools"
             routes={secondaryNavigationRoutes}
             onNavigate={navigate}
           />
@@ -710,7 +710,7 @@ export function App() {
             <NavigationGroup
               activeRoute={activeRoute}
               className="nav-group-support"
-              label="Trust tools"
+              label="Analytics tools"
               routes={secondaryNavigationRoutes}
               onNavigate={navigate}
             />
@@ -3566,10 +3566,17 @@ function AnalyticsScreen({
     return optedIn[studyId] ?? true;
   }
 
+  const selectedStudyCount = analyticsStudies.filter((study) => isStudySelected(study.id)).length;
+  const pausedStudyCount = analyticsStudies.filter((study) => study.status === "paused").length;
+  const availableStudyCount = analyticsStudies.length - pausedStudyCount;
+  const totalPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.epsilonBudget, 0);
+  const spentPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.spentBudget, 0);
+  const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
+
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Group facts choice</p>
+        <p className="eyebrow">Analytics tools</p>
         <h1>Share group facts, not your name</h1>
       </div>
       <p className="page-note">
@@ -3578,75 +3585,146 @@ function AnalyticsScreen({
       <StatusBanner tone="warning">
         A privacy and legal team must review this before real use.
       </StatusBanner>
-      <div className="analytics-grid">
-        {analyticsStudies.map((study) => {
-          const selected = isStudySelected(study.id);
-          const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
-          const titleId = `analytics-title-${study.id}`;
-          return (
-            <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
-              <div className="scope-header">
-                <div>
-                  <h3 id={titleId}>{study.title}</h3>
-                  <p>{study.purpose}</p>
-                </div>
-                <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
-                  {study.status === "paused" ? "paused" : selected ? "on" : "off"}
-                </Badge>
+      <Section eyebrow="Admin view" title="Admin introspection">
+        <p className="section-note">
+          Project admins and service organization admins can inspect aggregate operations without seeing raw wallet
+          records, exact locations, names, or contact details.
+        </p>
+        <div className="analytics-admin-grid">
+          <article aria-label="211-AI project admin analytics introspection" className="analytics-card analytics-admin-card">
+            <div className="scope-header">
+              <div>
+                <h3>211-AI project admins</h3>
+                <p>Inspect template health, privacy budget use, and aggregate coverage across participating services.</p>
               </div>
-              <div className="privacy-metrics">
-                <StatusPanel label="Group size" value={String(study.minCohortSize)} tone="teal" />
-                <StatusPanel label="Privacy left" value={budgetRemaining.toFixed(2)} tone="gold" />
+              <Badge tone="success">Project admin</Badge>
+            </div>
+            <div className="privacy-metrics">
+              <StatusPanel label="Templates" value={String(analyticsStudies.length)} tone="teal" />
+              <StatusPanel label="Privacy left" value={privacyBudgetLeft.toFixed(2)} tone="gold" />
+            </div>
+            <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>Can inspect</strong>
+                <span>Template status, cohort floors, privacy spend, consent coverage, organization participation</span>
               </div>
-              <div className="badge-row">
-                {study.fields.map((field) => (
-                  <Badge key={field}>{formatAnalyticsField(field)}</Badge>
-                ))}
+              <div className="disclosure-row">
+                <strong>Use for</strong>
+                <span>System QA, grant reporting, product safety reviews, privacy and legal audit preparation</span>
               </div>
-              <div
-                className="capability-preview"
-                role="group"
-                aria-label={`${study.title} analytics capability preview`}
-              >
+              <div className="disclosure-row">
+                <strong>Not allowed</strong>
+                <span>Raw wallet records, names, contact details, exact locations, files, or private notes</span>
+              </div>
+            </div>
+          </article>
+          <article
+            aria-label="Service organization admin analytics introspection"
+            className="analytics-card analytics-admin-card"
+          >
+            <div className="scope-header">
+              <div>
+                <h3>Service organization admins</h3>
+                <p>Inspect their own service demand, referral outcomes, and approved aggregate cohorts.</p>
+              </div>
+              <Badge tone="info">Organization admin</Badge>
+            </div>
+            <div className="privacy-metrics">
+              <StatusPanel label="Active" value={String(availableStudyCount)} tone="teal" />
+              <StatusPanel label="Paused" value={String(pausedStudyCount)} tone="gold" />
+            </div>
+            <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>Can inspect</strong>
+                <span>Own organization programs, aggregate need categories, referral counts, consented cohort health</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Use for</strong>
+                <span>Capacity planning, service gaps, outreach coordination, and accountable reporting</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Not allowed</strong>
+                <span>Cross-organization row-level views, personal records, exact addresses, or unapproved exports</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </Section>
+      <Section title="Resident group fact choices">
+        <div className="privacy-metrics">
+          <StatusPanel label="Choices on" value={`${selectedStudyCount}/${analyticsStudies.length}`} tone="teal" />
+          <StatusPanel label="Privacy left" value={privacyBudgetLeft.toFixed(2)} tone="gold" />
+        </div>
+        <div className="analytics-grid">
+          {analyticsStudies.map((study) => {
+            const selected = isStudySelected(study.id);
+            const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
+            const titleId = `analytics-title-${study.id}`;
+            return (
+              <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
                 <div className="scope-header">
                   <div>
-                    <h4>What this allows</h4>
-                    <p>{study.fields.length} safe details · group size {study.minCohortSize}</p>
+                    <h3 id={titleId}>{study.title}</h3>
+                    <p>{study.purpose}</p>
                   </div>
-                  <Badge tone={study.status === "paused" ? "warning" : "success"}>
-                    {study.status === "paused" ? "paused" : "limited group share"}
+                  <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
+                    {study.status === "paused" ? "paused" : selected ? "on" : "off"}
                   </Badge>
                 </div>
-                <div className="disclosure-package">
-                  <div className="disclosure-row">
-                    <strong>Can do</strong>
-                    <span>{plainCapabilitySummary(["analytics/contribute"])}</span>
+                <div className="privacy-metrics">
+                  <StatusPanel label="Group size" value={String(study.minCohortSize)} tone="teal" />
+                  <StatusPanel label="Privacy left" value={budgetRemaining.toFixed(2)} tone="gold" />
+                </div>
+                <div className="badge-row">
+                  {study.fields.map((field) => (
+                    <Badge key={field}>{formatAnalyticsField(field)}</Badge>
+                  ))}
+                </div>
+                <div
+                  className="capability-preview"
+                  role="group"
+                  aria-label={`${study.title} analytics capability preview`}
+                >
+                  <div className="scope-header">
+                    <div>
+                      <h4>What this allows</h4>
+                      <p>{study.fields.length} safe details · group size {study.minCohortSize}</p>
+                    </div>
+                    <Badge tone={study.status === "paused" ? "warning" : "success"}>
+                      {study.status === "paused" ? "paused" : "limited group share"}
+                    </Badge>
                   </div>
-                  <div className="disclosure-row">
-                    <strong>Safe details</strong>
-                    <span>{study.fields.map(formatAnalyticsField).join(", ")}</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Not allowed</strong>
-                    <span>{plainNonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
+                  <div className="disclosure-package">
+                    <div className="disclosure-row">
+                      <strong>Can do</strong>
+                      <span>{plainCapabilitySummary(["analytics/contribute"])}</span>
+                    </div>
+                    <div className="disclosure-row">
+                      <strong>Safe details</strong>
+                      <span>{study.fields.map(formatAnalyticsField).join(", ")}</span>
+                    </div>
+                    <div className="disclosure-row">
+                      <strong>Not allowed</strong>
+                      <span>{plainNonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <label className="consent-box">
-                <input
-                  checked={selected}
-                  onChange={() => toggleStudy(study.id)}
-                  type="checkbox"
-                />
-                <span>
-                  <strong>Allow this choice to use the group facts listed above.</strong>
-                  <small>Exact location, files, names, and contact details are not used.</small>
-                </span>
-              </label>
-            </article>
-          );
-        })}
-      </div>
+                <label className="consent-box">
+                  <input
+                    checked={selected}
+                    onChange={() => toggleStudy(study.id)}
+                    type="checkbox"
+                  />
+                  <span>
+                    <strong>Allow this choice to use the group facts listed above.</strong>
+                    <small>Exact location, files, names, and contact details are not used.</small>
+                  </span>
+                </label>
+              </article>
+            );
+          })}
+        </div>
+      </Section>
     </div>
   );
 }

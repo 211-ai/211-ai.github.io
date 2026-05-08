@@ -259,9 +259,14 @@ const captureScenarios: CaptureScenario[] = [
     ],
     prepare: async (page) => {
       const addContactSection = page.getByRole("region", { name: "Add contact" });
-      await addContactSection.getByRole("radio", { name: /Shelter or group/i }).check();
+      await addContactSection.getByText("Shelter or group", { exact: true }).click();
+      await expect(addContactSection.getByRole("button", { name: /Ask to add shelter/i })).toBeVisible({
+        timeout: 5000
+      });
       const nudge = addContactSection.locator(".access-request-item").filter({ hasText: "Downtown Outreach Shelter" }).first();
-      await nudge.getByRole("button", { name: /^Approve$/i }).click();
+      const approveButton = nudge.getByRole("button", { name: /^Approve$/i });
+      await expect(approveButton).toBeVisible({ timeout: 5000 });
+      await approveButton.click();
       await expect(page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" })).toBeVisible();
     }
   },
@@ -549,6 +554,8 @@ test("capture Abby UI screenshots for multimodal UX review", async ({ page }, te
     if (route.prepare) {
       await route.prepare(page);
     }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(50);
     await page.screenshot({
       fullPage: true,
       path: path.join(viewportDir, `${route.id}.png`)

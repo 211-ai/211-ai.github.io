@@ -35,7 +35,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
 export const secondaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "recipient-access", label: "Who can see info" },
   { id: "benefits-protection", label: "Benefits" },
-  { id: "analytics", label: "Group facts" },
+  { id: "analytics", label: "Analytics" },
   { id: "proof-center", label: "Proofs" },
   { id: "exports", label: "Exports" },
   { id: "security", label: "Security" },
