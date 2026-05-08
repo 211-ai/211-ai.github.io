@@ -105,6 +105,12 @@ deterministic UCAN-compatible inspection envelope:
 }
 ```
 
+When a wallet grant is supplied, the capability `nb` field contains the
+effective adapter-visible caveats: grant caveats plus any invocation caveats
+that attenuate them. This keeps the external adapter byte block no broader than
+the wallet grant even when the internal invocation token omits caveats that are
+already enforced by the wallet grant.
+
 This envelope is for verifier, audit, and adapter tests. It deliberately does
 not expose raw record payloads, document text, precise location, decrypted keys,
 or private metadata.
@@ -132,9 +138,11 @@ The adapter fixture records the `dag-cbor` block bytes as base64url, the
 SHA-256 of those bytes, and the CIDv1 base32 `dag-cbor`/`sha2-256` CID. Fixture
 validation decodes the exact bytes, recomputes the hash and CID, and verifies
 that the decoded block exactly matches the wallet profile payload. Added,
-removed, or changed capabilities and caveats fail validation. The adapter does
-not introduce new wallet abilities, resources, caveats, proof semantics, or
-authorization bypasses.
+removed, or changed capabilities and caveats fail validation. When
+`wallet_grant` is present, validation also rejects adapter payloads whose
+resource, ability, or caveats exceed the grant. The adapter does not introduce
+new wallet abilities, resources, caveats, proof semantics, or authorization
+bypasses.
 
 ## Conformance Fixtures
 
@@ -146,9 +154,9 @@ envelope. `validate_wallet_ucan_external_adapter_fixture(adapter, profile_payloa
 validates the byte-level `ucanto/w3up` DAG-CBOR adapter block.
 `validate_wallet_ucan_conformance_fixture` validates the complete fixture,
 including token prefix, decoded token fields, expected UCAN fields, proof-chain
-grant ID, signature-payload hash, and external adapter hash/CID. External
-`ucanto`/w3up adapters can use these functions without depending on product API
-internals.
+grant ID, signature-payload hash, grant-bounded caveats, and external adapter
+hash/CID. External `ucanto`/w3up adapters can use these functions without
+depending on product API internals.
 
 The same contract is available from the wallet CLI for adapter pipelines:
 
