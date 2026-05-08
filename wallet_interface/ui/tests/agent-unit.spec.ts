@@ -30,7 +30,6 @@ import {
   evidenceBundleFromResults,
 } from "../src/agent/serviceNavigationAgent";
 import { createAgentChatController } from "../src/agent/chatController";
-import { shouldRenderAudioBubble } from "../src/components/agent/AgentMessageList";
 import type { AgentSurfaceApi } from "../src/agent/surfaceApi";
 import type {
   AgentMessage,
@@ -253,6 +252,8 @@ test.describe("agent unit contracts", () => {
       requiresWebGPU: true,
       quantized: true,
     });
+    expect(AUDIO_CHAT_CONFIG.liquidAudioRunnerBaseUrl).toContain("LFM2.5-Audio-1.5B-transformers-js");
+    expect(AUDIO_CHAT_CONFIG.maxAudioFrames).toBeGreaterThan(0);
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
   });
 
@@ -274,21 +275,6 @@ test.describe("agent unit contracts", () => {
       fallbackForModel: AUDIO_CHAT_CONFIG.defaultModel,
     });
     expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("test audio worker unavailable");
-  });
-
-  test("adds audio bubbles to completed assistant chat replies", () => {
-    const assistantMessage: AgentMessage = {
-      id: "assistant-audio-test",
-      sessionId: "agent-session-unit",
-      role: "assistant",
-      content: "Here are nearby food pantry options.",
-      createdAt: NOW,
-      status: "complete",
-    };
-
-    expect(shouldRenderAudioBubble(assistantMessage)).toBe(true);
-    expect(shouldRenderAudioBubble({ ...assistantMessage, role: "user" })).toBe(false);
-    expect(shouldRenderAudioBubble({ ...assistantMessage, content: "   " })).toBe(false);
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {

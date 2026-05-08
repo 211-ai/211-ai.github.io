@@ -1253,6 +1253,27 @@ body.playful-pulse .decor-shape {
   z-index: 9;
 }
 
+.agent-chat-launcher,
+.agent-chat-bottom-launcher {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+  position: fixed;
+}
+
+.agent-chat-launcher {
+  bottom: 24px;
+  right: 24px;
+  z-index: 47;
+}
+
+.agent-chat-bottom-launcher {
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  right: 10px;
+  z-index: 12;
+}
+
 .agent-chat-bottom-sheet-toggle {
   bottom: calc(12px + env(safe-area-inset-bottom));
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
@@ -1272,6 +1293,32 @@ body.playful-pulse .decor-shape {
   position: fixed;
   right: 16px;
   z-index: 47;
+}
+
+.agent-chat-launcher .agent-chat-toggle,
+.agent-chat-bottom-launcher .agent-chat-bottom-sheet-toggle {
+  align-items: center;
+  bottom: auto;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  left: auto;
+  margin: 0;
+  pointer-events: auto;
+  position: static;
+  right: auto;
+}
+
+.agent-chat-launcher .agent-chat-toggle {
+  min-height: 58px;
+  min-width: 58px;
+  padding: 0 16px;
+}
+
+.agent-chat-bottom-launcher .agent-chat-bottom-sheet-toggle {
+  height: 52px;
+  min-height: 52px;
+  width: 52px;
 }
 
 .agent-chat-bottom-sheet {
@@ -1355,6 +1402,10 @@ body.playful-pulse .decor-shape {
   right: 12px;
   width: min(calc(100vw - 24px), 380px);
   z-index: 46;
+}
+
+.agent-audio-chat-drawer {
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .agent-chat-header {
@@ -1684,119 +1735,204 @@ body.playful-pulse .decor-shape {
   min-width: 0;
 }
 
-.agent-audio-bubble {
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid rgba(127, 174, 180, 0.4);
-  border-radius: 8px;
+.agent-audio-chat-content {
   display: grid;
-  gap: 10px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  margin-top: 2px;
-  padding: 8px;
-}
-
-.agent-audio-visual {
-  align-items: end;
-  background: rgba(220, 232, 226, 0.72);
-  border-radius: 8px;
-  display: inline-grid;
-  gap: 2px;
-  grid-template-columns: repeat(4, 3px);
-  height: 34px;
-  justify-content: center;
-  padding: 8px 7px;
-  width: 34px;
-}
-
-.agent-audio-visual span {
-  background: var(--abby-teal);
-  border-radius: 999px;
-  display: block;
-  min-height: 7px;
-}
-
-.agent-audio-visual span:nth-child(1) {
-  height: 12px;
-}
-
-.agent-audio-visual span:nth-child(2) {
-  height: 18px;
-}
-
-.agent-audio-visual span:nth-child(3) {
-  height: 10px;
-}
-
-.agent-audio-visual span:nth-child(4) {
-  height: 15px;
-}
-
-.agent-audio-content {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-}
-
-.agent-audio-title {
-  align-items: center;
-  color: var(--abby-forest);
-  display: flex;
-  font-size: 12px;
-  font-weight: 850;
-  gap: 6px;
-}
-
-.agent-audio-title span {
+  gap: 12px;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  padding: 12px;
 }
 
-.agent-audio-content audio {
-  height: 32px;
-  max-width: 100%;
-  width: 100%;
-}
-
-.agent-audio-note,
-.agent-audio-error {
-  align-items: center;
-  color: rgba(7, 49, 74, 0.68);
-  display: flex;
-  font-size: 12px;
-  gap: 5px;
-  line-height: 1.35;
+.agent-audio-session-status {
   margin: 0;
 }
 
-.agent-audio-error {
-  color: #b42318;
+.agent-audio-stage {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 18px 8px 12px;
 }
 
-.agent-audio-action {
+.agent-audio-orb {
   align-items: center;
-  background: var(--abby-forest);
-  border: 1px solid var(--abby-forest);
-  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 52%),
+    linear-gradient(180deg, #0f766e, var(--abby-forest));
+  border: 1px solid rgba(7, 49, 74, 0.28);
+  border-radius: 999px;
+  box-shadow:
+    0 20px 42px rgba(7, 49, 74, 0.2),
+    inset 0 -12px 24px rgba(7, 49, 74, 0.28);
   color: #ffffff;
   display: inline-flex;
-  font-size: 12px;
-  font-weight: 850;
-  gap: 6px;
+  height: 118px;
   justify-content: center;
-  min-height: 34px;
-  min-width: 74px;
-  padding: 6px 9px;
+  padding: 0;
+  width: 118px;
 }
 
-.agent-audio-action:disabled {
+.agent-audio-stage-listening .agent-audio-orb {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 52%),
+    linear-gradient(180deg, #d9480f, #9a3412);
+}
+
+.agent-audio-stage-speaking .agent-audio-orb {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 52%),
+    linear-gradient(180deg, #2563eb, #1e3a8a);
+}
+
+.agent-audio-orb:disabled {
   cursor: default;
-  opacity: 0.7;
+  opacity: 0.76;
+}
+
+.agent-audio-wave {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(5, 5px);
+  height: 32px;
+}
+
+.agent-audio-wave span {
+  background: rgba(15, 124, 115, 0.62);
+  border-radius: 999px;
+  display: block;
+  height: 10px;
+}
+
+.agent-audio-stage-listening .agent-audio-wave span,
+.agent-audio-stage-speaking .agent-audio-wave span {
+  animation: agent-audio-level 0.86s ease-in-out infinite;
+}
+
+.agent-audio-stage-listening .agent-audio-wave span {
+  background: rgba(217, 72, 15, 0.72);
+}
+
+.agent-audio-stage-speaking .agent-audio-wave span {
+  background: rgba(37, 99, 235, 0.72);
+}
+
+.agent-audio-wave span:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.agent-audio-wave span:nth-child(3) {
+  animation-delay: 0.24s;
+}
+
+.agent-audio-wave span:nth-child(4) {
+  animation-delay: 0.36s;
+}
+
+.agent-audio-wave span:nth-child(5) {
+  animation-delay: 0.48s;
+}
+
+.agent-audio-route {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.agent-audio-route strong {
+  color: var(--abby-ink);
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.agent-audio-route small {
+  color: #5b6776;
+  font-size: 12px;
+}
+
+.agent-audio-live-transcript {
+  background: #ffffff;
+  border: 1px solid rgba(127, 174, 180, 0.46);
+  border-radius: 8px;
+  color: #17202a;
+  line-height: 1.45;
+  min-height: 48px;
+  padding: 10px 12px;
+}
+
+.agent-audio-controls {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.agent-audio-controls .button {
+  justify-content: center;
+}
+
+.agent-audio-transcript {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.agent-audio-transcript-row {
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+}
+
+.agent-audio-transcript-user {
+  justify-items: end;
+}
+
+.agent-audio-transcript-meta {
+  color: #5b6776;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.agent-audio-transcript-bubble {
+  background: #ffffff;
+  border: 1px solid rgba(127, 174, 180, 0.42);
+  border-radius: 8px;
+  max-width: 92%;
+  padding: 9px 11px;
+}
+
+.agent-audio-transcript-user .agent-audio-transcript-bubble {
+  background: rgba(220, 232, 226, 0.86);
+  border-color: rgba(15, 124, 115, 0.42);
+}
+
+.agent-audio-transcript-bubble p {
+  line-height: 1.42;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .agent-audio-spinner {
   animation: agent-audio-spin 1s linear infinite;
+}
+
+@keyframes agent-audio-level {
+  0%,
+  100% {
+    height: 9px;
+  }
+
+  50% {
+    height: 28px;
+  }
 }
 
 @keyframes agent-audio-spin {
@@ -3355,10 +3491,6 @@ a {
   width: 58px;
 }
 
-.agent-chat-bottom-sheet-shell .agent-chat-bottom-sheet-toggle {
-  display: none;
-}
-
 .agent-chat-bottom-sheet-toggle span {
   display: none;
 }
@@ -3368,6 +3500,21 @@ a {
   border-color: var(--abby-forest);
   border-radius: 999px;
   box-shadow: 0 14px 32px rgba(7, 49, 74, 0.22);
+}
+
+.agent-chat-launcher .agent-chat-toggle,
+.agent-chat-bottom-launcher .agent-chat-bottom-sheet-toggle {
+  bottom: auto;
+  left: auto;
+  margin: 0;
+  position: static;
+  right: auto;
+}
+
+.agent-chat-launcher .agent-chat-toggle-audio,
+.agent-chat-bottom-launcher .agent-chat-toggle-audio {
+  background: linear-gradient(180deg, #0f766e, #0b4f6c);
+  border-color: #0b4f6c;
 }
 
 .agent-chat-drawer,
@@ -4009,6 +4156,12 @@ textarea:focus-visible,
 .agent-chat-bottom-sheet-toggle {
   background: linear-gradient(180deg, #126b49, var(--abby-forest));
   border-color: var(--abby-forest);
+}
+
+.agent-chat-toggle-audio,
+.agent-chat-bottom-launcher .agent-chat-toggle-audio {
+  background: linear-gradient(180deg, #0f766e, #0b4f6c);
+  border-color: #0b4f6c;
 }
 
 @media (min-width: 760px) {

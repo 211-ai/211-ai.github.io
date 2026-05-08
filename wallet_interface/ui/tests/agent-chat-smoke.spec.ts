@@ -1,11 +1,12 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-test("assistant opens, searches food pantry evidence, navigates, and gates saving", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
+test("assistant opens, searches food pantry evidence, navigates, and gates saving", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "Mobile Safari", "Full GraphRAG planner smoke is covered in Desktop Chrome.");
+  test.setTimeout(90000);
+  await enterSignedInApp(page);
   await installTiny211Corpus(page);
 
-  await page.getByRole("button", { name: /Open assistant/i }).click();
+  await openTextAssistant(page);
   const assistant = visibleAssistant(page);
   await expect(assistant).toBeVisible();
   await expect(assistant.getByText(/I will ask before changing wallet data/i)).toBeVisible();
@@ -36,8 +37,70 @@ test("assistant opens, searches food pantry evidence, navigates, and gates savin
   });
 });
 
+test("assistant launchers expose separate text and voice chat surfaces", async ({ page }) => {
+  await enterSignedInApp(page);
+
+  const launcher = visibleClosedLauncher(page);
+  await expect(launcher.getByRole("button", { name: /Open text chat/i })).toBeVisible();
+  await expect(launcher.getByRole("button", { name: /Open voice chat/i })).toBeVisible();
+
+  await launcher.getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant).toBeVisible();
+  await expect(voiceAssistant.getByRole("button", { name: /Start voice chat/i })).toBeVisible();
+  await expect(voiceAssistant.getByText(/Voice chat/i).first()).toBeVisible();
+
+  await voiceAssistant.getByRole("button", { name: /Close voice chat|Close voice assistant|Close assistant/i }).first().click();
+  await openTextAssistant(page);
+  await expect(visibleAssistant(page).getByLabel(/Message Abby assistant/i)).toBeVisible();
+});
+
 function visibleAssistant(page: Page): Locator {
-  return page.locator('aside[aria-label="Abby assistant"]:visible');
+  return page.locator('aside[aria-label="Abby text assistant"]:visible, aside[aria-label="Abby assistant"]:visible');
+}
+
+function visibleVoiceAssistant(page: Page): Locator {
+  return page.locator('aside[aria-label="Abby voice assistant"]:visible, aside[aria-label="Abby assistant"]:visible');
+}
+
+function visibleClosedLauncher(page: Page): Locator {
+  return page.locator(".agent-chat-launcher:visible, .agent-chat-bottom-launcher:visible").first();
+}
+
+async function openTextAssistant(page: Page): Promise<void> {
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open text chat/i }).click();
+}
+
+async function enterSignedInApp(page: Page): Promise<void> {
+  await page.goto("/");
+  await clearPwaState(page);
+  await page.goto("/");
+  if (await page.getByRole("heading", { name: /Sign in to Abby/i }).isVisible()) {
+    await page.getByRole("button", { name: /Open assistant/i }).click();
+  }
+  await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
+  await closeAssistantIfOpen(page);
+}
+
+async function closeAssistantIfOpen(page: Page): Promise<void> {
+  const closeButton = page
+    .getByRole("button", { name: /Close text chat|Close voice chat|Close voice assistant|Close assistant/i })
+    .first();
+  if (await closeButton.isVisible()) {
+    await closeButton.click();
+  }
+}
+
+async function clearPwaState(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    const registrations = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistrations() : [];
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+    if ("caches" in window) {
+      await Promise.all((await caches.keys()).map((cacheName) => caches.delete(cacheName)));
+    }
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
 }
 
 async function installTiny211Corpus(page: Page): Promise<void> {

@@ -17,6 +17,7 @@ import {
   LogOut,
   Menu,
   MessageSquare,
+  Mic,
   RefreshCw,
   Save,
   ShieldCheck,
@@ -25,7 +26,7 @@ import {
   Wrench
 } from "lucide-react";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
-import { AgentChatDrawer } from "../components/agent/AgentChatDrawer";
+import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
 import {
   getServiceDetailDocIdFromHash,
@@ -411,7 +412,18 @@ export function App() {
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
+  const [agentChatMode, setAgentChatMode] = useState<AgentChatMode>("text");
   const walletApiConfig = useMemo(readWalletApiConfig, []);
+
+  function openAgentChatMode(mode: AgentChatMode) {
+    setAgentChatMode(mode);
+    setAgentChatOpen(true);
+  }
+
+  function toggleAgentChatMode(mode: AgentChatMode) {
+    setAgentChatMode(mode);
+    setAgentChatOpen((open) => (open && agentChatMode === mode ? false : true));
+  }
 
   async function refreshWalletAccessState() {
     if (!walletApiConfig) return;
@@ -692,7 +704,7 @@ export function App() {
       <LoginScreen
         onOpenAssistant={() => {
           handleSignIn("abby");
-          setAgentChatOpen(true);
+          openAgentChatMode("text");
         }}
         onAuthenticated={(portal, contact) => {
           handleSignIn(`${portal}:${contact}`);
@@ -757,12 +769,21 @@ export function App() {
           <div className="topbar-actions">
             <Button
               ariaControls="agent-chat-bottom-sheet"
-              ariaExpanded={agentChatOpen}
-              ariaLabel={agentChatOpen ? "Close assistant" : "Open assistant"}
-              onClick={() => setAgentChatOpen((open) => !open)}
+              ariaExpanded={agentChatOpen && agentChatMode === "text"}
+              ariaLabel={agentChatOpen && agentChatMode === "text" ? "Close text chat" : "Open text chat"}
+              onClick={() => toggleAgentChatMode("text")}
               variant="quiet"
             >
               <MessageSquare size={20} />
+            </Button>
+            <Button
+              ariaControls="agent-chat-bottom-sheet"
+              ariaExpanded={agentChatOpen && agentChatMode === "audio"}
+              ariaLabel={agentChatOpen && agentChatMode === "audio" ? "Close voice chat" : "Open voice chat"}
+              onClick={() => toggleAgentChatMode("audio")}
+              variant="quiet"
+            >
+              <Mic size={20} />
             </Button>
             <Button ariaLabel="Sign out" onClick={handleSignOut} variant="quiet">
               <LogOut size={20} />
@@ -955,10 +976,13 @@ export function App() {
         activeRouteLabel={getRouteLabel(activeRoute)}
         confirmations={agentChat.pendingConfirmations}
         evidenceBundles={agentChat.snapshot.session.evidenceBundles}
+        mode={agentChatMode}
         messages={agentChat.messages}
         onCancelConfirmation={(confirmationId) => agentChat.denyConfirmation(confirmationId)}
         onClose={() => setAgentChatOpen(false)}
         onConfirmConfirmation={(confirmationId) => agentChat.approveConfirmation(confirmationId)}
+        onOpenAudio={() => openAgentChatMode("audio")}
+        onOpenText={() => openAgentChatMode("text")}
         onOpenServiceDetail={(docId) => {
           setServicePlanDocId(null);
           return openCanonicalServiceDetailRoute(docId, {
@@ -974,7 +998,6 @@ export function App() {
         onSend={(message) => {
           void agentChat.sendMessage(message);
         }}
-        onToggle={() => setAgentChatOpen((open) => !open)}
         open={agentChatOpen}
         responding={agentChat.responding}
         toolCalls={agentChat.snapshot.session.toolCalls}
