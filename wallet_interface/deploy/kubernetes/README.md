@@ -68,7 +68,8 @@ Before production use:
 - Change the ingress host and storage class to the target cluster settings.
 - Run `python -m wallet_interface.ops --validate-production-readiness` and
   `python -m wallet_interface.ops --validate-target-signoff-packet` from the
-  deployed ops environment before live wallet data.
+  deployed ops environment before live wallet data. The readiness report must
+  show `storage_retention_controls=ok` and `storage_repair_safety=ok`.
 - Run `/ops/health?verify_storage=true` and the wallet or record storage repair
   endpoint after any replica outage. Archive only ciphertext hashes, storage
   types, failure counts, and repair counts; never archive wallet plaintext,

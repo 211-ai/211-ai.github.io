@@ -234,6 +234,12 @@ def _target_env(tmp_path: Path, verifier_url: str) -> dict[str, str]:
         "WALLET_OPS_ALERT_SECRET_REF": "secret://ci/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://ci/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://ci/wallet/storage",
+        "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
+        "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://ci/wallet/ipfs-pinning",
+        "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://ci/wallet/filecoin-deals",
+        "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://ci/wallet/s3-lifecycle",
+        "WALLET_BACKUP_PURGE_POLICY_REF": "policy://ci/wallet/backup-purge",
+        "WALLET_ALERT_RETENTION_POLICY_REF": "policy://ci/wallet/alert-retention",
     }
 
 
@@ -371,6 +377,8 @@ def test_production_handoff_blackbox_accepts_mocked_staging_environment(tmp_path
             "proof_credentials": "ok",
             "ops_credentials": "ok",
             "secret_manager_references": "ok",
+            "storage_retention_controls": "ok",
+            "storage_repair_safety": "ok",
             "ops_health": "ok",
             "proof_contract": "ok",
             "distance_proof_contract": "ok",

@@ -196,6 +196,11 @@ The technical gate is:
 python -m wallet_interface.ops --validate-production-readiness
 ```
 
+That gate must report `storage_retention_controls=ok` for the target
+IPFS-pinning, Filecoin-deal, S3-lifecycle, backup-purge, and alert-retention
+policy references, and `storage_repair_safety=ok` for metadata-only encrypted
+replica repair reporting.
+
 The governance gate is a completed
 `docs/WALLET_TARGET_PRODUCTION_SIGNOFF.md` packet that names the approved
 retention schedule, storage lifecycle controls, backup purge SLA, and reviewers.

@@ -12,6 +12,7 @@ from wallet_interface.ops import (
     validate_distance_proof_contract,
     validate_production_readiness,
     validate_proof_contract,
+    validate_storage_repair_report_safety,
     validate_target_signoff_packet,
     validate_target_signoff_packet_template,
 )
@@ -335,6 +336,8 @@ def test_validate_production_readiness_reports_missing_target_environment() -> N
     assert checks["proof_credentials"]["status"] == "error"
     assert checks["ops_credentials"]["status"] == "error"
     assert checks["secret_manager_references"]["status"] == "error"
+    assert checks["storage_retention_controls"]["status"] == "error"
+    assert checks["storage_repair_safety"]["status"] == "ok"
 
 
 def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_path) -> None:
@@ -412,6 +415,12 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "WALLET_OPS_ALERT_SECRET_REF": "secret://staging/wallet/ops-alert",
         "WALLET_PROOF_CREDENTIAL_SECRET_REF": "secret://staging/wallet/proof-verifier",
         "WALLET_STORAGE_CREDENTIAL_SECRET_REF": "secret://staging/wallet/storage",
+        "WALLET_STORAGE_RETENTION_POLICY_REF": "docs/WALLET_RETENTION_POLICY.md@2026-05-05",
+        "WALLET_STORAGE_IPFS_PINNING_POLICY_REF": "policy://staging/wallet/ipfs-pinning",
+        "WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF": "policy://staging/wallet/filecoin-deals",
+        "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF": "policy://staging/wallet/s3-lifecycle",
+        "WALLET_BACKUP_PURGE_POLICY_REF": "policy://staging/wallet/backup-purge",
+        "WALLET_ALERT_RETENTION_POLICY_REF": "policy://staging/wallet/alert-retention",
     }
 
     report = validate_production_readiness(
@@ -428,6 +437,8 @@ def test_validate_production_readiness_passes_with_configured_http_verifier(tmp_
         "proof_credentials": "ok",
         "ops_credentials": "ok",
         "secret_manager_references": "ok",
+        "storage_retention_controls": "ok",
+        "storage_repair_safety": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
         "distance_proof_contract": "ok",
@@ -521,10 +532,24 @@ def test_local_production_readiness_self_check_passes_without_target_env() -> No
         "proof_credentials": "ok",
         "ops_credentials": "ok",
         "secret_manager_references": "ok",
+        "storage_retention_controls": "ok",
+        "storage_repair_safety": "ok",
         "ops_health": "ok",
         "proof_contract": "ok",
         "distance_proof_contract": "ok",
     }
+
+
+def test_storage_repair_report_safety_keeps_operator_output_metadata_only() -> None:
+    report = validate_storage_repair_report_safety()
+
+    assert report["status"] == "ok"
+    checks = {check["name"]: check for check in report["checks"]}
+    assert checks["repair_execution"]["status"] == "ok"
+    assert checks["operator_output_safety"]["status"] == "ok"
+    assert checks["report_schema"]["status"] == "ok"
+    rendered = json.dumps(report)
+    assert "wallet-130 repair plaintext sentinel" not in rendered
 
 
 def test_validate_target_signoff_packet_accepts_completed_packet(tmp_path) -> None:

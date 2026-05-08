@@ -49,9 +49,10 @@ event for every loaded wallet.
 Run `--validate-production-readiness` in staging before launch and after secret
 rotation. It fails if durable repository/storage env vars, production proof
 mode, external verifier credentials, ops-health auth, alert routing, ops health,
-or the verifier prove/verify contract are missing or unsafe placeholders. The
-report shows only whether secret values are configured, not the values. Archive
-the passing report with the completed target production signoff packet. The
+storage retention policy references, storage repair report safety, or the
+verifier prove/verify contract are missing or unsafe placeholders. The report
+shows only whether secret values are configured, not the values. Archive the
+passing report with the completed target production signoff packet. The
 readiness gate also requires secret-manager reference environment variables for
 ops-health, alert, proof-verifier, and storage credentials; record the same
 references in the target signoff JSON packet.
@@ -245,6 +246,9 @@ show `repaired_replica_count` for S3/IPFS/Filecoin mirrors. The report verifies
 encrypted bytes and stored hashes only; if a repair run or alert contains raw
 document text, precise location values, proof witnesses, or credential values,
 treat it as a privacy incident.
+The readiness command also runs a synthetic storage repair report safety check
+that fails if operator-visible repair output includes fields outside the
+ciphertext replica metadata schema.
 
 Provider retention checks:
 

@@ -83,6 +83,10 @@ Remaining target-production gates:
   (`WALLET_OPS_HEALTH_SECRET_REF`, `WALLET_OPS_ALERT_SECRET_REF`,
   `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
   `WALLET_STORAGE_CREDENTIAL_SECRET_REF`) to the readiness report.
+- Configure target storage-retention reference env vars for the approved
+  IPFS-pinning, Filecoin-deal, S3-lifecycle, backup-purge, and alert-retention
+  controls so readiness reports `storage_retention_controls=ok` and
+  `storage_repair_safety=ok`.
 - Run `python -m wallet_interface.ops --validate-production-readiness` in the
   target staging environment until the report is `status=ok`; this now includes
   external `location_region` and `location_distance` verifier contract checks.
