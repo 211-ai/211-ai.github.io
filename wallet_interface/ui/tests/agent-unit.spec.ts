@@ -43,8 +43,52 @@ import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
 import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
+import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
+import { LLM_CONFIG } from "../src/lib/llmConfig";
 
 const NOW = "2026-05-05T12:00:00.000Z";
+const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
+
+type ClientLlmDevice = "wasm" | "webgpu" | "auto";
+
+interface TestLlmCapabilities {
+  webGPU: boolean;
+  webGPUError?: string;
+  webGPUShaderF16?: boolean;
+  simd: boolean;
+  wasmThreads: boolean;
+  crossOriginIsolated: boolean;
+  sharedArrayBuffer: boolean;
+}
+
+interface TestLlmWorkerResponse {
+  modelName?: string;
+  capabilities?: TestLlmCapabilities;
+  device?: ClientLlmDevice;
+  isInitialized?: boolean;
+}
+
+interface TestableClientLLMWorkerService {
+  worker: { terminate: () => void } | null;
+  isInitialized: boolean;
+  isInitializing: boolean;
+  currentModel: string;
+  currentDevice: ClientLlmDevice;
+  webGPUFallbackReason?: string;
+  capabilities: TestLlmCapabilities;
+  pendingRequests: Map<string, { reject: (reason?: unknown) => void }>;
+  requestCounter: number;
+  initialize: (modelName?: string) => Promise<void>;
+  getCapabilities: () => Promise<TestLlmWorkerResponse>;
+  getStatus: () => {
+    currentDevice: ClientLlmDevice;
+    currentModel: string;
+    capabilities: TestLlmCapabilities;
+    isInitialized: boolean;
+  };
+  initializeWorker: () => void;
+  sendWorkerRequest: (type: string, data: { modelName?: string }, timeoutMs: number) => Promise<TestLlmWorkerResponse>;
+}
 
 function createSurfaceContext(
   route: RouteId,
@@ -623,5 +667,104 @@ test.describe("agent unit contracts", () => {
 
     expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate"]);
     expect(invoked[0].input).toEqual({ route: "exports" });
+  });
+
+  test("restarts the LLM worker before using WASM fallback after WebGPU runtime failure", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      initializeWorker: service.initializeWorker,
+      sendWorkerRequest: service.sendWorkerRequest,
+      consoleWarn: console.warn,
+    };
+    const calls: string[] = [];
+    const baseCapabilities: TestLlmCapabilities = {
+      webGPU: true,
+      webGPUShaderF16: false,
+      simd: true,
+      wasmThreads: true,
+      crossOriginIsolated: true,
+      sharedArrayBuffer: true,
+    };
+
+    try {
+      console.warn = () => undefined;
+      service.worker = { terminate: () => calls.push("terminate") };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "webgpu";
+      service.webGPUFallbackReason = undefined;
+      service.capabilities = baseCapabilities;
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.initializeWorker = () => {
+        calls.push("initializeWorker");
+        service.worker = { terminate: () => calls.push("terminate-fallback") };
+      };
+      service.sendWorkerRequest = async (type, data) => {
+        calls.push(`${type}:${data.modelName || ""}`);
+        if (type === "initialize" && data.modelName === LLM_CONFIG.defaultModel) {
+          throw new Error(`${WORKER_RESTART_REQUIRED_PREFIX}WebGPU execution failed for test model.`);
+        }
+        if (type === "initialize" && data.modelName === LLM_CONFIG.fallbackModel) {
+          return {
+            isInitialized: true,
+            modelName: LLM_CONFIG.fallbackModel,
+            device: "wasm",
+            capabilities: baseCapabilities,
+          };
+        }
+        if (type === "getCapabilities") {
+          return {
+            isInitialized: true,
+            modelName: LLM_CONFIG.fallbackModel,
+            device: "wasm",
+            capabilities: baseCapabilities,
+          };
+        }
+        throw new Error(`Unexpected worker request ${type}`);
+      };
+
+      await service.initialize(LLM_CONFIG.defaultModel);
+      const status = service.getStatus();
+      const capabilities = await service.getCapabilities();
+
+      expect(calls).toEqual([
+        `initialize:${LLM_CONFIG.defaultModel}`,
+        "terminate",
+        "initializeWorker",
+        `initialize:${LLM_CONFIG.fallbackModel}`,
+        "getCapabilities:",
+      ]);
+      expect(status).toMatchObject({
+        currentModel: LLM_CONFIG.fallbackModel,
+        currentDevice: "wasm",
+        isInitialized: true,
+      });
+      expect(status.capabilities.webGPUError).toContain("WebGPU execution failed");
+      expect(capabilities.capabilities?.webGPUError).toContain("WebGPU execution failed");
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.initializeWorker = originalState.initializeWorker;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      console.warn = originalState.consoleWarn;
+    }
   });
 });

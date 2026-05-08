@@ -188,7 +188,7 @@ function summarizeRuntime(status: ClientLlmRuntimeStatus): {
   if (status.capabilities.webGPU) {
     return {
       backend: "wasm",
-      detail: status.isInitialized ? "WASM active" : "WebGPU available before model load",
+      detail: status.capabilities.webGPUError || (status.isInitialized ? "WASM active" : "WebGPU available before model load"),
       label: status.isInitialized ? "WASM" : "WebGPU ready",
       tone: status.isInitialized ? "warning" : "success",
     };

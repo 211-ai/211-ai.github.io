@@ -1,5 +1,7 @@
 import { LLM_CONFIG } from "./llmConfig";
 
+const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
+
 interface PendingRequest<T> {
   resolve: (value: T) => void;
   reject: (reason?: unknown) => void;
@@ -52,6 +54,7 @@ class ClientLLMWorkerService {
   private pendingRequests = new Map<string, PendingRequest<LlmWorkerResponse>>();
   private currentModel = LLM_CONFIG.defaultModel;
   private currentDevice: "wasm" | "webgpu" | "auto" = "wasm";
+  private webGPUFallbackReason: string | undefined;
   private capabilities: NonNullable<LlmWorkerResponse["capabilities"]> = {
     webGPU: false,
     webGPUShaderF16: false,
@@ -78,29 +81,66 @@ class ClientLLMWorkerService {
 
     this.isInitializing = true;
     try {
-      const result = await this.sendWorkerRequest("initialize", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+      let result: LlmWorkerResponse;
+      try {
+        result = await this.sendWorkerRequest("initialize", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+      } catch (error) {
+        if (isWorkerRestartRequiredError(error)) {
+          await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
+          return;
+        }
+        throw error;
+      }
       this.isInitialized = Boolean(result.isInitialized ?? true);
       this.currentModel = result.modelName || modelName;
       this.currentDevice = result.device || this.currentDevice;
-      this.capabilities = result.capabilities || this.capabilities;
+      if (this.currentDevice === "webgpu") {
+        this.webGPUFallbackReason = undefined;
+      }
+      if (result.capabilities) {
+        this.applyCapabilities(result.capabilities);
+      }
     } finally {
       this.isInitializing = false;
     }
   }
 
   async switchModel(modelName: string): Promise<void> {
-    const result = await this.sendWorkerRequest("switchModel", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+    let result: LlmWorkerResponse;
+    try {
+      result = await this.sendWorkerRequest("switchModel", { modelName }, LLM_CONFIG.modelDownloadTimeoutMs);
+    } catch (error) {
+      if (isWorkerRestartRequiredError(error)) {
+        await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
+        return;
+      }
+      throw error;
+    }
     this.currentModel = result.modelName || modelName;
     this.currentDevice = result.device || this.currentDevice;
-    this.capabilities = result.capabilities || this.capabilities;
+    if (this.currentDevice === "webgpu") {
+      this.webGPUFallbackReason = undefined;
+    }
+    if (result.capabilities) {
+      this.applyCapabilities(result.capabilities);
+    }
     this.isInitialized = true;
   }
 
-  async generateText(prompt: string, maxTokens = 180): Promise<string> {
+  async generateText(prompt: string, maxTokens = 180, didRestart = false): Promise<string> {
     if (!this.isInitialized) {
       await this.initialize();
     }
-    const result = await this.sendWorkerRequest("generate", { prompt, maxTokens }, LLM_CONFIG.requestTimeoutMs);
+    let result: LlmWorkerResponse;
+    try {
+      result = await this.sendWorkerRequest("generate", { prompt, maxTokens }, LLM_CONFIG.requestTimeoutMs);
+    } catch (error) {
+      if (!didRestart && isWorkerRestartRequiredError(error)) {
+        await this.restartWorkerWithFallback(formatWorkerRestartReason(error));
+        return this.generateText(prompt, maxTokens, true);
+      }
+      throw error;
+    }
     if (!result.text) {
       throw new Error("LLM worker returned an empty response");
     }
@@ -145,7 +185,11 @@ class ClientLLMWorkerService {
 
   async getCapabilities(): Promise<LlmWorkerResponse> {
     try {
-      return await this.sendWorkerRequest("getCapabilities", {}, 5000);
+      const result = await this.sendWorkerRequest("getCapabilities", {}, 5000);
+      return {
+        ...result,
+        capabilities: result.capabilities ? this.mergeCapabilities(result.capabilities) : this.capabilities,
+      };
     } catch {
       return {
         modelName: this.currentModel,
@@ -167,12 +211,45 @@ class ClientLLMWorkerService {
     };
   }
 
-  destroy(): void {
+  destroy(reason = "LLM worker was stopped"): void {
     this.worker?.terminate();
     this.worker = null;
     this.isInitialized = false;
     this.isInitializing = false;
+    for (const [id, pending] of this.pendingRequests.entries()) {
+      pending.reject(new Error(reason));
+      this.pendingRequests.delete(id);
+    }
     this.pendingRequests.clear();
+  }
+
+  private async restartWorkerWithFallback(reason: string): Promise<void> {
+    console.warn(`Restarting 211 LLM worker after WebGPU runtime failure. ${reason}`);
+    this.webGPUFallbackReason = reason;
+    this.destroy("LLM worker restarted after WebGPU runtime failure");
+    this.currentModel = LLM_CONFIG.fallbackModel;
+    this.currentDevice = "wasm";
+    this.capabilities = {
+      ...this.capabilities,
+      webGPUError: reason,
+    };
+    this.initializeWorker();
+    await this.initialize(LLM_CONFIG.fallbackModel);
+    this.capabilities = {
+      ...this.capabilities,
+      webGPUError: reason,
+    };
+  }
+
+  private applyCapabilities(capabilities: NonNullable<LlmWorkerResponse["capabilities"]>): void {
+    this.capabilities = this.mergeCapabilities(capabilities);
+  }
+
+  private mergeCapabilities(capabilities: NonNullable<LlmWorkerResponse["capabilities"]>): NonNullable<LlmWorkerResponse["capabilities"]> {
+    return {
+      ...capabilities,
+      webGPUError: capabilities.webGPUError || this.webGPUFallbackReason,
+    };
   }
 
   private initializeWorker(): void {
@@ -206,11 +283,14 @@ class ClientLLMWorkerService {
       if (data?.modelName) {
         this.currentModel = data.modelName;
       }
-      if (data?.capabilities) {
-        this.capabilities = data.capabilities;
-      }
       if (data?.device) {
         this.currentDevice = data.device;
+      }
+      if (this.currentDevice === "webgpu") {
+        this.webGPUFallbackReason = undefined;
+      }
+      if (data?.capabilities) {
+        this.applyCapabilities(data.capabilities);
       }
       pending.resolve(data || {});
     } else {
@@ -255,6 +335,17 @@ class ClientLLMWorkerService {
       worker.postMessage({ id, type, data });
     });
   }
+}
+
+function isWorkerRestartRequiredError(error: unknown): boolean {
+  return error instanceof Error && error.message.startsWith(WORKER_RESTART_REQUIRED_PREFIX);
+}
+
+function formatWorkerRestartReason(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message.replace(WORKER_RESTART_REQUIRED_PREFIX, "").trim();
+  }
+  return "WebGPU runtime failed; using WASM fallback.";
 }
 
 function extractFirstJsonValue(text: string): { ok: true; value: unknown } | { ok: false; error: string } {

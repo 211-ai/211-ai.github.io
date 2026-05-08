@@ -83,6 +83,7 @@ let initializingModelName: string | null = null;
 let capabilities: LlmCapabilities = createUnavailableCapabilities();
 let webGPUDetectionCache: { result: WebGpuDetectionResult; timestamp: number } | null = null;
 const WEBGPU_DETECTION_CACHE_MS = 5 * 60 * 1000;
+const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
 
 self.onmessage = async (event: MessageEvent<LlmWorkerRequest>) => {
   const { id, type, data } = event.data;
@@ -160,11 +161,17 @@ async function initializePipeline(modelName: string): Promise<void> {
   configureTransformersRuntime();
 
   const requestedModelName = getClientLlmModelInfo(modelName) ? modelName : LLM_CONFIG.fallbackModel;
+  const requestedModelInfo = getClientLlmModelInfo(requestedModelName);
   try {
     await loadPipeline(requestedModelName);
   } catch (error) {
     if (requestedModelName === LLM_CONFIG.fallbackModel) {
       throw error;
+    }
+    if (requestedModelInfo && capabilities.webGPU && selectModelDevice(requestedModelInfo) === "webgpu") {
+      const reason = `WebGPU initialization failed for ${requestedModelInfo.name}; restart the worker before using ${SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel].name} on WASM. ${formatError(error)}`;
+      capabilities.webGPUError = reason;
+      throw new Error(`${WORKER_RESTART_REQUIRED_PREFIX}${reason}`);
     }
     console.warn(`211 LLM model ${requestedModelName} unavailable; falling back to ${LLM_CONFIG.fallbackModel}.`, error);
     await loadPipeline(LLM_CONFIG.fallbackModel);
@@ -238,14 +245,13 @@ async function runTextGeneration(prompt: string, maxTokens: number): Promise<str
   return extractGeneratedText(output);
 }
 
-async function recoverFromWebGpuGenerationFailure(error: unknown, prompt: string, maxTokens: number): Promise<string> {
+async function recoverFromWebGpuGenerationFailure(error: unknown, _prompt: string, _maxTokens: number): Promise<string> {
   const failedModelInfo = getClientLlmModelInfo(currentModelName);
   const failedModelLabel = failedModelInfo?.name || currentModelName;
-  const reason = `WebGPU execution failed for ${failedModelLabel}; using ${SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel].name} on WASM. ${formatError(error)}`;
+  const reason = `WebGPU execution failed for ${failedModelLabel}; restart the worker before using ${SUPPORTED_CLIENT_LLM_MODELS[LLM_CONFIG.fallbackModel].name} on WASM. ${formatError(error)}`;
   console.warn(`[Worker] ${reason}`, error);
   capabilities.webGPUError = reason;
-  await loadPipeline(LLM_CONFIG.fallbackModel, "wasm");
-  return runTextGeneration(prompt, maxTokens);
+  throw new Error(`${WORKER_RESTART_REQUIRED_PREFIX}${reason}`);
 }
 
 async function disposeCurrentPipeline(): Promise<void> {
