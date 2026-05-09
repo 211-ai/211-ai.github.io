@@ -1,5 +1,6 @@
 export * from "./corpus";
 export * from "./graphRag";
+export * from "./serviceDocument";
 export * from "./search";
 export * from "./searchWorkerService";
 export * from "./types";

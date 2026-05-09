@@ -238,18 +238,86 @@ def _make_package(root: Path) -> Path:
     return package_dir
 
 
+def _make_portal_parquet(root: Path) -> Path:
+    portal_path = root / "documents.portal.parquet"
+    _write_parquet(
+        portal_path,
+        [
+            {
+                "service_doc_id": "service:cid-service",
+                "phones": json.dumps(
+                    [
+                        {
+                            "contact_id": "service:cid-service:phone:0",
+                            "label": "main",
+                            "tel_url": "tel:+15035550100",
+                            "sms_url": "sms:+15035550100",
+                            "value": "(503) 555-0100",
+                            "confidence": 0.99,
+                        }
+                    ]
+                ),
+                "emails": json.dumps([]),
+                "websites": json.dumps(
+                    [
+                        {
+                            "contact_id": "service:cid-service:website:0",
+                            "label": "apply",
+                            "url": "https://example.org/apply",
+                            "value": "https://example.org/apply",
+                            "confidence": 0.99,
+                        }
+                    ]
+                ),
+                "addresses": json.dumps(
+                    [
+                        {
+                            "location_id": "service:cid-service:location:0",
+                            "address": "123 Main St, Portland, OR 97204",
+                            "street": "123 Main St",
+                            "city": "Portland",
+                            "state": "OR",
+                            "postal_code": "97204",
+                            "maps_query": "123 Main St Portland OR 97204",
+                            "google_maps_url": "https://www.google.com/maps/search/?api=1&query=123+Main+St+Portland+OR+97204",
+                            "apple_maps_url": "https://maps.apple.com/?q=123+Main+St+Portland+OR+97204",
+                            "geo_url": "geo:0,0?q=123+Main+St+Portland+OR+97204",
+                            "geo": {"lat": None, "lon": None, "precision": "address_query"},
+                            "confidence": 0.99,
+                        }
+                    ]
+                ),
+                "hours": json.dumps([{"label": "hours", "value": "Mon-Fri 9am-5pm", "confidence": 0.97}]),
+                "eligibility": json.dumps([{"label": "eligibility", "value": "Low income households", "confidence": 0.97}]),
+                "intake_steps": json.dumps([{"label": "intake", "value": "Apply online or call first", "confidence": 0.97}]),
+                "required_documents": json.dumps([{"label": "documents", "value": "Photo ID", "confidence": 0.97}]),
+                "fees": json.dumps([]),
+                "languages": json.dumps([]),
+                "accessibility": json.dumps([]),
+                "travel_info": json.dumps([{"label": "travel", "value": "Bus stop nearby", "confidence": 0.97}]),
+                "area_served": json.dumps([{"label": "area served", "value": "Multnomah County", "confidence": 0.97}]),
+                "geo": json.dumps({"lat": None, "lon": None, "precision": "address_query"}),
+            }
+        ],
+    )
+    return portal_path
+
+
 def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     package_dir = _make_package(tmp_path)
+    portal_parquet_path = _make_portal_parquet(tmp_path)
     output_dir = tmp_path / "browser_corpus"
 
     result = build_browser_graphrag_corpus(
         package_dir=package_dir,
         output_dir=output_dir,
+        portal_parquet_path=portal_parquet_path,
         max_terms_per_document=8,
         max_edges_per_document=4,
     )
 
     assert result["document_count"] == 2
+    assert result["service_document_count"] == 1
     assert result["embedding_count"] == 2
     assert result["embedding_dimension"] == 3
     assert result["graph_neighborhood_count"] == 2
@@ -261,10 +329,14 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     graph_index = json.loads((output_dir / "generated" / "graph-neighborhood-index.json").read_text())
     graph_shard = json.loads((output_dir / graph_index["docIdToShard"]["service:cid-service"]).read_text())
     communities = json.loads((output_dir / "generated" / "graph-communities.json").read_text())
+    service_geo_index = json.loads((output_dir / "generated" / "service-geo-index.json").read_text())
     artifacts = json.loads((output_dir / "artifacts.manifest.json").read_text())
 
     assert documents[0]["source_content_cid"] == "cid-page"
     assert document_index["contentCidToIndex"]["cid-service"] == 1
+    assert documents[1]["phones"][0]["tel_url"] == "tel:+15035550100"
+    assert documents[1]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
+    assert documents[1]["intake_steps"][0]["value"] == "Apply online or call first"
     assert bm25["documents"][1]["terms"]["pantry"] == 3.0
     assert embedding_index["binary"] == "embeddings.f32"
     assert (output_dir / "generated" / "embeddings.f32").stat().st_size == 2 * 3 * 4
@@ -277,4 +349,8 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert graph_shard["edges"]["edge-service-page"]["relation"] == "DERIVED_FROM_PAGE"
     assert graph_shard["nodes"]["term:food"]["label"] == "food"
     assert communities["communities"][0]["top_terms"] == [["food", 2]]
+    assert service_geo_index["serviceCount"] == 1
+    assert service_geo_index["docsWithAddress"] == 1
+    assert service_geo_index["docsByCity"]["portland"] == ["service:cid-service"]
+    assert "multnomah" in service_geo_index["docsByPlaceTerm"]
     assert artifacts["sourcePackage"]["build_manifest_cid"] == "cid-manifest"

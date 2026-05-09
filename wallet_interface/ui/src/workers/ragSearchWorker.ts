@@ -1,6 +1,6 @@
 import { build211GraphRagEvidence } from "../lib/graphrag/graphRag";
 import { search211Corpus } from "../lib/graphrag/search";
-import type { GraphRagEvidence, SearchMode, SearchResult } from "../lib/graphrag/types";
+import type { GraphRagEvidence, SearchFilters, SearchMode, SearchResult } from "../lib/graphrag/types";
 
 type RagSearchWorkerRequest =
   | {
@@ -8,6 +8,7 @@ type RagSearchWorkerRequest =
       type: "search";
       data: {
         query: string;
+        filters?: SearchFilters;
         limit?: number;
         mode?: SearchMode;
         queryEmbedding?: number[];
@@ -18,6 +19,7 @@ type RagSearchWorkerRequest =
       type: "evidence";
       data: {
         query: string;
+        filters?: SearchFilters;
         limit?: number;
         queryEmbedding?: number[];
       };
@@ -51,6 +53,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
     if (type === "search") {
       const queryEmbedding = data.queryEmbedding ? new Float32Array(data.queryEmbedding) : undefined;
       const results = await search211Corpus(data.query, {
+        filters: data.filters,
         mode: data.mode || (queryEmbedding ? "hybrid" : "keyword"),
         queryEmbedding,
         limit: data.limit || 10,
@@ -62,6 +65,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
     if (type === "evidence") {
       const queryEmbedding = data.queryEmbedding ? new Float32Array(data.queryEmbedding) : undefined;
       const evidence = await build211GraphRagEvidence(data.query, {
+        filters: data.filters,
         queryEmbedding,
         limit: data.limit || 6,
       });

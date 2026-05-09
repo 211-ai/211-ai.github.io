@@ -1,4 +1,10 @@
-import { load211Bm25, load211Documents, load211Embeddings } from "./corpus";
+import { load211Bm25, load211Documents, load211Embeddings, load211ServiceGeoIndex } from "./corpus";
+import {
+  getPrimaryAddress,
+  getServiceRichnessScore,
+  getServiceSearchMetadataText,
+  isServiceDocument,
+} from "./serviceDocument";
 import type { Bm25Document, CorpusDocument, SearchFilters, SearchMode, SearchResult } from "./types";
 
 const STOP_WORDS = new Set([
@@ -50,22 +56,25 @@ export async function search211Corpus(
   const limit = options.limit || options.filters?.limit || 20;
   const candidateLimit = options.candidateLimit || Math.max(limit * 10, 200);
 
-  const [{ documents, documentById }, keywordScores, vectorScores] = await Promise.all([
+  const [{ documents, documentById }, keywordScores, vectorScores, geoScores] = await Promise.all([
     load211Documents(),
     mode !== "vector" ? keywordSearch211(trimmedQuery, candidateLimit) : Promise.resolve(new Map<string, number>()),
     mode !== "keyword" && options.queryEmbedding
       ? vectorSearch211(options.queryEmbedding, candidateLimit)
       : Promise.resolve(new Map<string, number>()),
+    load211ServiceGeoIndex()
+      .then((index) => lookupGeoScores(trimmedQuery, index))
+      .catch(() => new Map<string, number>()),
   ]);
 
   const normalizedKeyword = normalizeScores(keywordScores);
   const normalizedVector = normalizeScores(vectorScores);
-  const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys()]);
+  const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys(), ...geoScores.keys()]);
 
   if (candidates.size === 0) {
     const loweredQuery = trimmedQuery.toLowerCase();
     for (const document of documents) {
-      if (document.title.toLowerCase().includes(loweredQuery)) {
+      if (document.title.toLowerCase().includes(loweredQuery) || getServiceSearchMetadataText(document).toLowerCase().includes(loweredQuery)) {
         candidates.add(document.doc_id);
       }
     }
@@ -80,7 +89,7 @@ export async function search211Corpus(
 
     const keyword = normalizedKeyword.get(docId) || 0;
     const vector = normalizedVector.get(docId) || 0;
-    const metadata = metadataScore(document, trimmedQuery);
+    const metadata = metadataScore(document, trimmedQuery, geoScores.get(docId) || 0);
     const score =
       mode === "keyword"
         ? keyword * 2 + metadata
@@ -193,8 +202,9 @@ function normalizeScores(scores: Map<string, number>): Map<string, number> {
   return new Map([...scores.entries()].map(([key, value]) => [key, (value - min) / (max - min)]));
 }
 
-function metadataScore(document: CorpusDocument, query: string): number {
+function metadataScore(document: CorpusDocument, query: string, geoBoost: number): number {
   const loweredQuery = query.toLowerCase();
+  const queryTerms = tokenizeSearchText(query);
   let score = 0;
   if (document.title.toLowerCase().includes(loweredQuery)) {
     score += 1.5;
@@ -204,7 +214,18 @@ function metadataScore(document: CorpusDocument, query: string): number {
       score += 0.5;
     }
   }
-  return score;
+  const metadataText = getServiceSearchMetadataText(document).toLowerCase();
+  if (metadataText && metadataText.includes(loweredQuery)) {
+    score += 0.8;
+  }
+  score += Math.min(
+    0.8,
+    queryTerms.reduce((total, term) => total + (metadataText.includes(term) ? 0.12 : 0), 0),
+  );
+  if (isServiceDocument(document)) {
+    score += 0.25 + getServiceRichnessScore(document);
+  }
+  return score + geoBoost;
 }
 
 function matchesFilters(document: CorpusDocument, filters?: SearchFilters): boolean {
@@ -214,10 +235,13 @@ function matchesFilters(document: CorpusDocument, filters?: SearchFilters): bool
   if (filters.docTypes?.length && !filters.docTypes.includes(document.doc_type)) {
     return false;
   }
-  if (filters.city && document.city.toLowerCase() !== filters.city.toLowerCase()) {
+  const primaryAddress = getPrimaryAddress(document);
+  const documentCity = (primaryAddress?.city || document.city || "").toLowerCase();
+  const documentState = (primaryAddress?.state || document.state || "").toLowerCase();
+  if (filters.city && documentCity !== filters.city.toLowerCase()) {
     return false;
   }
-  if (filters.state && document.state.toLowerCase() !== filters.state.toLowerCase()) {
+  if (filters.state && documentState !== filters.state.toLowerCase()) {
     return false;
   }
   if (filters.host && document.host.toLowerCase() !== filters.host.toLowerCase()) {
@@ -251,4 +275,35 @@ function vectorNorm(vector: Float32Array): number {
     total += value * value;
   }
   return Math.sqrt(total);
+}
+
+function lookupGeoScores(
+  query: string,
+  index: {
+    docsByCity: Record<string, string[]>;
+    docsByState: Record<string, string[]>;
+    docsByPlaceTerm: Record<string, string[]>;
+  },
+): Map<string, number> {
+  const scores = new Map<string, number>();
+  const normalizedQuery = normalizeLocationKey(query);
+  const queryTerms = new Set([normalizedQuery, ...tokenizeSearchText(query).map(normalizeLocationKey)].filter(Boolean));
+
+  for (const term of queryTerms) {
+    addGeoScore(scores, index.docsByCity[term], 0.8);
+    addGeoScore(scores, index.docsByState[term], 0.45);
+    addGeoScore(scores, index.docsByPlaceTerm[term], 0.6);
+  }
+
+  return scores;
+}
+
+function addGeoScore(scores: Map<string, number>, docIds: string[] | undefined, increment: number): void {
+  for (const docId of docIds || []) {
+    scores.set(docId, (scores.get(docId) || 0) + increment);
+  }
+}
+
+function normalizeLocationKey(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }

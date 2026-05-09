@@ -31,6 +31,7 @@ export interface CorpusArtifactManifest {
 export interface GeneratedCorpusManifest {
   schemaVersion: number;
   documentCount: number;
+  serviceDocumentCount?: number;
   embeddingCount: number;
   embeddingDimension: number;
   embeddingModel: string;
@@ -39,7 +40,52 @@ export interface GeneratedCorpusManifest {
   graphNeighborhoodShardCount: number;
   graphCommunityCount: number;
   documentCommunityCount: number;
+  geoSearchIndexedServiceCount?: number;
+  geoSearchPlaceTermCount?: number;
   files: CorpusArtifact[];
+}
+
+export interface ServiceGeoPoint {
+  lat?: number | null;
+  lon?: number | null;
+  precision?: string;
+}
+
+export interface ServiceContactPoint {
+  contact_id?: string;
+  label?: string;
+  type?: string;
+  value?: string;
+  url?: string;
+  tel_url?: string;
+  sms_url?: string;
+  confidence?: number;
+}
+
+export interface ServiceAddress {
+  location_id?: string;
+  label?: string;
+  address?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  maps_query?: string;
+  google_maps_url?: string;
+  apple_maps_url?: string;
+  geo_url?: string;
+  geo?: ServiceGeoPoint | null;
+  confidence?: number;
+}
+
+export interface ServiceExtractValue {
+  label?: string;
+  value?: string;
+  confidence?: number;
+  extraction_method?: string;
+  source_url?: string;
+  source_content_cid?: string;
+  source_page_cid?: string;
 }
 
 export interface CorpusDocument {
@@ -57,6 +103,20 @@ export interface CorpusDocument {
   host: string;
   city: string;
   state: string;
+  phones?: ServiceContactPoint[];
+  emails?: ServiceContactPoint[];
+  websites?: ServiceContactPoint[];
+  addresses?: ServiceAddress[];
+  hours?: ServiceExtractValue[];
+  eligibility?: ServiceExtractValue[];
+  intake_steps?: ServiceExtractValue[];
+  required_documents?: ServiceExtractValue[];
+  fees?: ServiceExtractValue[];
+  languages?: ServiceExtractValue[];
+  accessibility?: ServiceExtractValue[];
+  travel_info?: ServiceExtractValue[];
+  area_served?: ServiceExtractValue[];
+  geo?: ServiceGeoPoint | null;
 }
 
 export interface CorpusDocumentIndex {
@@ -190,6 +250,19 @@ export interface SearchFilters {
   state?: string;
   host?: string;
   limit?: number;
+}
+
+export interface ServiceGeoIndex {
+  schemaVersion: number;
+  serviceCount: number;
+  docsWithAddress: number;
+  docsWithMapQuery: number;
+  docsWithCoordinates: number;
+  docsWithAreaServed: number;
+  geoPrecisionCounts: Record<string, number>;
+  docsByCity: Record<string, string[]>;
+  docsByState: Record<string, string[]>;
+  docsByPlaceTerm: Record<string, string[]>;
 }
 
 export interface SearchResult {

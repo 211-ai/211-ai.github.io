@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { ServiceProvenancePanel } from "../components/services/ServiceProvenancePanel";
 import { Badge, Button, Section, StatusBanner } from "../components/ui";
 import {
+  getPrimaryEligibilityText,
+  getPrimaryIntakeText,
+  getPrimaryRequiredDocumentsText,
+  getServiceAddresses,
+  getServiceAreaServedText,
+  getServiceLocationLabel,
+  getServicePhones,
+  getServiceTravelInfoText,
   load211ArtifactManifest,
   load211Documents,
   load211GeneratedManifest,
@@ -138,8 +147,14 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
   const title = document.program_name || document.provider_name || document.title || document.doc_id;
   const provider = document.provider_name || "Provider not listed";
   const program = document.program_name || document.title || "Program not listed";
-  const sourceUrl = document.source_url;
-  const location = [document.city, document.state].filter(Boolean).join(", ");
+  const location = getServiceLocationLabel(document);
+  const phones = getServicePhones(document);
+  const addresses = getServiceAddresses(document);
+  const intakeText = getPrimaryIntakeText(document);
+  const eligibilityText = getPrimaryEligibilityText(document);
+  const requiredDocumentsText = getPrimaryRequiredDocumentsText(document);
+  const areaServedText = getServiceAreaServedText(document);
+  const travelInfoText = getServiceTravelInfoText(document);
   const provenance = build211InfoServiceProvenance(document, {
     buildManifestCid: metadata.buildManifestCid,
     documentsArtifactCid: metadata.documentsArtifactCid,
@@ -178,12 +193,75 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
       </Section>
 
       <Section title="Actions">
-        <div className="row-actions">
-          {sourceUrl ? (
-            <a className="button button-secondary" href={sourceUrl} rel="noreferrer" target="_blank">
-              <ExternalLink aria-hidden="true" size={18} />
-              Website
-            </a>
+        <ServiceQuickActions document={document} />
+      </Section>
+
+      <Section title="Contact and location">
+        <div className="list-stack">
+          {phones.length ? (
+            <article className="list-item">
+              <div>
+                <h3>Phone</h3>
+                <p>{phones.map((item) => item.value).filter(Boolean).join(" · ")}</p>
+              </div>
+            </article>
+          ) : null}
+          {addresses.length ? (
+            <article className="list-item">
+              <div>
+                <h3>Address</h3>
+                <p>{addresses.map((item) => item.address || item.maps_query).filter(Boolean).join(" · ")}</p>
+              </div>
+              {location ? <Badge tone="success">{location}</Badge> : null}
+            </article>
+          ) : null}
+          {areaServedText ? (
+            <article className="list-item">
+              <div>
+                <h3>Area served</h3>
+                <p>{areaServedText}</p>
+              </div>
+            </article>
+          ) : null}
+          {travelInfoText ? (
+            <article className="list-item">
+              <div>
+                <h3>Travel notes</h3>
+                <p>{travelInfoText}</p>
+              </div>
+            </article>
+          ) : null}
+        </div>
+      </Section>
+
+      <Section title="How to apply">
+        <div className="list-stack">
+          {intakeText ? (
+            <article className="list-item">
+              <div>
+                <h3>Intake steps</h3>
+                <p>{intakeText}</p>
+              </div>
+            </article>
+          ) : null}
+          {eligibilityText ? (
+            <article className="list-item">
+              <div>
+                <h3>Eligibility</h3>
+                <p>{eligibilityText}</p>
+              </div>
+            </article>
+          ) : null}
+          {requiredDocumentsText ? (
+            <article className="list-item">
+              <div>
+                <h3>Required documents</h3>
+                <p>{requiredDocumentsText}</p>
+              </div>
+            </article>
+          ) : null}
+          {!intakeText && !eligibilityText && !requiredDocumentsText ? (
+            <StatusBanner tone="info">This service record does not yet expose structured intake details in the browser corpus.</StatusBanner>
           ) : null}
         </div>
       </Section>

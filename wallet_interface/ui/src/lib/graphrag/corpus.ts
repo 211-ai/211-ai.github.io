@@ -11,6 +11,7 @@ import type {
   GraphNeighborhoodIndex,
   GraphNeighborhoodShard,
   GraphNode,
+  ServiceGeoIndex,
 } from "./types";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
@@ -32,6 +33,7 @@ let embeddingsPromise: Promise<{ index: EmbeddingIndex; vectors: Float32Array }>
 let graphIndexPromise: Promise<GraphNeighborhoodIndex> | null = null;
 let communitiesPromise: Promise<GraphCommunity[]> | null = null;
 let documentCommunitiesPromise: Promise<DocumentCommunity[]> | null = null;
+let serviceGeoIndexPromise: Promise<ServiceGeoIndex> | null = null;
 const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
 
 export function get211CorpusBaseUrl(): string {
@@ -175,6 +177,13 @@ export async function load211DocumentCommunities(): Promise<DocumentCommunity[]>
     ).then((payload) => payload.documents);
   }
   return documentCommunitiesPromise;
+}
+
+export async function load211ServiceGeoIndex(): Promise<ServiceGeoIndex> {
+  if (!serviceGeoIndexPromise) {
+    serviceGeoIndexPromise = fetch211CorpusJson<ServiceGeoIndex>("generated/service-geo-index.json");
+  }
+  return serviceGeoIndexPromise;
 }
 
 export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {

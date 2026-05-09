@@ -1,6 +1,6 @@
 import { get211RelatedGraph } from "./corpus";
 import { search211Corpus } from "./search";
-import type { GraphEdge, GraphNode, GraphRagEvidence, SearchResult } from "./types";
+import type { GraphEdge, GraphNode, GraphRagEvidence, SearchFilters, SearchResult } from "./types";
 
 export interface GraphRagAnswer {
   question: string;
@@ -22,10 +22,12 @@ export async function build211GraphRagEvidence(
   query: string,
   options: {
     queryEmbedding?: Float32Array | number[];
+    filters?: SearchFilters;
     limit?: number;
   } = {},
 ): Promise<GraphRagEvidence> {
   const results = await search211Corpus(query, {
+    filters: options.filters,
     mode: options.queryEmbedding ? "hybrid" : "keyword",
     queryEmbedding: options.queryEmbedding,
     limit: options.limit || 6,

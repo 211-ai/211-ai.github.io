@@ -13,11 +13,14 @@ import {
 } from "../lib/graphrag";
 import { backendDetectionWorkerService } from "../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../lib/clientEmbeddingWorkerService";
-import type { CorpusDocument, GraphRagAnswer, GraphRagEvidence, SearchResult } from "../lib/graphrag";
+import type { CorpusDocument, GraphRagAnswer, GraphRagEvidence, SearchFilters, SearchResult } from "../lib/graphrag";
 import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
 
 interface GraphRagRetrievalOptions {
   useEmbedding?: boolean;
+  filters?: SearchFilters;
+  serviceOnly?: boolean;
+  fallbackToAllDocs?: boolean;
 }
 
 export interface GraphRagCitation {
@@ -149,15 +152,38 @@ const ADDRESS_PATTERN =
 
 export async function search211Info(query: string, limit = 10, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
-  return withMainThreadSearchFallback(
+  const initialFilters = preferredServiceFilters(limit, options);
+  const initialResults = await withMainThreadSearchFallback(
     () =>
       ragSearchWorkerService.search(query, {
+        filters: initialFilters,
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
       }),
     () =>
       search211Corpus(query, {
+        filters: initialFilters,
+        mode: queryEmbedding ? "hybrid" : "keyword",
+        queryEmbedding,
+        limit,
+      }),
+  );
+  if (initialResults.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
+    return initialResults;
+  }
+  const allDocumentFilters = fallbackFilters(limit, options);
+  return withMainThreadSearchFallback(
+    () =>
+      ragSearchWorkerService.search(query, {
+        filters: allDocumentFilters,
+        mode: queryEmbedding ? "hybrid" : "keyword",
+        queryEmbedding,
+        limit,
+      }),
+    () =>
+      search211Corpus(query, {
+        filters: allDocumentFilters,
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
@@ -167,9 +193,18 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
 
 export async function build211InfoEvidence(query: string, limit = 6, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
+  const initialFilters = preferredServiceFilters(limit, options);
+  const initialEvidence = await withMainThreadSearchFallback(
+    () => ragSearchWorkerService.buildEvidence(query, { filters: initialFilters, queryEmbedding, limit }),
+    () => build211GraphRagEvidence(query, { filters: initialFilters, queryEmbedding, limit }),
+  );
+  if (initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
+    return initialEvidence;
+  }
+  const allDocumentFilters = fallbackFilters(limit, options);
   return withMainThreadSearchFallback(
-    () => ragSearchWorkerService.buildEvidence(query, { queryEmbedding, limit }),
-    () => build211GraphRagEvidence(query, { queryEmbedding, limit }),
+    () => ragSearchWorkerService.buildEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
+    () => build211GraphRagEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
   );
 }
 
@@ -401,6 +436,9 @@ export async function answer211InfoQuestion(
     useLocalModel?: boolean;
     maxTokens?: number;
     useEmbedding?: boolean;
+    filters?: SearchFilters;
+    serviceOnly?: boolean;
+    fallbackToAllDocs?: boolean;
   } = {},
 ): Promise<GraphRagAnswer> {
   const trimmedQuestion = question.trim();
@@ -409,10 +447,28 @@ export async function answer211InfoQuestion(
   }
   const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding);
 
-  const evidence = await withMainThreadSearchFallback(
-    () => ragSearchWorkerService.buildEvidence(trimmedQuestion, { queryEmbedding, limit: 6 }),
-    () => build211GraphRagEvidence(trimmedQuestion, { queryEmbedding, limit: 6 }),
+  const initialFilters = preferredServiceFilters(6, options);
+  const initialEvidence = await withMainThreadSearchFallback(
+    () => ragSearchWorkerService.buildEvidence(trimmedQuestion, { filters: initialFilters, queryEmbedding, limit: 6 }),
+    () => build211GraphRagEvidence(trimmedQuestion, { filters: initialFilters, queryEmbedding, limit: 6 }),
   );
+  const evidence =
+    initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)
+      ? initialEvidence
+      : await withMainThreadSearchFallback(
+          () =>
+            ragSearchWorkerService.buildEvidence(trimmedQuestion, {
+              filters: fallbackFilters(6, options),
+              queryEmbedding,
+              limit: 6,
+            }),
+          () =>
+            build211GraphRagEvidence(trimmedQuestion, {
+              filters: fallbackFilters(6, options),
+              queryEmbedding,
+              limit: 6,
+            }),
+        );
   if (evidence.results.length === 0) {
     return {
       question: trimmedQuestion,
@@ -454,6 +510,28 @@ export async function answer211InfoQuestion(
       usedLocalModel: false,
     };
   }
+}
+
+function preferredServiceFilters(limit: number, options: GraphRagRetrievalOptions): SearchFilters {
+  const filters: SearchFilters = { ...(options.filters || {}) };
+  filters.limit = limit;
+  if (!filters.docTypes?.length && options.serviceOnly !== false) {
+    filters.docTypes = ["service"];
+  }
+  return filters;
+}
+
+function fallbackFilters(limit: number, options: GraphRagRetrievalOptions): SearchFilters {
+  const filters: SearchFilters = { ...(options.filters || {}) };
+  filters.limit = limit;
+  if (!options.filters?.docTypes?.length) {
+    delete filters.docTypes;
+  }
+  return filters;
+}
+
+function shouldFallbackToAllDocuments(options: GraphRagRetrievalOptions, filters: SearchFilters): boolean {
+  return options.fallbackToAllDocs !== false && Boolean(filters.docTypes?.length) && !options.filters?.docTypes?.length;
 }
 
 async function getCorpusStatus(): Promise<GraphRagRuntimeStatus["corpus"]> {

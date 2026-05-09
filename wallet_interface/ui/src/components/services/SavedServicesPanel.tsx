@@ -1,6 +1,9 @@
+import { useEffect, useState } from "react";
 import { CalendarClock, ExternalLink, RefreshCw } from "lucide-react";
+import { getServiceLocationLabel, load211Documents, type CorpusDocument } from "../../lib/graphrag";
 import type { SavedService, ServicePlan } from "../../models/abby";
 import { Badge, Button, Section, StatusBanner } from "../ui";
+import { ServiceQuickActions } from "./ServiceQuickActions";
 
 export function SavedServicesPanel({
   error = "",
@@ -19,6 +22,7 @@ export function SavedServicesPanel({
   savedServices: SavedService[];
   servicePlans: ServicePlan[];
 }) {
+  const [documentById, setDocumentById] = useState<Map<string, CorpusDocument>>(new Map());
   const serviceByDoc = new Map(savedServices.map((service) => [service.service_doc_id, service]));
   const planByService = new Map(servicePlans.map((plan) => [plan.service_doc_id, plan]));
   const rows = [
@@ -27,6 +31,20 @@ export function SavedServicesPanel({
       .filter((plan) => !serviceByDoc.has(plan.service_doc_id))
       .map((plan) => ({ service: undefined, plan }))
   ];
+
+  useEffect(() => {
+    let canceled = false;
+    load211Documents()
+      .then((state) => {
+        if (!canceled) {
+          setDocumentById(state.documentById);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      canceled = true;
+    };
+  }, []);
 
   return (
     <Section
@@ -52,13 +70,18 @@ export function SavedServicesPanel({
         <div className="list-stack" aria-label="Saved services">
           {rows.map(({ plan, service }) => {
             const serviceDocId = service?.service_doc_id || plan?.service_doc_id || "";
+            const serviceDocument = serviceDocId ? documentById.get(serviceDocId) : undefined;
             const title =
               service?.label ||
               service?.program_name ||
+              serviceDocument?.program_name ||
               service?.title ||
+              serviceDocument?.title ||
               plan?.service_title ||
               serviceDocId;
-            const provider = service?.provider_name || plan?.provider_name || "Provider not listed";
+            const provider =
+              service?.provider_name || plan?.provider_name || serviceDocument?.provider_name || "Provider not listed";
+            const location = serviceDocument ? getServiceLocationLabel(serviceDocument) : "";
             return (
               <article className="list-item" key={service?.saved_service_id || plan?.plan_id || serviceDocId}>
                 <div>
@@ -78,9 +101,11 @@ export function SavedServicesPanel({
                     {service?.private_notes_record_id || plan?.private_notes_record_id ? (
                       <Badge tone="success">encrypted notes</Badge>
                     ) : null}
+                    {location ? <Badge>{location}</Badge> : null}
                   </div>
                 </div>
                 <div className="row-actions list-item-action">
+                  {serviceDocument ? <ServiceQuickActions document={serviceDocument} /> : null}
                   {service?.source_url ? (
                     <a className="button button-secondary" href={service.source_url} rel="noreferrer" target="_blank">
                       <ExternalLink aria-hidden="true" size={18} />

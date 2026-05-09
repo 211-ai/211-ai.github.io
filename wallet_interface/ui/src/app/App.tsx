@@ -42,8 +42,9 @@ import {
   setLocationServicePlanHash
 } from "./ServicePlanScreen";
 import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
+import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
-import type { SearchResult } from "../lib/graphrag";
+import { getPrimaryIntakeText, getServiceLocationLabel, type SearchResult } from "../lib/graphrag";
 import {
   getFilecoinStorageConfig,
   toFilecoinStoragePatch,
@@ -2657,8 +2658,7 @@ function SocialServicesScreen({
     setSearchError("");
     try {
       const searchResults = await search211Info(trimmedQuery, 18);
-      const serviceResults = searchResults.filter((result) => result.document.doc_type === "service");
-      setResults((serviceResults.length ? serviceResults : searchResults).slice(0, 8));
+      setResults(searchResults.slice(0, 12));
       setSearchStatus("complete");
     } catch (error) {
       setResults([]);
@@ -2731,23 +2731,26 @@ function SocialServicesScreen({
               const document = result.document;
               const provider = document.provider_name || "Provider not listed";
               const program = document.program_name || document.title || "Program not listed";
+              const location = getServiceLocationLabel(document);
+              const intake = getPrimaryIntakeText(document);
               return (
                 <article className="list-item" key={result.docId}>
                   <div>
                     <h3>{program}</h3>
                     <p>{provider}</p>
                     <small className="upload-machine-summary">{result.snippet}</small>
+                    {intake ? <small className="upload-machine-summary">Apply: {intake}</small> : null}
                     <div className="badge-row">
                       <Badge>{document.doc_type}</Badge>
-                      {document.city || document.state ? (
+                      {location ? (
                         <Badge>
-                          {[document.city, document.state].filter(Boolean).join(", ")}
+                          {location}
                         </Badge>
                       ) : null}
                     </div>
                   </div>
                   <div className="row-actions list-item-action">
-                    {document.source_url ? <Badge tone="success">source</Badge> : null}
+                    <ServiceQuickActions document={document} />
                     <Button
                       disabled={savedServices.some((service) => service.service_doc_id === result.docId)}
                       loading={savingDocIds.includes(result.docId)}

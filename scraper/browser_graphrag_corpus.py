@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 import struct
 import sys
 from collections import defaultdict
@@ -15,8 +16,51 @@ import pandas as pd
 
 DEFAULT_PACKAGE_DIR = Path("data/retrieval_package")
 DEFAULT_OUTPUT_DIR = Path("wallet_interface/ui/public/corpus/211-info/current")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_PORTAL_PARQUET = REPO_ROOT / "data" / "portal" / "documents.portal.parquet"
 DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL = {
     "BAAI/bge-small-en-v1.5": "Xenova/bge-small-en-v1.5",
+}
+GEO_STOP_WORDS = {
+    "and",
+    "ave",
+    "avenue",
+    "blvd",
+    "boulevard",
+    "box",
+    "center",
+    "county",
+    "court",
+    "ct",
+    "drive",
+    "dr",
+    "hwy",
+    "highway",
+    "lane",
+    "ln",
+    "loop",
+    "main",
+    "north",
+    "northeast",
+    "northwest",
+    "or",
+    "parkway",
+    "pkwy",
+    "place",
+    "pl",
+    "po",
+    "rd",
+    "road",
+    "south",
+    "southeast",
+    "southwest",
+    "st",
+    "state",
+    "street",
+    "suite",
+    "the",
+    "unit",
+    "west",
 }
 
 
@@ -66,7 +110,76 @@ def read_manifest(package_dir: Path) -> dict[str, Any]:
     return json.loads(manifest_path.read_text(encoding="utf-8"))
 
 
-def load_documents(package_dir: Path, *, max_documents: int, text_max_chars: int) -> list[dict[str, Any]]:
+def json_value(value: Any, default: Any) -> Any:
+    if value in ("", None):
+        return default
+    if isinstance(value, float) and math.isnan(value):
+        return default
+    if isinstance(value, (dict, list)):
+        return value
+    try:
+        parsed = json.loads(str(value))
+    except Exception:
+        return default
+    return parsed if parsed is not None else default
+
+
+def load_portal_service_details(portal_parquet_path: Path) -> dict[str, dict[str, Any]]:
+    if not portal_parquet_path.exists():
+        return {}
+
+    frame = pd.read_parquet(
+        portal_parquet_path,
+        columns=[
+            "service_doc_id",
+            "phones",
+            "emails",
+            "websites",
+            "addresses",
+            "hours",
+            "eligibility",
+            "intake_steps",
+            "required_documents",
+            "fees",
+            "languages",
+            "accessibility",
+            "travel_info",
+            "area_served",
+            "geo",
+        ],
+    ).fillna("")
+
+    details: dict[str, dict[str, Any]] = {}
+    for row in frame.to_dict(orient="records"):
+        doc_id = str(row.get("service_doc_id", ""))
+        if not doc_id:
+            continue
+        details[doc_id] = {
+            "phones": json_value(row.get("phones"), []),
+            "emails": json_value(row.get("emails"), []),
+            "websites": json_value(row.get("websites"), []),
+            "addresses": json_value(row.get("addresses"), []),
+            "hours": json_value(row.get("hours"), []),
+            "eligibility": json_value(row.get("eligibility"), []),
+            "intake_steps": json_value(row.get("intake_steps"), []),
+            "required_documents": json_value(row.get("required_documents"), []),
+            "fees": json_value(row.get("fees"), []),
+            "languages": json_value(row.get("languages"), []),
+            "accessibility": json_value(row.get("accessibility"), []),
+            "travel_info": json_value(row.get("travel_info"), []),
+            "area_served": json_value(row.get("area_served"), []),
+            "geo": json_value(row.get("geo"), {"lat": None, "lon": None, "precision": "none"}),
+        }
+    return details
+
+
+def load_documents(
+    package_dir: Path,
+    *,
+    portal_service_details: dict[str, dict[str, Any]],
+    max_documents: int,
+    text_max_chars: int,
+) -> list[dict[str, Any]]:
     frame = pd.read_parquet(package_dir / "content" / "documents.parquet")
     if max_documents > 0:
         frame = frame.head(max_documents)
@@ -74,25 +187,134 @@ def load_documents(package_dir: Path, *, max_documents: int, text_max_chars: int
     documents: list[dict[str, Any]] = []
     for row in frame.fillna("").to_dict(orient="records"):
         text, text_truncated = compact_text(row.get("text", ""), text_max_chars)
-        documents.append(
-            {
-                "doc_id": str(row.get("doc_id", "")),
-                "doc_type": str(row.get("doc_type", "")),
-                "title": str(row.get("title", "")),
-                "text": text,
-                "text_truncated": text_truncated,
-                "source_url": str(row.get("source_url", "")),
-                "source_content_cid": str(row.get("source_content_cid", "")),
-                "source_page_cid": str(row.get("source_page_cid", "")),
-                "provider_name": str(row.get("provider_name", "")),
-                "program_name": str(row.get("program_name", "")),
-                "categories": str(row.get("categories", "")),
-                "host": str(row.get("host", "")),
-                "city": str(row.get("city", "")),
-                "state": str(row.get("state", "")),
-            }
-        )
+        doc_id = str(row.get("doc_id", ""))
+        document = {
+            "doc_id": doc_id,
+            "doc_type": str(row.get("doc_type", "")),
+            "title": str(row.get("title", "")),
+            "text": text,
+            "text_truncated": text_truncated,
+            "source_url": str(row.get("source_url", "")),
+            "source_content_cid": str(row.get("source_content_cid", "")),
+            "source_page_cid": str(row.get("source_page_cid", "")),
+            "provider_name": str(row.get("provider_name", "")),
+            "program_name": str(row.get("program_name", "")),
+            "categories": str(row.get("categories", "")),
+            "host": str(row.get("host", "")),
+            "city": str(row.get("city", "")),
+            "state": str(row.get("state", "")),
+        }
+        if document["doc_type"] == "service":
+            document.update(portal_service_details.get(doc_id, {}))
+        documents.append(document)
     return documents
+
+
+def normalize_geo_key(value: Any) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", str(value or "").lower()).strip()
+
+
+def tokenize_geo_text(value: str) -> set[str]:
+    tokens = set()
+    for token in normalize_geo_key(value).split():
+        if len(token) < 2:
+            continue
+        if token in GEO_STOP_WORDS:
+            continue
+        if token.isdigit() and len(token) < 5:
+            continue
+        tokens.add(token)
+    return tokens
+
+
+def add_geo_term(index: dict[str, set[str]], key: Any, doc_id: str) -> None:
+    normalized = normalize_geo_key(key)
+    if not normalized:
+        return
+    index.setdefault(normalized, set()).add(doc_id)
+
+
+def build_service_geo_index(documents: list[dict[str, Any]]) -> dict[str, Any]:
+    docs_by_city: dict[str, set[str]] = {}
+    docs_by_state: dict[str, set[str]] = {}
+    docs_by_place_term: dict[str, set[str]] = {}
+    geo_precision_counts: dict[str, int] = defaultdict(int)
+    docs_with_address = 0
+    docs_with_map_query = 0
+    docs_with_coordinates = 0
+    docs_with_area_served = 0
+    service_count = 0
+
+    for document in documents:
+        if document.get("doc_type") != "service":
+            continue
+        service_count += 1
+        doc_id = str(document.get("doc_id", ""))
+        geo = document.get("geo") if isinstance(document.get("geo"), dict) else {}
+        precision = str((geo or {}).get("precision") or "none")
+        geo_precision_counts[precision] += 1
+        if (geo or {}).get("lat") is not None and (geo or {}).get("lon") is not None:
+            docs_with_coordinates += 1
+
+        place_text_parts = [
+            str(document.get("city", "")),
+            str(document.get("state", "")),
+            str(document.get("categories", "")),
+        ]
+        add_geo_term(docs_by_city, document.get("city"), doc_id)
+        add_geo_term(docs_by_state, document.get("state"), doc_id)
+
+        addresses = document.get("addresses") if isinstance(document.get("addresses"), list) else []
+        if addresses:
+            docs_with_address += 1
+        seen_map_query = False
+        for address in addresses:
+            if not isinstance(address, dict):
+                continue
+            add_geo_term(docs_by_city, address.get("city"), doc_id)
+            add_geo_term(docs_by_state, address.get("state"), doc_id)
+            place_text_parts.extend(
+                [
+                    str(address.get("address", "")),
+                    str(address.get("street", "")),
+                    str(address.get("city", "")),
+                    str(address.get("state", "")),
+                    str(address.get("postal_code", "")),
+                    str(address.get("maps_query", "")),
+                ]
+            )
+            if address.get("maps_query"):
+                seen_map_query = True
+        if seen_map_query:
+            docs_with_map_query += 1
+
+        area_served = document.get("area_served") if isinstance(document.get("area_served"), list) else []
+        if area_served:
+            docs_with_area_served += 1
+        for item in area_served:
+            if isinstance(item, dict):
+                place_text_parts.append(str(item.get("value", "")))
+
+        travel_info = document.get("travel_info") if isinstance(document.get("travel_info"), list) else []
+        for item in travel_info:
+            if isinstance(item, dict):
+                place_text_parts.append(str(item.get("value", "")))
+
+        for term in tokenize_geo_text(" ".join(part for part in place_text_parts if part)):
+            docs_by_place_term.setdefault(term, set()).add(doc_id)
+
+    return {
+        "schemaVersion": 1,
+        "serviceCount": service_count,
+        "docsWithAddress": docs_with_address,
+        "docsWithMapQuery": docs_with_map_query,
+        "docsWithCoordinates": docs_with_coordinates,
+        "docsWithAreaServed": docs_with_area_served,
+        "geoPrecisionCounts": dict(sorted(geo_precision_counts.items())),
+        "docsByCity": {key: sorted(value) for key, value in sorted(docs_by_city.items())},
+        "docsByState": {key: sorted(value) for key, value in sorted(docs_by_state.items())},
+        "docsByPlaceTerm": {key: sorted(value) for key, value in sorted(docs_by_place_term.items())},
+    }
 
 
 def build_document_index(documents: list[dict[str, Any]]) -> dict[str, Any]:
@@ -531,6 +753,7 @@ def build_browser_graphrag_corpus(
     *,
     package_dir: Path = DEFAULT_PACKAGE_DIR,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
+    portal_parquet_path: Path = DEFAULT_PORTAL_PARQUET,
     max_documents: int = 0,
     text_max_chars: int = 6000,
     max_terms_per_document: int = 48,
@@ -543,8 +766,15 @@ def build_browser_graphrag_corpus(
     generated_dir.mkdir(parents=True, exist_ok=True)
 
     source_manifest = read_manifest(package_dir)
-    documents = load_documents(package_dir, max_documents=max_documents, text_max_chars=text_max_chars)
+    portal_service_details = load_portal_service_details(portal_parquet_path.resolve())
+    documents = load_documents(
+        package_dir,
+        portal_service_details=portal_service_details,
+        max_documents=max_documents,
+        text_max_chars=text_max_chars,
+    )
     selected_doc_ids = {document["doc_id"] for document in documents}
+    service_count = sum(1 for document in documents if document.get("doc_type") == "service")
 
     artifact_records: list[dict[str, Any]] = []
     documents_record = write_json(generated_dir / "documents.json", documents)
@@ -593,9 +823,14 @@ def build_browser_graphrag_corpus(
     document_communities_record = write_json(generated_dir / "document-communities.json", document_communities)
     artifact_records.append(relative_manifest_record(output_dir, document_communities_record, "graph"))
 
+    service_geo_index = build_service_geo_index(documents)
+    service_geo_record = write_json(generated_dir / "service-geo-index.json", service_geo_index)
+    artifact_records.append(relative_manifest_record(output_dir, service_geo_record, "geo"))
+
     generated_manifest = {
         "schemaVersion": 1,
         "documentCount": len(documents),
+        "serviceDocumentCount": service_count,
         "embeddingCount": int(embedding_index["count"]),
         "embeddingDimension": int(embedding_index["dimension"]),
         "embeddingModel": embedding_index["embeddingModel"],
@@ -604,6 +839,8 @@ def build_browser_graphrag_corpus(
         "graphNeighborhoodShardCount": int(graph_index["shardCount"]),
         "graphCommunityCount": len(graph_communities["communities"]),
         "documentCommunityCount": len(document_communities["documents"]),
+        "geoSearchIndexedServiceCount": int(service_geo_index["serviceCount"]),
+        "geoSearchPlaceTermCount": len(service_geo_index["docsByPlaceTerm"]),
         "sourcePackage": {
             "path": str(package_dir),
             "build_manifest_cid": source_manifest.get("build_manifest_cid", ""),
@@ -635,6 +872,7 @@ def build_browser_graphrag_corpus(
     return {
         "output_dir": str(output_dir),
         "document_count": len(documents),
+        "service_document_count": service_count,
         "embedding_count": int(embedding_index["count"]),
         "embedding_dimension": int(embedding_index["dimension"]),
         "bm25_document_count": len(bm25_payload["documents"]),
@@ -642,6 +880,8 @@ def build_browser_graphrag_corpus(
         "graph_neighborhood_shard_count": int(graph_index["shardCount"]),
         "graph_community_count": len(graph_communities["communities"]),
         "document_community_count": len(document_communities["documents"]),
+        "geo_indexed_service_count": int(service_geo_index["serviceCount"]),
+        "geo_place_term_count": len(service_geo_index["docsByPlaceTerm"]),
         "artifact_count": len(artifact_records) + 1,
         "artifacts_manifest_cid": artifacts_manifest_record["cid"],
         "generated_manifest_cid": generated_manifest_record["cid"],
@@ -652,6 +892,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build browser-ready static GraphRAG assets from the 211 retrieval package")
     parser.add_argument("--package-dir", type=Path, default=DEFAULT_PACKAGE_DIR)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--portal-parquet-path", type=Path, default=DEFAULT_PORTAL_PARQUET)
     parser.add_argument("--max-documents", type=int, default=0, help="Optional cap for smoke builds")
     parser.add_argument("--text-max-chars", type=int, default=6000, help="Per-document text cap; 0 keeps full text")
     parser.add_argument("--max-terms-per-document", type=int, default=48)
@@ -665,6 +906,7 @@ def main(argv: list[str] | None = None) -> None:
     result = build_browser_graphrag_corpus(
         package_dir=args.package_dir,
         output_dir=args.output_dir,
+        portal_parquet_path=args.portal_parquet_path,
         max_documents=args.max_documents,
         text_max_chars=args.text_max_chars,
         max_terms_per_document=args.max_terms_per_document,

@@ -1,4 +1,4 @@
-import type { GraphRagEvidence, SearchMode, SearchResult } from "./types";
+import type { GraphRagEvidence, SearchFilters, SearchMode, SearchResult } from "./types";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -23,6 +23,7 @@ class RagSearchWorkerService {
   async search(
     query: string,
     options: {
+      filters?: SearchFilters;
       limit?: number;
       mode?: SearchMode;
       queryEmbedding?: Float32Array | number[];
@@ -32,6 +33,7 @@ class RagSearchWorkerService {
       "search",
       {
         query,
+        filters: options.filters,
         limit: options.limit,
         mode: options.mode,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
@@ -44,6 +46,7 @@ class RagSearchWorkerService {
   async buildEvidence(
     query: string,
     options: {
+      filters?: SearchFilters;
       limit?: number;
       queryEmbedding?: Float32Array | number[];
     } = {},
@@ -52,6 +55,7 @@ class RagSearchWorkerService {
       "evidence",
       {
         query,
+        filters: options.filters,
         limit: options.limit,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
       },
