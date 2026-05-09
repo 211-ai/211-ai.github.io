@@ -65,7 +65,7 @@ test("login and inner route chrome use production ABBY assets", async ({ page },
     };
   });
 
-  expect(loginTheme.loginLogoSrc).toContain("/assets/abby-logo.png");
+  expect(loginTheme.loginLogoSrc).toContain("/assets/abby-icon.png");
   expect(loginTheme.loginLogoNaturalWidth).toBeGreaterThan(0);
   expect(loginTheme.loginPanelWatermark).toContain("preview-header-landscape.png");
   expect(loginTheme.faviconHref).toContain("assets/favicon.svg");
@@ -154,10 +154,10 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
   expect(Math.abs(homeMetrics.providerTop - proofMetrics.providerTop)).toBeLessThanOrEqual(1);
   expect(Math.abs(homeMetrics.supportTop - proofMetrics.supportTop)).toBeLessThanOrEqual(1);
   expect(homeMetrics.brandLogoAlt).toBe("Abby Client portal");
-  expect(homeMetrics.brandLogoSrc).toContain("/assets/abby-logo.png");
+  expect(homeMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
   expect(providerMetrics.appClass).toContain("portal-provider");
   expect(providerMetrics.brandLogoAlt).toBe("Abby Provider workspace");
-  expect(providerMetrics.brandLogoSrc).toContain("/assets/abby-logo.png");
+  expect(providerMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
 });
 
 test("analytics tools expose project and service organization admin introspection", async ({ page }) => {

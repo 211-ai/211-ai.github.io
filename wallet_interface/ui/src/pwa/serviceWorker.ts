@@ -74,7 +74,7 @@ async function precacheShell(): Promise<void> {
   const shellUrl = scopedUrl("index.html");
   const rootUrl = scopedUrl("");
   const manifestUrl = scopedUrl("manifest.webmanifest");
-  const iconUrl = scopedUrl("assets/abby-logo.png");
+  const iconUrl = scopedUrl("assets/abby-icon.png");
 
   try {
     const shellResponse = await fetch(new Request(shellUrl, { cache: "reload" }));
@@ -359,7 +359,7 @@ function isPublicShellAsset(request: Request): boolean {
 
   const relativePath = scopeRelativePath(url);
   if (relativePath === "" || relativePath === "index.html") return true;
-  if (relativePath === "manifest.webmanifest" || relativePath === "assets/abby-logo.png") return true;
+  if (relativePath === "manifest.webmanifest" || relativePath === "assets/abby-icon.png") return true;
 
   return (
     relativePath.startsWith("assets/") &&

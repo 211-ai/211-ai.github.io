@@ -729,7 +729,7 @@ export function App() {
   return (
     <div className={`app portal-${portalMode} ${agentChatOpen ? "app-chat-open" : ""}`}>
       <aside className="sidebar" aria-label="Primary navigation">
-        <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-logo.png" />
+        <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-icon.png" />
         <nav className="nav-sections" aria-label="Portal navigation">
           <NavigationGroup
             activeRoute={activeRoute}
@@ -1242,7 +1242,7 @@ function LoginScreen({
     <main className="login-page">
       <form className="login-panel" onSubmit={submitLogin}>
         <div className="login-brand">
-          <img alt="Abby" className="login-logo" src="/assets/abby-logo.png" />
+          <img alt="Abby" className="login-logo" src="/assets/abby-icon.png" />
           <h1 className="sr-only">Sign in to Abby</h1>
         </div>
         <div className="login-portal-actions" aria-label="Choose portal" role="group">
