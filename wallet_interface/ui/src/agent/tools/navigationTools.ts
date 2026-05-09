@@ -25,12 +25,18 @@ const extraRouteAliases = {
   register: ["registration", "profile", "intake"],
   "check-in": ["reminder", "reminders", "checkins"],
   calendar: ["appointments", "appointment", "schedule", "scheduled services", "service schedule"],
+  messages: ["inbox", "client messages", "service staff messages", "notifications"],
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
   uploads: ["wallet", "documents", "files", "records"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
   interactions: ["interaction history", "service history", "service interactions", "timeline"],
-  shelter: ["shelters", "shelter services", "beds"],
+  shelter: ["provider overview", "provider portal", "shelter staff", "shelters", "shelter services", "beds"],
+  "provider-clients": ["served clients", "clients served", "provider clients", "case list"],
+  "provider-messages": ["provider messages", "send client messages", "client notifications", "notifications"],
+  "provider-analytics": ["staff analytics", "provider analytics", "staff reports"],
+  "provider-proofs": ["zk certificates", "zero knowledge certificates", "provider proofs", "proof certificates"],
+  "provider-operations": ["staff operations", "provider operations", "create user account", "contact requests"],
   "recipient-access": ["recipient access", "access requests", "who can see", "requests"],
   "benefits-protection": ["benefits", "benefits protection", "public benefits"],
   analytics: ["reports", "group facts"],
@@ -55,12 +61,22 @@ const routeSummaries = {
 
     return `${appointments + followUps} scheduled appointments, services, and follow-ups.`;
   },
+  messages: (state) => `${state.shelterProviderMessages?.length ?? 0} service staff messages are available.`,
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
   uploads: (state) => `${state.uploads.length} wallet files are visible.`,
   "social-services": () => "Services search and public 211 guidance are active.",
   interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
   shelter: (state) =>
+    `Provider overview is active with ${state.shelterUserAccounts?.length ?? 0} served clients, ${
+      state.shelterProviderMessages?.length ?? 0
+    } messages, and ${providerProofCount(state)} provider proof certificates.`,
+  "provider-clients": (state) => `${state.shelterUserAccounts?.length ?? 0} served clients are visible.`,
+  "provider-messages": (state) => `${state.shelterProviderMessages?.length ?? 0} provider messages are visible.`,
+  "provider-analytics": (state) =>
+    `${state.shelterStaffAccounts?.length ?? 0} provider staff accounts are available for analytics.`,
+  "provider-proofs": (state) => `${providerProofCount(state)} provider proof certificates are visible.`,
+  "provider-operations": (state) =>
     `Shelter workspace is active with ${state.shelterStaffAccounts?.length ?? 0} staff accounts, ${
       state.shelterUserAccounts?.length ?? 0
     } managed user accounts, and ${state.shelterContactRequests?.filter((request) => request.status === "pending").length ?? 0} pending contact requests.`,
@@ -447,6 +463,10 @@ function canReadPrivateSurfaceContext(
 
 function pendingAccessRequestCount(state: AppActionState): number {
   return state.accessRequests.filter((request) => request.status === "pending").length;
+}
+
+function providerProofCount(state: AppActionState): number {
+  return state.walletProofReceipts.filter((proof) => proof.proofType.startsWith("provider_")).length;
 }
 
 function countBy(values: string[]): Record<string, number> {

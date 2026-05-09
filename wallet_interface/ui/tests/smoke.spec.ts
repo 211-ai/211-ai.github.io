@@ -159,7 +159,7 @@ test("registration enforces minimum required profile fields", async ({ page }) =
     return state.profile?.servicePartnerHelpRequested === true && Boolean(state.profile?.servicePartnerHelpRequestedAt);
   });
   await page.goto("/#/shelter");
-  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible({ timeout: 10000 });
   const partnerRequests = page.getByRole("region", { name: /Partner help requests/i });
   await expect(partnerRequests).toBeVisible();
   await expect(partnerRequests.getByText(/Needs partner help/i)).toBeVisible();
@@ -455,10 +455,10 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
   await expect(page.locator(".list-item").filter({ hasText: "Harbor Night Shelter" }).getByText(/pending/i)).toBeVisible();
 
   await page.evaluate(() => {
-    window.location.hash = "#/shelter";
+    window.location.hash = "#/provider-operations";
   });
-  await page.getByLabel("Shelter").first().selectOption("Harbor Night Shelter");
-  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Riley Chen" });
+  await page.getByLabel(/Service organization/i).selectOption("Harbor Night Shelter");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Riley Chen" });
   const request = page.locator(".access-request-item").filter({ hasText: "Harbor Night Shelter" }).filter({ hasText: "User asked" });
   await request.getByRole("button", { name: /^Approve$/i }).click();
   await expect(request.getByText(/approved/i)).toBeVisible();
@@ -483,9 +483,9 @@ test("user can cancel a pending shelter contact request", async ({ page }) => {
 });
 
 test("verified shelter staff can send a contact-list nudge", async ({ page }) => {
-  await openAppRoute(page, "/#/shelter");
-  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
-  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+  await openAppRoute(page, "/#/provider-operations");
+  await page.getByLabel(/Service organization/i).selectOption("Rose City Shelter");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
   await expect(page.getByRole("button", { name: /Send contact request/i })).toBeDisabled();
   await expect(page.getByText(/already waiting/i)).toBeVisible();
   const createUser = page.locator('section[aria-labelledby="Create-user-account"]');
@@ -533,13 +533,14 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
 
 test("provider portal sends client messages and processes ZK certificates", async ({ page }) => {
   await openAppRoute(page, "/#/shelter");
-  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 10000 });
-  await expect(page.getByRole("heading", { name: /Provider overview/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Clients served/i })).toBeVisible();
-  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
-  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible();
+  await page.goto("/#/provider-clients");
+  await expect(page.locator("h1", { hasText: /Clients served/i })).toBeVisible();
+  await page.locator(".provider-client-list").getByRole("button", { name: /^Message$/i }).first().click();
 
   const messageSection = page.locator('section[aria-labelledby="Client-notifications-and-messages"]');
+  await expect(page.locator("h1", { hasText: /Client messages/i })).toBeVisible();
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
   await messageSection.locator("select").first().selectOption({ label: "Abby" });
   await messageSection.getByRole("textbox", { name: /Message/i }).fill("Please arrive 10 minutes early for your service appointment.");
   await messageSection.getByRole("button", { name: /Send message/i }).click();
@@ -547,6 +548,15 @@ test("provider portal sends client messages and processes ZK certificates", asyn
   await expect(sentMessage).toBeVisible();
   await expect(sentMessage.getByText(/Sent by Avery Patel/i)).toBeVisible();
 
+  await page.goto("/#/messages");
+  const clientInbox = page.locator('section[aria-labelledby="Service-staff-messages"]');
+  await expect(page.getByRole("heading", { name: /^Messages$/i })).toBeVisible();
+  await expect(clientInbox.getByText(/Please arrive 10 minutes early/i)).toBeVisible();
+  await clientInbox.getByRole("button", { name: /Mark read/i }).first().click();
+  await expect(clientInbox.getByText("Read", { exact: true }).first()).toBeVisible();
+
+  await page.goto("/#/provider-proofs");
+  await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
   const proofSection = page.locator('section[aria-labelledby="Zero-knowledge-proof-certificates"]');
   await proofSection.locator("select").first().selectOption({ label: "Abby" });
   await proofSection.getByLabel("Certificate type").selectOption("benefits_referral");

@@ -179,12 +179,18 @@ const routeIcons: Record<RouteId, typeof Home> = {
   register: ClipboardCheck,
   "check-in": CalendarCheck,
   calendar: CalendarClock,
+  messages: MessageSquare,
   contacts: ContactRound,
   "sharing-rules": ShieldCheck,
   uploads: FileUp,
   "social-services": HeartHandshake,
   interactions: History,
   shelter: UsersRound,
+  "provider-clients": ContactRound,
+  "provider-messages": MessageSquare,
+  "provider-analytics": BarChart3,
+  "provider-proofs": ShieldCheck,
+  "provider-operations": Wrench,
   "recipient-access": KeyRound,
   "benefits-protection": Landmark,
   analytics: BarChart3,
@@ -201,8 +207,27 @@ const routes = primaryRoutes
 const secondaryNavigationRoutes = secondaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
-const clientNavigationRoutes = routes.filter((route) => route.id !== "shelter");
-const providerNavigationRoutes = routes.filter((route) => route.id === "shelter");
+const providerRouteIds = new Set<RouteId>([
+  "shelter",
+  "provider-clients",
+  "provider-messages",
+  "provider-analytics",
+  "provider-proofs",
+  "provider-operations"
+]);
+const clientNavigationRoutes = routes.filter((route) => !providerRouteIds.has(route.id));
+const providerNavigationRoutes = routes.filter((route) => providerRouteIds.has(route.id));
+
+type ProviderPortalView = "overview" | "clients" | "messages" | "analytics" | "proofs" | "operations";
+
+function getProviderPortalView(route: RouteId): ProviderPortalView {
+  if (route === "provider-clients") return "clients";
+  if (route === "provider-messages") return "messages";
+  if (route === "provider-analytics") return "analytics";
+  if (route === "provider-proofs") return "proofs";
+  if (route === "provider-operations") return "operations";
+  return "overview";
+}
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
@@ -505,6 +530,7 @@ export function App() {
         shelterContactRequests,
         shelterStaffAccounts,
         shelterUserAccounts,
+        shelterProviderMessages,
         uploads,
         accessRequests,
         grantReceipts,
@@ -558,6 +584,7 @@ export function App() {
       serviceInteractions,
       servicePlans,
       shelterContactRequests,
+      shelterProviderMessages,
       shelterStaffAccounts,
       shelterUserAccounts,
       uploads,
@@ -733,27 +760,33 @@ export function App() {
     );
   }
 
-  const portalMode = activeRoute === "shelter" ? "provider" : "client";
+  const portalMode = providerRouteIds.has(activeRoute) ? "provider" : "client";
   const portalLabel = portalMode === "provider" ? "Provider workspace" : "Client portal";
+  const showClientNavigation = !providerRouteIds.has(activeRoute);
+  const showProviderNavigation = signedInUser.startsWith("provider:") || providerRouteIds.has(activeRoute);
 
   return (
     <div className={`app portal-${portalMode} ${agentChatOpen ? "app-chat-open" : ""}`}>
       <aside className="sidebar" aria-label="Primary navigation">
         <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-icon.png" />
         <nav className="nav-sections" aria-label="Portal navigation">
-          <NavigationGroup
-            activeRoute={activeRoute}
-            label="Client portal"
-            routes={clientNavigationRoutes}
-            onNavigate={navigate}
-          />
-          <NavigationGroup
-            activeRoute={activeRoute}
-            className="nav-group-provider"
-            label="Provider portal"
-            routes={providerNavigationRoutes}
-            onNavigate={navigate}
-          />
+          {showClientNavigation ? (
+            <NavigationGroup
+              activeRoute={activeRoute}
+              label="Client portal"
+              routes={clientNavigationRoutes}
+              onNavigate={navigate}
+            />
+          ) : null}
+          {showProviderNavigation ? (
+            <NavigationGroup
+              activeRoute={activeRoute}
+              className="nav-group-provider"
+              label="Provider portal"
+              routes={providerNavigationRoutes}
+              onNavigate={navigate}
+            />
+          ) : null}
           <NavigationGroup
             activeRoute={activeRoute}
             className="nav-group-support"
@@ -806,19 +839,23 @@ export function App() {
 
         {mobileNavOpen ? (
           <nav className="mobile-nav-panel" id="mobile-navigation" aria-label="Mobile navigation">
-            <NavigationGroup
-              activeRoute={activeRoute}
-              label="Client portal"
-              routes={clientNavigationRoutes}
-              onNavigate={navigate}
-            />
-            <NavigationGroup
-              activeRoute={activeRoute}
-              className="nav-group-provider"
-              label="Provider portal"
-              routes={providerNavigationRoutes}
-              onNavigate={navigate}
-            />
+            {showClientNavigation ? (
+              <NavigationGroup
+                activeRoute={activeRoute}
+                label="Client portal"
+                routes={clientNavigationRoutes}
+                onNavigate={navigate}
+              />
+            ) : null}
+            {showProviderNavigation ? (
+              <NavigationGroup
+                activeRoute={activeRoute}
+                className="nav-group-provider"
+                label="Provider portal"
+                routes={providerNavigationRoutes}
+                onNavigate={navigate}
+              />
+            ) : null}
             <NavigationGroup
               activeRoute={activeRoute}
               className="nav-group-support"
@@ -861,6 +898,14 @@ export function App() {
             onOpenService={openServiceDetailFromServices}
             policy={policy}
             servicePlans={servicePlans}
+          />
+        ) : null}
+        {activeRoute === "messages" ? (
+          <ClientMessagesScreen
+            profile={profile}
+            providerMessages={shelterProviderMessages}
+            setProviderMessages={setShelterProviderMessages}
+            signedInUser={signedInUser}
           />
         ) : null}
         {activeRoute === "contacts" ? (
@@ -946,11 +991,12 @@ export function App() {
             uploads={uploads}
           />
         ) : null}
-        {activeRoute === "shelter" ? (
+        {providerRouteIds.has(activeRoute) ? (
           <ShelterScreen
             checklist={shelterChecklist}
             setChecklist={setShelterChecklist}
             contactRequests={shelterContactRequests}
+            navigate={navigate}
             profile={profile}
             proofReceipts={walletProofReceipts}
             providerMessages={shelterProviderMessages}
@@ -963,6 +1009,7 @@ export function App() {
             setShelterStaffAccounts={setShelterStaffAccounts}
             shelterUserAccounts={shelterUserAccounts}
             setShelterUserAccounts={setShelterUserAccounts}
+            view={getProviderPortalView(activeRoute)}
           />
         ) : null}
         {activeRoute === "recipient-access" ? (
@@ -1804,6 +1851,142 @@ function SharingCapabilityPreview({ recipientName, scopes }: { recipientName: st
       </div>
     </div>
   );
+}
+
+function ClientMessagesScreen({
+  profile,
+  providerMessages,
+  setProviderMessages,
+  signedInUser
+}: {
+  profile: RegistrationProfileDraft;
+  providerMessages: ShelterProviderMessage[];
+  setProviderMessages: (messages: ShelterProviderMessage[]) => void;
+  signedInUser: string;
+}) {
+  const [messageFilter, setMessageFilter] = useState<"inbox" | "unread" | "archived" | "all">("inbox");
+  const clientMessages = providerMessages
+    .filter((message) => messageMatchesClient(message, profile, signedInUser))
+    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+  const inboxMessages = clientMessages.filter((message) => !message.clientArchivedAt);
+  const unreadMessages = inboxMessages.filter((message) => !message.clientReadAt);
+  const archivedMessages = clientMessages.filter((message) => message.clientArchivedAt);
+  const visibleMessages =
+    messageFilter === "unread"
+      ? unreadMessages
+      : messageFilter === "archived"
+        ? archivedMessages
+        : messageFilter === "all"
+          ? clientMessages
+          : inboxMessages;
+
+  function updateMessage(messageId: string, patch: Partial<ShelterProviderMessage>) {
+    setProviderMessages(
+      providerMessages.map((message) => (message.id === messageId ? { ...message, ...patch } : message))
+    );
+  }
+
+  function markMessageRead(message: ShelterProviderMessage) {
+    updateMessage(message.id, { clientReadAt: message.clientReadAt ? undefined : new Date().toISOString() });
+  }
+
+  function toggleMessageArchive(message: ShelterProviderMessage) {
+    updateMessage(message.id, {
+      clientArchivedAt: message.clientArchivedAt ? undefined : new Date().toISOString(),
+      clientReadAt: message.clientReadAt ?? new Date().toISOString()
+    });
+  }
+
+  return (
+    <div className="screen client-messages-screen">
+      <div className="page-title">
+        <p className="eyebrow">Client portal</p>
+        <h1>Messages</h1>
+      </div>
+      <p className="page-note">See notifications, appointment notes, and follow-ups from service provider staff.</p>
+      <Section title="Message summary">
+        <div className="dashboard-grid">
+          <StatusPanel label="Inbox" value={String(inboxMessages.length)} tone="teal" />
+          <StatusPanel label="Unread" value={String(unreadMessages.length)} tone="gold" />
+          <StatusPanel label="Archived" value={String(archivedMessages.length)} tone="teal" />
+        </div>
+      </Section>
+      <Section title="Service staff messages">
+        <div className="message-toolbar">
+          <Field label="View">
+            <select value={messageFilter} onChange={(event) => setMessageFilter(event.target.value as typeof messageFilter)}>
+              <option value="inbox">Inbox</option>
+              <option value="unread">Unread</option>
+              <option value="archived">Archived</option>
+              <option value="all">All messages</option>
+            </select>
+          </Field>
+        </div>
+        <div className="list-stack client-message-list">
+          {visibleMessages.length ? (
+            visibleMessages.map((message) => (
+              <article className="list-item client-message-item" key={message.id}>
+                <div>
+                  <h3>{message.subject}</h3>
+                  <p>{message.body}</p>
+                  <div className="badge-row">
+                    <Badge>{message.shelter}</Badge>
+                    <Badge>{message.staffName}</Badge>
+                    <Badge>{message.channel.replace("_", " ")}</Badge>
+                    <Badge tone={message.clientReadAt ? "neutral" : "warning"}>
+                      {message.clientReadAt ? "Read" : "Unread"}
+                    </Badge>
+                    <Badge>{formatShelterDate(message.createdAt)}</Badge>
+                  </div>
+                  <small>Sent to {message.clientContact}</small>
+                </div>
+                <div className="row-actions">
+                  <Button onClick={() => markMessageRead(message)} variant="secondary">
+                    {message.clientReadAt ? "Mark unread" : "Mark read"}
+                  </Button>
+                  <Button onClick={() => toggleMessageArchive(message)} variant="secondary">
+                    {message.clientArchivedAt ? "Restore" : "Archive"}
+                  </Button>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="empty-state">
+              <h3>No messages in this view</h3>
+              <p>Messages sent by service staff will appear here when they match your Abby contact information.</p>
+            </div>
+          )}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function messageMatchesClient(
+  message: ShelterProviderMessage,
+  profile: RegistrationProfileDraft,
+  signedInUser: string
+): boolean {
+  const profileKeys = [profile.phone, profile.email, profile.preferredName, profile.legalName]
+    .map(normalizeClientMessageKey)
+    .filter(Boolean);
+  const loginContact = signedInUser.startsWith("client:") ? signedInUser.slice("client:".length) : signedInUser;
+  const loginKey = normalizeClientMessageKey(loginContact);
+  const messageKeys = [message.clientContact, message.clientName].map(normalizeClientMessageKey).filter(Boolean);
+
+  if (loginKey && messageKeys.some((key) => key.includes(loginKey) || loginKey.includes(key))) return true;
+  if (profileKeys.length && profileKeys.some((profileKey) => messageKeys.some((key) => key.includes(profileKey)))) {
+    return true;
+  }
+  return signedInUser === "abby" && normalizeClientMessageKey(message.clientName).includes("abby");
+}
+
+function normalizeClientMessageKey(value: string): string {
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed) return "";
+  if (trimmed.includes("@")) return trimmed;
+  const digits = trimmed.replace(/\D/g, "");
+  return digits.length >= 7 ? digits : trimmed.replace(/[^a-z0-9]+/g, " ");
 }
 
 function ContactsScreen({
@@ -2863,6 +3046,7 @@ function ShelterScreen({
   checklist,
   setChecklist,
   contactRequests,
+  navigate,
   profile,
   proofReceipts,
   providerMessages,
@@ -2874,11 +3058,13 @@ function ShelterScreen({
   shelterStaffAccounts,
   setShelterStaffAccounts,
   shelterUserAccounts,
-  setShelterUserAccounts
+  setShelterUserAccounts,
+  view
 }: {
   checklist: typeof defaultShelterChecklist;
   setChecklist: (value: typeof defaultShelterChecklist) => void;
   contactRequests: ShelterContactRequest[];
+  navigate: (route: RouteId) => void;
   profile: RegistrationProfileDraft;
   proofReceipts: ProofReceiptView[];
   providerMessages: ShelterProviderMessage[];
@@ -2891,6 +3077,7 @@ function ShelterScreen({
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
   shelterUserAccounts: ShelterUserAccount[];
   setShelterUserAccounts: (accounts: ShelterUserAccount[]) => void;
+  view: ProviderPortalView;
 }) {
   const [isShelterAdmin, setIsShelterAdmin] = useState(false);
   const [adminShelter, setAdminShelter] = useState(shelterOptions[0]);
@@ -3120,6 +3307,7 @@ function ShelterScreen({
       subject: "Service reminder",
       body: `Hi ${client.preferredName || client.legalName}, this is ${activeProviderOperator?.displayName ?? "your service provider"} from ${operatorShelter}. Please check your Abby calendar for your next service step.`
     });
+    navigate("provider-messages");
   }
 
   function sendProviderMessage(event: FormEvent<HTMLFormElement>) {
@@ -3150,6 +3338,7 @@ function ShelterScreen({
       verifier: `${operatorShelter} certificate verifier`,
       claim: "Client attended or received a service without exposing private documents."
     });
+    navigate("provider-proofs");
   }
 
   function processProviderProofCertificate(event: FormEvent<HTMLFormElement>) {
@@ -3205,22 +3394,76 @@ function ShelterScreen({
     );
   }
 
+  const providerViewTitle: Record<ProviderPortalView, string> = {
+    overview: "Provider overview",
+    clients: "Clients served",
+    messages: "Client messages",
+    analytics: "Staff analytics",
+    proofs: "Zero-knowledge certificates",
+    operations: "Staff operations"
+  };
+
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Shelter portal</p>
-        <h1>Assisted access</h1>
+        <p className="eyebrow">Provider portal</p>
+        <h1>{providerViewTitle[view]}</h1>
       </div>
-      <p className="page-note">Shelter workflows are free and keep user sharing choices separate from staff access.</p>
+      <p className="page-note">Provider workflows keep user sharing choices separate from staff access.</p>
+      <Section title="Provider workspace">
+        <div className="provider-workspace-controls">
+          <Field label="Service organization" required>
+            <select
+              value={operatorShelter}
+              onChange={(event) => {
+                setOperatorShelter(event.target.value);
+                setOperatorStaffId("");
+              }}
+            >
+              {shelterOptions.map((shelter) => (
+                <option key={shelter} value={shelter}>
+                  {shelter}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field help="Select a verified staff identity for writes and audit attribution." label="Staff identity">
+            <select value={operatorStaffId} onChange={(event) => setOperatorStaffId(event.target.value)}>
+              <option value="">Use default verified staff</option>
+              {verifiedStaffForOperatorShelter.map((staff) => (
+                <option key={staff.id} value={staff.id}>
+                  {staff.displayName}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <div className="provider-route-actions" aria-label="Provider route shortcuts">
+            <Button onClick={() => navigate("provider-clients")} variant="secondary">
+              <ContactRound aria-hidden="true" size={18} />
+              Clients
+            </Button>
+            <Button onClick={() => navigate("provider-messages")} variant="secondary">
+              <MessageSquare aria-hidden="true" size={18} />
+              Messages
+            </Button>
+            <Button onClick={() => navigate("provider-proofs")} variant="secondary">
+              <ShieldCheck aria-hidden="true" size={18} />
+              Proofs
+            </Button>
+          </div>
+        </div>
+      </Section>
+      {view === "overview" ? (
+        <>
       <Section title="Staff tools">
         <div className="tool-grid">
-          <button className="tool-tile" type="button">
+          <button className="tool-tile" onClick={() => navigate("provider-operations")} type="button">
             <ClipboardCheck size={24} /> Assist registration
           </button>
-          <button className="tool-tile" type="button">
+          <button className="tool-tile" onClick={() => navigate("provider-operations")} type="button">
             <UsersRound size={24} /> Verify contact
           </button>
-          <button className="tool-tile" type="button">
+          <button className="tool-tile" onClick={() => navigate("provider-analytics")} type="button">
             <ShieldCheck size={24} /> Review staff audit
           </button>
         </div>
@@ -3254,6 +3497,9 @@ function ShelterScreen({
           Provider analytics use the selected shelter workspace and show operational counts without exposing wallet files.
         </p>
       </Section>
+        </>
+      ) : null}
+      {view === "clients" ? (
       <Section title="Clients served">
         <div className="list-stack provider-client-list">
           {usersForOperatorShelter.length ? (
@@ -3297,6 +3543,8 @@ function ShelterScreen({
           )}
         </div>
       </Section>
+      ) : null}
+      {view === "messages" ? (
       <Section title="Client notifications and messages">
         {!activeProviderOperator ? (
           <StatusBanner tone="info">Add or verify staff before sending client messages.</StatusBanner>
@@ -3376,6 +3624,8 @@ function ShelterScreen({
           )}
         </div>
       </Section>
+      ) : null}
+      {view === "analytics" ? (
       <Section title="Staff analytics">
         <div className="list-stack provider-staff-analytics">
           {staffAnalytics.length ? (
@@ -3402,6 +3652,8 @@ function ShelterScreen({
           )}
         </div>
       </Section>
+      ) : null}
+      {view === "proofs" ? (
       <Section title="Zero-knowledge proof certificates">
         <p className="section-note">
           Process certificates as public proof receipts. The public inputs use commitments and service metadata instead of raw client documents.
@@ -3479,33 +3731,11 @@ function ShelterScreen({
           )}
         </div>
       </Section>
+      ) : null}
+      {view === "operations" ? (
+        <>
       <Section title="Verified staff workspace">
         <div className="shelter-staff-panel">
-          <Field label="Shelter" required>
-            <select
-              value={operatorShelter}
-              onChange={(event) => {
-                setOperatorShelter(event.target.value);
-                setOperatorStaffId("");
-              }}
-            >
-              {shelterOptions.map((shelter) => (
-                <option key={shelter} value={shelter}>
-                  {shelter}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field help="Only verified staff can create accounts." label="Verified staff operator" required>
-            <select value={operatorStaffId} onChange={(event) => setOperatorStaffId(event.target.value)}>
-              <option value="">Select verified staff</option>
-              {verifiedStaffForOperatorShelter.map((staff) => (
-                <option key={staff.id} value={staff.id}>
-                  {staff.displayName}
-                </option>
-              ))}
-            </select>
-          </Field>
           {!selectedOperator ? (
             <small className="pin-request-note">Select a verified staff operator to create client or staff accounts.</small>
           ) : (
@@ -3900,6 +4130,8 @@ function ShelterScreen({
           </div>
         ) : null}
       </Section>
+        </>
+      ) : null}
     </div>
   );
 }

@@ -284,6 +284,12 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (!localLlmReasoningEnabled) {
       turn = disableLocalModelForTurn(turn);
+      if (shouldTryLocalLlmResponse(turn)) {
+        turn = {
+          ...turn,
+          response: deterministicResponseWithoutLocalReasoning(content, context)
+        };
+      }
     }
     let localLlmUnavailable = false;
     if (localLlmReasoningEnabled && enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
@@ -903,6 +909,17 @@ function disableLocalModelForTurn(turn: AgentPlannedTurn): AgentPlannedTurn {
       };
     })
   };
+}
+
+function deterministicResponseWithoutLocalReasoning(content: string, context: SurfaceContext): string {
+  const lower = content.trim().toLowerCase();
+  if (/\b(hi|hello|hey|how are you|how's it going|how are things)\b/.test(lower)) {
+    return "I am here and ready to help. You can ask me to navigate the app, explain the current screen, or look up public 211 service information.";
+  }
+  if (/\b(what can you do|how can you help|what do you do|help me)\b/.test(lower)) {
+    return "I can help with app navigation, current-screen questions, public 211 service lookups, and actions that ask for confirmation before changing wallet data.";
+  }
+  return `I can help with ${context.routeLabel} using app actions and public 211 information. Ask a specific question or tell me what you want to open.`;
 }
 
 function shouldTryLocalLlmToolSelection(turn: AgentPlannedTurn): boolean {

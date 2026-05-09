@@ -26,12 +26,18 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "register", label: "Register" },
   { id: "check-in", label: "Check in" },
   { id: "calendar", label: "Calendar" },
+  { id: "messages", label: "Messages" },
   { id: "contacts", label: "Contacts" },
   { id: "sharing-rules", label: "Sharing" },
   { id: "social-services", label: "Services" },
   { id: "interactions", label: "Interactions" },
   { id: "uploads", label: "Wallet" },
-  { id: "shelter", label: "Shelter staff" }
+  { id: "shelter", label: "Overview" },
+  { id: "provider-clients", label: "Clients served" },
+  { id: "provider-messages", label: "Client messages" },
+  { id: "provider-analytics", label: "Staff analytics" },
+  { id: "provider-proofs", label: "ZK certificates" },
+  { id: "provider-operations", label: "Staff operations" }
 ];
 
 export const secondaryRoutes: Array<{ id: RouteId; label: string }> = [
@@ -125,6 +131,8 @@ export type ShelterProviderMessage = {
   staffId: string;
   staffName: string;
   status: "sent" | "queued";
+  clientReadAt?: string;
+  clientArchivedAt?: string;
   createdAt: string;
 };
 
@@ -188,6 +196,37 @@ export const initialShelterUserAccounts: ShelterUserAccount[] = [
     foundPermanentHousing: false,
     createdByStaffId: "staff-demo-downtown",
     createdAt: "2026-05-04T14:05:00.000Z"
+  }
+];
+
+export const initialShelterProviderMessages: ShelterProviderMessage[] = [
+  {
+    id: "provider-message-demo-rose-abby",
+    shelter: "Rose City Shelter",
+    clientId: "user-demo-rose-abby",
+    clientName: "Abby",
+    clientContact: "(503) 555-0100 / abby@example.org",
+    channel: "in_app",
+    subject: "Intake appointment reminder",
+    body: "Your Rose City Shelter intake appointment is on your Abby calendar. Please bring your ID if you have it.",
+    staffId: "staff-demo-rose",
+    staffName: "Avery Patel",
+    status: "sent",
+    createdAt: "2026-05-07T17:45:00.000Z"
+  },
+  {
+    id: "provider-message-demo-rose-casey",
+    shelter: "Rose City Shelter",
+    clientId: "user-demo-rose-casey",
+    clientName: "Casey",
+    clientContact: "(503) 555-0188 / casey@example.org",
+    channel: "sms",
+    subject: "Transportation voucher",
+    body: "Your transportation voucher is ready at the front desk after 2 PM today.",
+    staffId: "staff-demo-rose",
+    staffName: "Avery Patel",
+    status: "sent",
+    createdAt: "2026-05-07T19:05:00.000Z"
   }
 ];
 
@@ -304,7 +343,7 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
       : initialShelterUserAccounts,
     shelterProviderMessages: Array.isArray(persistedState.shelterProviderMessages)
       ? persistedState.shelterProviderMessages
-      : [],
+      : initialShelterProviderMessages,
     savedServices: Array.isArray(persistedState.savedServices) ? persistedState.savedServices : [],
     servicePlans: Array.isArray(persistedState.servicePlans) ? persistedState.servicePlans : [],
     serviceInteractions: Array.isArray(persistedState.serviceInteractions) ? persistedState.serviceInteractions : [],

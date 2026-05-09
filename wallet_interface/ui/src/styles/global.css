@@ -949,17 +949,37 @@ body.playful-pulse .decor-shape {
 .provider-client-item,
 .provider-message-item,
 .provider-proof-item,
-.provider-staff-row {
+.provider-staff-row,
+.client-message-item {
   align-items: flex-start;
 }
 
 .provider-client-item > div:first-child,
 .provider-message-item > div:first-child,
 .provider-proof-item > div:first-child,
-.provider-staff-row > div:first-child {
+.provider-staff-row > div:first-child,
+.client-message-item > div:first-child {
   display: grid;
   gap: 7px;
   min-width: 0;
+}
+
+.provider-workspace-controls {
+  align-items: end;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(220px, 1fr) minmax(220px, 1fr) auto;
+}
+
+.provider-route-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.message-toolbar {
+  max-width: 280px;
 }
 
 .provider-message-form textarea,
@@ -987,6 +1007,16 @@ body.playful-pulse .decor-shape {
 
 .provider-staff-metrics strong {
   color: #075e54;
+}
+
+@media (max-width: 900px) {
+  .provider-workspace-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-route-actions {
+    justify-content: flex-start;
+  }
 }
 
 .pin-request-note {
@@ -4568,6 +4598,12 @@ textarea:focus-visible,
 .nav-group-support {
   border-top: 1px solid rgba(127, 174, 180, 0.28);
   padding-top: 13px;
+}
+
+.nav-sections > .nav-group:first-child,
+.mobile-nav-panel > .nav-group:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .portal-provider .nav-group-provider .nav-section-label {

@@ -323,17 +323,17 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "shelter",
     path: "/#/shelter",
-    title: "Shelter portal",
+    title: "Provider overview",
     state: "default",
     goals: [
-      "Shelter staff workflows should feel separate from personal account controls.",
-      "Shared-device safety should be explicit.",
+      "Provider staff workflows should feel separate from personal account controls.",
+      "Operational metrics should be easy to scan.",
       "The portal should support low-bandwidth, repeated-use contexts."
     ]
   },
   {
     id: "shelter-shared-device-checklist",
-    path: "/#/shelter",
+    path: "/#/provider-operations",
     title: "Shelter portal shared-device checklist",
     state: "safety checklist checked",
     goals: [
@@ -349,7 +349,7 @@ const captureScenarios: CaptureScenario[] = [
   },
   {
     id: "shelter-create-user-draft",
-    path: "/#/shelter",
+    path: "/#/provider-operations",
     title: "Shelter portal create-user draft",
     state: "staff-created user draft",
     goals: [
@@ -358,7 +358,7 @@ const captureScenarios: CaptureScenario[] = [
       "Contact reminder helper copy should remain readable in the staff flow."
     ],
     prepare: async (page) => {
-      await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+      await page.getByLabel(/Staff identity/i).selectOption({ label: "Avery Patel" });
       const createUser = page.locator('section[aria-labelledby="Create-user-account"]');
       await createUser.getByLabel(/Legal or full name/i).fill("Casey Example");
       await createUser.getByLabel(/Preferred name/i).fill("Casey");
@@ -486,7 +486,9 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,
   "/#/security": /Account safety/i,
-  "/#/shelter": /Assisted access/i,
+  "/#/messages": /^Messages$/i,
+  "/#/shelter": /Provider overview/i,
+  "/#/provider-operations": /Staff operations/i,
   "/#/social-services": /Find support/i,
   "/#/uploads": /^Wallet$/i,
   "/#/audit": /Consent and access history/i
@@ -534,14 +536,23 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
     await seedCalendarCaptureState(page);
   }
 
-  if (scenarioPath === "/#/shelter") {
+  if (scenarioPath === "/#/shelter" || scenarioPath === "/#/provider-operations") {
     await verifyShelterStaffForCapture(page);
+    if (scenarioPath !== "/#/shelter") {
+      await page.goto(scenarioPath);
+      await page.reload();
+      await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+    }
     return;
   }
   await page.goto(scenarioPath);
   await page.reload();
   await expect(page.locator(".screen")).toBeVisible();
-  await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+  if (scenarioPath === "/#/shelter") {
+    await expect(page.locator("h1", { hasText: routeReadyHeadings[scenarioPath] })).toBeVisible();
+  } else {
+    await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+  }
 }
 
 async function seedCalendarCaptureState(page: Page) {
@@ -625,8 +636,8 @@ async function seedCalendarCaptureState(page: Page) {
 
 async function verifyShelterStaffForCapture(page: Page) {
   await page.goto("/#/shelter");
-  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
-  await page.getByLabel(/Verified staff operator/i).selectOption("staff-demo-rose");
+  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible();
+  await page.getByLabel(/Staff identity/i).selectOption("staff-demo-rose");
 }
 
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {

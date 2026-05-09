@@ -70,12 +70,19 @@ const RUNNER_PATCH_PATTERNS = [
       "if (loadAudioEncoder) { this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder); }",
   },
   {
+    key: "dynamicSessionMemoryPattern",
+    label: "dynamic-shape ONNX session memory pattern",
+    pattern: /const\s+sessionOptions\s*=\s*\{\s*executionProviders,\s*\.\.\.extraOptions\s*\};?/,
+    replacement: () =>
+      "const sessionOptions = { executionProviders, enableMemPattern: false, ...extraOptions };",
+  },
+  {
     key: "vocoderDynamicOutputLocation",
     label: "vocoder dynamic cache output location",
     pattern:
       /const\s+vocoderOpts\s*=\s*device\s*===\s*['"]webgpu['"]\s*\?\s*\{\s*preferredOutputLocation\s*:\s*\{\s*new_keys\s*:\s*['"]gpu-buffer['"]\s*,\s*new_values\s*:\s*['"]gpu-buffer['"]\s*,\s*depth_slices\s*:\s*['"]gpu-buffer['"]\s*\}\s*\}\s*:\s*\{\s*\};?/,
     replacement: () =>
-      "const vocoderOpts = {}; // Dynamic vocoder KV caches change from length 0 to 1; GPU output binding can reuse an incompatible buffer.",
+      "const vocoderOpts = { enableMemPattern: false }; // Dynamic vocoder KV caches change from length 0 to 1; GPU output binding can reuse an incompatible buffer.",
   },
   {
     key: "tokenizerEnvFetchCapture",

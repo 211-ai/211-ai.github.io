@@ -323,6 +323,10 @@ async function loadTokenizerFromPath(modelPath) {
 export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;
+    const loadOnnxWithExternalData = async (name, progress, quantSuffix = null, extraOptions = {}) => {
+      const sessionOptions = { executionProviders, ...extraOptions };
+      return sessionOptions;
+    };
     this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder);
     const vocoderOpts = device === 'webgpu'
       ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
@@ -345,7 +349,8 @@ export class AudioModel {
     expect(patched).toContain('import { AutoTokenizer, env } from "blob:transformers-web";');
     expect(patched).toContain("loadAudioEncoder = true");
     expect(patched).toContain("if (loadAudioEncoder)");
-    expect(patched).toContain("const vocoderOpts = {};");
+    expect(patched).toContain("enableMemPattern: false");
+    expect(patched).toContain("const vocoderOpts = { enableMemPattern: false };");
     expect(patched).not.toContain("new_keys: 'gpu-buffer'");
     expect(patched).toContain("const originalEnvFetch = env.fetch");
     expect(patched).toContain("env.fetch = globalThis.fetch");
@@ -439,6 +444,10 @@ async function loadTokenizerFromPath(modelPath) {
 export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;
+    const loadOnnxWithExternalData = async (name, progress, quantSuffix = null, extraOptions = {}) => {
+      const sessionOptions = { executionProviders, ...extraOptions };
+      return sessionOptions;
+    };
     this.audioEncoderSession = await loadOnnxWithExternalData('speech_encoder', 50, quantConfig.audioEncoder);
     const vocoderOpts = device === 'webgpu'
       ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
@@ -1165,7 +1174,8 @@ export class AudioModel {
 
     expect(localLlmCalls).toBe(0);
     expect(invoked).toEqual([]);
-    expect(controller.getSnapshot().messages.at(-1)?.content).toMatch(/You are on home\./);
+    expect(controller.getSnapshot().messages.at(-1)?.content).toMatch(/I am here and ready to help\./);
+    expect(controller.getSnapshot().messages.at(-1)?.content).not.toMatch(/You are on home\./);
   });
 
   test("disables local GraphRAG model answers when local LLM reasoning is disabled", async () => {

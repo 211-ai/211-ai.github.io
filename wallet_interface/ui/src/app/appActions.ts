@@ -15,7 +15,7 @@ import type {
   WalletAccessRequest,
   WalletGrantReceipt
 } from "../models/abby";
-import type { ShelterStaffAccount, ShelterUserAccount } from "./appState";
+import type { ShelterProviderMessage, ShelterStaffAccount, ShelterUserAccount } from "./appState";
 import { type WalletApiConfig } from "../services/walletApi";
 import {
   answerServiceNavigationQuestion,
@@ -150,6 +150,7 @@ export interface AppActionState {
   shelterContactRequests?: ShelterContactRequest[];
   shelterStaffAccounts?: ShelterStaffAccount[];
   shelterUserAccounts?: ShelterUserAccount[];
+  shelterProviderMessages?: ShelterProviderMessage[];
   uploads: UploadItem[];
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];

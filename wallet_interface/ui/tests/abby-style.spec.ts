@@ -106,13 +106,14 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
 
   const navigation = page.locator("#mobile-navigation");
   await expect(navigation.getByText("Client portal", { exact: true })).toBeVisible();
-  await expect(navigation.getByText("Provider portal", { exact: true })).toBeVisible();
+  await expect(navigation.getByText("Provider portal", { exact: true })).toHaveCount(0);
   await expect(navigation.getByText("Analytics tools", { exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Home", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Register", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Calendar", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Messages", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Services", exact: true })).toBeVisible();
-  await expect(navigation.getByRole("button", { name: "Shelter staff", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Overview", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Analytics", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Group facts", exact: true })).toHaveCount(0);
   await expect(navigation.getByRole("button", { name: "Who can see info", exact: true })).toHaveCount(0);
@@ -138,14 +139,20 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
         const box = node.getBoundingClientRect();
         return { height: box.height, top: box.top, width: box.width, y: box.y };
       };
+      const optionalRect = (selector: string) => {
+        const node = document.querySelector(selector);
+        if (!node) return null;
+        const box = node.getBoundingClientRect();
+        return { height: box.height, top: box.top, width: box.width, y: box.y };
+      };
       return {
         appClass: document.querySelector(".app")?.className ?? "",
         brandLogoAlt: document.querySelector(".brand-logo")?.getAttribute("alt") ?? "",
         brandLogoHeight: rect(".brand-logo").height,
         brandLogoSrc: document.querySelector<HTMLImageElement>(".brand-logo")?.currentSrc ?? "",
         brandLogoWidth: rect(".brand-logo").width,
-        clientTop: rect(".nav-group:not(.nav-group-provider):not(.nav-group-support)").y,
-        providerTop: rect(".nav-group-provider").y,
+        clientTop: optionalRect(".nav-group:not(.nav-group-provider):not(.nav-group-support)")?.y ?? null,
+        providerTop: optionalRect(".nav-group-provider")?.y ?? null,
         sidebarHeight: rect(".sidebar").height,
         supportTop: rect(".nav-group-support").y
       };
@@ -158,13 +165,16 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
 
   expect(Math.round(homeMetrics.sidebarHeight)).toBe(1000);
   expect(Math.round(proofMetrics.sidebarHeight)).toBe(1000);
-  expect(Math.abs(homeMetrics.providerTop - proofMetrics.providerTop)).toBeLessThanOrEqual(1);
+  expect(homeMetrics.providerTop).toBeNull();
+  expect(proofMetrics.providerTop).toBeNull();
   expect(Math.abs(homeMetrics.supportTop - proofMetrics.supportTop)).toBeLessThanOrEqual(1);
   expect(homeMetrics.brandLogoAlt).toBe("Abby Client portal");
   expect(homeMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
   expect(Math.round(homeMetrics.brandLogoHeight)).toBe(128);
   expect(homeMetrics.brandLogoWidth).toBeGreaterThan(200);
   expect(providerMetrics.appClass).toContain("portal-provider");
+  expect(providerMetrics.clientTop).toBeNull();
+  expect(providerMetrics.providerTop).not.toBeNull();
   expect(providerMetrics.brandLogoAlt).toBe("Abby Provider workspace");
   expect(providerMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
   expect(Math.round(providerMetrics.brandLogoHeight)).toBe(128);
