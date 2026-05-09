@@ -1,4 +1,4 @@
-const CACHE_VERSION = "portal-076-v1";
+const CACHE_VERSION = "portal-077-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const APP_CACHE_PREFIX = "abby-";

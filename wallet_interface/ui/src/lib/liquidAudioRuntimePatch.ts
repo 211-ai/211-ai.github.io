@@ -69,6 +69,24 @@ const RUNNER_PATCH_PATTERNS = [
     replacement: () =>
       "if (loadAudioEncoder) { this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder); }",
   },
+  {
+    key: "tokenizerEnvFetchCapture",
+    label: "Transformers.js env.fetch tokenizer override capture",
+    pattern: /const\s+originalFetch\s*=\s*globalThis\.fetch;\s*globalThis\.fetch\s*=/,
+    replacement: () => "const originalFetch = globalThis.fetch;\n  const originalEnvFetch = env.fetch;\n  globalThis.fetch =",
+  },
+  {
+    key: "tokenizerEnvFetchOverride",
+    label: "Transformers.js env.fetch tokenizer override install",
+    pattern: /const\s+originalAllowLocal\s*=\s*env\.allowLocalModels;/,
+    replacement: () => "env.fetch = globalThis.fetch;\n  const originalAllowLocal = env.allowLocalModels;",
+  },
+  {
+    key: "tokenizerEnvFetchRestore",
+    label: "Transformers.js env.fetch tokenizer override restore",
+    pattern: /globalThis\.fetch\s*=\s*originalFetch;\s*env\.allowLocalModels\s*=\s*originalAllowLocal;/,
+    replacement: () => "globalThis.fetch = originalFetch;\n    env.fetch = originalEnvFetch;\n    env.allowLocalModels = originalAllowLocal;",
+  },
 ] as const;
 
 const TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN =

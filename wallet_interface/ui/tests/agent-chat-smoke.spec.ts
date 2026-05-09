@@ -538,6 +538,30 @@ async function installFakeAudioPlayback(page: Page): Promise<void> {
 }
 
 async function installTiny211Corpus(page: Page): Promise<void> {
+  await page.route("**/corpus/211-info/current/artifacts.manifest.json", async (route) => {
+    await route.fulfill({
+      json: {
+        schemaVersion: 1,
+        datasetId: "test/211-info",
+        datasetPath: "test/211-info/current",
+        corpus: {
+          name: "Test 211 corpus",
+          source: "playwright",
+          documentCount: 2,
+          embeddingModel: "test",
+          embeddingDimension: 2,
+        },
+        sourcePackage: {
+          path: "playwright",
+          build_manifest_cid: "test",
+          document_count: 2,
+          graph_node_count: 0,
+          graph_edge_count: 0,
+        },
+        artifacts: [],
+      },
+    });
+  });
   const documents = [
     {
       doc_id: "svc-food-pantry-1",

@@ -304,6 +304,21 @@ test.describe("agent unit contracts", () => {
 import * as ort from 'onnxruntime-web';
 import { AutoTokenizer, env } from '@huggingface/transformers';
 import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from './audio-processor.js';
+async function loadTokenizerFromPath(modelPath) {
+  const fakeModelId = 'tokenizer-test';
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    return originalFetch(input, init);
+  };
+  const originalAllowLocal = env.allowLocalModels;
+  env.allowLocalModels = false;
+  try {
+    return AutoTokenizer.from_pretrained(fakeModelId);
+  } finally {
+    globalThis.fetch = originalFetch;
+    env.allowLocalModels = originalAllowLocal;
+  }
+}
 export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;
@@ -325,6 +340,9 @@ export class AudioModel {
     expect(patched).toContain('import { AutoTokenizer, env } from "blob:transformers-web";');
     expect(patched).toContain("loadAudioEncoder = true");
     expect(patched).toContain("if (loadAudioEncoder)");
+    expect(patched).toContain("const originalEnvFetch = env.fetch");
+    expect(patched).toContain("env.fetch = globalThis.fetch");
+    expect(patched).toContain("env.fetch = originalEnvFetch");
     expect(patched).not.toContain("from 'onnxruntime-web'");
   });
 
@@ -396,6 +414,21 @@ export { ORT_COMMON, ORT_WEB, Tensor, OrtSession };
 import * as ort from 'onnxruntime-web';
 import { AutoTokenizer, env } from '@huggingface/transformers';
 import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from './audio-processor.js';
+async function loadTokenizerFromPath(modelPath) {
+  const fakeModelId = 'tokenizer-test';
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    return originalFetch(input, init);
+  };
+  const originalAllowLocal = env.allowLocalModels;
+  env.allowLocalModels = false;
+  try {
+    return AutoTokenizer.from_pretrained(fakeModelId);
+  } finally {
+    globalThis.fetch = originalFetch;
+    env.allowLocalModels = originalAllowLocal;
+  }
+}
 export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;

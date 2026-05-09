@@ -13,6 +13,7 @@ import type {
   GraphNode,
   ServiceGeoIndex,
 } from "./types";
+import { loadDocumentsFromParquet } from "./duckdbDocuments";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
@@ -63,15 +64,29 @@ export async function load211GeneratedManifest(): Promise<GeneratedCorpusManifes
 
 export async function load211Documents(): Promise<CorpusState> {
   if (!documentsPromise) {
-    documentsPromise = fetch211CorpusJson<CorpusDocument[]>("generated/documents.json").then((documents) => ({
-      documents,
-      documentById: new Map(documents.map((document) => [document.doc_id, document])),
-      documentByContentCid: new Map(
-        documents
-          .filter((document) => document.source_content_cid)
-          .map((document) => [document.source_content_cid, document]),
-      ),
-    }));
+    documentsPromise = load211ArtifactManifest()
+      .then(async (manifest) => {
+        const parquetArtifact = manifest.artifacts.find(
+          (artifact) => artifact.role === "documents" && artifact.path.endsWith(".parquet"),
+        );
+        if (parquetArtifact) {
+          try {
+            return await loadDocumentsFromParquet(get211CorpusAssetUrl(parquetArtifact.path));
+          } catch (error) {
+            console.warn("211 corpus parquet load failed; falling back to JSON documents.", error);
+          }
+        }
+        return fetch211CorpusJson<CorpusDocument[]>("generated/documents.json");
+      })
+      .then((documents) => ({
+        documents,
+        documentById: new Map(documents.map((document) => [document.doc_id, document])),
+        documentByContentCid: new Map(
+          documents
+            .filter((document) => document.source_content_cid)
+            .map((document) => [document.source_content_cid, document]),
+        ),
+      }));
   }
   return documentsPromise;
 }

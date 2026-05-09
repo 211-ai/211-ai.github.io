@@ -88,6 +88,12 @@ def write_json(path: Path, payload: Any) -> dict[str, Any]:
     return file_record(path)
 
 
+def write_parquet(path: Path, rows: list[dict[str, Any]], *, compression: str = "zstd") -> dict[str, Any]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_parquet(path, index=False, compression=compression)
+    return file_record(path)
+
+
 def file_record(path: Path) -> dict[str, Any]:
     return {
         "path": path.as_posix(),
@@ -782,7 +788,10 @@ def build_browser_graphrag_corpus(
     service_required_document_count = sum(1 for document in service_documents if document.get("required_documents"))
 
     artifact_records: list[dict[str, Any]] = []
-    documents_record = write_json(generated_dir / "documents.json", documents)
+    stale_documents_json = generated_dir / "documents.json"
+    if stale_documents_json.exists():
+        stale_documents_json.unlink()
+    documents_record = write_parquet(generated_dir / "documents.parquet", documents)
     artifact_records.append(relative_manifest_record(output_dir, documents_record, "documents"))
 
     document_index_record = write_json(generated_dir / "document-index.json", build_document_index(documents))

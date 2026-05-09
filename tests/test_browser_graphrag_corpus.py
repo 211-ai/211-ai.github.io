@@ -326,7 +326,7 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert result["embedding_dimension"] == 3
     assert result["graph_neighborhood_count"] == 2
 
-    documents = json.loads((output_dir / "generated" / "documents.json").read_text())
+    documents = pd.read_parquet(output_dir / "generated" / "documents.parquet").to_dict(orient="records")
     document_index = json.loads((output_dir / "generated" / "document-index.json").read_text())
     bm25 = json.loads((output_dir / "generated" / "bm25-documents.json").read_text())
     embedding_index = json.loads((output_dir / "generated" / "embedding-index.json").read_text())
@@ -341,6 +341,7 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert documents[1]["phones"][0]["tel_url"] == "tel:+15035550100"
     assert documents[1]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
     assert documents[1]["intake_steps"][0]["value"] == "Apply online or call first"
+    assert not (output_dir / "generated" / "documents.json").exists()
     assert bm25["documents"][1]["terms"]["pantry"] == 3.0
     assert embedding_index["binary"] == "embeddings.f32"
     assert (output_dir / "generated" / "embeddings.f32").stat().st_size == 2 * 3 * 4
