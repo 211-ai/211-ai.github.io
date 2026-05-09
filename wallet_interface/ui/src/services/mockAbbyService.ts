@@ -39,6 +39,8 @@ export const emptyRegistrationProfile: RegistrationProfileDraft = {
   currentLocation: "",
   shelterAffiliation: "",
   serviceNeeds: [],
+  servicePartnerHelpRequested: false,
+  servicePartnerHelpRequestedAt: "",
   preferredCheckInChannels: ["web"],
   easyBotCheckStatus: "pending",
   captchaToken: ""

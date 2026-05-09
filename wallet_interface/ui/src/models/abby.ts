@@ -52,6 +52,8 @@ export interface RegistrationProfileDraft {
   currentLocation: string;
   shelterAffiliation: string;
   serviceNeeds: string[];
+  servicePartnerHelpRequested: boolean;
+  servicePartnerHelpRequestedAt: string;
   preferredCheckInChannels: CheckInChannel[];
   easyBotCheckStatus: EasyBotCheckStatus;
   captchaToken: string;
