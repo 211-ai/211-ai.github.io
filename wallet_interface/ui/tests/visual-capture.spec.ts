@@ -531,7 +531,6 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
 async function verifyShelterStaffForCapture(page: Page) {
   await page.goto("/#/shelter");
   await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
-  await page.getByLabel(/^Shelter$/i).selectOption("Rose City Shelter");
   await page.getByLabel(/Verified staff operator/i).selectOption("staff-demo-rose");
 }
 

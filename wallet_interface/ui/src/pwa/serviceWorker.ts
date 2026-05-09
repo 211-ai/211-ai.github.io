@@ -1,4 +1,4 @@
-const CACHE_VERSION = "portal-074-v1";
+const CACHE_VERSION = "portal-075-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const APP_CACHE_PREFIX = "abby-";
@@ -208,6 +208,15 @@ async function matchShellAsset(request: Request): Promise<Response | undefined> 
 function recoverMissingAppBuildAsset(request: Request): Response | undefined {
   const url = new URL(request.url);
   const relativePath = scopeRelativePath(url);
+  if (/^assets\/clientLLMWorkerService-[A-Za-z0-9_-]+\.js$/.test(relativePath)) {
+    return new Response(buildStaleClientLlmServiceRecovery(), {
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "application/javascript; charset=utf-8"
+      }
+    });
+  }
+
   if (!/^assets\/app-[A-Za-z0-9_-]+\.(?:css|js|mjs)$/.test(relativePath)) return undefined;
 
   if (relativePath.endsWith(".css")) {
@@ -225,6 +234,38 @@ function recoverMissingAppBuildAsset(request: Request): Response | undefined {
       "Content-Type": "application/javascript; charset=utf-8"
     }
   });
+}
+
+function buildStaleClientLlmServiceRecovery(): string {
+  return `
+const selfUrl = new URL(import.meta.url);
+const appRoot = new URL("../", selfUrl);
+const shellResponse = await fetch(new URL("index.html?abby-client-llm-recover=" + Date.now(), appRoot), {
+  cache: "no-store"
+});
+if (!shellResponse.ok) throw new Error("Unable to load the current Abby app shell.");
+const html = await shellResponse.text();
+const scriptPattern = /\\bsrc=["']([^"']*assets\\/app-[^"']+\\.js)["']/gi;
+let currentChunkUrl;
+let scriptMatch;
+while ((scriptMatch = scriptPattern.exec(html))) {
+  const appScriptUrl = new URL(scriptMatch[1], appRoot);
+  const appScriptResponse = await fetch(appScriptUrl.href + "?abby-client-llm-recover=" + Date.now(), {
+    cache: "no-store"
+  });
+  if (!appScriptResponse.ok) continue;
+  const appScript = await appScriptResponse.text();
+  const chunkMatch = /clientLLMWorkerService-[A-Za-z0-9_-]+\\.js/.exec(appScript);
+  if (chunkMatch) {
+    currentChunkUrl = new URL("assets/" + chunkMatch[0], appRoot);
+    break;
+  }
+}
+if (!currentChunkUrl) throw new Error("Unable to find the current Abby LLM service chunk.");
+const currentModule = await import(currentChunkUrl.href);
+export const clientLLMWorkerService = currentModule.clientLLMWorkerService;
+export default currentModule.default;
+`;
 }
 
 function buildStaleAppScriptRecovery(): string {

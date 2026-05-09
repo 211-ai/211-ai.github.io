@@ -327,6 +327,7 @@ export class AudioModel {
   test("patches Transformers.js WebGPU runtime imports for blob-loaded audio modules", () => {
     const source = `
 import * as ONNX_WEB from "onnxruntime-web/webgpu";
+import { Tensor } from "onnxruntime-common";
 export { ONNX_WEB };
 `;
 
@@ -335,7 +336,9 @@ export { ONNX_WEB };
     });
 
     expect(patched).toContain('import * as ONNX_WEB from "blob:ort-wrapper";');
+    expect(patched).toContain('import { Tensor } from "blob:ort-wrapper";');
     expect(patched).not.toContain("onnxruntime-web/webgpu");
+    expect(patched).not.toContain("onnxruntime-common");
   });
 
   test("patches legacy Transformers.js ONNX runtime imports without the webgpu subpath", () => {
