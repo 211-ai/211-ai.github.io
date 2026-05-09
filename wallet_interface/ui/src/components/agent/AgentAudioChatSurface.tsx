@@ -50,6 +50,7 @@ export function AgentAudioChatSurface({
   const [modelProgress, setModelProgress] = useState<ClientAudioProgress | null>(null);
   const [muted, setMuted] = useState(false);
   const [statusDetail, setStatusDetail] = useState("");
+  const [audioDiagnostic, setAudioDiagnostic] = useState("");
   const finalTranscriptRef = useRef("");
   const audioProgressRequestIdRef = useRef(0);
   const lastSpokenAssistantIdRef = useRef<string | undefined>(getLastAssistantMessage(messages)?.id);
@@ -64,6 +65,7 @@ export function AgentAudioChatSurface({
       lastSpokenAssistantIdRef.current = getLastAssistantMessage(messages)?.id;
       setSessionState("ready");
       setStatusDetail("");
+      setAudioDiagnostic("");
     }
     if (!open && openRef.current) {
       audioProgressRequestIdRef.current += 1;
@@ -71,6 +73,7 @@ export function AgentAudioChatSurface({
       stopPlayback();
       setInterimTranscript("");
       setModelProgress(null);
+      setAudioDiagnostic("");
     }
     openRef.current = open;
   }, [messages, open]);
@@ -78,6 +81,7 @@ export function AgentAudioChatSurface({
   useEffect(() => {
     if (!open) return;
     const requestId = ++audioProgressRequestIdRef.current;
+    setAudioDiagnostic("");
     void clientAudioReplyService
       .warmUp({
         onProgress: (progress) => updateModelProgress(requestId, progress),
@@ -85,12 +89,20 @@ export function AgentAudioChatSurface({
       .then((result) => {
         if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
         setModelProgress(null);
-        setStatusDetail(result.kind === "local-ready" ? "Audio model ready." : "Browser speech output ready.");
+        if (result.kind === "local-ready") {
+          setStatusDetail("Audio model ready.");
+          setAudioDiagnostic("");
+        } else {
+          setStatusDetail("Browser speech output ready.");
+          setAudioDiagnostic(result.fallbackReason);
+        }
       })
       .catch((error) => {
         if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
+        const message = error instanceof Error ? error.message : "Audio model warmup failed.";
         setModelProgress(null);
-        setStatusDetail(error instanceof Error ? error.message : "Audio model warmup failed.");
+        setStatusDetail(message);
+        setAudioDiagnostic(message);
       });
   }, [open]);
 
@@ -192,6 +204,7 @@ export function AgentAudioChatSurface({
     stopPlayback();
     setSessionState("speaking");
     setStatusDetail("");
+    setAudioDiagnostic("");
     const requestId = ++audioProgressRequestIdRef.current;
     setModelProgress({
       phase: "queued",
@@ -223,10 +236,13 @@ export function AgentAudioChatSurface({
         return;
       }
       setStatusDetail("Using browser speech output.");
+      setAudioDiagnostic(result.fallbackReason);
       playBrowserSpeech(result.text);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Audio reply failed.";
       if (audioProgressRequestIdRef.current === requestId) setModelProgress(null);
-      setStatusDetail(error instanceof Error ? error.message : "Audio reply failed.");
+      setStatusDetail(message);
+      setAudioDiagnostic(message);
       setSessionState("ready");
     }
   }
@@ -311,6 +327,12 @@ export function AgentAudioChatSurface({
             {progressValue}%
           </progress>
           <small>{formatProgressDetail(modelProgress)}</small>
+        </div>
+      ) : null}
+
+      {audioDiagnostic ? (
+        <div aria-label="Audio diagnostic" className="agent-audio-diagnostic" role="alert">
+          {audioDiagnostic}
         </div>
       ) : null}
 

@@ -2,6 +2,12 @@ import ortWebGpuModuleUrl from "../../node_modules/onnxruntime-web/dist/ort.webg
 import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
 import transformersWebModuleUrl from "../../node_modules/@huggingface/transformers/dist/transformers.web.js?url";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../lib/audioChatConfig";
+import {
+  clampAudioProgress,
+  formatLiquidAudioLoadProgress,
+  patchAudioModelSource,
+  type LiquidAudioWorkerProgress as AudioWorkerProgress,
+} from "../lib/liquidAudioRuntimePatch";
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 installWarningSuppression();
@@ -14,23 +20,6 @@ type AudioWorkerRequest = {
     modelName?: string;
   };
 };
-
-type AudioProgressPhase =
-  | "queued"
-  | "loading-runtime"
-  | "downloading-model"
-  | "warming-up"
-  | "ready"
-  | "generating"
-  | "decoding";
-
-interface AudioWorkerProgress {
-  phase: AudioProgressPhase;
-  progress: number;
-  status: string;
-  file?: string;
-  modelName?: string;
-}
 
 interface AudioWorkerResponse {
   id: string;
@@ -80,6 +69,8 @@ interface LiquidAudioModel {
       textTemperature: number;
       audioTemperature: number;
       audioTopK: number;
+      onAudioFrame?: (frame: number[], count: number) => void;
+      onToken?: (token: string, tokenId: number) => boolean | void;
     },
   ) => Promise<{ audioCodes: number[][]; textOutput?: string }>;
   decodeAudioCodes: (audioCodes: number[][]) => Promise<Float32Array>;
@@ -130,12 +121,22 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
       status: "Generating speech audio.",
       modelName,
     });
+    const maxAudioFrames = AUDIO_CHAT_CONFIG.maxAudioFrames;
     const generation = await model.generateSpeech(text, {
-      maxNewTokens: AUDIO_CHAT_CONFIG.maxAudioFrames,
+      maxNewTokens: maxAudioFrames,
       systemPrompt: "Perform TTS. Use the UK female voice.",
       textTemperature: 0.7,
       audioTemperature: 0.8,
       audioTopK: 64,
+      onAudioFrame: (_frame, count) => {
+        if (count !== 1 && count % 4 !== 0) return;
+        postProgress(request.id, {
+          phase: "generating",
+          progress: 90 + Math.min(6, (count / Math.max(1, maxAudioFrames)) * 6),
+          status: `Generating speech audio (${count} frames).`,
+          modelName,
+        });
+      },
     });
     if (!generation.audioCodes.length) {
       throw new Error("LiquidAI audio model completed without audio frames.");
@@ -333,41 +334,6 @@ async function fetchRunnerSource(fileName: "audio-model.js" | "audio-processor.j
   return response.text();
 }
 
-function patchAudioModelSource(
-  source: string,
-  urls: {
-    audioProcessorUrl: string;
-    ortWrapperUrl: string;
-    transformersWebModuleUrl: string;
-  },
-): string {
-  let patched = source
-    .replace("import * as ort from 'onnxruntime-web';", `import * as ort from ${JSON.stringify(urls.ortWrapperUrl)};`)
-    .replace(
-      "import { AutoTokenizer, env } from '@huggingface/transformers';",
-      `import { AutoTokenizer, env } from ${JSON.stringify(urls.transformersWebModuleUrl)};`,
-    )
-    .replace(
-      "import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from './audio-processor.js';",
-      `import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from ${JSON.stringify(urls.audioProcessorUrl)};`,
-    )
-    .replace(
-      "const { progressCallback, device = 'webgpu', quantization = null } = options;",
-      "const { progressCallback, device = 'webgpu', quantization = null, loadAudioEncoder = true } = options;",
-    )
-    .replace(
-      "this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder);",
-      "if (loadAudioEncoder) { this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder); }",
-    );
-
-  if (patched === source) {
-    throw new Error("LiquidAI audio runner import patch failed.");
-  }
-
-  return `// Runtime-patched from LiquidAI/LFM2.5-Audio-1.5B-transformers-js.
-${patched}`;
-}
-
 function createWavBlob(samples: Float32Array, sampleRate: number): Blob {
   const numChannels = 1;
   const bytesPerSample = 2;
@@ -418,7 +384,7 @@ function postProgress(id: string, progress: AudioWorkerProgress): void {
     type: "progress",
     progress: {
       ...progress,
-      progress: clampProgress(progress.progress),
+      progress: clampAudioProgress(progress.progress),
     },
     success: false,
   });
@@ -426,30 +392,4 @@ function postProgress(id: string, progress: AudioWorkerProgress): void {
 
 function postResponse(response: AudioWorkerResponse): void {
   self.postMessage(response);
-}
-
-function formatLiquidAudioLoadProgress(
-  progress: { status: string; progress: number; file?: string },
-  modelName: string,
-): AudioWorkerProgress {
-  const rawProgress = Number.isFinite(progress.progress) ? progress.progress : 0;
-  const normalizedProgress = rawProgress <= 1 ? rawProgress * 100 : rawProgress;
-  const scaledProgress = 15 + normalizedProgress * 0.7;
-  const fileDetail = progress.file ? ` ${progress.file}` : "";
-  return {
-    phase: "downloading-model",
-    progress: scaledProgress,
-    status: `Downloading audio model${fileDetail}.`,
-    file: progress.file,
-    modelName,
-  };
-}
-
-function clampProgress(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(100, Math.round(value)));
-}
-
-function formatError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error || "Unknown audio worker error");
 }

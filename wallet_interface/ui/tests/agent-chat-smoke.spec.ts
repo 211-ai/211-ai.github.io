@@ -79,7 +79,42 @@ test("voice chat shows local audio model warmup progress", async ({ page }) => {
   await expect(progressRegion).toBeVisible({ timeout: 5000 });
   await expect(progressRegion.getByText(/Downloading model|Loading runtime|Warming up/i)).toBeVisible();
   await expect(progressRegion.locator(".agent-audio-model-progress-header span")).toHaveText("38%");
-  await expect(progressRegion.getByText(/decoder_model_quantized\.onnx/i)).toBeVisible();
+  await expect(progressRegion.getByText(/decoder_q4\.onnx/i)).toBeVisible();
+});
+
+test("voice chat reports local audio model warmup failures", async ({ page }) => {
+  await installFakeAudioWorker(page, "warmup-error");
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  const diagnostic = voiceAssistant.getByRole("alert", { name: /Audio diagnostic/i });
+
+  await expect(diagnostic).toBeVisible({ timeout: 5000 });
+  await expect(diagnostic).toContainText(/Failed to fetch decoder_q4\.onnx: 404/i);
+  await expect(voiceAssistant.getByText(/Browser speech output ready/i)).toBeVisible();
+});
+
+test("voice chat captures speech, routes the app command, and plays generated audio", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "Mobile Safari", "Synthetic SpeechRecognition and Audio playback are covered in Chromium.");
+  await installFakeAudioWorker(page, "success");
+  await installFakeSpeechRecognition(page, "open services");
+  await installFakeAudioPlayback(page);
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant.getByText(/Audio model ready/i)).toBeVisible({ timeout: 10000 });
+
+  await voiceAssistant.getByRole("button", { name: /Start voice chat/i }).click();
+
+  await expect(page.getByRole("heading", { name: /Find support/i })).toBeVisible({ timeout: 15000 });
+  await expect(voiceAssistant.getByLabel(/Voice conversation transcript/i)).toContainText(/open services/i, {
+    timeout: 15000,
+  });
+  await expect
+    .poll(() => page.evaluate(() => (window as typeof window & { __abbyAudioPlayCalls?: number }).__abbyAudioPlayCalls || 0))
+    .toBeGreaterThan(0);
 });
 
 function visibleAssistant(page: Page): Locator {
@@ -130,12 +165,37 @@ async function clearPwaState(page: Page): Promise<void> {
   });
 }
 
-async function installFakeAudioWorker(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+type FakeAudioWorkerMode = "progress-only" | "success" | "warmup-error";
+
+async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "progress-only"): Promise<void> {
+  await page.addInitScript((fakeMode: FakeAudioWorkerMode) => {
     Object.defineProperty(navigator, "gpu", {
       configurable: true,
       value: {},
     });
+    if (!("speechSynthesis" in window)) {
+      Object.defineProperty(window, "speechSynthesis", {
+        configurable: true,
+        value: {
+          cancel: () => undefined,
+          speak: () => undefined,
+        },
+      });
+    }
+    if (typeof SpeechSynthesisUtterance === "undefined") {
+      Object.defineProperty(window, "SpeechSynthesisUtterance", {
+        configurable: true,
+        value: class SpeechSynthesisUtterance {
+          text: string;
+          onend: (() => void) | null = null;
+          onerror: (() => void) | null = null;
+
+          constructor(text: string) {
+            this.text = text;
+          }
+        },
+      });
+    }
 
     const RealWorker = window.Worker;
     class FakeAudioWorker {
@@ -174,13 +234,65 @@ async function installFakeAudioWorker(page: Page): Promise<void> {
               progress: {
                 phase: "downloading-model",
                 progress: 38,
-                status: "Downloading audio model decoder_model_quantized.onnx.",
-                file: "decoder_model_quantized.onnx",
+                status: "Downloading audio model decoder_q4.onnx.",
+                file: "decoder_q4.onnx",
                 modelName,
               },
             },
           } as MessageEvent);
         }, 50);
+        window.setTimeout(() => {
+          if (fakeMode === "warmup-error" && message.type === "warmUp") {
+            this.onmessage?.({
+              data: {
+                id: message.id,
+                success: false,
+                error: "Failed to fetch decoder_q4.onnx: 404",
+              },
+            } as MessageEvent);
+            return;
+          }
+          if (fakeMode !== "success") return;
+          if (message.type === "warmUp") {
+            this.onmessage?.({
+              data: {
+                id: message.id,
+                success: true,
+                data: {
+                  modelName,
+                  provider: "local-liquidai",
+                },
+              },
+            } as MessageEvent);
+            return;
+          }
+          this.onmessage?.({
+            data: {
+              id: message.id,
+              type: "progress",
+              progress: {
+                phase: "generating",
+                progress: 92,
+                status: "Generating speech audio (4 frames).",
+                modelName,
+              },
+            },
+          } as MessageEvent);
+          window.setTimeout(() => {
+            this.onmessage?.({
+              data: {
+                id: message.id,
+                success: true,
+                data: {
+                  audioBlob: new Blob(["RIFF....WAVE"], { type: "audio/wav" }),
+                  mimeType: "audio/wav",
+                  modelName,
+                  provider: "local-liquidai",
+                },
+              },
+            } as MessageEvent);
+          }, 25);
+        }, 75);
       }
 
       terminate() {
@@ -191,6 +303,89 @@ async function installFakeAudioWorker(page: Page): Promise<void> {
     Object.defineProperty(window, "Worker", {
       configurable: true,
       value: FakeAudioWorker,
+    });
+  }, mode);
+}
+
+async function installFakeSpeechRecognition(page: Page, transcript: string): Promise<void> {
+  await page.addInitScript((spokenText: string) => {
+    class FakeSpeechRecognition extends EventTarget {
+      continuous = false;
+      interimResults = false;
+      lang = "en-US";
+      onend: (() => void) | null = null;
+      onerror: ((event: { error?: string }) => void) | null = null;
+      onresult: ((event: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0?: { transcript?: string } }> }) => void) | null =
+        null;
+
+      start() {
+        window.setTimeout(() => {
+          this.onresult?.({
+            resultIndex: 0,
+            results: [
+              {
+                isFinal: true,
+                0: {
+                  transcript: spokenText,
+                },
+              },
+            ],
+          });
+          this.onend?.();
+        }, 40);
+      }
+
+      stop() {
+        this.onend?.();
+      }
+
+      abort() {
+        this.onend = null;
+      }
+    }
+
+    Object.defineProperty(window, "SpeechRecognition", {
+      configurable: true,
+      value: FakeSpeechRecognition,
+    });
+    Object.defineProperty(window, "webkitSpeechRecognition", {
+      configurable: true,
+      value: FakeSpeechRecognition,
+    });
+  }, transcript);
+}
+
+async function installFakeAudioPlayback(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "__abbyAudioPlayCalls", {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+
+    class FakeAudio {
+      onended: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      src = "";
+
+      constructor(src?: string) {
+        this.src = src || "";
+      }
+
+      async play() {
+        const testWindow = window as typeof window & { __abbyAudioPlayCalls?: number };
+        testWindow.__abbyAudioPlayCalls = (testWindow.__abbyAudioPlayCalls || 0) + 1;
+        window.setTimeout(() => this.onended?.(), 10);
+      }
+
+      pause() {
+        return undefined;
+      }
+    }
+
+    Object.defineProperty(window, "Audio", {
+      configurable: true,
+      value: FakeAudio,
     });
   });
 }

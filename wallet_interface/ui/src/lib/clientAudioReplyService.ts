@@ -120,7 +120,7 @@ export class ClientAudioReplyService {
         };
       } catch (error) {
         this.localAudioUnavailableReason = formatError(error);
-        this.restartWorker();
+        this.restartWorker(this.localAudioUnavailableReason);
       }
     }
 
@@ -169,7 +169,7 @@ export class ClientAudioReplyService {
         throw new Error("Audio worker completed without an audio blob.");
       } catch (error) {
         this.localAudioUnavailableReason = formatError(error);
-        this.restartWorker();
+        this.restartWorker(this.localAudioUnavailableReason);
       }
     }
 
@@ -266,16 +266,16 @@ export class ClientAudioReplyService {
       this.pendingRequests.forEach((pending) => pending.reject(error));
       this.pendingRequests.clear();
       this.localAudioUnavailableReason = error.message;
-      this.restartWorker();
+      this.restartWorker(error.message);
     };
   }
 
-  private restartWorker(): void {
+  private restartWorker(reason = "Audio worker restarted."): void {
     if (this.worker) {
       this.worker.terminate();
       this.worker = null;
     }
-    this.pendingRequests.forEach((pending) => pending.reject(new Error("Audio worker restarted.")));
+    this.pendingRequests.forEach((pending) => pending.reject(new Error(reason)));
     this.pendingRequests.clear();
   }
 }

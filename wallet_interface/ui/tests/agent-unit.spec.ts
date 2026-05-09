@@ -46,6 +46,11 @@ import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
+import {
+  formatLiquidAudioLoadProgress,
+  getLiquidAudioRunnerPatchDiagnostics,
+  patchAudioModelSource,
+} from "../src/lib/liquidAudioRuntimePatch";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 
@@ -289,6 +294,77 @@ test.describe("agent unit contracts", () => {
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
   });
 
+  test("patches the LiquidAI audio demo runner with local bundled dependencies", () => {
+    const source = `
+import * as ort from 'onnxruntime-web';
+import { AutoTokenizer, env } from '@huggingface/transformers';
+import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from './audio-processor.js';
+export class AudioModel {
+  async load(modelPath, options = {}) {
+    const { progressCallback, device = 'webgpu', quantization = null } = options;
+    this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder);
+  }
+}
+`;
+    const diagnostics = getLiquidAudioRunnerPatchDiagnostics(source);
+
+    expect(diagnostics.every((diagnostic) => diagnostic.present)).toBe(true);
+
+    const patched = patchAudioModelSource(source, {
+      audioProcessorUrl: "blob:audio-processor",
+      ortWrapperUrl: "blob:ort-wrapper",
+      transformersWebModuleUrl: "blob:transformers-web",
+    });
+
+    expect(patched).toContain('import * as ort from "blob:ort-wrapper";');
+    expect(patched).toContain('import { AutoTokenizer, env } from "blob:transformers-web";');
+    expect(patched).toContain("loadAudioEncoder = true");
+    expect(patched).toContain("if (loadAudioEncoder)");
+    expect(patched).not.toContain("from 'onnxruntime-web'");
+  });
+
+  test("fails loudly when the upstream LiquidAI runner can no longer be patched safely", () => {
+    const source = `
+import * as ort from 'onnxruntime-web';
+import { AutoTokenizer, env } from '@huggingface/transformers';
+import { loadMelConfig, computeMelSpectrogram, loadAudioFile } from './audio-processor.js';
+export class AudioModel {
+  async load(modelPath, options = {}) {
+    const { progressCallback, device = 'webgpu', quantization = null } = options;
+    this.audioEncoderSession = await loadOnnxWithExternalData('speech_encoder', 50, quantConfig.audioEncoder);
+  }
+}
+`;
+    const diagnostics = getLiquidAudioRunnerPatchDiagnostics(source);
+
+    expect(diagnostics.find((diagnostic) => diagnostic.key === "audioEncoderLoad")).toMatchObject({
+      present: false,
+    });
+    expect(() =>
+      patchAudioModelSource(source, {
+        audioProcessorUrl: "blob:audio-processor",
+        ortWrapperUrl: "blob:ort-wrapper",
+        transformersWebModuleUrl: "blob:transformers-web",
+      }),
+    ).toThrow(/audio encoder session load/i);
+  });
+
+  test("normalizes LiquidAI audio model download progress for the voice UI", () => {
+    expect(
+      formatLiquidAudioLoadProgress(
+        { status: "loading", progress: 0.5, file: "decoder_q4.onnx" },
+        AUDIO_CHAT_CONFIG.defaultModel,
+      ),
+    ).toMatchObject({
+      phase: "downloading-model",
+      progress: 50,
+      file: "decoder_q4.onnx",
+      modelName: AUDIO_CHAT_CONFIG.defaultModel,
+    });
+    expect(formatLiquidAudioLoadProgress({ status: "done", progress: 100 }, AUDIO_CHAT_CONFIG.defaultModel).progress).toBe(85);
+    expect(formatLiquidAudioLoadProgress({ status: "loading", progress: Number.NaN }, AUDIO_CHAT_CONFIG.defaultModel).progress).toBe(15);
+  });
+
   test("falls back to browser speech when local LiquidAI audio cannot start", async () => {
     const service = new ClientAudioReplyService({
       createWorker: () => {
@@ -329,7 +405,7 @@ test.describe("agent unit contracts", () => {
           phase: "downloading-model",
           progress: 42,
           status: "Downloading audio model.",
-          file: "decoder_model_quantized.onnx",
+          file: "decoder_q4.onnx",
           modelName: message.data.modelName,
         },
       });
@@ -362,10 +438,40 @@ test.describe("agent unit contracts", () => {
         expect.objectContaining({
           phase: "downloading-model",
           progress: 42,
-          file: "decoder_model_quantized.onnx",
+          file: "decoder_q4.onnx",
         }),
       ]),
     );
+  });
+
+  test("preserves the LiquidAI audio worker failure reason across concurrent warmups", async () => {
+    let requestCount = 0;
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      requestCount += 1;
+      if (requestCount === 1) {
+        globalThis.setTimeout(() => {
+          emitAudioWorkerMessage(activeWorker, {
+            id: message.id,
+            success: false,
+            error: "Failed to fetch decoder_q4.onnx: 404",
+          });
+        }, 0);
+      }
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const results = await Promise.all([service.warmUp(), service.warmUp()]);
+
+    expect(results).toHaveLength(2);
+    expect(results.every((result) => result.kind === "fallback")).toBe(true);
+    expect(results.map((result) => (result.kind === "fallback" ? result.fallbackReason : ""))).toEqual([
+      "Failed to fetch decoder_q4.onnx: 404",
+      "Failed to fetch decoder_q4.onnx: 404",
+    ]);
   });
 
   test("reports LiquidAI audio generation progress before returning a playable blob", async () => {

@@ -774,7 +774,12 @@ def build_browser_graphrag_corpus(
         text_max_chars=text_max_chars,
     )
     selected_doc_ids = {document["doc_id"] for document in documents}
-    service_count = sum(1 for document in documents if document.get("doc_type") == "service")
+    service_documents = [document for document in documents if document.get("doc_type") == "service"]
+    service_count = len(service_documents)
+    service_phone_count = sum(1 for document in service_documents if document.get("phones"))
+    service_address_count = sum(1 for document in service_documents if document.get("addresses"))
+    service_intake_step_count = sum(1 for document in service_documents if document.get("intake_steps"))
+    service_required_document_count = sum(1 for document in service_documents if document.get("required_documents"))
 
     artifact_records: list[dict[str, Any]] = []
     documents_record = write_json(generated_dir / "documents.json", documents)
@@ -831,6 +836,10 @@ def build_browser_graphrag_corpus(
         "schemaVersion": 1,
         "documentCount": len(documents),
         "serviceDocumentCount": service_count,
+        "servicePhoneCount": service_phone_count,
+        "serviceAddressCount": service_address_count,
+        "serviceIntakeStepCount": service_intake_step_count,
+        "serviceRequiredDocumentCount": service_required_document_count,
         "embeddingCount": int(embedding_index["count"]),
         "embeddingDimension": int(embedding_index["dimension"]),
         "embeddingModel": embedding_index["embeddingModel"],
@@ -873,6 +882,10 @@ def build_browser_graphrag_corpus(
         "output_dir": str(output_dir),
         "document_count": len(documents),
         "service_document_count": service_count,
+        "service_phone_count": service_phone_count,
+        "service_address_count": service_address_count,
+        "service_intake_step_count": service_intake_step_count,
+        "service_required_document_count": service_required_document_count,
         "embedding_count": int(embedding_index["count"]),
         "embedding_dimension": int(embedding_index["dimension"]),
         "bm25_document_count": len(bm25_payload["documents"]),
