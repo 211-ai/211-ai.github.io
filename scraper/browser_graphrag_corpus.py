@@ -800,6 +800,24 @@ def coerce_service_geo_point(document: dict[str, Any], place_centroids: dict[tup
             "state": str(existing_geo.get("state") or ""),
         }
 
+    addresses = document.get("addresses") if isinstance(document.get("addresses"), list) else []
+    for address in addresses:
+        if not isinstance(address, dict):
+            continue
+        address_geo = address.get("geo") if isinstance(address.get("geo"), dict) else {}
+        address_lat = address_geo.get("lat")
+        address_lon = address_geo.get("lon")
+        if address_lat is None or address_lon is None:
+            continue
+        return {
+            "lat": float(address_lat),
+            "lon": float(address_lon),
+            "precision": str(address_geo.get("precision") or "address_geocode"),
+            "source": str(address_geo.get("source") or "address"),
+            "place": first_non_empty_text([address.get("city"), document.get("city")]),
+            "state": first_non_empty_text([address.get("state"), document.get("state")]),
+        }
+
     for city, state in iter_service_locality_candidates(document):
         key = (normalize_geo_key(state), normalize_place_name(city))
         match = place_centroids.get(key)

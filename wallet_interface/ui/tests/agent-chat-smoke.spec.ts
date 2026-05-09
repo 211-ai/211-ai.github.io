@@ -129,14 +129,13 @@ test("voice chat validates microphone input level while listening", async ({ pag
 
   await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
   const voiceAssistant = visibleVoiceAssistant(page);
-  await voiceAssistant.getByRole("button", { name: /Start voice chat/i }).click();
 
   const meter = voiceAssistant.getByRole("meter", { name: /Microphone input level/i });
   await expect(meter).toBeVisible();
   await expect.poll(async () => Number((await meter.getAttribute("aria-valuenow")) || 0)).toBeGreaterThan(20);
 });
 
-test("voice chat captures speech, routes the app command, and plays generated audio", async ({ page }, testInfo) => {
+test("voice chat automatically captures speech, routes the app command, and plays generated audio", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "Mobile Safari", "Synthetic SpeechRecognition and Audio playback are covered in Chromium.");
   await installFakeSpeechSynthesis(page);
   await installFakeAudioWorker(page, "success");
@@ -148,8 +147,6 @@ test("voice chat captures speech, routes the app command, and plays generated au
   await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
   const voiceAssistant = visibleVoiceAssistant(page);
   await expect(voiceAssistant.getByText(/Audio model ready/i)).toBeVisible({ timeout: 10000 });
-
-  await voiceAssistant.getByRole("button", { name: /Start voice chat/i }).click();
 
   await expect(page.getByRole("heading", { name: /Find support/i })).toBeVisible({ timeout: 15000 });
   await expect(voiceAssistant.getByLabel(/Voice conversation transcript/i)).toContainText(/open services/i, {
@@ -461,14 +458,25 @@ async function installFakeMicrophoneMeter(page: Page): Promise<void> {
       fftSize = 256;
       smoothingTimeConstant = 0.72;
 
+      get frequencyBinCount() {
+        return this.fftSize / 2;
+      }
+
       getByteTimeDomainData(data: Uint8Array) {
         for (let index = 0; index < data.length; index += 1) {
           data[index] = index % 2 === 0 ? 72 : 184;
         }
       }
+
+      getByteFrequencyData(data: Uint8Array) {
+        for (let index = 0; index < data.length; index += 1) {
+          data[index] = index > 0 && index < 37 ? 220 : 6;
+        }
+      }
     }
 
     class FakeAudioContext {
+      sampleRate = 48000;
       state: AudioContextState = "running";
 
       async close() {

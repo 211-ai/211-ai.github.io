@@ -5,13 +5,18 @@ import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import { Button } from "../ui";
 
-type AudioSessionState = "ready" | "listening" | "thinking" | "speaking" | "unavailable";
+type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "speaking" | "unavailable";
 type AgentAudioSurface = "drawer" | "sheet";
 type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserAudioContextConstructor = new () => BrowserAudioContext;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. Press the microphone and start speaking.";
+const VAD_MIN_RMS = 0.025;
+const VAD_NOISE_MULTIPLIER = 3.2;
+const VAD_VOICE_BAND_RATIO = 0.38;
+const VAD_TRIGGER_FRAMES = 5;
+const VAD_RETRIGGER_COOLDOWN_MS = 1200;
 let lastOpeningGreetingAt = 0;
 
 interface BrowserSpeechRecognition extends EventTarget {
@@ -37,9 +42,11 @@ interface BrowserSpeechRecognitionEvent {
 }
 
 interface BrowserAudioContext {
+  sampleRate?: number;
   state?: AudioContextState;
   close: () => Promise<void>;
   createAnalyser: () => AnalyserNode;
+  createBiquadFilter?: () => BiquadFilterNode;
   createMediaStreamSource: (stream: MediaStream) => MediaStreamAudioSourceNode;
   resume?: () => Promise<void>;
 }
@@ -68,13 +75,17 @@ export function AgentAudioChatSurface({
   const [muted, setMuted] = useState(false);
   const [statusDetail, setStatusDetail] = useState("");
   const [audioDiagnostic, setAudioDiagnostic] = useState("");
+  const [voiceDetectionEnabled, setVoiceDetectionEnabled] = useState(true);
   const finalTranscriptRef = useRef("");
   const audioProgressRequestIdRef = useRef(0);
   const lastSpokenAssistantIdRef = useRef<string | undefined>(getLastAssistantMessage(messages)?.id);
   const micAnalyserRef = useRef<AnalyserNode | null>(null);
   const micAudioContextRef = useRef<BrowserAudioContext | null>(null);
   const micDataRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
+  const micFrequencyDataRef = useRef<Uint8Array<ArrayBuffer> | null>(null);
+  const micFilterNodesRef = useRef<Array<{ disconnect: () => void }>>([]);
   const micRafRef = useRef<number | null>(null);
+  const micSampleRateRef = useRef(48000);
   const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const mutedRef = useRef(muted);
@@ -82,11 +93,25 @@ export function AgentAudioChatSurface({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const sessionStateRef = useRef(sessionState);
   const openRef = useRef(open);
+  const detectVoiceActivityRef = useRef(false);
+  const vadNoiseFloorRef = useRef(0.018);
+  const vadSpeechFramesRef = useRef(0);
+  const vadLastTriggerAtRef = useRef(0);
+  const voiceDetectionEnabledRef = useRef(voiceDetectionEnabled);
 
   useEffect(() => {
     mutedRef.current = muted;
   }, [muted]);
+
+  useEffect(() => {
+    sessionStateRef.current = sessionState;
+  }, [sessionState]);
+
+  useEffect(() => {
+    voiceDetectionEnabledRef.current = voiceDetectionEnabled;
+  }, [voiceDetectionEnabled]);
 
   useEffect(() => {
     if (open && !openRef.current) {
@@ -95,15 +120,20 @@ export function AgentAudioChatSurface({
       setStatusDetail("");
       setAudioDiagnostic("");
       setMicLevel(0);
+      setVoiceDetectionEnabled(true);
+      voiceDetectionEnabledRef.current = true;
+      resetVoiceActivityDetector();
     }
     if (!open && openRef.current) {
       audioProgressRequestIdRef.current += 1;
+      voiceDetectionEnabledRef.current = false;
       cancelListening();
       stopPlayback();
       setInterimTranscript("");
       setModelProgress(null);
       setAudioDiagnostic("");
       setMicLevel(0);
+      resetVoiceActivityDetector();
     }
     openRef.current = open;
   }, [messages, open]);
@@ -137,15 +167,22 @@ export function AgentAudioChatSurface({
   }, [open, surface]);
 
   useEffect(() => {
-    if (!open || muted || !isAudioSurfaceActive(surface)) return;
+    if (!open || !voiceDetectionEnabled || !isAudioSurfaceActive(surface)) return;
     const timeout = window.setTimeout(() => {
-      if (!openRef.current || mutedRef.current || !reserveOpeningGreeting()) return;
-      setSessionState("speaking");
-      setStatusDetail("Testing voice output.");
-      playBrowserSpeech(AUDIO_OPENING_GREETING);
+      if (!openRef.current || !voiceDetectionEnabledRef.current) return;
+      if (!mutedRef.current && reserveOpeningGreeting()) {
+        sessionStateRef.current = "speaking";
+        setSessionState("speaking");
+        setStatusDetail("Testing voice output.");
+        playBrowserSpeech(AUDIO_OPENING_GREETING, () => {
+          void startVoiceActivityDetection();
+        });
+        return;
+      }
+      void startVoiceActivityDetection();
     }, 120);
     return () => window.clearTimeout(timeout);
-  }, [muted, open, surface]);
+  }, [open, surface, voiceDetectionEnabled]);
 
   useEffect(() => {
     if (!open || muted || responding || !isAudioSurfaceActive(surface)) return;
@@ -163,7 +200,29 @@ export function AgentAudioChatSurface({
     }
   }, [open, responding, sessionState]);
 
-  async function startListening() {
+  async function startVoiceActivityDetection() {
+    if (
+      !openRef.current ||
+      !voiceDetectionEnabledRef.current ||
+      recognitionRef.current ||
+      responding ||
+      sessionStateRef.current === "thinking" ||
+      sessionStateRef.current === "speaking"
+    ) {
+      return;
+    }
+    if (!getSpeechRecognitionConstructor()) {
+      setStatusDetail("Speech recognition is not available in this browser.");
+      return;
+    }
+    resetVoiceActivityDetector();
+    const microphoneReady = await startMicrophoneMeter({ detectVoiceActivity: true });
+    if (!microphoneReady || !openRef.current || !voiceDetectionEnabledRef.current) return;
+    setSessionState("monitoring");
+    setStatusDetail("Listening for speech.");
+  }
+
+  async function startListening({ fromVoiceActivity = false }: { fromVoiceActivity?: boolean } = {}) {
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) {
       setSessionState("unavailable");
@@ -171,8 +230,14 @@ export function AgentAudioChatSurface({
       return;
     }
     stopPlayback();
-    const microphoneReady = await startMicrophoneMeter();
-    if (!microphoneReady || !openRef.current) return;
+    if (fromVoiceActivity) {
+      detectVoiceActivityRef.current = false;
+    } else {
+      setVoiceDetectionEnabled(true);
+      voiceDetectionEnabledRef.current = true;
+      const microphoneReady = await startMicrophoneMeter({ detectVoiceActivity: false });
+      if (!microphoneReady || !openRef.current) return;
+    }
     const recognition = new Recognition();
     recognition.continuous = false;
     recognition.interimResults = true;
@@ -196,6 +261,9 @@ export function AgentAudioChatSurface({
       setSessionState("ready");
       setStatusDetail(formatSpeechRecognitionError(event.error));
       stopMicrophoneMeter();
+      if (event.error === "no-speech") {
+        restartVoiceActivityDetectionSoon();
+      }
     };
     recognition.onend = () => {
       recognitionRef.current = null;
@@ -208,6 +276,7 @@ export function AgentAudioChatSurface({
         setStatusDetail("");
       } else {
         setSessionState("ready");
+        restartVoiceActivityDetectionSoon();
       }
     };
     recognitionRef.current = recognition;
@@ -224,8 +293,15 @@ export function AgentAudioChatSurface({
   }
 
   function stopListening() {
+    setVoiceDetectionEnabled(false);
+    voiceDetectionEnabledRef.current = false;
     const recognition = recognitionRef.current;
-    if (!recognition) return;
+    if (!recognition) {
+      stopMicrophoneMeter();
+      setSessionState("ready");
+      setStatusDetail("Voice detection paused.");
+      return;
+    }
     try {
       recognition.stop();
     } catch {
@@ -250,7 +326,7 @@ export function AgentAudioChatSurface({
     stopMicrophoneMeter();
   }
 
-  async function startMicrophoneMeter(): Promise<boolean> {
+  async function startMicrophoneMeter({ detectVoiceActivity }: { detectVoiceActivity: boolean }): Promise<boolean> {
     stopMicrophoneMeter();
     if (!navigator.mediaDevices?.getUserMedia) {
       setSessionState("unavailable");
@@ -275,16 +351,33 @@ export function AgentAudioChatSurface({
         await audioContext.resume();
       }
       const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
+      analyser.fftSize = 512;
       analyser.smoothingTimeConstant = 0.72;
       const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
+      const highPass = audioContext.createBiquadFilter?.();
+      const lowPass = audioContext.createBiquadFilter?.();
+      if (highPass && lowPass) {
+        highPass.type = "highpass";
+        highPass.frequency.value = 85;
+        lowPass.type = "lowpass";
+        lowPass.frequency.value = 3400;
+        source.connect(highPass);
+        highPass.connect(lowPass);
+        lowPass.connect(analyser);
+        micFilterNodesRef.current = [highPass, lowPass];
+      } else {
+        source.connect(analyser);
+        micFilterNodesRef.current = [];
+      }
       micAudioContextRef.current = audioContext;
       micAnalyserRef.current = analyser;
       micSourceRef.current = source;
+      micSampleRateRef.current = audioContext.sampleRate || 48000;
       micDataRef.current = new Uint8Array(new ArrayBuffer(analyser.fftSize));
+      micFrequencyDataRef.current = new Uint8Array(new ArrayBuffer(analyser.frequencyBinCount));
+      detectVoiceActivityRef.current = detectVoiceActivity;
       setMicLevel(0);
-      setStatusDetail("Microphone connected. Speak to check your input level.");
+      setStatusDetail(detectVoiceActivity ? "Listening for speech." : "Microphone connected. Speak to check your input level.");
       monitorMicrophoneLevel();
       return true;
     } catch (error) {
@@ -309,14 +402,22 @@ export function AgentAudioChatSurface({
     }
     const rms = Math.sqrt(sumSquares / data.length);
     setMicLevel(clampLevel(rms * 4.8));
+    if (detectVoiceActivityRef.current && shouldTriggerSpeechRecognition(analyser, rms)) {
+      detectVoiceActivityRef.current = false;
+      void startListening({ fromVoiceActivity: true });
+      return;
+    }
     micRafRef.current = window.requestAnimationFrame(monitorMicrophoneLevel);
   }
 
   function stopMicrophoneMeter() {
+    detectVoiceActivityRef.current = false;
     if (micRafRef.current !== null) {
       window.cancelAnimationFrame(micRafRef.current);
       micRafRef.current = null;
     }
+    micFilterNodesRef.current.forEach((node) => node.disconnect());
+    micFilterNodesRef.current = [];
     micSourceRef.current?.disconnect();
     micSourceRef.current = null;
     if (micAudioContextRef.current) {
@@ -327,7 +428,34 @@ export function AgentAudioChatSurface({
     micStreamRef.current = null;
     micAnalyserRef.current = null;
     micDataRef.current = null;
+    micFrequencyDataRef.current = null;
     setMicLevel(0);
+  }
+
+  function shouldTriggerSpeechRecognition(analyser: AnalyserNode, rms: number): boolean {
+    const frequencyData = micFrequencyDataRef.current;
+    if (frequencyData) {
+      analyser.getByteFrequencyData(frequencyData);
+    }
+    const voiceBandRatio = frequencyData ? getVoiceBandRatio(frequencyData, micSampleRateRef.current) : 1;
+    const noiseFloor = vadNoiseFloorRef.current;
+    const speechThreshold = Math.max(VAD_MIN_RMS, noiseFloor * VAD_NOISE_MULTIPLIER);
+    const speechLike = rms >= speechThreshold && (voiceBandRatio >= VAD_VOICE_BAND_RATIO || rms >= speechThreshold * 1.8);
+
+    if (speechLike) {
+      vadSpeechFramesRef.current += 1;
+    } else {
+      vadSpeechFramesRef.current = 0;
+      vadNoiseFloorRef.current = noiseFloor * 0.96 + Math.max(0.006, rms) * 0.04;
+    }
+
+    const now = Date.now();
+    if (vadSpeechFramesRef.current < VAD_TRIGGER_FRAMES || now - vadLastTriggerAtRef.current < VAD_RETRIGGER_COOLDOWN_MS) {
+      return false;
+    }
+
+    vadLastTriggerAtRef.current = now;
+    return true;
   }
 
   async function speakAssistantMessage(message: AgentMessage) {
@@ -357,11 +485,13 @@ export function AgentAudioChatSurface({
         audio.onended = () => {
           revokeAudioUrl();
           setSessionState("ready");
+          restartVoiceActivityDetectionSoon();
         };
         audio.onerror = () => {
           revokeAudioUrl();
           setStatusDetail("Audio playback failed.");
           setSessionState("ready");
+          restartVoiceActivityDetectionSoon();
         };
         await audio.play();
         return;
@@ -384,19 +514,27 @@ export function AgentAudioChatSurface({
     setStatusDetail(progress.status);
   }
 
-  function playBrowserSpeech(text: string) {
+  function playBrowserSpeech(text: string, onComplete?: () => void) {
     if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
       setStatusDetail("Audio playback is not available in this browser.");
+      sessionStateRef.current = "ready";
       setSessionState("ready");
+      onComplete?.();
       return;
     }
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 0.96;
     utterance.pitch = 1;
-    utterance.onend = () => setSessionState("ready");
+    utterance.onend = () => {
+      sessionStateRef.current = "ready";
+      setSessionState("ready");
+      onComplete?.();
+    };
     utterance.onerror = () => {
       setStatusDetail("Browser speech playback failed.");
+      sessionStateRef.current = "ready";
       setSessionState("ready");
+      onComplete?.();
     };
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
@@ -412,7 +550,7 @@ export function AgentAudioChatSurface({
       utteranceRef.current = null;
     }
     revokeAudioUrl();
-    if (sessionState === "speaking") {
+    if (sessionStateRef.current === "speaking") {
       setSessionState("ready");
     }
   }
@@ -430,13 +568,34 @@ export function AgentAudioChatSurface({
     if (nextMuted) stopPlayback();
   }
 
+  function resumeVoiceDetection() {
+    setVoiceDetectionEnabled(true);
+    voiceDetectionEnabledRef.current = true;
+    void startVoiceActivityDetection();
+  }
+
+  function restartVoiceActivityDetectionSoon() {
+    if (!openRef.current || !voiceDetectionEnabledRef.current) return;
+    window.setTimeout(() => {
+      if (openRef.current && voiceDetectionEnabledRef.current && !recognitionRef.current) {
+        void startVoiceActivityDetection();
+      }
+    }, 220);
+  }
+
+  function resetVoiceActivityDetector() {
+    vadNoiseFloorRef.current = 0.018;
+    vadSpeechFramesRef.current = 0;
+  }
+
   const visibleMessages = messages.slice(-8).filter((message) => message.role === "assistant" || message.role === "user");
   const isListening = sessionState === "listening";
+  const isMonitoring = sessionState === "monitoring";
   const isBusy = responding || sessionState === "thinking";
   const statusLabel = getAudioSessionStatusLabel(sessionState, responding);
   const progressValue = modelProgress ? clampProgress(modelProgress.progress) : 0;
   const micLevelPercent = Math.round(micLevel * 100);
-  const waveHeights = getWaveHeights(isListening ? micLevel : 0);
+  const waveHeights = getWaveHeights(isListening || isMonitoring ? micLevel : 0);
 
   return (
     <div className="agent-audio-chat-content">
@@ -471,15 +630,15 @@ export function AgentAudioChatSurface({
 
       <div className={`agent-audio-stage agent-audio-stage-${sessionState}`}>
         <button
-          aria-label={isListening ? "Stop listening" : "Start voice chat"}
+          aria-label={isListening ? "Stop listening" : isMonitoring ? "Pause voice detection" : "Start voice chat"}
           className="agent-audio-orb"
           disabled={isBusy}
-          onClick={isListening ? stopListening : startListening}
+          onClick={isListening || isMonitoring ? stopListening : resumeVoiceDetection}
           type="button"
         >
           {isBusy ? (
             <Loader2 aria-hidden="true" className="agent-audio-spinner" size={38} />
-          ) : isListening ? (
+          ) : isListening || isMonitoring ? (
             <MicOff aria-hidden="true" size={38} />
           ) : (
             <Mic aria-hidden="true" size={38} />
@@ -572,6 +731,7 @@ function getLastAssistantMessage(messages: AgentMessage[]): AgentMessage | undef
 
 function getAudioSessionStatusLabel(sessionState: AudioSessionState, responding?: boolean): string {
   if (responding || sessionState === "thinking") return "Abby is working through your request.";
+  if (sessionState === "monitoring") return "Listening for speech.";
   if (sessionState === "listening") return "Listening.";
   if (sessionState === "speaking") return "Speaking.";
   if (sessionState === "unavailable") return "Speech recognition unavailable.";
@@ -617,6 +777,23 @@ function clampProgress(value: number): number {
 function clampLevel(value: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.max(0, Math.min(1, value));
+}
+
+function getVoiceBandRatio(data: Uint8Array, sampleRate: number): number {
+  if (!data.length) return 0;
+  const hzPerBin = (sampleRate / 2) / data.length;
+  let totalEnergy = 0;
+  let voiceEnergy = 0;
+  for (let index = 1; index < data.length; index += 1) {
+    const hz = index * hzPerBin;
+    const magnitude = data[index] / 255;
+    const energy = magnitude * magnitude;
+    totalEnergy += energy;
+    if (hz >= 85 && hz <= 3400) {
+      voiceEnergy += energy;
+    }
+  }
+  return totalEnergy > 0 ? voiceEnergy / totalEnergy : 0;
 }
 
 function getWaveHeights(level: number): number[] {
