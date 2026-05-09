@@ -26,43 +26,23 @@ type ServiceWorkerFetchEvent = Event & {
   respondWith(response: Promise<Response> | Response): void;
 };
 
-type ServiceWorkerMessageEvent = MessageEvent & {
-  data?: { type?: string };
-  waitUntil(promise: Promise<unknown>): void;
-};
-
 type ServiceWorkerGlobal = typeof globalThis & {
-  clients: {
-    claim(): Promise<void>;
-  };
   registration: {
     scope: string;
   };
-  skipWaiting(): Promise<void>;
   addEventListener(type: "activate", listener: (event: ServiceWorkerLifecycleEvent) => void): void;
   addEventListener(type: "fetch", listener: (event: ServiceWorkerFetchEvent) => void): void;
   addEventListener(type: "install", listener: (event: ServiceWorkerLifecycleEvent) => void): void;
-  addEventListener(type: "message", listener: (event: ServiceWorkerMessageEvent) => void): void;
 };
 
 const sw = self as unknown as ServiceWorkerGlobal;
 
 sw.addEventListener("install", (event) => {
-  event.waitUntil(
-    precacheShell().then(() => sw.skipWaiting())
-  );
+  event.waitUntil(precacheShell());
 });
 
 sw.addEventListener("activate", (event) => {
-  event.waitUntil(
-    deleteOldCaches().then(() => sw.clients.claim())
-  );
-});
-
-sw.addEventListener("message", (event) => {
-  if (event.data?.type === "SKIP_WAITING") {
-    event.waitUntil(sw.skipWaiting());
-  }
+  event.waitUntil(deleteOldCaches());
 });
 
 sw.addEventListener("fetch", (event) => {

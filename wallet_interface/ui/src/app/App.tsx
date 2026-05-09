@@ -729,7 +729,7 @@ export function App() {
   return (
     <div className={`app portal-${portalMode} ${agentChatOpen ? "app-chat-open" : ""}`}>
       <aside className="sidebar" aria-label="Primary navigation">
-        <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-logo-lockup.svg" />
+        <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-logo.png" />
         <nav className="nav-sections" aria-label="Portal navigation">
           <NavigationGroup
             activeRoute={activeRoute}

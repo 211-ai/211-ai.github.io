@@ -136,6 +136,7 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
       return {
         appClass: document.querySelector(".app")?.className ?? "",
         brandLogoAlt: document.querySelector(".brand-logo")?.getAttribute("alt") ?? "",
+        brandLogoSrc: document.querySelector<HTMLImageElement>(".brand-logo")?.currentSrc ?? "",
         clientTop: rect(".nav-group:not(.nav-group-provider):not(.nav-group-support)").y,
         providerTop: rect(".nav-group-provider").y,
         sidebarHeight: rect(".sidebar").height,
@@ -153,8 +154,10 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
   expect(Math.abs(homeMetrics.providerTop - proofMetrics.providerTop)).toBeLessThanOrEqual(1);
   expect(Math.abs(homeMetrics.supportTop - proofMetrics.supportTop)).toBeLessThanOrEqual(1);
   expect(homeMetrics.brandLogoAlt).toBe("Abby Client portal");
+  expect(homeMetrics.brandLogoSrc).toContain("/assets/abby-logo.png");
   expect(providerMetrics.appClass).toContain("portal-provider");
   expect(providerMetrics.brandLogoAlt).toBe("Abby Provider workspace");
+  expect(providerMetrics.brandLogoSrc).toContain("/assets/abby-logo.png");
 });
 
 test("analytics tools expose project and service organization admin introspection", async ({ page }) => {

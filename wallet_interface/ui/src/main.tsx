@@ -27,18 +27,9 @@ if (shouldRegisterServiceWorker) {
 }
 
 async function registerServiceWorker(serviceWorkerUrl: URL, scopeUrl: URL): Promise<void> {
-  let refreshing = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (refreshing) return;
-    refreshing = true;
-    window.location.reload();
-  });
-
   const registration = await navigator.serviceWorker.register(serviceWorkerUrl, {
     scope: scopeUrl.pathname,
     type: "module",
   });
   await registration.update().catch(() => undefined);
-  const waitingWorker = registration.waiting || registration.installing;
-  waitingWorker?.postMessage({ type: "SKIP_WAITING" });
 }
