@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   commandSchemas,
@@ -57,6 +60,7 @@ import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
+const UI_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 
@@ -353,6 +357,38 @@ export { ONNX_WEB };
 
     expect(patched).toContain('import * as ONNX_WEB from "blob:ort-wrapper";');
     expect(patched).not.toContain("onnxruntime-web");
+  });
+
+  test("patches Transformers.js ONNX imports without assuming exact imported symbols", () => {
+    const source = `
+import * as ORT_COMMON from "onnxruntime-common";
+import * as ORT_WEB from "onnxruntime-web/webgpu";
+import { Tensor, InferenceSession as OrtSession } from "onnxruntime-common";
+export { ORT_COMMON, ORT_WEB, Tensor, OrtSession };
+`;
+
+    const patched = patchTransformersWebSource(source, {
+      ortWrapperUrl: "blob:ort-wrapper",
+    });
+
+    expect(patched).toContain('import * as ORT_COMMON from "blob:ort-wrapper";');
+    expect(patched).toContain('import * as ORT_WEB from "blob:ort-wrapper";');
+    expect(patched).toContain('import { Tensor, InferenceSession as OrtSession } from "blob:ort-wrapper";');
+    expect(/\bfrom\s*["']onnxruntime-(?:common|web(?:\/webgpu)?)["']/.test(patched)).toBe(false);
+  });
+
+  test("patches the bundled Transformers.js WebGPU module without leaving bare ONNX imports", () => {
+    const transformersWebSource = readFileSync(
+      resolve(UI_ROOT, "node_modules/@huggingface/transformers/dist/transformers.web.js"),
+      "utf8",
+    );
+
+    const patched = patchTransformersWebSource(transformersWebSource, {
+      ortWrapperUrl: "blob:ort-wrapper",
+    });
+
+    expect(/\bfrom\s*["']onnxruntime-(?:common|web(?:\/webgpu)?)["']/.test(patched)).toBe(false);
+    expect(patched).toContain('from "blob:ort-wrapper"');
   });
 
   test("fails loudly when the upstream LiquidAI runner can no longer be patched safely", () => {

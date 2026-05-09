@@ -147,6 +147,20 @@ test("registration enforces minimum required profile fields", async ({ page }) =
   await expect(page.getByRole("button", { name: /^Start request$/i })).toBeVisible();
   await expect(page.locator(".screen .captcha-box")).toHaveCount(0);
   await expect(page.locator(".screen .consent-box")).toHaveCount(0);
+
+  await page.getByRole("button", { name: /^Start request$/i }).click();
+  await expect(page.getByRole("button", { name: /^Clear request$/i })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText(/This account is flagged for service partners/i)).toBeVisible();
+  await expect(page.getByText("Help requested", { exact: true })).toBeVisible();
+  await page.waitForFunction(() => {
+    const state = JSON.parse(window.localStorage.getItem("abby-ui-state-v1") ?? "{}");
+    return state.profile?.servicePartnerHelpRequested === true && Boolean(state.profile?.servicePartnerHelpRequestedAt);
+  });
+  await page.goto("/#/shelter");
+  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 10000 });
+  const partnerRequests = page.getByRole("region", { name: /Partner help requests/i });
+  await expect(partnerRequests).toBeVisible();
+  await expect(partnerRequests.getByText(/Needs partner help/i)).toBeVisible();
 });
 
 test("check-in interval cannot exceed thirty days", async ({ page }) => {

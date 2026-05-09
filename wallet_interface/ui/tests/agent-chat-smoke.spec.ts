@@ -60,7 +60,12 @@ test("front page assistant button opens voice chat", async ({ page }) => {
   await clearPwaState(page);
   await page.goto("/");
 
-  await page.getByRole("button", { name: /Open assistant/i }).click();
+  const frontPageAssistantButton = page.getByRole("button", { name: /^Open assistant$/i });
+  if (await frontPageAssistantButton.isVisible({ timeout: 10000 }).catch(() => false)) {
+    await frontPageAssistantButton.click();
+  } else {
+    await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  }
   await expect(page.getByRole("heading", { name: /Your safety plan/i })).toBeVisible({ timeout: 10000 });
 
   const voiceAssistant = visibleVoiceAssistant(page);

@@ -2721,6 +2721,12 @@ body.playful-pulse .decor-shape {
   gap: 14px;
 }
 
+.partner-help-panel-active,
+.partner-help-request {
+  border-color: rgba(183, 121, 31, 0.55);
+  box-shadow: 0 10px 26px rgba(117, 90, 8, 0.08);
+}
+
 .checklist {
   background: #ffffff;
   border: 1px solid #d8dee6;
@@ -2842,11 +2848,12 @@ body.playful-pulse .decor-shape {
     top: 0;
   }
 
-  .brand {
-    align-items: center;
-    display: flex;
-    gap: 12px;
+  .brand-logo {
+    display: block;
+    height: auto;
     margin-bottom: 18px;
+    max-width: 100%;
+    width: 186px;
   }
 
   .brand-mark {
@@ -4051,13 +4058,11 @@ body {
   width: 52px;
 }
 
-.brand {
-  align-items: center;
-  gap: 12px;
-}
-
-.brand strong {
-  font-size: 24px;
+.brand-logo {
+  display: block;
+  height: auto;
+  max-width: 100%;
+  width: 190px;
 }
 
 .topbar {
@@ -4517,7 +4522,6 @@ textarea:focus-visible,
   padding-top: 13px;
 }
 
-.portal-provider .brand small,
 .portal-provider .nav-group-provider .nav-section-label {
   color: var(--abby-teal);
 }
@@ -4658,7 +4662,7 @@ textarea:focus-visible,
     scrollbar-gutter: stable;
   }
 
-  .brand,
+  .brand-logo,
   .nav-sections {
     position: relative;
     z-index: 1;

@@ -72,9 +72,13 @@ const RUNNER_PATCH_PATTERNS = [
 ] as const;
 
 const TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN =
-  /import\s+\*\s+as\s+ONNX_WEB\s+from\s+['"]onnxruntime-web(?:\/webgpu)?['"];?/;
-const TRANSFORMERS_ONNX_COMMON_TENSOR_IMPORT_PATTERN =
-  /import\s+\{\s*Tensor\s*\}\s+from\s+['"]onnxruntime-common['"];?/;
+  /import\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"]onnxruntime-web(?:\/webgpu)?['"];?/;
+const TRANSFORMERS_ONNX_COMMON_NAMESPACE_IMPORT_PATTERN =
+  /import\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from\s+['"]onnxruntime-common['"];?/g;
+const TRANSFORMERS_ONNX_COMMON_NAMED_IMPORT_PATTERN =
+  /import\s*\{\s*([^}]+?)\s*\}\s*from\s*['"]onnxruntime-common['"];?/g;
+const TRANSFORMERS_BARE_ONNX_IMPORT_PATTERN =
+  /\bfrom\s*['"]onnxruntime-(?:common|web(?:\/webgpu)?)['"]/;
 
 export function getLiquidAudioRunnerPatchDiagnostics(source: string): LiquidAudioRunnerPatchDiagnostic[] {
   return RUNNER_PATCH_PATTERNS.map((rule) => ({
@@ -94,15 +98,30 @@ export function assertLiquidAudioRunnerPatchable(source: string): void {
 }
 
 export function patchTransformersWebSource(source: string, urls: TransformersRuntimePatchUrls): string {
-  if (!TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN.test(source)) {
+  const runtimeImportMatch = source.match(TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN);
+  if (!runtimeImportMatch) {
     throw new Error("Transformers.js WebGPU runtime patch failed; missing ONNX Runtime WebGPU import.");
   }
-  return source
-    .replace(TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN, `import * as ONNX_WEB from ${JSON.stringify(urls.ortWrapperUrl)};`)
+
+  const patched = source
     .replace(
-      TRANSFORMERS_ONNX_COMMON_TENSOR_IMPORT_PATTERN,
-      `import { Tensor } from ${JSON.stringify(urls.ortWrapperUrl)};`,
+      TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN,
+      (_match, runtimeBinding: string) => `import * as ${runtimeBinding} from ${JSON.stringify(urls.ortWrapperUrl)};`,
+    )
+    .replace(
+      TRANSFORMERS_ONNX_COMMON_NAMESPACE_IMPORT_PATTERN,
+      (_match, commonBinding: string) => `import * as ${commonBinding} from ${JSON.stringify(urls.ortWrapperUrl)};`,
+    )
+    .replace(
+      TRANSFORMERS_ONNX_COMMON_NAMED_IMPORT_PATTERN,
+      (_match, namedImports: string) => `import { ${namedImports.trim()} } from ${JSON.stringify(urls.ortWrapperUrl)};`,
     );
+
+  if (TRANSFORMERS_BARE_ONNX_IMPORT_PATTERN.test(patched)) {
+    throw new Error("Transformers.js WebGPU runtime patch failed; unresolved bare ONNX Runtime import remains.");
+  }
+
+  return patched;
 }
 
 export function patchAudioModelSource(source: string, urls: LiquidAudioRuntimePatchUrls): string {

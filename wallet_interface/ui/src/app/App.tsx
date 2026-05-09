@@ -727,13 +727,7 @@ export function App() {
   return (
     <div className={`app portal-${portalMode} ${agentChatOpen ? "app-chat-open" : ""}`}>
       <aside className="sidebar" aria-label="Primary navigation">
-        <div className="brand">
-          <span className="brand-mark">A</span>
-          <div>
-            <strong>Abby</strong>
-            <small>{portalLabel}</small>
-          </div>
-        </div>
+        <img alt={`Abby ${portalLabel}`} className="brand-logo" src="/assets/abby-logo-lockup.svg" />
         <nav className="nav-sections" aria-label="Portal navigation">
           <NavigationGroup
             activeRoute={activeRoute}
@@ -929,6 +923,7 @@ export function App() {
             checklist={shelterChecklist}
             setChecklist={setShelterChecklist}
             contactRequests={shelterContactRequests}
+            profile={profile}
             recipients={recipients}
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
@@ -1436,6 +1431,13 @@ function RegistrationScreen({
     });
   }
 
+  function togglePartnerHelpRequest() {
+    update({
+      servicePartnerHelpRequested: !profile.servicePartnerHelpRequested,
+      servicePartnerHelpRequestedAt: profile.servicePartnerHelpRequested ? "" : new Date().toISOString()
+    });
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -1514,24 +1516,54 @@ function RegistrationScreen({
           </div>
         </div>
       </form>
-      <GovernmentHelpSection />
+      <GovernmentHelpSection
+        requested={profile.servicePartnerHelpRequested}
+        requestedAt={profile.servicePartnerHelpRequestedAt}
+        onToggle={togglePartnerHelpRequest}
+      />
     </div>
   );
 }
 
-function GovernmentHelpSection() {
+function GovernmentHelpSection({
+  onToggle,
+  requested,
+  requestedAt
+}: {
+  onToggle: () => void;
+  requested: boolean;
+  requestedAt: string;
+}) {
   return (
     <Section title="Government help">
-      <div className="liaison-panel">
+      <div className={`liaison-panel partner-help-panel${requested ? " partner-help-panel-active" : ""}`}>
         <MessageSquare aria-hidden="true" size={28} />
         <div>
           <h3>Get help with benefits, ID, housing, or forms.</h3>
-          <p>Only the details you choose to share will be included in the request.</p>
+          <p>
+            {requested
+              ? "This account is flagged for service partners to follow up."
+              : "Only the details you choose to share will be included in the request."}
+          </p>
+          {requested ? (
+            <div className="badge-row" aria-label="Government help request status">
+              <Badge tone="warning">Help requested</Badge>
+              {requestedAt ? <Badge>{formatRequestTimestamp(requestedAt)}</Badge> : null}
+            </div>
+          ) : null}
         </div>
-        <Button>Start request</Button>
+        <Button ariaPressed={requested} onClick={onToggle} variant={requested ? "secondary" : "primary"}>
+          {requested ? "Clear request" : "Start request"}
+        </Button>
       </div>
     </Section>
   );
+}
+
+function formatRequestTimestamp(value: string): string {
+  const timestamp = new Date(value);
+  if (Number.isNaN(timestamp.getTime())) return "Requested";
+  return `Requested ${timestamp.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
 }
 
 function CheckInScreen({
@@ -2797,6 +2829,7 @@ function ShelterScreen({
   checklist,
   setChecklist,
   contactRequests,
+  profile,
   recipients,
   setContactRequests,
   setRecipients,
@@ -2808,6 +2841,7 @@ function ShelterScreen({
   checklist: typeof defaultShelterChecklist;
   setChecklist: (value: typeof defaultShelterChecklist) => void;
   contactRequests: ShelterContactRequest[];
+  profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
@@ -2834,6 +2868,9 @@ function ShelterScreen({
   const usersForOperatorShelter = shelterUserAccounts.filter((account) => account.shelter === operatorShelter);
   const requestsForOperatorShelter = contactRequests.filter((request) => request.shelterName === operatorShelter);
   const oversightShelter = isShelterAdmin ? adminShelter : operatorShelter;
+  const partnerHelpDisplayName = profile.preferredName || profile.legalName || "Current client";
+  const partnerHelpContact = [profile.phone, profile.email].map((item) => item.trim()).filter(Boolean).join(" / ");
+  const partnerHelpNeeds = profile.serviceNeeds.length ? profile.serviceNeeds.join(", ") : "Needs not selected";
 
   function accountSortByHousingThenDate(a: ShelterUserAccount, b: ShelterUserAccount) {
     if (a.foundPermanentHousing !== b.foundPermanentHousing) {
@@ -3028,6 +3065,22 @@ function ShelterScreen({
           </button>
         </div>
       </Section>
+      {profile.servicePartnerHelpRequested ? (
+        <Section title="Partner help requests">
+          <article className="list-item partner-help-request">
+            <div>
+              <h3>{partnerHelpDisplayName}</h3>
+              <p>Government help requested for benefits, ID, housing, or forms.</p>
+              <div className="badge-row">
+                <Badge tone="warning">Needs partner help</Badge>
+                <Badge>{formatRequestTimestamp(profile.servicePartnerHelpRequestedAt)}</Badge>
+                <Badge>{partnerHelpNeeds}</Badge>
+              </div>
+              <small>{partnerHelpContact || "No contact method added yet"}</small>
+            </div>
+          </article>
+        </Section>
+      ) : null}
       <Section title="Verified staff workspace">
         <div className="shelter-staff-panel">
           <Field label="Shelter" required>
