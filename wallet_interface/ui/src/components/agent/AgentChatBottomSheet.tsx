@@ -130,6 +130,7 @@ export function AgentChatBottomSheet({
                 onSend={onSend}
                 open={open && mode === "audio"}
                 responding={responding}
+                surface="sheet"
               />
             ) : (
               <>

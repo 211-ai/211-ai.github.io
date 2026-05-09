@@ -165,6 +165,7 @@ export function AgentChatDrawer({
               onSend={onSend}
               open={open && mode === "audio"}
               responding={responding}
+              surface="drawer"
             />
           </aside>
         ) : null}

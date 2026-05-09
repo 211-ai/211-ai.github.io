@@ -44,7 +44,7 @@ import {
 import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
-import { getPrimaryIntakeText, getServiceLocationLabel, type SearchResult } from "../lib/graphrag";
+import { getPrimaryIntakeText, getServiceLocationLabel, load211GeneratedManifest, type SearchResult } from "../lib/graphrag";
 import {
   getFilecoinStorageConfig,
   toFilecoinStoragePatch,
@@ -2648,6 +2648,30 @@ function SocialServicesScreen({
   const [searchError, setSearchError] = useState("");
   const [savingDocIds, setSavingDocIds] = useState<string[]>([]);
   const [saveError, setSaveError] = useState("");
+  const [catalogCounts, setCatalogCounts] = useState({
+    serviceCount: 0,
+    phoneCount: 0,
+    addressCount: 0,
+    intakeCount: 0
+  });
+
+  useEffect(() => {
+    let canceled = false;
+    load211GeneratedManifest()
+      .then((manifest) => {
+        if (canceled) return;
+        setCatalogCounts({
+          serviceCount: manifest.serviceDocumentCount ?? 0,
+          phoneCount: manifest.servicePhoneCount ?? 0,
+          addressCount: manifest.serviceAddressCount ?? 0,
+          intakeCount: manifest.serviceIntakeStepCount ?? 0
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      canceled = true;
+    };
+  }, []);
 
   async function runSearch(nextQuery = query) {
     const trimmedQuery = nextQuery.trim();
@@ -2695,8 +2719,16 @@ function SocialServicesScreen({
       <div className="page-title">
         <p className="eyebrow">Social services</p>
         <h1>Find support</h1>
+        {catalogCounts.serviceCount > 0 ? (
+          <p className="supporting-copy">
+            Indexed 211 service network: {formatCount(catalogCounts.serviceCount)} services,{" "}
+            {formatCount(catalogCounts.phoneCount)} with direct phone handoff,{" "}
+            {formatCount(catalogCounts.addressCount)} with directions, and{" "}
+            {formatCount(catalogCounts.intakeCount)} with structured intake steps.
+          </p>
+        ) : null}
       </div>
-      <Section title="Search 211 services">
+      <Section title={catalogCounts.serviceCount > 0 ? `Search ${formatCount(catalogCounts.serviceCount)} indexed services` : "Search the 211 service index"}>
         <form className="form-grid" onSubmit={handleSearchSubmit}>
           <Field label="Search by need, provider, or place">
             <input
@@ -2864,6 +2896,10 @@ function toLocalSavedService(result: SearchResult, walletId = "local-wallet"): S
     updated_at: now,
     wallet_id: walletId
   };
+}
+
+function formatCount(value: number): string {
+  return new Intl.NumberFormat("en-US").format(Math.max(0, Math.trunc(value || 0)));
 }
 
 function appStableSuffix(value: string): string {

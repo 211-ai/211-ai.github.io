@@ -241,7 +241,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     requiresPrivateContextOptIn: false
   },
   search_211_services: {
-    title: "Search 211 services",
+    title: "Search the 211 service index",
     permissionLevel: "public",
     surfaces: ["social-services", "shelter", "benefits-protection"],
     requiresConfirmation: false,

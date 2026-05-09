@@ -1,4 +1,4 @@
-const CACHE_VERSION = "portal-073-v1";
+const CACHE_VERSION = "portal-074-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const APP_CACHE_PREFIX = "abby-";
@@ -6,8 +6,7 @@ const SHELL_CACHE_PREFIX = "abby-shell-";
 
 const PUBLIC_SERVICE_DETAIL_ASSETS = new Set([
   "corpus/211-info/current/artifacts.manifest.json",
-  "corpus/211-info/current/generated/generated-manifest.json",
-  "corpus/211-info/current/generated/documents.json"
+  "corpus/211-info/current/generated/generated-manifest.json"
 ]);
 
 const PRIVATE_QUERY_KEYS = new Set([

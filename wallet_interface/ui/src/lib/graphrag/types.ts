@@ -32,6 +32,10 @@ export interface GeneratedCorpusManifest {
   schemaVersion: number;
   documentCount: number;
   serviceDocumentCount?: number;
+  servicePhoneCount?: number;
+  serviceAddressCount?: number;
+  serviceIntakeStepCount?: number;
+  serviceRequiredDocumentCount?: number;
   embeddingCount: number;
   embeddingDimension: number;
   embeddingModel: string;

@@ -191,7 +191,20 @@ export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
   if (!response.ok) {
     throw new Error(`Failed to load 211 corpus asset ${relativePath}: ${response.status}`);
   }
-  return response.json() as Promise<T>;
+  const text = await response.text();
+  const trimmed = text.trimStart();
+  if (trimmed.startsWith("version https://git-lfs.github.com/spec/v1")) {
+    throw new Error(
+      `211 corpus asset ${relativePath} resolved to a Git LFS pointer instead of JSON. Refresh the service worker cache or serve a non-LFS JSON artifact.`,
+    );
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch (error) {
+    throw new Error(
+      `Failed to parse 211 corpus asset ${relativePath} as JSON: ${error instanceof Error ? error.message : "unknown parse error"}`,
+    );
+  }
 }
 
 export async function fetch211CorpusArrayBuffer(relativePath: string): Promise<ArrayBuffer> {

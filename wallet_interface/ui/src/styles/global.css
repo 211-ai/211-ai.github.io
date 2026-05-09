@@ -1849,9 +1849,9 @@ body.playful-pulse .decor-shape {
   border-radius: 999px;
   display: block;
   height: 10px;
+  transition: height 90ms linear;
 }
 
-.agent-audio-stage-listening .agent-audio-wave span,
 .agent-audio-stage-speaking .agent-audio-wave span {
   animation: agent-audio-level 0.86s ease-in-out infinite;
 }
@@ -1878,6 +1878,22 @@ body.playful-pulse .decor-shape {
 
 .agent-audio-wave span:nth-child(5) {
   animation-delay: 0.48s;
+}
+
+.agent-audio-input-meter {
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+  width: min(180px, 72%);
+}
+
+.agent-audio-input-meter span {
+  background: linear-gradient(90deg, #16a34a, #f59e0b);
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  transition: transform 90ms linear;
 }
 
 .agent-audio-route {

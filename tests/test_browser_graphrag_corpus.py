@@ -318,6 +318,10 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
 
     assert result["document_count"] == 2
     assert result["service_document_count"] == 1
+    assert result["service_phone_count"] == 1
+    assert result["service_address_count"] == 1
+    assert result["service_intake_step_count"] == 1
+    assert result["service_required_document_count"] == 1
     assert result["embedding_count"] == 2
     assert result["embedding_dimension"] == 3
     assert result["graph_neighborhood_count"] == 2
@@ -354,3 +358,9 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert service_geo_index["docsByCity"]["portland"] == ["service:cid-service"]
     assert "multnomah" in service_geo_index["docsByPlaceTerm"]
     assert artifacts["sourcePackage"]["build_manifest_cid"] == "cid-manifest"
+    generated_manifest = json.loads((output_dir / "generated" / "generated-manifest.json").read_text())
+    assert generated_manifest["serviceDocumentCount"] == 1
+    assert generated_manifest["servicePhoneCount"] == 1
+    assert generated_manifest["serviceAddressCount"] == 1
+    assert generated_manifest["serviceIntakeStepCount"] == 1
+    assert generated_manifest["serviceRequiredDocumentCount"] == 1

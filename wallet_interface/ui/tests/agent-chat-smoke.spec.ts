@@ -95,10 +95,48 @@ test("voice chat reports local audio model warmup failures", async ({ page }) =>
   await expect(voiceAssistant.getByText(/Browser speech output ready/i)).toBeVisible();
 });
 
+test("voice chat speaks an opening greeting when the audio surface opens", async ({ page }) => {
+  await installFakeSpeechSynthesis(page);
+  await installFakeAudioWorker(page, "success");
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as typeof window & { __abbySpeechSpeakCalls?: number }).__abbySpeechSpeakCalls || 0),
+    )
+    .toBeGreaterThan(0);
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as typeof window & { __abbySpeechTexts?: string[] }).__abbySpeechTexts?.join(" ") || ""),
+    )
+    .toMatch(/Abby voice/i);
+});
+
+test("voice chat validates microphone input level while listening", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "Mobile Safari", "Synthetic Web Audio microphone metering is covered in Chromium.");
+  await installFakeSpeechSynthesis(page);
+  await installFakeAudioWorker(page, "success");
+  await installFakeSpeechRecognition(page, "open services", 900);
+  await installFakeMicrophoneMeter(page);
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await voiceAssistant.getByRole("button", { name: /Start voice chat/i }).click();
+
+  const meter = voiceAssistant.getByRole("meter", { name: /Microphone input level/i });
+  await expect(meter).toBeVisible();
+  await expect.poll(async () => Number((await meter.getAttribute("aria-valuenow")) || 0)).toBeGreaterThan(20);
+});
+
 test("voice chat captures speech, routes the app command, and plays generated audio", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "Mobile Safari", "Synthetic SpeechRecognition and Audio playback are covered in Chromium.");
+  await installFakeSpeechSynthesis(page);
   await installFakeAudioWorker(page, "success");
   await installFakeSpeechRecognition(page, "open services");
+  await installFakeMicrophoneMeter(page);
   await installFakeAudioPlayback(page);
   await enterSignedInApp(page);
 
@@ -307,8 +345,52 @@ async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "p
   }, mode);
 }
 
-async function installFakeSpeechRecognition(page: Page, transcript: string): Promise<void> {
-  await page.addInitScript((spokenText: string) => {
+async function installFakeSpeechSynthesis(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "__abbySpeechSpeakCalls", {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    Object.defineProperty(window, "__abbySpeechTexts", {
+      configurable: true,
+      writable: true,
+      value: [],
+    });
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        cancel: () => undefined,
+        speak: (utterance: SpeechSynthesisUtterance) => {
+          const testWindow = window as typeof window & {
+            __abbySpeechSpeakCalls?: number;
+            __abbySpeechTexts?: string[];
+          };
+          testWindow.__abbySpeechSpeakCalls = (testWindow.__abbySpeechSpeakCalls || 0) + 1;
+          testWindow.__abbySpeechTexts = [...(testWindow.__abbySpeechTexts || []), utterance.text];
+          window.setTimeout(() => utterance.onend?.({} as SpeechSynthesisEvent), 10);
+        },
+      },
+    });
+    Object.defineProperty(window, "SpeechSynthesisUtterance", {
+      configurable: true,
+      value: class SpeechSynthesisUtterance {
+        onend: ((event: SpeechSynthesisEvent) => void) | null = null;
+        onerror: ((event: SpeechSynthesisErrorEvent) => void) | null = null;
+        pitch = 1;
+        rate = 1;
+        text: string;
+
+        constructor(text: string) {
+          this.text = text;
+        }
+      },
+    });
+  });
+}
+
+async function installFakeSpeechRecognition(page: Page, transcript: string, delayMs = 40): Promise<void> {
+  await page.addInitScript(({ spokenText, resultDelayMs }: { spokenText: string; resultDelayMs: number }) => {
     class FakeSpeechRecognition extends EventTarget {
       continuous = false;
       interimResults = false;
@@ -332,7 +414,7 @@ async function installFakeSpeechRecognition(page: Page, transcript: string): Pro
             ],
           });
           this.onend?.();
-        }, 40);
+        }, resultDelayMs);
       }
 
       stop() {
@@ -352,7 +434,67 @@ async function installFakeSpeechRecognition(page: Page, transcript: string): Pro
       configurable: true,
       value: FakeSpeechRecognition,
     });
-  }, transcript);
+  }, { spokenText: transcript, resultDelayMs: delayMs });
+}
+
+async function installFakeMicrophoneMeter(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: {
+        getUserMedia: async () => ({
+          getTracks: () => [
+            {
+              stop: () => undefined,
+            },
+          ],
+        }),
+      },
+    });
+
+    class FakeAnalyser {
+      fftSize = 256;
+      smoothingTimeConstant = 0.72;
+
+      getByteTimeDomainData(data: Uint8Array) {
+        for (let index = 0; index < data.length; index += 1) {
+          data[index] = index % 2 === 0 ? 72 : 184;
+        }
+      }
+    }
+
+    class FakeAudioContext {
+      state: AudioContextState = "running";
+
+      async close() {
+        return undefined;
+      }
+
+      createAnalyser() {
+        return new FakeAnalyser();
+      }
+
+      createMediaStreamSource() {
+        return {
+          connect: () => undefined,
+          disconnect: () => undefined,
+        } as unknown as MediaStreamAudioSourceNode;
+      }
+
+      async resume() {
+        return undefined;
+      }
+    }
+
+    Object.defineProperty(window, "AudioContext", {
+      configurable: true,
+      value: FakeAudioContext,
+    });
+    Object.defineProperty(window, "webkitAudioContext", {
+      configurable: true,
+      value: FakeAudioContext,
+    });
+  });
 }
 
 async function installFakeAudioPlayback(page: Page): Promise<void> {
