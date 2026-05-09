@@ -8,7 +8,11 @@ import pandas as pd
 from scraper.browser_graphrag_corpus import coerce_service_geo_point
 from scraper.enrich_service_addresses import (
     AddressQuery,
+    build_geocode_miss_diagnostics_report,
     build_nominatim_search_attempts,
+    build_repaired_query_for_miss_record,
+    classify_geocode_miss_record,
+    diagnose_address_query,
     enrich_service_addresses,
     normalized_query_city,
     normalized_query_street,
@@ -258,6 +262,124 @@ def test_nominatim_search_attempts_strip_boilerplate_and_unit_suffix() -> None:
     assert attempts[1]["street"] == "3772 Portland Road NE"
 
 
+def test_normalized_query_street_does_not_treat_suite_as_direction() -> None:
+    query = AddressQuery(
+        address="1216 Moore Street Suite #214 Brookings, OR 97415",
+        street="1216 Moore Street",
+        city="Suite #214 Brookings",
+        state="OR",
+        postal_code="97415",
+    )
+
+    assert normalized_query_city(query.city) == "Brookings"
+    assert normalized_query_street(query.address, query.street, query.city) == "1216 Moore Street"
+    assert normalized_query_street_without_unit(query.address, query.street, query.city) == "1216 Moore Street"
+
+
+def test_classify_geocode_miss_record_identifies_malformed_city_and_normalization_damage() -> None:
+    malformed = classify_geocode_miss_record(
+        {
+            "provider": "nominatim",
+            "status": "miss",
+            "precision": "miss",
+            "query": {
+                "address": "1601 E Fourth Plain Boulevard Suite A212 Vancouver, WA 98663",
+                "street": "1601 E Fourth Plain Boulevard",
+                "city": "Suite A212 Vancouver",
+                "state": "WA",
+                "postal_code": "98663",
+                "country_code": "us",
+            },
+        }
+    )
+    assert malformed["classification"] == "likely_malformed_input"
+    assert "city_unit_prefix" in malformed["issue_tags"]
+
+    damaged = diagnose_address_query(
+        AddressQuery(
+            address="1216 Moore Street Suite #214 Brookings, OR 97415",
+            street="1216 Moore Street",
+            city="Suite #214 Brookings",
+            state="OR",
+            postal_code="97415",
+        )
+    )
+    assert "street_direction_suite_artifact" not in damaged["issue_tags"]
+
+
+def test_build_repaired_query_for_malformed_miss_uses_normalized_city_and_street() -> None:
+    repaired = build_repaired_query_for_miss_record(
+        {
+            "provider": "nominatim",
+            "status": "miss",
+            "precision": "miss",
+            "query": {
+                "address": "3772 Portland Road NE Suite A Salem, OR 97301",
+                "street": "3772 Portland Road",
+                "city": "NE Suite A Salem",
+                "state": "OR",
+                "postal_code": "97301",
+                "country_code": "us",
+            },
+        }
+    )
+    assert repaired is not None
+    assert repaired.street == "3772 Portland Road NE"
+    assert repaired.city == "Salem"
+    assert repaired.postal_code == "97301"
+
+
+def test_build_geocode_miss_diagnostics_report_writes_summary_and_parquet(tmp_path: Path) -> None:
+    cache_path = tmp_path / "cache.json"
+    cache_path.write_text(
+        json.dumps(
+            {
+                "malformed": {
+                    "provider": "nominatim",
+                    "status": "miss",
+                    "precision": "miss",
+                    "query": {
+                        "address": "182 SW Academy Street Suite 302 Dallas, OR 97338",
+                        "street": "182 SW Academy Street",
+                        "city": "Suite 302 Dallas",
+                        "state": "OR",
+                        "postal_code": "97338",
+                        "country_code": "us",
+                    },
+                },
+                "clean": {
+                    "provider": "nominatim",
+                    "status": "miss",
+                    "precision": "miss",
+                    "query": {
+                        "address": "840 SW Fourth Avenue Ontario, OR 97914",
+                        "street": "840 SW Fourth Avenue",
+                        "city": "Ontario",
+                        "state": "OR",
+                        "postal_code": "97914",
+                        "country_code": "us",
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    output_json = tmp_path / "report.json"
+    output_parquet = tmp_path / "report.parquet"
+    report = build_geocode_miss_diagnostics_report(
+        cache_path=cache_path,
+        output_json_path=output_json,
+        output_parquet_path=output_parquet,
+    )
+
+    assert report["miss_count"] == 2
+    assert report["classification_counts"]["likely_malformed_input"] == 1
+    assert report["classification_counts"]["likely_provider_or_coverage_miss"] == 1
+    assert output_json.exists()
+    assert output_parquet.exists()
+
+
 def test_enrich_service_addresses_retries_cached_miss_with_cap(tmp_path: Path) -> None:
     source_dir = tmp_path / "portal"
     source_dir.mkdir(parents=True, exist_ok=True)
@@ -382,6 +504,7 @@ def test_enrich_service_addresses_retries_cached_miss_with_cap(tmp_path: Path) -
     )
 
     assert result["fetched_queries"] == 1
+    assert result["repaired_retry_queries"] == 1
     assert result["cache_hits_reused"] == 0
     assert result["service_geo_count"] == 1
-    assert geocoder.calls == ["3772 Portland Road NE Suite A Salem, OR 97301 NE Suite A Salem OR 97301"]
+    assert geocoder.calls == ["3772 Portland Road NE Salem OR 97301"]

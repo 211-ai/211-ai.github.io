@@ -31,7 +31,7 @@ STREET_SUFFIX_PATTERN = (
 )
 STREET_CORE_RE = re.compile(
     rf"^.+?\b{STREET_SUFFIX_PATTERN}\b\.?"
-    rf"(?:\s+(?:NE|NW|SE|SW|North|South|East|West|N|S|E|W))?"
+    rf"(?:\s+(?:(?:NE|NW|SE|SW|North|South|East|West|N|S|E|W)\b))?"
     rf"(?:\s+(?:Suite|Ste\.?|Unit|Rm\.?|Room|#)\s*[A-Za-z0-9/-]+)?",
     re.IGNORECASE,
 )
@@ -42,6 +42,7 @@ CITY_UNIT_PREFIX_RE = re.compile(
 )
 CITY_FLOOR_PREFIX_RE = re.compile(r"^(?:\d+(?:st|nd|rd|th)\s+Floor|Floor\s*\d+|Fl\.?\s*\d+)\b[\s,]+", re.IGNORECASE)
 CITY_HASH_PREFIX_RE = re.compile(r"^#[A-Za-z0-9/-]+\b[\s,]+", re.IGNORECASE)
+CITY_LEVEL_PREFIX_RE = re.compile(r"^(?:Basement(?:\s+Level)?|Lower\s+Level|Upper\s+Level|Lobby)\b[\s,]+", re.IGNORECASE)
 LEADING_BOILERPLATE_RE = re.compile(
     r"^(?:[A-Za-z][^.]{0,60}|\d{1,3}\s+[A-Za-z][^.]{0,60})\.\s*(?=\d)",
     re.IGNORECASE,
@@ -178,6 +179,7 @@ def normalized_query_city(city: str) -> str:
         value = clean_text(CITY_UNIT_PREFIX_RE.sub("", value))
         value = clean_text(CITY_FLOOR_PREFIX_RE.sub("", value))
         value = clean_text(CITY_HASH_PREFIX_RE.sub("", value))
+        value = clean_text(CITY_LEVEL_PREFIX_RE.sub("", value))
     return value
 
 
@@ -436,6 +438,190 @@ def build_query_from_location_row(row: dict[str, Any]) -> AddressQuery | None:
     )
 
 
+def detect_street_direction_suite_artifact(query: AddressQuery) -> bool:
+    raw_street = clean_text(query.street)
+    if not raw_street:
+        return False
+    normalized_street = normalized_query_street(query.address, query.street, query.city)
+    if normalized_street == raw_street:
+        return False
+    if not re.search(r"\b(?:Suite|Ste\.?|Unit|Rm\.?|Room|#)\b", query.address, re.IGNORECASE):
+        return False
+    if not normalized_street.startswith(raw_street):
+        return False
+    suffix = clean_text(normalized_street[len(raw_street) :])
+    return suffix in {"N", "S", "E", "W", "NE", "NW", "SE", "SW"}
+
+
+def diagnose_address_query(query: AddressQuery) -> dict[str, Any]:
+    raw_address = clean_text(query.address)
+    raw_street = clean_text(query.street)
+    raw_city = clean_text(query.city)
+    normalized_address = normalized_query_address_text(raw_address)
+    normalized_city = normalized_query_city(raw_city)
+    normalized_street = normalized_query_street(raw_address, raw_street, raw_city)
+    normalized_street_without_unit = normalized_query_street_without_unit(raw_address, raw_street, raw_city)
+
+    issue_tags: list[str] = []
+    if CITY_UNIT_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_unit_prefix")
+    if CITY_DIRECTION_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_direction_prefix")
+    if CITY_FLOOR_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_floor_prefix")
+    if CITY_HASH_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_hash_prefix")
+    if CITY_LEVEL_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_level_prefix")
+    if LEADING_BOILERPLATE_RE.match(raw_address):
+        issue_tags.append("address_leading_boilerplate")
+    if STREET_SUITE_GLUE_RE.search(raw_address) or STREET_SUITE_GLUE_RE.search(raw_street):
+        issue_tags.append("street_suite_glued")
+    if normalized_city != raw_city:
+        issue_tags.append("city_normalized_changed")
+    if normalized_address != raw_address:
+        issue_tags.append("address_normalized_changed")
+    if normalized_street != raw_street:
+        issue_tags.append("street_normalized_changed")
+    if normalized_street_without_unit != raw_street:
+        issue_tags.append("street_unit_removed_or_changed")
+    if detect_street_direction_suite_artifact(query):
+        issue_tags.append("street_direction_suite_artifact")
+
+    malformed_tags = {
+        "city_unit_prefix",
+        "city_direction_prefix",
+        "city_floor_prefix",
+        "city_hash_prefix",
+        "city_level_prefix",
+        "address_leading_boilerplate",
+        "street_suite_glued",
+    }
+
+    classification = "likely_provider_or_coverage_miss"
+    if "street_direction_suite_artifact" in issue_tags:
+        classification = "likely_normalization_damage"
+    elif malformed_tags.intersection(issue_tags):
+        classification = "likely_malformed_input"
+    elif "street_unit_removed_or_changed" in issue_tags and re.search(r"\b(?:Suite|Ste\.?|Unit|Rm\.?|Room|Floor|Fl\.?|#)\b", raw_address, re.IGNORECASE):
+        classification = "likely_malformed_input"
+
+    return {
+        "cache_key": query.key,
+        "address": raw_address,
+        "street": raw_street,
+        "city": raw_city,
+        "state": clean_text(query.state),
+        "postal_code": clean_text(query.postal_code),
+        "normalized_address": normalized_address,
+        "normalized_street": normalized_street,
+        "normalized_street_without_unit": normalized_street_without_unit,
+        "normalized_city": normalized_city,
+        "issue_tags": issue_tags,
+        "classification": classification,
+    }
+
+
+def classify_geocode_miss_record(record: dict[str, Any]) -> dict[str, Any]:
+    query_payload = record.get("query") if isinstance(record.get("query"), dict) else {}
+    query = AddressQuery(
+        address=clean_text(str(query_payload.get("address") or "")),
+        street=clean_text(str(query_payload.get("street") or "")),
+        city=clean_text(str(query_payload.get("city") or "")),
+        state=clean_text(str(query_payload.get("state") or "")),
+        postal_code=clean_text(str(query_payload.get("postal_code") or "")),
+        country_code=clean_text(str(query_payload.get("country_code") or DEFAULT_COUNTRY_CODE)) or DEFAULT_COUNTRY_CODE,
+    )
+    diagnosis = diagnose_address_query(query)
+    diagnosis.update(
+        {
+            "status": str(record.get("status") or ""),
+            "provider": str(record.get("provider") or ""),
+            "precision": str(record.get("precision") or ""),
+            "display_name": str(record.get("display_name") or ""),
+            "queried_at": str(record.get("queried_at") or ""),
+            "search_params": record.get("search_params") if isinstance(record.get("search_params"), dict) else {},
+        }
+    )
+    return diagnosis
+
+
+def build_repaired_query_for_miss_record(record: dict[str, Any]) -> AddressQuery | None:
+    diagnosis = classify_geocode_miss_record(record)
+    if diagnosis.get("classification") != "likely_malformed_input":
+        return None
+
+    street = clean_text(str(diagnosis.get("normalized_street_without_unit") or diagnosis.get("normalized_street") or ""))
+    city = clean_text(str(diagnosis.get("normalized_city") or ""))
+    state = clean_text(str(diagnosis.get("state") or ""))
+    postal_code = clean_text(str(diagnosis.get("postal_code") or ""))
+    if not street or not city or not state:
+        return None
+
+    original_query = record.get("query") if isinstance(record.get("query"), dict) else {}
+    original_street = clean_text(str(original_query.get("street") or ""))
+    original_city = clean_text(str(original_query.get("city") or ""))
+    if street == original_street and city == original_city:
+        return None
+
+    country_code = clean_text(str(original_query.get("country_code") or DEFAULT_COUNTRY_CODE)) or DEFAULT_COUNTRY_CODE
+    return AddressQuery(
+        address=street,
+        street=street,
+        city=city,
+        state=state,
+        postal_code=postal_code,
+        country_code=country_code,
+    )
+
+
+def build_geocode_miss_diagnostics_report(
+    *,
+    cache_path: Path,
+    output_json_path: Path | None = None,
+    output_parquet_path: Path | None = None,
+) -> dict[str, Any]:
+    cache = load_cache(cache_path)
+    rows: list[dict[str, Any]] = []
+    classification_counts: dict[str, int] = {}
+    issue_tag_counts: dict[str, int] = {}
+
+    for record in cache.values():
+        status = str(record.get("status") or "")
+        if status not in {"miss", "error"}:
+            continue
+        diagnosis = classify_geocode_miss_record(record)
+        rows.append(diagnosis)
+        classification = diagnosis["classification"]
+        classification_counts[classification] = classification_counts.get(classification, 0) + 1
+        for tag in diagnosis["issue_tags"]:
+            issue_tag_counts[tag] = issue_tag_counts.get(tag, 0) + 1
+
+    rows.sort(key=lambda row: (row["classification"], row["city"], row["street"], row["postal_code"]))
+    report = {
+        "generated_at": utc_now(),
+        "cache_path": str(cache_path),
+        "miss_count": len(rows),
+        "classification_counts": classification_counts,
+        "issue_tag_counts": issue_tag_counts,
+        "rows": rows,
+    }
+
+    if output_json_path is not None:
+        write_json_atomic(output_json_path, report)
+    if output_parquet_path is not None:
+        parquet_rows = []
+        for row in rows:
+            payload = dict(row)
+            payload["issue_tags_json"] = compact_json(row["issue_tags"])
+            payload["search_params_json"] = compact_json(row["search_params"])
+            payload.pop("issue_tags", None)
+            payload.pop("search_params", None)
+            parquet_rows.append(payload)
+        write_parquet_atomic(output_parquet_path, pd.DataFrame(parquet_rows))
+    return report
+
+
 def parse_json_value(value: Any, default: Any) -> Any:
     if value in ("", None):
         return default
@@ -661,6 +847,7 @@ def enrich_service_addresses(
     max_queries: int = 0,
     refresh_only: bool = False,
     retry_misses: bool = False,
+    repair_malformed_retries: bool = True,
     overwrite: bool = False,
     geocoder: AddressGeocoder | None = None,
 ) -> dict[str, Any]:
@@ -711,6 +898,7 @@ def enrich_service_addresses(
     misses = 0
     errors = 0
     reused = 0
+    repaired_retry_queries = 0
     if not refresh_only:
         for key in query_keys:
             existing_record = cache.get(key)
@@ -721,7 +909,32 @@ def enrich_service_addresses(
             if max_queries > 0 and fetched >= max_queries:
                 reused += 1
                 continue
-            record = geocoder.geocode(unique_queries[key])
+            geocode_query = unique_queries[key]
+            if should_retry_miss and repair_malformed_retries and isinstance(existing_record, dict):
+                repaired_query = build_repaired_query_for_miss_record(existing_record)
+                if repaired_query is not None:
+                    geocode_query = repaired_query
+                    repaired_retry_queries += 1
+            record = geocoder.geocode(geocode_query)
+            if geocode_query != unique_queries[key]:
+                original_payload = existing_record.get("query") if isinstance(existing_record, dict) and isinstance(existing_record.get("query"), dict) else {
+                    "address": unique_queries[key].address,
+                    "street": unique_queries[key].street,
+                    "city": unique_queries[key].city,
+                    "state": unique_queries[key].state,
+                    "postal_code": unique_queries[key].postal_code,
+                    "country_code": unique_queries[key].country_code,
+                }
+                record["query"] = original_payload
+                record["repair_query"] = {
+                    "address": geocode_query.address,
+                    "street": geocode_query.street,
+                    "city": geocode_query.city,
+                    "state": geocode_query.state,
+                    "postal_code": geocode_query.postal_code,
+                    "country_code": geocode_query.country_code,
+                }
+                record["repair_strategy"] = "normalized_structured_repair"
             cache[key] = record
             fetched += 1
             if record.get("status") == "ok":
@@ -735,7 +948,7 @@ def enrich_service_addresses(
                 fetched,
                 max_queries if max_queries > 0 else len(query_keys),
                 record.get("status") or "unknown",
-                unique_queries[key].display,
+                geocode_query.display,
             )
             write_json_atomic(cache_path, cache)
 
@@ -757,6 +970,7 @@ def enrich_service_addresses(
         "unique_queries": len(unique_queries),
         "fetched_queries": fetched,
         "cache_hits_reused": reused,
+        "repaired_retry_queries": repaired_retry_queries,
         "geocode_hits": hits,
         "geocode_misses": misses,
         "geocode_errors": errors,

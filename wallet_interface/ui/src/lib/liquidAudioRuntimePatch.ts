@@ -85,6 +85,28 @@ const RUNNER_PATCH_PATTERNS = [
       "const vocoderOpts = { enableMemPattern: false }; // Dynamic vocoder KV caches change from length 0 to 1; GPU output binding can reuse an incompatible buffer.",
   },
   {
+    key: "vocoderNonZeroCacheData",
+    label: "vocoder non-zero cache backing arrays",
+    pattern:
+      /emptyKeysData\s*:\s*new\s+Float32Array\(0\),\s*emptyValuesData\s*:\s*new\s+Float32Array\(0\),/,
+    replacement: () =>
+      "emptyKeysData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim),\n      emptyValuesData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim),",
+  },
+  {
+    key: "vocoderNonZeroKeysCacheShape",
+    label: "vocoder non-zero keys cache tensor shape",
+    pattern:
+      /cache\.emptyKeysData,\s*\[\s*numLayers,\s*1,\s*numKvHeads,\s*0,\s*headDim\s*\]/,
+    replacement: () => "cache.emptyKeysData,\n      [numLayers, 1, numKvHeads, 1, headDim]",
+  },
+  {
+    key: "vocoderNonZeroValuesCacheShape",
+    label: "vocoder non-zero values cache tensor shape",
+    pattern:
+      /cache\.emptyValuesData,\s*\[\s*numLayers,\s*1,\s*numKvHeads,\s*0,\s*headDim\s*\]/,
+    replacement: () => "cache.emptyValuesData,\n      [numLayers, 1, numKvHeads, 1, headDim]",
+  },
+  {
     key: "tokenizerEnvFetchCapture",
     label: "Transformers.js env.fetch tokenizer override capture",
     pattern: /const\s+originalFetch\s*=\s*globalThis\.fetch;\s*globalThis\.fetch\s*=/,

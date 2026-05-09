@@ -327,6 +327,15 @@ export class AudioModel {
       const sessionOptions = { executionProviders, ...extraOptions };
       return sessionOptions;
     };
+    const cache = {
+      emptyKeysData: new Float32Array(0),
+      emptyValuesData: new Float32Array(0),
+    };
+    const numLayers = 6;
+    const numKvHeads = 8;
+    const headDim = 32;
+    const pastKeys = new ort.Tensor('float32', cache.emptyKeysData, [numLayers, 1, numKvHeads, 0, headDim]);
+    const pastValues = new ort.Tensor('float32', cache.emptyValuesData, [numLayers, 1, numKvHeads, 0, headDim]);
     this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder);
     const vocoderOpts = device === 'webgpu'
       ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
@@ -351,6 +360,9 @@ export class AudioModel {
     expect(patched).toContain("if (loadAudioEncoder)");
     expect(patched).toContain("enableMemPattern: false");
     expect(patched).toContain("const vocoderOpts = { enableMemPattern: false };");
+    expect(patched).toContain("emptyKeysData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim)");
+    expect(patched).toContain("[numLayers, 1, numKvHeads, 1, headDim]");
+    expect(patched).not.toContain("[numLayers, 1, numKvHeads, 0, headDim]");
     expect(patched).not.toContain("new_keys: 'gpu-buffer'");
     expect(patched).toContain("const originalEnvFetch = env.fetch");
     expect(patched).toContain("env.fetch = globalThis.fetch");
@@ -448,6 +460,15 @@ export class AudioModel {
       const sessionOptions = { executionProviders, ...extraOptions };
       return sessionOptions;
     };
+    const cache = {
+      emptyKeysData: new Float32Array(0),
+      emptyValuesData: new Float32Array(0),
+    };
+    const numLayers = 6;
+    const numKvHeads = 8;
+    const headDim = 32;
+    const pastKeys = new ort.Tensor('float32', cache.emptyKeysData, [numLayers, 1, numKvHeads, 0, headDim]);
+    const pastValues = new ort.Tensor('float32', cache.emptyValuesData, [numLayers, 1, numKvHeads, 0, headDim]);
     this.audioEncoderSession = await loadOnnxWithExternalData('speech_encoder', 50, quantConfig.audioEncoder);
     const vocoderOpts = device === 'webgpu'
       ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
