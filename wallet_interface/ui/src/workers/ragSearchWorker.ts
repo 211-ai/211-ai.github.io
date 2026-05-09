@@ -1,6 +1,13 @@
 import { build211GraphRagEvidence } from "../lib/graphrag/graphRag";
-import { search211Corpus } from "../lib/graphrag/search";
-import type { GraphRagEvidence, SearchFilters, SearchMode, SearchResult } from "../lib/graphrag/types";
+import { search211Corpus, search211GraphCommunities, search211GraphGeoClusters } from "../lib/graphrag/search";
+import type {
+  GraphCommunitySearchResult,
+  GraphGeoClusterSearchResult,
+  GraphRagEvidence,
+  SearchFilters,
+  SearchMode,
+  SearchResult,
+} from "../lib/graphrag/types";
 
 type RagSearchWorkerRequest =
   | {
@@ -30,6 +37,24 @@ type RagSearchWorkerRequest =
       id: string;
       type: "status";
       data?: Record<string, never>;
+    }
+  | {
+      id: string;
+      type: "community-search";
+      data: {
+        query: string;
+        limit?: number;
+        preferredClusterIds?: number[];
+      };
+    }
+  | {
+      id: string;
+      type: "cluster-search";
+      data: {
+        query: string;
+        limit?: number;
+        preferredClusterIds?: number[];
+      };
     };
 
 interface RagSearchWorkerResponse {
@@ -38,6 +63,8 @@ interface RagSearchWorkerResponse {
   data?: {
     results?: SearchResult[];
     evidence?: GraphRagEvidence;
+    communityResults?: GraphCommunitySearchResult[];
+    clusterResults?: GraphGeoClusterSearchResult[];
     ready?: boolean;
   };
   error?: string;
@@ -74,6 +101,24 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
         preferredClusterIds: data.preferredClusterIds,
       });
       postResponse({ id, success: true, data: { evidence } });
+      return;
+    }
+
+    if (type === "community-search") {
+      const communityResults = await search211GraphCommunities(data.query, {
+        limit: data.limit || 12,
+        preferredClusterIds: data.preferredClusterIds,
+      });
+      postResponse({ id, success: true, data: { communityResults } });
+      return;
+    }
+
+    if (type === "cluster-search") {
+      const clusterResults = await search211GraphGeoClusters(data.query, {
+        limit: data.limit || 10,
+        preferredClusterIds: data.preferredClusterIds,
+      });
+      postResponse({ id, success: true, data: { clusterResults } });
       return;
     }
 

@@ -40,6 +40,13 @@ export interface GeneratedCorpusManifest {
   geoClusteredServiceCount?: number;
   geoUnclusteredServiceCount?: number;
   documentParquetRowGroupCount?: number;
+  geoRetrievalShardCount?: number;
+  geoRetrievalShardContentCidCount?: number;
+  bm25ParquetRowGroupCount?: number;
+  embeddingParquetRowGroupCount?: number;
+  graphGeoClusterCount?: number;
+  graphCommunityParquetRowGroupCount?: number;
+  documentCommunityParquetRowGroupCount?: number;
   embeddingCount: number;
   embeddingDimension: number;
   embeddingModel: string;
@@ -136,6 +143,7 @@ export interface CorpusDocumentIndex {
   count: number;
   docIdToIndex: Record<string, number>;
   contentCidToIndex: Record<string, number>;
+  contentCidToDocIds?: Record<string, string[]>;
 }
 
 export interface Bm25Document {
@@ -158,6 +166,7 @@ export interface Bm25Payload {
   avgdl: number;
   documentCount: number;
   maxTermsPerDocument: number;
+  sourceContentCidToDocIds?: Record<string, string[]>;
 }
 
 export interface EmbeddingIndex {
@@ -167,10 +176,12 @@ export interface EmbeddingIndex {
   embeddingModel: string;
   browserEmbeddingModel: string;
   binary: string;
+  parquet?: string;
   doc_ids: string[];
   source_content_cids: string[];
   source_page_cids: string[];
   source_urls: string[];
+  sourceContentCidToDocIds?: Record<string, string[]>;
 }
 
 export interface GraphNode {
@@ -254,6 +265,9 @@ export interface DocumentCommunity {
   source_page_cid: string;
   community_id: string;
   community_label: string;
+  geo_cluster_id?: number | null;
+  geo_cluster_ids_json?: string;
+  cluster_count?: number;
 }
 
 export interface SearchFilters {
@@ -327,6 +341,91 @@ export interface DocumentGeoClusterManifest {
   clusters: DocumentGeoClusterRecord[];
   rowGroups?: DocumentGeoClusterRowGroup[];
   serviceDocIdToClusterId: Record<string, number>;
+}
+
+export interface RetrievalGeoShardRecord {
+  shardId: string;
+  clusterId: number;
+  kind: "service_cluster" | "service_unclustered";
+  documentCount: number;
+  serviceDocumentCount: number;
+  contentCidCount: number;
+  firstDocId: string;
+  lastDocId: string;
+  bm25Path: string;
+  embeddingIndexPath: string;
+  embeddingBinaryPath: string;
+  bm25ParquetPath?: string;
+  embeddingParquetPath?: string;
+  bm25RowGroupIndexes?: number[];
+  embeddingRowGroupIndexes?: number[];
+  sourceContentCidToDocIds?: Record<string, string[]>;
+}
+
+export interface RetrievalGeoShardManifest {
+  schemaVersion: number;
+  serviceDocumentCount: number;
+  clusteredServiceCount: number;
+  unclusteredServiceCount: number;
+  embeddingModel: string;
+  embeddingDimension: number;
+  bm25ParquetPath?: string;
+  embeddingParquetPath?: string;
+  bm25RowGroupCount?: number;
+  embeddingRowGroupCount?: number;
+  clusterIdToBm25RowGroupIndexes?: Record<string, number[]>;
+  clusterIdToEmbeddingRowGroupIndexes?: Record<string, number[]>;
+  shardCount: number;
+  shards: RetrievalGeoShardRecord[];
+  clusterIdToShardId: Record<string, string>;
+  docIdToShardId: Record<string, string>;
+  contentCidToShardIds: Record<string, string[]>;
+}
+
+export interface GraphGeoClusterCommunitySummary {
+  community_id: string;
+  label: string;
+  document_count: number;
+  service_count: number;
+  matched_documents: number;
+}
+
+export interface GraphGeoClusterRecord {
+  clusterId: number;
+  kind: string;
+  serviceDocumentCount: number;
+  graphDocumentCount: number;
+  serviceGraphDocumentCount: number;
+  pageGraphDocumentCount: number;
+  graphNeighborhoodShardCount: number;
+  graphNeighborhoodShardPaths: string[];
+  communityCount: number;
+  communityIds: string[];
+  sourcePageCidCount: number;
+  topCommunities: GraphGeoClusterCommunitySummary[];
+}
+
+export interface GraphGeoClusterManifest {
+  schemaVersion: number;
+  clusterCount: number;
+  clusters: GraphGeoClusterRecord[];
+  communityIdToClusterIds: Record<string, number[]>;
+  docIdToClusterIds?: Record<string, number[]>;
+}
+
+export interface GraphCommunitySearchResult {
+  community: GraphCommunity;
+  clusterIds: number[];
+  matchedTerms: string[];
+  matchedDocIds: string[];
+  score: number;
+}
+
+export interface GraphGeoClusterSearchResult {
+  cluster: GraphGeoClusterRecord;
+  matchedTerms: string[];
+  matchedCommunityIds: string[];
+  score: number;
 }
 
 export interface SearchResult {

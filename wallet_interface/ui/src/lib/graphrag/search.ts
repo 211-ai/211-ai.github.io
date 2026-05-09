@@ -1,8 +1,16 @@
 import {
   load211Bm25,
+  load211Bm25GeoShard,
+  load211Bm25Slice,
   load211Documents,
   load211DocumentsSlice,
   load211Embeddings,
+  load211EmbeddingGeoShard,
+  load211EmbeddingSlice,
+  load211DocumentCommunities,
+  load211GraphCommunities,
+  load211GraphGeoClusters,
+  load211RetrievalGeoShards,
   load211ServiceGeoIndex,
 } from "./corpus";
 import {
@@ -11,7 +19,17 @@ import {
   getServiceSearchMetadataText,
   isServiceDocument,
 } from "./serviceDocument";
-import type { Bm25Document, CorpusDocument, SearchFilters, SearchMode, SearchResult } from "./types";
+import type {
+  Bm25Document,
+  CorpusDocument,
+  GraphCommunity,
+  GraphCommunitySearchResult,
+  GraphGeoClusterRecord,
+  GraphGeoClusterSearchResult,
+  SearchFilters,
+  SearchMode,
+  SearchResult,
+} from "./types";
 
 const STOP_WORDS = new Set([
   "a",
@@ -43,6 +61,12 @@ interface RankedScore {
   score: number;
 }
 
+interface WeightedSearchField {
+  text: string;
+  weight: number;
+  phraseWeight?: number;
+}
+
 export async function search211Corpus(
   query: string,
   options: {
@@ -64,6 +88,18 @@ export async function search211Corpus(
   const candidateLimit = options.candidateLimit || Math.max(limit * 10, 200);
   const preferredClusterIds = dedupeIntegerList(options.preferredClusterIds || []);
 
+  const serviceClusterResults = await searchPreferredServiceClusters(trimmedQuery, {
+    filters: options.filters,
+    limit,
+    candidateLimit,
+    mode,
+    queryEmbedding: options.queryEmbedding,
+    preferredClusterIds,
+  });
+  if (serviceClusterResults.length >= limit) {
+    return serviceClusterResults.slice(0, limit);
+  }
+
   const [keywordScores, vectorScores, geoScores] = await Promise.all([
     mode !== "vector" ? keywordSearch211(trimmedQuery, candidateLimit) : Promise.resolve(new Map<string, number>()),
     mode !== "keyword" && options.queryEmbedding
@@ -77,19 +113,6 @@ export async function search211Corpus(
   const normalizedKeyword = normalizeScores(keywordScores);
   const normalizedVector = normalizeScores(vectorScores);
   const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys(), ...geoScores.keys()]);
-  const serviceClusterResults = await searchPreferredServiceClusters(trimmedQuery, {
-    filters: options.filters,
-    limit,
-    mode,
-    candidates,
-    normalizedKeyword,
-    normalizedVector,
-    geoScores,
-    preferredClusterIds,
-  });
-  if (serviceClusterResults.length >= limit) {
-    return serviceClusterResults.slice(0, limit);
-  }
 
   const fullState = await load211Documents();
   if (candidates.size === 0) {
@@ -175,6 +198,137 @@ export async function vectorSearch211(
   return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
 }
 
+export async function search211GraphCommunities(
+  query: string,
+  options: {
+    limit?: number;
+    preferredClusterIds?: number[];
+  } = {},
+): Promise<GraphCommunitySearchResult[]> {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  const [communities, documentCommunities, graphGeoClusters] = await Promise.all([
+    load211GraphCommunities(),
+    load211DocumentCommunities(),
+    load211GraphGeoClusters(),
+  ]);
+  const preferredClusterIds = new Set(dedupeIntegerList(options.preferredClusterIds || []));
+  const matchedDocumentsByCommunity = new Map<string, string[]>();
+  for (const row of documentCommunities) {
+    if (!matchedDocumentsByCommunity.has(row.community_id)) {
+      matchedDocumentsByCommunity.set(row.community_id, []);
+    }
+    matchedDocumentsByCommunity.get(row.community_id)!.push(row.doc_id);
+  }
+
+  const ranked = communities
+    .map((community) =>
+      rankGraphCommunity(community, matchedDocumentsByCommunity, graphGeoClusters.communityIdToClusterIds, trimmedQuery, preferredClusterIds),
+    )
+    .filter((result): result is GraphCommunitySearchResult => Boolean(result))
+    .sort((left, right) => right.score - left.score);
+  return ranked.slice(0, options.limit || 12);
+}
+
+export async function search211GraphGeoClusters(
+  query: string,
+  options: {
+    limit?: number;
+    preferredClusterIds?: number[];
+  } = {},
+): Promise<GraphGeoClusterSearchResult[]> {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) {
+    return [];
+  }
+
+  const [communities, graphGeoClusters] = await Promise.all([load211GraphCommunities(), load211GraphGeoClusters()]);
+  const communityById = new Map<string, GraphCommunity>(communities.map((community) => [community.community_id, community]));
+  const preferredClusterIds = new Set(dedupeIntegerList(options.preferredClusterIds || []));
+  const ranked = graphGeoClusters.clusters
+    .map((cluster) => rankGraphGeoCluster(cluster, communityById, trimmedQuery, preferredClusterIds))
+    .filter((result): result is GraphGeoClusterSearchResult => Boolean(result))
+    .sort((left, right) => right.score - left.score);
+  return ranked.slice(0, options.limit || 10);
+}
+
+async function keywordSearch211GeoShards(
+  query: string,
+  clusterIds: number[],
+  includeUnclusteredServices: boolean,
+  limit = 200,
+): Promise<Map<string, number>> {
+  const terms = tokenizeSearchText(query);
+  if (terms.length === 0) {
+    return new Map();
+  }
+  const parquetPayload = await load211Bm25Slice({ clusterIds, includeUnclusteredServices }).catch(() => null);
+  if (parquetPayload) {
+    const ranked: RankedScore[] = [];
+    for (const document of parquetPayload.documents) {
+      const score = scoreBm25Document(document, terms, parquetPayload.k1, parquetPayload.b, parquetPayload.avgdl);
+      if (score > 0) {
+        ranked.push({ docId: document.doc_id, score });
+      }
+    }
+    ranked.sort((left, right) => right.score - left.score);
+    return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+  }
+  const shardRecords = await resolveRetrievalGeoShardRecords(clusterIds, includeUnclusteredServices);
+  if (!shardRecords.length) {
+    return new Map();
+  }
+  const ranked: RankedScore[] = [];
+  for (const payload of await Promise.all(shardRecords.map((record) => load211Bm25GeoShard(record.bm25Path)))) {
+    for (const document of payload.documents) {
+      const score = scoreBm25Document(document, terms, payload.k1, payload.b, payload.avgdl);
+      if (score > 0) {
+        ranked.push({ docId: document.doc_id, score });
+      }
+    }
+  }
+  ranked.sort((left, right) => right.score - left.score);
+  return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+}
+
+async function vectorSearch211GeoShards(
+  queryEmbedding: Float32Array | number[],
+  clusterIds: number[],
+  includeUnclusteredServices: boolean,
+  limit = 200,
+): Promise<Map<string, number>> {
+  const parquetEmbeddings = await load211EmbeddingSlice({ clusterIds, includeUnclusteredServices }).catch(() => null);
+  if (parquetEmbeddings) {
+    return vectorSearchFromBundle(parquetEmbeddings.index, parquetEmbeddings.vectors, queryEmbedding, limit);
+  }
+  const shardRecords = await resolveRetrievalGeoShardRecords(clusterIds, includeUnclusteredServices);
+  if (!shardRecords.length) {
+    return new Map();
+  }
+  const queryVector = queryEmbedding instanceof Float32Array ? queryEmbedding : new Float32Array(queryEmbedding);
+  const queryNorm = vectorNorm(queryVector);
+  if (queryNorm === 0) {
+    return new Map();
+  }
+
+  const ranked: RankedScore[] = [];
+  const shardEmbeddings = await Promise.all(
+    shardRecords.map((record) => load211EmbeddingGeoShard(record.embeddingIndexPath, record.embeddingBinaryPath)),
+  );
+  for (const { index, vectors } of shardEmbeddings) {
+    if (queryVector.length !== index.dimension) {
+      throw new Error(`Query embedding dimension ${queryVector.length} did not match ${index.dimension}`);
+    }
+    const shardScores = rankEmbeddingBundle(index, vectors, queryVector, queryNorm);
+    ranked.push(...shardScores);
+  }
+  ranked.sort((left, right) => right.score - left.score);
+  return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+}
+
 export function tokenizeSearchText(text: string): string[] {
   return text
     .toLowerCase()
@@ -217,11 +371,9 @@ async function searchPreferredServiceClusters(
   options: {
     filters?: SearchFilters;
     limit: number;
+    candidateLimit: number;
     mode: SearchMode;
-    candidates: Set<string>;
-    normalizedKeyword: Map<string, number>;
-    normalizedVector: Map<string, number>;
-    geoScores: Map<string, number>;
+    queryEmbedding?: Float32Array | number[];
     preferredClusterIds: number[];
   },
 ): Promise<SearchResult[]> {
@@ -231,21 +383,37 @@ async function searchPreferredServiceClusters(
   const clusterPlans = buildClusterLoadPlans(options.preferredClusterIds);
   let bestResults: SearchResult[] = [];
   for (const plan of clusterPlans) {
-    const state = await load211DocumentsSlice({
-      clusterIds: plan.clusterIds,
-      includeUnclusteredServices: plan.includeUnclusteredServices,
-      docTypes: ["service"],
-    });
+    const [state, keywordScores, vectorScores] = await Promise.all([
+      load211DocumentsSlice({
+        clusterIds: plan.clusterIds,
+        includeUnclusteredServices: plan.includeUnclusteredServices,
+        docTypes: ["service"],
+      }),
+      options.mode !== "vector"
+        ? keywordSearch211GeoShards(query, plan.clusterIds, plan.includeUnclusteredServices, options.candidateLimit)
+        : Promise.resolve(new Map<string, number>()),
+      options.mode !== "keyword" && options.queryEmbedding
+        ? vectorSearch211GeoShards(
+            options.queryEmbedding,
+            plan.clusterIds,
+            plan.includeUnclusteredServices,
+            options.candidateLimit,
+          )
+        : Promise.resolve(new Map<string, number>()),
+    ]);
+    const normalizedKeyword = normalizeScores(keywordScores);
+    const normalizedVector = normalizeScores(vectorScores);
+    const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys()]);
     const results = rankSearchResults(
       state.documents,
       state.documentById,
-      options.candidates,
+      candidates,
       query,
       options.filters,
       options.mode,
-      options.normalizedKeyword,
-      options.normalizedVector,
-      options.geoScores,
+      normalizedKeyword,
+      normalizedVector,
+      new Map(),
       options.limit,
     );
     if (results.length > bestResults.length) {
@@ -256,6 +424,24 @@ async function searchPreferredServiceClusters(
     }
   }
   return bestResults;
+}
+
+async function resolveRetrievalGeoShardRecords(clusterIds: number[], includeUnclusteredServices: boolean) {
+  const manifest = await load211RetrievalGeoShards();
+  const shardIds = new Set<string>();
+  for (const clusterId of dedupeIntegerList(clusterIds)) {
+    const shardId = manifest.clusterIdToShardId[String(clusterId)];
+    if (shardId) {
+      shardIds.add(shardId);
+    }
+  }
+  if (includeUnclusteredServices) {
+    const shardId = manifest.clusterIdToShardId["-1"];
+    if (shardId) {
+      shardIds.add(shardId);
+    }
+  }
+  return manifest.shards.filter((record) => shardIds.has(record.shardId));
 }
 
 function buildClusterLoadPlans(preferredClusterIds: number[]) {
@@ -426,6 +612,50 @@ function vectorNorm(vector: Float32Array): number {
   return Math.sqrt(total);
 }
 
+function vectorSearchFromBundle(
+  index: { count: number; dimension: number; doc_ids: string[] },
+  vectors: Float32Array,
+  queryEmbedding: Float32Array | number[],
+  limit: number,
+): Map<string, number> {
+  const queryVector = queryEmbedding instanceof Float32Array ? queryEmbedding : new Float32Array(queryEmbedding);
+  if (queryVector.length !== index.dimension) {
+    throw new Error(`Query embedding dimension ${queryVector.length} did not match ${index.dimension}`);
+  }
+  const queryNorm = vectorNorm(queryVector);
+  if (queryNorm === 0) {
+    return new Map();
+  }
+  const ranked = rankEmbeddingBundle(index, vectors, queryVector, queryNorm);
+  ranked.sort((left, right) => right.score - left.score);
+  return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+}
+
+function rankEmbeddingBundle(
+  index: { count: number; dimension: number; doc_ids: string[] },
+  vectors: Float32Array,
+  queryVector: Float32Array,
+  queryNorm: number,
+): RankedScore[] {
+  const ranked: RankedScore[] = [];
+  for (let row = 0; row < index.count; row += 1) {
+    const offset = row * index.dimension;
+    let dot = 0;
+    let candidateNormSquared = 0;
+    for (let column = 0; column < index.dimension; column += 1) {
+      const value = vectors[offset + column] || 0;
+      const queryValue = queryVector[column] || 0;
+      dot += value * queryValue;
+      candidateNormSquared += value * value;
+    }
+    const candidateNorm = Math.sqrt(candidateNormSquared);
+    if (candidateNorm > 0) {
+      ranked.push({ docId: index.doc_ids[row], score: dot / (queryNorm * candidateNorm) });
+    }
+  }
+  return ranked;
+}
+
 function lookupGeoScores(
   query: string,
   index: {
@@ -477,4 +707,136 @@ function dedupeIntegerList(values: number[]): number[] {
 
 function sameIntegerList(left: number[], right: number[]): boolean {
   return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function rankGraphCommunity(
+  community: GraphCommunity,
+  matchedDocumentsByCommunity: Map<string, string[]>,
+  communityIdToClusterIds: Record<string, number[]>,
+  query: string,
+  preferredClusterIds: Set<number>,
+): GraphCommunitySearchResult | null {
+  const match = scoreWeightedTextSet(query, [
+    { text: community.label, weight: 1.9, phraseWeight: 2.4 },
+    { text: weightedTupleText(community.top_terms), weight: 1.2, phraseWeight: 1.7 },
+    { text: weightedTupleText(community.top_categories), weight: 1.0, phraseWeight: 1.4 },
+    { text: weightedTupleText(community.top_hosts), weight: 0.6, phraseWeight: 0.9 },
+  ]);
+  if (match.score <= 0) {
+    return null;
+  }
+
+  const clusterIds = (communityIdToClusterIds[community.community_id] || []).map((value) => Math.trunc(value));
+  const preferredOverlap = clusterIds.some((clusterId) => preferredClusterIds.has(clusterId));
+  const matchedDocIds = prioritizeServiceDocIds(matchedDocumentsByCommunity.get(community.community_id) || []);
+  const score =
+    match.score +
+    (preferredOverlap ? 1.1 : 0) +
+    Math.min(0.9, community.service_count * 0.05) +
+    Math.min(0.5, community.document_count * 0.015);
+  return {
+    community,
+    clusterIds,
+    matchedTerms: match.matchedTerms,
+    matchedDocIds,
+    score,
+  };
+}
+
+function rankGraphGeoCluster(
+  cluster: GraphGeoClusterRecord,
+  communityById: Map<string, GraphCommunity>,
+  query: string,
+  preferredClusterIds: Set<number>,
+): GraphGeoClusterSearchResult | null {
+  const relevantCommunities = cluster.communityIds
+    .map((communityId) => communityById.get(communityId))
+    .filter((community): community is GraphCommunity => Boolean(community));
+  const match = scoreWeightedTextSet(query, [
+    { text: cluster.topCommunities.map((community) => community.label).join(" "), weight: 1.8, phraseWeight: 2.3 },
+    { text: relevantCommunities.map((community) => weightedTupleText(community.top_terms)).join(" "), weight: 0.9, phraseWeight: 1.2 },
+    {
+      text: relevantCommunities.map((community) => weightedTupleText(community.top_categories)).join(" "),
+      weight: 0.8,
+      phraseWeight: 1.0,
+    },
+    { text: relevantCommunities.map((community) => weightedTupleText(community.top_hosts)).join(" "), weight: 0.5, phraseWeight: 0.7 },
+  ]);
+  if (match.score <= 0) {
+    return null;
+  }
+
+  const matchedCommunityIds = relevantCommunities
+    .filter((community) => communityMatchesTerms(community, match.matchedTerms))
+    .map((community) => community.community_id)
+    .slice(0, 12);
+  const score =
+    match.score +
+    (preferredClusterIds.has(cluster.clusterId) ? 1.3 : 0) +
+    Math.min(1.1, cluster.serviceDocumentCount * 0.01) +
+    Math.min(0.7, cluster.communityCount * 0.05);
+  return {
+    cluster,
+    matchedTerms: match.matchedTerms,
+    matchedCommunityIds,
+    score,
+  };
+}
+
+function scoreWeightedTextSet(query: string, fields: WeightedSearchField[]): { score: number; matchedTerms: string[] } {
+  const loweredQuery = query.toLowerCase();
+  const queryTerms = Array.from(new Set(tokenizeSearchText(query)));
+  const matchedTerms = new Set<string>();
+  let score = 0;
+
+  for (const field of fields) {
+    const normalized = field.text.toLowerCase().trim();
+    if (!normalized) {
+      continue;
+    }
+    if (loweredQuery.length > 2 && normalized.includes(loweredQuery)) {
+      score += field.phraseWeight ?? field.weight * 1.5;
+      matchedTerms.add(loweredQuery);
+    }
+    for (const term of queryTerms) {
+      if (normalized.includes(term)) {
+        score += field.weight;
+        matchedTerms.add(term);
+      }
+    }
+  }
+
+  return { score, matchedTerms: [...matchedTerms] };
+}
+
+function weightedTupleText(values: Array<[string, number]>): string {
+  return values.map(([label]) => label).join(" ");
+}
+
+function prioritizeServiceDocIds(docIds: string[]): string[] {
+  return [...docIds]
+    .sort((left, right) => {
+      const leftIsService = left.startsWith("service:");
+      const rightIsService = right.startsWith("service:");
+      if (leftIsService === rightIsService) {
+        return left.localeCompare(right);
+      }
+      return leftIsService ? -1 : 1;
+    })
+    .slice(0, 24);
+}
+
+function communityMatchesTerms(community: GraphCommunity, matchedTerms: string[]): boolean {
+  if (!matchedTerms.length) {
+    return true;
+  }
+  const haystack = [
+    community.label,
+    weightedTupleText(community.top_terms),
+    weightedTupleText(community.top_categories),
+    weightedTupleText(community.top_hosts),
+  ]
+    .join(" ")
+    .toLowerCase();
+  return matchedTerms.some((term) => haystack.includes(term.toLowerCase()));
 }

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import math
 import re
@@ -10,7 +11,7 @@ import sys
 import zipfile
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from urllib.request import urlretrieve
 
 import numpy as np
@@ -82,6 +83,7 @@ GEO_STOP_WORDS = {
     "unit",
     "west",
 }
+_CID_FOR_BYTES_IMPL: Any | None = None
 
 
 def _bootstrap_local_ipfs_datasets() -> None:
@@ -91,15 +93,41 @@ def _bootstrap_local_ipfs_datasets() -> None:
         sys.path.insert(0, str(local_ipfs))
 
 
-def cid_for_file(path: Path) -> str:
-    data = path.read_bytes()
+def _load_cid_for_bytes_impl() -> Any | None:
+    global _CID_FOR_BYTES_IMPL
+    if _CID_FOR_BYTES_IMPL is not None:
+        return _CID_FOR_BYTES_IMPL
+
+    local_cid_utils = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "utils" / "cid_utils.py"
     try:
+        if local_cid_utils.exists():
+            spec = importlib.util.spec_from_file_location("_ipfs_datasets_cid_utils_local", local_cid_utils)
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                cid_for_bytes = getattr(module, "cid_for_bytes", None)
+                if callable(cid_for_bytes):
+                    _CID_FOR_BYTES_IMPL = cid_for_bytes
+                    return _CID_FOR_BYTES_IMPL
         _bootstrap_local_ipfs_datasets()
         from ipfs_datasets_py.utils.cid_utils import cid_for_bytes
 
-        return str(cid_for_bytes(data))
+        _CID_FOR_BYTES_IMPL = cid_for_bytes
+        return _CID_FOR_BYTES_IMPL
     except Exception:
-        return f"sha256:{hashlib.sha256(data).hexdigest()}"
+        _CID_FOR_BYTES_IMPL = False
+        return None
+
+
+def cid_for_file(path: Path) -> str:
+    data = path.read_bytes()
+    try:
+        cid_for_bytes = _load_cid_for_bytes_impl()
+        if cid_for_bytes:
+            return str(cid_for_bytes(data))
+    except Exception:
+        pass
+    return f"sha256:{hashlib.sha256(data).hexdigest()}"
 
 
 def write_json(path: Path, payload: Any) -> dict[str, Any]:
@@ -240,12 +268,190 @@ def write_clustered_documents_parquet(
     return file_record(path)
 
 
+def write_service_clustered_parquet(
+    path: Path,
+    rows: list[dict[str, Any]],
+    *,
+    non_service_row_group_size: int = DEFAULT_NON_SERVICE_ROW_GROUP_SIZE,
+    compression: str = "zstd",
+    sort_key: Callable[[dict[str, Any]], Any] | None = None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    if not rows:
+        return write_parquet(path, rows, compression=compression), []
+
+    service_rows_by_cluster: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    service_rows_unclustered: list[dict[str, Any]] = []
+    non_service_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if str(row.get("doc_type", "")) != "service":
+            non_service_rows.append(row)
+            continue
+        cluster_id = row.get("geo_cluster_id")
+        if isinstance(cluster_id, int) and cluster_id >= 0:
+            service_rows_by_cluster[cluster_id].append(row)
+        else:
+            service_rows_unclustered.append(row)
+
+    if sort_key is None:
+        sort_key = lambda row: (str(row.get("doc_id", "")), str(row.get("source_content_cid", "")))
+
+    grouped_rows: list[list[dict[str, Any]]] = []
+    row_group_records: list[dict[str, Any]] = []
+    row_group_index = 0
+
+    for cluster_id in sorted(service_rows_by_cluster):
+        cluster_rows = sorted(service_rows_by_cluster[cluster_id], key=sort_key)
+        grouped_rows.append(cluster_rows)
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "service_cluster",
+                "clusterId": cluster_id,
+                "documentCount": len(cluster_rows),
+                "serviceDocumentCount": len(cluster_rows),
+            }
+        )
+        row_group_index += 1
+
+    if service_rows_unclustered:
+        cluster_rows = sorted(service_rows_unclustered, key=sort_key)
+        grouped_rows.append(cluster_rows)
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "service_unclustered",
+                "clusterId": -1,
+                "documentCount": len(cluster_rows),
+                "serviceDocumentCount": len(cluster_rows),
+            }
+        )
+        row_group_index += 1
+
+    non_service_rows = sorted(non_service_rows, key=sort_key)
+    for offset in range(0, len(non_service_rows), max(1, non_service_row_group_size)):
+        chunk = non_service_rows[offset : offset + max(1, non_service_row_group_size)]
+        grouped_rows.append(chunk)
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "non_service",
+                "clusterId": None,
+                "documentCount": len(chunk),
+                "serviceDocumentCount": 0,
+            }
+        )
+        row_group_index += 1
+
+    return write_grouped_parquet(path, grouped_rows, compression=compression), row_group_records
+
+
+def write_cluster_field_grouped_parquet(
+    path: Path,
+    rows: list[dict[str, Any]],
+    *,
+    cluster_field: str,
+    unclustered_row_group_size: int = DEFAULT_NON_SERVICE_ROW_GROUP_SIZE,
+    compression: str = "zstd",
+    sort_key: Callable[[dict[str, Any]], Any] | None = None,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    if not rows:
+        return write_parquet(path, rows, compression=compression), []
+
+    clustered_rows: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    unclustered_rows: list[dict[str, Any]] = []
+    for row in rows:
+        cluster_id = row.get(cluster_field)
+        if isinstance(cluster_id, int) and cluster_id >= 0:
+            clustered_rows[cluster_id].append(row)
+        else:
+            unclustered_rows.append(row)
+
+    if sort_key is None:
+        sort_key = lambda row: (
+            str(row.get("community_id", "")),
+            str(row.get("doc_id", "")),
+            str(row.get("label", "")),
+        )
+
+    grouped_rows: list[list[dict[str, Any]]] = []
+    row_group_records: list[dict[str, Any]] = []
+    row_group_index = 0
+    for cluster_id in sorted(clustered_rows):
+        cluster_rows = sorted(clustered_rows[cluster_id], key=sort_key)
+        grouped_rows.append(cluster_rows)
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "clustered",
+                "clusterId": cluster_id,
+                "documentCount": len(cluster_rows),
+            }
+        )
+        row_group_index += 1
+
+    unclustered_rows = sorted(unclustered_rows, key=sort_key)
+    for offset in range(0, len(unclustered_rows), max(1, unclustered_row_group_size)):
+        chunk = unclustered_rows[offset : offset + max(1, unclustered_row_group_size)]
+        grouped_rows.append(chunk)
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "unclustered",
+                "clusterId": None,
+                "documentCount": len(chunk),
+            }
+        )
+        row_group_index += 1
+
+    return write_grouped_parquet(path, grouped_rows, compression=compression), row_group_records
+
+
+def write_grouped_parquet(
+    path: Path,
+    grouped_rows: list[list[dict[str, Any]]],
+    *,
+    compression: str = "zstd",
+) -> dict[str, Any]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    all_rows = [row for group in grouped_rows for row in group]
+    schema = pa.Table.from_pandas(pd.DataFrame(all_rows), preserve_index=False).schema
+    writer = pq.ParquetWriter(path, schema, compression=compression, use_dictionary=True)
+    try:
+        for rows in grouped_rows:
+            table = pa.Table.from_pandas(pd.DataFrame(rows), schema=schema, preserve_index=False)
+            writer.write_table(table)
+    finally:
+        writer.close()
+    return file_record(path)
+
+
+def build_cluster_row_group_indexes(row_group_records: list[dict[str, Any]]) -> dict[str, list[int]]:
+    cluster_to_row_groups: dict[str, list[int]] = defaultdict(list)
+    for row_group in row_group_records:
+        cluster_id = row_group.get("clusterId")
+        if cluster_id in ("", None):
+            continue
+        cluster_to_row_groups[str(cluster_id)].append(int(row_group["rowGroupIndex"]))
+    return {cluster_id: values for cluster_id, values in sorted(cluster_to_row_groups.items())}
+
+
 def file_record(path: Path) -> dict[str, Any]:
     return {
         "path": path.as_posix(),
         "bytes": int(path.stat().st_size),
         "cid": cid_for_file(path),
     }
+
+
+def build_content_cid_to_doc_ids(rows: Iterable[dict[str, Any]]) -> dict[str, list[str]]:
+    cid_to_doc_ids: dict[str, list[str]] = defaultdict(list)
+    for row in rows:
+        content_cid = str(row.get("source_content_cid", "") or "")
+        doc_id = str(row.get("doc_id", "") or "")
+        if not content_cid or not doc_id:
+            continue
+        cid_to_doc_ids[content_cid].append(doc_id)
+    return {cid: sorted(set(doc_ids)) for cid, doc_ids in sorted(cid_to_doc_ids.items())}
 
 
 def compact_text(value: Any, max_chars: int) -> tuple[str, bool]:
@@ -805,6 +1011,7 @@ def build_document_index(documents: list[dict[str, Any]]) -> dict[str, Any]:
             for index, document in enumerate(documents)
             if document.get("source_content_cid")
         },
+        "contentCidToDocIds": build_content_cid_to_doc_ids(documents),
     }
 
 
@@ -813,12 +1020,14 @@ def build_bm25_payload(
     *,
     selected_doc_ids: set[str],
     max_terms_per_document: int,
+    doc_frame: pd.DataFrame | None = None,
+    term_frame: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
-    doc_frame = pd.read_parquet(package_dir / "retrieval" / "bm25_documents.parquet").fillna("")
+    doc_frame = (doc_frame.copy() if doc_frame is not None else pd.read_parquet(package_dir / "retrieval" / "bm25_documents.parquet")).fillna("")
     if selected_doc_ids:
         doc_frame = doc_frame[doc_frame["doc_id"].isin(selected_doc_ids)]
 
-    term_frame = pd.read_parquet(package_dir / "retrieval" / "bm25_terms.parquet").fillna("")
+    term_frame = (term_frame.copy() if term_frame is not None else pd.read_parquet(package_dir / "retrieval" / "bm25_terms.parquet")).fillna("")
     if selected_doc_ids:
         term_frame = term_frame[term_frame["doc_id"].isin(selected_doc_ids)]
 
@@ -891,6 +1100,7 @@ def build_bm25_payload(
         "avgdl": avgdl,
         "documentCount": document_count,
         "maxTermsPerDocument": max_terms_per_document,
+        "sourceContentCidToDocIds": build_content_cid_to_doc_ids(documents),
     }
 
 
@@ -899,8 +1109,9 @@ def write_embeddings(
     output_path: Path,
     *,
     selected_doc_ids: set[str],
+    frame: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
-    frame = pd.read_parquet(package_dir / "retrieval" / "vector_embeddings.parquet").fillna("")
+    frame = (frame.copy() if frame is not None else pd.read_parquet(package_dir / "retrieval" / "vector_embeddings.parquet")).fillna("")
     if selected_doc_ids:
         frame = frame[frame["doc_id"].isin(selected_doc_ids)]
 
@@ -946,8 +1157,258 @@ def write_embeddings(
         "source_content_cids": content_cids,
         "source_page_cids": page_cids,
         "source_urls": source_urls,
+        "sourceContentCidToDocIds": build_content_cid_to_doc_ids(
+            [
+                {
+                    "doc_id": doc_id,
+                    "source_content_cid": content_cid,
+                }
+                for doc_id, content_cid in zip(doc_ids, content_cids)
+            ]
+        ),
     }
     return index
+
+
+def build_retrieval_geo_shard_artifacts(
+    *,
+    package_dir: Path,
+    output_dir: Path,
+    generated_dir: Path,
+    documents: list[dict[str, Any]],
+    geo_cluster_manifest: dict[str, Any],
+    max_terms_per_document: int,
+    bm25_doc_frame: pd.DataFrame,
+    bm25_term_frame: pd.DataFrame,
+    embedding_frame: pd.DataFrame,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    shard_dir = generated_dir / "retrieval-geo-shards"
+    shard_dir.mkdir(parents=True, exist_ok=True)
+    for stale_path in shard_dir.glob("*"):
+        if stale_path.is_file():
+            stale_path.unlink()
+
+    service_documents = [document for document in documents if document.get("doc_type") == "service"]
+    service_docs_by_cluster: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    service_docs_unclustered: list[dict[str, Any]] = []
+    for document in service_documents:
+        cluster_id = document.get("geo_cluster_id")
+        if isinstance(cluster_id, int) and cluster_id >= 0:
+            service_docs_by_cluster[cluster_id].append(document)
+        else:
+            service_docs_unclustered.append(document)
+
+    shard_records: list[dict[str, Any]] = []
+    artifact_records: list[dict[str, Any]] = []
+    doc_id_to_shard_id: dict[str, str] = {}
+    content_cid_to_shard_ids: dict[str, set[str]] = defaultdict(set)
+    cluster_id_to_shard_id: dict[str, str] = {}
+    embedding_model = ""
+    embedding_dimension = 0
+    selected_doc_ids = {str(document.get("doc_id", "")) for document in documents if document.get("doc_id")}
+    documents_by_id = {
+        str(document.get("doc_id", "")): document
+        for document in documents
+        if document.get("doc_id")
+    }
+
+    full_bm25_payload = build_bm25_payload(
+        package_dir,
+        selected_doc_ids=selected_doc_ids,
+        max_terms_per_document=max_terms_per_document,
+        doc_frame=bm25_doc_frame,
+        term_frame=bm25_term_frame,
+    )
+    bm25_rows = build_bm25_parquet_rows(full_bm25_payload, documents_by_id)
+    bm25_parquet_record, bm25_row_groups = write_service_clustered_parquet(
+        generated_dir / "bm25-documents.parquet",
+        bm25_rows,
+        sort_key=lambda row: (str(row.get("doc_id", "")), str(row.get("source_content_cid", ""))),
+    )
+    artifact_records.append(relative_manifest_record(output_dir, bm25_parquet_record, "retrieval"))
+    cluster_id_to_bm25_row_groups = build_cluster_row_group_indexes(bm25_row_groups)
+
+    embedding_rows = build_embedding_parquet_rows(
+        frame=embedding_frame,
+        selected_doc_ids=selected_doc_ids,
+        documents_by_id=documents_by_id,
+    )
+    embedding_parquet_record, embedding_row_groups = write_service_clustered_parquet(
+        generated_dir / "embeddings.parquet",
+        embedding_rows,
+        sort_key=lambda row: (str(row.get("doc_id", "")), str(row.get("source_content_cid", ""))),
+    )
+    artifact_records.append(relative_manifest_record(output_dir, embedding_parquet_record, "retrieval"))
+    cluster_id_to_embedding_row_groups = build_cluster_row_group_indexes(embedding_row_groups)
+
+    for cluster in geo_cluster_manifest.get("clusters", []):
+        kind = str(cluster.get("kind") or "")
+        raw_cluster_id = cluster.get("clusterId")
+        cluster_id = int(raw_cluster_id) if raw_cluster_id not in ("", None) else -1
+        if kind not in {"service_cluster", "service_unclustered"}:
+            continue
+        shard_documents = (
+            sorted(service_docs_by_cluster.get(cluster_id, []), key=lambda document: str(document.get("doc_id", "")))
+            if kind == "service_cluster"
+            else sorted(service_docs_unclustered, key=lambda document: str(document.get("doc_id", "")))
+        )
+        if not shard_documents:
+            continue
+
+        shard_id = f"cluster-{cluster_id:04d}" if cluster_id >= 0 else "cluster-unclustered"
+        cluster_id_to_shard_id[str(cluster_id)] = shard_id
+        selected_doc_ids = {str(document.get("doc_id", "")) for document in shard_documents}
+        bm25_payload = build_bm25_payload(
+            package_dir,
+            selected_doc_ids=selected_doc_ids,
+            max_terms_per_document=max_terms_per_document,
+            doc_frame=bm25_doc_frame,
+            term_frame=bm25_term_frame,
+        )
+        bm25_record = write_json(shard_dir / f"bm25-{shard_id}.json", bm25_payload)
+        artifact_records.append(relative_manifest_record(output_dir, bm25_record, "retrieval"))
+
+        embedding_binary_path = shard_dir / f"embeddings-{shard_id}.f32"
+        embedding_index = write_embeddings(
+            package_dir,
+            embedding_binary_path,
+            selected_doc_ids=selected_doc_ids,
+            frame=embedding_frame,
+        )
+        embedding_model = embedding_model or str(embedding_index.get("embeddingModel") or "")
+        embedding_dimension = embedding_dimension or int(embedding_index.get("dimension") or 0)
+        embedding_binary_record = file_record(embedding_binary_path)
+        artifact_records.append(relative_manifest_record(output_dir, embedding_binary_record, "retrieval"))
+        embedding_index_record = write_json(shard_dir / f"embedding-index-{shard_id}.json", embedding_index)
+        artifact_records.append(relative_manifest_record(output_dir, embedding_index_record, "retrieval"))
+
+        for document in shard_documents:
+            doc_id = str(document.get("doc_id", ""))
+            if doc_id:
+                doc_id_to_shard_id[doc_id] = shard_id
+            content_cid = str(document.get("source_content_cid", "") or "")
+            if content_cid:
+                content_cid_to_shard_ids[content_cid].add(shard_id)
+
+        shard_records.append(
+            {
+                "shardId": shard_id,
+                "clusterId": cluster_id,
+                "kind": kind,
+                "documentCount": len(shard_documents),
+                "serviceDocumentCount": len(shard_documents),
+                "contentCidCount": len(
+                    {
+                        str(document.get("source_content_cid", ""))
+                        for document in shard_documents
+                        if document.get("source_content_cid")
+                    }
+                ),
+                "firstDocId": str(shard_documents[0].get("doc_id", "")),
+                "lastDocId": str(shard_documents[-1].get("doc_id", "")),
+                "bm25Path": Path(bm25_record["path"]).relative_to(output_dir).as_posix(),
+                "embeddingIndexPath": Path(embedding_index_record["path"]).relative_to(output_dir).as_posix(),
+                "embeddingBinaryPath": Path(embedding_binary_record["path"]).relative_to(output_dir).as_posix(),
+                "bm25ParquetPath": Path(bm25_parquet_record["path"]).relative_to(output_dir).as_posix(),
+                "embeddingParquetPath": Path(embedding_parquet_record["path"]).relative_to(output_dir).as_posix(),
+                "bm25RowGroupIndexes": cluster_id_to_bm25_row_groups.get(str(cluster_id), []),
+                "embeddingRowGroupIndexes": cluster_id_to_embedding_row_groups.get(str(cluster_id), []),
+                "sourceContentCidToDocIds": build_content_cid_to_doc_ids(shard_documents),
+            }
+        )
+
+    manifest = {
+        "schemaVersion": 1,
+        "serviceDocumentCount": len(service_documents),
+        "clusteredServiceCount": int(geo_cluster_manifest.get("clusteredServiceCount") or 0),
+        "unclusteredServiceCount": int(geo_cluster_manifest.get("unclusteredServiceCount") or 0),
+        "embeddingModel": embedding_model,
+        "embeddingDimension": embedding_dimension,
+        "bm25ParquetPath": Path(bm25_parquet_record["path"]).relative_to(output_dir).as_posix(),
+        "embeddingParquetPath": Path(embedding_parquet_record["path"]).relative_to(output_dir).as_posix(),
+        "bm25RowGroupCount": len(bm25_row_groups),
+        "embeddingRowGroupCount": len(embedding_row_groups),
+        "clusterIdToBm25RowGroupIndexes": cluster_id_to_bm25_row_groups,
+        "clusterIdToEmbeddingRowGroupIndexes": cluster_id_to_embedding_row_groups,
+        "shardCount": len(shard_records),
+        "shards": shard_records,
+        "clusterIdToShardId": cluster_id_to_shard_id,
+        "docIdToShardId": dict(sorted(doc_id_to_shard_id.items())),
+        "contentCidToShardIds": {
+            content_cid: sorted(shard_ids)
+            for content_cid, shard_ids in sorted(content_cid_to_shard_ids.items())
+        },
+    }
+    manifest_record = write_json(generated_dir / "retrieval-geo-shards.json", manifest)
+    artifact_records.insert(0, relative_manifest_record(output_dir, manifest_record, "retrieval"))
+    return manifest, artifact_records
+
+
+def build_bm25_parquet_rows(
+    bm25_payload: dict[str, Any],
+    documents_by_id: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for document in bm25_payload.get("documents", []):
+        doc_id = str(document.get("doc_id", ""))
+        source_document = documents_by_id.get(doc_id, {})
+        geo_cluster_id = source_document.get("geo_cluster_id")
+        rows.append(
+            {
+                "doc_id": doc_id,
+                "doc_type": str(document.get("doc_type", "")),
+                "source_url": str(document.get("source_url", "")),
+                "source_content_cid": str(document.get("source_content_cid", "")),
+                "source_page_cid": str(document.get("source_page_cid", "")),
+                "document_length": int(document.get("document_length") or 0),
+                "terms_json": json.dumps(document.get("terms") or {}, separators=(",", ":")),
+                "term_idf_json": json.dumps(document.get("term_idf") or {}, separators=(",", ":")),
+                "geo_cluster_id": int(geo_cluster_id) if isinstance(geo_cluster_id, int) else None,
+                "k1": float(bm25_payload.get("k1") or 0.0),
+                "b": float(bm25_payload.get("b") or 0.0),
+                "avgdl": float(bm25_payload.get("avgdl") or 0.0),
+                "document_count": int(bm25_payload.get("documentCount") or 0),
+                "max_terms_per_document": int(bm25_payload.get("maxTermsPerDocument") or 0),
+            }
+        )
+    return rows
+
+
+def build_embedding_parquet_rows(
+    *,
+    frame: pd.DataFrame,
+    selected_doc_ids: set[str],
+    documents_by_id: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    filtered_frame = frame.fillna("")
+    if selected_doc_ids:
+        filtered_frame = filtered_frame[filtered_frame["doc_id"].isin(selected_doc_ids)]
+
+    for row in filtered_frame.to_dict(orient="records"):
+        doc_id = str(row.get("doc_id", ""))
+        embedding = row.get("embedding")
+        values = [float(value) for value in embedding] if embedding is not None and len(embedding) else []
+        if not values:
+            continue
+        source_document = documents_by_id.get(doc_id, {})
+        geo_cluster_id = source_document.get("geo_cluster_id")
+        embedding_model = str(row.get("embedding_model", ""))
+        rows.append(
+            {
+                "doc_id": doc_id,
+                "doc_type": str(row.get("doc_type", "")),
+                "source_url": str(row.get("source_url", "")),
+                "source_content_cid": str(row.get("source_content_cid", "")),
+                "source_page_cid": str(row.get("source_page_cid", "")),
+                "embedding_model": embedding_model,
+                "browser_embedding_model": DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL.get(embedding_model, ""),
+                "dimension": len(values),
+                "embedding": values,
+                "geo_cluster_id": int(geo_cluster_id) if isinstance(geo_cluster_id, int) else None,
+            }
+        )
+    return rows
 
 
 def compact_node(row: dict[str, Any]) -> dict[str, Any]:
@@ -1218,6 +1679,214 @@ def build_community_payloads(package_dir: Path, *, selected_doc_ids: set[str]) -
     )
 
 
+def build_document_community_parquet_rows(
+    document_communities: dict[str, Any],
+    documents: list[dict[str, Any]],
+) -> tuple[list[dict[str, Any]], dict[str, list[int]]]:
+    service_cluster_by_doc_id: dict[str, list[int]] = {}
+    page_cluster_ids_by_page_cid: dict[str, set[int]] = defaultdict(set)
+    for document in documents:
+        if str(document.get("doc_type", "")) != "service":
+            continue
+        doc_id = str(document.get("doc_id", "") or "")
+        if not doc_id:
+            continue
+        cluster_id = document.get("geo_cluster_id")
+        normalized_cluster_id = int(cluster_id) if isinstance(cluster_id, int) and cluster_id >= 0 else -1
+        service_cluster_by_doc_id[doc_id] = [normalized_cluster_id]
+        page_cid = str(document.get("source_page_cid", "") or "")
+        if page_cid:
+            page_cluster_ids_by_page_cid[page_cid].add(normalized_cluster_id)
+
+    rows: list[dict[str, Any]] = []
+    doc_id_to_cluster_ids: dict[str, list[int]] = {}
+    for row in document_communities.get("documents", []):
+        doc_id = str(row.get("doc_id", "") or "")
+        doc_type = str(row.get("doc_type", "") or "")
+        source_page_cid = str(row.get("source_page_cid", "") or "")
+        cluster_ids = service_cluster_by_doc_id.get(doc_id)
+        if cluster_ids is None and source_page_cid:
+            cluster_ids = sorted(page_cluster_ids_by_page_cid.get(source_page_cid, set()))
+        cluster_ids = cluster_ids or []
+        primary_cluster_id = next((cluster_id for cluster_id in cluster_ids if cluster_id >= 0), None)
+        rows.append(
+            {
+                "doc_id": doc_id,
+                "doc_type": doc_type,
+                "source_url": str(row.get("source_url", "")),
+                "source_content_cid": str(row.get("source_content_cid", "")),
+                "source_page_cid": source_page_cid,
+                "community_id": str(row.get("community_id", "")),
+                "community_label": str(row.get("community_label", "")),
+                "geo_cluster_id": primary_cluster_id,
+                "geo_cluster_ids_json": json.dumps(cluster_ids, separators=(",", ":")),
+                "cluster_count": len(cluster_ids),
+            }
+        )
+        doc_id_to_cluster_ids[doc_id] = cluster_ids
+    return rows, doc_id_to_cluster_ids
+
+
+def build_graph_community_parquet_rows(
+    graph_communities: dict[str, Any],
+    document_community_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    community_cluster_counts: dict[str, dict[int, int]] = defaultdict(lambda: defaultdict(int))
+    for row in document_community_rows:
+        community_id = str(row.get("community_id", "") or "")
+        if not community_id:
+            continue
+        for cluster_id in json.loads(row.get("geo_cluster_ids_json") or "[]"):
+            if isinstance(cluster_id, int):
+                community_cluster_counts[community_id][cluster_id] += 1
+
+    rows: list[dict[str, Any]] = []
+    for row in graph_communities.get("communities", []):
+        community_id = str(row.get("community_id", "") or "")
+        cluster_counts = community_cluster_counts.get(community_id, {})
+        primary_cluster_id = None
+        positive_cluster_counts = {
+            cluster_id: count
+            for cluster_id, count in cluster_counts.items()
+            if cluster_id >= 0
+        }
+        if positive_cluster_counts:
+            primary_cluster_id = sorted(
+                positive_cluster_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )[0][0]
+        rows.append(
+            {
+                "community_id": community_id,
+                "community_cid": str(row.get("community_cid", "")),
+                "label": str(row.get("label", "")),
+                "node_count": int(row.get("node_count") or 0),
+                "document_count": int(row.get("document_count") or 0),
+                "page_count": int(row.get("page_count") or 0),
+                "service_count": int(row.get("service_count") or 0),
+                "keyterm_count": int(row.get("keyterm_count") or 0),
+                "provider_count": int(row.get("provider_count") or 0),
+                "category_count": int(row.get("category_count") or 0),
+                "top_terms_json": json.dumps(row.get("top_terms") or [], separators=(",", ":")),
+                "top_categories_json": json.dumps(row.get("top_categories") or [], separators=(",", ":")),
+                "top_hosts_json": json.dumps(row.get("top_hosts") or [], separators=(",", ":")),
+                "geo_cluster_id": primary_cluster_id,
+                "geo_cluster_ids_json": json.dumps(sorted(cluster_counts), separators=(",", ":")),
+                "geo_cluster_counts_json": json.dumps(
+                    {str(cluster_id): count for cluster_id, count in sorted(cluster_counts.items())},
+                    separators=(",", ":"),
+                ),
+            }
+        )
+    return rows
+
+
+def build_graph_geo_cluster_manifest(
+    *,
+    geo_cluster_manifest: dict[str, Any],
+    graph_index: dict[str, Any],
+    graph_communities: dict[str, Any],
+    document_community_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    cluster_metadata = {
+        int(cluster.get("clusterId")): cluster
+        for cluster in geo_cluster_manifest.get("clusters", [])
+        if cluster.get("clusterId") not in ("", None)
+    }
+    community_by_id = {
+        str(community.get("community_id", "")): community
+        for community in graph_communities.get("communities", [])
+        if community.get("community_id")
+    }
+    graph_cluster_records: dict[int, dict[str, Any]] = {}
+    community_id_to_cluster_ids: dict[str, set[int]] = defaultdict(set)
+
+    for row in document_community_rows:
+        doc_id = str(row.get("doc_id", "") or "")
+        community_id = str(row.get("community_id", "") or "")
+        doc_type = str(row.get("doc_type", "") or "")
+        source_page_cid = str(row.get("source_page_cid", "") or "")
+        shard_path = str(graph_index.get("docIdToShard", {}).get(doc_id, "") or "")
+        cluster_ids = json.loads(row.get("geo_cluster_ids_json") or "[]")
+        for cluster_id in cluster_ids:
+            if not isinstance(cluster_id, int):
+                continue
+            record = graph_cluster_records.setdefault(
+                cluster_id,
+                {
+                    "clusterId": cluster_id,
+                    "kind": cluster_metadata.get(cluster_id, {}).get(
+                        "kind",
+                        "service_unclustered" if cluster_id < 0 else "service_cluster",
+                    ),
+                    "serviceDocumentCount": int(cluster_metadata.get(cluster_id, {}).get("serviceDocumentCount") or 0),
+                    "graphDocIds": set(),
+                    "graphNeighborhoodShardPaths": set(),
+                    "communityCounts": defaultdict(int),
+                    "pageDocCount": 0,
+                    "serviceDocCount": 0,
+                    "sourcePageCids": set(),
+                },
+            )
+            if doc_id:
+                record["graphDocIds"].add(doc_id)
+            if shard_path:
+                record["graphNeighborhoodShardPaths"].add(shard_path)
+            if community_id:
+                record["communityCounts"][community_id] += 1
+                community_id_to_cluster_ids[community_id].add(cluster_id)
+            if source_page_cid:
+                record["sourcePageCids"].add(source_page_cid)
+            if doc_type == "service":
+                record["serviceDocCount"] += 1
+            elif doc_type == "page":
+                record["pageDocCount"] += 1
+
+    clusters: list[dict[str, Any]] = []
+    for cluster_id, record in sorted(graph_cluster_records.items()):
+        top_communities = []
+        for community_id, count in sorted(
+            record["communityCounts"].items(),
+            key=lambda item: (-item[1], item[0]),
+        )[:8]:
+            community = community_by_id.get(community_id, {})
+            top_communities.append(
+                {
+                    "community_id": community_id,
+                    "label": str(community.get("label", "")),
+                    "document_count": int(community.get("document_count") or 0),
+                    "service_count": int(community.get("service_count") or 0),
+                    "matched_documents": count,
+                }
+            )
+        clusters.append(
+            {
+                "clusterId": cluster_id,
+                "kind": record["kind"],
+                "serviceDocumentCount": record["serviceDocumentCount"],
+                "graphDocumentCount": len(record["graphDocIds"]),
+                "serviceGraphDocumentCount": int(record["serviceDocCount"]),
+                "pageGraphDocumentCount": int(record["pageDocCount"]),
+                "graphNeighborhoodShardCount": len(record["graphNeighborhoodShardPaths"]),
+                "graphNeighborhoodShardPaths": sorted(record["graphNeighborhoodShardPaths"]),
+                "communityCount": len(record["communityCounts"]),
+                "communityIds": sorted(record["communityCounts"]),
+                "sourcePageCidCount": len(record["sourcePageCids"]),
+                "topCommunities": top_communities,
+            }
+        )
+
+    return {
+        "schemaVersion": 1,
+        "clusterCount": len(clusters),
+        "clusters": clusters,
+        "communityIdToClusterIds": {
+            community_id: sorted(cluster_ids)
+            for community_id, cluster_ids in sorted(community_id_to_cluster_ids.items())
+        },
+    }
+
+
 def relative_manifest_record(root: Path, record: dict[str, Any], role: str) -> dict[str, Any]:
     return {
         "path": Path(record["path"]).relative_to(root).as_posix(),
@@ -1286,10 +1955,16 @@ def build_browser_graphrag_corpus(
     document_index_record = write_json(generated_dir / "document-index.json", build_document_index(documents))
     artifact_records.append(relative_manifest_record(output_dir, document_index_record, "index"))
 
+    bm25_doc_frame = pd.read_parquet(package_dir / "retrieval" / "bm25_documents.parquet")
+    bm25_term_frame = pd.read_parquet(package_dir / "retrieval" / "bm25_terms.parquet")
+    embedding_frame = pd.read_parquet(package_dir / "retrieval" / "vector_embeddings.parquet")
+
     bm25_payload = build_bm25_payload(
         package_dir,
         selected_doc_ids=selected_doc_ids,
         max_terms_per_document=max_terms_per_document,
+        doc_frame=bm25_doc_frame,
+        term_frame=bm25_term_frame,
     )
     bm25_record = write_json(generated_dir / "bm25-documents.json", bm25_payload)
     artifact_records.append(relative_manifest_record(output_dir, bm25_record, "retrieval"))
@@ -1298,11 +1973,25 @@ def build_browser_graphrag_corpus(
         package_dir,
         generated_dir / "embeddings.f32",
         selected_doc_ids=selected_doc_ids,
+        frame=embedding_frame,
     )
     embedding_binary_record = file_record(generated_dir / "embeddings.f32")
     artifact_records.append(relative_manifest_record(output_dir, embedding_binary_record, "retrieval"))
     embedding_index_record = write_json(generated_dir / "embedding-index.json", embedding_index)
     artifact_records.append(relative_manifest_record(output_dir, embedding_index_record, "retrieval"))
+
+    retrieval_geo_shards, retrieval_geo_shard_records = build_retrieval_geo_shard_artifacts(
+        package_dir=package_dir,
+        output_dir=output_dir,
+        generated_dir=generated_dir,
+        documents=documents,
+        geo_cluster_manifest=geo_cluster_manifest,
+        max_terms_per_document=max_terms_per_document,
+        bm25_doc_frame=bm25_doc_frame,
+        bm25_term_frame=bm25_term_frame,
+        embedding_frame=embedding_frame,
+    )
+    artifact_records.extend(retrieval_geo_shard_records)
 
     graph_payload = build_graph_neighborhoods(
         package_dir,
@@ -1325,6 +2014,40 @@ def build_browser_graphrag_corpus(
     artifact_records.append(relative_manifest_record(output_dir, communities_record, "graph"))
     document_communities_record = write_json(generated_dir / "document-communities.json", document_communities)
     artifact_records.append(relative_manifest_record(output_dir, document_communities_record, "graph"))
+
+    document_community_parquet_rows, doc_id_to_cluster_ids = build_document_community_parquet_rows(
+        document_communities,
+        documents,
+    )
+    document_communities_parquet_record, document_communities_row_groups = write_cluster_field_grouped_parquet(
+        generated_dir / "document-communities.parquet",
+        document_community_parquet_rows,
+        cluster_field="geo_cluster_id",
+        sort_key=lambda row: (str(row.get("doc_id", "")), str(row.get("community_id", ""))),
+    )
+    artifact_records.append(relative_manifest_record(output_dir, document_communities_parquet_record, "graph"))
+
+    graph_community_parquet_rows = build_graph_community_parquet_rows(
+        graph_communities,
+        document_community_parquet_rows,
+    )
+    graph_communities_parquet_record, graph_communities_row_groups = write_cluster_field_grouped_parquet(
+        generated_dir / "graph-communities.parquet",
+        graph_community_parquet_rows,
+        cluster_field="geo_cluster_id",
+        sort_key=lambda row: (str(row.get("community_id", "")), str(row.get("label", ""))),
+    )
+    artifact_records.append(relative_manifest_record(output_dir, graph_communities_parquet_record, "graph"))
+
+    graph_geo_clusters = build_graph_geo_cluster_manifest(
+        geo_cluster_manifest=geo_cluster_manifest,
+        graph_index=graph_index,
+        graph_communities=graph_communities,
+        document_community_rows=document_community_parquet_rows,
+    )
+    graph_geo_clusters["docIdToClusterIds"] = doc_id_to_cluster_ids
+    graph_geo_clusters_record = write_json(generated_dir / "graph-geo-clusters.json", graph_geo_clusters)
+    artifact_records.append(relative_manifest_record(output_dir, graph_geo_clusters_record, "graph"))
 
     service_geo_index = build_service_geo_index(documents)
     service_geo_record = write_json(generated_dir / "service-geo-index.json", service_geo_index)
@@ -1354,6 +2077,13 @@ def build_browser_graphrag_corpus(
         "geoClusteredServiceCount": int(geo_cluster_manifest["clusteredServiceCount"]),
         "geoUnclusteredServiceCount": int(geo_cluster_manifest["unclusteredServiceCount"]),
         "documentParquetRowGroupCount": int(geo_cluster_manifest.get("rowGroupCount", 0)),
+        "geoRetrievalShardCount": int(retrieval_geo_shards["shardCount"]),
+        "geoRetrievalShardContentCidCount": len(retrieval_geo_shards["contentCidToShardIds"]),
+        "bm25ParquetRowGroupCount": int(retrieval_geo_shards.get("bm25RowGroupCount") or 0),
+        "embeddingParquetRowGroupCount": int(retrieval_geo_shards.get("embeddingRowGroupCount") or 0),
+        "graphGeoClusterCount": int(graph_geo_clusters["clusterCount"]),
+        "graphCommunityParquetRowGroupCount": len(graph_communities_row_groups),
+        "documentCommunityParquetRowGroupCount": len(document_communities_row_groups),
         "sourcePackage": {
             "path": str(package_dir),
             "build_manifest_cid": source_manifest.get("build_manifest_cid", ""),
@@ -1403,6 +2133,13 @@ def build_browser_graphrag_corpus(
         "geo_clustered_service_count": int(geo_cluster_manifest["clusteredServiceCount"]),
         "geo_unclustered_service_count": int(geo_cluster_manifest["unclusteredServiceCount"]),
         "document_parquet_row_group_count": int(geo_cluster_manifest.get("rowGroupCount", 0)),
+        "geo_retrieval_shard_count": int(retrieval_geo_shards["shardCount"]),
+        "geo_retrieval_shard_content_cid_count": len(retrieval_geo_shards["contentCidToShardIds"]),
+        "bm25_parquet_row_group_count": int(retrieval_geo_shards.get("bm25RowGroupCount") or 0),
+        "embedding_parquet_row_group_count": int(retrieval_geo_shards.get("embeddingRowGroupCount") or 0),
+        "graph_geo_cluster_count": int(graph_geo_clusters["clusterCount"]),
+        "graph_community_parquet_row_group_count": len(graph_communities_row_groups),
+        "document_community_parquet_row_group_count": len(document_communities_row_groups),
         "artifact_count": len(artifact_records) + 1,
         "artifacts_manifest_cid": artifacts_manifest_record["cid"],
         "generated_manifest_cid": generated_manifest_record["cid"],

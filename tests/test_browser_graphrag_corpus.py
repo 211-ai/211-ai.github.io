@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from scraper.browser_graphrag_corpus import build_browser_graphrag_corpus
 
@@ -354,11 +355,26 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     communities = json.loads((output_dir / "generated" / "graph-communities.json").read_text())
     service_geo_index = json.loads((output_dir / "generated" / "service-geo-index.json").read_text())
     geo_clusters = json.loads((output_dir / "generated" / "document-geo-clusters.json").read_text())
+    retrieval_geo_shards = json.loads((output_dir / "generated" / "retrieval-geo-shards.json").read_text())
+    graph_geo_clusters = json.loads((output_dir / "generated" / "graph-geo-clusters.json").read_text())
+    bm25_parquet = pd.read_parquet(output_dir / "generated" / "bm25-documents.parquet").to_dict(orient="records")
+    embedding_parquet = pd.read_parquet(output_dir / "generated" / "embeddings.parquet").to_dict(orient="records")
+    graph_communities_parquet = pd.read_parquet(output_dir / "generated" / "graph-communities.parquet").to_dict(
+        orient="records"
+    )
+    document_communities_parquet = pd.read_parquet(
+        output_dir / "generated" / "document-communities.parquet"
+    ).to_dict(orient="records")
     artifacts = json.loads((output_dir / "artifacts.manifest.json").read_text())
+    bm25_parquet_file = pq.ParquetFile(output_dir / "generated" / "bm25-documents.parquet")
+    embedding_parquet_file = pq.ParquetFile(output_dir / "generated" / "embeddings.parquet")
+    bm25_parquet_by_id = {row["doc_id"]: row for row in bm25_parquet}
+    embedding_parquet_by_id = {row["doc_id"]: row for row in embedding_parquet}
 
     assert len(documents) == 2
     assert documents_by_id["page:cid-page"]["source_content_cid"] == "cid-page"
     assert document_index["contentCidToIndex"]["cid-service"] == 1
+    assert document_index["contentCidToDocIds"]["cid-service"] == ["service:cid-service"]
     assert documents_by_id["service:cid-service"]["phones"][0]["tel_url"] == "tel:+15035550100"
     assert documents_by_id["service:cid-service"]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
     assert documents_by_id["service:cid-service"]["intake_steps"][0]["value"] == "Apply online or call first"
@@ -366,8 +382,12 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert documents_by_id["service:cid-service"]["geo_cluster_id"] == 0
     assert not (output_dir / "generated" / "documents.json").exists()
     assert bm25["documents"][1]["terms"]["pantry"] == 3.0
+    assert bm25_parquet_by_id["service:cid-service"]["terms_json"] == '{"pantry":3.0}'
+    assert bm25_parquet_file.metadata.num_row_groups == 2
     assert embedding_index["binary"] == "embeddings.f32"
     assert (output_dir / "generated" / "embeddings.f32").stat().st_size == 2 * 3 * 4
+    assert embedding_parquet_by_id["service:cid-service"]["dimension"] == 3
+    assert embedding_parquet_file.metadata.num_row_groups == 2
     assert not (output_dir / "generated" / "graph-neighborhoods.json").exists()
     assert graph_index["neighborhoodCount"] == 2
     assert graph_index["shardCount"] == 1
@@ -389,8 +409,33 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert geo_clusters["rowGroups"][0]["kind"] == "service_cluster"
     assert geo_clusters["rowGroups"][1]["kind"] == "non_service"
     assert geo_clusters["clusters"][0]["centroid"]["lat"] == 45.537123
+    assert retrieval_geo_shards["shardCount"] == 1
+    assert retrieval_geo_shards["docIdToShardId"]["service:cid-service"] == "cluster-0000"
+    assert retrieval_geo_shards["contentCidToShardIds"]["cid-service"] == ["cluster-0000"]
+    assert retrieval_geo_shards["shards"][0]["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]
+    assert retrieval_geo_shards["bm25ParquetPath"] == "generated/bm25-documents.parquet"
+    assert retrieval_geo_shards["embeddingParquetPath"] == "generated/embeddings.parquet"
+    assert retrieval_geo_shards["clusterIdToBm25RowGroupIndexes"]["0"] == [0]
+    assert retrieval_geo_shards["clusterIdToEmbeddingRowGroupIndexes"]["0"] == [0]
+    assert retrieval_geo_shards["shards"][0]["bm25RowGroupIndexes"] == [0]
+    assert retrieval_geo_shards["shards"][0]["embeddingRowGroupIndexes"] == [0]
+    assert graph_communities_parquet[0]["community_id"] == "community:food"
+    assert graph_communities_parquet[0]["geo_cluster_id"] == 0
+    assert document_communities_parquet[1]["community_id"] == "community:food"
+    assert document_communities_parquet[1]["geo_cluster_id"] == 0
+    assert graph_geo_clusters["clusterCount"] == 1
+    assert graph_geo_clusters["communityIdToClusterIds"]["community:food"] == [0]
+    assert graph_geo_clusters["clusters"][0]["graphNeighborhoodShardPaths"] == [
+        graph_index["docIdToShard"]["service:cid-service"]
+    ]
     assert artifacts["sourcePackage"]["build_manifest_cid"] == "cid-manifest"
     assert any(artifact["path"] == "generated/document-geo-clusters.json" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/retrieval-geo-shards.json" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/bm25-documents.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/embeddings.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/graph-communities.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/document-communities.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/graph-geo-clusters.json" for artifact in artifacts["artifacts"])
     generated_manifest = json.loads((output_dir / "generated" / "generated-manifest.json").read_text())
     assert generated_manifest["serviceDocumentCount"] == 1
     assert generated_manifest["servicePhoneCount"] == 1
@@ -400,3 +445,12 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert generated_manifest["geoClusterCount"] == 1
     assert generated_manifest["geoClusteredServiceCount"] == 1
     assert generated_manifest["documentParquetRowGroupCount"] == 2
+    assert generated_manifest["geoRetrievalShardCount"] == 1
+    assert generated_manifest["geoRetrievalShardContentCidCount"] == 1
+    assert generated_manifest["bm25ParquetRowGroupCount"] == 2
+    assert generated_manifest["embeddingParquetRowGroupCount"] == 2
+    assert generated_manifest["graphGeoClusterCount"] == 1
+    assert generated_manifest["graphCommunityParquetRowGroupCount"] == 1
+    assert generated_manifest["documentCommunityParquetRowGroupCount"] == 1
+    assert bm25["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]
+    assert embedding_index["sourceContentCidToDocIds"]["cid-service"] == ["service:cid-service"]

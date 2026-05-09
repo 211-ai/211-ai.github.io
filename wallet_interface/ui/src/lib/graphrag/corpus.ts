@@ -7,14 +7,16 @@ import type {
   DocumentCommunity,
   EmbeddingIndex,
   GeneratedCorpusManifest,
+  GraphGeoClusterManifest,
   GraphCommunity,
   GraphEdge,
   GraphNeighborhoodIndex,
   GraphNeighborhoodShard,
   GraphNode,
+  RetrievalGeoShardManifest,
   ServiceGeoIndex,
 } from "./types";
-import { loadDocumentsFromParquet, type DuckDbDocumentQuery } from "./duckdbDocuments";
+import { loadDocumentsFromParquet, queryParquetRows, type DuckDbDocumentQuery } from "./duckdbDocuments";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
@@ -37,8 +39,12 @@ let communitiesPromise: Promise<GraphCommunity[]> | null = null;
 let documentCommunitiesPromise: Promise<DocumentCommunity[]> | null = null;
 let serviceGeoIndexPromise: Promise<ServiceGeoIndex> | null = null;
 let documentGeoClusterPromise: Promise<DocumentGeoClusterManifest> | null = null;
+let retrievalGeoShardManifestPromise: Promise<RetrievalGeoShardManifest> | null = null;
+let graphGeoClusterManifestPromise: Promise<GraphGeoClusterManifest> | null = null;
 const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
 const documentSlicePromises = new Map<string, Promise<CorpusState>>();
+const bm25GeoShardPromises = new Map<string, Promise<Bm25Payload>>();
+const embeddingGeoShardPromises = new Map<string, Promise<{ index: EmbeddingIndex; vectors: Float32Array }>>();
 
 export function get211CorpusBaseUrl(): string {
   return CORPUS_BASE_URL;
@@ -119,26 +125,83 @@ export async function load211DocumentIndex(): Promise<CorpusDocumentIndex> {
 
 export async function load211Bm25(): Promise<Bm25Payload> {
   if (!bm25Promise) {
-    bm25Promise = fetch211CorpusJson<Bm25Payload>("generated/bm25-documents.json");
+    bm25Promise = load211ArtifactManifest().then(async (manifest) => {
+      const parquetArtifact = findArtifactBySuffix(manifest, "generated/bm25-documents.parquet");
+      if (parquetArtifact) {
+        try {
+          return buildBm25PayloadFromRows(await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+            orderBy: ["doc_type ASC", "doc_id ASC"],
+          }));
+        } catch (error) {
+          console.warn("211 BM25 parquet load failed; falling back to JSON BM25.", error);
+        }
+      }
+      return fetch211CorpusJson<Bm25Payload>("generated/bm25-documents.json");
+    });
   }
   return bm25Promise;
 }
 
 export async function load211Embeddings(): Promise<{ index: EmbeddingIndex; vectors: Float32Array }> {
   if (!embeddingsPromise) {
-    embeddingsPromise = Promise.all([
-      fetch211CorpusJson<EmbeddingIndex>("generated/embedding-index.json"),
-      fetch211CorpusArrayBuffer("generated/embeddings.f32"),
-    ]).then(([index, buffer]) => {
-      const vectors = new Float32Array(buffer);
-      const expectedLength = index.count * index.dimension;
-      if (vectors.length !== expectedLength) {
-        throw new Error(`211 embedding vector length ${vectors.length} did not match ${expectedLength}`);
+    embeddingsPromise = load211ArtifactManifest().then(async (manifest) => {
+      const parquetArtifact = findArtifactBySuffix(manifest, "generated/embeddings.parquet");
+      if (parquetArtifact) {
+        try {
+          return buildEmbeddingBundleFromRows(
+            await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+              orderBy: ["doc_type ASC", "doc_id ASC"],
+            }),
+            parquetArtifact.path,
+          );
+        } catch (error) {
+          console.warn("211 embedding parquet load failed; falling back to binary embedding bundle.", error);
+        }
       }
-      return { index, vectors };
+      return Promise.all([
+        fetch211CorpusJson<EmbeddingIndex>("generated/embedding-index.json"),
+        fetch211CorpusArrayBuffer("generated/embeddings.f32"),
+      ]).then(([index, buffer]) => {
+        const vectors = new Float32Array(buffer);
+        const expectedLength = index.count * index.dimension;
+        if (vectors.length !== expectedLength) {
+          throw new Error(`211 embedding vector length ${vectors.length} did not match ${expectedLength}`);
+        }
+        return { index, vectors };
+      });
     });
   }
   return embeddingsPromise;
+}
+
+export async function load211Bm25GeoShard(shardPath: string): Promise<Bm25Payload> {
+  if (!bm25GeoShardPromises.has(shardPath)) {
+    bm25GeoShardPromises.set(shardPath, fetch211CorpusJson<Bm25Payload>(shardPath));
+  }
+  return bm25GeoShardPromises.get(shardPath)!;
+}
+
+export async function load211EmbeddingGeoShard(
+  indexPath: string,
+  binaryPath: string,
+): Promise<{ index: EmbeddingIndex; vectors: Float32Array }> {
+  const cacheKey = `${indexPath}::${binaryPath}`;
+  if (!embeddingGeoShardPromises.has(cacheKey)) {
+    embeddingGeoShardPromises.set(
+      cacheKey,
+      Promise.all([fetch211CorpusJson<EmbeddingIndex>(indexPath), fetch211CorpusArrayBuffer(binaryPath)]).then(
+        ([index, buffer]) => {
+          const vectors = new Float32Array(buffer);
+          const expectedLength = index.count * index.dimension;
+          if (vectors.length !== expectedLength) {
+            throw new Error(`211 embedding shard vector length ${vectors.length} did not match ${expectedLength}`);
+          }
+          return { index, vectors };
+        },
+      ),
+    );
+  }
+  return embeddingGeoShardPromises.get(cacheKey)!;
 }
 
 export async function load211GraphNeighborhoodIndex(): Promise<GraphNeighborhoodIndex> {
@@ -197,18 +260,46 @@ export async function get211RelatedGraph(
 
 export async function load211GraphCommunities(): Promise<GraphCommunity[]> {
   if (!communitiesPromise) {
-    communitiesPromise = fetch211CorpusJson<{ communities: GraphCommunity[] }>("generated/graph-communities.json").then(
-      (payload) => payload.communities,
-    );
+    communitiesPromise = load211ArtifactManifest().then(async (manifest) => {
+      const parquetArtifact = findArtifactBySuffix(manifest, "generated/graph-communities.parquet");
+      if (parquetArtifact) {
+        try {
+          return buildGraphCommunitiesFromRows(
+            await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+              orderBy: ["coalesce(geo_cluster_id, 999999) ASC", "community_id ASC"],
+            }),
+          );
+        } catch (error) {
+          console.warn("211 graph community parquet load failed; falling back to JSON graph communities.", error);
+        }
+      }
+      return fetch211CorpusJson<{ communities: GraphCommunity[] }>("generated/graph-communities.json").then(
+        (payload) => payload.communities,
+      );
+    });
   }
   return communitiesPromise;
 }
 
 export async function load211DocumentCommunities(): Promise<DocumentCommunity[]> {
   if (!documentCommunitiesPromise) {
-    documentCommunitiesPromise = fetch211CorpusJson<{ documents: DocumentCommunity[] }>(
-      "generated/document-communities.json",
-    ).then((payload) => payload.documents);
+    documentCommunitiesPromise = load211ArtifactManifest().then(async (manifest) => {
+      const parquetArtifact = findArtifactBySuffix(manifest, "generated/document-communities.parquet");
+      if (parquetArtifact) {
+        try {
+          return buildDocumentCommunitiesFromRows(
+            await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+              orderBy: ["coalesce(geo_cluster_id, 999999) ASC", "doc_id ASC", "community_id ASC"],
+            }),
+          );
+        } catch (error) {
+          console.warn("211 document community parquet load failed; falling back to JSON document communities.", error);
+        }
+      }
+      return fetch211CorpusJson<{ documents: DocumentCommunity[] }>("generated/document-communities.json").then(
+        (payload) => payload.documents,
+      );
+    });
   }
   return documentCommunitiesPromise;
 }
@@ -225,6 +316,58 @@ export async function load211DocumentGeoClusters(): Promise<DocumentGeoClusterMa
     documentGeoClusterPromise = fetch211CorpusJson<DocumentGeoClusterManifest>("generated/document-geo-clusters.json");
   }
   return documentGeoClusterPromise;
+}
+
+export async function load211RetrievalGeoShards(): Promise<RetrievalGeoShardManifest> {
+  if (!retrievalGeoShardManifestPromise) {
+    retrievalGeoShardManifestPromise = fetch211CorpusJson<RetrievalGeoShardManifest>("generated/retrieval-geo-shards.json");
+  }
+  return retrievalGeoShardManifestPromise;
+}
+
+export async function load211GraphGeoClusters(): Promise<GraphGeoClusterManifest> {
+  if (!graphGeoClusterManifestPromise) {
+    graphGeoClusterManifestPromise = fetch211CorpusJson<GraphGeoClusterManifest>("generated/graph-geo-clusters.json");
+  }
+  return graphGeoClusterManifestPromise;
+}
+
+export async function load211Bm25Slice(options: {
+  clusterIds: number[];
+  includeUnclusteredServices?: boolean;
+}): Promise<Bm25Payload | null> {
+  const manifest = await load211ArtifactManifest();
+  const parquetArtifact = findArtifactBySuffix(manifest, "generated/bm25-documents.parquet");
+  if (!parquetArtifact) {
+    return null;
+  }
+  const rows = await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+    clusterIds: options.clusterIds,
+    includeNullCluster: Boolean(options.includeUnclusteredServices),
+    clusterColumn: "geo_cluster_id",
+    clusterFilterDocTypes: ["service"],
+    orderBy: ["doc_id ASC"],
+  });
+  return buildBm25PayloadFromRows(rows);
+}
+
+export async function load211EmbeddingSlice(options: {
+  clusterIds: number[];
+  includeUnclusteredServices?: boolean;
+}): Promise<{ index: EmbeddingIndex; vectors: Float32Array } | null> {
+  const manifest = await load211ArtifactManifest();
+  const parquetArtifact = findArtifactBySuffix(manifest, "generated/embeddings.parquet");
+  if (!parquetArtifact) {
+    return null;
+  }
+  const rows = await queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+    clusterIds: options.clusterIds,
+    includeNullCluster: Boolean(options.includeUnclusteredServices),
+    clusterColumn: "geo_cluster_id",
+    clusterFilterDocTypes: ["service"],
+    orderBy: ["doc_id ASC"],
+  });
+  return buildEmbeddingBundleFromRows(rows, parquetArtifact.path);
 }
 
 export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
@@ -275,6 +418,182 @@ function buildCorpusState(documents: CorpusDocument[]): CorpusState {
         .map((document) => [document.source_content_cid, document]),
     ),
   };
+}
+
+function findArtifactBySuffix(manifest: CorpusArtifactManifest, suffix: string) {
+  return manifest.artifacts.find((artifact) => artifact.path.endsWith(suffix));
+}
+
+function buildBm25PayloadFromRows(rows: Record<string, unknown>[]): Bm25Payload {
+  const documents = rows.map((row) => ({
+    doc_id: stringValue(row.doc_id),
+    doc_type: stringValue(row.doc_type),
+    source_url: stringValue(row.source_url),
+    source_content_cid: stringValue(row.source_content_cid),
+    source_page_cid: stringValue(row.source_page_cid),
+    document_length: numberValue(row.document_length),
+    terms: jsonRecordValue(row.terms_json),
+    term_idf: jsonRecordValue(row.term_idf_json),
+  }));
+  const firstRow = rows[0] || {};
+  return {
+    schemaVersion: 1,
+    documents,
+    documentFrequency: {},
+    k1: numberValue(firstRow.k1),
+    b: numberValue(firstRow.b),
+    avgdl: numberValue(firstRow.avgdl),
+    documentCount: numberValue(firstRow.document_count),
+    maxTermsPerDocument: numberValue(firstRow.max_terms_per_document),
+    sourceContentCidToDocIds: buildContentCidToDocIds(documents),
+  };
+}
+
+function buildEmbeddingBundleFromRows(
+  rows: Record<string, unknown>[],
+  parquetPath: string,
+): { index: EmbeddingIndex; vectors: Float32Array } {
+  const vectorsByRow = rows.map((row) => arrayNumberValue(row.embedding));
+  const dimension = vectorsByRow[0]?.length || 0;
+  const flatValues = new Float32Array(rows.length * dimension);
+  vectorsByRow.forEach((vector, rowIndex) => {
+    vector.forEach((value, columnIndex) => {
+      flatValues[rowIndex * dimension + columnIndex] = value;
+    });
+  });
+  const firstRow = rows[0] || {};
+  return {
+    index: {
+      schemaVersion: 1,
+      count: rows.length,
+      dimension,
+      embeddingModel: stringValue(firstRow.embedding_model),
+      browserEmbeddingModel: stringValue(firstRow.browser_embedding_model),
+      binary: "",
+      parquet: parquetPath,
+      doc_ids: rows.map((row) => stringValue(row.doc_id)),
+      source_content_cids: rows.map((row) => stringValue(row.source_content_cid)),
+      source_page_cids: rows.map((row) => stringValue(row.source_page_cid)),
+      source_urls: rows.map((row) => stringValue(row.source_url)),
+      sourceContentCidToDocIds: buildContentCidToDocIds(
+        rows.map((row) => ({
+          doc_id: stringValue(row.doc_id),
+          source_content_cid: stringValue(row.source_content_cid),
+        })),
+      ),
+    },
+    vectors: flatValues,
+  };
+}
+
+function buildGraphCommunitiesFromRows(rows: Record<string, unknown>[]): GraphCommunity[] {
+  return rows.map((row) => ({
+    community_id: stringValue(row.community_id),
+    community_cid: stringValue(row.community_cid),
+    label: stringValue(row.label),
+    node_count: numberValue(row.node_count),
+    document_count: numberValue(row.document_count),
+    page_count: numberValue(row.page_count),
+    service_count: numberValue(row.service_count),
+    keyterm_count: numberValue(row.keyterm_count),
+    provider_count: numberValue(row.provider_count),
+    category_count: numberValue(row.category_count),
+    top_terms: tuplePairsValue(row.top_terms ?? jsonArrayValue(row.top_terms_json)),
+    top_categories: tuplePairsValue(row.top_categories ?? jsonArrayValue(row.top_categories_json)),
+    top_hosts: tuplePairsValue(row.top_hosts ?? jsonArrayValue(row.top_hosts_json)),
+  }));
+}
+
+function buildDocumentCommunitiesFromRows(rows: Record<string, unknown>[]): DocumentCommunity[] {
+  return rows.map((row) => ({
+    doc_id: stringValue(row.doc_id),
+    doc_type: stringValue(row.doc_type),
+    source_url: stringValue(row.source_url),
+    source_content_cid: stringValue(row.source_content_cid),
+    source_page_cid: stringValue(row.source_page_cid),
+    community_id: stringValue(row.community_id),
+    community_label: stringValue(row.community_label),
+    geo_cluster_id: numberOrNull(row.geo_cluster_id),
+    geo_cluster_ids_json: stringValue(row.geo_cluster_ids_json),
+    cluster_count: numberValue(row.cluster_count),
+  }));
+}
+
+function buildContentCidToDocIds(
+  rows: Array<{ doc_id: string; source_content_cid: string }>,
+): Record<string, string[]> {
+  const contentCidToDocIds = new Map<string, Set<string>>();
+  for (const row of rows) {
+    if (!row.source_content_cid || !row.doc_id) {
+      continue;
+    }
+    const entry = contentCidToDocIds.get(row.source_content_cid) || new Set<string>();
+    entry.add(row.doc_id);
+    contentCidToDocIds.set(row.source_content_cid, entry);
+  }
+  return Object.fromEntries(
+    [...contentCidToDocIds.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([contentCid, docIds]) => [contentCid, [...docIds].sort()]),
+  );
+}
+
+function jsonRecordValue(value: unknown): Record<string, number> {
+  if (typeof value !== "string" || !value) {
+    return {};
+  }
+  try {
+    return JSON.parse(value) as Record<string, number>;
+  } catch {
+    return {};
+  }
+}
+
+function jsonArrayValue(value: unknown): unknown[] {
+  if (typeof value !== "string" || !value) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function arrayNumberValue(value: unknown): number[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map((entry) => numberValue(entry));
+}
+
+function tuplePairsValue(value: unknown): Array<[string, number]> {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((entry) =>
+      Array.isArray(entry) && entry.length >= 2 ? [stringValue(entry[0]), numberValue(entry[1])] : null,
+    )
+    .filter((entry): entry is [string, number] => Boolean(entry));
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === "string" ? value : value == null ? "" : String(value);
+}
+
+function numberValue(value: unknown): number {
+  const numeric = typeof value === "number" ? value : Number(value || 0);
+  return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function numberOrNull(value: unknown): number | null {
+  if (value == null || value === "") {
+    return null;
+  }
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
 }
 
 function resolveDefaultCorpusBaseUrl(): string {

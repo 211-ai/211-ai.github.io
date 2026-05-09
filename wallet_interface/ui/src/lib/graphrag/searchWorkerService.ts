@@ -1,4 +1,11 @@
-import type { GraphRagEvidence, SearchFilters, SearchMode, SearchResult } from "./types";
+import type {
+  GraphCommunitySearchResult,
+  GraphGeoClusterSearchResult,
+  GraphRagEvidence,
+  SearchFilters,
+  SearchMode,
+  SearchResult,
+} from "./types";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -8,6 +15,8 @@ interface PendingRequest<T> {
 interface RagSearchWorkerPayload {
   results?: SearchResult[];
   evidence?: GraphRagEvidence;
+  communityResults?: GraphCommunitySearchResult[];
+  clusterResults?: GraphGeoClusterSearchResult[];
   ready?: boolean;
 }
 
@@ -69,6 +78,44 @@ class RagSearchWorkerService {
       throw new Error("211 GraphRAG worker returned no evidence");
     }
     return response.evidence;
+  }
+
+  async searchCommunities(
+    query: string,
+    options: {
+      limit?: number;
+      preferredClusterIds?: number[];
+    } = {},
+  ): Promise<GraphCommunitySearchResult[]> {
+    const response = await this.sendWorkerRequest(
+      "community-search",
+      {
+        query,
+        limit: options.limit,
+        preferredClusterIds: options.preferredClusterIds,
+      },
+      90000,
+    );
+    return response.communityResults || [];
+  }
+
+  async searchGraphGeoClusters(
+    query: string,
+    options: {
+      limit?: number;
+      preferredClusterIds?: number[];
+    } = {},
+  ): Promise<GraphGeoClusterSearchResult[]> {
+    const response = await this.sendWorkerRequest(
+      "cluster-search",
+      {
+        query,
+        limit: options.limit,
+        preferredClusterIds: options.preferredClusterIds,
+      },
+      90000,
+    );
+    return response.clusterResults || [];
   }
 
   async getStatus(): Promise<{ hasWorker: boolean; ready: boolean }> {

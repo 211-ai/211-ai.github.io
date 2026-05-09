@@ -9,12 +9,22 @@ import {
   load211ArtifactManifest,
   load211GeneratedManifest,
   ragSearchWorkerService,
+  search211GraphCommunities,
+  search211GraphGeoClusters,
   search211Corpus,
 } from "../lib/graphrag";
 import { backendDetectionWorkerService } from "../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../lib/clientEmbeddingWorkerService";
 import { resolvePreferred211ServiceClusterIds } from "../lib/graphrag/serviceGeoPreference";
-import type { CorpusDocument, GraphRagAnswer, GraphRagEvidence, SearchFilters, SearchResult } from "../lib/graphrag";
+import type {
+  CorpusDocument,
+  GraphCommunitySearchResult,
+  GraphGeoClusterSearchResult,
+  GraphRagAnswer,
+  GraphRagEvidence,
+  SearchFilters,
+  SearchResult,
+} from "../lib/graphrag";
 import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
 
 interface GraphRagRetrievalOptions {
@@ -211,6 +221,30 @@ export async function build211InfoEvidence(query: string, limit = 6, options: Gr
   return withMainThreadSearchFallback(
     () => ragSearchWorkerService.buildEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
     () => build211GraphRagEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
+  );
+}
+
+export async function search211InfoCommunities(
+  query: string,
+  limit = 12,
+  options: Pick<GraphRagRetrievalOptions, "filters"> = {},
+): Promise<GraphCommunitySearchResult[]> {
+  const preferredClusterIds = await resolvePreferred211ServiceClusterIds(query, limit);
+  return withMainThreadSearchFallback(
+    () => ragSearchWorkerService.searchCommunities(query, { limit, preferredClusterIds }),
+    () => search211GraphCommunities(query, { limit, preferredClusterIds }),
+  );
+}
+
+export async function search211InfoGeoClusters(
+  query: string,
+  limit = 10,
+  options: Pick<GraphRagRetrievalOptions, "filters"> = {},
+): Promise<GraphGeoClusterSearchResult[]> {
+  const preferredClusterIds = await resolvePreferred211ServiceClusterIds(query, limit);
+  return withMainThreadSearchFallback(
+    () => ragSearchWorkerService.searchGraphGeoClusters(query, { limit, preferredClusterIds }),
+    () => search211GraphGeoClusters(query, { limit, preferredClusterIds }),
   );
 }
 
@@ -637,7 +671,9 @@ async function tryGenerateQueryEmbedding(query: string, enabled = false): Promis
   }
 }
 
-async function withMainThreadSearchFallback<T extends SearchResult[] | GraphRagEvidence>(
+async function withMainThreadSearchFallback<
+  T extends SearchResult[] | GraphRagEvidence | GraphCommunitySearchResult[] | GraphGeoClusterSearchResult[],
+>(
   workerCall: () => Promise<T>,
   fallbackCall: () => Promise<T>,
 ): Promise<T> {

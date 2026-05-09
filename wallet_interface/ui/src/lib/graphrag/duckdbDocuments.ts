@@ -1,30 +1,59 @@
 import * as duckdb from "@duckdb/duckdb-wasm";
-import type { Table } from "apache-arrow";
 import type { CorpusDocument } from "./types";
 
 let duckDbPromise: Promise<duckdb.AsyncDuckDB> | null = null;
 let duckDbBundlesPromise: Promise<duckdb.DuckDBBundles> | null = null;
 
-export interface DuckDbDocumentQuery {
+export interface DuckDbParquetQuery {
   clusterIds?: number[];
-  includeUnclusteredServices?: boolean;
+  includeNullCluster?: boolean;
+  clusterColumn?: string;
+  clusterFilterDocTypes?: string[];
   docTypes?: string[];
   docIds?: string[];
   limit?: number;
+  orderBy?: string[];
+  columns?: string[];
+}
+
+export interface DuckDbDocumentQuery extends DuckDbParquetQuery {
+  includeUnclusteredServices?: boolean;
+}
+
+export async function queryParquetRows(
+  parquetUrl: string,
+  query: DuckDbParquetQuery = {},
+): Promise<Record<string, unknown>[]> {
+  const database = await getDuckDb();
+  const connection = await database.connect();
+  try {
+    const table = await connection.query(buildReadParquetQuery(parquetUrl, query));
+    return table.toArray().map((row) => normalizeDuckDbValue(row)).map((row) => toRecord(row));
+  } finally {
+    await connection.close();
+  }
 }
 
 export async function loadDocumentsFromParquet(
   parquetUrl: string,
   query: DuckDbDocumentQuery = {},
 ): Promise<CorpusDocument[]> {
-  const database = await getDuckDb();
-  const connection = await database.connect();
-  try {
-    const table = await connection.query(buildReadParquetQuery(parquetUrl, query));
-    return tableToDocuments(table);
-  } finally {
-    await connection.close();
-  }
+  const rows = await queryParquetRows(parquetUrl, {
+    ...query,
+    includeNullCluster: query.includeUnclusteredServices,
+    clusterColumn: "geo_cluster_id",
+    clusterFilterDocTypes: query.clusterIds?.length || query.includeUnclusteredServices ? ["service"] : undefined,
+    orderBy: query.clusterIds?.length
+      ? [
+          buildClusterOrderExpression(query.clusterIds, Boolean(query.includeUnclusteredServices), "geo_cluster_id"),
+          "doc_type ASC",
+          "city ASC",
+          "state ASC",
+          "doc_id ASC",
+        ]
+      : ["doc_type ASC", "city ASC", "state ASC", "doc_id ASC"],
+  });
+  return rows.map((row) => coerceCorpusDocument(row));
 }
 
 async function getDuckDb(): Promise<duckdb.AsyncDuckDB> {
@@ -64,15 +93,8 @@ async function loadDuckDbBundles(): Promise<duckdb.DuckDBBundles> {
   return duckDbBundlesPromise;
 }
 
-function tableToDocuments(table: Table<any>): CorpusDocument[] {
-  return table
-    .toArray()
-    .map((row) => normalizeDuckDbValue(row))
-    .map((row) => coerceCorpusDocument(row));
-}
-
 function coerceCorpusDocument(value: unknown): CorpusDocument {
-  const row = isRecord(value) ? value : {};
+  const row = toRecord(value);
   return {
     doc_id: stringValue(row.doc_id),
     doc_type: stringValue(row.doc_type),
@@ -143,6 +165,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function toRecord(value: unknown): Record<string, unknown> {
+  return isRecord(value) ? value : {};
+}
+
 function stringValue(value: unknown): string {
   return typeof value === "string" ? value : value == null ? "" : String(value);
 }
@@ -171,41 +197,59 @@ function recordOrNull(value: unknown): Record<string, unknown> | null | undefine
   return isRecord(value) ? value : null;
 }
 
-function buildReadParquetQuery(parquetUrl: string, query: DuckDbDocumentQuery): string {
+function buildReadParquetQuery(parquetUrl: string, query: DuckDbParquetQuery): string {
   const whereClauses: string[] = [];
   if (query.docTypes?.length) {
     whereClauses.push(`doc_type IN (${query.docTypes.map(sqlStringLiteral).join(", ")})`);
   }
   if (query.clusterIds?.length) {
-    const clusterClauses = [`geo_cluster_id IN (${query.clusterIds.map((value) => String(Math.trunc(value))).join(", ")})`];
-    if (query.includeUnclusteredServices) {
-      clusterClauses.push("(doc_type = 'service' AND geo_cluster_id IS NULL)");
+    const clusterColumn = query.clusterColumn || "geo_cluster_id";
+    const clusterClauses = [
+      `${clusterColumn} IN (${query.clusterIds.map((value) => String(Math.trunc(value))).join(", ")})`,
+    ];
+    if (query.includeNullCluster) {
+      clusterClauses.push(`${clusterColumn} IS NULL`);
     }
-    whereClauses.push(`(doc_type = 'service' AND (${clusterClauses.join(" OR ")}))`);
-  } else if (query.includeUnclusteredServices) {
-    whereClauses.push("(doc_type = 'service' AND geo_cluster_id IS NULL)");
+    const clusterClause = `(${clusterClauses.join(" OR ")})`;
+    if (query.clusterFilterDocTypes?.length) {
+      whereClauses.push(`(doc_type IN (${query.clusterFilterDocTypes.map(sqlStringLiteral).join(", ")}) AND ${clusterClause})`);
+    } else {
+      whereClauses.push(clusterClause);
+    }
+  } else if (query.includeNullCluster) {
+    const clusterColumn = query.clusterColumn || "geo_cluster_id";
+    if (query.clusterFilterDocTypes?.length) {
+      whereClauses.push(
+        `(doc_type IN (${query.clusterFilterDocTypes.map(sqlStringLiteral).join(", ")}) AND ${clusterColumn} IS NULL)`,
+      );
+    } else {
+      whereClauses.push(`${clusterColumn} IS NULL`);
+    }
   }
   if (query.docIds?.length) {
     whereClauses.push(`doc_id IN (${query.docIds.map(sqlStringLiteral).join(", ")})`);
   }
 
-  const clauses = [`SELECT * FROM read_parquet(${sqlStringLiteral(parquetUrl)})`];
+  const selectColumns = query.columns?.length ? query.columns.join(", ") : "*";
+  const clauses = [`SELECT ${selectColumns} FROM read_parquet(${sqlStringLiteral(parquetUrl)})`];
   if (whereClauses.length) {
     clauses.push(`WHERE ${whereClauses.join(" AND ")}`);
   }
-  clauses.push("ORDER BY");
-  if (query.clusterIds?.length) {
-    clauses.push(
-      `CASE ${query.clusterIds
-        .map((clusterId, index) => `WHEN geo_cluster_id = ${String(Math.trunc(clusterId))} THEN ${index}`)
-        .join(" ")} ELSE ${query.clusterIds.length + (query.includeUnclusteredServices ? 1 : 0)} END,`,
-    );
+  if (query.orderBy?.length) {
+    clauses.push(`ORDER BY ${query.orderBy.join(", ")}`);
   }
-  clauses.push("doc_type ASC, city ASC, state ASC, doc_id ASC");
   if (query.limit && query.limit > 0) {
     clauses.push(`LIMIT ${Math.trunc(query.limit)}`);
   }
   return clauses.join(" ");
+}
+
+function buildClusterOrderExpression(clusterIds: number[], includeNullCluster: boolean, clusterColumn: string): string {
+  return `CASE ${clusterIds
+    .map((clusterId, index) => `WHEN ${clusterColumn} = ${String(Math.trunc(clusterId))} THEN ${index}`)
+    .join(" ")}${includeNullCluster ? ` WHEN ${clusterColumn} IS NULL THEN ${clusterIds.length}` : ""} ELSE ${
+    clusterIds.length + (includeNullCluster ? 1 : 0)
+  } END`;
 }
 
 function sqlStringLiteral(value: string): string {
