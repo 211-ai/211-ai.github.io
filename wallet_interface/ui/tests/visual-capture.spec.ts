@@ -67,7 +67,7 @@ const captureScenarios: CaptureScenario[] = [
       "Required fields should be obvious without feeling punitive.",
       "Optional sensitive fields should feel clearly optional.",
       "The photo or photo ID field should allow image files and PDFs without promising a thumbnail preview.",
-      "The bot-check controls should be visible and understandable."
+      "The government-services help entry point should be visible on the registration page."
     ]
   },
   {
@@ -97,8 +97,6 @@ const captureScenarios: CaptureScenario[] = [
       await page.getByLabel(/Preferred shelter/i).fill("Rose City Shelter");
       await screen.getByRole("button", { name: "Shelter" }).click();
       await screen.getByRole("button", { name: "Benefits" }).click();
-      await page.getByLabel(/Quick health check complete/i).check();
-      await page.getByLabel(/Bot check complete/i).check();
     }
   },
   {
@@ -218,14 +216,14 @@ const captureScenarios: CaptureScenario[] = [
     title: "Emergency contacts edit sharing panel",
     state: "saved contact sharing editor open",
     goals: [
-      "A saved contact should open into an obvious sharing edit panel.",
+      "A saved contact should open into an obvious full-width sharing edit panel below the list.",
       "Checkboxes should have a clear group heading and readable labels.",
       "Save and cancel actions should be reachable without horizontal scrolling."
     ],
     prepare: async (page) => {
       const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
       await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      await expect(savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
+      await expect(page.getByRole("region", { name: /Edit sharing for Maya Johnson/i })).toBeVisible();
     }
   },
   {
@@ -241,7 +239,7 @@ const captureScenarios: CaptureScenario[] = [
     prepare: async (page) => {
       const savedMaya = page.locator(".recipient-list-item").filter({ hasText: "Maya Johnson" });
       await savedMaya.getByRole("button", { name: /^Edit sharing$/i }).click();
-      const editPanel = savedMaya.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
+      const editPanel = page.getByRole("region", { name: /Edit sharing for Maya Johnson/i });
       await editPanel.getByLabel(/Medical notes/i).uncheck();
       await editPanel.getByLabel(/Found permanent housing/i).uncheck();
       await expect(editPanel.getByText("9 selected", { exact: true })).toBeVisible();
@@ -307,7 +305,7 @@ const captureScenarios: CaptureScenario[] = [
     state: "default",
     goals: [
       "Service categories should be dense enough to scan but not cramped.",
-      "The government-services help entry point should be visible.",
+      "Saved and matched services should remain easy to scan without the government-help panel.",
       "Matched services should be easy to compare on mobile and desktop."
     ]
   },
@@ -531,15 +529,10 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
 }
 
 async function verifyShelterStaffForCapture(page: Page) {
-  await page.goto("/#/register");
-  await expect(page.getByRole("heading", { name: /Create your Abby profile/i })).toBeVisible();
-  await page.getByLabel(/I am shelter staff/i).check();
-  await page.locator("select").first().selectOption("Rose City Shelter");
-  await page.getByLabel(/Shelter staff PIN/i).fill("1234");
-  await page.getByRole("button", { name: /Verify shelter staff/i }).click();
-  await expect(page.getByText(/Shelter staff verified/i)).toBeVisible();
   await page.goto("/#/shelter");
   await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible();
+  await page.getByLabel(/^Shelter$/i).selectOption("Rose City Shelter");
+  await page.getByLabel(/Verified staff operator/i).selectOption("staff-demo-rose");
 }
 
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {

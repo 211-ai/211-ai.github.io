@@ -76,8 +76,6 @@ const iterationScenarios: IterationScenario[] = [
       await page.getByLabel(/Preferred shelter/i).fill("Rose City Shelter");
       await screen.getByRole("button", { name: "Shelter" }).click();
       await screen.getByRole("button", { name: "Benefits" }).click();
-      await page.getByLabel(/Quick health check complete/i).check();
-      await page.getByLabel(/Bot check complete/i).check();
     }
   },
   {

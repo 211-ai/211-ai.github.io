@@ -3638,12 +3638,18 @@ a {
 }
 
 .recipient-edit-panel {
-  border-top: 1px solid rgba(127, 174, 180, 0.35);
+  border: 1px solid rgba(127, 174, 180, 0.58);
+  border-radius: var(--abby-radius-lg);
   display: grid;
-  gap: 12px;
-  margin-top: 12px;
-  padding-top: 12px;
+  gap: 14px;
+  padding: 16px;
   width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .recipient-edit-panel .scope-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .agent-chat-bottom-sheet-toggle {

@@ -140,13 +140,13 @@ test("registration enforces minimum required profile fields", async ({ page }) =
   await expect(page.getByText(/Selected file: id-card\.jpg \(JPG\)/i)).toBeVisible();
   await expect(page.locator(".photo-preview-card, .photo-preview-toggle")).toHaveCount(0);
   await expect(page.locator(".field").filter({ hasText: "Photo or photo ID" }).locator("img, object, embed, canvas")).toHaveCount(0);
-  await expect(page.getByLabel(/Bot check complete/i)).toBeDisabled();
   await page.getByLabel(/Legal or full name/i).fill("Abby Example");
   await page.getByLabel(/Birth date/i).fill("1990-01-01");
-  await page.getByLabel(/Quick health check complete/i).check();
-  await expect(page.getByLabel(/Bot check complete/i)).toBeEnabled();
-  await page.getByLabel(/Bot check complete/i).check();
-  await expect(page.getByLabel(/Bot check complete/i)).toBeChecked();
+  await expect(page.locator('section[aria-labelledby="Government-help"]')).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Government help$/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Start request$/i })).toBeVisible();
+  await expect(page.locator(".screen .captcha-box")).toHaveCount(0);
+  await expect(page.locator(".screen .consent-box")).toHaveCount(0);
 });
 
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
@@ -281,7 +281,8 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
   await expect(savedMorgan.getByText("9 items", { exact: true })).toBeVisible();
   await savedMorgan.locator(".recipient-open-button").focus();
   await page.keyboard.press("Enter");
-  const editPanel = savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(savedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i })).toHaveCount(0);
+  const editPanel = savedContacts.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
   await expect(editPanel).toBeVisible();
   await expect(editPanel.getByLabel(/Minimum identity/i)).toBeChecked();
   await expect(editPanel.getByLabel(/Medical notes/i)).not.toBeChecked();
@@ -296,7 +297,10 @@ test("contacts add flow saves sharing choices and opens edit panel by keyboard",
   await expect(reloadedMorgan.getByText("8 items", { exact: true })).toBeVisible();
   await reloadedMorgan.locator(".recipient-open-button").focus();
   await page.keyboard.press("Space");
-  const reloadedPanel = reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
+  await expect(reloadedMorgan.getByRole("region", { name: /Edit sharing for Morgan Caseworker/i })).toHaveCount(0);
+  const reloadedPanel = page
+    .locator('section[aria-labelledby="Saved-contacts"]')
+    .getByRole("region", { name: /Edit sharing for Morgan Caseworker/i });
   await expect(reloadedPanel.getByLabel(/Benefits information/i)).not.toBeChecked();
 });
 
@@ -321,7 +325,8 @@ test("contact list shelter nudge requires user approval before adding contact", 
   const shelterRules = page.locator(".recipient-list-item").filter({ hasText: "Downtown Outreach Shelter" });
   await expect(shelterRules.getByText("1 items", { exact: true })).toBeVisible();
   await shelterRules.getByRole("button", { name: /^Edit sharing$/i }).click();
-  const shelterPanel = shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
+  await expect(shelterRules.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i })).toHaveCount(0);
+  const shelterPanel = savedContacts.getByRole("region", { name: /Edit sharing for Downtown Outreach Shelter/i });
   await expect(shelterPanel.getByText("1 selected", { exact: true })).toBeVisible();
   await expect(shelterPanel.getByLabel(/Minimum identity/i)).toBeChecked();
   await expect(shelterPanel.getByLabel(/Profile/i)).not.toBeChecked();

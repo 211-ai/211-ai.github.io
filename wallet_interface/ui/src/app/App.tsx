@@ -836,8 +836,6 @@ export function App() {
           <RegistrationScreen
             profile={profile}
             setProfile={setProfile}
-            shelterStaffAccounts={shelterStaffAccounts}
-            setShelterStaffAccounts={setShelterStaffAccounts}
           />
         ) : null}
         {activeRoute === "check-in" ? (
@@ -1399,25 +1397,14 @@ function StatusPanel({ label, value, tone, onClick }: { label: string; value: st
 
 function RegistrationScreen({
   profile,
-  setProfile,
-  shelterStaffAccounts,
-  setShelterStaffAccounts
+  setProfile
 }: {
   profile: RegistrationProfileDraft;
   setProfile: (profile: RegistrationProfileDraft) => void;
-  shelterStaffAccounts: ShelterStaffAccount[];
-  setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
 }) {
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
   const [photoFileDetail, setPhotoFileDetail] = useState("");
   const [photoUploadError, setPhotoUploadError] = useState("");
-  const [isShelterStaff, setIsShelterStaff] = useState(false);
-  const [selectedShelter, setSelectedShelter] = useState("");
-  const [shelterPin, setShelterPin] = useState("");
-  const [currentStaffAccountId, setCurrentStaffAccountId] = useState("");
-
-  const currentStaffAccount = shelterStaffAccounts.find((account) => account.id === currentStaffAccountId);
-  const staffVerified = Boolean(currentStaffAccount?.verified);
 
   async function handleProfileUploadChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -1526,122 +1513,24 @@ function RegistrationScreen({
             ))}
           </div>
         </div>
-        <label className="captcha-box full-span">
-          <input
-            checked={profile.easyBotCheckStatus === "passed"}
-            onChange={(event) =>
-              update({ easyBotCheckStatus: event.target.checked ? "passed" : "failed", captchaToken: "" })
-            }
-            type="checkbox"
-          />
-          <span>Quick health check complete (step 1)</span>
-        </label>
-        <label className="captcha-box full-span">
-          <input
-            checked={Boolean(profile.captchaToken)}
-            disabled={profile.easyBotCheckStatus !== "passed"}
-            onChange={(event) => update({ captchaToken: event.target.checked ? "mock-captcha-token" : "" })}
-            type="checkbox"
-          />
-          <span>Bot check complete (step 2)</span>
-        </label>
-        <label className="consent-box full-span">
-          <input
-            checked={isShelterStaff}
-            onChange={(event) => {
-              const checked = event.target.checked;
-              setIsShelterStaff(checked);
-              if (!checked) {
-                setSelectedShelter("");
-                setShelterPin("");
-                setCurrentStaffAccountId("");
-              }
-            }}
-            type="checkbox"
-          />
-          <span>
-            <strong>I am shelter staff</strong>
-          </span>
-        </label>
-        {isShelterStaff ? (
-          <div className="shelter-staff-panel full-span">
-            <Field help="Choose the shelter where you currently work." label="Shelter" required>
-              <select
-                value={selectedShelter}
-                onChange={(event) => {
-                  setSelectedShelter(event.target.value);
-                  setCurrentStaffAccountId("");
-                }}
-              >
-                <option value="">Select shelter</option>
-                {shelterOptions.map((shelter) => (
-                  <option key={shelter} value={shelter}>
-                    {shelter}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field help="Enter your assigned shelter staff PIN to verify this account." label="Shelter staff PIN" required>
-              <input
-                placeholder="Enter PIN"
-                value={shelterPin}
-                onChange={(event) => setShelterPin(event.target.value)}
-              />
-            </Field>
-            <div>
-              <Button
-                disabled={!selectedShelter || !shelterPin.trim()}
-                onClick={() => {
-                  const displayName = profile.preferredName || profile.legalName || "Shelter staff";
-                  const emailKey = profile.email.trim().toLowerCase();
-                  const existingAccount = shelterStaffAccounts.find(
-                    (account) =>
-                      account.shelter === selectedShelter &&
-                      ((emailKey && account.email.toLowerCase() === emailKey) ||
-                        (!emailKey && account.displayName.toLowerCase() === displayName.toLowerCase()))
-                  );
-
-                  if (existingAccount) {
-                    const updated = shelterStaffAccounts.map((account) =>
-                      account.id === existingAccount.id
-                        ? {
-                            ...account,
-                            displayName,
-                            email: profile.email,
-                            verified: true,
-                            updatedAt: new Date().toISOString()
-                          }
-                        : account
-                    );
-                    setShelterStaffAccounts(updated);
-                    setCurrentStaffAccountId(existingAccount.id);
-                    return;
-                  }
-
-                  const createdAccount: ShelterStaffAccount = {
-                    id: `staff-${Date.now()}`,
-                    shelter: selectedShelter,
-                    displayName,
-                    email: profile.email,
-                    verified: true,
-                    updatedAt: new Date().toISOString()
-                  };
-                  setShelterStaffAccounts([...shelterStaffAccounts, createdAccount]);
-                  setCurrentStaffAccountId(createdAccount.id);
-                }}
-                type="button"
-              >
-                Verify shelter staff
-              </Button>
-              {staffVerified ? <small className="pin-request-note">Shelter staff verified.</small> : null}
-              {!staffVerified && currentStaffAccountId ? (
-                <small className="pin-request-note">Verification revoked by shelter administrator.</small>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
       </form>
+      <GovernmentHelpSection />
     </div>
+  );
+}
+
+function GovernmentHelpSection() {
+  return (
+    <Section title="Government help">
+      <div className="liaison-panel">
+        <MessageSquare aria-hidden="true" size={28} />
+        <div>
+          <h3>Get help with benefits, ID, housing, or forms.</h3>
+          <p>Only the details you choose to share will be included in the request.</p>
+        </div>
+        <Button>Start request</Button>
+      </div>
+    </Section>
   );
 }
 
@@ -2157,90 +2046,94 @@ function ContactsScreen({
         {recipients.length === 0 ? (
           <p className="empty-state">No saved contacts yet. Add a shelter, group, or person above.</p>
         ) : (
-          <div className="list-stack">
-            {recipients.map((recipient) => {
-              const isEditing = editingRecipient?.id === recipient.id;
+          <>
+            <div className="list-stack">
+              {recipients.map((recipient) => {
+                const isEditing = editingRecipient?.id === recipient.id;
 
-              return (
-                <article className="list-item recipient-list-item" key={recipient.id}>
-                  <div className="recipient-row">
-                    <button
-                      aria-controls={`recipient-edit-${recipient.id}`}
-                      aria-expanded={isEditing}
-                      aria-label={`Edit sharing for ${recipient.displayName}`}
-                      className="recipient-open-button"
-                      id={`recipient-open-${recipient.id}`}
-                      onClick={() => openRecipientEditor(recipient)}
-                      type="button"
-                    >
-                      <span className="recipient-summary">
-                        <span className="recipient-name">{recipient.displayName}</span>
-                        <span className="recipient-details">
-                          <span>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</span>
-                          {recipient.email ? <span>{recipient.email}</span> : null}
-                          {recipient.phone ? <span>{recipient.phone}</span> : null}
-                        </span>
-                        <span className="badge-row" aria-label={`${recipient.displayName} status`}>
-                          <Badge tone={recipient.verified ? "success" : "warning"}>
-                            {recipient.verified ? "Verified" : "Needs a check"}
-                          </Badge>
-                          <Badge>{recipient.allowedScopes.length} items</Badge>
-                        </span>
-                      </span>
-                    </button>
-                    <div className="row-actions">
-                      <Button
-                        ariaControls={`recipient-edit-${recipient.id}`}
-                        ariaExpanded={isEditing}
-                        className="compact-list-action"
+                return (
+                  <article className="list-item recipient-list-item" key={recipient.id}>
+                    <div className="recipient-row">
+                      <button
+                        aria-controls={`recipient-edit-${recipient.id}`}
+                        aria-expanded={isEditing}
+                        aria-label={`Edit sharing for ${recipient.displayName}`}
+                        className="recipient-open-button"
+                        id={`recipient-open-${recipient.id}`}
                         onClick={() => openRecipientEditor(recipient)}
-                        variant="secondary"
+                        type="button"
                       >
-                        Edit sharing
-                      </Button>
-                      <Button
-                        ariaLabel={`Remove ${recipient.displayName}`}
-                        className="compact-list-action"
-                        onClick={() => removeRecipient(recipient.id)}
-                        variant="quiet"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                  {isEditing ? (
-                    <div
-                      aria-labelledby={`recipient-edit-heading-${recipient.id}`}
-                      className="recipient-edit-panel"
-                      id={`recipient-edit-${recipient.id}`}
-                      role="region"
-                      tabIndex={-1}
-                    >
-                      <div className="scope-header">
-                        <div>
-                          <h3 id={`recipient-edit-heading-${recipient.id}`}>Edit sharing for {recipient.displayName}</h3>
-                          <p>Save only what this contact should see.</p>
-                        </div>
-                        <Badge>{editingScopes.length} selected</Badge>
-                      </div>
-                      <SharingScopeChecklist
-                        label={`Sharing choices for ${recipient.displayName}`}
-                        onToggle={(scope) => setEditingScopes(toggleScopeSelection(editingScopes, scope))}
-                        scopes={editingScopes}
-                      />
-                      <SharingCapabilityPreview recipientName={recipient.displayName} scopes={editingScopes} />
+                        <span className="recipient-summary">
+                          <span className="recipient-name">{recipient.displayName}</span>
+                          <span className="recipient-details">
+                            <span>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</span>
+                            {recipient.email ? <span>{recipient.email}</span> : null}
+                            {recipient.phone ? <span>{recipient.phone}</span> : null}
+                          </span>
+                          <span className="badge-row" aria-label={`${recipient.displayName} status`}>
+                            <Badge tone={recipient.verified ? "success" : "warning"}>
+                              {recipient.verified ? "Verified" : "Needs a check"}
+                            </Badge>
+                            <Badge>{recipient.allowedScopes.length} items</Badge>
+                          </span>
+                        </span>
+                      </button>
                       <div className="row-actions">
-                        <Button onClick={() => saveRecipientScopes(recipient.id)}>Save sharing</Button>
-                        <Button onClick={() => closeRecipientEditor(recipient.id)} variant="secondary">
-                          Cancel
+                        <Button
+                          ariaControls={`recipient-edit-${recipient.id}`}
+                          ariaExpanded={isEditing}
+                          className="compact-list-action"
+                          onClick={() => openRecipientEditor(recipient)}
+                          variant="secondary"
+                        >
+                          Edit sharing
+                        </Button>
+                        <Button
+                          ariaLabel={`Remove ${recipient.displayName}`}
+                          className="compact-list-action"
+                          onClick={() => removeRecipient(recipient.id)}
+                          variant="quiet"
+                        >
+                          Remove
                         </Button>
                       </div>
                     </div>
-                  ) : null}
-                </article>
-              );
-            })}
-          </div>
+                  </article>
+                );
+              })}
+            </div>
+            {editingRecipient ? (
+              <div
+                aria-labelledby={`recipient-edit-heading-${editingRecipient.id}`}
+                className="recipient-edit-panel"
+                id={`recipient-edit-${editingRecipient.id}`}
+                role="region"
+                tabIndex={-1}
+              >
+                <div className="scope-header">
+                  <div>
+                    <h3 id={`recipient-edit-heading-${editingRecipient.id}`}>
+                      Edit sharing for {editingRecipient.displayName}
+                    </h3>
+                    <p>Save only what this contact should see.</p>
+                  </div>
+                  <Badge>{editingScopes.length} selected</Badge>
+                </div>
+                <SharingScopeChecklist
+                  label={`Sharing choices for ${editingRecipient.displayName}`}
+                  onToggle={(scope) => setEditingScopes(toggleScopeSelection(editingScopes, scope))}
+                  scopes={editingScopes}
+                />
+                <SharingCapabilityPreview recipientName={editingRecipient.displayName} scopes={editingScopes} />
+                <div className="row-actions">
+                  <Button onClick={() => saveRecipientScopes(editingRecipient.id)}>Save sharing</Button>
+                  <Button onClick={() => closeRecipientEditor(editingRecipient.id)} variant="secondary">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </>
         )}
       </Section>
     </div>
@@ -2824,16 +2717,6 @@ function SocialServicesScreen({
           </button>
         ))}
       </div>
-      <Section title="Government help">
-        <div className="liaison-panel">
-          <MessageSquare aria-hidden="true" size={28} />
-          <div>
-            <h3>Get help with benefits, ID, housing, or forms.</h3>
-            <p>Only the details you choose to share will be included in the request.</p>
-          </div>
-          <Button>Start request</Button>
-        </div>
-      </Section>
       <Section title="Matched services">
         <div className="list-stack">
           {serviceMatches.map((service) => (
