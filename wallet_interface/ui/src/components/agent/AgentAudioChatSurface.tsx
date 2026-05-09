@@ -11,7 +11,7 @@ type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserAudioContextConstructor = new () => BrowserAudioContext;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
-const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. Press the microphone and start speaking.";
+const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
 const VAD_MIN_RMS = 0.025;
 const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;

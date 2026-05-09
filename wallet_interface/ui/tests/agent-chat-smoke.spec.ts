@@ -155,6 +155,16 @@ test("voice chat automatically captures speech, routes the app command, and play
   await expect
     .poll(() => page.evaluate(() => (window as typeof window & { __abbyAudioPlayCalls?: number }).__abbyAudioPlayCalls || 0))
     .toBeGreaterThan(0);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          ((window as typeof window & { __abbyWorkerScripts?: string[] }).__abbyWorkerScripts || []).filter((script) =>
+            script.includes("clientLLMWorker"),
+          ).length,
+      ),
+    )
+    .toBe(0);
 });
 
 function visibleAssistant(page: Page): Locator {
@@ -209,6 +219,11 @@ type FakeAudioWorkerMode = "progress-only" | "success" | "warmup-error";
 
 async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "progress-only"): Promise<void> {
   await page.addInitScript((fakeMode: FakeAudioWorkerMode) => {
+    Object.defineProperty(window, "__abbyWorkerScripts", {
+      configurable: true,
+      writable: true,
+      value: [],
+    });
     Object.defineProperty(navigator, "gpu", {
       configurable: true,
       value: {},
@@ -244,6 +259,7 @@ async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "p
       private readonly realWorker?: Worker;
 
       constructor(scriptUrl: string | URL, options?: WorkerOptions) {
+        (window as typeof window & { __abbyWorkerScripts?: string[] }).__abbyWorkerScripts?.push(String(scriptUrl));
         if (!String(scriptUrl).includes("clientAudioWorker")) {
           this.realWorker = new RealWorker(scriptUrl, options);
           return this.realWorker;

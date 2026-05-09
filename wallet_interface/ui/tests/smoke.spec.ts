@@ -531,6 +531,33 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
   await expect(nudge.getByText(/pending/i)).toBeVisible();
 });
 
+test("provider portal sends client messages and processes ZK certificates", async ({ page }) => {
+  await openAppRoute(page, "/#/shelter");
+  await expect(page.getByRole("heading", { name: /Assisted access/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Provider overview/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Clients served/i })).toBeVisible();
+  await page.getByLabel("Shelter").first().selectOption("Rose City Shelter");
+  await page.getByLabel(/Verified staff operator/i).selectOption({ label: "Avery Patel" });
+
+  const messageSection = page.locator('section[aria-labelledby="Client-notifications-and-messages"]');
+  await messageSection.locator("select").first().selectOption({ label: "Abby" });
+  await messageSection.getByRole("textbox", { name: /Message/i }).fill("Please arrive 10 minutes early for your service appointment.");
+  await messageSection.getByRole("button", { name: /Send message/i }).click();
+  const sentMessage = messageSection.locator(".provider-message-item").filter({ hasText: /Please arrive 10 minutes early/i });
+  await expect(sentMessage).toBeVisible();
+  await expect(sentMessage.getByText(/Sent by Avery Patel/i)).toBeVisible();
+
+  const proofSection = page.locator('section[aria-labelledby="Zero-knowledge-proof-certificates"]');
+  await proofSection.locator("select").first().selectOption({ label: "Abby" });
+  await proofSection.getByLabel("Certificate type").selectOption("benefits_referral");
+  await proofSection.getByLabel("Public claim").fill("Client received a benefits referral without exposing private documents.");
+  await proofSection.getByRole("button", { name: /Process certificate/i }).click();
+  const processedProof = proofSection.locator(".provider-proof-item").filter({ hasText: /Client received a benefits referral/i });
+  await expect(processedProof).toBeVisible();
+  await expect(processedProof.getByText(/Client commitment/i)).toBeVisible();
+  await expect(processedProof.getByText(/verified/i)).toBeVisible();
+});
+
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();

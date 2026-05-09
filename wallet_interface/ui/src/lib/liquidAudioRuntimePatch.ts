@@ -70,6 +70,14 @@ const RUNNER_PATCH_PATTERNS = [
       "if (loadAudioEncoder) { this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder); }",
   },
   {
+    key: "vocoderDynamicOutputLocation",
+    label: "vocoder dynamic cache output location",
+    pattern:
+      /const\s+vocoderOpts\s*=\s*device\s*===\s*['"]webgpu['"]\s*\?\s*\{\s*preferredOutputLocation\s*:\s*\{\s*new_keys\s*:\s*['"]gpu-buffer['"]\s*,\s*new_values\s*:\s*['"]gpu-buffer['"]\s*,\s*depth_slices\s*:\s*['"]gpu-buffer['"]\s*\}\s*\}\s*:\s*\{\s*\};?/,
+    replacement: () =>
+      "const vocoderOpts = {}; // Dynamic vocoder KV caches change from length 0 to 1; GPU output binding can reuse an incompatible buffer.",
+  },
+  {
     key: "tokenizerEnvFetchCapture",
     label: "Transformers.js env.fetch tokenizer override capture",
     pattern: /const\s+originalFetch\s*=\s*globalThis\.fetch;\s*globalThis\.fetch\s*=/,

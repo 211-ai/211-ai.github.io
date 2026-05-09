@@ -143,6 +143,7 @@ import {
   serviceNeeds,
   setLocationRouteHash,
   shelterOptions,
+  ShelterProviderMessage,
   ShelterStaffAccount,
   ShelterUserAccount,
   writePersistedAppState
@@ -403,8 +404,13 @@ export function App() {
   const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(
     () => defaultAppState.shelterUserAccounts
   );
+  const [shelterProviderMessages, setShelterProviderMessages] = useState<ShelterProviderMessage[]>(
+    () => defaultAppState.shelterProviderMessages
+  );
   const [walletAuditEvents, setWalletAuditEvents] = useState<AuditEvent[]>(auditEvents);
-  const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(proofReceipts);
+  const [walletProofReceipts, setWalletProofReceipts] = useState<ProofReceiptView[]>(
+    () => (defaultAppState.proofReceipts.length ? defaultAppState.proofReceipts : proofReceipts)
+  );
   const [exportBundleViews, setExportBundleViews] = useState<ExportBundleView[]>(exportBundles);
   const [accessRequests, setAccessRequests] = useState<WalletAccessRequest[]>(initialAccessRequests);
   const [grantReceipts, setGrantReceipts] = useState<WalletGrantReceipt[]>(initialGrantReceipts);
@@ -587,9 +593,11 @@ export function App() {
       shelterContactRequests,
       shelterStaffAccounts,
       shelterUserAccounts,
+      shelterProviderMessages,
       savedServices,
       servicePlans,
       serviceInteractions,
+      proofReceipts: walletProofReceipts,
       benefitsOptIn,
       analyticsOptIn,
       shelterChecklist
@@ -605,9 +613,11 @@ export function App() {
     servicePlans,
     shelterContactRequests,
     shelterChecklist,
+    shelterProviderMessages,
     shelterStaffAccounts,
     shelterUserAccounts,
-    uploads
+    uploads,
+    walletProofReceipts
   ]);
 
   useEffect(() => {
@@ -942,8 +952,12 @@ export function App() {
             setChecklist={setShelterChecklist}
             contactRequests={shelterContactRequests}
             profile={profile}
+            proofReceipts={walletProofReceipts}
+            providerMessages={shelterProviderMessages}
             recipients={recipients}
             setContactRequests={setShelterContactRequests}
+            setProofReceipts={setWalletProofReceipts}
+            setProviderMessages={setShelterProviderMessages}
             setRecipients={setRecipients}
             shelterStaffAccounts={shelterStaffAccounts}
             setShelterStaffAccounts={setShelterStaffAccounts}
@@ -1015,7 +1029,9 @@ export function App() {
           });
         }}
         onSend={(message) => {
-          void agentChat.sendMessage(message);
+          void agentChat.sendMessage(message, {
+            disableLocalLlmReasoning: agentChatMode === "audio"
+          });
         }}
         open={agentChatOpen}
         responding={agentChat.responding}
@@ -2848,8 +2864,12 @@ function ShelterScreen({
   setChecklist,
   contactRequests,
   profile,
+  proofReceipts,
+  providerMessages,
   recipients,
   setContactRequests,
+  setProofReceipts,
+  setProviderMessages,
   setRecipients,
   shelterStaffAccounts,
   setShelterStaffAccounts,
@@ -2860,8 +2880,12 @@ function ShelterScreen({
   setChecklist: (value: typeof defaultShelterChecklist) => void;
   contactRequests: ShelterContactRequest[];
   profile: RegistrationProfileDraft;
+  proofReceipts: ProofReceiptView[];
+  providerMessages: ShelterProviderMessage[];
   recipients: DisclosureRecipientDraft[];
   setContactRequests: (requests: ShelterContactRequest[]) => void;
+  setProofReceipts: (proofs: ProofReceiptView[]) => void;
+  setProviderMessages: (messages: ShelterProviderMessage[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
   shelterStaffAccounts: ShelterStaffAccount[];
   setShelterStaffAccounts: (accounts: ShelterStaffAccount[]) => void;
@@ -2877,14 +2901,33 @@ function ShelterScreen({
   const [nudgeDraft, setNudgeDraft] = useState({ userName: "Abby Example", userContact: "abby@example.org" });
   const [managedUserFileDetail, setManagedUserFileDetail] = useState("");
   const [managedUserUploadError, setManagedUserUploadError] = useState("");
+  const [messageDraft, setMessageDraft] = useState({
+    clientId: "",
+    channel: "sms" as ShelterProviderMessage["channel"],
+    subject: "Appointment reminder",
+    body: "Reminder from your service provider: please check your Abby calendar for your next appointment."
+  });
+  const [proofDraft, setProofDraft] = useState({
+    clientId: "",
+    proofType: "service_attendance",
+    verifier: "Provider portal verifier",
+    claim: "Client received services from this organization without exposing private documents."
+  });
 
   const staffForShelter = shelterStaffAccounts.filter((account) => account.shelter === adminShelter);
   const verifiedStaffForOperatorShelter = shelterStaffAccounts.filter(
     (account) => account.shelter === operatorShelter && account.verified
   );
   const selectedOperator = shelterStaffAccounts.find((account) => account.id === operatorStaffId && account.verified);
+  const activeProviderOperator = selectedOperator ?? verifiedStaffForOperatorShelter[0];
   const usersForOperatorShelter = shelterUserAccounts.filter((account) => account.shelter === operatorShelter);
   const requestsForOperatorShelter = contactRequests.filter((request) => request.shelterName === operatorShelter);
+  const providerMessagesForShelter = providerMessages
+    .filter((message) => message.shelter === operatorShelter)
+    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
+  const providerProofsForShelter = proofReceipts
+    .filter((proof) => proof.proofType.startsWith("provider_") && proof.publicInputs.shelter === operatorShelter)
+    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
   const oversightShelter = isShelterAdmin ? adminShelter : operatorShelter;
   const partnerHelpDisplayName = profile.preferredName || profile.legalName || "Current client";
   const partnerHelpContact = [profile.phone, profile.email].map((item) => item.trim()).filter(Boolean).join(" / ");
@@ -2908,6 +2951,28 @@ function ShelterScreen({
         account.preferredShelter.toLowerCase().includes(oversightShelter.toLowerCase())
     )
     .sort(accountSortByHousingThenDate);
+  const selectedMessageClient = usersForOperatorShelter.find((account) => account.id === messageDraft.clientId);
+  const selectedProofClient = usersForOperatorShelter.find((account) => account.id === proofDraft.clientId);
+  const pendingContactRequestCount = requestsForOperatorShelter.filter((request) => request.status === "pending").length;
+  const housedClientCount = usersForOperatorShelter.filter((account) => account.foundPermanentHousing).length;
+  const activeClientCount = Math.max(0, usersForOperatorShelter.length - housedClientCount);
+  const verifiedStaffCount = verifiedStaffForOperatorShelter.length;
+  const staffAnalytics = shelterStaffAccounts
+    .filter((account) => account.shelter === operatorShelter)
+    .map((staff) => {
+      const servedClients = usersForOperatorShelter.filter((account) => account.createdByStaffId === staff.id);
+      const staffMessages = providerMessagesForShelter.filter((message) => message.staffId === staff.id);
+      const staffProofs = providerProofsForShelter.filter((proof) => proof.publicInputs.staff_id === staff.id);
+      return {
+        staff,
+        servedCount: servedClients.length,
+        activeCount: servedClients.filter((account) => !account.foundPermanentHousing).length,
+        housedCount: servedClients.filter((account) => account.foundPermanentHousing).length,
+        messageCount: staffMessages.length,
+        proofCount: staffProofs.length
+      };
+    })
+    .sort((left, right) => right.servedCount - left.servedCount || left.staff.displayName.localeCompare(right.staff.displayName));
 
   function toggleManagedUserNeed(need: string) {
     setUserDraft((prev) => ({
@@ -3048,6 +3113,83 @@ function ShelterScreen({
     ]);
   }
 
+  function prepareProviderMessage(client: ShelterUserAccount) {
+    setMessageDraft({
+      clientId: client.id,
+      channel: client.phone ? "sms" : client.email ? "email" : "in_app",
+      subject: "Service reminder",
+      body: `Hi ${client.preferredName || client.legalName}, this is ${activeProviderOperator?.displayName ?? "your service provider"} from ${operatorShelter}. Please check your Abby calendar for your next service step.`
+    });
+  }
+
+  function sendProviderMessage(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!activeProviderOperator || !selectedMessageClient || !messageDraft.body.trim()) return;
+
+    const nextMessage: ShelterProviderMessage = {
+      id: `provider-message-${Date.now()}`,
+      shelter: operatorShelter,
+      clientId: selectedMessageClient.id,
+      clientName: selectedMessageClient.preferredName || selectedMessageClient.legalName,
+      clientContact: contactLabelForShelterUser(selectedMessageClient),
+      channel: messageDraft.channel,
+      subject: messageDraft.subject.trim() || "Service message",
+      body: messageDraft.body.trim(),
+      staffId: activeProviderOperator.id,
+      staffName: activeProviderOperator.displayName,
+      status: "sent",
+      createdAt: new Date().toISOString()
+    };
+    setProviderMessages([nextMessage, ...providerMessages]);
+  }
+
+  function prepareProviderProof(client: ShelterUserAccount) {
+    setProofDraft({
+      clientId: client.id,
+      proofType: "service_attendance",
+      verifier: `${operatorShelter} certificate verifier`,
+      claim: "Client attended or received a service without exposing private documents."
+    });
+  }
+
+  function processProviderProofCertificate(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!activeProviderOperator || !selectedProofClient || !proofDraft.claim.trim() || !proofDraft.verifier.trim()) return;
+
+    const createdAt = new Date().toISOString();
+    const proofSeed = [
+      operatorShelter,
+      selectedProofClient.id,
+      activeProviderOperator.id,
+      proofDraft.proofType,
+      proofDraft.claim,
+      createdAt
+    ].join("|");
+    const proof: ProofReceiptView = {
+      id: `provider-proof-${Date.now()}`,
+      proofType: `provider_${proofDraft.proofType}`,
+      claim: proofDraft.claim.trim(),
+      verifier: proofDraft.verifier.trim(),
+      proofSystem: "simulated_zk_certificate",
+      verificationStatus: "verified",
+      circuitId: `provider-${proofDraft.proofType}-v1`,
+      verifierDigest: appStableSuffix(proofSeed),
+      proofArtifactRef: `zk-cert-${appStableSuffix(`${proofSeed}:artifact`)}`,
+      publicInputs: {
+        shelter: operatorShelter,
+        client_commitment: appStableSuffix(`${selectedProofClient.id}:${selectedProofClient.dateOfBirth}`),
+      staff_id: activeProviderOperator.id,
+        certificate_type: proofDraft.proofType,
+        issued_at: createdAt
+      },
+      witnessLabel: `${selectedProofClient.preferredName || selectedProofClient.legalName} service record`,
+      simulated: true,
+      createdAt
+    };
+
+    setProofReceipts([proof, ...proofReceipts.filter((item) => item.id !== proof.id)]);
+  }
+
   function decideUserShelterRequest(requestId: string, status: "approved" | "denied") {
     const request = contactRequests.find((item) => item.id === requestId);
     if (!request) return;
@@ -3099,6 +3241,244 @@ function ShelterScreen({
           </article>
         </Section>
       ) : null}
+      <Section title="Provider overview">
+        <div className="dashboard-grid">
+          <StatusPanel label="Clients served" value={String(usersForOperatorShelter.length)} tone="teal" />
+          <StatusPanel label="Active support" value={String(activeClientCount)} tone="gold" />
+          <StatusPanel label="Messages sent" value={String(providerMessagesForShelter.length)} tone="teal" />
+          <StatusPanel label="ZK certificates" value={String(providerProofsForShelter.length)} tone="gold" />
+          <StatusPanel label="Verified staff" value={String(verifiedStaffCount)} tone="teal" />
+          <StatusPanel label="Pending requests" value={String(pendingContactRequestCount)} tone="red" />
+        </div>
+        <p className="section-note">
+          Provider analytics use the selected shelter workspace and show operational counts without exposing wallet files.
+        </p>
+      </Section>
+      <Section title="Clients served">
+        <div className="list-stack provider-client-list">
+          {usersForOperatorShelter.length ? (
+            usersForOperatorShelter.map((account) => (
+              <article className="list-item provider-client-item" key={`served-${account.id}`}>
+                <div>
+                  <h3>{account.preferredName || account.legalName}</h3>
+                  <p>{account.serviceNeeds.length ? account.serviceNeeds.join(", ") : "No service needs selected"}</p>
+                  <small>
+                    Served by {shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"}
+                    {" · "}
+                    {formatShelterDate(account.createdAt)}
+                  </small>
+                  <div className="badge-row">
+                    <Badge>{contactLabelForShelterUser(account)}</Badge>
+                    <Badge tone={account.foundPermanentHousing ? "success" : "warning"}>
+                      {account.foundPermanentHousing ? "Housing found" : "Still needs support"}
+                    </Badge>
+                    <Badge tone={account.localPrecinctNotified ? "success" : "neutral"}>
+                      {account.localPrecinctNotified ? "Emergency contact set" : "No precinct contact"}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="row-actions">
+                  <Button disabled={!activeProviderOperator} onClick={() => prepareProviderMessage(account)} variant="secondary">
+                    <MessageSquare aria-hidden="true" size={18} />
+                    Message
+                  </Button>
+                  <Button disabled={!activeProviderOperator} onClick={() => prepareProviderProof(account)} variant="secondary">
+                    <ShieldCheck aria-hidden="true" size={18} />
+                    ZK certificate
+                  </Button>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="empty-state">
+              <h3>No served clients yet</h3>
+              <p>Create a user account in the verified staff workspace to start tracking service delivery.</p>
+            </div>
+          )}
+        </div>
+      </Section>
+      <Section title="Client notifications and messages">
+        {!activeProviderOperator ? (
+          <StatusBanner tone="info">Add or verify staff before sending client messages.</StatusBanner>
+        ) : !selectedOperator ? (
+          <StatusBanner tone="info">Using {activeProviderOperator.displayName} as the default message sender for this shelter.</StatusBanner>
+        ) : null}
+        <form className="form-grid provider-message-form" id="provider-message-composer" onSubmit={sendProviderMessage}>
+          <Field label="Client" required>
+            <select
+              value={messageDraft.clientId}
+              onChange={(event) => setMessageDraft({ ...messageDraft, clientId: event.target.value })}
+            >
+              <option value="">Select client</option>
+              {usersForOperatorShelter.map((account) => (
+                <option key={`message-${account.id}`} value={account.id}>
+                  {account.preferredName || account.legalName}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Channel" required>
+            <select
+              value={messageDraft.channel}
+              onChange={(event) =>
+                setMessageDraft({ ...messageDraft, channel: event.target.value as ShelterProviderMessage["channel"] })
+              }
+            >
+              <option value="sms">Text message</option>
+              <option value="email">Email</option>
+              <option value="in_app">In-app Abby note</option>
+            </select>
+          </Field>
+          <Field label="Subject">
+            <input
+              value={messageDraft.subject}
+              onChange={(event) => setMessageDraft({ ...messageDraft, subject: event.target.value })}
+            />
+          </Field>
+          <Field label="Message" required>
+            <textarea
+              rows={4}
+              value={messageDraft.body}
+              onChange={(event) => setMessageDraft({ ...messageDraft, body: event.target.value })}
+            />
+          </Field>
+          <div className="full-span row-actions">
+            <Button
+              disabled={!activeProviderOperator || !selectedMessageClient || !messageDraft.body.trim()}
+              type="submit"
+            >
+              <MessageSquare aria-hidden="true" size={18} />
+              Send message
+            </Button>
+          </div>
+        </form>
+        <div className="list-stack">
+          {providerMessagesForShelter.length ? (
+            providerMessagesForShelter.slice(0, 6).map((message) => (
+              <article className="list-item provider-message-item" key={message.id}>
+                <div>
+                  <h3>{message.subject}</h3>
+                  <p>{message.body}</p>
+                  <div className="badge-row">
+                    <Badge>{message.clientName}</Badge>
+                    <Badge>{message.channel.replace("_", " ")}</Badge>
+                    <Badge tone="success">{message.status}</Badge>
+                    <Badge>{formatShelterDate(message.createdAt)}</Badge>
+                  </div>
+                  <small>
+                    Sent by {message.staffName} to {message.clientContact}
+                  </small>
+                </div>
+              </article>
+            ))
+          ) : (
+            <small>No provider messages sent for this shelter yet.</small>
+          )}
+        </div>
+      </Section>
+      <Section title="Staff analytics">
+        <div className="list-stack provider-staff-analytics">
+          {staffAnalytics.length ? (
+            staffAnalytics.map((item) => (
+              <article className="list-item provider-staff-row" key={`analytics-${item.staff.id}`}>
+                <div>
+                  <h3>{item.staff.displayName}</h3>
+                  <p>{item.staff.email || "No email provided"}</p>
+                  <div className="provider-staff-metrics" aria-label={`${item.staff.displayName} staff analytics`}>
+                    <span><strong>{item.servedCount}</strong> served</span>
+                    <span><strong>{item.activeCount}</strong> active</span>
+                    <span><strong>{item.housedCount}</strong> housed</span>
+                    <span><strong>{item.messageCount}</strong> messages</span>
+                    <span><strong>{item.proofCount}</strong> proofs</span>
+                  </div>
+                </div>
+                <Badge tone={item.staff.verified ? "success" : "warning"}>
+                  {item.staff.verified ? "Verified" : "Verification off"}
+                </Badge>
+              </article>
+            ))
+          ) : (
+            <small>No staff analytics available for this shelter yet.</small>
+          )}
+        </div>
+      </Section>
+      <Section title="Zero-knowledge proof certificates">
+        <p className="section-note">
+          Process certificates as public proof receipts. The public inputs use commitments and service metadata instead of raw client documents.
+        </p>
+        <form className="form-grid provider-proof-form" onSubmit={processProviderProofCertificate}>
+          <Field label="Client" required>
+            <select
+              value={proofDraft.clientId}
+              onChange={(event) => setProofDraft({ ...proofDraft, clientId: event.target.value })}
+            >
+              <option value="">Select client</option>
+              {usersForOperatorShelter.map((account) => (
+                <option key={`proof-${account.id}`} value={account.id}>
+                  {account.preferredName || account.legalName}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Certificate type" required>
+            <select
+              value={proofDraft.proofType}
+              onChange={(event) => setProofDraft({ ...proofDraft, proofType: event.target.value })}
+            >
+              <option value="service_attendance">Service attendance</option>
+              <option value="document_reviewed">Document reviewed</option>
+              <option value="benefits_referral">Benefits referral</option>
+              <option value="housing_step">Housing step completed</option>
+            </select>
+          </Field>
+          <Field label="Verifier" required>
+            <input
+              value={proofDraft.verifier}
+              onChange={(event) => setProofDraft({ ...proofDraft, verifier: event.target.value })}
+            />
+          </Field>
+          <Field label="Public claim" required>
+            <textarea
+              rows={3}
+              value={proofDraft.claim}
+              onChange={(event) => setProofDraft({ ...proofDraft, claim: event.target.value })}
+            />
+          </Field>
+          <div className="full-span row-actions">
+            <Button
+              disabled={!activeProviderOperator || !selectedProofClient || !proofDraft.claim.trim() || !proofDraft.verifier.trim()}
+              type="submit"
+            >
+              <ShieldCheck aria-hidden="true" size={18} />
+              Process certificate
+            </Button>
+          </div>
+        </form>
+        <div className="list-stack">
+          {providerProofsForShelter.length ? (
+            providerProofsForShelter.slice(0, 6).map((proof) => (
+              <article className="list-item provider-proof-item" key={proof.id}>
+                <div>
+                  <h3>{proof.claim}</h3>
+                  <p>{proof.verifier}</p>
+                  <div className="badge-row">
+                    <Badge tone="success">{proof.verificationStatus}</Badge>
+                    <Badge>{proof.proofType.replace("provider_", "").replace("_", " ")}</Badge>
+                    <Badge>{proof.publicInputs.certificate_type}</Badge>
+                    <Badge>{formatShelterDate(proof.createdAt)}</Badge>
+                  </div>
+                  <small>
+                    Client commitment <code>{proof.publicInputs.client_commitment}</code> · Artifact{" "}
+                    <code>{proof.proofArtifactRef}</code>
+                  </small>
+                </div>
+              </article>
+            ))
+          ) : (
+            <small>No provider proof certificates processed yet.</small>
+          )}
+        </div>
+      </Section>
       <Section title="Verified staff workspace">
         <div className="shelter-staff-panel">
           <Field label="Shelter" required>
@@ -3522,6 +3902,16 @@ function ShelterScreen({
       </Section>
     </div>
   );
+}
+
+function contactLabelForShelterUser(account: ShelterUserAccount): string {
+  return account.phone || account.email || "No contact";
+}
+
+function formatShelterDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value || "Date unavailable";
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
 type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";

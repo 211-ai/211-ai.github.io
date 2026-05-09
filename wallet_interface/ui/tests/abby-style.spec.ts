@@ -55,17 +55,22 @@ test("login and inner route chrome use production ABBY assets", async ({ page },
 
   const loginTheme = await page.evaluate(() => {
     const loginLogo = document.querySelector<HTMLImageElement>(".login-logo")!;
+    const loginLogoBox = loginLogo.getBoundingClientRect();
     const loginPanelWatermark = getComputedStyle(document.querySelector(".login-panel")!, "::after");
     const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
     return {
+      loginLogoHeight: loginLogoBox.height,
       loginLogoNaturalWidth: loginLogo.naturalWidth,
       loginLogoSrc: loginLogo.currentSrc,
+      loginLogoWidth: loginLogoBox.width,
       loginPanelWatermark: loginPanelWatermark.backgroundImage,
       faviconHref: favicon?.getAttribute("href") ?? ""
     };
   });
 
   expect(loginTheme.loginLogoSrc).toContain("/assets/abby-icon.png");
+  expect(Math.round(loginTheme.loginLogoHeight)).toBe(128);
+  expect(loginTheme.loginLogoWidth).toBeGreaterThan(300);
   expect(loginTheme.loginLogoNaturalWidth).toBeGreaterThan(0);
   expect(loginTheme.loginPanelWatermark).toContain("preview-header-landscape.png");
   expect(loginTheme.faviconHref).toContain("assets/favicon.svg");
@@ -131,12 +136,14 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
         const node = document.querySelector(selector);
         if (!node) throw new Error(`Missing ${selector}`);
         const box = node.getBoundingClientRect();
-        return { height: box.height, top: box.top, y: box.y };
+        return { height: box.height, top: box.top, width: box.width, y: box.y };
       };
       return {
         appClass: document.querySelector(".app")?.className ?? "",
         brandLogoAlt: document.querySelector(".brand-logo")?.getAttribute("alt") ?? "",
+        brandLogoHeight: rect(".brand-logo").height,
         brandLogoSrc: document.querySelector<HTMLImageElement>(".brand-logo")?.currentSrc ?? "",
+        brandLogoWidth: rect(".brand-logo").width,
         clientTop: rect(".nav-group:not(.nav-group-provider):not(.nav-group-support)").y,
         providerTop: rect(".nav-group-provider").y,
         sidebarHeight: rect(".sidebar").height,
@@ -155,9 +162,13 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
   expect(Math.abs(homeMetrics.supportTop - proofMetrics.supportTop)).toBeLessThanOrEqual(1);
   expect(homeMetrics.brandLogoAlt).toBe("Abby Client portal");
   expect(homeMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
+  expect(Math.round(homeMetrics.brandLogoHeight)).toBe(128);
+  expect(homeMetrics.brandLogoWidth).toBeGreaterThan(200);
   expect(providerMetrics.appClass).toContain("portal-provider");
   expect(providerMetrics.brandLogoAlt).toBe("Abby Provider workspace");
   expect(providerMetrics.brandLogoSrc).toContain("/assets/abby-icon.png");
+  expect(Math.round(providerMetrics.brandLogoHeight)).toBe(128);
+  expect(providerMetrics.brandLogoWidth).toBeGreaterThan(200);
 });
 
 test("analytics tools expose project and service organization admin introspection", async ({ page }) => {

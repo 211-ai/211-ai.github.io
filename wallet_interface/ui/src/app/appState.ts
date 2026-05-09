@@ -3,6 +3,7 @@ import type {
   DisclosureRecipientDraft,
   EasyBotCheckStatus,
   RegistrationProfileDraft,
+  ProofReceiptView,
   RouteId,
   SavedService,
   ServiceInteractionEvent,
@@ -112,6 +113,84 @@ export type ShelterUserAccount = {
   createdAt: string;
 };
 
+export type ShelterProviderMessage = {
+  id: string;
+  shelter: string;
+  clientId: string;
+  clientName: string;
+  clientContact: string;
+  channel: "sms" | "email" | "in_app";
+  subject: string;
+  body: string;
+  staffId: string;
+  staffName: string;
+  status: "sent" | "queued";
+  createdAt: string;
+};
+
+export const initialShelterUserAccounts: ShelterUserAccount[] = [
+  {
+    id: "user-demo-rose-abby",
+    shelter: "Rose City Shelter",
+    legalName: "Abby Example",
+    preferredName: "Abby",
+    pronouns: "they/them",
+    dateOfBirth: "1990-01-01",
+    photoAssetId: "abby-id.pdf",
+    phone: "(503) 555-0100",
+    email: "abby@example.org",
+    currentLocation: "Rose City day room",
+    preferredShelter: "Rose City Shelter",
+    serviceNeeds: ["Shelter", "Benefits", "Health"],
+    easyBotCheckStatus: "passed",
+    captchaToken: "demo-check",
+    localPrecinctNotified: true,
+    foundPermanentHousing: false,
+    createdByStaffId: "staff-demo-rose",
+    createdAt: "2026-05-05T16:30:00.000Z"
+  },
+  {
+    id: "user-demo-rose-casey",
+    shelter: "Rose City Shelter",
+    legalName: "Casey Rivera",
+    preferredName: "Casey",
+    pronouns: "she/her",
+    dateOfBirth: "1986-03-14",
+    photoAssetId: "casey-id.pdf",
+    phone: "(503) 555-0188",
+    email: "casey@example.org",
+    currentLocation: "Rose City dorm B",
+    preferredShelter: "Rose City Shelter",
+    serviceNeeds: ["Food", "Transportation"],
+    easyBotCheckStatus: "passed",
+    captchaToken: "demo-check",
+    localPrecinctNotified: false,
+    foundPermanentHousing: true,
+    createdByStaffId: "staff-demo-rose",
+    createdAt: "2026-05-06T18:10:00.000Z"
+  },
+  {
+    id: "user-demo-downtown-morgan",
+    shelter: "Downtown Outreach Shelter",
+    legalName: "Morgan Lee",
+    preferredName: "Morgan",
+    pronouns: "he/him",
+    dateOfBirth: "1978-08-22",
+    photoAssetId: "morgan-id.pdf",
+    phone: "(503) 555-0144",
+    email: "morgan@example.org",
+    currentLocation: "Downtown outreach office",
+    preferredShelter: "Downtown Outreach Shelter",
+    serviceNeeds: ["Legal", "Benefits"],
+    easyBotCheckStatus: "failed",
+    captchaToken: "",
+    localPrecinctNotified: true,
+    foundPermanentHousing: false,
+    createdByStaffId: "staff-demo-downtown",
+    createdAt: "2026-05-04T14:05:00.000Z"
+  }
+];
+
 export const defaultManagedUserDraft = {
   legalName: "",
   preferredName: "",
@@ -157,9 +236,11 @@ export type PersistedAppState = {
   shelterContactRequests?: ShelterContactRequest[];
   shelterStaffAccounts?: ShelterStaffAccount[];
   shelterUserAccounts?: ShelterUserAccount[];
+  shelterProviderMessages?: ShelterProviderMessage[];
   savedServices?: SavedService[];
   servicePlans?: ServicePlan[];
   serviceInteractions?: ServiceInteractionEvent[];
+  proofReceipts?: ProofReceiptView[];
   benefitsOptIn?: boolean;
   analyticsOptIn?: Record<string, boolean>;
   shelterChecklist?: typeof defaultShelterChecklist;
@@ -218,10 +299,16 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
     shelterStaffAccounts: Array.isArray(persistedState.shelterStaffAccounts)
       ? persistedState.shelterStaffAccounts
       : initialShelterStaffAccounts,
-    shelterUserAccounts: Array.isArray(persistedState.shelterUserAccounts) ? persistedState.shelterUserAccounts : [],
+    shelterUserAccounts: Array.isArray(persistedState.shelterUserAccounts)
+      ? persistedState.shelterUserAccounts
+      : initialShelterUserAccounts,
+    shelterProviderMessages: Array.isArray(persistedState.shelterProviderMessages)
+      ? persistedState.shelterProviderMessages
+      : [],
     savedServices: Array.isArray(persistedState.savedServices) ? persistedState.savedServices : [],
     servicePlans: Array.isArray(persistedState.servicePlans) ? persistedState.servicePlans : [],
     serviceInteractions: Array.isArray(persistedState.serviceInteractions) ? persistedState.serviceInteractions : [],
+    proofReceipts: Array.isArray(persistedState.proofReceipts) ? persistedState.proofReceipts : [],
     benefitsOptIn: persistedState.benefitsOptIn ?? true,
     analyticsOptIn:
       persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"

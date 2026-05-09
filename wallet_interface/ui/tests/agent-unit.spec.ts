@@ -324,6 +324,10 @@ export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;
     this.audioEncoderSession = await loadOnnxWithExternalData('audio_encoder', 50, quantConfig.audioEncoder);
+    const vocoderOpts = device === 'webgpu'
+      ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
+      : {};
+    this.vocoderSession = await loadOnnxWithExternalData('vocoder_depthformer', 95, quantConfig.vocoder, vocoderOpts);
   }
 }
 `;
@@ -341,6 +345,8 @@ export class AudioModel {
     expect(patched).toContain('import { AutoTokenizer, env } from "blob:transformers-web";');
     expect(patched).toContain("loadAudioEncoder = true");
     expect(patched).toContain("if (loadAudioEncoder)");
+    expect(patched).toContain("const vocoderOpts = {};");
+    expect(patched).not.toContain("new_keys: 'gpu-buffer'");
     expect(patched).toContain("const originalEnvFetch = env.fetch");
     expect(patched).toContain("env.fetch = globalThis.fetch");
     expect(patched).toContain("env.fetch = originalEnvFetch");
@@ -434,6 +440,10 @@ export class AudioModel {
   async load(modelPath, options = {}) {
     const { progressCallback, device = 'webgpu', quantization = null } = options;
     this.audioEncoderSession = await loadOnnxWithExternalData('speech_encoder', 50, quantConfig.audioEncoder);
+    const vocoderOpts = device === 'webgpu'
+      ? { preferredOutputLocation: { new_keys: 'gpu-buffer', new_values: 'gpu-buffer', depth_slices: 'gpu-buffer' } }
+      : {};
+    this.vocoderSession = await loadOnnxWithExternalData('vocoder_depthformer', 95, quantConfig.vocoder, vocoderOpts);
   }
 }
 `;
@@ -1130,6 +1140,57 @@ export class AudioModel {
 
     expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate"]);
     expect(invoked[0].input).toEqual({ route: "exports" });
+  });
+
+  test("can disable local LLM reasoning for a single chat turn", async () => {
+    const invoked: AgentToolCall[] = [];
+    let localLlmCalls = 0;
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      localLlmService: {
+        tryGenerateText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM response should not run");
+        },
+        generateStructuredText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM tool selection should not run");
+        },
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("hello there", { disableLocalLlmReasoning: true });
+
+    expect(localLlmCalls).toBe(0);
+    expect(invoked).toEqual([]);
+    expect(controller.getSnapshot().messages.at(-1)?.content).toMatch(/You are on home\./);
+  });
+
+  test("disables local GraphRAG model answers when local LLM reasoning is disabled", async () => {
+    const invoked: AgentToolCall[] = [];
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      localLlmService: {
+        tryGenerateText: async () => {
+          throw new Error("local LLM response should not run");
+        },
+        generateStructuredText: async () => {
+          throw new Error("local LLM tool selection should not run");
+        },
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("tell me about 211 shelter eligibility", { disableLocalLlmReasoning: true });
+
+    expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate", "answer_211_question"]);
+    expect(invoked[1].input).toMatchObject({
+      question: "tell me about 211 shelter eligibility",
+      useLocalModel: false,
+    });
   });
 
   test("uses OpenRouter when WebGPU is unavailable for the default client LLM", async () => {

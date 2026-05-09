@@ -78,6 +78,7 @@ export interface AgentChatControllerOptions {
 
 export interface AgentChatSendOptions {
   retryOfMessageId?: string;
+  disableLocalLlmReasoning?: boolean;
 }
 
 export interface AgentChatController {
@@ -94,6 +95,7 @@ export interface AgentChatController {
 
 interface RetryRequest {
   content?: string;
+  disableLocalLlmReasoning?: boolean;
   tool?: AgentPlannedTool;
 }
 
@@ -219,12 +221,12 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
 
     try {
-      await runTurn(trimmed);
+      await runTurn(trimmed, sendOptions);
       pushProgress("complete", "Response complete.");
     } catch (error) {
       const chatError = toChatError(error);
       appendMessage(createMessage(sessionId, "assistant", chatError.message, "failed"));
-      setError(chatError, { content: trimmed });
+      setError(chatError, { content: trimmed, disableLocalLlmReasoning: sendOptions.disableLocalLlmReasoning });
     } finally {
       responding = false;
       emit();
@@ -260,7 +262,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
   }
 
-  async function runTurn(content: string) {
+  async function runTurn(content: string, sendOptions: AgentChatSendOptions = {}) {
     pushProgress("reading_context", "Reading current app context.");
     const context = options.surfaceApi.getContext(false);
     replaceSession({
@@ -279,8 +281,12 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
     }
+    const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
+    if (!localLlmReasoningEnabled) {
+      turn = disableLocalModelForTurn(turn);
+    }
     let localLlmUnavailable = false;
-    if (enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
+    if (localLlmReasoningEnabled && enableLocalLlmToolSelection && shouldTryLocalLlmToolSelection(turn)) {
       const pendingConfirmations = session.confirmations.filter((confirmation) => confirmation.status === "pending");
       const selection = await selectLocalLlmTool({
         content,
@@ -297,7 +303,7 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       }
       turn = selection.turn;
     }
-    if (enableLocalLlmResponses && !localLlmUnavailable && shouldTryLocalLlmResponse(turn)) {
+    if (localLlmReasoningEnabled && enableLocalLlmResponses && !localLlmUnavailable && shouldTryLocalLlmResponse(turn)) {
       pushProgress("responding", "Drafting response with the local model.");
       const response = await generateLocalLlmAssistantResponse({
         content,
@@ -545,7 +551,10 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
     if (retryRequest.content) {
       const userMessage = [...session.messages].reverse().find((message) => message.role === "user");
-      await sendMessage(retryRequest.content, { retryOfMessageId: userMessage?.id });
+      await sendMessage(retryRequest.content, {
+        retryOfMessageId: userMessage?.id,
+        disableLocalLlmReasoning: retryRequest.disableLocalLlmReasoning
+      });
     }
   }
 
@@ -878,6 +887,22 @@ function readableToolName(name: string): string {
 
 function fallbackResponse(context: SurfaceContext): string {
   return `You are on ${context.routeLabel}. I can explain this screen, navigate the app, answer public 211 service questions, and ask for confirmation before changing wallet data.`;
+}
+
+function disableLocalModelForTurn(turn: AgentPlannedTurn): AgentPlannedTurn {
+  return {
+    ...turn,
+    tools: turn.tools.map((tool) => {
+      if (tool.name !== "answer_211_question" || !isRecord(tool.input)) return tool;
+      return {
+        ...tool,
+        input: {
+          ...tool.input,
+          useLocalModel: false
+        }
+      };
+    })
+  };
 }
 
 function shouldTryLocalLlmToolSelection(turn: AgentPlannedTurn): boolean {
