@@ -50,6 +50,7 @@ import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
   patchAudioModelSource,
+  patchTransformersWebSource,
 } from "../src/lib/liquidAudioRuntimePatch";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
@@ -321,6 +322,34 @@ export class AudioModel {
     expect(patched).toContain("loadAudioEncoder = true");
     expect(patched).toContain("if (loadAudioEncoder)");
     expect(patched).not.toContain("from 'onnxruntime-web'");
+  });
+
+  test("patches Transformers.js WebGPU runtime imports for blob-loaded audio modules", () => {
+    const source = `
+import * as ONNX_WEB from "onnxruntime-web/webgpu";
+export { ONNX_WEB };
+`;
+
+    const patched = patchTransformersWebSource(source, {
+      ortWrapperUrl: "blob:ort-wrapper",
+    });
+
+    expect(patched).toContain('import * as ONNX_WEB from "blob:ort-wrapper";');
+    expect(patched).not.toContain("onnxruntime-web/webgpu");
+  });
+
+  test("patches legacy Transformers.js ONNX runtime imports without the webgpu subpath", () => {
+    const source = `
+import * as ONNX_WEB from "onnxruntime-web";
+export { ONNX_WEB };
+`;
+
+    const patched = patchTransformersWebSource(source, {
+      ortWrapperUrl: "blob:ort-wrapper",
+    });
+
+    expect(patched).toContain('import * as ONNX_WEB from "blob:ort-wrapper";');
+    expect(patched).not.toContain("onnxruntime-web");
   });
 
   test("fails loudly when the upstream LiquidAI runner can no longer be patched safely", () => {

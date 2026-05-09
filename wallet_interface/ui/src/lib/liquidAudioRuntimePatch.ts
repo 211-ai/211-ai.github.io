@@ -4,6 +4,10 @@ export interface LiquidAudioRuntimePatchUrls {
   transformersWebModuleUrl: string;
 }
 
+export interface TransformersRuntimePatchUrls {
+  ortWrapperUrl: string;
+}
+
 export type LiquidAudioProgressPhase =
   | "queued"
   | "loading-runtime"
@@ -67,6 +71,9 @@ const RUNNER_PATCH_PATTERNS = [
   },
 ] as const;
 
+const TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN =
+  /import\s+\*\s+as\s+ONNX_WEB\s+from\s+['"]onnxruntime-web(?:\/webgpu)?['"];?/;
+
 export function getLiquidAudioRunnerPatchDiagnostics(source: string): LiquidAudioRunnerPatchDiagnostic[] {
   return RUNNER_PATCH_PATTERNS.map((rule) => ({
     key: rule.key,
@@ -81,6 +88,16 @@ export function assertLiquidAudioRunnerPatchable(source: string): void {
   throw new Error(
     `LiquidAI audio runner patch failed; missing ${missing.map((diagnostic) => diagnostic.label).join(", ")}. ` +
       "The upstream LiquidAI demo runner may have changed.",
+  );
+}
+
+export function patchTransformersWebSource(source: string, urls: TransformersRuntimePatchUrls): string {
+  if (!TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN.test(source)) {
+    throw new Error("Transformers.js WebGPU runtime patch failed; missing ONNX Runtime WebGPU import.");
+  }
+  return source.replace(
+    TRANSFORMERS_ONNX_RUNTIME_IMPORT_PATTERN,
+    `import * as ONNX_WEB from ${JSON.stringify(urls.ortWrapperUrl)};`,
   );
 }
 

@@ -6,6 +6,7 @@ import {
   clampAudioProgress,
   formatLiquidAudioLoadProgress,
   patchAudioModelSource,
+  patchTransformersWebSource,
   type LiquidAudioWorkerProgress as AudioWorkerProgress,
 } from "../lib/liquidAudioRuntimePatch";
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
@@ -291,13 +292,18 @@ export default actual.default ?? actual;
       { type: "text/javascript" },
     ),
   );
+  const transformersWrapperUrl = URL.createObjectURL(
+    new Blob([patchTransformersWebSource(await fetchModuleSource(transformersWebModuleUrl), { ortWrapperUrl })], {
+      type: "text/javascript",
+    }),
+  );
   const audioProcessorUrl = URL.createObjectURL(
     new Blob([audioProcessorSource], { type: "text/javascript" }),
   );
   const patchedAudioModelSource = patchAudioModelSource(audioModelSource, {
     audioProcessorUrl,
     ortWrapperUrl,
-    transformersWebModuleUrl,
+    transformersWebModuleUrl: transformersWrapperUrl,
   });
   const audioModelUrl = URL.createObjectURL(
     new Blob([patchedAudioModelSource], { type: "text/javascript" }),
@@ -313,14 +319,26 @@ export default actual.default ?? actual;
         URL.revokeObjectURL(audioModelUrl);
         URL.revokeObjectURL(audioProcessorUrl);
         URL.revokeObjectURL(ortWrapperUrl);
+        URL.revokeObjectURL(transformersWrapperUrl);
       },
     };
   } catch (error) {
     URL.revokeObjectURL(audioModelUrl);
     URL.revokeObjectURL(audioProcessorUrl);
     URL.revokeObjectURL(ortWrapperUrl);
+    URL.revokeObjectURL(transformersWrapperUrl);
     throw error;
   }
+}
+
+async function fetchModuleSource(url: string): Promise<string> {
+  const response = await fetch(url, {
+    credentials: "omit",
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch bundled module for runtime patching: ${response.status}`);
+  }
+  return response.text();
 }
 
 async function fetchRunnerSource(fileName: "audio-model.js" | "audio-processor.js"): Promise<string> {
