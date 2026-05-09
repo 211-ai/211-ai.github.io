@@ -36,6 +36,7 @@ import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
 import { InteractionsScreen } from "./InteractionsScreen";
+import { CalendarScreen } from "./CalendarScreen";
 import {
   getServicePlanDocIdFromHash,
   ServicePlanScreen,
@@ -176,6 +177,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   home: Home,
   register: ClipboardCheck,
   "check-in": CalendarCheck,
+  calendar: CalendarClock,
   contacts: ContactRound,
   "sharing-rules": ShieldCheck,
   uploads: FileUp,
@@ -834,6 +836,22 @@ export function App() {
         ) : null}
         {activeRoute === "check-in" ? (
           <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
+        ) : null}
+        {activeRoute === "calendar" ? (
+          <CalendarScreen
+            interactions={serviceInteractions}
+            onOpenPlan={(nextDocId) => {
+              setLocationServicePlanHash(nextDocId);
+              setServicePlanDocId(nextDocId);
+              setServiceDetailDocId(null);
+              activeRouteRef.current = "social-services";
+              setActiveRoute("social-services");
+              setMobileNavOpen(false);
+            }}
+            onOpenService={openServiceDetailFromServices}
+            policy={policy}
+            servicePlans={servicePlans}
+          />
         ) : null}
         {activeRoute === "contacts" ? (
           <ContactsScreen

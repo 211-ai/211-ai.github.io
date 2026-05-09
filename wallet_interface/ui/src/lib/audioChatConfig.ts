@@ -5,6 +5,7 @@ export const AUDIO_CHAT_CONFIG = {
   enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
   requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "240000", 10),
+  warmupTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "1200000", 10),
   maxPromptCharacters: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_PROMPT_CHARS || "1200", 10),
   maxAudioFrames: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_FRAMES || "160", 10),
   liquidAudioRunnerBaseUrl:

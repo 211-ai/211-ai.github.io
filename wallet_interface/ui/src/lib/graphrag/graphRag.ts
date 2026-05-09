@@ -24,6 +24,7 @@ export async function build211GraphRagEvidence(
     queryEmbedding?: Float32Array | number[];
     filters?: SearchFilters;
     limit?: number;
+    preferredClusterIds?: number[];
   } = {},
 ): Promise<GraphRagEvidence> {
   const results = await search211Corpus(query, {
@@ -31,6 +32,7 @@ export async function build211GraphRagEvidence(
     mode: options.queryEmbedding ? "hybrid" : "keyword",
     queryEmbedding: options.queryEmbedding,
     limit: options.limit || 6,
+    preferredClusterIds: options.preferredClusterIds,
   });
   const related = await get211RelatedGraph(results.map((result) => result.docId));
   return {

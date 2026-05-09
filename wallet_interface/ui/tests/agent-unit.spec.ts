@@ -296,6 +296,7 @@ test.describe("agent unit contracts", () => {
     });
     expect(AUDIO_CHAT_CONFIG.liquidAudioRunnerBaseUrl).toContain("LFM2.5-Audio-1.5B-transformers-js");
     expect(AUDIO_CHAT_CONFIG.maxAudioFrames).toBeGreaterThan(0);
+    expect(AUDIO_CHAT_CONFIG.warmupTimeoutMs).toBeGreaterThan(AUDIO_CHAT_CONFIG.requestTimeoutMs);
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
   });
 

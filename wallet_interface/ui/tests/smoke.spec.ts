@@ -1,6 +1,8 @@
 import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
+const appSessionKey = "abby-ui-session-v1";
+const appPersistKey = "abby-ui-state-v1";
 
 function walletRoute(route: string, actorDid: string, params: Record<string, string> = {}) {
   const query = new URLSearchParams({
@@ -203,6 +205,98 @@ test("check-in interval cannot exceed thirty days", async ({ page }) => {
   await expect(page.getByText(/Checked in by text/i)).toBeVisible();
   await page.getByRole("button", { name: /Check in by email/i }).click();
   await expect(page.getByText(/Checked in by email/i)).toBeVisible();
+});
+
+test("calendar collects service appointments and follow-ups", async ({ page }) => {
+  const now = Date.now();
+  const appointmentAt = new Date(now + 36 * 60 * 60 * 1000).toISOString();
+  const reminderAt = new Date(now + 34 * 60 * 60 * 1000).toISOString();
+  const followUpAt = new Date(now + 72 * 60 * 60 * 1000).toISOString();
+  const lastCheckInAt = new Date(now).toISOString();
+
+  await page.addInitScript(
+    ({ appointmentAt, appPersistKey, appSessionKey, followUpAt, lastCheckInAt, reminderAt }) => {
+      window.localStorage.setItem(appSessionKey, JSON.stringify({ username: "calendar-reviewer" }));
+      window.localStorage.setItem(
+        appPersistKey,
+        JSON.stringify({
+          policy: {
+            intervalDays: 2,
+            reminderChannels: ["email", "sms"],
+            gracePeriodHours: 12,
+            escalationEnabled: true,
+            lastCheckInAt
+          },
+          servicePlans: [
+            {
+              plan_id: "plan-calendar-test",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What should I bring next time?"],
+              appointment_at: appointmentAt,
+              reminder_at: reminderAt,
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: [],
+              private_notes_record_id: "",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt
+            }
+          ],
+          serviceInteractions: [
+            {
+              interaction_id: "int-follow-up-test",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:example:user",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: lastCheckInAt,
+              status: "active",
+              outcome: "Call confirmed",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: followUpAt,
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt,
+              metadata: {}
+            }
+          ]
+        })
+      );
+    },
+    { appointmentAt, appPersistKey, appSessionKey, followUpAt, lastCheckInAt, reminderAt }
+  );
+
+  await page.goto("/#/calendar");
+  await expect(page.getByRole("heading", { name: /^Calendar$/i })).toBeVisible({ timeout: 10000 });
+  const foodAppointment = page.getByRole("article").filter({ hasText: /Food pantry intake/i });
+  const clinicFollowUp = page.getByRole("article").filter({ hasText: /Bring paperwork/i });
+  const checkInReminder = page.getByRole("article").filter({ hasText: /Check in with Abby/i });
+  await expect(foodAppointment).toBeVisible();
+  await expect(foodAppointment.getByText(/Bus 12 to 4th Ave/i)).toBeVisible();
+  await expect(clinicFollowUp).toBeVisible();
+  await expect(checkInReminder).toBeVisible();
+  await expect(page.getByRole("button", { name: /Open plan/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Add to calendar/i }).first()).toBeVisible();
 });
 
 test("hash navigation updates the active screen without a full reload", async ({ page }) => {

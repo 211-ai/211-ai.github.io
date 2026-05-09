@@ -160,6 +160,17 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "calendar-scheduled-services",
+    path: "/#/calendar",
+    title: "Calendar schedule",
+    state: "scheduled service appointment and follow-up",
+    goals: [
+      "Upcoming appointments, follow-ups, and check-ins should be easy to distinguish.",
+      "Travel and reminder details should be visible without crowding the row actions.",
+      "The schedule should remain readable on mobile with action buttons wrapping cleanly."
+    ]
+  },
+  {
     id: "contacts",
     path: "/#/contacts",
     title: "Emergency contacts",
@@ -468,6 +479,7 @@ const appSessionKey = "abby-ui-session-v1";
 const routeReadyHeadings: Record<string, RegExp> = {
   "/": /Welcome to your safety plan!/i,
   "/#/analytics": /Share group facts, not your name/i,
+  "/#/calendar": /^Calendar$/i,
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
   "/#/exports": /Shareable wallet bundles/i,
@@ -518,6 +530,10 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
     appSessionKey
   );
 
+  if (scenarioPath === "/#/calendar") {
+    await seedCalendarCaptureState(page);
+  }
+
   if (scenarioPath === "/#/shelter") {
     await verifyShelterStaffForCapture(page);
     return;
@@ -526,6 +542,85 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
   await page.reload();
   await expect(page.locator(".screen")).toBeVisible();
   await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+}
+
+async function seedCalendarCaptureState(page: Page) {
+  const now = Date.now();
+  const appointmentAt = new Date(now + 26 * 60 * 60 * 1000).toISOString();
+  const reminderAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+  const followUpAt = new Date(now + 54 * 60 * 60 * 1000).toISOString();
+  const lastCheckInAt = new Date(now).toISOString();
+
+  await page.evaluate(
+    ({ appointmentAt, followUpAt, lastCheckInAt, reminderAt }) => {
+      window.localStorage.setItem(
+        "abby-ui-state-v1",
+        JSON.stringify({
+          policy: {
+            intervalDays: 2,
+            reminderChannels: ["email", "sms"],
+            gracePeriodHours: 12,
+            escalationEnabled: true,
+            lastCheckInAt
+          },
+          servicePlans: [
+            {
+              plan_id: "plan-calendar-capture",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment and confirm next pickup window.",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What documents are needed next?"],
+              appointment_at: appointmentAt,
+              reminder_at: reminderAt,
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: [],
+              private_notes_record_id: "",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt
+            }
+          ],
+          serviceInteractions: [
+            {
+              interaction_id: "int-calendar-capture",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:example:user",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: lastCheckInAt,
+              status: "active",
+              outcome: "Call confirmed",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: followUpAt,
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: lastCheckInAt,
+              updated_at: lastCheckInAt,
+              metadata: {}
+            }
+          ]
+        })
+      );
+    },
+    { appointmentAt, followUpAt, lastCheckInAt, reminderAt }
+  );
 }
 
 async function verifyShelterStaffForCapture(page: Page) {

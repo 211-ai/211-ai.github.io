@@ -110,7 +110,8 @@ export class ClientAudioReplyService {
         await this.sendWorkerRequest(
           "warmUp",
           { modelName },
-          AUDIO_CHAT_CONFIG.requestTimeoutMs,
+          AUDIO_CHAT_CONFIG.warmupTimeoutMs,
+          "Audio model warmup timed out.",
           options.onProgress,
         );
         return {
@@ -155,6 +156,7 @@ export class ClientAudioReplyService {
           "generateAudio",
           { text: normalizedText, modelName },
           AUDIO_CHAT_CONFIG.requestTimeoutMs,
+          "Audio generation timed out.",
           options.onProgress,
         );
         if (result.audioBlob) {
@@ -219,6 +221,7 @@ export class ClientAudioReplyService {
     type: "generateAudio" | "warmUp",
     data: { text?: string; modelName: string },
     timeoutMs: number,
+    timeoutMessage: string,
     onProgress?: (progress: ClientAudioProgress) => void,
   ): Promise<AudioWorkerResponse> {
     this.ensureWorker();
@@ -226,7 +229,7 @@ export class ClientAudioReplyService {
     return new Promise((resolve, reject) => {
       const timeout = globalThis.setTimeout(() => {
         this.pendingRequests.delete(requestId);
-        reject(new Error("Audio generation timed out."));
+        reject(new Error(timeoutMessage));
       }, timeoutMs);
       this.pendingRequests.set(requestId, {
         onProgress,

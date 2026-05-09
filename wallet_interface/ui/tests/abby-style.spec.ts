@@ -105,6 +105,7 @@ test("mobile navigation keeps the ABBY palette and current route set", async ({ 
   await expect(navigation.getByText("Analytics tools", { exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Home", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Register", exact: true })).toBeVisible();
+  await expect(navigation.getByRole("button", { name: "Calendar", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Services", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Shelter staff", exact: true })).toBeVisible();
   await expect(navigation.getByRole("button", { name: "Analytics", exact: true })).toBeVisible();

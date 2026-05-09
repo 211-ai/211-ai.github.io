@@ -303,15 +303,32 @@ def _make_portal_parquet(root: Path) -> Path:
     return portal_path
 
 
+def _make_place_centroid_file(root: Path) -> Path:
+    centroid_path = root / "place_centroids.txt"
+    centroid_path.write_text(
+        "\n".join(
+            [
+                "USPS|GEOID|GEOIDFQ|ANSICODE|NAME|LSAD|FUNCSTAT|ALAND|AWATER|ALAND_SQMI|AWATER_SQMI|INTPTLAT|INTPTLONG",
+                "OR|4159000|1600000US4159000|02411792|Portland city|25|A|0|0|0|0|45.537123|-122.650925",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return centroid_path
+
+
 def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     package_dir = _make_package(tmp_path)
     portal_parquet_path = _make_portal_parquet(tmp_path)
+    place_centroid_path = _make_place_centroid_file(tmp_path)
     output_dir = tmp_path / "browser_corpus"
 
     result = build_browser_graphrag_corpus(
         package_dir=package_dir,
         output_dir=output_dir,
         portal_parquet_path=portal_parquet_path,
+        place_centroid_path=place_centroid_path,
         max_terms_per_document=8,
         max_edges_per_document=4,
     )
@@ -326,7 +343,9 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert result["embedding_dimension"] == 3
     assert result["graph_neighborhood_count"] == 2
 
-    documents = pd.read_parquet(output_dir / "generated" / "documents.parquet").to_dict(orient="records")
+    parquet_file = output_dir / "generated" / "documents.parquet"
+    documents = pd.read_parquet(parquet_file).to_dict(orient="records")
+    documents_by_id = {document["doc_id"]: document for document in documents}
     document_index = json.loads((output_dir / "generated" / "document-index.json").read_text())
     bm25 = json.loads((output_dir / "generated" / "bm25-documents.json").read_text())
     embedding_index = json.loads((output_dir / "generated" / "embedding-index.json").read_text())
@@ -334,13 +353,17 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     graph_shard = json.loads((output_dir / graph_index["docIdToShard"]["service:cid-service"]).read_text())
     communities = json.loads((output_dir / "generated" / "graph-communities.json").read_text())
     service_geo_index = json.loads((output_dir / "generated" / "service-geo-index.json").read_text())
+    geo_clusters = json.loads((output_dir / "generated" / "document-geo-clusters.json").read_text())
     artifacts = json.loads((output_dir / "artifacts.manifest.json").read_text())
 
-    assert documents[0]["source_content_cid"] == "cid-page"
+    assert len(documents) == 2
+    assert documents_by_id["page:cid-page"]["source_content_cid"] == "cid-page"
     assert document_index["contentCidToIndex"]["cid-service"] == 1
-    assert documents[1]["phones"][0]["tel_url"] == "tel:+15035550100"
-    assert documents[1]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
-    assert documents[1]["intake_steps"][0]["value"] == "Apply online or call first"
+    assert documents_by_id["service:cid-service"]["phones"][0]["tel_url"] == "tel:+15035550100"
+    assert documents_by_id["service:cid-service"]["addresses"][0]["maps_query"] == "123 Main St Portland OR 97204"
+    assert documents_by_id["service:cid-service"]["intake_steps"][0]["value"] == "Apply online or call first"
+    assert documents_by_id["service:cid-service"]["geo_precision"] == "place_centroid"
+    assert documents_by_id["service:cid-service"]["geo_cluster_id"] == 0
     assert not (output_dir / "generated" / "documents.json").exists()
     assert bm25["documents"][1]["terms"]["pantry"] == 3.0
     assert embedding_index["binary"] == "embeddings.f32"
@@ -356,12 +379,24 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert communities["communities"][0]["top_terms"] == [["food", 2]]
     assert service_geo_index["serviceCount"] == 1
     assert service_geo_index["docsWithAddress"] == 1
+    assert service_geo_index["docsWithCoordinates"] == 1
     assert service_geo_index["docsByCity"]["portland"] == ["service:cid-service"]
     assert "multnomah" in service_geo_index["docsByPlaceTerm"]
+    assert geo_clusters["clusterCount"] == 1
+    assert geo_clusters["clusteredServiceCount"] == 1
+    assert geo_clusters["serviceDocIdToClusterId"]["service:cid-service"] == 0
+    assert geo_clusters["rowGroupCount"] == 2
+    assert geo_clusters["rowGroups"][0]["kind"] == "service_cluster"
+    assert geo_clusters["rowGroups"][1]["kind"] == "non_service"
+    assert geo_clusters["clusters"][0]["centroid"]["lat"] == 45.537123
     assert artifacts["sourcePackage"]["build_manifest_cid"] == "cid-manifest"
+    assert any(artifact["path"] == "generated/document-geo-clusters.json" for artifact in artifacts["artifacts"])
     generated_manifest = json.loads((output_dir / "generated" / "generated-manifest.json").read_text())
     assert generated_manifest["serviceDocumentCount"] == 1
     assert generated_manifest["servicePhoneCount"] == 1
     assert generated_manifest["serviceAddressCount"] == 1
     assert generated_manifest["serviceIntakeStepCount"] == 1
     assert generated_manifest["serviceRequiredDocumentCount"] == 1
+    assert generated_manifest["geoClusterCount"] == 1
+    assert generated_manifest["geoClusteredServiceCount"] == 1
+    assert generated_manifest["documentParquetRowGroupCount"] == 2

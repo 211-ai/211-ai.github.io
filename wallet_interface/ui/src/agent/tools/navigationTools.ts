@@ -24,6 +24,7 @@ const extraRouteAliases = {
   home: ["dashboard", "start", "today", "safety plan"],
   register: ["registration", "profile", "intake"],
   "check-in": ["reminder", "reminders", "checkins"],
+  calendar: ["appointments", "appointment", "schedule", "scheduled services", "service schedule"],
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
   uploads: ["wallet", "documents", "files", "records"],
@@ -47,6 +48,13 @@ const routeSummaries = {
   register: (state) => `Registration draft is active with ${state.profile.serviceNeeds.length} service needs selected.`,
   "check-in": (state) =>
     `Check-in is configured every ${state.policy.intervalDays} days through ${state.policy.reminderChannels.length} channels.`,
+  calendar: (state) => {
+    const appointments = state.servicePlans?.filter((plan) => Boolean(plan.appointment_at)).length ?? 0;
+    const followUps =
+      state.serviceInteractions?.filter((interaction) => Boolean(interaction.next_follow_up_at)).length ?? 0;
+
+    return `${appointments + followUps} scheduled appointments, services, and follow-ups.`;
+  },
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
   uploads: (state) => `${state.uploads.length} wallet files are visible.`,

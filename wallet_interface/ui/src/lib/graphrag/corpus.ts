@@ -3,6 +3,7 @@ import type {
   CorpusArtifactManifest,
   CorpusDocument,
   CorpusDocumentIndex,
+  DocumentGeoClusterManifest,
   DocumentCommunity,
   EmbeddingIndex,
   GeneratedCorpusManifest,
@@ -13,7 +14,7 @@ import type {
   GraphNode,
   ServiceGeoIndex,
 } from "./types";
-import { loadDocumentsFromParquet } from "./duckdbDocuments";
+import { loadDocumentsFromParquet, type DuckDbDocumentQuery } from "./duckdbDocuments";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
@@ -35,7 +36,9 @@ let graphIndexPromise: Promise<GraphNeighborhoodIndex> | null = null;
 let communitiesPromise: Promise<GraphCommunity[]> | null = null;
 let documentCommunitiesPromise: Promise<DocumentCommunity[]> | null = null;
 let serviceGeoIndexPromise: Promise<ServiceGeoIndex> | null = null;
+let documentGeoClusterPromise: Promise<DocumentGeoClusterManifest> | null = null;
 const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
+const documentSlicePromises = new Map<string, Promise<CorpusState>>();
 
 export function get211CorpusBaseUrl(): string {
   return CORPUS_BASE_URL;
@@ -78,17 +81,33 @@ export async function load211Documents(): Promise<CorpusState> {
         }
         return fetch211CorpusJson<CorpusDocument[]>("generated/documents.json");
       })
-      .then((documents) => ({
-        documents,
-        documentById: new Map(documents.map((document) => [document.doc_id, document])),
-        documentByContentCid: new Map(
-          documents
-            .filter((document) => document.source_content_cid)
-            .map((document) => [document.source_content_cid, document]),
-        ),
-      }));
+      .then(buildCorpusState);
   }
   return documentsPromise;
+}
+
+export async function load211DocumentsSlice(query: DuckDbDocumentQuery = {}): Promise<CorpusState> {
+  const manifest = await load211ArtifactManifest();
+  const parquetArtifact = manifest.artifacts.find(
+    (artifact) => artifact.role === "documents" && artifact.path.endsWith(".parquet"),
+  );
+  if (!parquetArtifact) {
+    return load211Documents();
+  }
+  const cacheKey = JSON.stringify({
+    clusterIds: query.clusterIds || [],
+    includeUnclusteredServices: Boolean(query.includeUnclusteredServices),
+    docTypes: query.docTypes || [],
+    docIds: query.docIds || [],
+    limit: query.limit || 0,
+  });
+  if (!documentSlicePromises.has(cacheKey)) {
+    documentSlicePromises.set(
+      cacheKey,
+      loadDocumentsFromParquet(get211CorpusAssetUrl(parquetArtifact.path), query).then(buildCorpusState),
+    );
+  }
+  return documentSlicePromises.get(cacheKey)!;
 }
 
 export async function load211DocumentIndex(): Promise<CorpusDocumentIndex> {
@@ -201,6 +220,13 @@ export async function load211ServiceGeoIndex(): Promise<ServiceGeoIndex> {
   return serviceGeoIndexPromise;
 }
 
+export async function load211DocumentGeoClusters(): Promise<DocumentGeoClusterManifest> {
+  if (!documentGeoClusterPromise) {
+    documentGeoClusterPromise = fetch211CorpusJson<DocumentGeoClusterManifest>("generated/document-geo-clusters.json");
+  }
+  return documentGeoClusterPromise;
+}
+
 export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
   const response = await fetch(get211CorpusAssetUrl(relativePath));
   if (!response.ok) {
@@ -237,6 +263,18 @@ export function get211CorpusAssetUrl(relativePath: string): string {
 
 function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/, "");
+}
+
+function buildCorpusState(documents: CorpusDocument[]): CorpusState {
+  return {
+    documents,
+    documentById: new Map(documents.map((document) => [document.doc_id, document])),
+    documentByContentCid: new Map(
+      documents
+        .filter((document) => document.source_content_cid)
+        .map((document) => [document.source_content_cid, document]),
+    ),
+  };
 }
 
 function resolveDefaultCorpusBaseUrl(): string {

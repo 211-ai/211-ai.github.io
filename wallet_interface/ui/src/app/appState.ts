@@ -24,6 +24,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "home", label: "Home" },
   { id: "register", label: "Register" },
   { id: "check-in", label: "Check in" },
+  { id: "calendar", label: "Calendar" },
   { id: "contacts", label: "Contacts" },
   { id: "sharing-rules", label: "Sharing" },
   { id: "social-services", label: "Services" },

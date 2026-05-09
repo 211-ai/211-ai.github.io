@@ -294,6 +294,7 @@ export function isRouteId(value: unknown): value is RouteId {
       "home",
       "register",
       "check-in",
+      "calendar",
       "contacts",
       "sharing-rules",
       "uploads",

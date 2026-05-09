@@ -5,12 +5,22 @@ import type { CorpusDocument } from "./types";
 let duckDbPromise: Promise<duckdb.AsyncDuckDB> | null = null;
 let duckDbBundlesPromise: Promise<duckdb.DuckDBBundles> | null = null;
 
-export async function loadDocumentsFromParquet(parquetUrl: string): Promise<CorpusDocument[]> {
+export interface DuckDbDocumentQuery {
+  clusterIds?: number[];
+  includeUnclusteredServices?: boolean;
+  docTypes?: string[];
+  docIds?: string[];
+  limit?: number;
+}
+
+export async function loadDocumentsFromParquet(
+  parquetUrl: string,
+  query: DuckDbDocumentQuery = {},
+): Promise<CorpusDocument[]> {
   const database = await getDuckDb();
   const connection = await database.connect();
   try {
-    const escapedUrl = parquetUrl.replace(/'/g, "''");
-    const table = await connection.query(`SELECT * FROM read_parquet('${escapedUrl}')`);
+    const table = await connection.query(buildReadParquetQuery(parquetUrl, query));
     return tableToDocuments(table);
   } finally {
     await connection.close();
@@ -78,6 +88,10 @@ function coerceCorpusDocument(value: unknown): CorpusDocument {
     host: stringValue(row.host),
     city: stringValue(row.city),
     state: stringValue(row.state),
+    geo_lat: numberOrNull(row.geo_lat),
+    geo_lon: numberOrNull(row.geo_lon),
+    geo_precision: stringValue(row.geo_precision),
+    geo_cluster_id: integerOrNull(row.geo_cluster_id),
     phones: arrayValue(row.phones),
     emails: arrayValue(row.emails),
     websites: arrayValue(row.websites),
@@ -133,6 +147,19 @@ function stringValue(value: unknown): string {
   return typeof value === "string" ? value : value == null ? "" : String(value);
 }
 
+function numberOrNull(value: unknown): number | null | undefined {
+  if (value == null || value === "") {
+    return undefined;
+  }
+  const numeric = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(numeric) ? numeric : null;
+}
+
+function integerOrNull(value: unknown): number | null | undefined {
+  const numeric = numberOrNull(value);
+  return numeric == null ? numeric : Math.trunc(numeric);
+}
+
 function arrayValue(value: unknown): any[] | undefined {
   return Array.isArray(value) ? value : undefined;
 }
@@ -142,4 +169,45 @@ function recordOrNull(value: unknown): Record<string, unknown> | null | undefine
     return undefined;
   }
   return isRecord(value) ? value : null;
+}
+
+function buildReadParquetQuery(parquetUrl: string, query: DuckDbDocumentQuery): string {
+  const whereClauses: string[] = [];
+  if (query.docTypes?.length) {
+    whereClauses.push(`doc_type IN (${query.docTypes.map(sqlStringLiteral).join(", ")})`);
+  }
+  if (query.clusterIds?.length) {
+    const clusterClauses = [`geo_cluster_id IN (${query.clusterIds.map((value) => String(Math.trunc(value))).join(", ")})`];
+    if (query.includeUnclusteredServices) {
+      clusterClauses.push("(doc_type = 'service' AND geo_cluster_id IS NULL)");
+    }
+    whereClauses.push(`(doc_type = 'service' AND (${clusterClauses.join(" OR ")}))`);
+  } else if (query.includeUnclusteredServices) {
+    whereClauses.push("(doc_type = 'service' AND geo_cluster_id IS NULL)");
+  }
+  if (query.docIds?.length) {
+    whereClauses.push(`doc_id IN (${query.docIds.map(sqlStringLiteral).join(", ")})`);
+  }
+
+  const clauses = [`SELECT * FROM read_parquet(${sqlStringLiteral(parquetUrl)})`];
+  if (whereClauses.length) {
+    clauses.push(`WHERE ${whereClauses.join(" AND ")}`);
+  }
+  clauses.push("ORDER BY");
+  if (query.clusterIds?.length) {
+    clauses.push(
+      `CASE ${query.clusterIds
+        .map((clusterId, index) => `WHEN geo_cluster_id = ${String(Math.trunc(clusterId))} THEN ${index}`)
+        .join(" ")} ELSE ${query.clusterIds.length + (query.includeUnclusteredServices ? 1 : 0)} END,`,
+    );
+  }
+  clauses.push("doc_type ASC, city ASC, state ASC, doc_id ASC");
+  if (query.limit && query.limit > 0) {
+    clauses.push(`LIMIT ${Math.trunc(query.limit)}`);
+  }
+  return clauses.join(" ");
+}
+
+function sqlStringLiteral(value: string): string {
+  return `'${value.replace(/'/g, "''")}'`;
 }

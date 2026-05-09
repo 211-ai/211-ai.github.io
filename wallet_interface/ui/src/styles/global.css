@@ -4741,3 +4741,145 @@ textarea:focus-visible,
     padding-right: clamp(168px, 14vw, 204px);
   }
 }
+
+.calendar-screen {
+  gap: 18px;
+}
+
+.calendar-summary-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.calendar-summary-panel {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.calendar-summary-panel span,
+.calendar-summary-panel small {
+  color: #5b6776;
+}
+
+.calendar-summary-panel strong {
+  color: #17202a;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.calendar-list {
+  display: grid;
+  gap: 12px;
+}
+
+.calendar-event-item {
+  align-items: start;
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(96px, auto) minmax(0, 1fr) auto;
+  padding: 14px;
+}
+
+.calendar-event-past {
+  background: #f8fafc;
+}
+
+.calendar-date-block {
+  border-left: 4px solid #1d4ed8;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding-left: 10px;
+}
+
+.calendar-event-past .calendar-date-block {
+  border-left-color: #aeb8c5;
+}
+
+.calendar-date-block strong {
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.calendar-date-block span {
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.calendar-event-body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.calendar-event-body h3,
+.calendar-event-body p {
+  margin: 0;
+}
+
+.calendar-event-body p {
+  color: #4b5563;
+}
+
+.calendar-event-meta {
+  display: grid;
+  gap: 8px;
+  margin: 2px 0 0;
+}
+
+.calendar-event-meta div {
+  align-items: start;
+  color: #4b5563;
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: auto auto minmax(0, 1fr);
+}
+
+.calendar-event-meta dt {
+  font-weight: 800;
+}
+
+.calendar-event-meta dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.calendar-event-actions {
+  align-self: stretch;
+  align-content: start;
+  justify-content: flex-end;
+  min-width: 172px;
+}
+
+@media (max-width: 900px) {
+  .calendar-event-item {
+    grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+  }
+
+  .calendar-event-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .calendar-event-item {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-event-actions .button {
+    width: 100%;
+  }
+}

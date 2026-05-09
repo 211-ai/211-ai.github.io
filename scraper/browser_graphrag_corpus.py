@@ -7,20 +7,40 @@ import math
 import re
 import struct
 import sys
+import zipfile
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.request import urlretrieve
 
+import numpy as np
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+from sklearn.cluster import KMeans
 
 
 DEFAULT_PACKAGE_DIR = Path("data/retrieval_package")
 DEFAULT_OUTPUT_DIR = Path("wallet_interface/ui/public/corpus/211-info/current")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_PORTAL_PARQUET = REPO_ROOT / "data" / "portal" / "documents.portal.parquet"
+DEFAULT_GEO_REFERENCE_DIR = REPO_ROOT / "data" / "reference" / "geo"
 DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL = {
     "BAAI/bge-small-en-v1.5": "Xenova/bge-small-en-v1.5",
 }
+DEFAULT_GEO_CLUSTER_TARGET_SIZE = 256
+DEFAULT_GEO_CLUSTER_MIN_COUNT = 8
+DEFAULT_GEO_CLUSTER_MAX_COUNT = 64
+DEFAULT_NON_SERVICE_ROW_GROUP_SIZE = 1024
+CENSUS_PLACE_GAZETTEER_YEAR = 2025
+CENSUS_PLACE_GAZETTEER_URL = (
+    "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/"
+    f"{CENSUS_PLACE_GAZETTEER_YEAR}_Gazetteer/{CENSUS_PLACE_GAZETTEER_YEAR}_Gaz_place_national.zip"
+)
+CENSUS_PLACE_GAZETTEER_FILENAME = f"{CENSUS_PLACE_GAZETTEER_YEAR}_Gaz_place_national.txt"
+PLACE_SUFFIX_PATTERN = re.compile(
+    r"\b(?:city|town|village|borough|municipality|metro township|cdp|balance|urban county|consolidated government)\b$"
+)
 GEO_STOP_WORDS = {
     "and",
     "ave",
@@ -91,6 +111,132 @@ def write_json(path: Path, payload: Any) -> dict[str, Any]:
 def write_parquet(path: Path, rows: list[dict[str, Any]], *, compression: str = "zstd") -> dict[str, Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_parquet(path, index=False, compression=compression)
+    return file_record(path)
+
+
+def write_clustered_documents_parquet(
+    path: Path,
+    documents: list[dict[str, Any]],
+    *,
+    service_cluster_metadata: dict[str, Any],
+    non_service_row_group_size: int = DEFAULT_NON_SERVICE_ROW_GROUP_SIZE,
+    compression: str = "zstd",
+) -> dict[str, Any]:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not documents:
+        pd.DataFrame(documents).to_parquet(path, index=False, compression=compression)
+        return file_record(path)
+
+    grouped_rows: list[tuple[dict[str, Any], list[dict[str, Any]]]] = []
+    service_docs_by_cluster: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    service_docs_unclustered: list[dict[str, Any]] = []
+    non_service_documents: list[dict[str, Any]] = []
+
+    for document in documents:
+        if document.get("doc_type") != "service":
+            non_service_documents.append(document)
+            continue
+        cluster_id = document.get("geo_cluster_id")
+        if isinstance(cluster_id, int) and cluster_id >= 0:
+            service_docs_by_cluster[cluster_id].append(document)
+        else:
+            service_docs_unclustered.append(document)
+
+    cluster_rows = {
+        int(cluster["clusterId"]): cluster
+        for cluster in service_cluster_metadata.get("clusters", [])
+        if cluster.get("kind") == "service_cluster"
+    }
+    cluster_order = sorted(cluster_rows)
+
+    def sort_document_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return sorted(
+            rows,
+            key=lambda document: (
+                str(document.get("city", "")),
+                str(document.get("state", "")),
+                str(document.get("provider_name", "")),
+                str(document.get("program_name", "")),
+                str(document.get("title", "")),
+                str(document.get("doc_id", "")),
+            ),
+        )
+
+    row_group_records: list[dict[str, Any]] = []
+    row_group_index = 0
+
+    for cluster_id in cluster_order:
+        rows = sort_document_rows(service_docs_by_cluster.get(cluster_id, []))
+        if not rows:
+            continue
+        grouped_rows.append(({"kind": "service_cluster", "clusterId": cluster_id}, rows))
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "service_cluster",
+                "clusterId": cluster_id,
+                "documentCount": len(rows),
+                "serviceDocumentCount": len(rows),
+            }
+        )
+        row_group_index += 1
+
+    if service_docs_unclustered:
+        rows = sort_document_rows(service_docs_unclustered)
+        grouped_rows.append(({"kind": "service_unclustered", "clusterId": -1}, rows))
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "service_unclustered",
+                "clusterId": -1,
+                "documentCount": len(rows),
+                "serviceDocumentCount": len(rows),
+            }
+        )
+        row_group_index += 1
+
+    non_service_sorted = sorted(
+        non_service_documents,
+        key=lambda document: (
+            str(document.get("doc_type", "")),
+            str(document.get("city", "")),
+            str(document.get("state", "")),
+            str(document.get("title", "")),
+            str(document.get("doc_id", "")),
+        ),
+    )
+    for offset in range(0, len(non_service_sorted), max(1, non_service_row_group_size)):
+        rows = non_service_sorted[offset : offset + max(1, non_service_row_group_size)]
+        grouped_rows.append(({"kind": "non_service", "clusterId": None}, rows))
+        row_group_records.append(
+            {
+                "rowGroupIndex": row_group_index,
+                "kind": "non_service",
+                "clusterId": None,
+                "documentCount": len(rows),
+                "serviceDocumentCount": 0,
+            }
+        )
+        row_group_index += 1
+
+    ordered_rows = [row for _, group in grouped_rows for row in group]
+    schema = pa.Table.from_pandas(pd.DataFrame(ordered_rows), preserve_index=False).schema
+    writer = pq.ParquetWriter(path, schema, compression=compression, use_dictionary=True)
+    try:
+        for _, rows in grouped_rows:
+            table = pa.Table.from_pandas(pd.DataFrame(rows), schema=schema, preserve_index=False)
+            writer.write_table(table)
+    finally:
+        writer.close()
+
+    service_cluster_metadata["rowGroups"] = row_group_records
+    service_cluster_metadata["rowGroupCount"] = len(row_group_records)
+    service_cluster_metadata["nonServiceRowGroupCount"] = sum(
+        1 for record in row_group_records if record["kind"] == "non_service"
+    )
+    service_cluster_metadata["serviceRowGroupCount"] = sum(
+        1 for record in row_group_records if record["kind"] != "non_service"
+    )
     return file_record(path)
 
 
@@ -209,6 +355,20 @@ def load_documents(
             "host": str(row.get("host", "")),
             "city": str(row.get("city", "")),
             "state": str(row.get("state", "")),
+            "phones": [],
+            "emails": [],
+            "websites": [],
+            "addresses": [],
+            "hours": [],
+            "eligibility": [],
+            "intake_steps": [],
+            "required_documents": [],
+            "fees": [],
+            "languages": [],
+            "accessibility": [],
+            "travel_info": [],
+            "area_served": [],
+            "geo": {"lat": None, "lon": None, "precision": "none"},
         }
         if document["doc_type"] == "service":
             document.update(portal_service_details.get(doc_id, {}))
@@ -218,6 +378,15 @@ def load_documents(
 
 def normalize_geo_key(value: Any) -> str:
     return re.sub(r"[^a-z0-9]+", " ", str(value or "").lower()).strip()
+
+
+def normalize_place_name(value: Any) -> str:
+    normalized = normalize_geo_key(value)
+    if not normalized:
+        return ""
+    normalized = PLACE_SUFFIX_PATTERN.sub("", normalized).strip()
+    normalized = re.sub(r"\s+", " ", normalized)
+    return normalized
 
 
 def tokenize_geo_text(value: str) -> set[str]:
@@ -281,11 +450,8 @@ def build_service_geo_index(documents: list[dict[str, Any]]) -> dict[str, Any]:
             add_geo_term(docs_by_state, address.get("state"), doc_id)
             place_text_parts.extend(
                 [
-                    str(address.get("address", "")),
-                    str(address.get("street", "")),
                     str(address.get("city", "")),
                     str(address.get("state", "")),
-                    str(address.get("postal_code", "")),
                     str(address.get("maps_query", "")),
                 ]
             )
@@ -320,6 +486,312 @@ def build_service_geo_index(documents: list[dict[str, Any]]) -> dict[str, Any]:
         "docsByCity": {key: sorted(value) for key, value in sorted(docs_by_city.items())},
         "docsByState": {key: sorted(value) for key, value in sorted(docs_by_state.items())},
         "docsByPlaceTerm": {key: sorted(value) for key, value in sorted(docs_by_place_term.items())},
+    }
+
+
+def load_place_centroids(
+    *,
+    reference_dir: Path = DEFAULT_GEO_REFERENCE_DIR,
+    place_centroid_path: Path | None = None,
+) -> dict[tuple[str, str], dict[str, Any]]:
+    if place_centroid_path is None:
+        place_centroid_path = ensure_census_place_gazetteer(reference_dir)
+    centroid_records: dict[tuple[str, str], dict[str, Any]] = {}
+    for line in place_centroid_path.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("USPS|"):
+            continue
+        parts = line.split("|")
+        if len(parts) < 13:
+            continue
+        state = normalize_geo_key(parts[0])
+        name = normalize_place_name(parts[4])
+        if not state or not name:
+            continue
+        try:
+            lat = float(parts[11])
+            lon = float(parts[12])
+        except ValueError:
+            continue
+        land_area = float(parts[8] or 0.0)
+        funcstat = parts[6]
+        priority = (1 if funcstat == "A" else 0, land_area)
+        key = (state, name)
+        current = centroid_records.get(key)
+        if current is None or priority > current["priority"]:
+            centroid_records[key] = {
+                "state": parts[0],
+                "name": parts[4],
+                "lat": lat,
+                "lon": lon,
+                "priority": priority,
+            }
+    return centroid_records
+
+
+def ensure_census_place_gazetteer(reference_dir: Path) -> Path:
+    reference_dir.mkdir(parents=True, exist_ok=True)
+    txt_path = reference_dir / CENSUS_PLACE_GAZETTEER_FILENAME
+    if txt_path.exists():
+        return txt_path
+    zip_path = reference_dir / f"{CENSUS_PLACE_GAZETTEER_YEAR}_Gaz_place_national.zip"
+    if not zip_path.exists():
+        urlretrieve(CENSUS_PLACE_GAZETTEER_URL, zip_path)
+    with zipfile.ZipFile(zip_path) as archive:
+        member = next((name for name in archive.namelist() if name.endswith(".txt")), "")
+        if not member:
+            raise FileNotFoundError(f"no gazetteer text file found in {zip_path}")
+        archive.extract(member, reference_dir)
+        extracted = reference_dir / member
+        if extracted != txt_path:
+            extracted.replace(txt_path)
+    return txt_path
+
+
+def first_non_empty_text(values: Iterable[Any]) -> str:
+    for value in values:
+        normalized = str(value or "").strip()
+        if normalized:
+            return normalized
+    return ""
+
+
+def iter_service_locality_candidates(document: dict[str, Any]) -> Iterable[tuple[str, str]]:
+    addresses = document.get("addresses") if isinstance(document.get("addresses"), list) else []
+    for address in addresses:
+        if not isinstance(address, dict):
+            continue
+        city = first_non_empty_text([address.get("city")])
+        state = first_non_empty_text([address.get("state")])
+        if city and state:
+            yield (city, state)
+
+    document_city = first_non_empty_text([document.get("city")])
+    document_state = first_non_empty_text([document.get("state")])
+    if document_city and document_state:
+        yield (document_city, document_state)
+
+    area_served = document.get("area_served") if isinstance(document.get("area_served"), list) else []
+    for value in area_served:
+        if not isinstance(value, dict):
+            continue
+        text = str(value.get("value", "")).strip()
+        match = re.match(r"^\s*([^,]+),\s*([A-Z]{2})\s*$", text)
+        if match:
+            yield (match.group(1), match.group(2))
+
+
+def coerce_service_geo_point(document: dict[str, Any], place_centroids: dict[tuple[str, str], dict[str, Any]]) -> dict[str, Any]:
+    existing_geo = document.get("geo") if isinstance(document.get("geo"), dict) else {}
+    existing_lat = existing_geo.get("lat")
+    existing_lon = existing_geo.get("lon")
+    if existing_lat is not None and existing_lon is not None:
+        return {
+            "lat": float(existing_lat),
+            "lon": float(existing_lon),
+            "precision": str(existing_geo.get("precision") or "service"),
+            "source": str(existing_geo.get("source") or "service"),
+            "place": str(existing_geo.get("place") or ""),
+            "state": str(existing_geo.get("state") or ""),
+        }
+
+    for city, state in iter_service_locality_candidates(document):
+        key = (normalize_geo_key(state), normalize_place_name(city))
+        match = place_centroids.get(key)
+        if not match:
+            continue
+        return {
+            "lat": float(match["lat"]),
+            "lon": float(match["lon"]),
+            "precision": "place_centroid",
+            "source": "census_gazetteer",
+            "place": city,
+            "state": state,
+        }
+
+    return {
+        "lat": None,
+        "lon": None,
+        "precision": str(existing_geo.get("precision") or "none"),
+        "source": str(existing_geo.get("source") or ""),
+        "place": "",
+        "state": "",
+    }
+
+
+def choose_geo_cluster_count(
+    point_count: int,
+    *,
+    requested_cluster_count: int = 0,
+    target_cluster_size: int = DEFAULT_GEO_CLUSTER_TARGET_SIZE,
+) -> int:
+    if point_count <= 1:
+        return point_count
+    if requested_cluster_count > 0:
+        return max(1, min(requested_cluster_count, point_count))
+    auto_count = int(math.ceil(point_count / max(1, target_cluster_size)))
+    return max(DEFAULT_GEO_CLUSTER_MIN_COUNT, min(DEFAULT_GEO_CLUSTER_MAX_COUNT, auto_count, point_count))
+
+
+def cluster_service_documents(
+    documents: list[dict[str, Any]],
+    *,
+    reference_dir: Path = DEFAULT_GEO_REFERENCE_DIR,
+    place_centroid_path: Path | None = None,
+    target_cluster_size: int = DEFAULT_GEO_CLUSTER_TARGET_SIZE,
+    cluster_count: int = 0,
+) -> dict[str, Any]:
+    place_centroids = load_place_centroids(reference_dir=reference_dir, place_centroid_path=place_centroid_path)
+    service_documents = [document for document in documents if document.get("doc_type") == "service"]
+    located_documents: list[dict[str, Any]] = []
+    feature_rows: list[tuple[float, float]] = []
+
+    for document in service_documents:
+        geo_point = coerce_service_geo_point(document, place_centroids)
+        document["geo"] = geo_point
+        lat = geo_point.get("lat")
+        lon = geo_point.get("lon")
+        document["geo_lat"] = float(lat) if lat is not None else None
+        document["geo_lon"] = float(lon) if lon is not None else None
+        document["geo_precision"] = str(geo_point.get("precision") or "none")
+        document["geo_cluster_id"] = None
+        if lat is None or lon is None:
+            continue
+        located_documents.append(document)
+        feature_rows.append((float(lat), float(lon)))
+
+    for document in documents:
+        if document.get("doc_type") != "service":
+            document["geo_lat"] = None
+            document["geo_lon"] = None
+            document["geo_precision"] = ""
+            document["geo_cluster_id"] = None
+
+    if not located_documents:
+        return {
+            "schemaVersion": 1,
+            "centroidSource": {
+                "kind": "census_place_gazetteer",
+                "year": CENSUS_PLACE_GAZETTEER_YEAR,
+                "url": CENSUS_PLACE_GAZETTEER_URL,
+                "path": str(place_centroid_path or ensure_census_place_gazetteer(reference_dir)),
+            },
+            "serviceDocumentCount": len(service_documents),
+            "clusteredServiceCount": 0,
+            "unclusteredServiceCount": len(service_documents),
+            "clusterCount": 0,
+            "clusters": [],
+            "serviceDocIdToClusterId": {},
+        }
+
+    points = np.array(feature_rows, dtype=np.float64)
+    mean_lat_radians = math.radians(float(points[:, 0].mean()))
+    projected = np.column_stack((points[:, 1] * math.cos(mean_lat_radians), points[:, 0]))
+    effective_cluster_count = choose_geo_cluster_count(
+        len(located_documents),
+        requested_cluster_count=cluster_count,
+        target_cluster_size=target_cluster_size,
+    )
+    kmeans = KMeans(n_clusters=effective_cluster_count, n_init=10, random_state=42)
+    labels = kmeans.fit_predict(projected)
+
+    clusters: list[dict[str, Any]] = []
+    doc_id_to_cluster: dict[str, int] = {}
+    cluster_member_rows: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for label, document in zip(labels.tolist(), located_documents):
+        cluster_id = int(label)
+        document["geo_cluster_id"] = cluster_id
+        doc_id_to_cluster[str(document.get("doc_id", ""))] = cluster_id
+        cluster_member_rows[cluster_id].append(document)
+
+    for cluster_id in sorted(cluster_member_rows):
+        rows = cluster_member_rows[cluster_id]
+        latitudes = [float(row["geo_lat"]) for row in rows if row.get("geo_lat") is not None]
+        longitudes = [float(row["geo_lon"]) for row in rows if row.get("geo_lon") is not None]
+        city_counts: dict[str, int] = defaultdict(int)
+        state_counts: dict[str, int] = defaultdict(int)
+        for row in rows:
+            address_cities = [
+                address.get("city")
+                for address in row.get("addresses", [])
+                if isinstance(address, dict)
+            ]
+            address_states = [
+                address.get("state")
+                for address in row.get("addresses", [])
+                if isinstance(address, dict)
+            ]
+            city = first_non_empty_text(
+                [
+                    row.get("city"),
+                    *address_cities,
+                ]
+            )
+            state = first_non_empty_text(
+                [
+                    row.get("state"),
+                    *address_states,
+                ]
+            )
+            if city:
+                city_counts[city] += 1
+            if state:
+                state_counts[state] += 1
+        clusters.append(
+            {
+                "clusterId": cluster_id,
+                "kind": "service_cluster",
+                "serviceDocumentCount": len(rows),
+                "documentCount": len(rows),
+                "centroid": {
+                    "lat": round(float(sum(latitudes) / len(latitudes)), 6) if latitudes else None,
+                    "lon": round(float(sum(longitudes) / len(longitudes)), 6) if longitudes else None,
+                },
+                "bounds": {
+                    "minLat": round(float(min(latitudes)), 6) if latitudes else None,
+                    "maxLat": round(float(max(latitudes)), 6) if latitudes else None,
+                    "minLon": round(float(min(longitudes)), 6) if longitudes else None,
+                    "maxLon": round(float(max(longitudes)), 6) if longitudes else None,
+                },
+                "topCities": [
+                    {"name": name, "count": count}
+                    for name, count in sorted(city_counts.items(), key=lambda item: (-item[1], item[0]))[:6]
+                ],
+                "topStates": [
+                    {"name": name, "count": count}
+                    for name, count in sorted(state_counts.items(), key=lambda item: (-item[1], item[0]))[:4]
+                ],
+            }
+        )
+
+    unclustered_service_count = len(service_documents) - len(located_documents)
+    if unclustered_service_count > 0:
+        clusters.append(
+            {
+                "clusterId": -1,
+                "kind": "service_unclustered",
+                "serviceDocumentCount": unclustered_service_count,
+                "documentCount": unclustered_service_count,
+                "centroid": {"lat": None, "lon": None},
+                "bounds": {"minLat": None, "maxLat": None, "minLon": None, "maxLon": None},
+                "topCities": [],
+                "topStates": [],
+            }
+        )
+
+    return {
+        "schemaVersion": 1,
+        "centroidSource": {
+            "kind": "census_place_gazetteer",
+            "year": CENSUS_PLACE_GAZETTEER_YEAR,
+            "url": CENSUS_PLACE_GAZETTEER_URL,
+            "path": str(place_centroid_path or ensure_census_place_gazetteer(reference_dir)),
+        },
+        "serviceDocumentCount": len(service_documents),
+        "clusteredServiceCount": len(located_documents),
+        "unclusteredServiceCount": unclustered_service_count,
+        "clusterCount": effective_cluster_count,
+        "clusters": clusters,
+        "serviceDocIdToClusterId": doc_id_to_cluster,
     }
 
 
@@ -760,11 +1232,16 @@ def build_browser_graphrag_corpus(
     package_dir: Path = DEFAULT_PACKAGE_DIR,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
     portal_parquet_path: Path = DEFAULT_PORTAL_PARQUET,
+    geo_reference_dir: Path = DEFAULT_GEO_REFERENCE_DIR,
+    place_centroid_path: Path | None = None,
     max_documents: int = 0,
     text_max_chars: int = 6000,
     max_terms_per_document: int = 48,
     max_edges_per_document: int = 8,
     graph_shard_size: int = 500,
+    geo_cluster_target_size: int = DEFAULT_GEO_CLUSTER_TARGET_SIZE,
+    geo_cluster_count: int = 0,
+    non_service_row_group_size: int = DEFAULT_NON_SERVICE_ROW_GROUP_SIZE,
 ) -> dict[str, Any]:
     package_dir = package_dir.resolve()
     output_dir = output_dir.resolve()
@@ -779,6 +1256,13 @@ def build_browser_graphrag_corpus(
         max_documents=max_documents,
         text_max_chars=text_max_chars,
     )
+    geo_cluster_manifest = cluster_service_documents(
+        documents,
+        reference_dir=geo_reference_dir.resolve(),
+        place_centroid_path=place_centroid_path.resolve() if place_centroid_path else None,
+        target_cluster_size=geo_cluster_target_size,
+        cluster_count=geo_cluster_count,
+    )
     selected_doc_ids = {document["doc_id"] for document in documents}
     service_documents = [document for document in documents if document.get("doc_type") == "service"]
     service_count = len(service_documents)
@@ -791,7 +1275,12 @@ def build_browser_graphrag_corpus(
     stale_documents_json = generated_dir / "documents.json"
     if stale_documents_json.exists():
         stale_documents_json.unlink()
-    documents_record = write_parquet(generated_dir / "documents.parquet", documents)
+    documents_record = write_clustered_documents_parquet(
+        generated_dir / "documents.parquet",
+        documents,
+        service_cluster_metadata=geo_cluster_manifest,
+        non_service_row_group_size=non_service_row_group_size,
+    )
     artifact_records.append(relative_manifest_record(output_dir, documents_record, "documents"))
 
     document_index_record = write_json(generated_dir / "document-index.json", build_document_index(documents))
@@ -840,6 +1329,8 @@ def build_browser_graphrag_corpus(
     service_geo_index = build_service_geo_index(documents)
     service_geo_record = write_json(generated_dir / "service-geo-index.json", service_geo_index)
     artifact_records.append(relative_manifest_record(output_dir, service_geo_record, "geo"))
+    document_geo_cluster_record = write_json(generated_dir / "document-geo-clusters.json", geo_cluster_manifest)
+    artifact_records.append(relative_manifest_record(output_dir, document_geo_cluster_record, "geo"))
 
     generated_manifest = {
         "schemaVersion": 1,
@@ -859,6 +1350,10 @@ def build_browser_graphrag_corpus(
         "documentCommunityCount": len(document_communities["documents"]),
         "geoSearchIndexedServiceCount": int(service_geo_index["serviceCount"]),
         "geoSearchPlaceTermCount": len(service_geo_index["docsByPlaceTerm"]),
+        "geoClusterCount": int(geo_cluster_manifest["clusterCount"]),
+        "geoClusteredServiceCount": int(geo_cluster_manifest["clusteredServiceCount"]),
+        "geoUnclusteredServiceCount": int(geo_cluster_manifest["unclusteredServiceCount"]),
+        "documentParquetRowGroupCount": int(geo_cluster_manifest.get("rowGroupCount", 0)),
         "sourcePackage": {
             "path": str(package_dir),
             "build_manifest_cid": source_manifest.get("build_manifest_cid", ""),
@@ -904,6 +1399,10 @@ def build_browser_graphrag_corpus(
         "document_community_count": len(document_communities["documents"]),
         "geo_indexed_service_count": int(service_geo_index["serviceCount"]),
         "geo_place_term_count": len(service_geo_index["docsByPlaceTerm"]),
+        "geo_cluster_count": int(geo_cluster_manifest["clusterCount"]),
+        "geo_clustered_service_count": int(geo_cluster_manifest["clusteredServiceCount"]),
+        "geo_unclustered_service_count": int(geo_cluster_manifest["unclusteredServiceCount"]),
+        "document_parquet_row_group_count": int(geo_cluster_manifest.get("rowGroupCount", 0)),
         "artifact_count": len(artifact_records) + 1,
         "artifacts_manifest_cid": artifacts_manifest_record["cid"],
         "generated_manifest_cid": generated_manifest_record["cid"],
@@ -915,11 +1414,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--package-dir", type=Path, default=DEFAULT_PACKAGE_DIR)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--portal-parquet-path", type=Path, default=DEFAULT_PORTAL_PARQUET)
+    parser.add_argument("--geo-reference-dir", type=Path, default=DEFAULT_GEO_REFERENCE_DIR)
+    parser.add_argument("--place-centroid-path", type=Path, default=None)
     parser.add_argument("--max-documents", type=int, default=0, help="Optional cap for smoke builds")
     parser.add_argument("--text-max-chars", type=int, default=6000, help="Per-document text cap; 0 keeps full text")
     parser.add_argument("--max-terms-per-document", type=int, default=48)
     parser.add_argument("--max-edges-per-document", type=int, default=8)
     parser.add_argument("--graph-shard-size", type=int, default=500)
+    parser.add_argument("--geo-cluster-target-size", type=int, default=DEFAULT_GEO_CLUSTER_TARGET_SIZE)
+    parser.add_argument("--geo-cluster-count", type=int, default=0)
+    parser.add_argument("--non-service-row-group-size", type=int, default=DEFAULT_NON_SERVICE_ROW_GROUP_SIZE)
     return parser.parse_args(argv)
 
 
@@ -929,11 +1433,16 @@ def main(argv: list[str] | None = None) -> None:
         package_dir=args.package_dir,
         output_dir=args.output_dir,
         portal_parquet_path=args.portal_parquet_path,
+        geo_reference_dir=args.geo_reference_dir,
+        place_centroid_path=args.place_centroid_path,
         max_documents=args.max_documents,
         text_max_chars=args.text_max_chars,
         max_terms_per_document=args.max_terms_per_document,
         max_edges_per_document=args.max_edges_per_document,
         graph_shard_size=args.graph_shard_size,
+        geo_cluster_target_size=args.geo_cluster_target_size,
+        geo_cluster_count=args.geo_cluster_count,
+        non_service_row_group_size=args.non_service_row_group_size,
     )
     print(json.dumps(result, indent=2))
 

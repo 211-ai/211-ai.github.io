@@ -13,6 +13,7 @@ import {
 } from "../lib/graphrag";
 import { backendDetectionWorkerService } from "../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../lib/clientEmbeddingWorkerService";
+import { resolvePreferred211ServiceClusterIds } from "../lib/graphrag/serviceGeoPreference";
 import type { CorpusDocument, GraphRagAnswer, GraphRagEvidence, SearchFilters, SearchResult } from "../lib/graphrag";
 import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
 
@@ -153,6 +154,7 @@ const ADDRESS_PATTERN =
 export async function search211Info(query: string, limit = 10, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
   const initialFilters = preferredServiceFilters(limit, options);
+  const preferredClusterIds = await resolvePreferredServiceClusterIds(query, initialFilters);
   const initialResults = await withMainThreadSearchFallback(
     () =>
       ragSearchWorkerService.search(query, {
@@ -160,6 +162,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
+        preferredClusterIds,
       }),
     () =>
       search211Corpus(query, {
@@ -167,6 +170,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
+        preferredClusterIds,
       }),
   );
   if (initialResults.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
@@ -194,9 +198,11 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
 export async function build211InfoEvidence(query: string, limit = 6, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
   const initialFilters = preferredServiceFilters(limit, options);
+  const preferredClusterIds = await resolvePreferredServiceClusterIds(query, initialFilters);
   const initialEvidence = await withMainThreadSearchFallback(
-    () => ragSearchWorkerService.buildEvidence(query, { filters: initialFilters, queryEmbedding, limit }),
-    () => build211GraphRagEvidence(query, { filters: initialFilters, queryEmbedding, limit }),
+    () =>
+      ragSearchWorkerService.buildEvidence(query, { filters: initialFilters, queryEmbedding, limit, preferredClusterIds }),
+    () => build211GraphRagEvidence(query, { filters: initialFilters, queryEmbedding, limit, preferredClusterIds }),
   );
   if (initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
     return initialEvidence;
@@ -448,9 +454,22 @@ export async function answer211InfoQuestion(
   const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding);
 
   const initialFilters = preferredServiceFilters(6, options);
+  const preferredClusterIds = await resolvePreferredServiceClusterIds(trimmedQuestion, initialFilters);
   const initialEvidence = await withMainThreadSearchFallback(
-    () => ragSearchWorkerService.buildEvidence(trimmedQuestion, { filters: initialFilters, queryEmbedding, limit: 6 }),
-    () => build211GraphRagEvidence(trimmedQuestion, { filters: initialFilters, queryEmbedding, limit: 6 }),
+    () =>
+      ragSearchWorkerService.buildEvidence(trimmedQuestion, {
+        filters: initialFilters,
+        queryEmbedding,
+        limit: 6,
+        preferredClusterIds,
+      }),
+    () =>
+      build211GraphRagEvidence(trimmedQuestion, {
+        filters: initialFilters,
+        queryEmbedding,
+        limit: 6,
+        preferredClusterIds,
+      }),
   );
   const evidence =
     initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)
@@ -532,6 +551,13 @@ function fallbackFilters(limit: number, options: GraphRagRetrievalOptions): Sear
 
 function shouldFallbackToAllDocuments(options: GraphRagRetrievalOptions, filters: SearchFilters): boolean {
   return options.fallbackToAllDocs !== false && Boolean(filters.docTypes?.length) && !options.filters?.docTypes?.length;
+}
+
+async function resolvePreferredServiceClusterIds(query: string, filters: SearchFilters): Promise<number[]> {
+  if (!filters.docTypes?.length || filters.docTypes.some((docType) => docType !== "service")) {
+    return [];
+  }
+  return resolvePreferred211ServiceClusterIds(query);
 }
 
 async function getCorpusStatus(): Promise<GraphRagRuntimeStatus["corpus"]> {

@@ -27,6 +27,7 @@ class RagSearchWorkerService {
       limit?: number;
       mode?: SearchMode;
       queryEmbedding?: Float32Array | number[];
+      preferredClusterIds?: number[];
     } = {},
   ): Promise<SearchResult[]> {
     const response = await this.sendWorkerRequest(
@@ -37,6 +38,7 @@ class RagSearchWorkerService {
         limit: options.limit,
         mode: options.mode,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
+        preferredClusterIds: options.preferredClusterIds,
       },
       90000,
     );
@@ -49,6 +51,7 @@ class RagSearchWorkerService {
       filters?: SearchFilters;
       limit?: number;
       queryEmbedding?: Float32Array | number[];
+      preferredClusterIds?: number[];
     } = {},
   ): Promise<GraphRagEvidence> {
     const response = await this.sendWorkerRequest(
@@ -58,6 +61,7 @@ class RagSearchWorkerService {
         filters: options.filters,
         limit: options.limit,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
+        preferredClusterIds: options.preferredClusterIds,
       },
       90000,
     );

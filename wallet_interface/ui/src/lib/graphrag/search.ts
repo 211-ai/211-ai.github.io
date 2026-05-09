@@ -1,4 +1,10 @@
-import { load211Bm25, load211Documents, load211Embeddings, load211ServiceGeoIndex } from "./corpus";
+import {
+  load211Bm25,
+  load211Documents,
+  load211DocumentsSlice,
+  load211Embeddings,
+  load211ServiceGeoIndex,
+} from "./corpus";
 import {
   getPrimaryAddress,
   getServiceRichnessScore,
@@ -45,6 +51,7 @@ export async function search211Corpus(
     queryEmbedding?: Float32Array | number[];
     limit?: number;
     candidateLimit?: number;
+    preferredClusterIds?: number[];
   } = {},
 ): Promise<SearchResult[]> {
   const trimmedQuery = query.trim();
@@ -55,9 +62,9 @@ export async function search211Corpus(
   const mode = options.mode || "hybrid";
   const limit = options.limit || options.filters?.limit || 20;
   const candidateLimit = options.candidateLimit || Math.max(limit * 10, 200);
+  const preferredClusterIds = dedupeIntegerList(options.preferredClusterIds || []);
 
-  const [{ documents, documentById }, keywordScores, vectorScores, geoScores] = await Promise.all([
-    load211Documents(),
+  const [keywordScores, vectorScores, geoScores] = await Promise.all([
     mode !== "vector" ? keywordSearch211(trimmedQuery, candidateLimit) : Promise.resolve(new Map<string, number>()),
     mode !== "keyword" && options.queryEmbedding
       ? vectorSearch211(options.queryEmbedding, candidateLimit)
@@ -70,45 +77,48 @@ export async function search211Corpus(
   const normalizedKeyword = normalizeScores(keywordScores);
   const normalizedVector = normalizeScores(vectorScores);
   const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys(), ...geoScores.keys()]);
+  const serviceClusterResults = await searchPreferredServiceClusters(trimmedQuery, {
+    filters: options.filters,
+    limit,
+    mode,
+    candidates,
+    normalizedKeyword,
+    normalizedVector,
+    geoScores,
+    preferredClusterIds,
+  });
+  if (serviceClusterResults.length >= limit) {
+    return serviceClusterResults.slice(0, limit);
+  }
 
+  const fullState = await load211Documents();
   if (candidates.size === 0) {
-    const loweredQuery = trimmedQuery.toLowerCase();
-    for (const document of documents) {
-      if (document.title.toLowerCase().includes(loweredQuery) || getServiceSearchMetadataText(document).toLowerCase().includes(loweredQuery)) {
+    for (const document of fullState.documents) {
+      if (
+        document.title.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+        getServiceSearchMetadataText(document).toLowerCase().includes(trimmedQuery.toLowerCase())
+      ) {
         candidates.add(document.doc_id);
       }
     }
   }
 
-  const results: SearchResult[] = [];
-  for (const docId of candidates) {
-    const document = documentById.get(docId);
-    if (!document || !matchesFilters(document, options.filters)) {
-      continue;
-    }
-
-    const keyword = normalizedKeyword.get(docId) || 0;
-    const vector = normalizedVector.get(docId) || 0;
-    const metadata = metadataScore(document, trimmedQuery, geoScores.get(docId) || 0);
-    const score =
-      mode === "keyword"
-        ? keyword * 2 + metadata
-        : mode === "vector"
-          ? vector * 2 + metadata * 0.5
-          : keyword * 1.4 + vector * 2 + metadata;
-
-    results.push({
-      docId,
-      contentCid: document.source_content_cid,
-      pageCid: document.source_page_cid,
-      document,
-      score,
-      scoreParts: { keyword, vector, metadata },
-      snippet: buildSnippet(document.text, trimmedQuery),
-    });
+  const fullResults = rankSearchResults(
+    fullState.documents,
+    fullState.documentById,
+    candidates,
+    trimmedQuery,
+    options.filters,
+    mode,
+    normalizedKeyword,
+    normalizedVector,
+    geoScores,
+    limit,
+  );
+  if (serviceClusterResults.length === 0) {
+    return fullResults;
   }
-
-  return results.sort((left, right) => right.score - left.score).slice(0, limit);
+  return mergeSearchResults(serviceClusterResults, fullResults, limit);
 }
 
 export async function keywordSearch211(query: string, limit = 200): Promise<Map<string, number>> {
@@ -200,6 +210,145 @@ function normalizeScores(scores: Map<string, number>): Map<string, number> {
     return new Map([...scores.keys()].map((key) => [key, 1]));
   }
   return new Map([...scores.entries()].map(([key, value]) => [key, (value - min) / (max - min)]));
+}
+
+async function searchPreferredServiceClusters(
+  query: string,
+  options: {
+    filters?: SearchFilters;
+    limit: number;
+    mode: SearchMode;
+    candidates: Set<string>;
+    normalizedKeyword: Map<string, number>;
+    normalizedVector: Map<string, number>;
+    geoScores: Map<string, number>;
+    preferredClusterIds: number[];
+  },
+): Promise<SearchResult[]> {
+  if (!options.preferredClusterIds.length || !isServiceOnlySearch(options.filters)) {
+    return [];
+  }
+  const clusterPlans = buildClusterLoadPlans(options.preferredClusterIds);
+  let bestResults: SearchResult[] = [];
+  for (const plan of clusterPlans) {
+    const state = await load211DocumentsSlice({
+      clusterIds: plan.clusterIds,
+      includeUnclusteredServices: plan.includeUnclusteredServices,
+      docTypes: ["service"],
+    });
+    const results = rankSearchResults(
+      state.documents,
+      state.documentById,
+      options.candidates,
+      query,
+      options.filters,
+      options.mode,
+      options.normalizedKeyword,
+      options.normalizedVector,
+      options.geoScores,
+      options.limit,
+    );
+    if (results.length > bestResults.length) {
+      bestResults = results;
+    }
+    if (bestResults.length >= options.limit) {
+      break;
+    }
+  }
+  return bestResults;
+}
+
+function buildClusterLoadPlans(preferredClusterIds: number[]) {
+  const plans: Array<{ clusterIds: number[]; includeUnclusteredServices: boolean }> = [];
+  for (const size of [4, 8, 16]) {
+    const clusterIds = preferredClusterIds.slice(0, Math.min(size, preferredClusterIds.length));
+    if (!clusterIds.length) {
+      continue;
+    }
+    if (!plans.some((plan) => sameIntegerList(plan.clusterIds, clusterIds) && !plan.includeUnclusteredServices)) {
+      plans.push({ clusterIds, includeUnclusteredServices: false });
+    }
+  }
+  plans.push({ clusterIds: preferredClusterIds, includeUnclusteredServices: true });
+  return plans;
+}
+
+function rankSearchResults(
+  documents: CorpusDocument[],
+  documentById: Map<string, CorpusDocument>,
+  candidates: Set<string>,
+  query: string,
+  filters: SearchFilters | undefined,
+  mode: SearchMode,
+  normalizedKeyword: Map<string, number>,
+  normalizedVector: Map<string, number>,
+  geoScores: Map<string, number>,
+  limit: number,
+): SearchResult[] {
+  const effectiveCandidates = new Set(candidates);
+  if (effectiveCandidates.size === 0) {
+    const loweredQuery = query.toLowerCase();
+    for (const document of documents) {
+      if (
+        document.title.toLowerCase().includes(loweredQuery) ||
+        getServiceSearchMetadataText(document).toLowerCase().includes(loweredQuery)
+      ) {
+        effectiveCandidates.add(document.doc_id);
+      }
+    }
+  }
+
+  const results: SearchResult[] = [];
+  for (const docId of effectiveCandidates) {
+    const document = documentById.get(docId);
+    if (!document || !matchesFilters(document, filters)) {
+      continue;
+    }
+    const result = scoreSearchResult(document, docId, query, mode, normalizedKeyword, normalizedVector, geoScores);
+    results.push(result);
+  }
+  return results.sort((left, right) => right.score - left.score).slice(0, limit);
+}
+
+function scoreSearchResult(
+  document: CorpusDocument,
+  docId: string,
+  query: string,
+  mode: SearchMode,
+  normalizedKeyword: Map<string, number>,
+  normalizedVector: Map<string, number>,
+  geoScores: Map<string, number>,
+): SearchResult {
+  const keyword = normalizedKeyword.get(docId) || 0;
+  const vector = normalizedVector.get(docId) || 0;
+  const metadata = metadataScore(document, query, geoScores.get(docId) || 0);
+  const score =
+    mode === "keyword"
+      ? keyword * 2 + metadata
+      : mode === "vector"
+        ? vector * 2 + metadata * 0.5
+        : keyword * 1.4 + vector * 2 + metadata;
+
+  return {
+    docId,
+    contentCid: document.source_content_cid,
+    pageCid: document.source_page_cid,
+    document,
+    score,
+    scoreParts: { keyword, vector, metadata },
+    snippet: buildSnippet(document.text, query),
+  };
+}
+
+function mergeSearchResults(primary: SearchResult[], secondary: SearchResult[], limit: number): SearchResult[] {
+  const byDocId = new Map<string, SearchResult>();
+  for (const result of [...primary, ...secondary]) {
+    const current = byDocId.get(result.docId);
+    if (!current || result.score > current.score) {
+      byDocId.set(result.docId, result);
+    }
+  }
+  return [...byDocId.values()].sort((left, right) => right.score - left.score).slice(0, limit);
 }
 
 function metadataScore(document: CorpusDocument, query: string, geoBoost: number): number {
@@ -306,4 +455,26 @@ function addGeoScore(scores: Map<string, number>, docIds: string[] | undefined, 
 
 function normalizeLocationKey(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function isServiceOnlySearch(filters?: SearchFilters): boolean {
+  return Boolean(filters?.docTypes?.length && filters.docTypes.every((docType) => docType === "service"));
+}
+
+function dedupeIntegerList(values: number[]): number[] {
+  const seen = new Set<number>();
+  const ordered: number[] = [];
+  for (const value of values) {
+    const normalized = Math.trunc(value);
+    if (seen.has(normalized)) {
+      continue;
+    }
+    seen.add(normalized);
+    ordered.push(normalized);
+  }
+  return ordered;
+}
+
+function sameIntegerList(left: number[], right: number[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }

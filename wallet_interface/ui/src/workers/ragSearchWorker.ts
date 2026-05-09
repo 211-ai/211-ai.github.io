@@ -12,6 +12,7 @@ type RagSearchWorkerRequest =
         limit?: number;
         mode?: SearchMode;
         queryEmbedding?: number[];
+        preferredClusterIds?: number[];
       };
     }
   | {
@@ -22,6 +23,7 @@ type RagSearchWorkerRequest =
         filters?: SearchFilters;
         limit?: number;
         queryEmbedding?: number[];
+        preferredClusterIds?: number[];
       };
     }
   | {
@@ -57,6 +59,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
         mode: data.mode || (queryEmbedding ? "hybrid" : "keyword"),
         queryEmbedding,
         limit: data.limit || 10,
+        preferredClusterIds: data.preferredClusterIds,
       });
       postResponse({ id, success: true, data: { results } });
       return;
@@ -68,6 +71,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
         filters: data.filters,
         queryEmbedding,
         limit: data.limit || 6,
+        preferredClusterIds: data.preferredClusterIds,
       });
       postResponse({ id, success: true, data: { evidence } });
       return;

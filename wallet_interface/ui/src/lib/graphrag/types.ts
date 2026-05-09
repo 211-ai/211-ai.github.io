@@ -36,6 +36,10 @@ export interface GeneratedCorpusManifest {
   serviceAddressCount?: number;
   serviceIntakeStepCount?: number;
   serviceRequiredDocumentCount?: number;
+  geoClusterCount?: number;
+  geoClusteredServiceCount?: number;
+  geoUnclusteredServiceCount?: number;
+  documentParquetRowGroupCount?: number;
   embeddingCount: number;
   embeddingDimension: number;
   embeddingModel: string;
@@ -107,6 +111,10 @@ export interface CorpusDocument {
   host: string;
   city: string;
   state: string;
+  geo_lat?: number | null;
+  geo_lon?: number | null;
+  geo_precision?: string;
+  geo_cluster_id?: number | null;
   phones?: ServiceContactPoint[];
   emails?: ServiceContactPoint[];
   websites?: ServiceContactPoint[];
@@ -267,6 +275,58 @@ export interface ServiceGeoIndex {
   docsByCity: Record<string, string[]>;
   docsByState: Record<string, string[]>;
   docsByPlaceTerm: Record<string, string[]>;
+}
+
+export interface SearchCoordinates {
+  lat: number;
+  lon: number;
+}
+
+export interface DocumentGeoClusterRecord {
+  clusterId: number;
+  kind: "service_cluster" | "service_unclustered";
+  serviceDocumentCount: number;
+  documentCount: number;
+  centroid: {
+    lat: number | null;
+    lon: number | null;
+  };
+  bounds: {
+    minLat: number | null;
+    maxLat: number | null;
+    minLon: number | null;
+    maxLon: number | null;
+  };
+  topCities: Array<{ name: string; count: number }>;
+  topStates: Array<{ name: string; count: number }>;
+}
+
+export interface DocumentGeoClusterRowGroup {
+  rowGroupIndex: number;
+  kind: "service_cluster" | "service_unclustered" | "non_service";
+  clusterId: number | null;
+  documentCount: number;
+  serviceDocumentCount: number;
+}
+
+export interface DocumentGeoClusterManifest {
+  schemaVersion: number;
+  centroidSource: {
+    kind: string;
+    year: number;
+    url: string;
+    path: string;
+  };
+  serviceDocumentCount: number;
+  clusteredServiceCount: number;
+  unclusteredServiceCount: number;
+  clusterCount: number;
+  rowGroupCount?: number;
+  nonServiceRowGroupCount?: number;
+  serviceRowGroupCount?: number;
+  clusters: DocumentGeoClusterRecord[];
+  rowGroups?: DocumentGeoClusterRowGroup[];
+  serviceDocIdToClusterId: Record<string, number>;
 }
 
 export interface SearchResult {
