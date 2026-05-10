@@ -234,7 +234,7 @@ export function planAgentTurn(input: AgentPlannerInput): AgentPlannedTurn {
   }
 
   if (/\b(export|exports|download|bundle|share bundle)\b/.test(lower)) {
-    return navigationTurn("exports", "export_request");
+    return navigationTurn("security", "export_request");
   }
 
   return {
@@ -292,7 +292,7 @@ function isCurrentSurfaceQuestion(lower: string): boolean {
 
 function shouldNavigate(lower: string, route: RouteId): boolean {
   if (navigationPattern.test(lower)) return true;
-  if (route === "audit" || route === "proof-center" || route === "exports") {
+  if (route === "audit" || route === "proof-center" || route === "security") {
     return /\b(audit|history|proof|proofs|verify|verification|export|exports|bundle|download)\b/.test(lower);
   }
   return false;
@@ -373,7 +373,7 @@ function planExportTurn(context: SurfaceContext, lower: string, original: string
       return {
         intentKind: "export_request",
         summary: "Clarify export import request.",
-        tools: withToolSurface(context, [{ name: "navigate", input: { route: "exports" }, title: getToolDefinition("navigate").title }]),
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "security" }, title: getToolDefinition("navigate").title }]),
         response: "To import an export bundle, I need the export bundle ID or provided bundle data."
       };
     }
@@ -396,7 +396,7 @@ function planExportTurn(context: SurfaceContext, lower: string, original: string
     return {
       intentKind: "export_request",
       summary: "Clarify export bundle request.",
-      tools: withToolSurface(context, [{ name: "navigate", input: { route: "exports" }, title: getToolDefinition("navigate").title }]),
+        tools: withToolSurface(context, [{ name: "navigate", input: { route: "security" }, title: getToolDefinition("navigate").title }]),
       response: "To stage an export bundle, I need a recipient or audience label and at least one record ID."
     };
   }

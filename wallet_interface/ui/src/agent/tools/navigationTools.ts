@@ -44,7 +44,7 @@ const extraRouteAliases = {
   analytics: ["reports", "group facts"],
   "proof-center": ["proof center", "proofs", "proof", "verification", "verifications"],
   exports: ["export", "sharing bundle", "bundle", "download"],
-  security: ["wallet security", "privacy", "security settings"],
+  security: ["wallet security", "privacy", "security settings", "export", "exports", "sharing bundle", "bundle", "download"],
   audit: ["history", "wallet audit", "activity log", "audit log"]
 } satisfies Record<RouteId, readonly string[]>;
 
@@ -91,7 +91,7 @@ const routeSummaries = {
     `Group facts and aggregate reporting are active with ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} studies selected.`,
   "proof-center": (state) => `${state.walletProofReceipts.length} proof receipts are visible.`,
   exports: (state) => `${state.exportBundleViews.length} export bundles are visible.`,
-  security: () => "Security settings and wallet safety information are active.",
+  security: (state) => `Security settings and wallet safety information are active with ${state.exportBundleViews.length} export bundles visible.`,
   audit: (state) => `${state.walletAuditEvents.length} audit events are visible.`
 } satisfies Record<RouteId, RouteSummaryBuilder>;
 
@@ -404,6 +404,10 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
       return {
         verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
       };
+    case "security":
+      return {
+        verifiedExportBundleCount: state.exportBundleViews.filter((bundle) => bundle.verificationOk).length
+      };
     default:
       return {};
   }
@@ -426,6 +430,10 @@ function privateRouteMetadata(route: RouteId, state: AppActionState): Record<str
         visibleProofReceiptIds: state.walletProofReceipts.map((proof) => proof.id)
       };
     case "exports":
+      return {
+        visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
+      };
+    case "security":
       return {
         visibleExportBundleIds: state.exportBundleViews.map((bundle) => bundle.bundleId || bundle.id)
       };

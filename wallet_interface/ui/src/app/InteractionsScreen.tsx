@@ -82,6 +82,35 @@ export function InteractionsScreen({
         servicePlans={servicePlans}
         uploads={uploads}
       />
+      <AuditHistorySection events={auditEvents} />
     </div>
+  );
+}
+
+function AuditHistorySection({ events }: { events: AuditEvent[] }) {
+  const hasEvents = events.length > 0;
+
+  return (
+    <Section eyebrow="Audit" title="Consent and access history">
+      {!hasEvents ? <StatusBanner tone="info">No consent or access events have been recorded yet.</StatusBanner> : null}
+      {hasEvents ? (
+        <div aria-label="Consent and access history" className="timeline" role="list">
+          {events.map((event) => (
+            <article className="timeline-event" key={event.id} role="listitem">
+              <span aria-hidden="true" />
+              <div>
+                <h3>{event.action}</h3>
+                <p>
+                  {event.actor} · {event.timestamp}
+                </p>
+                {event.resource || event.decision || event.grantId ? (
+                  <small>{[event.decision, event.resource, event.grantId].filter(Boolean).join(" · ")}</small>
+                ) : null}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </Section>
   );
 }
