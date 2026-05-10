@@ -3596,9 +3596,9 @@ function UploadsScreen({
       setApiConfig({
         apiBaseUrl,
         walletId: wallet.wallet_id,
-        actorDid: wallet.owner_did || ownerDid,
+        actorDid: wallet.owner_did,
         issuerKeyHex: ownerKeyHex,
-        audienceKeyHex: ownerKeyHex
+        audienceKeyHex: undefined
       });
       setWalletCreateStatus("created");
     } catch (error) {
