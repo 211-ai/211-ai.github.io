@@ -133,13 +133,24 @@ the expected `wallet_export_v1` type and required bundle sections.
 `POST /exports/storage` reports encrypted blob availability for records
 referenced by a verified export bundle.
 
-For missing-person dead-drop escalation, the API can also route a structured
-wallet bundle email to Portland Police through server-side SMTP with:
-`POST /wallets/{wallet_id}/dead-drops/missing-person`.
+For missing-person dead-drop escalation, the API can arm and persist a true
+server-side dead drop with `PUT /wallets/{wallet_id}/dead-drops/missing-person`,
+inspect it with `GET /wallets/{wallet_id}/dead-drops/missing-person`, manually
+route the saved bundle with
+`POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`, and process all
+due dead drops from server automation with
+`POST /ops/dead-drops/missing-person/process-due`. The direct
+`POST /wallets/{wallet_id}/dead-drops/missing-person` route remains available
+for immediate authenticated sends. All dead-drop email routes are restricted to
+`missing@police.portlandoregon.gov`.
+
 Configure `WALLET_DEAD_DROP_SMTP_HOST` (required), optional
 `WALLET_DEAD_DROP_SMTP_PORT`, `WALLET_DEAD_DROP_SMTP_USE_SSL`,
 `WALLET_DEAD_DROP_SMTP_STARTTLS`, `WALLET_DEAD_DROP_SMTP_USERNAME`,
 `WALLET_DEAD_DROP_SMTP_PASSWORD`, and `WALLET_DEAD_DROP_FROM_EMAIL`.
+Configure `WALLET_OPS_HEALTH_SHARED_SECRET` for authenticated due-processing,
+and set `WALLET_REPOSITORY_ROOT` when you need armed dead drops to survive API
+restarts.
 
 ## Wallet Storage Configuration
 
@@ -212,7 +223,11 @@ Repository API endpoints:
 - `GET /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot/load`
+- `GET /wallets/{wallet_id}/dead-drops/missing-person`
+- `PUT /wallets/{wallet_id}/dead-drops/missing-person`
 - `POST /wallets/{wallet_id}/dead-drops/missing-person`
+- `POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`
+- `POST /ops/dead-drops/missing-person/process-due`
 
 ## UI Export Wiring
 

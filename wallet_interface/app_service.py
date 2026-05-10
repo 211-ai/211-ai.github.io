@@ -160,6 +160,24 @@ def _portal_now() -> str:
     return _utc_now()
 
 
+def _portal_datetime(value: str | None) -> datetime | None:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        return datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def _same_portal_timestamp(left: str | None, right: str | None) -> bool:
+    left_dt = _portal_datetime(left)
+    right_dt = _portal_datetime(right)
+    if left_dt is not None and right_dt is not None:
+        return left_dt == right_dt
+    return str(left or "").strip() == str(right or "").strip()
+
+
 def _portal_id(prefix: str) -> str:
     return f"{prefix}-{uuid4().hex}"
 
@@ -424,6 +442,70 @@ class ServiceInteractionRecord:
 
 
 @dataclass
+class MissingPersonDeadDropRecord:
+    wallet_id: str
+    actor_did: str = ""
+    enabled: bool = False
+    to_email: str = "missing@police.portlandoregon.gov"
+    subject: str = "Missing person report dead drop bundle"
+    body: str = ""
+    bundle: Dict[str, Any] = field(default_factory=dict)
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+    armed_at: str = ""
+    due_at: str = ""
+    last_check_in_at: str = ""
+    last_sent_at: str = ""
+    last_sent_for_check_in_at: str = ""
+    last_message_id: str = ""
+    last_error: str = ""
+    last_dispatched_reason: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "enabled": self.enabled,
+            "to_email": self.to_email,
+            "subject": self.subject,
+            "body": self.body,
+            "bundle": dict(self.bundle),
+            "bundle_filename": self.bundle_filename,
+            "armed_at": self.armed_at,
+            "due_at": self.due_at,
+            "last_check_in_at": self.last_check_in_at,
+            "last_sent_at": self.last_sent_at,
+            "last_sent_for_check_in_at": self.last_sent_for_check_in_at,
+            "last_message_id": self.last_message_id,
+            "last_error": self.last_error,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "MissingPersonDeadDropRecord":
+        return cls(
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            enabled=bool(payload.get("enabled")),
+            to_email=str(payload.get("to_email") or "missing@police.portlandoregon.gov"),
+            subject=str(payload.get("subject") or "Missing person report dead drop bundle"),
+            body=str(payload.get("body") or ""),
+            bundle=dict(payload.get("bundle") or {}),
+            bundle_filename=str(payload.get("bundle_filename") or "abby-missing-person-wallet-dead-drop.json"),
+            armed_at=str(payload.get("armed_at") or ""),
+            due_at=str(payload.get("due_at") or ""),
+            last_check_in_at=str(payload.get("last_check_in_at") or ""),
+            last_sent_at=str(payload.get("last_sent_at") or ""),
+            last_sent_for_check_in_at=str(payload.get("last_sent_for_check_in_at") or ""),
+            last_message_id=str(payload.get("last_message_id") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
 class ServicePlanShareGrantResult:
     grant: Any
     receipt: Any | None
@@ -486,6 +568,7 @@ class WalletInterfaceService:
         self.saved_services: Dict[str, SavedServiceRecord] = {}
         self.service_plans: Dict[str, ServicePlanRecord] = {}
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
+        self.missing_person_dead_drops: Dict[str, MissingPersonDeadDropRecord] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
             if auto_persist is None
@@ -816,6 +899,10 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.timestamp, item.interaction_id),
                 )
             ],
+            "missing_person_dead_drops": [
+                record.to_dict()
+                for record in sorted(self.missing_person_dead_drops.values(), key=lambda item: item.wallet_id)
+            ],
         }
 
     def _save_portal_state(self) -> Path | None:
@@ -866,6 +953,15 @@ class WalletInterfaceService:
             )
             if record.interaction_id
         }
+        self.missing_person_dead_drops = {
+            record.wallet_id: record
+            for record in (
+                MissingPersonDeadDropRecord.from_dict(item)
+                for item in payload.get("missing_person_dead_drops", [])
+                if isinstance(item, Mapping)
+            )
+            if record.wallet_id
+        }
 
     def _wallet_principals(self, wallet_id: str) -> set[str]:
         wallet = self.wallet_service._wallet(wallet_id)
@@ -896,6 +992,9 @@ class WalletInterfaceService:
             decision="allow",
             details=dict(details or {}),
         )
+
+    def _missing_person_dead_drop_resource(self, wallet_id: str) -> str:
+        return _portal_resource(wallet_id, "dead-drops", "missing-person")
 
     def create_wallet(
         self,
@@ -942,6 +1041,173 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return wallet
+
+    def get_missing_person_dead_drop(self, wallet_id: str) -> MissingPersonDeadDropRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.missing_person_dead_drops.get(wallet_id)
+        if record is not None:
+            return record
+        return MissingPersonDeadDropRecord(wallet_id=wallet_id)
+
+    def save_missing_person_dead_drop(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        enabled: bool,
+        to_email: str,
+        subject: str,
+        body: str,
+        bundle: Mapping[str, Any] | None,
+        bundle_filename: str,
+        due_at: str = "",
+        last_check_in_at: str = "",
+    ) -> MissingPersonDeadDropRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        now = _portal_now()
+        current = self.missing_person_dead_drops.get(wallet_id)
+        normalized_body = str(body or "")
+        normalized_bundle = dict(bundle or {})
+        if enabled:
+            if not normalized_body.strip():
+                raise ValueError("body is required when missing-person dead drop is enabled")
+            if not normalized_bundle:
+                raise ValueError("bundle is required when missing-person dead drop is enabled")
+        record = MissingPersonDeadDropRecord(
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            enabled=bool(enabled),
+            to_email=str(to_email or "missing@police.portlandoregon.gov"),
+            subject=str(subject or "Missing person report dead drop bundle"),
+            body=normalized_body,
+            bundle=normalized_bundle,
+            bundle_filename=str(bundle_filename or "abby-missing-person-wallet-dead-drop.json"),
+            armed_at=(
+                current.armed_at
+                if current is not None and current.enabled == bool(enabled) and current.armed_at
+                else (now if enabled else "")
+            ),
+            due_at=str(due_at or ""),
+            last_check_in_at=str(last_check_in_at or ""),
+            last_sent_at=str(current.last_sent_at if current is not None else ""),
+            last_sent_for_check_in_at=str(current.last_sent_for_check_in_at if current is not None else ""),
+            last_message_id=str(current.last_message_id if current is not None else ""),
+            last_error="",
+            last_dispatched_reason=str(current.last_dispatched_reason if current is not None else ""),
+            updated_at=now,
+        )
+        self.missing_person_dead_drops[wallet_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/arm" if enabled else "dead_drop/disable",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "enabled": enabled,
+                "due_at": record.due_at,
+                "last_check_in_at": record.last_check_in_at,
+                "to_email": record.to_email,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_missing_person_dead_drop_for_dispatch(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        self.wallet_service._wallet(wallet_id)
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.missing_person_dead_drops.get(wallet_id)
+        if record is None or not record.enabled:
+            raise ValueError("missing-person dead drop is not armed")
+        if not record.body.strip():
+            raise ValueError("missing-person dead drop email body is missing")
+        if not record.bundle:
+            raise ValueError("missing-person dead drop bundle is missing")
+        return record
+
+    def mark_missing_person_dead_drop_sent(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        message_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        record = self.get_missing_person_dead_drop_for_dispatch(wallet_id)
+        now = str(dispatched_at or _portal_now())
+        record.last_sent_at = now
+        record.last_sent_for_check_in_at = record.last_check_in_at
+        record.last_message_id = str(message_id or "")
+        record.last_error = ""
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/dispatch",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "message_id": record.last_message_id,
+                "last_check_in_at": record.last_check_in_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_missing_person_dead_drop_failed(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> MissingPersonDeadDropRecord:
+        record = self.get_missing_person_dead_drop(wallet_id)
+        now = str(failed_at or _portal_now())
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="dead_drop/error",
+            resource=self._missing_person_dead_drop_resource(wallet_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+                "last_check_in_at": record.last_check_in_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_missing_person_dead_drops(self, *, now: str | None = None) -> List[MissingPersonDeadDropRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[MissingPersonDeadDropRecord] = []
+        for record in self.missing_person_dead_drops.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if not record.enabled or not record.body.strip() or not record.bundle:
+                continue
+            already_sent_for_current_check_in = record.last_sent_for_check_in_at and _same_portal_timestamp(
+                record.last_sent_for_check_in_at, record.last_check_in_at
+            )
+            if already_sent_for_current_check_in:
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id))
 
     def remove_controller(
         self,

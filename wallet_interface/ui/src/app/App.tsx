@@ -56,6 +56,7 @@ import {
 import {
   CheckInChannel,
   AuditEvent,
+  CheckInPolicyDraft,
   DecryptedRecordView,
   DisclosureDataScope,
   DisclosureRecipientDraft,
@@ -107,6 +108,7 @@ import {
   createLocationRegionProof,
   createRedactedGraphRAG,
   createVerifiedExportBundleView,
+  dispatchMissingPersonDeadDrop,
   delegateGrant,
   decryptRecordWithGrant,
   extractRecordTextRedactedWithGrant,
@@ -127,6 +129,7 @@ import {
   repairRecordStorage,
   revokeAccessRequest,
   saveWalletService,
+  saveMissingPersonDeadDrop,
   saveWalletSnapshot,
   sendMissingPersonDeadDropEmail,
   verifyWalletSnapshot,
@@ -333,13 +336,18 @@ function formatDeadDropFileTimestamp(date = new Date()): string {
   return date.toISOString().replace(/[:.]/g, "-");
 }
 
-function isMissingPersonDeadDropDue(policy: CheckInPolicyDraft): boolean {
+function getMissingPersonDeadDropDueAt(policy: CheckInPolicyDraft): string {
   const lastCheckInAtMs = Date.parse(policy.lastCheckInAt);
-  if (!Number.isFinite(lastCheckInAtMs)) return false;
+  if (!Number.isFinite(lastCheckInAtMs)) return "";
   const intervalDays = Math.max(1, Math.round(policy.intervalDays || 1));
   const gracePeriodHours = Math.max(0, Math.round(policy.gracePeriodHours || 0));
   const dueAtMs = lastCheckInAtMs + intervalDays * 24 * 60 * 60 * 1000 + gracePeriodHours * 60 * 60 * 1000;
-  return Date.now() >= dueAtMs;
+  return new Date(dueAtMs).toISOString();
+}
+
+function isMissingPersonDeadDropDue(policy: CheckInPolicyDraft): boolean {
+  const dueAt = getMissingPersonDeadDropDueAt(policy);
+  return Boolean(dueAt) && Date.now() >= Date.parse(dueAt);
 }
 
 function buildMissingPersonDeadDropBundle(
@@ -383,6 +391,66 @@ function buildMissingPersonDeadDropBundle(
       decentralizedStorageProvider: upload.decentralizedStorageProvider ?? "local"
     })),
     knownPoliceRecipients: policeRecipients
+  };
+}
+
+function buildMissingPersonDeadDropEmail(
+  policy: CheckInPolicyDraft,
+  profile: RegistrationProfileDraft,
+  uploads: UploadItem[],
+  recipients: DisclosureRecipientDraft[]
+) {
+  const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
+  const dueAt = getMissingPersonDeadDropDueAt(policy);
+  const lastCheckInAt = Number.isFinite(Date.parse(policy.lastCheckInAt)) ? policy.lastCheckInAt : "";
+  const timestampSource = dueAt || lastCheckInAt || new Date().toISOString();
+  const fileName = `abby-missing-person-wallet-dead-drop-${formatDeadDropFileTimestamp(new Date(timestampSource))}.json`;
+  const personLabel = bundle.person.preferredName || "Unknown";
+  const walletLines = bundle.walletContents.length
+    ? bundle.walletContents
+        .map((item, index) => `${index + 1}. ${item.fileName} (${item.category}, ${item.sensitivity}, ${item.status})`)
+        .join("\n")
+    : "No wallet files are currently stored.";
+  const body = [
+    "Hello Portland Police Missing Persons Unit,",
+    "",
+    `Please use this Abby emergency dead-drop bundle to support a missing-person report for ${personLabel}.`,
+    "",
+    `Name: ${bundle.person.legalName || bundle.person.preferredName || "Unknown"}`,
+    `Date of birth: ${bundle.person.dateOfBirth || "Unknown"}`,
+    `Phone: ${bundle.person.phone || "Unknown"}`,
+    `Email: ${bundle.person.email || "Unknown"}`,
+    `Last known location: ${bundle.person.currentLocation || "Unknown"}`,
+    "",
+    `Wallet contents (${bundle.walletContents.length}):`,
+    walletLines,
+    "",
+    `Dead-drop JSON bundle filename: ${fileName}`,
+    "Please review the attached dead-drop JSON bundle for structured evidence metadata.",
+    "",
+    "Submitted from Abby missing-person safety setting."
+  ].join("\n");
+  return {
+    toEmail: PORTLAND_POLICE_MISSING_EMAIL,
+    subject: "Missing person report dead drop bundle",
+    body,
+    bundle,
+    bundleFileName: fileName,
+    dueAt,
+    lastCheckInAt: policy.lastCheckInAt
+  };
+}
+
+function buildMissingPersonDeadDropSyncPayload(
+  enabled: boolean,
+  policy: CheckInPolicyDraft,
+  profile: RegistrationProfileDraft,
+  uploads: UploadItem[],
+  recipients: DisclosureRecipientDraft[]
+) {
+  return {
+    enabled,
+    ...buildMissingPersonDeadDropEmail(policy, profile, uploads, recipients)
   };
 }
 
@@ -532,6 +600,8 @@ export function App() {
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [agentChatMode, setAgentChatMode] = useState<AgentChatMode>("text");
   const walletApiConfig = useMemo(readWalletApiConfig, []);
+  const lastSyncedDeadDropPayloadRef = useRef("");
+  const walletDeadDropReady = Boolean(walletApiConfig?.actorDid);
 
   function openAgentChatMode(mode: AgentChatMode) {
     setAgentChatMode(mode);
@@ -797,57 +867,23 @@ export function App() {
   }
 
   const sendMissingPersonDeadDrop = useCallback(async (): Promise<boolean> => {
+    if (!walletApiConfig || !walletDeadDropReady) {
+      return false;
+    }
     try {
-      const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
-      const timestamp = formatDeadDropFileTimestamp();
-      const fileName = `abby-missing-person-wallet-dead-drop-${timestamp}.json`;
-      const personLabel = bundle.person.preferredName || "Unknown";
-      const walletLines = bundle.walletContents.length
-        ? bundle.walletContents
-            .map((item, index) => `${index + 1}. ${item.fileName} (${item.category}, ${item.sensitivity}, ${item.status})`)
-            .join("\n")
-        : "No wallet files are currently stored.";
-      const body = [
-        "Hello Portland Police Missing Persons Unit,",
-        "",
-        `Please use this Abby emergency dead-drop bundle to support a missing-person report for ${personLabel}.`,
-        "",
-        `Name: ${bundle.person.legalName || bundle.person.preferredName || "Unknown"}`,
-        `Date of birth: ${bundle.person.dateOfBirth || "Unknown"}`,
-        `Phone: ${bundle.person.phone || "Unknown"}`,
-        `Email: ${bundle.person.email || "Unknown"}`,
-        `Last known location: ${bundle.person.currentLocation || "Unknown"}`,
-        "",
-        `Wallet contents (${bundle.walletContents.length}):`,
-        walletLines,
-        "",
-        `Dead-drop JSON bundle filename: ${fileName}`,
-        "Please review the attached dead-drop JSON bundle for structured evidence metadata.",
-        "",
-        "Submitted from Abby missing-person safety setting."
-      ].join("\n");
-      const subject = "Missing person report dead drop bundle";
-      if (walletApiConfig) {
-        await sendMissingPersonDeadDropEmail(walletApiConfig, {
-          body,
-          bundle,
-          bundleFileName: fileName,
-          subject,
-          toEmail: PORTLAND_POLICE_MISSING_EMAIL
-        });
-      } else {
-        const bundleJson = JSON.stringify(bundle, null, 2);
-        const blob = new Blob([bundleJson], { type: "application/json" });
-        const blobUrl = URL.createObjectURL(blob);
-        const downloadLink = document.createElement("a");
-        downloadLink.href = blobUrl;
-        downloadLink.download = fileName;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-        URL.revokeObjectURL(blobUrl);
-        window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      }
+      const request = buildMissingPersonDeadDropSyncPayload(true, policy, profile, uploads, recipients);
+      await saveMissingPersonDeadDrop(walletApiConfig, {
+        toEmail: request.toEmail,
+        subject: request.subject,
+        body: request.body,
+        bundle: request.bundle,
+        bundleFileName: request.bundleFileName,
+        dueAt: request.dueAt,
+        enabled: request.enabled,
+        lastCheckInAt: request.lastCheckInAt
+      });
+      await dispatchMissingPersonDeadDrop(walletApiConfig);
+      lastSyncedDeadDropPayloadRef.current = JSON.stringify(request);
       if (isMissingPersonDeadDropDue(policy)) {
         setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
       }
@@ -858,7 +894,49 @@ export function App() {
       }
       return false;
     }
-  }, [policy, profile, recipients, uploads, walletApiConfig]);
+  }, [policy, profile, recipients, uploads, walletApiConfig, walletDeadDropReady]);
+
+  useEffect(() => {
+    if (!walletApiConfig || !walletDeadDropReady) {
+      lastSyncedDeadDropPayloadRef.current = "";
+      return;
+    }
+    const request = buildMissingPersonDeadDropSyncPayload(
+      missingPersonDeadDropEnabled,
+      policy,
+      profile,
+      uploads,
+      recipients
+    );
+    const payload = JSON.stringify(request);
+    if (lastSyncedDeadDropPayloadRef.current === payload) {
+      return;
+    }
+    let cancelled = false;
+    void saveMissingPersonDeadDrop(walletApiConfig, {
+      enabled: missingPersonDeadDropEnabled,
+      toEmail: request.toEmail,
+      subject: request.subject,
+      body: request.body,
+      bundle: request.bundle,
+      bundleFileName: request.bundleFileName,
+      dueAt: request.dueAt,
+      lastCheckInAt: request.lastCheckInAt
+    })
+      .then(() => {
+        if (!cancelled) {
+          lastSyncedDeadDropPayloadRef.current = payload;
+        }
+      })
+      .catch((error) => {
+        if (!cancelled && import.meta.env.DEV) {
+          console.error("Missing-person dead-drop arming failed", error);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [missingPersonDeadDropEnabled, policy, profile, recipients, uploads, walletApiConfig, walletDeadDropReady]);
 
   useEffect(() => {
     if (!missingPersonDeadDropEnabled || !policy.escalationEnabled) return;
@@ -1061,6 +1139,7 @@ export function App() {
             setPolicy={setPolicy}
             setProfile={setProfile}
             sendMissingPersonDeadDrop={sendMissingPersonDeadDrop}
+            walletDeadDropReady={walletDeadDropReady}
             walletConnected={Boolean(walletApiConfig)}
           />
         ) : null}
@@ -1862,6 +1941,7 @@ function SettingsScreen({
   setPolicy,
   setProfile,
   sendMissingPersonDeadDrop,
+  walletDeadDropReady,
   walletConnected
 }: {
   analyticsOptIn: Record<string, boolean>;
@@ -1877,6 +1957,7 @@ function SettingsScreen({
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   setProfile: (profile: RegistrationProfileDraft) => void;
   sendMissingPersonDeadDrop: () => Promise<boolean>;
+  walletDeadDropReady: boolean;
   walletConnected: boolean;
 }) {
   const updatePolicy = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
@@ -2003,16 +2084,15 @@ function SettingsScreen({
             <input
               checked={missingPersonDeadDropEnabled}
               onChange={(event) => setMissingPersonDeadDropEnabled(event.target.checked)}
+              disabled={!walletDeadDropReady}
               type="checkbox"
             />
             <span>
               <strong>Enable missing-person dead drop for Portland Police.</strong>
               <small>
-                When enabled, Abby automatically prepares a dead-drop bundle after a missed check-in passes your
-                schedule and grace period.{" "}
-                {walletConnected
-                  ? `If a wallet API is connected, Abby routes the bundle to ${PORTLAND_POLICE_MISSING_EMAIL} from the server.`
-                  : `Without a connected wallet API, Abby opens a local email draft to ${PORTLAND_POLICE_MISSING_EMAIL} and you must attach the file and send it.`}
+                {walletDeadDropReady
+                  ? `When enabled, Abby saves the dead-drop bundle on the connected wallet server and routes it to ${PORTLAND_POLICE_MISSING_EMAIL} from the server after a missed check-in passes your schedule and grace period.`
+                  : "A true dead drop needs a connected wallet API and authorized wallet actor so Abby can hold the bundle on the server and send it without your device."}
               </small>
             </span>
           </label>
@@ -2023,7 +2103,7 @@ function SettingsScreen({
                   ? "Prepare and email dead drop"
                   : "Prepare and email dead drop (disabled)"
               }
-              disabled={!missingPersonDeadDropEnabled}
+              disabled={!missingPersonDeadDropEnabled || !walletDeadDropReady}
               onClick={handleSendMissingPersonDeadDrop}
               variant="secondary"
             >
@@ -2032,9 +2112,7 @@ function SettingsScreen({
           </div>
           {deadDropStatus === "sent" ? (
             <StatusBanner tone="success">
-              {walletConnected
-                ? "Dead-drop bundle routed to Portland Police from the connected Abby server."
-                : "Dead-drop bundle downloaded. Please attach the file to the email draft and send."}
+              Dead-drop bundle routed to Portland Police from the connected Abby server.
             </StatusBanner>
           ) : null}
           {deadDropStatus === "failed" ? (
