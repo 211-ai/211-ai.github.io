@@ -372,26 +372,27 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
   const dashboardSummary = page.getByRole("region", { name: /Dashboard summary/i });
   await expect(dashboardSummary).toContainText(/People in verified cohorts/i);
   await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /People in verified cohorts/i })).toContainText(
-    /1,695/
+    /6,158/
   );
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Providers in verified releases/i })
-  ).toContainText(/12/);
+  ).toContainText(/67/);
+  await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /Counties covered/i })).toContainText(/5/);
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Mock proof certificates/i })
-  ).toContainText(/16/);
+  ).toContainText(/100/);
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Shelter requests this week/i })
-  ).toContainText(/527/);
+  ).toContainText(/1,966/);
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Average shelter fill rate/i })
-  ).toContainText(/89%/);
+  ).toContainText(/68%/);
   const mockCertificates = page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i });
-  await expect(mockCertificates).toContainText(/16 verified mock proof certificates/i);
+  await expect(mockCertificates).toContainText(/100 verified mock proof certificates/i);
   await expect(mockCertificates).toContainText(/210 shelter requests/i);
-  await expect(mockCertificates).toContainText(/64 shelter requests/i);
-  await expect(mockCertificates).toContainText(/228\/250 occupied beds/i);
-  await expect(mockCertificates).toContainText(/41\/56 occupied beds/i);
+  await expect(mockCertificates).toContainText(/41 shelter requests/i);
+  await expect(mockCertificates).toContainText(/228\/295 occupied beds/i);
+  await expect(mockCertificates).toContainText(/57\/90 occupied beds/i);
   const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
   await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();

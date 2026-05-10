@@ -256,6 +256,248 @@ export const initialGrantReceipts: WalletGrantReceipt[] = [
   }
 ];
 
+const analyticsCountyProfiles = [
+  { county: "multnomah", label: "Multnomah", scale: 1 },
+  { county: "washington", label: "Washington", scale: 0.82 },
+  { county: "clackamas", label: "Clackamas", scale: 0.67 },
+  { county: "lane", label: "Lane", scale: 0.74 },
+  { county: "marion", label: "Marion", scale: 0.71 }
+];
+
+const analyticsPopulationReleaseBatches = [
+  { ageGroup: "adult_25_54", cohortLabel: "adult 25 to 54", cohortCount: 620, shelterRequests: 210, waitingOver7Days: 71 },
+  { ageGroup: "family_household", cohortLabel: "family household", cohortCount: 390, shelterRequests: 95, waitingOver7Days: 29 },
+  { ageGroup: "veteran_household", cohortLabel: "veteran household", cohortCount: 205, shelterRequests: 64, waitingOver7Days: 18 },
+  { ageGroup: "youth_18_24", cohortLabel: "youth 18 to 24", cohortCount: 168, shelterRequests: 58, waitingOver7Days: 16 },
+  { ageGroup: "senior_55_plus", cohortLabel: "senior 55 plus", cohortCount: 142, shelterRequests: 47, waitingOver7Days: 14 }
+];
+
+const analyticsProviderReleaseBatches = [
+  {
+    serviceType: "emergency_shelter",
+    serviceLabel: "emergency shelter",
+    providersIncluded: 4,
+    occupiedBeds: 228,
+    licensedBeds: 250,
+    sameDayAvailablePrograms: 17,
+    totalPrograms: 30
+  },
+  {
+    serviceType: "transitional_housing",
+    serviceLabel: "transitional housing",
+    providersIncluded: 2,
+    occupiedBeds: 41,
+    licensedBeds: 56,
+    sameDayAvailablePrograms: 4,
+    totalPrograms: 8
+  },
+  {
+    serviceType: "winter_shelter",
+    serviceLabel: "winter shelter",
+    providersIncluded: 3,
+    occupiedBeds: 74,
+    licensedBeds: 92,
+    sameDayAvailablePrograms: 7,
+    totalPrograms: 12
+  },
+  {
+    serviceType: "recovery_beds",
+    serviceLabel: "recovery beds",
+    providersIncluded: 2,
+    occupiedBeds: 38,
+    licensedBeds: 52,
+    sameDayAvailablePrograms: 5,
+    totalPrograms: 9
+  },
+  {
+    serviceType: "family_shelter",
+    serviceLabel: "family shelter",
+    providersIncluded: 3,
+    occupiedBeds: 69,
+    licensedBeds: 88,
+    sameDayAvailablePrograms: 6,
+    totalPrograms: 11
+  }
+];
+
+const analyticsHousingReleaseBatches = [
+  { housingOutcome: "placed", outcomeLabel: "placed", referralsCompleted: 120, housedReferrals: 50 },
+  { housingOutcome: "rapid_rehousing", outcomeLabel: "rapid rehousing", referralsCompleted: 44, housedReferrals: 19 },
+  {
+    housingOutcome: "permanent_supportive_housing",
+    outcomeLabel: "permanent supportive housing",
+    referralsCompleted: 52,
+    housedReferrals: 22
+  },
+  { housingOutcome: "family_reunification", outcomeLabel: "family reunification", referralsCompleted: 36, housedReferrals: 14 },
+  { housingOutcome: "diversion", outcomeLabel: "diversion", referralsCompleted: 64, housedReferrals: 27 }
+];
+
+const analyticsOutreachReleaseBatches = [
+  { serviceType: "street_outreach", serviceLabel: "street outreach", completedFollowups: 43, assignedFollowups: 63 },
+  { serviceType: "hygiene_outreach", serviceLabel: "hygiene outreach", completedFollowups: 17, assignedFollowups: 24 },
+  { serviceType: "medical_outreach", serviceLabel: "medical outreach", completedFollowups: 21, assignedFollowups: 33 },
+  {
+    serviceType: "encampment_resolution",
+    serviceLabel: "encampment resolution",
+    completedFollowups: 18,
+    assignedFollowups: 29
+  },
+  {
+    serviceType: "benefits_navigation",
+    serviceLabel: "benefits navigation",
+    completedFollowups: 16,
+    assignedFollowups: 27
+  }
+];
+
+let analyticsProofSequence = 2;
+
+function nextAnalyticsProofMetadata(prefix: string) {
+  const sequence = analyticsProofSequence;
+  analyticsProofSequence += 1;
+  const day = 1 + Math.floor((sequence - 2) / 20);
+  const hour = 8 + ((sequence - 2) % 5);
+  const minute = String((10 + sequence * 7) % 60).padStart(2, "0");
+  return {
+    id: `proof-${sequence}`,
+    verifierDigest: `${prefix}-${sequence}d64c5b78caa09fd67d24b099c1ca87`,
+    proofArtifactRef: `zk-cert-${prefix}-${sequence}`,
+    createdAt: `May ${day}, ${hour}:${minute} ${sequence % 2 === 0 ? "AM" : "PM"}`
+  };
+}
+
+const analyticsProofReceipts: ProofReceiptView[] = [
+  ...analyticsPopulationReleaseBatches.flatMap((batch, batchIndex) =>
+    analyticsCountyProfiles.map((countyProfile) => {
+      const cohortCount = Math.round(batch.cohortCount * countyProfile.scale) + batchIndex * 3;
+      const shelterRequests = Math.round(batch.shelterRequests * countyProfile.scale) + batchIndex * 2;
+      const waitingOver7Days = Math.max(1, Math.round(batch.waitingOver7Days * countyProfile.scale) + batchIndex);
+      const metadata = nextAnalyticsProofMetadata("analytics-pop");
+      return {
+        ...metadata,
+        proofType: "analytics_population_snapshot",
+        claim: `Unsheltered residents seeking beds in ${countyProfile.county} county ${batch.cohortLabel} cohort`,
+        verifier: `${countyProfile.label} release verifier`,
+        proofSystem: "simulated_zk_certificate",
+        verificationStatus: "verified",
+        circuitId: "analytics-population-snapshot-v1",
+        publicInputs: {
+          certificate_type: "population_snapshot",
+          study_id: "study-1",
+          county: countyProfile.county,
+          need_category: "shelter",
+          age_group: batch.ageGroup,
+          cohort_count: String(cohortCount),
+          shelter_requests: String(shelterRequests),
+          waiting_over_7_days: String(waitingOver7Days)
+        },
+        witnessLabel: "Derived shelter demand cohort",
+        simulated: true
+      };
+    })
+  ),
+  ...analyticsProviderReleaseBatches.flatMap((batch, batchIndex) =>
+    analyticsCountyProfiles.map((countyProfile) => {
+      const providersIncluded = Math.max(2, Math.round(batch.providersIncluded * (countyProfile.scale + 0.15)));
+      const occupiedBeds = Math.round(batch.occupiedBeds * countyProfile.scale) + batchIndex * 2;
+      const licensedBeds = Math.max(
+        occupiedBeds + 8,
+        Math.round(batch.licensedBeds * (countyProfile.scale + 0.18)) + batchIndex * 3
+      );
+      const sameDayAvailablePrograms = Math.max(
+        1,
+        Math.round(batch.sameDayAvailablePrograms * (countyProfile.scale + 0.08)) + Math.floor(batchIndex / 2)
+      );
+      const totalPrograms = Math.max(
+        sameDayAvailablePrograms + 1,
+        Math.round(batch.totalPrograms * (countyProfile.scale + 0.12)) + batchIndex
+      );
+      const metadata = nextAnalyticsProofMetadata("analytics-cap");
+      return {
+        ...metadata,
+        proofType: "analytics_provider_capacity",
+        claim: `Provider capacity gap alerts in ${countyProfile.county} county ${batch.serviceLabel}`,
+        verifier: `${countyProfile.label} provider verifier`,
+        proofSystem: "simulated_zk_certificate",
+        verificationStatus: "verified",
+        circuitId: "analytics-provider-capacity-v1",
+        publicInputs: {
+          certificate_type: "provider_capacity",
+          study_id: "study-2",
+          county: countyProfile.county,
+          service_type: batch.serviceType,
+          providers_included: String(providersIncluded),
+          occupied_beds: String(occupiedBeds),
+          licensed_beds: String(licensedBeds),
+          same_day_available_programs: String(sameDayAvailablePrograms),
+          total_programs: String(totalPrograms)
+        },
+        witnessLabel: "Provider occupancy release batch",
+        simulated: true
+      };
+    })
+  ),
+  ...analyticsHousingReleaseBatches.flatMap((batch, batchIndex) =>
+    analyticsCountyProfiles.map((countyProfile) => {
+      const referralsCompleted = Math.round(batch.referralsCompleted * countyProfile.scale) + batchIndex * 2;
+      const housedReferrals = Math.min(
+        referralsCompleted - 1,
+        Math.round(batch.housedReferrals * countyProfile.scale) + batchIndex
+      );
+      const metadata = nextAnalyticsProofMetadata("analytics-house");
+      return {
+        ...metadata,
+        proofType: "analytics_housing_outcome",
+        claim: `Housing placements after referral in ${countyProfile.county} county ${batch.outcomeLabel} cohort`,
+        verifier: `${countyProfile.label} housing verifier`,
+        proofSystem: "simulated_zk_certificate",
+        verificationStatus: "verified",
+        circuitId: "analytics-housing-outcome-v1",
+        publicInputs: {
+          certificate_type: "housing_outcome",
+          study_id: "study-3",
+          county: countyProfile.county,
+          housing_outcome: batch.housingOutcome,
+          referrals_completed: String(referralsCompleted),
+          housed_referrals: String(housedReferrals)
+        },
+        witnessLabel: "Referral outcome release batch",
+        simulated: true
+      };
+    })
+  ),
+  ...analyticsOutreachReleaseBatches.flatMap((batch, batchIndex) =>
+    analyticsCountyProfiles.map((countyProfile) => {
+      const assignedFollowups = Math.round(batch.assignedFollowups * countyProfile.scale) + batchIndex * 2;
+      const completedFollowups = Math.min(
+        assignedFollowups - 1,
+        Math.round(batch.completedFollowups * countyProfile.scale) + batchIndex
+      );
+      const metadata = nextAnalyticsProofMetadata("analytics-outreach");
+      return {
+        ...metadata,
+        proofType: "analytics_outreach_followup",
+        claim: `Street outreach follow-up rate in ${countyProfile.county} county ${batch.serviceLabel}`,
+        verifier: `${countyProfile.label} outreach verifier`,
+        proofSystem: "simulated_zk_certificate",
+        verificationStatus: "verified",
+        circuitId: "analytics-outreach-followup-v1",
+        publicInputs: {
+          certificate_type: "outreach_followup",
+          study_id: "study-2",
+          county: countyProfile.county,
+          service_type: batch.serviceType,
+          completed_followups: String(completedFollowups),
+          assigned_followups: String(assignedFollowups)
+        },
+        witnessLabel: "Outreach follow-up release batch",
+        simulated: true
+      };
+    })
+  )
+];
+
 export const proofReceipts: ProofReceiptView[] = [
   {
     id: "proof-1",
@@ -275,378 +517,7 @@ export const proofReceipts: ProofReceiptView[] = [
     simulated: true,
     createdAt: "Today, 10:38 AM"
   },
-  {
-    id: "proof-2",
-    proofType: "analytics_population_snapshot",
-    claim: "Unsheltered residents seeking beds in multnomah county",
-    verifier: "Multnomah release verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-population-snapshot-v1",
-    verifierDigest: "analytics-pop-2d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-pop-multnomah",
-    publicInputs: {
-      certificate_type: "population_snapshot",
-      study_id: "study-1",
-      county: "multnomah",
-      need_category: "shelter",
-      age_group: "adult_25_54",
-      cohort_count: "620",
-      shelter_requests: "210",
-      waiting_over_7_days: "71"
-    },
-    witnessLabel: "Derived shelter demand cohort",
-    simulated: true,
-    createdAt: "Today, 10:41 AM"
-  },
-  {
-    id: "proof-3",
-    proofType: "analytics_population_snapshot",
-    claim: "Unsheltered residents seeking beds in washington county",
-    verifier: "Washington release verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-population-snapshot-v1",
-    verifierDigest: "analytics-pop-3d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-pop-washington",
-    publicInputs: {
-      certificate_type: "population_snapshot",
-      study_id: "study-1",
-      county: "washington",
-      need_category: "shelter",
-      age_group: "adult_25_54",
-      cohort_count: "480",
-      shelter_requests: "158",
-      waiting_over_7_days: "43"
-    },
-    witnessLabel: "Derived shelter demand cohort",
-    simulated: true,
-    createdAt: "Today, 10:43 AM"
-  },
-  {
-    id: "proof-4",
-    proofType: "analytics_population_snapshot",
-    claim: "Unsheltered residents seeking beds in clackamas county",
-    verifier: "Clackamas release verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-population-snapshot-v1",
-    verifierDigest: "analytics-pop-4d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-pop-clackamas",
-    publicInputs: {
-      certificate_type: "population_snapshot",
-      study_id: "study-1",
-      county: "clackamas",
-      need_category: "shelter",
-      age_group: "family_household",
-      cohort_count: "390",
-      shelter_requests: "95",
-      waiting_over_7_days: "29"
-    },
-    witnessLabel: "Derived shelter demand cohort",
-    simulated: true,
-    createdAt: "Today, 10:45 AM"
-  },
-  {
-    id: "proof-14",
-    proofType: "analytics_population_snapshot",
-    claim: "Unsheltered residents seeking beds in multnomah county veteran cohort",
-    verifier: "Multnomah release verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-population-snapshot-v1",
-    verifierDigest: "analytics-pop-14d64c5b78caa09fd67d24b099c1ca8",
-    proofArtifactRef: "zk-cert-analytics-pop-multnomah-veteran",
-    publicInputs: {
-      certificate_type: "population_snapshot",
-      study_id: "study-1",
-      county: "multnomah",
-      need_category: "shelter",
-      age_group: "veteran_household",
-      cohort_count: "205",
-      shelter_requests: "64",
-      waiting_over_7_days: "18"
-    },
-    witnessLabel: "Derived shelter demand cohort",
-    simulated: true,
-    createdAt: "Today, 10:46 AM"
-  },
-  {
-    id: "proof-5",
-    proofType: "analytics_provider_capacity",
-    claim: "Provider capacity gap alerts in multnomah county",
-    verifier: "Multnomah provider verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-provider-capacity-v1",
-    verifierDigest: "analytics-cap-5d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-cap-multnomah",
-    publicInputs: {
-      certificate_type: "provider_capacity",
-      study_id: "study-2",
-      county: "multnomah",
-      service_type: "emergency_shelter",
-      providers_included: "4",
-      occupied_beds: "228",
-      licensed_beds: "250",
-      same_day_available_programs: "17",
-      total_programs: "30"
-    },
-    witnessLabel: "Provider occupancy release batch",
-    simulated: true,
-    createdAt: "Today, 10:47 AM"
-  },
-  {
-    id: "proof-6",
-    proofType: "analytics_provider_capacity",
-    claim: "Provider capacity gap alerts in washington county",
-    verifier: "Washington provider verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-provider-capacity-v1",
-    verifierDigest: "analytics-cap-6d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-cap-washington",
-    publicInputs: {
-      certificate_type: "provider_capacity",
-      study_id: "study-2",
-      county: "washington",
-      service_type: "emergency_shelter",
-      providers_included: "3",
-      occupied_beds: "96",
-      licensed_beds: "110",
-      same_day_available_programs: "9",
-      total_programs: "14"
-    },
-    witnessLabel: "Provider occupancy release batch",
-    simulated: true,
-    createdAt: "Today, 10:49 AM"
-  },
-  {
-    id: "proof-7",
-    proofType: "analytics_provider_capacity",
-    claim: "Provider capacity gap alerts in clackamas county",
-    verifier: "Clackamas provider verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-provider-capacity-v1",
-    verifierDigest: "analytics-cap-7d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-cap-clackamas",
-    publicInputs: {
-      certificate_type: "provider_capacity",
-      study_id: "study-2",
-      county: "clackamas",
-      service_type: "emergency_shelter",
-      providers_included: "3",
-      occupied_beds: "76",
-      licensed_beds: "80",
-      same_day_available_programs: "5",
-      total_programs: "10"
-    },
-    witnessLabel: "Provider occupancy release batch",
-    simulated: true,
-    createdAt: "Today, 10:51 AM"
-  },
-  {
-    id: "proof-15",
-    proofType: "analytics_provider_capacity",
-    claim: "Provider capacity gap alerts in multnomah county transitional housing",
-    verifier: "Multnomah provider verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-provider-capacity-v1",
-    verifierDigest: "analytics-cap-15d64c5b78caa09fd67d24b099c1ca8",
-    proofArtifactRef: "zk-cert-analytics-cap-multnomah-transitional",
-    publicInputs: {
-      certificate_type: "provider_capacity",
-      study_id: "study-2",
-      county: "multnomah",
-      service_type: "transitional_housing",
-      providers_included: "2",
-      occupied_beds: "41",
-      licensed_beds: "56",
-      same_day_available_programs: "4",
-      total_programs: "8"
-    },
-    witnessLabel: "Provider occupancy release batch",
-    simulated: true,
-    createdAt: "Today, 10:52 AM"
-  },
-  {
-    id: "proof-8",
-    proofType: "analytics_housing_outcome",
-    claim: "Housing placements after referral in multnomah county",
-    verifier: "Multnomah housing verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-housing-outcome-v1",
-    verifierDigest: "analytics-house-8d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-house-multnomah",
-    publicInputs: {
-      certificate_type: "housing_outcome",
-      study_id: "study-3",
-      county: "multnomah",
-      housing_outcome: "placed",
-      referrals_completed: "120",
-      housed_referrals: "50"
-    },
-    witnessLabel: "Referral outcome release batch",
-    simulated: true,
-    createdAt: "Today, 10:53 AM"
-  },
-  {
-    id: "proof-9",
-    proofType: "analytics_housing_outcome",
-    claim: "Housing placements after referral in washington county",
-    verifier: "Washington housing verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-housing-outcome-v1",
-    verifierDigest: "analytics-house-9d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-house-washington",
-    publicInputs: {
-      certificate_type: "housing_outcome",
-      study_id: "study-3",
-      county: "washington",
-      housing_outcome: "placed",
-      referrals_completed: "90",
-      housed_referrals: "38"
-    },
-    witnessLabel: "Referral outcome release batch",
-    simulated: true,
-    createdAt: "Today, 10:55 AM"
-  },
-  {
-    id: "proof-10",
-    proofType: "analytics_housing_outcome",
-    claim: "Housing placements after referral in clackamas county",
-    verifier: "Clackamas housing verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-housing-outcome-v1",
-    verifierDigest: "analytics-house-10d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-house-clackamas",
-    publicInputs: {
-      certificate_type: "housing_outcome",
-      study_id: "study-3",
-      county: "clackamas",
-      housing_outcome: "placed",
-      referrals_completed: "60",
-      housed_referrals: "25"
-    },
-    witnessLabel: "Referral outcome release batch",
-    simulated: true,
-    createdAt: "Today, 10:57 AM"
-  },
-  {
-    id: "proof-16",
-    proofType: "analytics_housing_outcome",
-    claim: "Housing placements after referral in multnomah county rapid rehousing cohort",
-    verifier: "Multnomah housing verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-housing-outcome-v1",
-    verifierDigest: "analytics-house-16d64c5b78caa09fd67d24b099c1ca",
-    proofArtifactRef: "zk-cert-analytics-house-multnomah-rapid",
-    publicInputs: {
-      certificate_type: "housing_outcome",
-      study_id: "study-3",
-      county: "multnomah",
-      housing_outcome: "rapid_rehousing",
-      referrals_completed: "44",
-      housed_referrals: "19"
-    },
-    witnessLabel: "Referral outcome release batch",
-    simulated: true,
-    createdAt: "Today, 10:58 AM"
-  },
-  {
-    id: "proof-11",
-    proofType: "analytics_outreach_followup",
-    claim: "Street outreach follow-up rate in multnomah county",
-    verifier: "Multnomah outreach verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-11d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-outreach-multnomah",
-    publicInputs: {
-      certificate_type: "outreach_followup",
-      study_id: "study-2",
-      county: "multnomah",
-      service_type: "street_outreach",
-      completed_followups: "43",
-      assigned_followups: "63"
-    },
-    witnessLabel: "Outreach follow-up release batch",
-    simulated: true,
-    createdAt: "Today, 10:59 AM"
-  },
-  {
-    id: "proof-12",
-    proofType: "analytics_outreach_followup",
-    claim: "Street outreach follow-up rate in washington county",
-    verifier: "Washington outreach verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-12d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-outreach-washington",
-    publicInputs: {
-      certificate_type: "outreach_followup",
-      study_id: "study-2",
-      county: "washington",
-      service_type: "street_outreach",
-      completed_followups: "29",
-      assigned_followups: "42"
-    },
-    witnessLabel: "Outreach follow-up release batch",
-    simulated: true,
-    createdAt: "Today, 11:01 AM"
-  },
-  {
-    id: "proof-13",
-    proofType: "analytics_outreach_followup",
-    claim: "Street outreach follow-up rate in clackamas county",
-    verifier: "Clackamas outreach verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-13d64c5b78caa09fd67d24b099c1ca87",
-    proofArtifactRef: "zk-cert-analytics-outreach-clackamas",
-    publicInputs: {
-      certificate_type: "outreach_followup",
-      study_id: "study-2",
-      county: "clackamas",
-      service_type: "street_outreach",
-      completed_followups: "26",
-      assigned_followups: "39"
-    },
-    witnessLabel: "Outreach follow-up release batch",
-    simulated: true,
-    createdAt: "Today, 11:03 AM"
-  },
-  {
-    id: "proof-17",
-    proofType: "analytics_outreach_followup",
-    claim: "Street outreach follow-up rate in multnomah county hygiene outreach",
-    verifier: "Multnomah outreach verifier",
-    proofSystem: "simulated_zk_certificate",
-    verificationStatus: "verified",
-    circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-17d64c5b78caa09fd67d24b099c1",
-    proofArtifactRef: "zk-cert-analytics-outreach-multnomah-hygiene",
-    publicInputs: {
-      certificate_type: "outreach_followup",
-      study_id: "study-2",
-      county: "multnomah",
-      service_type: "hygiene_outreach",
-      completed_followups: "17",
-      assigned_followups: "24"
-    },
-    witnessLabel: "Outreach follow-up release batch",
-    simulated: true,
-    createdAt: "Today, 11:04 AM"
-  }
+  ...analyticsProofReceipts
 ];
 
 export const exportBundles: ExportBundleView[] = [
