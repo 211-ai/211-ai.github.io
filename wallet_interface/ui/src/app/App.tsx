@@ -127,6 +127,7 @@ import {
   createLocationRegionProof,
   createRedactedGraphRAG,
   createVerifiedExportBundleView,
+  createWallet,
   dispatchMissingPersonDeadDrop,
   delegateGrant,
   decryptRecordWithGrant,
@@ -268,7 +269,7 @@ function getProviderPortalView(route: RouteId): ProviderPortalView {
 }
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
-  if (route === "exports") return "security";
+  if (route === "exports") return "uploads";
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
 }
 
@@ -290,6 +291,19 @@ function readSignedInUser(): string {
   } catch {
     return "";
   }
+}
+
+function createGeneratedWalletOwnerDid(seed?: string): string {
+  const normalizedSeed = seed?.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return `did:key:${normalizedSeed ? `${normalizedSeed}-` : ""}${randomBase64Url(16)}`;
+}
+
+function resolveWalletOwnerDid(signedInUser: string, walletConfig?: WalletApiConfig): string {
+  if (walletConfig?.actorDid?.startsWith("did:")) return walletConfig.actorDid;
+  if (signedInUser.startsWith("did:")) return signedInUser;
+  if (signedInUser.startsWith("client:")) return createGeneratedWalletOwnerDid(signedInUser.slice("client:".length));
+  if (signedInUser.startsWith("provider:")) return createGeneratedWalletOwnerDid(signedInUser.slice("provider:".length));
+  return createGeneratedWalletOwnerDid(signedInUser);
 }
 
 function isAcceptedIdentityDocument(file: File): boolean {
@@ -537,6 +551,12 @@ function randomBase64Url(byteLength: number): string {
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
+function randomHex(byteLength: number): string {
+  const bytes = new Uint8Array(byteLength);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 function randomOneTimePad(length = 6): string {
   const bytes = new Uint8Array(length);
   crypto.getRandomValues(bytes);
@@ -667,9 +687,36 @@ export function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [agentChatMode, setAgentChatMode] = useState<AgentChatMode>("text");
-  const walletApiConfig = useMemo(readWalletApiConfig, []);
+  const [walletApiConfig, setWalletApiConfig] = useState<WalletApiConfig | undefined>(() => readWalletApiConfig());
   const lastSyncedDeadDropPayloadRef = useRef("");
+  const walletApiBaseUrl = walletApiConfig?.apiBaseUrl ?? readWalletApiBaseUrl();
   const walletDeadDropReady = Boolean(walletApiConfig?.actorDid);
+
+  const persistWalletApiConfig = useCallback((nextConfig: WalletApiConfig) => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(WALLET_API_CONFIG_KEY, JSON.stringify(nextConfig));
+      const url = new URL(window.location.href);
+      url.searchParams.set("walletApiBaseUrl", nextConfig.apiBaseUrl);
+      url.searchParams.set("walletId", nextConfig.walletId);
+      if (nextConfig.actorDid) {
+        url.searchParams.set("actorDid", nextConfig.actorDid);
+      } else {
+        url.searchParams.delete("actorDid");
+      }
+      if (nextConfig.issuerKeyHex) {
+        url.searchParams.set("issuerKeyHex", nextConfig.issuerKeyHex);
+      } else {
+        url.searchParams.delete("issuerKeyHex");
+      }
+      if (nextConfig.audienceKeyHex) {
+        url.searchParams.set("audienceKeyHex", nextConfig.audienceKeyHex);
+      } else {
+        url.searchParams.delete("audienceKeyHex");
+      }
+      window.history.replaceState({}, "", url.toString());
+    }
+    setWalletApiConfig(nextConfig);
+  }, []);
 
   function openAgentChatMode(mode: AgentChatMode) {
     setAgentChatMode(mode);
@@ -684,26 +731,26 @@ export function App() {
   async function refreshWalletAccessState() {
     if (!walletApiConfig) return;
     const state = await loadWalletAccessState(walletApiConfig);
-    setAccessRequests(state.accessRequests.length ? state.accessRequests : initialAccessRequests);
-    setGrantReceipts(state.grantReceipts.length ? state.grantReceipts : initialGrantReceipts);
+    setAccessRequests(state.accessRequests);
+    setGrantReceipts(state.grantReceipts);
   }
 
   async function refreshWalletAuditEvents() {
     if (!walletApiConfig) return;
     const events = await listWalletAuditEvents(walletApiConfig);
-    setWalletAuditEvents(events.length ? events : auditEvents);
+    setWalletAuditEvents(events);
   }
 
   async function refreshWalletDocuments() {
     if (!walletApiConfig) return;
     const documents = await listWalletDocuments(walletApiConfig);
-    setUploads(documents.length ? documents : initialUploads);
+    setUploads(documents);
   }
 
   async function refreshWalletProofReceipts() {
     if (!walletApiConfig) return;
     const proofs = await listWalletProofReceipts(walletApiConfig);
-    setWalletProofReceipts(proofs.length ? proofs : proofReceipts);
+    setWalletProofReceipts(proofs);
   }
 
   async function refreshWalletPortalState() {
@@ -1256,10 +1303,15 @@ export function App() {
         ) : null}
         {activeRoute === "uploads" ? (
           <UploadsScreen
+            apiBaseUrl={walletApiBaseUrl}
             apiConfig={walletApiConfig}
+            bundles={exportBundleViews}
             proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             recipients={recipients}
+            setApiConfig={persistWalletApiConfig}
+            setBundles={setExportBundleViews}
+            signedInUser={signedInUser}
             uploads={uploads}
             setUploads={setUploads}
           />
@@ -1383,9 +1435,7 @@ export function App() {
         {activeRoute === "security" ? (
           <SecurityScreen
             apiConfig={walletApiConfig}
-            bundles={exportBundleViews}
             onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
-            setBundles={setExportBundleViews}
           />
         ) : null}
       </main>
@@ -1439,7 +1489,20 @@ function readWalletApiConfig(): WalletApiConfig | undefined {
           audienceKeyHex: import.meta.env.VITE_DEMO_AUDIENCE_KEY_HEX as string | undefined
         }
       : undefined;
-  return envConfig ?? readUrlWalletApiConfig() ?? readStoredWalletApiConfig();
+  return readUrlWalletApiConfig() ?? readStoredWalletApiConfig() ?? envConfig;
+}
+
+function readWalletApiBaseUrl(): string | undefined {
+  const urlBaseUrl = readUrlWalletApiBaseUrl();
+  if (urlBaseUrl) return urlBaseUrl;
+  const storedBaseUrl = readStoredWalletApiBaseUrl();
+  if (storedBaseUrl) return storedBaseUrl;
+  return (import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined) ?? undefined;
+}
+
+function readUrlWalletApiBaseUrl(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return new URL(window.location.href).searchParams.get("walletApiBaseUrl") ?? undefined;
 }
 
 function readUrlWalletApiConfig(): WalletApiConfig | undefined {
@@ -1471,6 +1534,18 @@ function readStoredWalletApiConfig(): WalletApiConfig | undefined {
       issuerKeyHex: storedConfig.issuerKeyHex,
       audienceKeyHex: storedConfig.audienceKeyHex
     };
+  } catch {
+    return undefined;
+  }
+}
+
+function readStoredWalletApiBaseUrl(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const storedConfig = JSON.parse(window.localStorage.getItem(WALLET_API_CONFIG_KEY) ?? "null") as Partial<
+      WalletApiConfig
+    > | null;
+    return storedConfig?.apiBaseUrl ?? undefined;
   } catch {
     return undefined;
   }
@@ -3237,17 +3312,27 @@ function ContactsScreen({
 }
 
 function UploadsScreen({
+  apiBaseUrl,
   apiConfig,
+  bundles,
   proofs,
   refreshWalletAuditEvents,
   recipients,
+  setApiConfig,
+  setBundles,
+  signedInUser,
   uploads,
   setUploads
 }: {
+  apiBaseUrl?: string;
   apiConfig?: WalletApiConfig;
+  bundles: ExportBundleView[];
   proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   recipients: DisclosureRecipientDraft[];
+  setApiConfig: (config: WalletApiConfig) => void;
+  setBundles: (bundles: ExportBundleView[]) => void;
+  signedInUser: string;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
@@ -3261,6 +3346,8 @@ function UploadsScreen({
   const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
   const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
   const [walletProofBundleCid, setWalletProofBundleCid] = useState("");
+  const [walletCreateStatus, setWalletCreateStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+  const [walletCreateError, setWalletCreateError] = useState("");
   const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
   const walletProofBundlePayload = useMemo(
     () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
@@ -3498,12 +3585,69 @@ function UploadsScreen({
     });
   }
 
+  async function generateWallet() {
+    if (!apiBaseUrl) return;
+    setWalletCreateStatus("creating");
+    setWalletCreateError("");
+    const ownerDid = resolveWalletOwnerDid(signedInUser, apiConfig);
+    const issuerKeyHex = randomHex(32);
+
+    try {
+      const wallet = await createWallet({ apiBaseUrl, ownerDid });
+      setApiConfig({
+        apiBaseUrl,
+        walletId: wallet.wallet_id,
+        actorDid: wallet.owner_did,
+        issuerKeyHex,
+        audienceKeyHex: undefined
+      });
+      setWalletCreateStatus("created");
+    } catch (error) {
+      setWalletCreateStatus("failed");
+      setWalletCreateError(error instanceof Error ? error.message : "Wallet generation failed.");
+    }
+  }
+
   return (
     <div className="screen wallet-screen">
       <div className="page-title">
         <p className="eyebrow">Wallet</p>
         <h1>Wallet</h1>
       </div>
+      {walletCreateStatus === "created" ? <StatusBanner tone="success">New wallet generated and connected.</StatusBanner> : null}
+      {walletCreateStatus === "failed" ? <StatusBanner tone="warning">{walletCreateError || "Wallet generation failed."}</StatusBanner> : null}
+      <Section
+        title="Wallet connection"
+        actions={
+          <Badge tone={apiConfig ? "success" : apiBaseUrl ? "warning" : "neutral"}>
+            {apiConfig ? "connected" : apiBaseUrl ? "ready to create" : "API required"}
+          </Badge>
+        }
+      >
+        <div className="disclosure-package">
+          <div className="disclosure-row">
+            <strong>Wallet</strong>
+            <span>{apiConfig?.walletId ?? "Not connected"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Owner DID</strong>
+            <span>{apiConfig?.actorDid ?? "Will be generated when creating a new wallet"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Backend</strong>
+            <span>{apiBaseUrl ?? "Add walletApiBaseUrl or VITE_WALLET_API_BASE_URL to create a live wallet"}</span>
+          </div>
+        </div>
+        <div className="row-actions">
+          <Button
+            ariaLabel={walletCreateStatus === "creating" ? "Generating a new wallet" : "Generate new wallet"}
+            disabled={!apiBaseUrl || walletCreateStatus === "creating"}
+            onClick={() => void generateWallet()}
+          >
+            <Archive size={18} /> {walletCreateStatus === "creating" ? "Generating" : "Generate new wallet"}
+          </Button>
+        </div>
+      </Section>
       <Section
         title="Share wallet proof QR"
         actions={<Badge tone={walletQrProofs.length > 0 ? "success" : "warning"}>{walletQrProofs.length} proof claims</Badge>}
@@ -3557,6 +3701,7 @@ function UploadsScreen({
           </div>
         </div>
       </Section>
+      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <Section
         title="Add wallet file"
         actions={
@@ -7259,7 +7404,7 @@ function ExportCenterScreen({
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
       {importStatus === "imported" ? <StatusBanner tone="success">Export descriptors imported.</StatusBanner> : null}
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
-      <Section title="Manage encrypted export bundles">
+      <Section title="Export or import wallet bundles">
         <p className="page-note">
           Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal
           plaintext.
@@ -7399,14 +7544,10 @@ function shortHash(value?: string): string {
 
 function SecurityScreen({
   apiConfig,
-  bundles,
-  onSnapshotLoaded,
-  setBundles
+  onSnapshotLoaded
 }: {
   apiConfig?: WalletApiConfig;
-  bundles: ExportBundleView[];
   onSnapshotLoaded: () => Promise<void> | void;
-  setBundles: (bundles: ExportBundleView[]) => void;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
@@ -7522,7 +7663,6 @@ function SecurityScreen({
           </Button>
         </div>
       </Section>
-      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <div className="tool-grid">
         <button className="tool-tile" type="button">
           <LockKeyhole size={24} /> Session timeout

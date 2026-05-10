@@ -447,6 +447,25 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export async function createWallet({
+  apiBaseUrl,
+  approvalThreshold,
+  controllerDids,
+  ownerDid
+}: {
+  apiBaseUrl: string;
+  ownerDid: string;
+  controllerDids?: string[];
+  approvalThreshold?: number;
+}): Promise<WalletDetails> {
+  const url = new URL("/wallets", normalizedBaseUrl(apiBaseUrl));
+  return postJson<WalletDetails>(url, "Create wallet", {
+    approval_threshold: approvalThreshold,
+    controller_dids: controllerDids,
+    owner_did: ownerDid
+  });
+}
+
 export interface MissingPersonDeadDropDispatchResponse {
   wallet_id: string;
   status: string;

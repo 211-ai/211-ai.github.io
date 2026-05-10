@@ -1063,10 +1063,11 @@ test("proof center can create an API-backed location region proof", async ({ pag
   expect(createRequests).toBe(1);
 });
 
-test("security screen shows migrated export bundles", async ({ page }) => {
-  await openAppRoute(page, "/#/security");
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Manage encrypted export bundles/i })).toBeVisible();
+test("wallet screen shows export and proof sharing tools", async ({ page }) => {
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Export or import wallet bundles/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share wallet proof QR/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
   const preview = page.getByLabel("Export capability preview");
   await expect(preview.getByText(/export\/create/i)).toBeVisible();
@@ -1207,7 +1208,7 @@ test("configured exports create verify and import encrypted descriptors", async 
   await page.route("**/exports/**", handleWalletApiRoute);
 
   await page.goto(
-    walletRoute("security", "did:key:owner", {
+    walletRoute("uploads", "did:key:owner", {
       audienceKeyHex: "22".repeat(32),
       issuerKeyHex: "11".repeat(32)
     })
@@ -1226,6 +1227,81 @@ test("configured exports create verify and import encrypted descriptors", async 
   await expect(page.getByText(/Export descriptors imported/i)).toBeVisible();
   await expect(createdBundle.getByText(/import verified/i)).toBeVisible();
   expect(calls).toEqual(["grant", "invocation", "bundle", "verify", "storage", "import"]);
+});
+
+test("wallet page can generate and connect a new wallet", async ({ page }) => {
+  const calls: string[] = [];
+  await page.route("**/wallets", async (route) => {
+    calls.push("create");
+    expect(route.request().method()).toBe("POST");
+    const request = route.request().postDataJSON();
+    expect(String(request.owner_did)).toMatch(/^did:key:/i);
+    await route.fulfill({
+      json: {
+        wallet_id: "wallet-generated",
+        owner_did: request.owner_did,
+        controller_dids: [request.owner_did],
+        device_dids: [],
+        governance_policy: { approval_threshold: 1, controllers: [request.owner_did] }
+      }
+    });
+  });
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      calls.push("access");
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      calls.push("grants");
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      calls.push("records");
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      calls.push("audit");
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      calls.push("proofs");
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      calls.push("saved-services");
+      await route.fulfill({ json: { saved_services: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      calls.push("plans");
+      await route.fulfill({ json: { plans: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      calls.push("interactions");
+      await route.fulfill({ json: { interactions: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
+  });
+
+  const createRoute = `/?walletApiBaseUrl=${walletApiBaseUrl}#/uploads`;
+  await openAppRoute(page, createRoute);
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByRole("button", { name: /Generate new wallet/i }).click();
+
+  await expect(page.getByText(/New wallet generated and connected/i)).toBeVisible();
+  await expect(page.getByText(/wallet-generated/i)).toBeVisible();
+  await expect(calls).toContain("create");
+  await expect(calls).toContain("records");
+  await expect(calls).toContain("proofs");
 });
 
 test("security screen saves and restores wallet snapshots", async ({ page }) => {

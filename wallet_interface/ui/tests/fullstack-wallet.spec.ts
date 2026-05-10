@@ -257,7 +257,7 @@ async function visibleHeadingOrDiagnostics(page: Page, name: RegExp, diagnostics
     });
 }
 
-test("security screen export bundles work against a live wallet API", async ({ page }) => {
+test("wallet screen export bundles work against a live wallet API", async ({ page }) => {
   const api = await startWalletApi();
   const ownerDid = "did:key:fullstack-owner";
   const ownerKeyHex = "11".repeat(32);
@@ -281,13 +281,13 @@ test("security screen export bundles work against a live wallet API", async ({ p
     });
 
     await page.goto(
-        walletRoute("security", api.baseUrl, wallet.wallet_id, ownerDid, {
+        walletRoute("uploads", api.baseUrl, wallet.wallet_id, ownerDid, {
           audienceKeyHex: delegateKeyHex,
           issuerKeyHex: ownerKeyHex
         })
       );
       await signInIfNeeded(page, ownerDid);
-      await visibleHeadingOrDiagnostics(page, /Account safety/i, diagnostics);
+      await visibleHeadingOrDiagnostics(page, /^Wallet$/i, diagnostics);
       await page.getByLabel(/Recipient DID/i).fill(delegateDid);
     await page.getByLabel(/Recipient label/i).fill("Full-stack Clinic");
     await page.getByLabel(/Purpose/i).fill("benefits_portability");

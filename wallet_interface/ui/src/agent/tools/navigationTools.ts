@@ -28,7 +28,7 @@ const extraRouteAliases = {
   messages: ["inbox", "client messages", "service staff messages", "notifications"],
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
-  uploads: ["wallet", "documents", "files", "records"],
+  uploads: ["wallet", "documents", "files", "records", "export", "import", "bundle", "bundles", "share proofs"],
   settings: ["account settings", "profile settings", "preferences", "personal information"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
   interactions: ["interaction history", "service history", "service interactions", "timeline"],
@@ -44,7 +44,7 @@ const extraRouteAliases = {
   analytics: ["reports", "group facts"],
   "proof-center": ["proof center", "proofs", "proof", "verification", "verifications"],
   exports: ["export", "sharing bundle", "bundle", "download"],
-  security: ["wallet security", "privacy", "security settings", "export", "exports", "sharing bundle", "bundle", "download"],
+  security: ["wallet security", "privacy", "security settings"],
   audit: ["history", "wallet audit", "activity log", "audit log"]
 } satisfies Record<RouteId, readonly string[]>;
 
@@ -66,7 +66,7 @@ const routeSummaries = {
   messages: (state) => `${state.shelterProviderMessages?.length ?? 0} service staff messages are available.`,
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
-  uploads: (state) => `${state.uploads.length} wallet files are visible.`,
+  uploads: (state) => `${state.uploads.length} wallet files, ${state.exportBundleViews.length} export bundles, and ${state.walletProofReceipts.length} proof receipts are visible.`,
   settings: (state) =>
     `Settings are active with ${state.profile.serviceNeeds.length} service needs, ${state.policy.reminderChannels.length} check-in channels, and ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} explicit analytics choices.`,
   "social-services": () => "Services search and public 211 guidance are active.",
