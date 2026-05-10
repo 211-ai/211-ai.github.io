@@ -4512,17 +4512,19 @@ body {
 
 .topbar::before {
   background:
-    linear-gradient(90deg, rgba(250, 251, 248, 0.18), rgba(250, 251, 248, 0.04)),
-    var(--abby-header-asset) right center / min(420px, 36vw) auto no-repeat;
+    radial-gradient(130% 150% at 104% 50%, rgba(250, 251, 248, 0) 42%, rgba(250, 251, 248, 0.28) 78%, rgba(250, 251, 248, 0.62) 100%),
+    linear-gradient(90deg, rgba(250, 251, 248, 0.14), rgba(250, 251, 248, 0.02)),
+    var(--abby-header-asset) 104% 54% / min(500px, 42vw) auto no-repeat;
   content: "";
   inset: 0;
-  opacity: 0.96;
+  opacity: 0.98;
   pointer-events: none;
   position: absolute;
+  filter: saturate(1.03);
 }
 
 .topbar::after {
-  background: linear-gradient(90deg, rgba(250, 251, 248, 0.96) 0%, rgba(250, 251, 248, 0.88) 38%, rgba(250, 251, 248, 0.2) 78%, rgba(250, 251, 248, 0.02) 100%);
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.96) 0%, rgba(250, 251, 248, 0.84) 34%, rgba(250, 251, 248, 0.22) 72%, rgba(250, 251, 248, 0.08) 92%, rgba(250, 251, 248, 0.02) 100%);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -4759,16 +4761,20 @@ textarea:focus-visible,
 }
 
 .home-footer::before {
-  background: var(--abby-footer-asset) center bottom / cover no-repeat;
+  background: var(--abby-footer-asset) center bottom / 108% auto no-repeat;
   content: "";
   inset: 0;
-  opacity: 0.88;
+  opacity: 0.93;
   pointer-events: none;
   position: absolute;
+  transform: scale(1.06);
+  transform-origin: center bottom;
 }
 
 .home-footer::after {
-  background: linear-gradient(90deg, rgba(250, 251, 248, 0.94) 0%, rgba(250, 251, 248, 0.7) 36%, rgba(250, 251, 248, 0.22) 74%, rgba(250, 251, 248, 0.18) 100%);
+  background:
+    radial-gradient(135% 120% at 50% 100%, rgba(250, 251, 248, 0) 58%, rgba(250, 251, 248, 0.48) 100%),
+    linear-gradient(90deg, rgba(250, 251, 248, 0.94) 0%, rgba(250, 251, 248, 0.72) 34%, rgba(250, 251, 248, 0.24) 72%, rgba(250, 251, 248, 0.2) 100%);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -4838,8 +4844,8 @@ textarea:focus-visible,
 @media (min-width: 760px) {
   .sidebar {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0.84), rgba(243, 248, 246, 0.58)),
-      var(--abby-sidebar-wash) center center / cover no-repeat;
+      linear-gradient(180deg, rgba(250, 251, 248, 0.88), rgba(243, 248, 246, 0.56)),
+      var(--abby-sidebar-wash) 52% 42% / 132% 132% no-repeat;
     border-right: 1px solid rgba(127, 174, 180, 0.45);
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.68);
     isolation: isolate;
@@ -4849,18 +4855,18 @@ textarea:focus-visible,
 
   .sidebar::before {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0.08), rgba(250, 251, 248, 0.18)),
-      var(--abby-sidebar-wash) center top / cover no-repeat;
+      linear-gradient(180deg, rgba(250, 251, 248, 0.04), rgba(250, 251, 248, 0.2)),
+      var(--abby-sidebar-wash) 50% 30% / 138% 138% no-repeat;
     content: "";
     inset: 0;
-    opacity: 0.92;
+    opacity: 0.96;
     pointer-events: none;
     position: absolute;
     z-index: 0;
   }
 
   .sidebar::after {
-    background: linear-gradient(180deg, rgba(250, 251, 248, 0.14), rgba(7, 49, 74, 0.16) 78%, rgba(7, 49, 74, 0.22) 100%);
+    background: linear-gradient(180deg, rgba(250, 251, 248, 0.08), rgba(7, 49, 74, 0.14) 78%, rgba(7, 49, 74, 0.2) 100%);
     bottom: 0;
     content: "";
     left: 0;
@@ -5189,9 +5195,10 @@ textarea:focus-visible,
 
   .sidebar::before {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0), rgba(250, 251, 248, 0.88) 64%),
+      linear-gradient(180deg, rgba(250, 251, 248, 0), rgba(250, 251, 248, 0.86) 64%),
+      var(--abby-sidebar-wash) 54% 36% / 140% 140% no-repeat,
       var(--abby-watercolor-bridge) left bottom / 252px auto no-repeat;
-    opacity: 0.14;
+    opacity: 0.2;
   }
 
   .sidebar::after {
@@ -5206,7 +5213,7 @@ textarea:focus-visible,
     background:
       linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(232, 244, 243, 0.92)),
       var(--abby-watercolor-bridge) left bottom / 284px auto no-repeat,
-      var(--abby-sidebar-wash) left top / 100% 100% no-repeat;
+      var(--abby-sidebar-wash) 50% 36% / 138% 132% no-repeat;
   }
 }
 
