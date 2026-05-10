@@ -100,6 +100,30 @@ test("voice chat reports local audio model warmup failures", async ({ page }) =>
   await expect(voiceAssistant.getByText(/Browser speech output ready/i)).toBeVisible();
 });
 
+test("voice chat on iPhone uses browser speech instead of downloading the local audio model", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "Mobile Safari", "iPhone local-audio policy is covered by the Mobile Safari project.");
+  await installFakeSpeechSynthesis(page);
+  await installFakeAudioWorker(page, "success");
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  const diagnostic = voiceAssistant.getByRole("alert", { name: /Audio diagnostic/i });
+
+  await expect(voiceAssistant.getByText(/Browser speech output ready/i)).toBeVisible({ timeout: 5000 });
+  await expect(diagnostic).toContainText(/disabled on iPhone and iPad/i);
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          ((window as typeof window & { __abbyWorkerScripts?: string[] }).__abbyWorkerScripts || []).filter((script) =>
+            script.includes("clientAudioWorker"),
+          ).length,
+      ),
+    )
+    .toBe(0);
+});
+
 test("voice chat speaks an opening greeting when the audio surface opens", async ({ page }) => {
   await installFakeSpeechSynthesis(page);
   await installFakeAudioWorker(page, "success");

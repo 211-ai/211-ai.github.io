@@ -3,6 +3,7 @@ export const AUDIO_CHAT_CONFIG = {
     (import.meta.env?.VITE_CLIENT_AUDIO_MODEL as string | undefined) || "LiquidAI/LFM2.5-Audio-1.5B-ONNX",
   fallbackVoiceModel: "browser-speech-synthesis",
   enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
+  enableMobileLocalAudio: import.meta.env?.VITE_ENABLE_MOBILE_LOCAL_AUDIO === "true",
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
   requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "240000", 10),
   warmupTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "1200000", 10),

@@ -302,6 +302,7 @@ test.describe("agent unit contracts", () => {
       quantized: true,
     });
     expect(AUDIO_CHAT_CONFIG.liquidAudioRunnerBaseUrl).toContain("LFM2.5-Audio-1.5B-transformers-js");
+    expect(AUDIO_CHAT_CONFIG.enableMobileLocalAudio).toBe(false);
     expect(AUDIO_CHAT_CONFIG.maxAudioFrames).toBeGreaterThan(0);
     expect(AUDIO_CHAT_CONFIG.warmupTimeoutMs).toBeGreaterThan(AUDIO_CHAT_CONFIG.requestTimeoutMs);
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
@@ -617,8 +618,8 @@ export class AudioModel {
     expect(results).toHaveLength(2);
     expect(results.every((result) => result.kind === "fallback")).toBe(true);
     expect(results.map((result) => (result.kind === "fallback" ? result.fallbackReason : ""))).toEqual([
-      "Failed to fetch decoder_q4.onnx: 404 Using browser speech output instead.",
-      "Failed to fetch decoder_q4.onnx: 404 Using browser speech output instead.",
+      "Failed to fetch decoder_q4.onnx: 404. Using browser speech output instead.",
+      "Failed to fetch decoder_q4.onnx: 404. Using browser speech output instead.",
     ]);
   });
 
@@ -771,6 +772,72 @@ export class AudioModel {
         fallbackText: "Fallback food answer.",
       }),
     ).rejects.toThrow(/Audio worker failed to start\. Browser speech fallback is also unavailable\./);
+  });
+
+  test("uses browser speech while the local audio model is still warming up", async () => {
+    let warmupRequest: { message: TestAudioWorkerRequest; worker: TestAudioWorkerStub } | undefined;
+    let generateRequests = 0;
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      if (message.type === "warmUp") {
+        warmupRequest = { message, worker: activeWorker };
+        return;
+      }
+      generateRequests += 1;
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const warmupPromise = service.warmUp();
+    const result = await service.generateVoiceReply({
+      prompt: "User voice query: food help",
+      fallbackText: "Fallback food answer.",
+    });
+    if (!warmupRequest) throw new Error("Warmup request was not sent.");
+    emitAudioWorkerMessage(warmupRequest.worker, {
+      id: warmupRequest.message.id,
+      success: true,
+      data: {
+        modelName: warmupRequest.message.data.modelName,
+        provider: "local-liquidai",
+      },
+    });
+    await warmupPromise;
+
+    expect(generateRequests).toBe(0);
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      text: "Fallback food answer.",
+    });
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("still downloading or warming up");
+  });
+
+  test("does not start the local audio worker when browser policy blocks mobile local audio", async () => {
+    let workerStarted = false;
+    const service = new ClientAudioReplyService({
+      createWorker: () => {
+        workerStarted = true;
+        return createAudioWorkerStub(() => undefined) as unknown as Worker;
+      },
+      getLocalAudioBlockReason: () =>
+        "LiquidAI local audio is disabled on iPhone and iPad because the model download is too large for reliable mobile Safari use.",
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const result = await service.generateVoiceReply({
+      prompt: "User voice query: food help",
+      fallbackText: "Fallback food answer.",
+    });
+
+    expect(workerStarted).toBe(false);
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      text: "Fallback food answer.",
+    });
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("disabled on iPhone and iPad");
   });
 
   test("retries local LiquidAI audio after a transient failure cooldown", async () => {

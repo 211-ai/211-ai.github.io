@@ -276,6 +276,48 @@ def test_normalized_query_street_does_not_treat_suite_as_direction() -> None:
     assert normalized_query_street_without_unit(query.address, query.street, query.city) == "1216 Moore Street"
 
 
+def test_normalizer_recovers_split_highway_number_and_city_from_address() -> None:
+    query = AddressQuery(
+        address="38952 Highway 226 Scio, OR 97374",
+        street="38952 Highway",
+        city="226 Scio",
+        state="OR",
+        postal_code="97374",
+    )
+
+    assert normalized_query_city(query.city) == "Scio"
+    assert normalized_query_street(query.address, query.street, query.city) == "38952 Highway 226"
+    attempts = build_nominatim_search_attempts(query)
+    assert attempts[0]["q"] == "38952 Highway 226, Scio, OR, 97374"
+
+
+def test_normalizer_recovers_split_multiword_city_from_address() -> None:
+    query = AddressQuery(
+        address="1255 NW US 101 Lincoln City, OR 97367",
+        street="1255 NW US 101 Lincoln",
+        city="City",
+        state="OR",
+        postal_code="97367",
+    )
+
+    assert normalized_query_street(query.address, query.street, query.city) == "1255 NW US 101"
+    attempts = build_nominatim_search_attempts(query)
+    assert attempts[0]["q"] == "1255 NW US 101, Lincoln City, OR, 97367"
+
+
+def test_normalizer_keeps_final_street_suffix_when_name_contains_suffix_word() -> None:
+    query = AddressQuery(
+        address="500 Court Street Moro, OR 97039",
+        street="500 Court Street",
+        city="Moro",
+        state="OR",
+        postal_code="97039",
+    )
+
+    assert normalized_query_street(query.address, query.street, query.city) == "500 Court Street"
+    assert build_nominatim_search_attempts(query)[0]["q"] == "500 Court Street, Moro, OR, 97039"
+
+
 def test_classify_geocode_miss_record_identifies_malformed_city_and_normalization_damage() -> None:
     malformed = classify_geocode_miss_record(
         {
@@ -305,6 +347,61 @@ def test_classify_geocode_miss_record_identifies_malformed_city_and_normalizatio
         )
     )
     assert "street_direction_suite_artifact" not in damaged["issue_tags"]
+
+    split_city = classify_geocode_miss_record(
+        {
+            "provider": "nominatim",
+            "status": "miss",
+            "precision": "miss",
+            "query": {
+                "address": "500 NW 6th Street Department 15 Grants Pass, OR 97526",
+                "street": "500 NW 6th Street",
+                "city": "Department 15 Grants Pass",
+                "state": "OR",
+                "postal_code": "97526",
+                "country_code": "us",
+            },
+        }
+    )
+    assert split_city["classification"] == "likely_malformed_input"
+    assert split_city["normalized_city"] == "Grants Pass"
+    assert "city_embedded_venue" in split_city["issue_tags"]
+
+
+def test_city_normalizer_strips_leading_unit_conjunction_and_mailstop_noise() -> None:
+    bateman = classify_geocode_miss_record(
+        {
+            "provider": "nominatim",
+            "status": "miss",
+            "precision": "miss",
+            "query": {
+                "address": "40 pounds of food will be provided. 201 Bateman Drive #13 and #14 Central Point, OR 97502",
+                "street": "40 pounds of food will be provided. 201 Bateman Drive",
+                "city": "#13 and #14 Central Point",
+                "state": "OR",
+                "postal_code": "97502",
+                "country_code": "us",
+            },
+        }
+    )
+    assert bateman["normalized_city"] == "Central Point"
+
+    bethesda = classify_geocode_miss_record(
+        {
+            "provider": "nominatim",
+            "status": "miss",
+            "precision": "miss",
+            "query": {
+                "address": "9609 Medical Center Drive Building 9609 MSC 9760 Bethesda, MD 20892",
+                "street": "9609 Medical Center Drive",
+                "city": "Building 9609 MSC 9760 Bethesda",
+                "state": "MD",
+                "postal_code": "20892",
+                "country_code": "us",
+            },
+        }
+    )
+    assert bethesda["normalized_city"] == "Bethesda"
 
 
 def test_build_repaired_query_for_malformed_miss_uses_normalized_city_and_street() -> None:

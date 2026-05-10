@@ -25,12 +25,13 @@ DEFAULT_CACHE_PATH = DEFAULT_PORTAL_DIR / "service_address_geocode_cache.json"
 DEFAULT_NOMINATIM_URL = "https://nominatim.openstreetmap.org"
 DEFAULT_COUNTRY_CODE = "us"
 DEFAULT_USER_AGENT = "211-AI/1.0 (service-address-enrichment; github.com/211-ai/211-ai.github.io)"
+ROUTE_STREET_PATTERN = r"(?:Highway|Hwy|US|Route)\s+\d+[A-Za-z]?"
 STREET_SUFFIX_PATTERN = (
     r"(?:Avenue|Ave|Street|St|Road|Rd|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Place|Pl|Way|"
     r"Highway|Hwy|Circle|Cir|Parkway|Pkwy|Terrace|Ter)"
 )
 STREET_CORE_RE = re.compile(
-    rf"^.+?\b{STREET_SUFFIX_PATTERN}\b\.?"
+    rf"^.+?(?:\b{ROUTE_STREET_PATTERN}\b|\b{STREET_SUFFIX_PATTERN}\b\.?)(?!\s+\b{STREET_SUFFIX_PATTERN}\b)"
     rf"(?:\s+(?:(?:NE|NW|SE|SW|North|South|East|West|N|S|E|W)\b))?"
     rf"(?:\s+(?:Suite|Ste\.?|Unit|Rm\.?|Room|#)\s*[A-Za-z0-9/-]+)?",
     re.IGNORECASE,
@@ -43,6 +44,18 @@ CITY_UNIT_PREFIX_RE = re.compile(
 CITY_FLOOR_PREFIX_RE = re.compile(r"^(?:\d+(?:st|nd|rd|th)\s+Floor|Floor\s*\d+|Fl\.?\s*\d+)\b[\s,]+", re.IGNORECASE)
 CITY_HASH_PREFIX_RE = re.compile(r"^#[A-Za-z0-9/-]+\b[\s,]+", re.IGNORECASE)
 CITY_LEVEL_PREFIX_RE = re.compile(r"^(?:Basement(?:\s+Level)?|Lower\s+Level|Upper\s+Level|Lobby)\b[\s,]+", re.IGNORECASE)
+CITY_CONJUNCTION_PREFIX_RE = re.compile(r"^(?:and|&)\b[\s,]+", re.IGNORECASE)
+CITY_MAILSTOP_PREFIX_RE = re.compile(r"^(?:MSC|Mail\s*Stop|Mailstop)\s*[A-Za-z0-9-]+\b[\s,]*", re.IGNORECASE)
+CITY_NUMERIC_PREFIX_RE = re.compile(r"^\d+\s+", re.IGNORECASE)
+CITY_FRAGMENT_RE = re.compile(r"^(?:City|Grove|Junction)$", re.IGNORECASE)
+CITY_NOISE_PREFIX_RE = re.compile(
+    r"^(?:PO\s+Box\s+\d+|Department\s+\d+|Dept\.?\s*\d+|Number\s+\d+|Klondike\s+Room\s+\d+|Room\s+[A-Za-z0-9-]+|Rm\.?\s*[A-Za-z0-9-]+|Gymnasium|Clairmont\s+Hall|Marquam\s+Hill\s+Campus|Campus|Curbside\s+Bus\s+Stop)\b[\s,]*",
+    re.IGNORECASE,
+)
+CITY_VENUE_KEYWORD_RE = re.compile(
+    r"\b(?:PO\s+Box|Department|Dept\.?|Number|Room|Rm\.?|Hall|Campus|Gymnasium|Curbside\s+Bus\s+Stop)\b",
+    re.IGNORECASE,
+)
 LEADING_BOILERPLATE_RE = re.compile(
     r"^(?:[A-Za-z][^.]{0,60}|\d{1,3}\s+[A-Za-z][^.]{0,60})\.\s*(?=\d)",
     re.IGNORECASE,
@@ -53,6 +66,7 @@ SECONDARY_UNIT_SUFFIX_RE = re.compile(
     r"\s+(?:Suite|Ste\.?|Unit|Rm\.?|Room|Floor|Fl\.?|#)\s*[A-Za-z0-9/-]+\b.*$",
     re.IGNORECASE,
 )
+STATE_POSTAL_SUFFIX_RE = re.compile(r",?\s*[A-Z]{2}\s+\d{5}(?:-\d{4})?$", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -180,7 +194,54 @@ def normalized_query_city(city: str) -> str:
         value = clean_text(CITY_FLOOR_PREFIX_RE.sub("", value))
         value = clean_text(CITY_HASH_PREFIX_RE.sub("", value))
         value = clean_text(CITY_LEVEL_PREFIX_RE.sub("", value))
-    return value
+        value = clean_text(CITY_CONJUNCTION_PREFIX_RE.sub("", value))
+        value = clean_text(CITY_MAILSTOP_PREFIX_RE.sub("", value))
+    return _strip_city_noise(value)
+
+
+def _strip_city_noise(value: str) -> str:
+    cleaned = clean_text(value)
+    previous = None
+    while cleaned and cleaned != previous:
+        previous = cleaned
+        cleaned = clean_text(CITY_NUMERIC_PREFIX_RE.sub("", cleaned))
+        cleaned = clean_text(CITY_NOISE_PREFIX_RE.sub("", cleaned))
+    words = cleaned.split()
+    if len(words) >= 2:
+        midpoint = len(words) // 2
+        if words[:midpoint] == words[midpoint:]:
+            cleaned = " ".join(words[:midpoint])
+    return cleaned
+
+
+def _address_body_without_state_postal(address: str) -> str:
+    return clean_text(STATE_POSTAL_SUFFIX_RE.sub("", clean_text(address)))
+
+
+def _city_looks_suspicious(city: str) -> bool:
+    value = clean_text(city)
+    return bool(
+        value
+        and (
+            CITY_NUMERIC_PREFIX_RE.match(value)
+            or CITY_FRAGMENT_RE.fullmatch(value)
+            or CITY_VENUE_KEYWORD_RE.search(value)
+        )
+    )
+
+
+def normalized_query_city_with_context(address: str, street: str, city: str) -> str:
+    normalized_city = _strip_city_noise(normalized_query_city(city))
+    if not _city_looks_suspicious(city) and normalized_city:
+        return normalized_city
+
+    body = _address_body_without_state_postal(address or street)
+    street_candidate = normalized_query_street(address, street, normalized_city or city, normalize_city=False)
+    if body and street_candidate and body.lower().startswith(street_candidate.lower()):
+        city_tail = _strip_city_noise(body[len(street_candidate) :].strip(" ,"))
+        if city_tail:
+            return city_tail
+    return normalized_city
 
 
 def normalized_query_address_text(address: str) -> str:
@@ -196,10 +257,10 @@ def normalized_query_address_text(address: str) -> str:
     return value
 
 
-def normalized_query_street(address: str, street: str, city: str) -> str:
+def normalized_query_street(address: str, street: str, city: str, *, normalize_city: bool = True) -> str:
     normalized_address = normalized_query_address_text(address or street)
-    normalized_city = normalized_query_city(city)
-    body = clean_text(re.sub(r",?\s*[A-Z]{2}\s+\d{5}(?:-\d{4})?$", "", normalized_address))
+    normalized_city = normalized_query_city_with_context(address, street, city) if normalize_city else _strip_city_noise(normalized_query_city(city))
+    body = _address_body_without_state_postal(normalized_address)
     city_lower = normalized_city.lower()
     if city_lower and body.lower().endswith(city_lower):
         body = clean_text(body[: -len(normalized_city)].rstrip(","))
@@ -217,7 +278,7 @@ def normalized_query_street_without_unit(address: str, street: str, city: str) -
 
 
 def build_nominatim_search_attempts(query: AddressQuery, *, email: str = "") -> list[dict[str, str]]:
-    normalized_city = normalized_query_city(query.city)
+    normalized_city = normalized_query_city_with_context(query.address, query.street, query.city)
     normalized_street = normalized_query_street(query.address, query.street, normalized_city or query.city)
     normalized_street_without_unit = normalized_query_street_without_unit(query.address, query.street, normalized_city or query.city)
     normalized_display = clean_text(
@@ -458,7 +519,7 @@ def diagnose_address_query(query: AddressQuery) -> dict[str, Any]:
     raw_street = clean_text(query.street)
     raw_city = clean_text(query.city)
     normalized_address = normalized_query_address_text(raw_address)
-    normalized_city = normalized_query_city(raw_city)
+    normalized_city = normalized_query_city_with_context(raw_address, raw_street, raw_city)
     normalized_street = normalized_query_street(raw_address, raw_street, raw_city)
     normalized_street_without_unit = normalized_query_street_without_unit(raw_address, raw_street, raw_city)
 
@@ -473,6 +534,12 @@ def diagnose_address_query(query: AddressQuery) -> dict[str, Any]:
         issue_tags.append("city_hash_prefix")
     if CITY_LEVEL_PREFIX_RE.match(raw_city):
         issue_tags.append("city_level_prefix")
+    if CITY_NUMERIC_PREFIX_RE.match(raw_city):
+        issue_tags.append("city_numeric_prefix")
+    if CITY_FRAGMENT_RE.fullmatch(raw_city):
+        issue_tags.append("city_fragment")
+    if CITY_VENUE_KEYWORD_RE.search(raw_city):
+        issue_tags.append("city_embedded_venue")
     if LEADING_BOILERPLATE_RE.match(raw_address):
         issue_tags.append("address_leading_boilerplate")
     if STREET_SUITE_GLUE_RE.search(raw_address) or STREET_SUITE_GLUE_RE.search(raw_street):
@@ -494,6 +561,9 @@ def diagnose_address_query(query: AddressQuery) -> dict[str, Any]:
         "city_floor_prefix",
         "city_hash_prefix",
         "city_level_prefix",
+        "city_numeric_prefix",
+        "city_fragment",
+        "city_embedded_venue",
         "address_leading_boilerplate",
         "street_suite_glued",
     }
