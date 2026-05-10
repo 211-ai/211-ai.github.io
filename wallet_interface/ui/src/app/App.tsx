@@ -370,10 +370,7 @@ function buildMissingPersonDeadDropBundle(
       shared: upload.shared,
       sharingMode: upload.sharingMode ?? "private",
       decentralizedStorageStatus: upload.decentralizedStorageStatus ?? "not_configured",
-      decentralizedStorageProvider: upload.decentralizedStorageProvider ?? "local",
-      ipfsCid: upload.ipfsCid ?? "",
-      filecoinPieceCid: upload.filecoinPieceCid ?? "",
-      filecoinDealId: upload.filecoinDealId ?? ""
+      decentralizedStorageProvider: upload.decentralizedStorageProvider ?? "local"
     })),
     knownPoliceRecipients: policeRecipients
   };
@@ -825,10 +822,13 @@ export function App() {
         "",
         "Submitted from Abby missing-person safety setting."
       ].join("\n");
-      const subject = `Missing person report dead drop: ${personLabel}`;
+      const subject = "Missing person report dead drop bundle";
       window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       return true;
-    } catch {
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Missing-person dead-drop preparation failed", error);
+      }
       return false;
     }
   }
@@ -1855,6 +1855,12 @@ function SettingsScreen({
     setAnalyticsOptIn({ ...analyticsOptIn, [studyId]: !(analyticsOptIn[studyId] ?? true) });
   }
 
+  useEffect(() => {
+    if (!missingPersonDeadDropEnabled) {
+      setDeadDropStatus("idle");
+    }
+  }, [missingPersonDeadDropEnabled]);
+
   function handleSendMissingPersonDeadDrop() {
     const sent = sendMissingPersonDeadDrop();
     setDeadDropStatus(sent ? "sent" : "failed");
@@ -1961,17 +1967,29 @@ function SettingsScreen({
             />
             <span>
               <strong>Enable missing-person dead drop for Portland Police.</strong>
-              <small>When enabled, Abby can package wallet contents and open an email to {PORTLAND_POLICE_MISSING_EMAIL}.</small>
+              <small>
+                When enabled, Abby downloads a local JSON wallet bundle and opens an email draft to{" "}
+                {PORTLAND_POLICE_MISSING_EMAIL}. You must attach the file and send it.
+              </small>
             </span>
           </label>
           <div className="row-actions">
-            <Button disabled={!missingPersonDeadDropEnabled} onClick={handleSendMissingPersonDeadDrop} variant="secondary">
+            <Button
+              ariaLabel={
+                missingPersonDeadDropEnabled
+                  ? "Prepare and email dead drop"
+                  : "Prepare and email dead drop (disabled)"
+              }
+              disabled={!missingPersonDeadDropEnabled}
+              onClick={handleSendMissingPersonDeadDrop}
+              variant="secondary"
+            >
               <Bell size={18} /> Prepare and email dead drop
             </Button>
           </div>
           {deadDropStatus === "sent" ? (
             <StatusBanner tone="success">
-              Dead-drop bundle prepared and email draft opened for Portland Police missing persons.
+              Dead-drop bundle downloaded. Please attach the file to the email draft and send.
             </StatusBanner>
           ) : null}
           {deadDropStatus === "failed" ? (
