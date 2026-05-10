@@ -24,6 +24,35 @@ export type WalletProofQrReview = {
   sourceUrl?: string;
 };
 
+export function buildWalletProofQrValue({
+  actorDid,
+  proofs,
+  walletId
+}: {
+  actorDid?: string;
+  proofs: ProofReceiptView[];
+  walletId?: string;
+}): string {
+  return JSON.stringify({
+    p: proofs.map((proof) => ({
+      c: proof.claim,
+      i: proof.id,
+      ps: proof.proofSystem,
+      pt: proof.proofType,
+      u: proof.publicInputs,
+      v: proof.verifier,
+      vs: proof.verificationStatus,
+      w: proof.witnessLabel
+    })),
+    t: "Client wallet proof bundle",
+    w: {
+      a: actorDid,
+      i: walletId,
+      l: walletId ? `Wallet ${walletId}` : "Client wallet"
+    }
+  });
+}
+
 export function buildWalletProofBundlePayload({
   actorDid,
   proofs,
@@ -275,7 +304,7 @@ function readProofArray(payload: unknown): unknown[] | undefined {
   if (Array.isArray(payload)) return payload;
   if (!payload || typeof payload !== "object") return undefined;
   const record = payload as Record<string, unknown>;
-  const proofArrays = [record.proofs, record.proofCertificates, record.certificates, record.claims];
+  const proofArrays = [record.proofs, record.proofCertificates, record.certificates, record.claims, record.p];
   return proofArrays.find(Array.isArray);
 }
 
@@ -284,7 +313,8 @@ function readBundleTitle(payload: unknown): string | undefined {
   const record = payload as Record<string, unknown>;
   const wallet =
     record.wallet && typeof record.wallet === "object" ? (record.wallet as Record<string, unknown>) : undefined;
-  return firstString(record.title, record.name, wallet?.title, wallet?.name, wallet?.label);
+  const compactWallet = record.w && typeof record.w === "object" ? (record.w as Record<string, unknown>) : undefined;
+  return firstString(record.title, record.name, record.t, wallet?.title, wallet?.name, wallet?.label, compactWallet?.l);
 }
 
 function normalizeProofs(payload: unknown): ProofReceiptView[] {
@@ -301,32 +331,33 @@ function normalizeProof(proof: unknown): ProofReceiptView | undefined {
     record.public_inputs,
     record.disclosedClaims,
     record.disclosed_claims,
-    record.statement
+    record.statement,
+    record.u
   );
   const claim =
-    firstString(record.claim, publicInputs.claim, objectString(record.statement, "claim"), record.title, record.name) ||
-    firstString(record.proofType, record.proof_type, record.certificateType, record.type) ||
+    firstString(record.claim, record.c, publicInputs.claim, objectString(record.statement, "claim"), record.title, record.name) ||
+    firstString(record.proofType, record.proof_type, record.certificateType, record.type, record.pt) ||
     "Verified claim";
-  const proofType = firstString(record.proofType, record.proof_type, record.certificateType, record.type) || "wallet_proof";
+  const proofType = firstString(record.proofType, record.proof_type, record.certificateType, record.type, record.pt) || "wallet_proof";
   const witnessRecordIds = Array.isArray(record.witness_record_ids)
     ? record.witness_record_ids.filter((value): value is string => typeof value === "string")
     : [];
 
   return {
-    id: firstString(record.id, record.proofId, record.proof_id, record.certificateId, record.certificate_id) || claim,
+    id: firstString(record.id, record.proofId, record.proof_id, record.certificateId, record.certificate_id, record.i) || claim,
     proofType,
     claim,
     verifier:
-      firstString(record.verifier, record.verifierId, record.verifier_id, record.issuer, record.issuedBy, record.issuerDid) ||
+      firstString(record.verifier, record.verifierId, record.verifier_id, record.issuer, record.issuedBy, record.issuerDid, record.v) ||
       "Wallet verifier",
-    proofSystem: firstString(record.proofSystem, record.proof_system, record.system) || "linked bundle",
-    verificationStatus: firstString(record.verificationStatus, record.verification_status, record.status) || "verified",
+    proofSystem: firstString(record.proofSystem, record.proof_system, record.system, record.ps) || "linked bundle",
+    verificationStatus: firstString(record.verificationStatus, record.verification_status, record.status, record.vs) || "verified",
     circuitId: firstString(record.circuitId, record.circuit_id),
     verifierDigest: firstString(record.verifierDigest, record.verifier_digest),
     proofArtifactRef: firstString(record.proofArtifactRef, record.proof_artifact_ref, record.artifactRef, record.ipfsCid, record.cid),
     publicInputs,
     witnessLabel:
-      firstString(record.witnessLabel, record.witness_label, record.sourceLabel, record.source_label) ||
+      firstString(record.witnessLabel, record.witness_label, record.sourceLabel, record.source_label, record.w) ||
       witnessRecordIds.join(", ") ||
       "Wallet witness",
     simulated: Boolean(record.simulated ?? record.is_simulated),

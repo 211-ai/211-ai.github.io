@@ -56,6 +56,7 @@ import {
 } from "../services/filecoinStorage";
 import {
   buildWalletProofBundlePayload,
+  buildWalletProofQrValue,
   buildWalletProofReviewUrl,
   readWalletProofBundlePayloadFromUrl,
   reviewWalletProofBundlePayload,
@@ -2930,6 +2931,10 @@ function UploadsScreen({
   const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
   const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
   const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
+  const walletProofQrValue = useMemo(
+    () => buildWalletProofQrValue({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
+    [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
+  );
   const walletProofBundlePayload = useMemo(
     () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
     [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
@@ -2946,7 +2951,7 @@ function UploadsScreen({
   useEffect(() => {
     let cancelled = false;
     setWalletQrStatus("loading");
-    QRCode.toDataURL(walletProofReviewUrl, {
+    QRCode.toDataURL(walletProofQrValue, {
       errorCorrectionLevel: "M",
       margin: 1,
       width: 220
@@ -2967,7 +2972,7 @@ function UploadsScreen({
     return () => {
       cancelled = true;
     };
-  }, [walletProofReviewUrl]);
+  }, [walletProofQrValue]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -3176,6 +3181,7 @@ function UploadsScreen({
               exposing the underlying files.
             </small>
             <div className="badge-row">
+              <Badge tone="info">compact QR payload</Badge>
               <Badge>{apiConfig?.walletId ?? "localWallet"}</Badge>
               {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
             </div>
