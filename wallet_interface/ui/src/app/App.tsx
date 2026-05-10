@@ -237,7 +237,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   audit: ClipboardCheck
 };
 
-const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection", "exports"]);
+const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection", "exports", "security"]);
 const routes = primaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
@@ -270,6 +270,7 @@ function getProviderPortalView(route: RouteId): ProviderPortalView {
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
   if (route === "exports") return "uploads";
+  if (route === "security") return "settings";
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
 }
 
@@ -1248,11 +1249,13 @@ export function App() {
         ) : null}
         {activeRoute === "settings" ? (
           <SettingsScreen
+            apiConfig={walletApiConfig}
             analyticsOptIn={analyticsOptIn}
             benefitsOptIn={benefitsOptIn}
             missingPersonDeadDropEnabled={missingPersonDeadDropEnabled}
             navigate={navigate}
             nextCheckIn={nextCheckIn}
+            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
             policy={policy}
             profile={profile}
             setAnalyticsOptIn={setAnalyticsOptIn}
@@ -2293,11 +2296,13 @@ function formatRequestTimestamp(value: string): string {
 }
 
 function SettingsScreen({
+  apiConfig,
   analyticsOptIn,
   benefitsOptIn,
   missingPersonDeadDropEnabled,
   navigate,
   nextCheckIn,
+  onSnapshotLoaded,
   policy,
   profile,
   setAnalyticsOptIn,
@@ -2309,11 +2314,13 @@ function SettingsScreen({
   walletDeadDropReady,
   walletConnected
 }: {
+  apiConfig?: WalletApiConfig;
   analyticsOptIn: Record<string, boolean>;
   benefitsOptIn: boolean;
   missingPersonDeadDropEnabled: boolean;
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
+  onSnapshotLoaded: () => Promise<void> | void;
   policy: typeof defaultCheckInPolicy;
   profile: RegistrationProfileDraft;
   setAnalyticsOptIn: (value: Record<string, boolean>) => void;
@@ -2486,11 +2493,10 @@ function SettingsScreen({
         </div>
       </Section>
 
+      <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
+
       <Section title="Less-used tools">
         <div className="tool-grid">
-          <button className="tool-tile" onClick={() => navigate("security")} type="button">
-            <LockKeyhole size={24} /> Account safety
-          </button>
           <button className="tool-tile" onClick={() => navigate("proof-center")} type="button">
             <ShieldCheck size={24} /> Proof settings
           </button>
@@ -7542,7 +7548,7 @@ function shortHash(value?: string): string {
   return value.length > 24 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
 }
 
-function SecurityScreen({
+function AccountSafetySection({
   apiConfig,
   onSnapshotLoaded
 }: {
@@ -7609,60 +7615,54 @@ function SecurityScreen({
   }
 
   return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Security</p>
-        <h1>Account safety</h1>
-      </div>
+    <Section
+      title="Account safety"
+      actions={
+        <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>
+          {hasCurrentSnapshot ? "backup ready" : "no backup"}
+        </Badge>
+      }
+    >
       {!apiConfig ? (
         <StatusBanner tone="warning">Connect Abby to save and load wallet backups.</StatusBanner>
       ) : null}
       {snapshotStatus === "saved" ? <StatusBanner tone="success">Wallet backup saved.</StatusBanner> : null}
       {snapshotStatus === "loaded" ? <StatusBanner tone="success">Wallet backup loaded.</StatusBanner> : null}
       {snapshotStatus === "failed" ? <StatusBanner tone="warning">Wallet backup action failed.</StatusBanner> : null}
-      <Section
-        title="Wallet backups"
-        actions={
-          <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>
-            {hasCurrentSnapshot ? "backup ready" : "no backup"}
-          </Badge>
-        }
-      >
-        <div className="disclosure-package">
-          <div className="disclosure-row">
-            <strong>Wallet</strong>
-            <span>{apiConfig?.walletId ?? "Not connected"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Backups</strong>
-            <span>{snapshotIds.length}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Backup place</strong>
-            <span>{apiConfig ? "backup store" : "API required"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Backup check</strong>
-            <span>{snapshotReport ? (snapshotReport.valid ? "verified" : "failed") : "not checked"}</span>
-          </div>
-          <div className="disclosure-row">
-            <strong>Backup code</strong>
-            <span>{snapshotReport?.computed_hash ? <code>{shortHash(snapshotReport.computed_hash)}</code> : "Unavailable"}</span>
-          </div>
+      <div className="disclosure-package">
+        <div className="disclosure-row">
+          <strong>Wallet</strong>
+          <span>{apiConfig?.walletId ?? "Not connected"}</span>
         </div>
-        <div className="row-actions">
-          <Button disabled={!apiConfig || snapshotStatus === "saving" || snapshotStatus === "loading"} onClick={saveSnapshot}>
-            <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save backup"}
-          </Button>
-          <Button
-            disabled={!apiConfig || !hasCurrentSnapshot || snapshotStatus === "saving" || snapshotStatus === "loading"}
-            onClick={restoreSnapshot}
-            variant="secondary"
-          >
-            <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load backup"}
-          </Button>
+        <div className="disclosure-row">
+          <strong>Backups</strong>
+          <span>{snapshotIds.length}</span>
         </div>
-      </Section>
+        <div className="disclosure-row">
+          <strong>Backup place</strong>
+          <span>{apiConfig ? "backup store" : "API required"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Backup check</strong>
+          <span>{snapshotReport ? (snapshotReport.valid ? "verified" : "failed") : "not checked"}</span>
+        </div>
+        <div className="disclosure-row">
+          <strong>Backup code</strong>
+          <span>{snapshotReport?.computed_hash ? <code>{shortHash(snapshotReport.computed_hash)}</code> : "Unavailable"}</span>
+        </div>
+      </div>
+      <div className="row-actions">
+        <Button disabled={!apiConfig || snapshotStatus === "saving" || snapshotStatus === "loading"} onClick={saveSnapshot}>
+          <Archive size={18} /> {snapshotStatus === "saving" ? "Saving" : "Save backup"}
+        </Button>
+        <Button
+          disabled={!apiConfig || !hasCurrentSnapshot || snapshotStatus === "saving" || snapshotStatus === "loading"}
+          onClick={restoreSnapshot}
+          variant="secondary"
+        >
+          <RefreshCw size={18} /> {snapshotStatus === "loading" ? "Loading" : "Load backup"}
+        </Button>
+      </div>
       <div className="tool-grid">
         <button className="tool-tile" type="button">
           <LockKeyhole size={24} /> Session timeout
@@ -7674,6 +7674,24 @@ function SecurityScreen({
           <ShieldCheck size={24} /> Bot check settings
         </button>
       </div>
+    </Section>
+  );
+}
+
+function SecurityScreen({
+  apiConfig,
+  onSnapshotLoaded
+}: {
+  apiConfig?: WalletApiConfig;
+  onSnapshotLoaded: () => Promise<void> | void;
+}) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Security</p>
+        <h1>Account safety</h1>
+      </div>
+      <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
     </div>
   );
 }
