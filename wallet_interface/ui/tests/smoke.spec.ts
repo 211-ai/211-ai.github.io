@@ -192,7 +192,7 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).not.toBeChecked();
 
   await openAppRoute(page, "/#/security");
-  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
 
   if (!/Mobile/i.test(testInfo.project.name)) {

@@ -1435,12 +1435,6 @@ export function App() {
             setProofs={setWalletProofReceipts}
           />
         ) : null}
-        {activeRoute === "security" ? (
-          <SecurityScreen
-            apiConfig={walletApiConfig}
-            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
-          />
-        ) : null}
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
@@ -7675,23 +7669,5 @@ function AccountSafetySection({
         </button>
       </div>
     </Section>
-  );
-}
-
-function SecurityScreen({
-  apiConfig,
-  onSnapshotLoaded
-}: {
-  apiConfig?: WalletApiConfig;
-  onSnapshotLoaded: () => Promise<void> | void;
-}) {
-  return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Security</p>
-        <h1>Account safety</h1>
-      </div>
-      <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
-    </div>
   );
 }
