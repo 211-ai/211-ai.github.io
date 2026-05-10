@@ -186,6 +186,9 @@ const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
 const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
+const DEFAULT_LOCAL_PRECINCT = "Local police precinct";
+const LOCAL_PRECINCT_OPTIONS = [DEFAULT_LOCAL_PRECINCT];
+const LOCAL_PRECINCT_RELATIONSHIP = "Local precinct";
 
 type LoginPortal = "client" | "provider";
 
@@ -331,6 +334,17 @@ function formatAnalyticsField(field: string): string {
     service_type: "service type"
   };
   return labels[field] ?? field.replace(/_/g, " ");
+}
+
+function createEntityId(prefix: string): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function isLocalPrecinctRecipient(recipient: DisclosureRecipientDraft, precinctName: string): boolean {
+  return recipient.type === "police_precinct" && (recipient.precinctName === precinctName || recipient.displayName === precinctName);
 }
 
 const analyticsNeverPublishedText =
@@ -2775,6 +2789,7 @@ function ContactsScreen({
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
   const [contactCategory, setContactCategory] = useState<"person" | "shelter">("person");
+  const [providerType, setProviderType] = useState<"shelter" | "police_precinct">("shelter");
   const [draft, setDraft] = useState({
     firstName: "",
     lastName: "",
@@ -2787,6 +2802,7 @@ function ContactsScreen({
   const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
   const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
+  const [requestedPrecinct, setRequestedPrecinct] = useState(LOCAL_PRECINCT_OPTIONS[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
   const userContact = profile.email || profile.phone || "abby@example.org";
@@ -2805,6 +2821,7 @@ function ContactsScreen({
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
+  const hasSavedRequestedPrecinct = recipients.some((recipient) => isLocalPrecinctRecipient(recipient, requestedPrecinct));
   const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId);
 
   function addShelterRecipient(shelterName: string) {
@@ -2815,7 +2832,7 @@ function ContactsScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         type: "shelter_staff",
         displayName: shelterName,
         relationship: "Shelter",
@@ -2836,7 +2853,7 @@ function ContactsScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         displayName,
         relationship: draft.relationship,
         email: draft.email,
@@ -2850,6 +2867,28 @@ function ContactsScreen({
     ]);
     setDraft({ firstName: "", lastName: "", relationship: "", email: "", phone: "", type: "emergency_contact" });
     setDraftScopes([...defaultDisclosureScopes]);
+  }
+
+  function addPrecinctRecipient(precinctName: string) {
+    if (recipients.some((recipient) => isLocalPrecinctRecipient(recipient, precinctName))) {
+      return;
+    }
+
+    setRecipients([
+      ...recipients,
+      {
+        id: createEntityId("rec"),
+        type: "police_precinct",
+        displayName: precinctName,
+        relationship: LOCAL_PRECINCT_RELATIONSHIP,
+        email: "",
+        phone: "",
+        agencyName: "",
+        precinctName,
+        verified: true,
+        allowedScopes: ["identity_minimum"]
+      }
+    ]);
   }
 
   function openRecipientEditor(recipient: DisclosureRecipientDraft) {
@@ -3000,26 +3039,61 @@ function ContactsScreen({
         ) : (
           <>
             <p className="section-note">
-              A shelter is added only after the other side says yes. It starts with Minimum identity only.
+              {providerType === "shelter"
+                ? "A shelter is added only after the other side says yes. It starts with Minimum identity only."
+                : "A local precinct is saved right away. It starts with Minimum identity only."}
             </p>
-            <form className="form-grid" onSubmit={requestShelterContact}>
-              <Field label="Shelter name">
-                <select value={requestedShelter} onChange={(event) => setRequestedShelter(event.target.value)}>
-                  {shelterOptions.map((shelter) => (
-                    <option key={shelter} value={shelter}>
-                      {shelter}
+            <form
+              className="form-grid"
+              onSubmit={(event) => {
+                if (providerType === "shelter") {
+                  requestShelterContact(event);
+                  return;
+                }
+                event.preventDefault();
+                addPrecinctRecipient(requestedPrecinct);
+              }}
+            >
+              <Field label="Provider type">
+                <select
+                  value={providerType}
+                  onChange={(event) => setProviderType(event.target.value as "shelter" | "police_precinct")}
+                >
+                  <option value="shelter">Shelter or group</option>
+                  <option value="police_precinct">Local police precinct</option>
+                </select>
+              </Field>
+              <Field label={providerType === "shelter" ? "Shelter name" : "Local precinct"}>
+                <select
+                  value={providerType === "shelter" ? requestedShelter : requestedPrecinct}
+                  onChange={(event) =>
+                    providerType === "shelter"
+                      ? setRequestedShelter(event.target.value)
+                      : setRequestedPrecinct(event.target.value)
+                  }
+                >
+                  {(providerType === "shelter" ? shelterOptions : LOCAL_PRECINCT_OPTIONS).map((providerName) => (
+                    <option key={providerName} value={providerName}>
+                      {providerName}
                     </option>
                   ))}
                 </select>
               </Field>
               <div className="full-span centered-action">
-                <Button disabled={hasPendingRequestedShelter} type="submit" variant="secondary">
-                  <MessageSquare aria-hidden="true" size={18} /> Ask to add shelter
+                <Button
+                  disabled={providerType === "shelter" ? hasPendingRequestedShelter : hasSavedRequestedPrecinct}
+                  type="submit"
+                  variant="secondary"
+                >
+                  <MessageSquare aria-hidden="true" size={18} />{" "}
+                  {providerType === "shelter" ? "Ask to add shelter" : "Add local precinct"}
                 </Button>
               </div>
-              {hasPendingRequestedShelter ? (
+              {(providerType === "shelter" ? hasPendingRequestedShelter : hasSavedRequestedPrecinct) ? (
                 <small className="full-span pin-request-note">
-                  A request is already waiting for this shelter and person.
+                  {providerType === "shelter"
+                    ? "A request is already waiting for this shelter and person."
+                    : "This local precinct is already saved."}
                 </small>
               ) : null}
             </form>
@@ -4481,7 +4555,7 @@ function ShelterScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         type: "shelter_staff",
         displayName: shelterName,
         relationship: "Shelter",
