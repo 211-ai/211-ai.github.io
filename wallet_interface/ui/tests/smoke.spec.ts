@@ -529,6 +529,21 @@ test("user can request a shelter contact and shelter staff can approve it", asyn
   await expect(page.locator(".recipient-list-item").filter({ hasText: "Harbor Night Shelter" })).toBeVisible();
 });
 
+test("user can add a local police precinct from the provider contact flow", async ({ page }) => {
+  await openAppRoute(page, "/#/contacts");
+  const addContact = page.getByRole("region", { name: "Add contact" });
+  await addContact.getByRole("radio", { name: /Shelter or group/i }).check();
+  await addContact.getByLabel(/Provider type/i).selectOption("police_precinct");
+  await expect(addContact.getByLabel(/Local precinct/i)).toHaveValue("Local police precinct");
+  await expect(addContact.getByRole("button", { name: /Add local precinct/i })).toBeEnabled();
+  await addContact.getByRole("button", { name: /Add local precinct/i }).click();
+  const precinctContact = page.locator(".recipient-list-item").filter({ hasText: "Local police precinct" });
+  await expect(precinctContact).toBeVisible();
+  await expect(precinctContact.getByText("Local precinct", { exact: true })).toBeVisible();
+  await expect(addContact.getByRole("button", { name: /Add local precinct/i })).toBeDisabled();
+  await expect(addContact.getByText(/already saved/i)).toBeVisible();
+});
+
 test("user can cancel a pending shelter contact request", async ({ page }) => {
   await openAppRoute(page, "/#/contacts");
   const shelterRequests = page.getByRole("region", { name: "Add contact" });
