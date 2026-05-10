@@ -1221,6 +1221,81 @@ test("configured exports create verify and import encrypted descriptors", async 
   expect(calls).toEqual(["grant", "invocation", "bundle", "verify", "storage", "import"]);
 });
 
+test("wallet page can generate and connect a new wallet", async ({ page }) => {
+  const calls: string[] = [];
+  await page.route("**/wallets", async (route) => {
+    calls.push("create");
+    expect(route.request().method()).toBe("POST");
+    const request = route.request().postDataJSON();
+    expect(String(request.owner_did)).toMatch(/^did:key:/i);
+    await route.fulfill({
+      json: {
+        wallet_id: "wallet-generated",
+        owner_did: request.owner_did,
+        controller_dids: [request.owner_did],
+        device_dids: [],
+        governance_policy: { approval_threshold: 1, controllers: [request.owner_did] }
+      }
+    });
+  });
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      calls.push("access");
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      calls.push("grants");
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      calls.push("records");
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      calls.push("audit");
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      calls.push("proofs");
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      calls.push("saved-services");
+      await route.fulfill({ json: { saved_services: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      calls.push("plans");
+      await route.fulfill({ json: { plans: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      calls.push("interactions");
+      await route.fulfill({ json: { interactions: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
+  });
+
+  const createRoute = `/?walletApiBaseUrl=${encodeURIComponent(decodeURIComponent(walletApiBaseUrl))}#/uploads`;
+  await openAppRoute(page, createRoute);
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByRole("button", { name: /Generate new wallet/i }).click();
+
+  await expect(page.getByText(/New wallet generated and connected/i)).toBeVisible();
+  await expect(page.getByText(/wallet-generated/i)).toBeVisible();
+  await expect(calls).toContain("create");
+  await expect(calls).toContain("records");
+  await expect(calls).toContain("proofs");
+});
+
 test("security screen saves and restores wallet snapshots", async ({ page }) => {
   let saved = false;
   let saveRequests = 0;
