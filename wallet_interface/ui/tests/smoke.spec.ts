@@ -369,6 +369,21 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
 test("analytics consent shows privacy controls and safe details", async ({ page }) => {
   await openAppRoute(page, "/#/analytics");
   await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
+  const dashboardSummary = page.getByRole("region", { name: /Dashboard summary/i });
+  await expect(dashboardSummary).toContainText(/People in verified cohorts/i);
+  await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /People in verified cohorts/i })).toContainText(
+    /1,490/
+  );
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Providers in verified releases/i })
+  ).toContainText(/10/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Mock proof certificates/i })
+  ).toContainText(/12/);
+  const mockCertificates = page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i });
+  await expect(mockCertificates).toContainText(/12 verified mock proof certificates/i);
+  await expect(mockCertificates).toContainText(/210 shelter requests/i);
+  await expect(mockCertificates).toContainText(/228\/250 occupied beds/i);
   const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
   await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();

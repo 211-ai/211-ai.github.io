@@ -318,6 +318,26 @@ const analyticsNeverPublishedText =
   "No names, contact details, exact locations, files, staff actions, case notes, or individual service histories";
 const analyticsProviderPublicationFloor = 3;
 
+function parseAnalyticsProofNumber(value: string | undefined): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function calculatePercent(value: number, total: number): number {
+  if (!total) return 0;
+  return Math.round((value / total) * 100);
+}
+
+function formatAnalyticsProofValue(value: string | undefined): string {
+  if (!value) return "";
+  const numeric = Number(value);
+  if (Number.isFinite(numeric)) return numeric.toLocaleString();
+  return value
+    .split("_")
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+}
+
 function toShortSummaryTitle(text: string): string {
   const cleaned = text
     .replace(/machine\s+summary\s*:\s*/gi, " ")
@@ -1301,7 +1321,7 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen optedIn={analyticsOptIn} proofs={walletProofReceipts} setOptedIn={setAnalyticsOptIn} />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -5726,9 +5746,11 @@ function BenefitsProtectionScreen({
 
 function AnalyticsScreen({
   optedIn,
+  proofs,
   setOptedIn
 }: {
   optedIn: Record<string, boolean>;
+  proofs: ProofReceiptView[];
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
   function toggleStudy(studyId: string) {
@@ -5753,72 +5775,136 @@ function AnalyticsScreen({
       : cohortFloorMin === cohortFloorMax
         ? String(cohortFloorMin)
         : `${cohortFloorMin}-${cohortFloorMax}`;
+  const analyticsProofCertificates = proofs.filter(
+    (proof) => proof.proofType.startsWith("analytics_") && proof.verificationStatus === "verified"
+  );
+  const homelessnessProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_population_snapshot");
+  const providerCapacityProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_provider_capacity");
+  const housingOutcomeProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_housing_outcome");
+  const outreachFollowupProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_outreach_followup");
+  const cohortPeopleCount = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.cohort_count),
+    0
+  );
+  const providerOrganizationsCount = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.providers_included),
+    0
+  );
+  const countiesCoveredCount = new Set(
+    analyticsProofCertificates.map((proof) => proof.publicInputs.county).filter(Boolean)
+  ).size;
+  const shelterRequestsTotal = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.shelter_requests),
+    0
+  );
+  const waitingOverWeekCount = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.waiting_over_7_days),
+    0
+  );
+  const housedReferralsTotal = housingOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.housed_referrals),
+    0
+  );
+  const referralsCompletedTotal = housingOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.referrals_completed),
+    0
+  );
+  const occupiedBedsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.occupied_beds),
+    0
+  );
+  const licensedBedsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.licensed_beds),
+    0
+  );
+  const sameDayProgramsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.same_day_available_programs),
+    0
+  );
+  const totalPrograms = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.total_programs),
+    0
+  );
+  const completedFollowupsTotal = outreachFollowupProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.completed_followups),
+    0
+  );
+  const assignedFollowupsTotal = outreachFollowupProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.assigned_followups),
+    0
+  );
+  const shelterFillRate = calculatePercent(occupiedBedsTotal, licensedBedsTotal);
+  const waitingOverWeekRate = calculatePercent(waitingOverWeekCount, shelterRequestsTotal);
+  const referralToHousingRate = calculatePercent(housedReferralsTotal, referralsCompletedTotal);
+  const outreachFollowupRate = calculatePercent(completedFollowupsTotal, assignedFollowupsTotal);
+  const sameDayAvailabilityRate = calculatePercent(sameDayProgramsTotal, totalPrograms);
+  const studyTitleById = new Map(analyticsStudies.map((study) => [study.id, study.title]));
   const summaryPanels = [
-    { label: "People in verified cohorts", value: "2,480", tone: "teal" },
-    { label: "Providers submitting proofs", value: "38", tone: "teal" },
-    { label: "Counties covered", value: "6", tone: "gold" },
-    { label: "Published measures", value: `${selectedStudyCount}/${analyticsStudies.length}`, tone: "teal" },
-    { label: "Shelter requests this week", value: "812", tone: "red" },
-    { label: "Average shelter fill rate", value: "91%", tone: "gold" },
-    { label: "Referral-to-housing rate", value: "42%", tone: "teal" },
+    { label: "People in verified cohorts", value: cohortPeopleCount.toLocaleString(), tone: "teal" },
+    { label: "Providers in verified releases", value: providerOrganizationsCount.toLocaleString(), tone: "teal" },
+    { label: "Counties covered", value: String(countiesCoveredCount), tone: "gold" },
+    { label: "Mock proof certificates", value: String(analyticsProofCertificates.length), tone: "teal" },
+    { label: "Shelter requests this week", value: shelterRequestsTotal.toLocaleString(), tone: "red" },
+    { label: "Average shelter fill rate", value: `${shelterFillRate}%`, tone: "gold" },
+    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" },
     { label: "Privacy budget left", value: privacyBudgetLeft.toFixed(2), tone: "gold" }
   ];
   const populationSignals = [
     {
       badge: "Demand rising",
       badgeTone: "warning",
-      detail: "Weekly shelter requests rose 9% across proof-verified county cohorts.",
-      footnote: "Largest increases are among adults 25-54 and families with children.",
-      progress: 78,
+      detail: `Weekly shelter requests total ${shelterRequestsTotal.toLocaleString()} across ${homelessnessProofs.length} verified county proof certificates.`,
+      footnote: "Largest released cohorts still use age-group and need-type suppression to avoid singling anyone out.",
+      progress: Math.max(10, shelterRequestsTotal ? 78 : 0),
       title: "Unsheltered people requesting a bed",
-      value: "812"
+      value: shelterRequestsTotal.toLocaleString()
     },
     {
       badge: "Needs attention",
       badgeTone: "warning",
-      detail: "People waiting longer than 7 days for placement now represent 31% of the published cohort.",
+      detail: `People waiting longer than 7 days for placement represent ${waitingOverWeekRate}% of the released shelter-request proofs.`,
       footnote: "Breakdowns stay hidden whenever the release floor is not met.",
-      progress: 31,
+      progress: waitingOverWeekRate,
       title: "People waiting a week or more",
-      value: "31%"
+      value: `${waitingOverWeekRate}%`
     },
     {
       badge: "Improving",
       badgeTone: "success",
-      detail: "Verified referrals that lead to stable placement within 30 days are trending up.",
+      detail: `Verified referrals that lead to stable placement now total ${housedReferralsTotal.toLocaleString()} across ${housingOutcomeProofs.length} outcome certificates.`,
       footnote: "Calculated from proof-backed referral and placement totals only.",
-      progress: 42,
+      progress: referralToHousingRate,
       title: "Referrals that end in housing",
-      value: "42%"
+      value: `${referralToHousingRate}%`
     }
   ];
   const providerSignals = [
     {
       badge: "Near capacity",
       badgeTone: "warning",
-      detail: "Four provider networks are above the public alert threshold for sustained high occupancy.",
+      detail: `Emergency shelter releases cover ${providerOrganizationsCount.toLocaleString()} provider organizations contributing occupancy proofs.`,
       footnote: "Average verified occupancy across participating emergency shelter providers.",
-      progress: 91,
+      progress: shelterFillRate,
       title: "Emergency shelter networks",
-      value: "91% full"
+      value: `${shelterFillRate}% full`
     },
     {
       badge: "Expanding",
       badgeTone: "success",
-      detail: "Mobile teams verified more completed follow-ups after referrals this week.",
+      detail: `Mobile teams published ${completedFollowupsTotal.toLocaleString()} completed follow-ups from ${assignedFollowupsTotal.toLocaleString()} assigned outreach contacts.`,
       footnote: "Measures closed-loop outreach contacts without publishing any contact log.",
-      progress: 68,
+      progress: outreachFollowupRate,
       title: "Street outreach follow-up rate",
-      value: "68%"
+      value: `${outreachFollowupRate}%`
     },
     {
       badge: "Stable",
       badgeTone: "info",
       detail: "Food, hygiene, and document-help sites continue to absorb demand faster than shelter networks.",
       footnote: `Availability is published only when at least ${analyticsProviderPublicationFloor} providers submit matching proof batches.`,
-      progress: 57,
+      progress: sameDayAvailabilityRate,
       title: "Support programs with same-day availability",
-      value: "57%"
+      value: `${sameDayAvailabilityRate}%`
     }
   ];
   const privacyGuardrails = [
@@ -5909,6 +5995,67 @@ function AnalyticsScreen({
               <small>{signal.footnote}</small>
             </article>
           ))}
+        </div>
+      </Section>
+      <Section title="Mock proof certificates behind this dashboard">
+        <p className="section-note">
+          {analyticsProofCertificates.length} verified mock proof certificates feed the current aggregate totals so the
+          dashboard can be tested against public inputs instead of hard-coded statistics.
+        </p>
+        <div className="list-stack">
+          {analyticsProofCertificates.map((proof) => {
+            const studyTitle = studyTitleById.get(proof.publicInputs.study_id) ?? formatAnalyticsProofValue(proof.proofType);
+            const proofHighlights = [
+              proof.publicInputs.county ? `${formatAnalyticsProofValue(proof.publicInputs.county)} county` : "",
+              proof.publicInputs.cohort_count
+                ? `${formatAnalyticsProofValue(proof.publicInputs.cohort_count)} people in cohort`
+                : "",
+              proof.publicInputs.shelter_requests
+                ? `${formatAnalyticsProofValue(proof.publicInputs.shelter_requests)} shelter requests`
+                : "",
+              proof.publicInputs.providers_included
+                ? `${formatAnalyticsProofValue(proof.publicInputs.providers_included)} providers`
+                : "",
+              proof.publicInputs.occupied_beds && proof.publicInputs.licensed_beds
+                ? `${formatAnalyticsProofValue(proof.publicInputs.occupied_beds)}/${formatAnalyticsProofValue(proof.publicInputs.licensed_beds)} occupied beds`
+                : "",
+              proof.publicInputs.housed_referrals && proof.publicInputs.referrals_completed
+                ? `${formatAnalyticsProofValue(proof.publicInputs.housed_referrals)}/${formatAnalyticsProofValue(proof.publicInputs.referrals_completed)} housed referrals`
+                : "",
+              proof.publicInputs.completed_followups && proof.publicInputs.assigned_followups
+                ? `${formatAnalyticsProofValue(proof.publicInputs.completed_followups)}/${formatAnalyticsProofValue(proof.publicInputs.assigned_followups)} outreach follow-ups`
+                : ""
+            ].filter(Boolean);
+
+            return (
+              <article className="analytics-card" key={proof.id}>
+                <div className="scope-header">
+                  <div>
+                    <h3>{proof.claim}</h3>
+                    <p>{studyTitle} · {proof.verifier}</p>
+                  </div>
+                  <Badge tone="success">mock proof certificate</Badge>
+                </div>
+                <div className="badge-row">
+                  <Badge>{proof.proofType.replace(/_/g, " ")}</Badge>
+                  <Badge>{proof.witnessLabel}</Badge>
+                  {proof.publicInputs.certificate_type ? (
+                    <Badge>{formatAnalyticsProofValue(proof.publicInputs.certificate_type)}</Badge>
+                  ) : null}
+                </div>
+                <div className="badge-row">
+                  {proofHighlights.map((highlight) => (
+                    <Badge key={`${proof.id}-${highlight}`}>{highlight}</Badge>
+                  ))}
+                </div>
+                <small>
+                  Public inputs: {Object.entries(proof.publicInputs)
+                    .map(([key, value]) => `${formatAnalyticsField(key)} ${formatAnalyticsProofValue(value)}`)
+                    .join(" · ")}
+                </small>
+              </article>
+            );
+          })}
         </div>
       </Section>
       <Section title="Zero-knowledge and privacy safeguards">
