@@ -304,7 +304,8 @@ test.describe("agent unit contracts", () => {
     expect(AUDIO_CHAT_CONFIG.liquidAudioRunnerBaseUrl).toContain("LFM2.5-Audio-1.5B-transformers-js");
     expect(AUDIO_CHAT_CONFIG.enableMobileLocalAudio).toBe(false);
     expect(AUDIO_CHAT_CONFIG.maxAudioFrames).toBeGreaterThan(0);
-    expect(AUDIO_CHAT_CONFIG.warmupTimeoutMs).toBeGreaterThan(AUDIO_CHAT_CONFIG.requestTimeoutMs);
+    expect(AUDIO_CHAT_CONFIG.requestTimeoutMs).toBe(12000);
+    expect(AUDIO_CHAT_CONFIG.warmupTimeoutMs).toBe(10000);
     expect(SUPPORTED_CLIENT_LLM_MODELS).not.toHaveProperty(AUDIO_CHAT_CONFIG.defaultModel);
   });
 
@@ -521,6 +522,7 @@ export class AudioModel {
       },
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.generateAudio("Read this assistant reply aloud.");
@@ -571,6 +573,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => false,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.warmUp({ onProgress: (progress) => progressEvents.push(progress) });
@@ -611,6 +614,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const results = await Promise.all([service.warmUp(), service.warmUp()]);
@@ -662,6 +666,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => false,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.generateAudio("Please speak this reply.", {
@@ -679,6 +684,63 @@ export class AudioModel {
       expect.arrayContaining([
         expect.objectContaining({ phase: "generating", progress: 90 }),
         expect.objectContaining({ phase: "decoding", progress: 97 }),
+      ]),
+    );
+  });
+
+  test("uses the voice proxy before local audio generation and warms local audio in the background", async () => {
+    const workerRequests: string[] = [];
+    const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
+    const progressEvents: ClientAudioProgress[] = [];
+    const service = new ClientAudioReplyService({
+      createWorker: () =>
+        createAudioWorkerStub((message, activeWorker) => {
+          workerRequests.push(message.type);
+          if (message.type === "warmUp") {
+            emitAudioWorkerMessage(activeWorker, {
+              id: message.id,
+              success: true,
+              data: {
+                modelName: message.data.modelName,
+                provider: "local-liquidai",
+              },
+            });
+          }
+        }) as unknown as Worker,
+      generateRemoteAudio: async (options) => {
+        expect(options.mode).toBe("voice-reply");
+        expect(options.text).toContain("Evidence bundle for reasoning");
+        return {
+          audioBlob,
+          mimeType: "audio/wav",
+          modelName: "remote-voice-proxy",
+          text: "Remote spoken answer.",
+        };
+      },
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const result = await service.generateVoiceReply(
+      {
+        prompt: "User voice query: where can I find food?\nEvidence bundle for reasoning:\n[1] Neighborhood Pantry.",
+        fallbackText: "Neighborhood Pantry can help with food today.",
+      },
+      { onProgress: (progress) => progressEvents.push(progress) },
+    );
+
+    expect(result).toMatchObject({
+      kind: "audio",
+      audioBlob,
+      provider: "remote-voice-proxy",
+      text: "Remote spoken answer.",
+    });
+    expect(workerRequests).toEqual(["warmUp"]);
+    expect(progressEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ phase: "queued", status: "Sending audio request to voice proxy." }),
+        expect.objectContaining({ phase: "ready", progress: 100 }),
       ]),
     );
   });
@@ -704,6 +766,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.generateVoiceReply({
@@ -740,6 +803,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.generateVoiceReply({
@@ -764,6 +828,7 @@ export class AudioModel {
       },
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => false,
+      voiceProxyEnabled: false,
     });
 
     await expect(
@@ -788,6 +853,7 @@ export class AudioModel {
       createWorker: () => worker as unknown as Worker,
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const warmupPromise = service.warmUp();
@@ -825,6 +891,7 @@ export class AudioModel {
         "LiquidAI local audio is disabled on iPhone and iPad because the model download is too large for reliable mobile Safari use.",
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: false,
     });
 
     const result = await service.generateVoiceReply({
@@ -870,6 +937,7 @@ export class AudioModel {
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
       now: () => now,
+      voiceProxyEnabled: false,
     });
 
     const firstResult = await service.generateVoiceReply({
@@ -1607,7 +1675,7 @@ export class AudioModel {
       const text = await service.generateText("What can you do?", 64);
 
       expect(text).toBe("remote answer");
-      expect(calls).toEqual([]);
+      expect(calls).toEqual(["initialize"]);
       expect(requestBody.model).toBe("liquid/lfm-2.5-1.2b-instruct:free");
       expect(requestBody.messages[0]).toMatchObject({ role: "system" });
       expect(requestBody.max_tokens).toBe(64);
@@ -1736,6 +1804,110 @@ export class AudioModel {
       service.capabilitiesKnown = originalState.capabilitiesKnown;
       service.webGPUFallbackReason = originalState.webGPUFallbackReason;
       service.openRouterFallbackDelayMs = originalState.openRouterFallbackDelayMs;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
+  test("prefers OpenRouter for the first response even when the local model is available", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+    };
+    const calls: string[] = [];
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "webgpu";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.capabilities = {
+        webGPU: true,
+        webGPUShaderF16: true,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async (type, data) => {
+        calls.push(`${type}:${data.modelName || ""}`);
+        if (type === "initialize") {
+          service.isInitialized = true;
+          return {
+            isInitialized: true,
+            modelName: data.modelName,
+            device: "webgpu",
+            capabilities: service.capabilities,
+          };
+        }
+        if (type === "generate") {
+          throw new Error("local generation should not run before OpenRouter");
+        }
+        throw new Error(`Unexpected worker request ${type}`);
+      };
+      globalThis.fetch = async () =>
+        new Response(
+          JSON.stringify({
+            model: "liquid/lfm-2.5-1.2b-instruct:free",
+            choices: [{ message: { role: "assistant", content: "proxy-first answer" } }],
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 200 },
+        );
+
+      const text = await service.generateText("Find food nearby.", 72);
+      await new Promise((resolve) => setTimeout(resolve, 20));
+
+      expect(text).toBe("proxy-first answer");
+      expect(calls).toEqual([`initialize:${LLM_CONFIG.defaultModel}`]);
+      expect(service.lastGenerationProvider).toBe("openrouter");
+      expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
       service.openRouterLastError = originalState.openRouterLastError;
       service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
       service.lastGenerationModel = originalState.lastGenerationModel;

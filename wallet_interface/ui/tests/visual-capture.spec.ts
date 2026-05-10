@@ -125,7 +125,7 @@ const captureScenarios: CaptureScenario[] = [
     state: "account preferences",
     goals: [
       "The settings page should make the profile form feel editable after registration.",
-      "Less-used preferences should be grouped below personal information without crowding the page.",
+      "Privacy and account safety controls should read like saved settings without crowding the page.",
       "The Settings navigation item should feel like a bottom-of-client-menu destination, not onboarding."
     ]
   },
@@ -176,8 +176,8 @@ const captureScenarios: CaptureScenario[] = [
     title: "Interaction history",
     state: "seeded interaction timeline",
     goals: [
-      "Wallet interaction history should read like a clear two-column workspace on desktop and stack cleanly on mobile.",
-      "Summary cards, filters, calendar handoff, and the grouped timeline should all remain visible without crowding.",
+      "Wallet interaction history should read like one unified flow instead of a split sidebar layout.",
+      "Summary cards, filters, calendar handoff, audit details, and the grouped timeline should all remain visible without crowding.",
       "Follow-up due events should stand out without exposing sensitive note content."
     ]
   },
@@ -460,28 +460,6 @@ const captureScenarios: CaptureScenario[] = [
     ]
   },
   {
-    id: "security",
-    path: "/#/security",
-    title: "Security settings",
-    state: "default",
-    goals: [
-      "Security preferences should read as saved settings, not temporary reveal controls.",
-      "Shared-device guidance should be visible without exposing sensitive data.",
-      "Encrypted export bundle controls should fit cleanly alongside backup actions."
-    ]
-  },
-  {
-    id: "security-customized",
-    path: "/#/security",
-    title: "Security settings with wallet persistence",
-    state: "default wallet safety tools",
-    goals: [
-      "The layout should remain easy to scan on mobile.",
-      "Wallet backup controls should not imply local-only preferences are production enforcement.",
-      "Security tool tiles should be understandable without extra instructions."
-    ]
-  },
-  {
     id: "audit",
     path: "/#/audit",
     title: "Audit history",
@@ -507,7 +485,6 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,
   "/#/settings": /^Settings$/i,
-  "/#/security": /Account safety/i,
   "/#/messages": /^Messages$/i,
   "/#/shelter": /Provider overview/i,
   "/#/provider-cases": /Case management/i,

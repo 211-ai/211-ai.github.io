@@ -1235,13 +1235,16 @@ body.playful-pulse .decor-shape {
 }
 
 .interaction-history-layout {
-  align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
 }
 
-.interaction-history-sidebar,
+.interaction-history-sidebar {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
 .interaction-history-main,
 .interaction-day-list,
 .interaction-calendar-preview-list {
@@ -1252,6 +1255,10 @@ body.playful-pulse .decor-shape {
 .interaction-filter-panel,
 .interaction-calendar-panel {
   align-content: start;
+}
+
+.interaction-filter-panel {
+  grid-column: 1 / -1;
 }
 
 .interaction-day-groups {
@@ -5308,10 +5315,6 @@ textarea:focus-visible,
 }
 
 @media (max-width: 900px) {
-  .interaction-history-layout {
-    grid-template-columns: 1fr;
-  }
-
   .calendar-event-item {
     grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
   }
