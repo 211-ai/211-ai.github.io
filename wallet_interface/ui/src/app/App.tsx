@@ -7090,7 +7090,7 @@ function ExportCenterScreen({
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
       {importStatus === "imported" ? <StatusBanner tone="success">Export descriptors imported.</StatusBanner> : null}
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
-      <Section title="Encrypted export bundles">
+      <Section title="Manage encrypted export bundles">
         <p className="page-note">
           Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal
           plaintext.

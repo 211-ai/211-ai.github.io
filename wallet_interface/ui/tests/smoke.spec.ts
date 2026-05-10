@@ -873,7 +873,7 @@ test("proof center can create an API-backed location region proof", async ({ pag
 test("security screen shows migrated export bundles", async ({ page }) => {
   await openAppRoute(page, "/#/security");
   await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Encrypted export bundles/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Manage encrypted export bundles/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
   const preview = page.getByLabel("Export capability preview");
   await expect(preview.getByText(/export\/create/i)).toBeVisible();
