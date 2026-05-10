@@ -6398,6 +6398,7 @@ function AnalyticsScreen({
   const providerCapacityProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_provider_capacity");
   const housingOutcomeProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_housing_outcome");
   const outreachFollowupProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_outreach_followup");
+  const recoveryOutcomeProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_recovery_outcome");
   const cohortPeopleCount = homelessnessProofs.reduce(
     (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.cohort_count),
     0
@@ -6449,11 +6450,25 @@ function AnalyticsScreen({
     (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.assigned_followups),
     0
   );
+  const treatmentReferralsTotal = recoveryOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.treatment_referrals),
+    0
+  );
+  const rehabIntakesCompletedTotal = recoveryOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.intakes_completed),
+    0
+  );
+  const activeRecoveryPlansTotal = recoveryOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.active_recovery_plans),
+    0
+  );
   const shelterFillRate = calculatePercent(occupiedBedsTotal, licensedBedsTotal);
   const waitingOverWeekRate = calculatePercent(waitingOverWeekCount, shelterRequestsTotal);
   const referralToHousingRate = calculatePercent(housedReferralsTotal, referralsCompletedTotal);
   const outreachFollowupRate = calculatePercent(completedFollowupsTotal, assignedFollowupsTotal);
   const sameDayAvailabilityRate = calculatePercent(sameDayProgramsTotal, totalPrograms);
+  const rehabIntakeRate = calculatePercent(rehabIntakesCompletedTotal, treatmentReferralsTotal);
+  const activeRecoveryPlanRate = calculatePercent(activeRecoveryPlansTotal, rehabIntakesCompletedTotal);
   const studyTitleById = new Map(analyticsStudies.map((study) => [study.id, study.title]));
   const summaryPanels = [
     { label: "People in verified cohorts", value: cohortPeopleCount.toLocaleString(), tone: "teal" },
@@ -6462,7 +6477,8 @@ function AnalyticsScreen({
     { label: "Mock proof certificates", value: String(analyticsProofCertificates.length), tone: "teal" },
     { label: "Shelter requests this week", value: shelterRequestsTotal.toLocaleString(), tone: "red" },
     { label: "Average shelter fill rate", value: `${shelterFillRate}%`, tone: "gold" },
-    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" }
+    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" },
+    { label: "Recovery intake rate", value: `${rehabIntakeRate}%`, tone: "teal" }
   ];
   const populationSignals = [
     {
@@ -6522,6 +6538,35 @@ function AnalyticsScreen({
       value: `${sameDayAvailabilityRate}%`
     }
   ];
+  const recoverySignals = [
+    {
+      badge: "Demand rising",
+      badgeTone: "warning",
+      detail: `Recovery providers accepted ${treatmentReferralsTotal.toLocaleString()} proof-backed rehab referrals across ${recoveryOutcomeProofs.length} verified county certificates.`,
+      footnote: "Only aggregate treatment pathway counts are released, never treatment records or individual care plans.",
+      progress: Math.max(10, treatmentReferralsTotal ? 74 : 0),
+      title: "People referred to drug rehab services",
+      value: treatmentReferralsTotal.toLocaleString()
+    },
+    {
+      badge: "Engaged",
+      badgeTone: "success",
+      detail: `${rehabIntakeRate}% of released rehab referrals completed intake, showing how quickly people enter a treatment program after referral.`,
+      footnote: "Referral-source breakdowns stay hidden until the cohort floor is met.",
+      progress: rehabIntakeRate,
+      title: "Rehab intake completion rate",
+      value: `${rehabIntakeRate}%`
+    },
+    {
+      badge: "Stabilizing",
+      badgeTone: "info",
+      detail: `${activeRecoveryPlansTotal.toLocaleString()} people moved into active recovery plans after intake across detox, residential, outpatient, and medication-assisted treatment cohorts.`,
+      footnote: "Recovery plan totals are published without diagnoses, substances, provider rosters, or visit history.",
+      progress: activeRecoveryPlanRate,
+      title: "Active recovery plans after intake",
+      value: `${activeRecoveryPlanRate}%`
+    }
+  ];
   const privacyGuardrails = [
     {
       detail:
@@ -6547,8 +6592,8 @@ function AnalyticsScreen({
       </div>
       <p className="page-note">
         This public release shows only group totals proven with zero-knowledge proofs. It highlights homelessness trends,
-        provider capacity, and referral outcomes without exposing names, contact details, exact locations, files, or
-        case activity.
+        provider capacity, substance use treatment access, and referral outcomes without exposing names, contact
+        details, exact locations, files, or case activity.
       </p>
       <StatusBanner tone="info">
         Every figure shown here clears minimum group and provider thresholds before it can appear in the public dashboard.
@@ -6612,6 +6657,30 @@ function AnalyticsScreen({
           ))}
         </div>
       </Section>
+      <Section title="Substance use treatment and recovery statistics">
+        <p className="section-note">
+          Recovery providers publish proof-backed referral and intake totals so the public can track rehab access without
+          seeing treatment records, diagnoses, staff notes, or visit histories.
+        </p>
+        <div className="analytics-story-grid">
+          {recoverySignals.map((signal) => (
+            <article className="analytics-story-card" key={signal.title}>
+              <div className="scope-header">
+                <div>
+                  <h3>{signal.title}</h3>
+                  <p>{signal.detail}</p>
+                </div>
+                <Badge tone={signal.badgeTone}>{signal.badge}</Badge>
+              </div>
+              <strong className="analytics-story-value">{signal.value}</strong>
+              <div aria-hidden="true" className="analytics-progress">
+                <span style={{ width: `${signal.progress}%` }} />
+              </div>
+              <small>{signal.footnote}</small>
+            </article>
+          ))}
+        </div>
+      </Section>
       <Section title="Mock proof certificates behind this dashboard">
         <p className="section-note">
           {analyticsProofCertificates.length} verified mock proof certificates feed the current aggregate totals so the
@@ -6639,6 +6708,15 @@ function AnalyticsScreen({
                 : "",
               proof.publicInputs.completed_followups && proof.publicInputs.assigned_followups
                 ? `${formatAnalyticsProofValue(proof.publicInputs.completed_followups)}/${formatAnalyticsProofValue(proof.publicInputs.assigned_followups)} outreach follow-ups`
+                : "",
+              proof.publicInputs.treatment_referrals
+                ? `${formatAnalyticsProofValue(proof.publicInputs.treatment_referrals)} rehab referrals`
+                : "",
+              proof.publicInputs.intakes_completed
+                ? `${formatAnalyticsProofValue(proof.publicInputs.intakes_completed)} rehab intakes`
+                : "",
+              proof.publicInputs.active_recovery_plans
+                ? `${formatAnalyticsProofValue(proof.publicInputs.active_recovery_plans)} active recovery plans`
                 : ""
             ].filter(Boolean);
 
