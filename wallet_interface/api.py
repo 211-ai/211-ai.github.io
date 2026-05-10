@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import base64
+import json
 import os
+import smtplib
+from email.message import EmailMessage
+from email.utils import make_msgid
 from typing import Any, Dict, List, Sequence
 
 from .app_service import WalletInterfaceService
@@ -548,6 +552,14 @@ class DerivedServiceMatchRequest(BaseModel):
     limit: int = 10
 
 
+class MissingPersonDeadDropEmailRequest(BaseModel):
+    to_email: str = "missing@police.portlandoregon.gov"
+    subject: str = "Missing person report dead drop bundle"
+    body: str
+    bundle: Dict[str, Any]
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+
+
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
 
@@ -756,6 +768,35 @@ def create_app(*, service: WalletInterfaceService | None = None):
             return record.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/dead-drops/missing-person")
+    def send_missing_person_dead_drop_email(
+        wallet_id: str, request: MissingPersonDeadDropEmailRequest
+    ) -> Dict[str, Any]:
+        try:
+            app_service.get_wallet(wallet_id)
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        try:
+            envelope = _send_dead_drop_email(
+                to_email=request.to_email,
+                subject=request.subject,
+                body=request.body,
+                bundle=request.bundle,
+                bundle_filename=request.bundle_filename,
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "to_email": request.to_email,
+                "subject": request.subject,
+                "bundle_filename": request.bundle_filename,
+                **envelope,
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     @app.post("/wallets/{wallet_id}/locations/{location_record_id}/coarse-grants")
     def create_coarse_location_grant(
@@ -2084,3 +2125,52 @@ def _key_from_optional_hex(value: str | None) -> bytes | None:
     if len(key) != 32:
         raise ValueError("wallet key must decode to 32 bytes")
     return key
+
+
+def _send_dead_drop_email(
+    *,
+    to_email: str,
+    subject: str,
+    body: str,
+    bundle: Dict[str, Any],
+    bundle_filename: str,
+) -> Dict[str, Any]:
+    smtp_host = str(os.getenv("WALLET_DEAD_DROP_SMTP_HOST") or "").strip()
+    if not smtp_host:
+        raise RuntimeError("Missing WALLET_DEAD_DROP_SMTP_HOST for dead-drop email delivery")
+    smtp_port = int(str(os.getenv("WALLET_DEAD_DROP_SMTP_PORT") or "587").strip())
+    smtp_use_ssl = str(os.getenv("WALLET_DEAD_DROP_SMTP_USE_SSL") or "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    smtp_starttls = str(os.getenv("WALLET_DEAD_DROP_SMTP_STARTTLS") or "true").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+    smtp_username = str(os.getenv("WALLET_DEAD_DROP_SMTP_USERNAME") or "").strip()
+    smtp_password = str(os.getenv("WALLET_DEAD_DROP_SMTP_PASSWORD") or "")
+    sender = str(os.getenv("WALLET_DEAD_DROP_FROM_EMAIL") or "no-reply@211-ai.org").strip()
+
+    bundle_json = json.dumps(bundle, indent=2, sort_keys=True)
+    message = EmailMessage()
+    message["From"] = sender
+    message["To"] = to_email
+    message["Subject"] = subject
+    message["Message-Id"] = make_msgid(domain=sender.split("@")[-1] if "@" in sender else None)
+    message.set_content(body)
+    message.add_attachment(bundle_json.encode("utf-8"), maintype="application", subtype="json", filename=bundle_filename)
+
+    smtp_factory = smtplib.SMTP_SSL if smtp_use_ssl else smtplib.SMTP
+    with smtp_factory(smtp_host, smtp_port, timeout=20) as smtp:
+        if not smtp_use_ssl and smtp_starttls:
+            smtp.starttls()
+        if smtp_username:
+            smtp.login(smtp_username, smtp_password)
+        rejected = smtp.send_message(message)
+    if rejected:
+        raise RuntimeError(f"Dead-drop email delivery rejected recipients: {sorted(rejected)}")
+    return {"message_id": str(message.get("Message-Id") or "")}

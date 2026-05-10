@@ -128,6 +128,7 @@ import {
   revokeAccessRequest,
   saveWalletService,
   saveWalletSnapshot,
+  sendMissingPersonDeadDropEmail,
   verifyWalletSnapshot,
   WalletSnapshotVerification,
   WalletApiConfig
@@ -795,22 +796,11 @@ export function App() {
     setMobileNavOpen(false);
   }
 
-  const sendMissingPersonDeadDrop = useCallback((): boolean => {
+  const sendMissingPersonDeadDrop = useCallback(async (): Promise<boolean> => {
     try {
       const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
-      const bundleJson = JSON.stringify(bundle, null, 2);
       const timestamp = formatDeadDropFileTimestamp();
       const fileName = `abby-missing-person-wallet-dead-drop-${timestamp}.json`;
-      const blob = new Blob([bundleJson], { type: "application/json" });
-      const blobUrl = URL.createObjectURL(blob);
-      const downloadLink = document.createElement("a");
-      downloadLink.href = blobUrl;
-      downloadLink.download = fileName;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      downloadLink.remove();
-      URL.revokeObjectURL(blobUrl);
-
       const personLabel = bundle.person.preferredName || "Unknown";
       const walletLines = bundle.walletContents.length
         ? bundle.walletContents
@@ -831,13 +821,31 @@ export function App() {
         `Wallet contents (${bundle.walletContents.length}):`,
         walletLines,
         "",
-        `Dead-drop JSON bundle was generated locally as: ${fileName}`,
-        "Please review the attached bundle file for structured evidence metadata.",
+        "Please review the attached dead-drop JSON bundle for structured evidence metadata.",
         "",
         "Submitted from Abby missing-person safety setting."
       ].join("\n");
       const subject = "Missing person report dead drop bundle";
-      window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      if (walletApiConfig) {
+        await sendMissingPersonDeadDropEmail(walletApiConfig, {
+          body,
+          bundle,
+          bundleFileName: fileName,
+          subject
+        });
+      } else {
+        const bundleJson = JSON.stringify(bundle, null, 2);
+        const blob = new Blob([bundleJson], { type: "application/json" });
+        const blobUrl = URL.createObjectURL(blob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = blobUrl;
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        URL.revokeObjectURL(blobUrl);
+        window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      }
       if (isMissingPersonDeadDropDue(policy)) {
         setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
       }
@@ -848,14 +856,14 @@ export function App() {
       }
       return false;
     }
-  }, [policy, profile, recipients, uploads]);
+  }, [policy, profile, recipients, uploads, walletApiConfig]);
 
   useEffect(() => {
     if (!missingPersonDeadDropEnabled || !policy.escalationEnabled) return;
     if (!isMissingPersonDeadDropDue(policy)) return;
     if (missingPersonDeadDropLastSentForCheckInAt === policy.lastCheckInAt) return;
 
-    sendMissingPersonDeadDrop();
+    void sendMissingPersonDeadDrop();
   }, [
     missingPersonDeadDropEnabled,
     missingPersonDeadDropLastSentForCheckInAt,
@@ -1866,7 +1874,7 @@ function SettingsScreen({
   setMissingPersonDeadDropEnabled: (enabled: boolean) => void;
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   setProfile: (profile: RegistrationProfileDraft) => void;
-  sendMissingPersonDeadDrop: () => boolean;
+  sendMissingPersonDeadDrop: () => Promise<boolean>;
   walletConnected: boolean;
 }) {
   const updatePolicy = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
@@ -1891,8 +1899,8 @@ function SettingsScreen({
     }
   }, [missingPersonDeadDropEnabled]);
 
-  function handleSendMissingPersonDeadDrop() {
-    const sent = sendMissingPersonDeadDrop();
+  async function handleSendMissingPersonDeadDrop() {
+    const sent = await sendMissingPersonDeadDrop();
     setDeadDropStatus(sent ? "sent" : "failed");
   }
 
@@ -1998,9 +2006,11 @@ function SettingsScreen({
             <span>
               <strong>Enable missing-person dead drop for Portland Police.</strong>
               <small>
-                When enabled, Abby automatically prepares a dead-drop bundle and opens an email draft to{" "}
-                {PORTLAND_POLICE_MISSING_EMAIL} after a missed check-in passes your schedule and grace period. You
-                must attach the file and send it.
+                When enabled, Abby automatically prepares a dead-drop bundle after a missed check-in passes your
+                schedule and grace period.{" "}
+                {walletConnected
+                  ? `If a wallet API is connected, Abby routes the bundle to ${PORTLAND_POLICE_MISSING_EMAIL} from the server.`
+                  : `Without a connected wallet API, Abby opens a local email draft to ${PORTLAND_POLICE_MISSING_EMAIL} and you must attach the file and send it.`}
               </small>
             </span>
           </label>
@@ -2020,7 +2030,9 @@ function SettingsScreen({
           </div>
           {deadDropStatus === "sent" ? (
             <StatusBanner tone="success">
-              Dead-drop bundle downloaded. Please attach the file to the email draft and send.
+              {walletConnected
+                ? "Dead-drop bundle routed to Portland Police from the connected Abby server."
+                : "Dead-drop bundle downloaded. Please attach the file to the email draft and send."}
             </StatusBanner>
           ) : null}
           {deadDropStatus === "failed" ? (

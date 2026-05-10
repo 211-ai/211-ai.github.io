@@ -447,6 +447,15 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface MissingPersonDeadDropDispatchResponse {
+  wallet_id: string;
+  status: string;
+  to_email: string;
+  subject: string;
+  bundle_filename: string;
+  message_id?: string;
+}
+
 export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<{
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
@@ -456,6 +465,32 @@ export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBa
     listGrantReceipts(config)
   ]);
   return { accessRequests, grantReceipts };
+}
+
+export async function sendMissingPersonDeadDropEmail(
+  config: WalletApiConfig,
+  {
+    toEmail,
+    subject,
+    body,
+    bundle,
+    bundleFileName
+  }: {
+    toEmail?: string;
+    subject: string;
+    body: string;
+    bundle: Record<string, unknown>;
+    bundleFileName: string;
+  }
+): Promise<MissingPersonDeadDropDispatchResponse> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<MissingPersonDeadDropDispatchResponse>(url, "Missing-person dead-drop email", {
+    to_email: toEmail || "missing@police.portlandoregon.gov",
+    subject,
+    body,
+    bundle,
+    bundle_filename: bundleFileName
+  });
 }
 
 export async function loadWalletDetails(

@@ -133,6 +133,14 @@ the expected `wallet_export_v1` type and required bundle sections.
 `POST /exports/storage` reports encrypted blob availability for records
 referenced by a verified export bundle.
 
+For missing-person dead-drop escalation, the API can also route a structured
+wallet bundle email to Portland Police through server-side SMTP with:
+`POST /wallets/{wallet_id}/dead-drops/missing-person`.
+Configure `WALLET_DEAD_DROP_SMTP_HOST` (required), optional
+`WALLET_DEAD_DROP_SMTP_PORT`, `WALLET_DEAD_DROP_SMTP_USE_SSL`,
+`WALLET_DEAD_DROP_SMTP_STARTTLS`, `WALLET_DEAD_DROP_SMTP_USERNAME`,
+`WALLET_DEAD_DROP_SMTP_PASSWORD`, and `WALLET_DEAD_DROP_FROM_EMAIL`.
+
 ## Wallet Storage Configuration
 
 `WalletInterfaceService` builds the core `ipfs_datasets_py.wallet` storage
@@ -204,6 +212,7 @@ Repository API endpoints:
 - `GET /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot`
 - `POST /wallets/{wallet_id}/snapshot/load`
+- `POST /wallets/{wallet_id}/dead-drops/missing-person`
 
 ## UI Export Wiring
 
