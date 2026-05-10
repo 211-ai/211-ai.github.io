@@ -1363,14 +1363,15 @@ test("settings screen saves and restores wallet snapshots", async ({ page }) => 
   await openAppRoute(page, walletRoute("settings", "did:key:owner"));
 
   await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText(/no backup/i)).toBeVisible();
-  await page.getByRole("button", { name: /Save backup/i }).click();
+  const accountSafety = page.locator('section[aria-labelledby="Account-safety"]');
+  await expect(accountSafety.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
+  await expect(accountSafety.getByText(/no backup/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Save backup/i }).click();
   await expect(page.getByText(/Wallet backup saved/i)).toBeVisible();
-  await expect(page.getByText(/backup ready/i)).toBeVisible();
-  await expect(page.getByText(/verified/i)).toBeVisible();
-  await expect(page.getByText(/abc123def456/i)).toBeVisible();
-  await page.getByRole("button", { name: /Load backup/i }).click();
+  await expect(accountSafety.getByText(/backup ready/i)).toBeVisible();
+  await expect(accountSafety.getByText(/^verified$/i)).toBeVisible();
+  await expect(accountSafety.getByText(/abc123def456/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Load backup/i }).click();
   await expect(page.getByText(/Wallet backup loaded/i)).toBeVisible();
   expect(saveRequests).toBe(1);
   expect(loadRequests).toBe(1);
