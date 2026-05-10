@@ -10,7 +10,7 @@ export const LLM_CONFIG = {
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
   enableSIMD: import.meta.env?.VITE_ENABLE_SIMD !== "false",
   openRouterEnabled: import.meta.env?.VITE_OPENROUTER_ENABLED !== "false",
-  preferOpenRouter: import.meta.env?.VITE_PREFER_OPENROUTER !== "false",
+  preferOpenRouter: true,
   openRouterApiKey: (import.meta.env?.VITE_OPENROUTER_API_KEY as string | undefined) || "",
   openRouterProxyUrl:
     (import.meta.env?.VITE_OPENROUTER_PROXY_URL as string | undefined) ||
