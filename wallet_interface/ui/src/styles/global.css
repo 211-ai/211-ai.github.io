@@ -63,7 +63,6 @@ button {
 .checkin-panel,
 .choice-chip,
 .captcha-box,
-.consent-box,
 .scope-option,
 .status-panel-clickable {
   transition:
@@ -3578,11 +3577,11 @@ textarea {
 }
 
 .login-panel::after {
-  background: url("/assets/png/from-preview/preview-header-landscape.png") right bottom / min(92%, 430px) auto no-repeat;
+  background: var(--abby-header-asset) right bottom / min(92%, 430px) auto no-repeat;
   bottom: -18px;
   content: "";
   height: 120px;
-  opacity: 0.22;
+  opacity: 0.34;
   pointer-events: none;
   position: absolute;
   right: -22px;
@@ -3642,15 +3641,15 @@ textarea {
 }
 
 .home-hero::after {
-  background: url("/assets/png/from-preview/preview-header-landscape.png") right top / contain no-repeat;
+  background: var(--abby-header-asset) right top / contain no-repeat;
   content: "";
   height: 180px;
-  opacity: 0.64;
+  opacity: 0.86;
   pointer-events: none;
   position: absolute;
   right: -16px;
   top: -10px;
-  width: min(64vw, 640px);
+  width: min(72vw, 760px);
   z-index: -1;
 }
 
@@ -3665,12 +3664,9 @@ textarea {
 .section-heading h2 {
   color: var(--abby-navy);
   font-family: var(--abby-display-family);
-  font-size: 23px;
   line-height: 1.12;
 }
 
-.action-card,
-.review-row,
 .review-panel,
 .guided-intake-panel,
 .list-item,
@@ -4505,8 +4501,37 @@ body {
 }
 
 .topbar {
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.98), rgba(250, 251, 248, 0.82));
+  border-bottom: 1px solid rgba(127, 174, 180, 0.26);
+  box-shadow: 0 8px 22px rgba(7, 49, 74, 0.05);
+  overflow: hidden;
   min-height: 76px;
   padding: 10px 14px;
+  position: relative;
+}
+
+.topbar::before {
+  background:
+    linear-gradient(90deg, rgba(250, 251, 248, 0.18), rgba(250, 251, 248, 0.04)),
+    var(--abby-header-asset) right center / min(420px, 36vw) auto no-repeat;
+  content: "";
+  inset: 0;
+  opacity: 0.96;
+  pointer-events: none;
+  position: absolute;
+}
+
+.topbar::after {
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.96) 0%, rgba(250, 251, 248, 0.88) 38%, rgba(250, 251, 248, 0.2) 78%, rgba(250, 251, 248, 0.02) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.topbar > * {
+  position: relative;
+  z-index: 1;
 }
 
 .topbar .button-quiet {
@@ -4724,11 +4749,35 @@ textarea:focus-visible,
 }
 
 .home-footer {
-  background:
-    linear-gradient(90deg, rgba(250, 251, 248, 0.88), rgba(250, 251, 248, 0.62)),
-    var(--abby-footer-asset) center bottom / min(100%, 1100px) auto no-repeat;
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.92), rgba(250, 251, 248, 0.68));
   border-bottom: 1px solid rgba(127, 174, 180, 0.3);
+  border-top: 1px solid rgba(127, 174, 180, 0.24);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
   padding-bottom: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-footer::before {
+  background: var(--abby-footer-asset) center bottom / cover no-repeat;
+  content: "";
+  inset: 0;
+  opacity: 0.88;
+  pointer-events: none;
+  position: absolute;
+}
+
+.home-footer::after {
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.94) 0%, rgba(250, 251, 248, 0.7) 36%, rgba(250, 251, 248, 0.22) 74%, rgba(250, 251, 248, 0.18) 100%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.home-footer > * {
+  position: relative;
+  z-index: 1;
 }
 
 .field input,
@@ -4789,25 +4838,43 @@ textarea:focus-visible,
 @media (min-width: 760px) {
   .sidebar {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(243, 248, 246, 0.9)),
-      var(--abby-sidebar-wash) center bottom / cover no-repeat;
+      linear-gradient(180deg, rgba(250, 251, 248, 0.84), rgba(243, 248, 246, 0.58)),
+      var(--abby-sidebar-wash) center center / cover no-repeat;
+    border-right: 1px solid rgba(127, 174, 180, 0.45);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.68);
+    isolation: isolate;
+    padding: 20px 18px;
+    position: relative;
   }
 
   .sidebar::before {
-    background: none;
-    bottom: 0;
+    background:
+      linear-gradient(180deg, rgba(250, 251, 248, 0.08), rgba(250, 251, 248, 0.18)),
+      var(--abby-sidebar-wash) center top / cover no-repeat;
     content: "";
-    height: 220px;
-    left: 0;
-    opacity: 0.09;
+    inset: 0;
+    opacity: 0.92;
     pointer-events: none;
     position: absolute;
-    width: 100%;
+    z-index: 0;
   }
 
   .sidebar::after {
-    background: var(--abby-sidebar-evergreens);
-    opacity: 0;
+    background: linear-gradient(180deg, rgba(250, 251, 248, 0.14), rgba(7, 49, 74, 0.16) 78%, rgba(7, 49, 74, 0.22) 100%);
+    bottom: 0;
+    content: "";
+    left: 0;
+    opacity: 1;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 0;
+  }
+
+  .sidebar > * {
+    position: relative;
+    z-index: 1;
   }
 
   .home-hero {
@@ -4816,8 +4883,9 @@ textarea:focus-visible,
   }
 
   .home-hero::after {
-    height: 202px;
-    width: min(690px, 62vw);
+    height: 220px;
+    opacity: 0.92;
+    width: min(760px, 68vw);
   }
 }
 
