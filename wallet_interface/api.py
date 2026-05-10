@@ -2137,7 +2137,9 @@ def _send_dead_drop_email(
 ) -> Dict[str, Any]:
     smtp_host = str(os.getenv("WALLET_DEAD_DROP_SMTP_HOST") or "").strip()
     if not smtp_host:
-        raise RuntimeError("Missing WALLET_DEAD_DROP_SMTP_HOST for dead-drop email delivery")
+        raise RuntimeError(
+            "WALLET_DEAD_DROP_SMTP_HOST environment variable is required for dead-drop email delivery but is not configured"
+        )
     smtp_port = int(str(os.getenv("WALLET_DEAD_DROP_SMTP_PORT") or "587").strip())
     smtp_use_ssl = str(os.getenv("WALLET_DEAD_DROP_SMTP_USE_SSL") or "").strip().lower() in {
         "1",
@@ -2160,7 +2162,8 @@ def _send_dead_drop_email(
     message["From"] = sender
     message["To"] = to_email
     message["Subject"] = subject
-    message["Message-Id"] = make_msgid(domain=sender.split("@")[-1] if "@" in sender else None)
+    sender_domain = sender.rsplit("@", 1)[-1].strip() if "@" in sender else ""
+    message["Message-Id"] = make_msgid(domain=sender_domain or None)
     message.set_content(body)
     message.add_attachment(bundle_json.encode("utf-8"), maintype="application", subtype="json", filename=bundle_filename)
 

@@ -485,7 +485,7 @@ export async function sendMissingPersonDeadDropEmail(
 ): Promise<MissingPersonDeadDropDispatchResponse> {
   const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
   return postJson<MissingPersonDeadDropDispatchResponse>(url, "Missing-person dead-drop email", {
-    to_email: toEmail || "missing@police.portlandoregon.gov",
+    to_email: toEmail,
     subject,
     body,
     bundle,
