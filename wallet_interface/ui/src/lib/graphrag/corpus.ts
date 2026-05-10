@@ -22,7 +22,7 @@ import { loadDocumentsFromParquet, queryParquetRows, type DuckDbDocumentQuery } 
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
-const CORPUS_BASE_URL = stripTrailingSlash(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
+const CORPUS_BASE_URL = resolveCorpusBaseUrl(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
 interface CorpusState {
   documents: CorpusDocument[];
@@ -451,11 +451,36 @@ export async function fetch211CorpusArrayBuffer(relativePath: string): Promise<A
 
 export function get211CorpusAssetUrl(relativePath: string): string {
   const cleanPath = relativePath.replace(/^\/+/, "");
-  return `${CORPUS_BASE_URL}/${cleanPath}`;
+  return new URL(cleanPath, `${CORPUS_BASE_URL}/`).toString();
 }
 
 function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/, "");
+}
+
+function resolveCorpusBaseUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return resolveDefaultCorpusBaseUrl();
+  }
+  if (typeof window !== "undefined") {
+    try {
+      return stripTrailingSlash(new URL(ensureTrailingSlash(trimmed), window.location.href).toString());
+    } catch {
+      // Fall through to non-window normalization.
+    }
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    return stripTrailingSlash(trimmed);
+  }
+  if (trimmed.startsWith("/")) {
+    return stripTrailingSlash(trimmed);
+  }
+  return stripTrailingSlash(`/${trimmed.replace(/^\/+/, "")}`);
+}
+
+function ensureTrailingSlash(value: string): string {
+  return value.endsWith("/") ? value : `${value}/`;
 }
 
 function buildCorpusState(documents: CorpusDocument[]): CorpusState {
@@ -673,11 +698,19 @@ function numberOrNull(value: unknown): number | null {
 
 function resolveDefaultCorpusBaseUrl(): string {
   const baseUrl = String(import.meta.env?.BASE_URL || "/");
+  if (typeof window !== "undefined") {
+    try {
+      const appBaseUrl = new URL(ensureTrailingSlash(baseUrl), window.location.href);
+      return stripTrailingSlash(new URL("corpus/211-info/current/", appBaseUrl).toString());
+    } catch {
+      // Fall back to string-based normalization below.
+    }
+  }
   if (/^https?:\/\//i.test(baseUrl)) {
     return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
   }
   if (baseUrl === "." || baseUrl === "./") {
-    return "/corpus/211-info/current";
+    return "./corpus/211-info/current";
   }
   if (baseUrl.startsWith("/")) {
     return `${stripTrailingSlash(baseUrl)}/corpus/211-info/current`;
