@@ -1388,7 +1388,6 @@ export function App() {
             setBundles={setExportBundleViews}
           />
         ) : null}
-        {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}

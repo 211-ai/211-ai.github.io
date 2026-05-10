@@ -10,7 +10,7 @@ import type {
   WalletGrantReceipt
 } from "../models/abby";
 import { InteractionTimeline } from "../components/services/InteractionTimeline";
-import { Badge } from "../components/ui";
+import { Badge, Section, StatusBanner } from "../components/ui";
 import type { WalletApiConfig } from "../services/walletApi";
 
 export function InteractionsScreen({
