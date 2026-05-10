@@ -474,7 +474,7 @@ export const proofReceipts: ProofReceiptView[] = [
     proofSystem: "simulated_zk_certificate",
     verificationStatus: "verified",
     circuitId: "analytics-housing-outcome-v1",
-    verifierDigest: "analytics-house-10d64c5b78caa09fd67d24b099c1ca8",
+    verifierDigest: "analytics-house-10d64c5b78caa09fd67d24b099c1ca87",
     proofArtifactRef: "zk-cert-analytics-house-clackamas",
     publicInputs: {
       certificate_type: "housing_outcome",
@@ -496,7 +496,7 @@ export const proofReceipts: ProofReceiptView[] = [
     proofSystem: "simulated_zk_certificate",
     verificationStatus: "verified",
     circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-11d64c5b78caa09fd67d24b099c1c",
+    verifierDigest: "analytics-outreach-11d64c5b78caa09fd67d24b099c1ca87",
     proofArtifactRef: "zk-cert-analytics-outreach-multnomah",
     publicInputs: {
       certificate_type: "outreach_followup",
@@ -518,7 +518,7 @@ export const proofReceipts: ProofReceiptView[] = [
     proofSystem: "simulated_zk_certificate",
     verificationStatus: "verified",
     circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-12d64c5b78caa09fd67d24b099c1c",
+    verifierDigest: "analytics-outreach-12d64c5b78caa09fd67d24b099c1ca87",
     proofArtifactRef: "zk-cert-analytics-outreach-washington",
     publicInputs: {
       certificate_type: "outreach_followup",
@@ -540,7 +540,7 @@ export const proofReceipts: ProofReceiptView[] = [
     proofSystem: "simulated_zk_certificate",
     verificationStatus: "verified",
     circuitId: "analytics-outreach-followup-v1",
-    verifierDigest: "analytics-outreach-13d64c5b78caa09fd67d24b099c1c",
+    verifierDigest: "analytics-outreach-13d64c5b78caa09fd67d24b099c1ca87",
     proofArtifactRef: "zk-cert-analytics-outreach-clackamas",
     publicInputs: {
       certificate_type: "outreach_followup",
