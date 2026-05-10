@@ -316,6 +316,7 @@ function formatAnalyticsField(field: string): string {
 
 const analyticsNeverPublishedText =
   "No names, contact details, exact locations, files, staff actions, case notes, or individual service histories";
+const analyticsProviderPublicationFloor = 3;
 
 function toShortSummaryTitle(text: string): string {
   const cleaned = text
@@ -5752,7 +5753,6 @@ function AnalyticsScreen({
       : cohortFloorMin === cohortFloorMax
         ? String(cohortFloorMin)
         : `${cohortFloorMin}-${cohortFloorMax}`;
-  const providerPublicationFloor = 3;
   const summaryPanels = [
     { label: "People in verified cohorts", value: "2,480", tone: "teal" },
     { label: "Providers submitting proofs", value: "38", tone: "teal" },
@@ -5829,11 +5829,11 @@ function AnalyticsScreen({
     },
     {
       detail:
-        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than ${providerPublicationFloor} provider organizations are represented.`,
+        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than ${analyticsProviderPublicationFloor} provider organizations are represented.`,
       title: "Suppression for small groups"
     },
     {
-      detail: `${analyticsNeverPublishedText} are published to this dashboard.`,
+      detail: `${analyticsNeverPublishedText} are never published to this dashboard.`,
       title: "No row-level activity disclosure"
     }
   ];
