@@ -429,6 +429,53 @@ body.playful-pulse .decor-shape {
   align-content: start;
 }
 
+.analytics-story-grid,
+.analytics-method-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.analytics-story-card,
+.analytics-method-card {
+  display: grid;
+  gap: 12px;
+}
+
+.analytics-story-value {
+  color: #07314a;
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1;
+}
+
+.analytics-progress {
+  background: #e3eeee;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.analytics-progress span {
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  display: block;
+  height: 100%;
+  min-width: 10px;
+}
+
+.analytics-story-card small,
+.analytics-method-card p {
+  color: #5b6776;
+  margin: 0;
+}
+
+.analytics-method-card h3 {
+  margin: 0;
+}
+
+.analytics-release-disclosure {
+  margin-top: 12px;
+}
+
 .status-panel {
   border-left: 4px solid;
   border-radius: 8px;

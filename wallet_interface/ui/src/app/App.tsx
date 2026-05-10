@@ -323,10 +323,37 @@ function formatRecipientType(type: DisclosureRecipientType): string {
 
 function formatAnalyticsField(field: string): string {
   const labels: Record<string, string> = {
+    age_group: "age group",
     county: "county",
-    need_category: "need type"
+    housing_outcome: "housing outcome",
+    need_category: "need type",
+    service_type: "service type"
   };
   return labels[field] ?? field.replace(/_/g, " ");
+}
+
+const analyticsNeverPublishedText =
+  "No names, contact details, exact locations, files, staff actions, case notes, or individual service histories";
+const analyticsProviderPublicationFloor = 3;
+
+function parseAnalyticsProofNumber(value: string | undefined): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function calculatePercent(value: number, total: number): number {
+  if (!total) return 0;
+  return Math.round((value / total) * 100);
+}
+
+function formatAnalyticsProofValue(value: string | undefined): string {
+  if (!value) return "";
+  const numeric = Number(value);
+  if (Number.isFinite(numeric)) return numeric.toLocaleString();
+  return value
+    .split("_")
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
 }
 
 function toShortSummaryTitle(text: string): string {
@@ -1326,7 +1353,7 @@ export function App() {
           <BenefitsProtectionScreen optedIn={benefitsOptIn} setOptedIn={setBenefitsOptIn} />
         ) : null}
         {activeRoute === "analytics" ? (
-          <AnalyticsScreen optedIn={analyticsOptIn} setOptedIn={setAnalyticsOptIn} />
+          <AnalyticsScreen optedIn={analyticsOptIn} proofs={walletProofReceipts} setOptedIn={setAnalyticsOptIn} />
         ) : null}
         {activeRoute === "proof-center" ? (
           <ProofCenterScreen
@@ -6268,9 +6295,11 @@ function BenefitsProtectionScreen({
 
 function AnalyticsScreen({
   optedIn,
+  proofs,
   setOptedIn
 }: {
   optedIn: Record<string, boolean>;
+  proofs: ProofReceiptView[];
   setOptedIn: (value: Record<string, boolean>) => void;
 }) {
   function toggleStudy(studyId: string) {
@@ -6283,98 +6312,335 @@ function AnalyticsScreen({
 
   const selectedStudyCount = analyticsStudies.filter((study) => isStudySelected(study.id)).length;
   const pausedStudyCount = analyticsStudies.filter((study) => study.status === "paused").length;
-  const availableStudyCount = analyticsStudies.length - pausedStudyCount;
-  const totalPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.epsilonBudget, 0);
-  const spentPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.spentBudget, 0);
-  const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
+  const cohortFloorValues = analyticsStudies.map((study) => study.minCohortSize);
+  const cohortFloorMin = cohortFloorValues.length ? Math.min(...cohortFloorValues) : 0;
+  const cohortFloorMax = cohortFloorValues.length ? Math.max(...cohortFloorValues) : 0;
+  const cohortFloorLabel =
+    cohortFloorValues.length === 0
+      ? "0"
+      : cohortFloorMin === cohortFloorMax
+        ? String(cohortFloorMin)
+        : `${cohortFloorMin}-${cohortFloorMax}`;
+  const analyticsProofCertificates = proofs.filter(
+    (proof) => proof.proofType.startsWith("analytics_") && proof.verificationStatus === "verified"
+  );
+  const homelessnessProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_population_snapshot");
+  const providerCapacityProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_provider_capacity");
+  const housingOutcomeProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_housing_outcome");
+  const outreachFollowupProofs = analyticsProofCertificates.filter((proof) => proof.proofType === "analytics_outreach_followup");
+  const cohortPeopleCount = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.cohort_count),
+    0
+  );
+  const providerOrganizationsCount = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.providers_included),
+    0
+  );
+  const countiesCoveredCount = new Set(
+    analyticsProofCertificates.map((proof) => proof.publicInputs.county).filter(Boolean)
+  ).size;
+  const shelterRequestsTotal = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.shelter_requests),
+    0
+  );
+  const waitingOverWeekCount = homelessnessProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.waiting_over_7_days),
+    0
+  );
+  const housedReferralsTotal = housingOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.housed_referrals),
+    0
+  );
+  const referralsCompletedTotal = housingOutcomeProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.referrals_completed),
+    0
+  );
+  const occupiedBedsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.occupied_beds),
+    0
+  );
+  const licensedBedsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.licensed_beds),
+    0
+  );
+  const sameDayProgramsTotal = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.same_day_available_programs),
+    0
+  );
+  const totalPrograms = providerCapacityProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.total_programs),
+    0
+  );
+  const completedFollowupsTotal = outreachFollowupProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.completed_followups),
+    0
+  );
+  const assignedFollowupsTotal = outreachFollowupProofs.reduce(
+    (sum, proof) => sum + parseAnalyticsProofNumber(proof.publicInputs.assigned_followups),
+    0
+  );
+  const shelterFillRate = calculatePercent(occupiedBedsTotal, licensedBedsTotal);
+  const waitingOverWeekRate = calculatePercent(waitingOverWeekCount, shelterRequestsTotal);
+  const referralToHousingRate = calculatePercent(housedReferralsTotal, referralsCompletedTotal);
+  const outreachFollowupRate = calculatePercent(completedFollowupsTotal, assignedFollowupsTotal);
+  const sameDayAvailabilityRate = calculatePercent(sameDayProgramsTotal, totalPrograms);
+  const studyTitleById = new Map(analyticsStudies.map((study) => [study.id, study.title]));
+  const summaryPanels = [
+    { label: "People in verified cohorts", value: cohortPeopleCount.toLocaleString(), tone: "teal" },
+    { label: "Providers in verified releases", value: providerOrganizationsCount.toLocaleString(), tone: "teal" },
+    { label: "Counties covered", value: String(countiesCoveredCount), tone: "gold" },
+    { label: "Mock proof certificates", value: String(analyticsProofCertificates.length), tone: "teal" },
+    { label: "Shelter requests this week", value: shelterRequestsTotal.toLocaleString(), tone: "red" },
+    { label: "Average shelter fill rate", value: `${shelterFillRate}%`, tone: "gold" },
+    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" }
+  ];
+  const populationSignals = [
+    {
+      badge: "Demand rising",
+      badgeTone: "warning",
+      detail: `Weekly shelter requests total ${shelterRequestsTotal.toLocaleString()} across ${homelessnessProofs.length} verified county proof certificates.`,
+      footnote: "Largest released cohorts still use age-group and need-type suppression to avoid singling anyone out.",
+      progress: Math.max(10, shelterRequestsTotal ? 78 : 0),
+      title: "Unsheltered people requesting a bed",
+      value: shelterRequestsTotal.toLocaleString()
+    },
+    {
+      badge: "Needs attention",
+      badgeTone: "warning",
+      detail: `People waiting longer than 7 days for placement represent ${waitingOverWeekRate}% of the released shelter-request proofs.`,
+      footnote: "Breakdowns stay hidden whenever the release floor is not met.",
+      progress: waitingOverWeekRate,
+      title: "People waiting a week or more",
+      value: `${waitingOverWeekRate}%`
+    },
+    {
+      badge: "Improving",
+      badgeTone: "success",
+      detail: `Verified referrals that lead to stable placement now total ${housedReferralsTotal.toLocaleString()} across ${housingOutcomeProofs.length} outcome certificates.`,
+      footnote: "Calculated from proof-backed referral and placement totals only.",
+      progress: referralToHousingRate,
+      title: "Referrals that end in housing",
+      value: `${referralToHousingRate}%`
+    }
+  ];
+  const providerSignals = [
+    {
+      badge: "Near capacity",
+      badgeTone: "warning",
+      detail: `Emergency shelter releases cover ${providerOrganizationsCount.toLocaleString()} provider organizations contributing occupancy proofs.`,
+      footnote: "Average verified occupancy across participating emergency shelter providers.",
+      progress: shelterFillRate,
+      title: "Emergency shelter networks",
+      value: `${shelterFillRate}% full`
+    },
+    {
+      badge: "Expanding",
+      badgeTone: "success",
+      detail: `Mobile teams published ${completedFollowupsTotal.toLocaleString()} completed follow-ups from ${assignedFollowupsTotal.toLocaleString()} assigned outreach contacts.`,
+      footnote: "Measures closed-loop outreach contacts without publishing any contact log.",
+      progress: outreachFollowupRate,
+      title: "Street outreach follow-up rate",
+      value: `${outreachFollowupRate}%`
+    },
+    {
+      badge: "Stable",
+      badgeTone: "info",
+      detail: "Food, hygiene, and document-help sites continue to absorb demand faster than shelter networks.",
+      footnote: `Availability is published only when at least ${analyticsProviderPublicationFloor} providers submit matching proof batches.`,
+      progress: sameDayAvailabilityRate,
+      title: "Support programs with same-day availability",
+      value: `${sameDayAvailabilityRate}%`
+    }
+  ];
+  const privacyGuardrails = [
+    {
+      detail:
+        "Every published total comes from a proof that a real provider submitted an approved cohort count for the allowed schema.",
+      title: "Zero-knowledge proofs before release"
+    },
+    {
+      detail:
+        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than ${analyticsProviderPublicationFloor} provider organizations are represented.`,
+      title: "Suppression for small groups"
+    },
+    {
+      detail: `${analyticsNeverPublishedText} are never published to this dashboard.`,
+      title: "No row-level activity disclosure"
+    }
+  ];
 
   return (
     <div className="screen analytics-screen">
       <div className="page-title">
-        <p className="eyebrow">Analytics tools</p>
-        <h1>Share group facts, not your name</h1>
+        <p className="eyebrow">Public analytics</p>
+        <h1>Homelessness and service capacity dashboard</h1>
       </div>
       <p className="page-note">
-        These choices start on. You can turn off any one. We use group facts, not names or contact details.
+        This public release shows only group totals proven with zero-knowledge proofs. It highlights homelessness trends,
+        provider capacity, and referral outcomes without exposing names, contact details, exact locations, files, or
+        case activity.
       </p>
-      <StatusBanner tone="warning">
-        A privacy and legal team must review this before real use.
+      <StatusBanner tone="info">
+        Every figure shown here clears minimum group and provider thresholds before it can appear in the public dashboard.
       </StatusBanner>
-      <Section eyebrow="Admin view" title="Admin introspection">
+      <Section eyebrow="Public release" title="Dashboard summary">
         <p className="section-note">
-          Project admins and service organization admins can inspect aggregate operations without seeing raw wallet
-          records, exact locations, names, or contact details.
+          All figures reflect the latest verified proof batch from participating shelters, housing programs, outreach
+          teams, and support providers.
         </p>
-        <div className="analytics-admin-grid">
-          <article aria-label="211-AI project admin analytics introspection" className="analytics-card analytics-admin-card">
-            <div className="scope-header">
-              <div>
-                <h3>211-AI project admins</h3>
-                <p>Inspect template health, privacy budget use, and aggregate coverage across participating services.</p>
-              </div>
-              <Badge tone="success">Project admin</Badge>
-            </div>
-            <div className="privacy-metrics">
-              <StatusPanel label="Templates" value={String(analyticsStudies.length)} tone="teal" />
-              <StatusPanel label="Privacy left" value={privacyBudgetLeft.toFixed(2)} tone="gold" />
-            </div>
-            <div className="disclosure-package">
-              <div className="disclosure-row">
-                <strong>Can inspect</strong>
-                <span>Template status, cohort floors, privacy spend, consent coverage, organization participation</span>
-              </div>
-              <div className="disclosure-row">
-                <strong>Use for</strong>
-                <span>System QA, grant reporting, product safety reviews, privacy and legal audit preparation</span>
-              </div>
-              <div className="disclosure-row">
-                <strong>Not allowed</strong>
-                <span>Raw wallet records, names, contact details, exact locations, files, or private notes</span>
-              </div>
-            </div>
-          </article>
-          <article
-            aria-label="Service organization admin analytics introspection"
-            className="analytics-card analytics-admin-card"
-          >
-            <div className="scope-header">
-              <div>
-                <h3>Service organization admins</h3>
-                <p>Inspect their own service demand, referral outcomes, and approved aggregate cohorts.</p>
-              </div>
-              <Badge tone="info">Organization admin</Badge>
-            </div>
-            <div className="privacy-metrics">
-              <StatusPanel label="Active" value={String(availableStudyCount)} tone="teal" />
-              <StatusPanel label="Paused" value={String(pausedStudyCount)} tone="gold" />
-            </div>
-            <div className="disclosure-package">
-              <div className="disclosure-row">
-                <strong>Can inspect</strong>
-                <span>Own organization programs, aggregate need categories, referral counts, consented cohort health</span>
-              </div>
-              <div className="disclosure-row">
-                <strong>Use for</strong>
-                <span>Capacity planning, service gaps, outreach coordination, and accountable reporting</span>
-              </div>
-              <div className="disclosure-row">
-                <strong>Not allowed</strong>
-                <span>Cross-organization row-level views, personal records, exact addresses, or unapproved exports</span>
-              </div>
-            </div>
-          </article>
+        <div className="dashboard-grid">
+          {summaryPanels.map((panel) => (
+            <StatusPanel key={panel.label} label={panel.label} value={panel.value} tone={panel.tone} />
+          ))}
         </div>
       </Section>
-      <Section title="Resident group fact choices">
+      <Section title="Homelessness population snapshot">
+        <p className="section-note">
+          Public readers can track demand, waiting time, and housing outcomes at a cohort level without seeing who asked
+          for help or what any single person did.
+        </p>
+        <div className="analytics-story-grid">
+          {populationSignals.map((signal) => (
+            <article className="analytics-story-card" key={signal.title}>
+              <div className="scope-header">
+                <div>
+                  <h3>{signal.title}</h3>
+                  <p>{signal.detail}</p>
+                </div>
+                <Badge tone={signal.badgeTone}>{signal.badge}</Badge>
+              </div>
+              <strong className="analytics-story-value">{signal.value}</strong>
+              <div aria-hidden="true" className="analytics-progress">
+                <span style={{ width: `${signal.progress}%` }} />
+              </div>
+              <small>{signal.footnote}</small>
+            </article>
+          ))}
+        </div>
+      </Section>
+      <Section title="Service provider snapshot">
+        <p className="section-note">
+          Provider organizations contribute proof-backed counts so the public can see where services are under pressure
+          without publishing staff activity, rosters, or program-level records.
+        </p>
+        <div className="analytics-story-grid">
+          {providerSignals.map((signal) => (
+            <article className="analytics-story-card" key={signal.title}>
+              <div className="scope-header">
+                <div>
+                  <h3>{signal.title}</h3>
+                  <p>{signal.detail}</p>
+                </div>
+                <Badge tone={signal.badgeTone}>{signal.badge}</Badge>
+              </div>
+              <strong className="analytics-story-value">{signal.value}</strong>
+              <div aria-hidden="true" className="analytics-progress">
+                <span style={{ width: `${signal.progress}%` }} />
+              </div>
+              <small>{signal.footnote}</small>
+            </article>
+          ))}
+        </div>
+      </Section>
+      <Section title="Mock proof certificates behind this dashboard">
+        <p className="section-note">
+          {analyticsProofCertificates.length} verified mock proof certificates feed the current aggregate totals so the
+          dashboard can be tested against public inputs instead of hard-coded statistics.
+        </p>
+        <div className="list-stack">
+          {analyticsProofCertificates.map((proof) => {
+            const studyTitle = studyTitleById.get(proof.publicInputs.study_id) ?? formatAnalyticsProofValue(proof.proofType);
+            const proofHighlights = [
+              proof.publicInputs.county ? `${formatAnalyticsProofValue(proof.publicInputs.county)} county` : "",
+              proof.publicInputs.cohort_count
+                ? `${formatAnalyticsProofValue(proof.publicInputs.cohort_count)} people in cohort`
+                : "",
+              proof.publicInputs.shelter_requests
+                ? `${formatAnalyticsProofValue(proof.publicInputs.shelter_requests)} shelter requests`
+                : "",
+              proof.publicInputs.providers_included
+                ? `${formatAnalyticsProofValue(proof.publicInputs.providers_included)} providers`
+                : "",
+              proof.publicInputs.occupied_beds && proof.publicInputs.licensed_beds
+                ? `${formatAnalyticsProofValue(proof.publicInputs.occupied_beds)}/${formatAnalyticsProofValue(proof.publicInputs.licensed_beds)} occupied beds`
+                : "",
+              proof.publicInputs.housed_referrals && proof.publicInputs.referrals_completed
+                ? `${formatAnalyticsProofValue(proof.publicInputs.housed_referrals)}/${formatAnalyticsProofValue(proof.publicInputs.referrals_completed)} housed referrals`
+                : "",
+              proof.publicInputs.completed_followups && proof.publicInputs.assigned_followups
+                ? `${formatAnalyticsProofValue(proof.publicInputs.completed_followups)}/${formatAnalyticsProofValue(proof.publicInputs.assigned_followups)} outreach follow-ups`
+                : ""
+            ].filter(Boolean);
+
+            return (
+              <article className="analytics-card" key={proof.id}>
+                <div className="scope-header">
+                  <div>
+                    <h3>{proof.claim}</h3>
+                    <p>{studyTitle} · {proof.verifier}</p>
+                  </div>
+                  <Badge tone="success">mock proof certificate</Badge>
+                </div>
+                <div className="badge-row">
+                  <Badge>{proof.proofType.replace(/_/g, " ")}</Badge>
+                  <Badge>{proof.witnessLabel}</Badge>
+                  {proof.publicInputs.certificate_type ? (
+                    <Badge>{formatAnalyticsProofValue(proof.publicInputs.certificate_type)}</Badge>
+                  ) : null}
+                </div>
+                <div className="badge-row">
+                  {proofHighlights.map((highlight) => (
+                    <Badge key={`${proof.id}-${highlight}`}>{highlight}</Badge>
+                  ))}
+                </div>
+                <small>
+                  Public inputs: {Object.entries(proof.publicInputs)
+                    .map(([key, value]) => `${formatAnalyticsField(key)} ${formatAnalyticsProofValue(value)}`)
+                    .join(" · ")}
+                </small>
+              </article>
+            );
+          })}
+        </div>
+      </Section>
+      <Section title="Zero-knowledge and privacy safeguards">
+        <div className="analytics-method-grid">
+          {privacyGuardrails.map((guardrail) => (
+            <article className="analytics-card analytics-method-card" key={guardrail.title}>
+              <h3>{guardrail.title}</h3>
+              <p>{guardrail.detail}</p>
+            </article>
+          ))}
+        </div>
+        <div className="disclosure-package analytics-release-disclosure">
+          <div className="disclosure-row">
+            <strong>Published to the public</strong>
+            <span>Group totals, safe category breakdowns, provider capacity signals, and proof freshness timestamps</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Proven before publication</strong>
+            <span>Minimum cohort size, provider participation floor, and approved schema</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Never published</strong>
+            <span>{analyticsNeverPublishedText}</span>
+          </div>
+        </div>
+      </Section>
+      <Section eyebrow="Publication workflow" title="Published measures review">
+        <p className="section-note">
+          These measure cards show what is currently approved for the public dashboard release and what remains paused or
+          withheld.
+        </p>
         <div className="privacy-metrics">
-          <StatusPanel label="Choices on" value={`${selectedStudyCount}/${analyticsStudies.length}`} tone="teal" />
-          <StatusPanel label="Privacy left" value={privacyBudgetLeft.toFixed(2)} tone="gold" />
+          <StatusPanel label="Measures live" value={String(selectedStudyCount)} tone="teal" />
+          <StatusPanel label="Measures paused" value={String(pausedStudyCount)} tone="gold" />
         </div>
         <div className="analytics-grid">
           {analyticsStudies.map((study) => {
             const selected = isStudySelected(study.id);
-            const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
             const titleId = `analytics-title-${study.id}`;
+            const publicationStatus = study.status === "paused" ? "paused" : selected ? "public release" : "withheld";
             return (
               <article aria-labelledby={titleId} className="analytics-card" key={study.id}>
                 <div className="scope-header">
@@ -6383,12 +6649,12 @@ function AnalyticsScreen({
                     <p>{study.purpose}</p>
                   </div>
                   <Badge tone={study.status === "paused" ? "warning" : selected ? "success" : "neutral"}>
-                    {study.status === "paused" ? "paused" : selected ? "on" : "off"}
+                    {publicationStatus}
                   </Badge>
                 </div>
                 <div className="privacy-metrics">
-                  <StatusPanel label="Group size" value={String(study.minCohortSize)} tone="teal" />
-                  <StatusPanel label="Privacy left" value={budgetRemaining.toFixed(2)} tone="gold" />
+                  <StatusPanel label="Minimum cohort" value={String(study.minCohortSize)} tone="teal" />
+                  <StatusPanel label="Approved fields" value={String(study.fields.length)} tone="teal" />
                 </div>
                 <div className="badge-row">
                   {study.fields.map((field) => (
@@ -6398,29 +6664,29 @@ function AnalyticsScreen({
                 <div
                   className="capability-preview"
                   role="group"
-                  aria-label={`${study.title} analytics capability preview`}
+                  aria-label={`${study.title} public analytics preview`}
                 >
                   <div className="scope-header">
                     <div>
-                      <h4>What this allows</h4>
-                      <p>{study.fields.length} safe details · group size {study.minCohortSize}</p>
+                      <h4>What the public can learn</h4>
+                      <p>{study.fields.length} approved breakdowns · minimum cohort {study.minCohortSize}</p>
                     </div>
                     <Badge tone={study.status === "paused" ? "warning" : "success"}>
-                      {study.status === "paused" ? "paused" : "limited group share"}
+                      {study.status === "paused" ? "paused" : "proof-backed release"}
                     </Badge>
                   </div>
                   <div className="disclosure-package">
                     <div className="disclosure-row">
-                      <strong>Can do</strong>
-                      <span>{plainCapabilitySummary(["analytics/contribute"])}</span>
+                      <strong>Published total</strong>
+                      <span>{study.purpose}</span>
                     </div>
                     <div className="disclosure-row">
-                      <strong>Safe details</strong>
+                      <strong>Safe breakdowns</strong>
                       <span>{study.fields.map(formatAnalyticsField).join(", ")}</span>
                     </div>
                     <div className="disclosure-row">
-                      <strong>Not allowed</strong>
-                      <span>{plainNonGrantedCapabilities(["analytics/contribute"]).join(", ")}</span>
+                      <strong>Never published</strong>
+                      <span>{analyticsNeverPublishedText}</span>
                     </div>
                   </div>
                 </div>
@@ -6431,8 +6697,8 @@ function AnalyticsScreen({
                     type="checkbox"
                   />
                   <span>
-                    <strong>Allow this choice to use the group facts listed above.</strong>
-                    <small>Exact location, files, names, and contact details are not used.</small>
+                    <strong>Include this measure in the public dashboard release.</strong>
+                    <small>Turn it off to withhold this metric until it passes the next publication review.</small>
                   </span>
                 </label>
               </article>

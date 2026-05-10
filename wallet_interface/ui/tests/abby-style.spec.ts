@@ -181,17 +181,18 @@ test("desktop sidebar spacing stays stable across long pages and portal modes", 
   expect(providerMetrics.brandLogoWidth).toBeGreaterThan(200);
 });
 
-test("analytics tools expose project and service organization admin introspection", async ({ page }) => {
+test("analytics page reads like a public privacy-safe dashboard", async ({ page }) => {
   await signIn(page);
   await page.goto("/#/analytics");
 
-  await expect(page.getByRole("heading", { name: /Share group facts, not your name/i })).toBeVisible();
-  await expect(page.getByRole("region", { name: /Admin introspection/i })).toBeVisible();
-  await expect(page.getByRole("article", { name: /211-AI project admin analytics introspection/i })).toContainText(
-    "Template status"
+  await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Dashboard summary/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Zero-knowledge and privacy safeguards/i })).toBeVisible();
+  await expect(page.getByRole("article", { name: /Unsheltered residents seeking beds/i })).toContainText(
+    /public release/i
   );
-  await expect(page.getByRole("article", { name: /Service organization admin analytics introspection/i })).toContainText(
-    "Own organization programs"
+  await expect(page.getByRole("region", { name: /Zero-knowledge and privacy safeguards/i })).toContainText(
+    /No names, contact details, exact locations, files, staff actions/i
   );
-  await expect(page.getByText(/Raw wallet records, names, contact details/i)).toBeVisible();
 });
