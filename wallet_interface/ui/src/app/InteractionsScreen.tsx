@@ -77,10 +77,12 @@ export function InteractionsScreen({
 }
 
 function AuditHistorySection({ events }: { events: AuditEvent[] }) {
+  const hasEvents = events.length > 0;
+
   return (
     <Section eyebrow="Audit" title="Consent and access history">
-      {!events.length ? <StatusBanner tone="info">No consent or access events have been recorded yet.</StatusBanner> : null}
-      {events.length ? (
+      {!hasEvents ? <StatusBanner tone="info">No consent or access events have been recorded yet.</StatusBanner> : null}
+      {hasEvents ? (
         <div className="timeline" aria-label="Consent and access history">
           {events.map((event) => (
             <article className="timeline-event" key={event.id}>
