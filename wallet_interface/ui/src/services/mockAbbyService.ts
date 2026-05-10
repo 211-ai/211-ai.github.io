@@ -348,6 +348,30 @@ export const proofReceipts: ProofReceiptView[] = [
     createdAt: "Today, 10:45 AM"
   },
   {
+    id: "proof-14",
+    proofType: "analytics_population_snapshot",
+    claim: "Unsheltered residents seeking beds in multnomah county veteran cohort",
+    verifier: "Multnomah release verifier",
+    proofSystem: "simulated_zk_certificate",
+    verificationStatus: "verified",
+    circuitId: "analytics-population-snapshot-v1",
+    verifierDigest: "analytics-pop-14d64c5b78caa09fd67d24b099c1ca8",
+    proofArtifactRef: "zk-cert-analytics-pop-multnomah-veteran",
+    publicInputs: {
+      certificate_type: "population_snapshot",
+      study_id: "study-1",
+      county: "multnomah",
+      need_category: "shelter",
+      age_group: "veteran_household",
+      cohort_count: "205",
+      shelter_requests: "64",
+      waiting_over_7_days: "18"
+    },
+    witnessLabel: "Derived shelter demand cohort",
+    simulated: true,
+    createdAt: "Today, 10:46 AM"
+  },
+  {
     id: "proof-5",
     proofType: "analytics_provider_capacity",
     claim: "Provider capacity gap alerts in multnomah county",
@@ -423,6 +447,31 @@ export const proofReceipts: ProofReceiptView[] = [
     createdAt: "Today, 10:51 AM"
   },
   {
+    id: "proof-15",
+    proofType: "analytics_provider_capacity",
+    claim: "Provider capacity gap alerts in multnomah county transitional housing",
+    verifier: "Multnomah provider verifier",
+    proofSystem: "simulated_zk_certificate",
+    verificationStatus: "verified",
+    circuitId: "analytics-provider-capacity-v1",
+    verifierDigest: "analytics-cap-15d64c5b78caa09fd67d24b099c1ca8",
+    proofArtifactRef: "zk-cert-analytics-cap-multnomah-transitional",
+    publicInputs: {
+      certificate_type: "provider_capacity",
+      study_id: "study-2",
+      county: "multnomah",
+      service_type: "transitional_housing",
+      providers_included: "2",
+      occupied_beds: "41",
+      licensed_beds: "56",
+      same_day_available_programs: "4",
+      total_programs: "8"
+    },
+    witnessLabel: "Provider occupancy release batch",
+    simulated: true,
+    createdAt: "Today, 10:52 AM"
+  },
+  {
     id: "proof-8",
     proofType: "analytics_housing_outcome",
     claim: "Housing placements after referral in multnomah county",
@@ -489,6 +538,28 @@ export const proofReceipts: ProofReceiptView[] = [
     createdAt: "Today, 10:57 AM"
   },
   {
+    id: "proof-16",
+    proofType: "analytics_housing_outcome",
+    claim: "Housing placements after referral in multnomah county rapid rehousing cohort",
+    verifier: "Multnomah housing verifier",
+    proofSystem: "simulated_zk_certificate",
+    verificationStatus: "verified",
+    circuitId: "analytics-housing-outcome-v1",
+    verifierDigest: "analytics-house-16d64c5b78caa09fd67d24b099c1ca",
+    proofArtifactRef: "zk-cert-analytics-house-multnomah-rapid",
+    publicInputs: {
+      certificate_type: "housing_outcome",
+      study_id: "study-3",
+      county: "multnomah",
+      housing_outcome: "rapid_rehousing",
+      referrals_completed: "44",
+      housed_referrals: "19"
+    },
+    witnessLabel: "Referral outcome release batch",
+    simulated: true,
+    createdAt: "Today, 10:58 AM"
+  },
+  {
     id: "proof-11",
     proofType: "analytics_outreach_followup",
     claim: "Street outreach follow-up rate in multnomah county",
@@ -553,6 +624,28 @@ export const proofReceipts: ProofReceiptView[] = [
     witnessLabel: "Outreach follow-up release batch",
     simulated: true,
     createdAt: "Today, 11:03 AM"
+  },
+  {
+    id: "proof-17",
+    proofType: "analytics_outreach_followup",
+    claim: "Street outreach follow-up rate in multnomah county hygiene outreach",
+    verifier: "Multnomah outreach verifier",
+    proofSystem: "simulated_zk_certificate",
+    verificationStatus: "verified",
+    circuitId: "analytics-outreach-followup-v1",
+    verifierDigest: "analytics-outreach-17d64c5b78caa09fd67d24b099c1",
+    proofArtifactRef: "zk-cert-analytics-outreach-multnomah-hygiene",
+    publicInputs: {
+      certificate_type: "outreach_followup",
+      study_id: "study-2",
+      county: "multnomah",
+      service_type: "hygiene_outreach",
+      completed_followups: "17",
+      assigned_followups: "24"
+    },
+    witnessLabel: "Outreach follow-up release batch",
+    simulated: true,
+    createdAt: "Today, 11:04 AM"
   }
 ];
 

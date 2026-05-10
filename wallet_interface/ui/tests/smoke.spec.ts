@@ -372,18 +372,26 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
   const dashboardSummary = page.getByRole("region", { name: /Dashboard summary/i });
   await expect(dashboardSummary).toContainText(/People in verified cohorts/i);
   await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /People in verified cohorts/i })).toContainText(
-    /1,490/
+    /1,695/
   );
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Providers in verified releases/i })
-  ).toContainText(/10/);
+  ).toContainText(/12/);
   await expect(
     dashboardSummary.locator(".status-panel").filter({ hasText: /Mock proof certificates/i })
-  ).toContainText(/12/);
+  ).toContainText(/16/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Shelter requests this week/i })
+  ).toContainText(/527/);
+  await expect(
+    dashboardSummary.locator(".status-panel").filter({ hasText: /Average shelter fill rate/i })
+  ).toContainText(/89%/);
   const mockCertificates = page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i });
-  await expect(mockCertificates).toContainText(/12 verified mock proof certificates/i);
+  await expect(mockCertificates).toContainText(/16 verified mock proof certificates/i);
   await expect(mockCertificates).toContainText(/210 shelter requests/i);
+  await expect(mockCertificates).toContainText(/64 shelter requests/i);
   await expect(mockCertificates).toContainText(/228\/250 occupied beds/i);
+  await expect(mockCertificates).toContainText(/41\/56 occupied beds/i);
   const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
   await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();
