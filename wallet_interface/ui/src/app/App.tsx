@@ -5815,7 +5815,7 @@ function AnalyticsScreen({
       badge: "Stable",
       badgeTone: "info",
       detail: "Food, hygiene, and document-help sites continue to absorb demand faster than shelter networks.",
-      footnote: "Availability is published only when at least 3 providers submit matching proof batches.",
+      footnote: `Availability is published only when at least ${analyticsProviderPublicationFloor} providers submit matching proof batches.`,
       progress: 57,
       title: "Support programs with same-day availability",
       value: "57%"
