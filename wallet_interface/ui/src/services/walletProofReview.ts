@@ -35,7 +35,7 @@ export function buildWalletProofBundlePayload({
 }): string {
   const linkedProofs = proofs
     .map((proof) => {
-      const locator = parseProofLocator(proof.proofArtifactRef);
+      const locator = parseProofArtifactLocator(proof.proofArtifactRef);
       if (!locator) return undefined;
       return {
         ...locator,
@@ -46,7 +46,7 @@ export function buildWalletProofBundlePayload({
     })
     .filter((proof): proof is NonNullable<typeof proof> => Boolean(proof));
   const inlineProofs = proofs
-    .filter((proof) => !parseProofLocator(proof.proofArtifactRef))
+    .filter((proof) => !parseProofArtifactLocator(proof.proofArtifactRef))
     .map((proof) => ({
       claim: proof.claim,
       createdAt: proof.createdAt,
@@ -336,7 +336,7 @@ function readProofArray(payload: unknown): unknown[] | undefined {
 }
 
 function readLinkedProofs(payload: Record<string, unknown>): Array<Record<string, unknown>> {
-  const linkedProofArrays = [payload.linkedProofs, payload.proofLinks, payload.links];
+  const linkedProofArrays = [payload.linkedProofs, payload.proofLinks];
   const firstArray = linkedProofArrays.find(Array.isArray);
   if (!firstArray) return [];
   return firstArray.filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === "object");
@@ -440,7 +440,7 @@ function normalizeCid(value: string): string {
   return value.replace(/^ipfs:\/\//, "").replace(/^\/?ipfs\//, "");
 }
 
-function parseProofLocator(value: string | undefined): Record<string, string> | undefined {
+function parseProofArtifactLocator(value: string | undefined): Record<string, string> | undefined {
   if (!value) return undefined;
   if (/^https?:\/\//i.test(value)) return { url: value };
   if (/^ipfs:\/\//i.test(value) || /^\/?ipfs\//i.test(value) || cidPattern.test(value)) {

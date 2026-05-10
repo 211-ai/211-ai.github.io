@@ -2964,7 +2964,7 @@ function UploadsScreen({
     })
       .then(async (result) => {
         const cid = result.ipfsCid || result.cid;
-        if (!cid) throw new Error("The storage backend did not return an IPFS CID.");
+        if (!cid) throw new Error("The storage backend did not return a CID.");
         const nextQrCodeUrl = await QRCode.toDataURL(cid, {
           errorCorrectionLevel: "M",
           margin: 1,
@@ -3207,7 +3207,7 @@ function UploadsScreen({
             <div className="disclosure-package">
               <div className="disclosure-row">
                 <strong>QR payload</strong>
-                <span>{walletProofBundleCid || (filecoinStorageReady ? "Publishing IPFS CID…" : "Connect IPFS/Filecoin storage to mint a CID.")}</span>
+                <span>{walletProofBundleCid || (filecoinStorageReady ? "Publishing IPFS CID…" : "Connect IPFS/Filecoin storage to generate a CID.")}</span>
               </div>
               <div className="disclosure-row">
                 <strong>Includes</strong>
