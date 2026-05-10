@@ -24,35 +24,6 @@ export type WalletProofQrReview = {
   sourceUrl?: string;
 };
 
-export function buildWalletProofQrValue({
-  actorDid,
-  proofs,
-  walletId
-}: {
-  actorDid?: string;
-  proofs: ProofReceiptView[];
-  walletId?: string;
-}): string {
-  return JSON.stringify({
-    p: proofs.map((proof) => ({
-      c: proof.claim,
-      i: proof.id,
-      ps: proof.proofSystem,
-      pt: proof.proofType,
-      u: proof.publicInputs,
-      v: proof.verifier,
-      vs: proof.verificationStatus,
-      w: proof.witnessLabel
-    })),
-    t: "Client wallet proof bundle",
-    w: {
-      a: actorDid,
-      i: walletId,
-      l: walletId ? `Wallet ${walletId}` : "Client wallet"
-    }
-  });
-}
-
 export function buildWalletProofBundlePayload({
   actorDid,
   proofs,
@@ -62,10 +33,21 @@ export function buildWalletProofBundlePayload({
   proofs: ProofReceiptView[];
   walletId?: string;
 }): string {
-  return JSON.stringify({
-    title: "Client wallet proof bundle",
-    generatedAt: new Date().toISOString(),
-    proofs: proofs.map((proof) => ({
+  const linkedProofs = proofs
+    .map((proof) => {
+      const locator = parseProofLocator(proof.proofArtifactRef);
+      if (!locator) return undefined;
+      return {
+        ...locator,
+        claim: proof.claim,
+        id: proof.id,
+        proofType: proof.proofType
+      };
+    })
+    .filter((proof): proof is NonNullable<typeof proof> => Boolean(proof));
+  const inlineProofs = proofs
+    .filter((proof) => !parseProofLocator(proof.proofArtifactRef))
+    .map((proof) => ({
       claim: proof.claim,
       createdAt: proof.createdAt,
       id: proof.id,
@@ -78,7 +60,12 @@ export function buildWalletProofBundlePayload({
       verifier: proof.verifier,
       verifierDigest: proof.verifierDigest,
       witnessLabel: proof.witnessLabel
-    })),
+    }));
+  return JSON.stringify({
+    linkedProofs,
+    title: "Client wallet proof bundle",
+    generatedAt: new Date().toISOString(),
+    proofs: inlineProofs,
     wallet: {
       actorDid,
       id: walletId,
@@ -92,6 +79,22 @@ export function buildWalletProofReviewUrl(bundlePayload: string, baseUrl = curre
   url.searchParams.set(walletProofBundleParam, bundlePayload);
   url.hash = "/proof-center";
   return url.toString();
+}
+
+export async function reviewWalletProofBundleReference(
+  value: string,
+  qrValue = value,
+  sourceLabel?: string,
+  sourceUrl?: string
+): Promise<WalletProofQrReview> {
+  const locator = parseReviewLocator(value);
+  const resolved = await resolveReviewLocator(locator);
+  return reviewWalletProofBundlePayload(
+    resolved.payload,
+    qrValue,
+    sourceLabel || resolved.sourceLabel,
+    sourceUrl || resolved.sourceUrl
+  );
 }
 
 export function reviewWalletProofBundlePayload(
@@ -134,9 +137,7 @@ export async function reviewWalletProofQrScreenshot(file: File): Promise<WalletP
   }
 
   const qrValue = (await readQrValue(file)).trim();
-  const locator = parseReviewLocator(qrValue);
-  const resolved = await resolveReviewLocator(locator);
-  return reviewWalletProofBundlePayload(resolved.payload, qrValue, resolved.sourceLabel, resolved.sourceUrl);
+  return reviewWalletProofBundleReference(qrValue);
 }
 
 async function readQrValue(file: File): Promise<string> {
@@ -254,12 +255,15 @@ async function resolveReviewLocator(locator: ReviewLocator): Promise<{
   sourceUrl?: string;
 }> {
   if (locator.kind === "inline") {
-    return { payload: locator.payload, sourceLabel: locator.sourceLabel };
+    return {
+      payload: await hydrateProofBundle(locator.payload),
+      sourceLabel: locator.sourceLabel
+    };
   }
 
   if (locator.kind === "url") {
     return {
-      payload: await fetchJson(locator.url),
+      payload: await hydrateProofBundle(await fetchJson(locator.url)),
       sourceLabel: locator.sourceLabel,
       sourceUrl: locator.url
     };
@@ -270,7 +274,7 @@ async function resolveReviewLocator(locator: ReviewLocator): Promise<{
     const url = `${gateway}${locator.cid}`;
     try {
       return {
-        payload: await fetchJson(url),
+        payload: await hydrateProofBundle(await fetchJson(url)),
         sourceLabel: locator.sourceLabel,
         sourceUrl: url
       };
@@ -296,6 +300,29 @@ function unwrapProofPayload(payload: unknown): unknown {
   return record.proofBundle ?? record.walletProofBundle ?? record;
 }
 
+async function hydrateProofBundle(payload: unknown): Promise<unknown> {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return payload;
+  const record = unwrapProofPayload(payload) as Record<string, unknown>;
+  const linkedProofs = readLinkedProofs(record);
+  if (!linkedProofs.length) return record;
+
+  const resolvedProofEntries = (
+    await Promise.all(
+      linkedProofs.map(async (entry) => {
+        const locator = locatorFromObject(entry);
+        if (!locator) return [];
+        const resolved = await resolveReviewLocator(locator);
+        return readProofArray(resolved.payload) ?? [unwrapProofPayload(resolved.payload)];
+      })
+    )
+  ).flat();
+
+  return {
+    ...record,
+    proofs: [...(readProofArray(record) ?? []), ...resolvedProofEntries]
+  };
+}
+
 function hasInlineProofs(payload: unknown): boolean {
   return Array.isArray(readProofArray(payload));
 }
@@ -306,6 +333,13 @@ function readProofArray(payload: unknown): unknown[] | undefined {
   const record = payload as Record<string, unknown>;
   const proofArrays = [record.proofs, record.proofCertificates, record.certificates, record.claims, record.p];
   return proofArrays.find(Array.isArray);
+}
+
+function readLinkedProofs(payload: Record<string, unknown>): Array<Record<string, unknown>> {
+  const linkedProofArrays = [payload.linkedProofs, payload.proofLinks, payload.links];
+  const firstArray = linkedProofArrays.find(Array.isArray);
+  if (!firstArray) return [];
+  return firstArray.filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === "object");
 }
 
 function readBundleTitle(payload: unknown): string | undefined {
@@ -404,6 +438,15 @@ function parseJson(value: string): unknown | undefined {
 
 function normalizeCid(value: string): string {
   return value.replace(/^ipfs:\/\//, "").replace(/^\/?ipfs\//, "");
+}
+
+function parseProofLocator(value: string | undefined): Record<string, string> | undefined {
+  if (!value) return undefined;
+  if (/^https?:\/\//i.test(value)) return { url: value };
+  if (/^ipfs:\/\//i.test(value) || /^\/?ipfs\//i.test(value) || cidPattern.test(value)) {
+    return { cid: normalizeCid(value) };
+  }
+  return undefined;
 }
 
 function labelForUrl(url: string): string {

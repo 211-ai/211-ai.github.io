@@ -52,14 +52,14 @@ import {
   getFilecoinStorageConfig,
   toFilecoinStoragePatch,
   uploadFileToFilecoinStorage,
+  uploadProofBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
 import {
   buildWalletProofBundlePayload,
-  buildWalletProofQrValue,
   buildWalletProofReviewUrl,
   readWalletProofBundlePayloadFromUrl,
-  reviewWalletProofBundlePayload,
+  reviewWalletProofBundleReference,
   reviewWalletProofQrScreenshot,
   type WalletProofQrReview
 } from "../services/walletProofReview";
@@ -2930,18 +2930,16 @@ function UploadsScreen({
   const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
   const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
   const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
+  const [walletProofBundleCid, setWalletProofBundleCid] = useState("");
   const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
-  const walletProofQrValue = useMemo(
-    () => buildWalletProofQrValue({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
-    [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
-  );
   const walletProofBundlePayload = useMemo(
     () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
     [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
   );
+  const walletProofBundleReference = walletProofBundleCid ? `ipfs://${walletProofBundleCid}` : walletProofBundlePayload;
   const walletProofReviewUrl = useMemo(
-    () => buildWalletProofReviewUrl(walletProofBundlePayload),
-    [walletProofBundlePayload]
+    () => buildWalletProofReviewUrl(walletProofBundleReference),
+    [walletProofBundleReference]
   );
 
   useEffect(() => {
@@ -2950,20 +2948,37 @@ function UploadsScreen({
 
   useEffect(() => {
     let cancelled = false;
+    if (!filecoinStorageConfig || walletQrProofs.length === 0) {
+      setWalletProofBundleCid("");
+      setWalletQrCodeUrl("");
+      setWalletQrStatus("failed");
+      return () => {
+        cancelled = true;
+      };
+    }
+
     setWalletQrStatus("loading");
-    QRCode.toDataURL(walletProofQrValue, {
-      errorCorrectionLevel: "M",
-      margin: 1,
-      width: 220
+    void uploadProofBundleToFilecoinStorage(walletProofBundlePayload, {
+      clientConfig: filecoinStorageConfig,
+      walletConfig: apiConfig
     })
-      .then((nextQrCodeUrl: string) => {
+      .then(async (result) => {
+        const cid = result.ipfsCid || result.cid;
+        if (!cid) throw new Error("The storage backend did not return an IPFS CID.");
+        const nextQrCodeUrl = await QRCode.toDataURL(cid, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 220
+        });
         if (!cancelled) {
+          setWalletProofBundleCid(cid);
           setWalletQrCodeUrl(nextQrCodeUrl);
           setWalletQrStatus("ready");
         }
       })
       .catch(() => {
         if (!cancelled) {
+          setWalletProofBundleCid("");
           setWalletQrCodeUrl("");
           setWalletQrStatus("failed");
         }
@@ -2972,7 +2987,7 @@ function UploadsScreen({
     return () => {
       cancelled = true;
     };
-  }, [walletProofQrValue]);
+  }, [apiConfig?.actorDid, apiConfig?.walletId, filecoinStorageConfig, walletProofBundlePayload, walletQrProofs.length]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -3171,7 +3186,11 @@ function UploadsScreen({
             />
           ) : (
             <div aria-live="polite" className="wallet-proof-qr-placeholder">
-              {walletQrStatus === "loading" ? "Preparing wallet proof QR…" : "Wallet proof QR is unavailable right now."}
+              {walletQrStatus === "loading"
+                ? "Publishing the wallet proof bundle to IPFS/Filecoin…"
+                : filecoinStorageReady
+                  ? "Wallet proof QR is unavailable right now."
+                  : "Connect IPFS/Filecoin storage to generate a CID-backed wallet proof QR."}
             </div>
           )}
           <div className="wallet-proof-qr-details">
@@ -3181,18 +3200,22 @@ function UploadsScreen({
               exposing the underlying files.
             </small>
             <div className="badge-row">
-              <Badge tone="info">compact QR payload</Badge>
+              <Badge tone="info">IPFS CID QR</Badge>
               <Badge>{apiConfig?.walletId ?? "localWallet"}</Badge>
               {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
             </div>
             <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>QR payload</strong>
+                <span>{walletProofBundleCid || (filecoinStorageReady ? "Publishing IPFS CID…" : "Connect IPFS/Filecoin storage to mint a CID.")}</span>
+              </div>
               <div className="disclosure-row">
                 <strong>Includes</strong>
                 <span>{summarizeWalletProofClaims(walletQrProofs)}</span>
               </div>
               <div className="disclosure-row">
                 <strong>Opens</strong>
-                <span>Proof Center review with public inputs only</span>
+                <span>Proof Center review from an IPFS CID-backed proof bundle</span>
               </div>
             </div>
             <a className="button button-secondary" href={walletProofReviewUrl}>
@@ -6027,22 +6050,24 @@ function ProofCenterScreen({
 
   useEffect(() => {
     if (!linkedWalletProofBundle) return;
-    try {
-      setReviewedQrProofs(
-        reviewWalletProofBundlePayload(
-          linkedWalletProofBundle,
-          window.location.href,
-          "Wallet proof bundle link",
-          window.location.href
-        )
-      );
-      setReviewError("");
-      setReviewStatus("reviewed");
-    } catch (error) {
-      setReviewedQrProofs(null);
-      setReviewError(error instanceof Error ? error.message : "Unable to review the wallet proof QR.");
-      setReviewStatus("failed");
-    }
+    let cancelled = false;
+    setReviewStatus("reviewing");
+    void reviewWalletProofBundleReference(linkedWalletProofBundle, window.location.href, "Wallet proof bundle link", window.location.href)
+      .then((review) => {
+        if (cancelled) return;
+        setReviewedQrProofs(review);
+        setReviewError("");
+        setReviewStatus("reviewed");
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setReviewedQrProofs(null);
+        setReviewError(error instanceof Error ? error.message : "Unable to review the wallet proof QR.");
+        setReviewStatus("failed");
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [linkedWalletProofBundle]);
 
   async function createProof(event: FormEvent<HTMLFormElement>) {

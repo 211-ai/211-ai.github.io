@@ -1192,12 +1192,65 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
 });
 
 test("wallet page renders a scannable proof QR that opens proof center review", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+  await page.route("https://w3s.link/ipfs/bafywalletproofbundlecid", async (route) => {
+    await route.fulfill({
+      json: {
+        title: "Client wallet proof bundle",
+        proofs: [
+          {
+            claim: "Location is in service region",
+            id: "proof-1",
+            proofSystem: "simulated",
+            proofType: "location_region",
+            publicInputs: {
+              claim: "location_in_region",
+              region_id: "multnomah_county"
+            },
+            simulated: true,
+            verificationStatus: "verified",
+            verifier: "211 service matcher",
+            witnessLabel: "Current location"
+          },
+          {
+            claim: "Contribution follows study consent",
+            id: "proof-2",
+            proofSystem: "simulated",
+            proofType: "analytics_contribution",
+            publicInputs: {
+              fields: "county, need_category",
+              template_id: "housing_service_gap_v1"
+            },
+            simulated: true,
+            verificationStatus: "verified",
+            verifier: "Analytics template verifier",
+            witnessLabel: "Derived service needs"
+          }
+        ]
+      }
+    });
+  });
   await openAppRoute(page, "/#/uploads");
   await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
   const qrImage = page.getByRole("img", { name: /Wallet proof QR code/i });
   await expect(qrImage).toBeVisible();
   await expect(page.getByText(/Scan to open the client proof bundle/i)).toBeVisible();
-  await expect(page.getByText(/compact QR payload/i)).toBeVisible();
+  await expect(page.getByText(/IPFS CID QR/i)).toBeVisible();
+  await expect(page.getByText(/bafywalletproofbundlecid/i)).toBeVisible();
   await expect(page.getByText(/Location is in service region/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /Open proof review/i })).toBeVisible();
   const qrSource = await qrImage.getAttribute("src");
