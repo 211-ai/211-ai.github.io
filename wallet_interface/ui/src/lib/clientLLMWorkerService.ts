@@ -72,6 +72,7 @@ class ClientLLMWorkerService {
   private lastGenerationProvider: ClientLlmProvider = "local";
   private generationCounter = 0;
   private generationWinnerId = 0;
+  private localWarmupPromise: Promise<void> | null = null;
   private capabilities: NonNullable<LlmWorkerResponse["capabilities"]> = {
     webGPU: false,
     webGPUShaderF16: false,
@@ -83,6 +84,9 @@ class ClientLLMWorkerService {
 
   constructor() {
     this.initializeWorker();
+    if (LLM_CONFIG.preferOpenRouter) {
+      this.startLocalWarmupInBackground();
+    }
   }
 
   async initialize(modelName = this.currentModel): Promise<void> {
@@ -155,6 +159,16 @@ class ClientLLMWorkerService {
 
   async generateText(prompt: string, maxTokens = 180, didRestart = false): Promise<string> {
     const generationId = ++this.generationCounter;
+    if (LLM_CONFIG.preferOpenRouter && this.isOpenRouterFallbackUsable(prompt)) {
+      this.startLocalWarmupInBackground();
+      try {
+        return await this.generateTextWithOpenRouter(prompt, maxTokens, "proxy_first", generationId);
+      } catch (error) {
+        this.recordOpenRouterError(error);
+        console.warn(`OpenRouter proxy unavailable; using local LLM path. ${formatError(error)}`, error);
+      }
+    }
+
     const remoteFallbackReason = this.getImmediateOpenRouterFallbackReason(prompt);
     if (remoteFallbackReason) {
       try {
@@ -166,7 +180,7 @@ class ClientLLMWorkerService {
     }
 
     const localPromise = this.generateLocalText(prompt, maxTokens, didRestart, generationId);
-    if (!this.shouldRaceOpenRouterFallback(prompt)) {
+    if (LLM_CONFIG.preferOpenRouter || !this.shouldRaceOpenRouterFallback(prompt)) {
       return localPromise;
     }
 
@@ -317,6 +331,20 @@ class ClientLLMWorkerService {
       ...this.capabilities,
       webGPUError: reason,
     };
+  }
+
+  private startLocalWarmupInBackground(modelName = this.currentModel): void {
+    if (this.localWarmupPromise || this.isInitialized || this.isInitializing || !this.worker) {
+      return;
+    }
+    const targetModelName = this.resolveModelNameForSession(modelName);
+    this.localWarmupPromise = this.initialize(targetModelName)
+      .catch((error) => {
+        console.warn(`Background local LLM warmup failed. ${formatError(error)}`, error);
+      })
+      .finally(() => {
+        this.localWarmupPromise = null;
+      });
   }
 
   private resolveModelNameForSession(modelName: string): string {

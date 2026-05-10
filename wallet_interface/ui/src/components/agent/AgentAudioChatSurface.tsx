@@ -159,6 +159,9 @@ export function AgentAudioChatSurface({
         if (result.kind === "local-ready") {
           setStatusDetail("Audio model ready.");
           setAudioDiagnostic("");
+        } else if (result.kind === "remote-ready") {
+          setStatusDetail("Voice proxy ready.");
+          setAudioDiagnostic("");
         } else {
           setStatusDetail("Browser speech output ready.");
           setAudioDiagnostic(result.fallbackReason);

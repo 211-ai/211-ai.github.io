@@ -5,13 +5,16 @@ export const LLM_CONFIG = {
   fallbackModel: "Xenova/LaMini-Flan-T5-77M",
   defaultEmbeddingModel:
     (import.meta.env?.VITE_DEFAULT_EMBEDDING_MODEL as string | undefined) || "Xenova/bge-small-en-v1.5",
-  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_REQUEST_TIMEOUT || "90000", 10),
-  modelDownloadTimeoutMs: Number.parseInt(import.meta.env?.VITE_MODEL_DOWNLOAD_TIMEOUT || "240000", 10),
+  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_REQUEST_TIMEOUT || "12000", 10),
+  modelDownloadTimeoutMs: Number.parseInt(import.meta.env?.VITE_MODEL_DOWNLOAD_TIMEOUT || "10000", 10),
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
   enableSIMD: import.meta.env?.VITE_ENABLE_SIMD !== "false",
   openRouterEnabled: import.meta.env?.VITE_OPENROUTER_ENABLED !== "false",
+  preferOpenRouter: import.meta.env?.VITE_PREFER_OPENROUTER !== "false",
   openRouterApiKey: (import.meta.env?.VITE_OPENROUTER_API_KEY as string | undefined) || "",
-  openRouterProxyUrl: (import.meta.env?.VITE_OPENROUTER_PROXY_URL as string | undefined) || "",
+  openRouterProxyUrl:
+    (import.meta.env?.VITE_OPENROUTER_PROXY_URL as string | undefined) ||
+    "https://animegf.chat:8787/api/openrouter/chat/completions",
   openRouterEndpoint:
     (import.meta.env?.VITE_OPENROUTER_ENDPOINT as string | undefined) ||
     "https://openrouter.ai/api/v1/chat/completions",
@@ -21,9 +24,11 @@ export const LLM_CONFIG = {
   openRouterThinkingModel:
     (import.meta.env?.VITE_OPENROUTER_THINKING_MODEL as string | undefined) ||
     "liquid/lfm-2.5-1.2b-thinking:free",
-  openRouterFallbackDelayMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_FALLBACK_DELAY || "3500", 10),
+  openRouterFallbackDelayMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_FALLBACK_DELAY || "5000", 10),
   openRouterRequestTimeoutMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_REQUEST_TIMEOUT || "45000", 10),
   openRouterAllowPrivateContext: import.meta.env?.VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT === "true",
+  localProbeTimeoutMs: Number.parseInt(import.meta.env?.VITE_LOCAL_PROBE_TIMEOUT || "10000", 10),
+  localPerfBenchmarkTimeoutMs: Number.parseInt(import.meta.env?.VITE_LOCAL_PERF_BENCHMARK_TIMEOUT || "8000", 10),
 } as const;
 
 export type ClientLlmPipelineTask = "text-generation" | "text2text-generation";

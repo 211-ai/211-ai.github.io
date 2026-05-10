@@ -1,5 +1,6 @@
 import { buildClientLlmChatMessages, getClientLlmGenerationParameters } from "./clientLlmPrompting";
 import { LLM_CONFIG } from "./llmConfig";
+import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
 
 export const OPENROUTER_API_KEY_STORAGE_KEY = "abby-openrouter-api-key";
 
@@ -27,11 +28,12 @@ export function getOpenRouterRuntimeStatus(
   } = {},
 ): OpenRouterRuntimeStatus {
   const credentialSource = getOpenRouterCredentialSource();
+  const endpoint = getOpenRouterEndpoint();
   return {
     enabled: LLM_CONFIG.openRouterEnabled,
-    configured: LLM_CONFIG.openRouterEnabled && credentialSource !== "none",
+    configured: LLM_CONFIG.openRouterEnabled && Boolean(endpoint) && credentialSource !== "none",
     credentialSource,
-    endpoint: getOpenRouterEndpoint(),
+    endpoint,
     model: selectOpenRouterModel(options.localModelName || LLM_CONFIG.defaultModel),
     fallbackDelayMs: LLM_CONFIG.openRouterFallbackDelayMs,
     lastError: options.lastError,
@@ -108,11 +110,11 @@ function selectOpenRouterModel(localModelName: string): string {
 }
 
 function getOpenRouterEndpoint(): string {
-  return LLM_CONFIG.openRouterProxyUrl || LLM_CONFIG.openRouterEndpoint;
+  return resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl) || resolvePublicHttpsUrl(LLM_CONFIG.openRouterEndpoint);
 }
 
 function getOpenRouterCredentialSource(): OpenRouterRuntimeStatus["credentialSource"] {
-  if (LLM_CONFIG.openRouterProxyUrl) {
+  if (resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl)) {
     return "proxy";
   }
   if (readStoredOpenRouterApiKey()) {
@@ -129,7 +131,7 @@ function buildOpenRouterHeaders(): HeadersInit {
     "Content-Type": "application/json",
     "X-OpenRouter-Experimental-Metadata": "enabled",
   };
-  if (!LLM_CONFIG.openRouterProxyUrl) {
+  if (!resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl)) {
     const apiKey = readStoredOpenRouterApiKey() || LLM_CONFIG.openRouterApiKey.trim();
     if (apiKey) {
       headers.Authorization = `Bearer ${apiKey}`;

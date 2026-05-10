@@ -2,11 +2,18 @@ export const AUDIO_CHAT_CONFIG = {
   defaultModel:
     (import.meta.env?.VITE_CLIENT_AUDIO_MODEL as string | undefined) || "LiquidAI/LFM2.5-Audio-1.5B-ONNX",
   fallbackVoiceModel: "browser-speech-synthesis",
+  voiceProxyModel: (import.meta.env?.VITE_VOICE_PROXY_MODEL as string | undefined) || "remote-voice-proxy",
+  voiceProxyEnabled: import.meta.env?.VITE_VOICE_PROXY_ENABLED !== "false",
+  voiceProxyBaseUrl:
+    (import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined) || "https://animegf.chat:8790/api/voice",
+  voiceProxyInferUrl:
+    (import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) || "https://animegf.chat:8790/api/voice/infer",
   enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
   enableMobileLocalAudio: import.meta.env?.VITE_ENABLE_MOBILE_LOCAL_AUDIO === "true",
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
-  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "240000", 10),
-  warmupTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "1200000", 10),
+  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "12000", 10),
+  warmupTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "10000", 10),
+  remoteRequestTimeoutMs: Number.parseInt(import.meta.env?.VITE_REMOTE_AUDIO_REQUEST_TIMEOUT || "45000", 10),
   maxPromptCharacters: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_PROMPT_CHARS || "1200", 10),
   maxAudioFrames: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_FRAMES || "160", 10),
   liquidAudioRunnerBaseUrl:
