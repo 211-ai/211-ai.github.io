@@ -677,14 +677,12 @@ async function seedCalendarCaptureState(page: Page) {
 
 async function seedInteractionsCaptureState(page: Page) {
   const now = Date.now();
-  const appointmentAt = new Date(now + 28 * 60 * 60 * 1000).toISOString();
-  const reminderAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
   const dueFollowUpAt = new Date(now - 6 * 60 * 60 * 1000).toISOString();
   const upcomingFollowUpAt = new Date(now + 42 * 60 * 60 * 1000).toISOString();
   const recordedAt = new Date(now - 12 * 60 * 60 * 1000).toISOString();
 
   await page.evaluate(
-    ({ appointmentAt, dueFollowUpAt, recordedAt, reminderAt, upcomingFollowUpAt }) => {
+    ({ dueFollowUpAt, recordedAt, upcomingFollowUpAt }) => {
       window.localStorage.setItem(
         "abby-ui-state-v1",
         JSON.stringify({
@@ -703,30 +701,7 @@ async function seedInteractionsCaptureState(page: Page) {
               updated_at: recordedAt
             }
           ],
-          servicePlans: [
-            {
-              plan_id: "plan-interactions-capture",
-              wallet_id: "wallet-demo",
-              service_doc_id: "svc-food-pantry-1",
-              source_content_cid: "cid-food",
-              source_page_cid: "page-food",
-              service_title: "Food pantry intake",
-              provider_name: "Neighborhood Food Pantry",
-              goal: "Attend pantry appointment and confirm next pickup window.",
-              steps: ["Bring photo ID"],
-              documents_needed: ["Photo ID"],
-              questions_to_ask: ["What should I bring next time?"],
-              appointment_at: appointmentAt,
-              reminder_at: reminderAt,
-              travel_target: "Bus 12 to 4th Ave",
-              assigned_worker_recipient_id: "",
-              status: "active",
-              related_interaction_ids: ["int-capture-1"],
-              private_notes_record_id: "",
-              created_at: recordedAt,
-              updated_at: recordedAt
-            }
-          ],
+          servicePlans: [],
           serviceInteractions: [
             {
               interaction_id: "int-capture-1",
@@ -786,7 +761,7 @@ async function seedInteractionsCaptureState(page: Page) {
         })
       );
     },
-    { appointmentAt, dueFollowUpAt, recordedAt, reminderAt, upcomingFollowUpAt }
+    { dueFollowUpAt, recordedAt, upcomingFollowUpAt }
   );
 }
 
