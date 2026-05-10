@@ -6592,8 +6592,8 @@ function AnalyticsScreen({
       </div>
       <p className="page-note">
         This public release shows only group totals proven with zero-knowledge proofs. It highlights homelessness trends,
-        provider capacity, drug rehab access, and referral outcomes without exposing names, contact details, exact
-        locations, files, or case activity.
+        provider capacity, substance use treatment access, and referral outcomes without exposing names, contact
+        details, exact locations, files, or case activity.
       </p>
       <StatusBanner tone="info">
         Every figure shown here clears minimum group and provider thresholds before it can appear in the public dashboard.
@@ -6657,7 +6657,7 @@ function AnalyticsScreen({
           ))}
         </div>
       </Section>
-      <Section title="Drug abuse and rehab statistics">
+      <Section title="Substance use treatment and recovery statistics">
         <p className="section-note">
           Recovery providers publish proof-backed referral and intake totals so the public can track rehab access without
           seeing treatment records, diagnoses, staff notes, or visit histories.

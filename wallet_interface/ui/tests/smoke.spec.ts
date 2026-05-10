@@ -558,7 +558,7 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
     dashboardSummary.locator(".status-panel").filter({ hasText: /Average shelter fill rate/i })
   ).toContainText(/68%/);
   await expect(dashboardSummary.locator(".status-panel").filter({ hasText: /Recovery intake rate/i })).toContainText(/67%/);
-  await expect(page.getByRole("region", { name: /Drug abuse and rehab statistics/i })).toContainText(
+  await expect(page.getByRole("region", { name: /Substance use treatment and recovery statistics/i })).toContainText(
     /People referred to drug rehab services/i
   );
   const mockCertificates = page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i });

@@ -187,7 +187,7 @@ test("analytics page reads like a public privacy-safe dashboard", async ({ page 
 
   await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /Dashboard summary/i })).toBeVisible();
-  await expect(page.getByRole("region", { name: /Drug abuse and rehab statistics/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Substance use treatment and recovery statistics/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /Mock proof certificates behind this dashboard/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /Zero-knowledge and privacy safeguards/i })).toBeVisible();
   await expect(page.getByRole("article", { name: /Unsheltered residents seeking beds/i })).toContainText(

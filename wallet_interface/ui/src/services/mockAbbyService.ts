@@ -198,7 +198,7 @@ export const analyticsStudies: AnalyticsStudy[] = [
   },
   {
     id: "study-4",
-    title: "Drug abuse and rehab statistics",
+    title: "Substance use treatment and recovery statistics",
     purpose: "Publish how many people start rehab intake and active recovery planning without exposing treatment records.",
     fields: ["county", "treatment_pathway", "referral_source"],
     minCohortSize: 18,
