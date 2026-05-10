@@ -29,6 +29,7 @@ const extraRouteAliases = {
   contacts: ["people", "recipients"],
   "sharing-rules": ["sharing rules", "disclosure", "permissions"],
   uploads: ["wallet", "documents", "files", "records"],
+  settings: ["account settings", "profile settings", "preferences", "personal information"],
   "social-services": ["service", "services", "service navigator", "211", "211 services"],
   interactions: ["interaction history", "service history", "service interactions", "timeline"],
   shelter: ["provider overview", "provider portal", "shelter staff", "shelters", "shelter services", "beds"],
@@ -66,6 +67,8 @@ const routeSummaries = {
   contacts: (state) => `${state.recipients.length} recipients are visible.`,
   "sharing-rules": (state) => `${state.recipients.length} recipients have sharing controls available.`,
   uploads: (state) => `${state.uploads.length} wallet files are visible.`,
+  settings: (state) =>
+    `Settings are active with ${state.profile.serviceNeeds.length} service needs, ${state.policy.reminderChannels.length} check-in channels, and ${Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length} explicit analytics choices.`,
   "social-services": () => "Services search and public 211 guidance are active.",
   interactions: (state) => `${state.serviceInteractions?.length ?? 0} service interactions are visible.`,
   shelter: (state) =>
@@ -339,6 +342,14 @@ function routePublicMetadata(route: RouteId, state: AppActionState): Record<stri
       return {
         selectedServiceNeedCount: state.profile.serviceNeeds.length,
         preferredCheckInChannelCount: state.profile.preferredCheckInChannels.length
+      };
+    case "settings":
+      return {
+        selectedServiceNeedCount: state.profile.serviceNeeds.length,
+        intervalDays: state.policy.intervalDays,
+        reminderChannelCount: state.policy.reminderChannels.length,
+        benefitsOptIn: state.benefitsOptIn,
+        selectedAnalyticsStudyCount: Object.values(state.analyticsOptIn ?? {}).filter(Boolean).length
       };
     case "check-in":
       return {

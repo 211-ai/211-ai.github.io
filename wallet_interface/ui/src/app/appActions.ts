@@ -156,6 +156,7 @@ export interface AppActionState {
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
   walletAuditEvents: AuditEvent[];
+  benefitsOptIn?: boolean;
   analyticsStudies?: AnalyticsStudy[];
   analyticsOptIn?: Record<string, boolean>;
   walletProofReceipts: ProofReceiptView[];

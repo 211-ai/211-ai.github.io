@@ -98,6 +98,7 @@ const routeIds = [
   "contacts",
   "sharing-rules",
   "uploads",
+  "settings",
   "social-services",
   "interactions",
   "shelter",

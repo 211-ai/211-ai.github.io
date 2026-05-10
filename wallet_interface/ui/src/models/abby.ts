@@ -7,6 +7,7 @@ export type RouteId =
   | "contacts"
   | "sharing-rules"
   | "uploads"
+  | "settings"
   | "social-services"
   | "interactions"
   | "shelter"

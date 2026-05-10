@@ -37,6 +37,7 @@ BRAVE_CLIENT_PATH = REPO_ROOT / "ipfs_datasets_py" / "ipfs_datasets_py" / "proce
 DEFAULT_HANDOFF_JSON = DEFAULT_PORTAL_DIR / "geocode_search_handoff.json"
 DEFAULT_REPORT_PATH = DEFAULT_PORTAL_DIR / "geocode_search_repair_report.json"
 DEFAULT_BRAVE_SEARCH_CACHE = REPO_ROOT / "data" / "portal_geocoding" / "state" / "brave_search_cache.json"
+DEFAULT_PROGRESS_PATH = REPO_ROOT / "data" / "portal_geocoding" / "state" / "geocode_search_repair_progress.json"
 
 STATE_NAME_TO_ABBREV = {
     "ALABAMA": "AL", "ALASKA": "AK", "ARIZONA": "AZ", "ARKANSAS": "AR", "CALIFORNIA": "CA",
@@ -114,6 +115,59 @@ class BraveSearchRepairClient:
         return []
 
 
+class DuckDuckGoSearchRepairClient:
+    def __init__(self, *, min_delay_seconds: float = 1.2) -> None:
+        try:
+            from ddgs import DDGS  # type: ignore
+        except Exception as exc:  # pragma: no cover - import behavior depends on env
+            raise RuntimeError("DuckDuckGo repair client requires `ddgs` package") from exc
+        self._ddgs_class = DDGS
+        self._min_delay_seconds = max(0.0, float(min_delay_seconds))
+        self._last_request_at = 0.0
+
+    def search(self, query: str, *, count: int) -> list[dict[str, Any]]:
+        now = time.monotonic()
+        wait_seconds = self._min_delay_seconds - (now - self._last_request_at)
+        if wait_seconds > 0:
+            time.sleep(wait_seconds)
+        self._last_request_at = time.monotonic()
+        with self._ddgs_class() as ddgs:
+            rows = ddgs.text(query, max_results=max(1, int(count)))
+        normalized: list[dict[str, Any]] = []
+        for row in rows or []:
+            if not isinstance(row, dict):
+                continue
+            normalized.append(
+                {
+                    "title": row.get("title") or "",
+                    "description": row.get("body") or row.get("description") or "",
+                    "url": row.get("href") or row.get("url") or "",
+                }
+            )
+        return normalized
+
+
+def create_search_clients(*, engines: list[str], min_delay_seconds: float = 1.2) -> tuple[list[tuple[str, Any]], list[str]]:
+    clients: list[tuple[str, Any]] = []
+    warnings: list[str] = []
+    for engine in engines:
+        normalized_engine = clean_text(engine).lower()
+        if normalized_engine == "brave":
+            try:
+                clients.append(("brave", BraveSearchRepairClient(min_delay_seconds=min_delay_seconds)))
+            except Exception as exc:
+                warnings.append(f"brave unavailable: {type(exc).__name__}: {exc}")
+            continue
+        if normalized_engine == "duckduckgo":
+            try:
+                clients.append(("duckduckgo", DuckDuckGoSearchRepairClient(min_delay_seconds=min_delay_seconds)))
+            except Exception as exc:
+                warnings.append(f"duckduckgo unavailable: {type(exc).__name__}: {exc}")
+            continue
+        warnings.append(f"unknown engine: {engine}")
+    return clients, warnings
+
+
 def normalize_state_token(token: str) -> str:
     value = clean_text(token).upper()
     if value in STATE_ABBREVS:
@@ -183,6 +237,15 @@ def build_search_queries(row: dict[str, Any]) -> list[str]:
     return queries
 
 
+def write_search_repair_progress(progress_path: Path | None, payload: dict[str, Any]) -> None:
+    if progress_path is None:
+        return
+    body = dict(payload)
+    body["schema"] = "211-ai.geocode_search_repair_progress.v1"
+    body["updated_at"] = utc_now()
+    write_json_atomic(progress_path, body)
+
+
 def repair_handoff_batch(
     *,
     source_dir: Path,
@@ -192,11 +255,23 @@ def repair_handoff_batch(
     max_rows: int,
     classifications: set[str] | None = None,
     search_results_per_query: int = 5,
+    search_engines: list[str] | None = None,
+    max_candidate_geocode_attempts_per_row: int = 6,
+    progress_path: Path | None = None,
 ) -> dict[str, Any]:
+    started_at = utc_now()
     handoff = json.loads(handoff_json_path.read_text(encoding="utf-8"))
     rows = handoff.get("rows") if isinstance(handoff.get("rows"), list) else []
     cache = load_cache(cache_path)
-    brave = BraveSearchRepairClient()
+    search_clients, search_warnings = create_search_clients(
+        engines=search_engines or ["brave", "duckduckgo"],
+        min_delay_seconds=1.2,
+    )
+    if not search_clients:
+        raise RuntimeError(
+            "No search repair engines are available. "
+            + ("; ".join(search_warnings) if search_warnings else "configure brave or duckduckgo")
+        )
     geocoder = NominatimGeocoder(min_delay_seconds=1.1, timeout_seconds=12.0, max_retries=2)
 
     attempted = 0
@@ -206,6 +281,19 @@ def repair_handoff_batch(
     processed_rows: list[dict[str, Any]] = []
 
     allowed = classifications or {"likely_provider_or_coverage_miss", "likely_malformed_input"}
+    write_search_repair_progress(
+        progress_path,
+        {
+            "status": "running",
+            "started_at": started_at,
+            "max_rows": max(0, int(max_rows)),
+            "attempted_rows": attempted,
+            "repaired_rows": repaired,
+            "unrepaired_rows": unrepaired,
+            "search_engines": [engine for engine, _ in search_clients],
+            "search_engine_warnings": search_warnings,
+        },
+    )
     for row in rows:
         if attempted >= max(0, int(max_rows)):
             break
@@ -228,59 +316,85 @@ def repair_handoff_batch(
         seen_candidates: set[str] = set()
         success_record: dict[str, Any] | None = None
         success_query: str = ""
+        success_engine: str = ""
         search_error = ""
+        geocode_attempts = 0
 
         for search_query in search_queries:
-            try:
-                results = brave.search(search_query, count=search_results_per_query)
-            except Exception as exc:
-                search_error = f"{type(exc).__name__}: {exc}"
-                search_results_meta.append({"query": search_query, "result_count": 0, "error": search_error})
-                continue
-            search_results_meta.append({"query": search_query, "result_count": len(results)})
-            for result in results:
-                for text in (result.get("title"), result.get("description")):
-                    for candidate in extract_candidate_address_strings(str(text or "")):
-                        signature = candidate.lower()
-                        if signature in seen_candidates:
-                            continue
-                        seen_candidates.add(signature)
-                        candidate_addresses.append(candidate)
-            for candidate in candidate_addresses:
-                address_query = build_query_from_address_string(candidate)
-                if address_query is None:
+            for engine_name, engine_client in search_clients:
+                try:
+                    results = engine_client.search(search_query, count=search_results_per_query)
+                except Exception as exc:
+                    search_error = f"{type(exc).__name__}: {exc}"
+                    search_results_meta.append(
+                        {
+                            "engine": engine_name,
+                            "query": search_query,
+                            "result_count": 0,
+                            "error": search_error,
+                        }
+                    )
                     continue
-                record = geocoder.geocode(address_query)
-                if record.get("status") == "ok":
-                    original_query = current.get("query") if isinstance(current, dict) and isinstance(current.get("query"), dict) else {
-                        "address": row.get("address") or "",
-                        "street": row.get("street") or "",
-                        "city": row.get("city") or "",
-                        "state": row.get("state") or "",
-                        "postal_code": row.get("postal_code") or "",
-                        "country_code": "us",
+                search_results_meta.append(
+                    {
+                        "engine": engine_name,
+                        "query": search_query,
+                        "result_count": len(results),
                     }
-                    record["query"] = original_query
-                    record["repair_strategy"] = "brave_search_extract"
-                    record["repair_query"] = {
-                        "address": address_query.address,
-                        "street": address_query.street,
-                        "city": address_query.city,
-                        "state": address_query.state,
-                        "postal_code": address_query.postal_code,
-                        "country_code": address_query.country_code,
-                    }
-                    record["search_repair"] = {
-                        "engine": "brave",
-                        "selected_search_query": search_query,
-                        "candidate_address": candidate,
-                        "attempted_at": utc_now(),
-                        "search_results": search_results_meta,
-                    }
-                    success_record = record
-                    success_query = search_query
+                )
+                for result in results:
+                    for text in (result.get("title"), result.get("description"), result.get("body")):
+                        for candidate in extract_candidate_address_strings(str(text or "")):
+                            signature = candidate.lower()
+                            if signature in seen_candidates:
+                                continue
+                            seen_candidates.add(signature)
+                            candidate_addresses.append(candidate)
+                for candidate in candidate_addresses:
+                    if geocode_attempts >= max(1, int(max_candidate_geocode_attempts_per_row)):
+                        break
+                    address_query = build_query_from_address_string(candidate)
+                    if address_query is None:
+                        continue
+                    geocode_attempts += 1
+                    record = geocoder.geocode(address_query)
+                    if record.get("status") == "ok":
+                        original_query = current.get("query") if isinstance(current, dict) and isinstance(current.get("query"), dict) else {
+                            "address": row.get("address") or "",
+                            "street": row.get("street") or "",
+                            "city": row.get("city") or "",
+                            "state": row.get("state") or "",
+                            "postal_code": row.get("postal_code") or "",
+                            "country_code": "us",
+                        }
+                        record["query"] = original_query
+                        record["repair_strategy"] = "search_extract"
+                        record["repair_query"] = {
+                            "address": address_query.address,
+                            "street": address_query.street,
+                            "city": address_query.city,
+                            "state": address_query.state,
+                            "postal_code": address_query.postal_code,
+                            "country_code": address_query.country_code,
+                        }
+                        record["search_repair"] = {
+                            "engine": engine_name,
+                            "selected_search_query": search_query,
+                            "candidate_address": candidate,
+                            "attempted_at": utc_now(),
+                            "search_results": search_results_meta,
+                        }
+                        success_record = record
+                        success_query = search_query
+                        success_engine = engine_name
+                        break
+                if success_record is not None:
+                    break
+                if geocode_attempts >= max(1, int(max_candidate_geocode_attempts_per_row)):
                     break
             if success_record is not None:
+                break
+            if geocode_attempts >= max(1, int(max_candidate_geocode_attempts_per_row)):
                 break
 
         processed_entry = {
@@ -288,7 +402,9 @@ def repair_handoff_batch(
             "classification": classification,
             "search_queries": search_queries,
             "candidate_addresses": candidate_addresses[:10],
+            "geocode_attempts": geocode_attempts,
             "selected_search_query": success_query,
+            "selected_engine": success_engine,
             "status": "ok" if success_record is not None else "miss",
             "search_error": search_error,
         }
@@ -302,7 +418,7 @@ def repair_handoff_batch(
             unrepaired += 1
             existing = dict(current or {})
             existing["search_repair"] = {
-                "engine": "brave",
+                "engine": "multi",
                 "attempted_at": utc_now(),
                 "search_results": search_results_meta,
                 "candidate_addresses": candidate_addresses[:10],
@@ -310,6 +426,23 @@ def repair_handoff_batch(
             }
             cache[cache_key] = existing
         write_json_atomic(cache_path, cache)
+        write_search_repair_progress(
+            progress_path,
+            {
+                "status": "running",
+                "started_at": started_at,
+                "max_rows": max(0, int(max_rows)),
+                "attempted_rows": attempted,
+                "repaired_rows": repaired,
+                "unrepaired_rows": unrepaired,
+                "last_cache_key": cache_key,
+                "last_classification": classification,
+                "last_result": processed_entry.get("status"),
+                "last_engine": success_engine,
+                "search_engines": [engine for engine, _ in search_clients],
+                "search_engine_warnings": search_warnings,
+            },
+        )
 
     refresh_result = enrich_service_addresses(
         source_dir=source_dir,
@@ -318,16 +451,34 @@ def repair_handoff_batch(
     )
     refreshed_handoff = build_search_handoff(source_dir, cache_path)
     report = {
-        "generated_at": utc_now(),
+        "generated_at": started_at,
         "attempted_rows": attempted,
         "repaired_rows": repaired,
         "unrepaired_rows": unrepaired,
+        "search_engines": [engine for engine, _ in search_clients],
+        "search_engine_warnings": search_warnings,
         "updated_cache_keys": updated_keys,
         "processed_rows": processed_rows,
         "refresh_result": refresh_result,
         "refreshed_handoff": refreshed_handoff,
     }
     write_json_atomic(report_path, report)
+    write_search_repair_progress(
+        progress_path,
+        {
+            "status": "completed",
+            "started_at": started_at,
+            "finished_at": utc_now(),
+            "max_rows": max(0, int(max_rows)),
+            "attempted_rows": attempted,
+            "repaired_rows": repaired,
+            "unrepaired_rows": unrepaired,
+            "remaining_miss_count": int((refreshed_handoff or {}).get("miss_count") or 0),
+            "search_engines": [engine for engine, _ in search_clients],
+            "search_engine_warnings": search_warnings,
+            "report_path": str(report_path),
+        },
+    )
     return report
 
 
@@ -337,6 +488,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--cache-path", type=Path, default=DEFAULT_CACHE_PATH)
     parser.add_argument("--handoff-json", type=Path, default=DEFAULT_HANDOFF_JSON)
     parser.add_argument("--report-path", type=Path, default=DEFAULT_REPORT_PATH)
+    parser.add_argument("--progress-path", type=Path, default=DEFAULT_PROGRESS_PATH)
     parser.add_argument("--max-rows", type=int, default=25)
     parser.add_argument(
         "--classification",
@@ -346,6 +498,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Classification to include; may be passed multiple times",
     )
     parser.add_argument("--search-results-per-query", type=int, default=5)
+    parser.add_argument("--max-candidate-geocode-attempts-per-row", type=int, default=6)
+    parser.add_argument(
+        "--engine",
+        action="append",
+        dest="engines",
+        default=[],
+        help="Search engine order for repair. Allowed: brave, duckduckgo. May be repeated.",
+    )
     return parser.parse_args(argv)
 
 
@@ -360,6 +520,9 @@ def main(argv: list[str] | None = None) -> int:
         max_rows=args.max_rows,
         classifications=classifications,
         search_results_per_query=args.search_results_per_query,
+        search_engines=list(args.engines) if args.engines else ["brave", "duckduckgo"],
+        max_candidate_geocode_attempts_per_row=args.max_candidate_geocode_attempts_per_row,
+        progress_path=args.progress_path,
     )
     print(json.dumps(report, indent=2))
     return 0

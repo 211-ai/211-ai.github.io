@@ -32,6 +32,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "social-services", label: "Services" },
   { id: "interactions", label: "Interactions" },
   { id: "uploads", label: "Wallet" },
+  { id: "settings", label: "Settings" },
   { id: "shelter", label: "Overview" },
   { id: "provider-clients", label: "Clients served" },
   { id: "provider-cases", label: "Case management" },

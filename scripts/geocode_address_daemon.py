@@ -44,6 +44,11 @@ DEFAULT_BATCH_SIZE_RETRY = 60
 DEFAULT_LOOP_SLEEP_SECONDS = 30.0
 DEFAULT_IDLE_SLEEP_SECONDS = 600.0
 DEFAULT_RETRY_ZERO_HIT_THRESHOLD = 8
+DEFAULT_SEARCH_REPAIR_BATCH_SIZE = 40
+DEFAULT_SEARCH_REPAIR_ZERO_HIT_THRESHOLD = 6
+DEFAULT_SEARCH_REPAIR_RESULTS_PER_QUERY = 5
+DEFAULT_SEARCH_REPAIR_MAX_CANDIDATE_GEOCODE_ATTEMPTS = 6
+DEFAULT_SEARCH_REPAIR_TIMEOUT_SECONDS = 180.0
 
 
 def daemon_pid_path(state_dir: Path, state_prefix: str) -> Path:
@@ -60,6 +65,14 @@ def search_handoff_json_path(source_dir: Path) -> Path:
 
 def search_handoff_parquet_path(source_dir: Path) -> Path:
     return source_dir / "geocode_search_handoff.parquet"
+
+
+def search_repair_report_path(source_dir: Path) -> Path:
+    return source_dir / "geocode_search_repair_report.json"
+
+
+def search_repair_progress_path(state_dir: Path, state_prefix: str) -> Path:
+    return state_dir / f"{state_prefix}_search_repair_progress.json"
 
 
 def write_text_atomic(path: Path, text: str) -> None:
@@ -145,14 +158,26 @@ def choose_geocode_mode(summary: dict[str, Any]) -> str:
     return "idle"
 
 
-def choose_geocode_mode_with_state(summary: dict[str, Any], state: dict[str, Any], *, retry_zero_hit_threshold: int) -> str:
+def choose_geocode_mode_with_state(
+    summary: dict[str, Any],
+    state: dict[str, Any],
+    *,
+    retry_zero_hit_threshold: int,
+    search_repair_enabled: bool,
+    search_repair_zero_hit_threshold: int,
+) -> str:
     if int(summary.get("uncached_remaining") or 0) > 0:
         return "new"
     cached_non_ok_remaining = int(summary.get("cached_non_ok_remaining") or 0)
     if cached_non_ok_remaining <= 0:
         return "idle"
     if bool(state.get("nominatim_complete")):
-        return "idle"
+        if not search_repair_enabled:
+            return "idle"
+        search_zero_hit_streak = int(state.get("search_zero_hit_streak") or 0)
+        if search_zero_hit_streak >= max(1, int(search_repair_zero_hit_threshold)):
+            return "search_exhausted"
+        return "search_repair"
     zero_hit_retry_streak = int(state.get("zero_hit_retry_streak") or 0)
     if zero_hit_retry_streak >= max(1, int(retry_zero_hit_threshold)):
         return "search_handoff"
@@ -238,6 +263,7 @@ def refresh_browser_corpus(browser_output_dir: Path) -> dict[str, Any]:
         capture_output=True,
         text=True,
         check=False,
+        timeout=max(1.0, float(args.search_repair_timeout_seconds)),
     )
     payload: dict[str, Any] = {
         "command": command,
@@ -256,6 +282,66 @@ def refresh_browser_corpus(browser_output_dir: Path) -> dict[str, Any]:
     return payload
 
 
+def run_search_repair_batch(args: argparse.Namespace) -> dict[str, Any]:
+    progress_path = search_repair_progress_path(args.state_dir.resolve(), args.state_prefix)
+    command = [
+        sys.executable,
+        str(REPO_ROOT / "scripts" / "geocode_search_repair.py"),
+        "--source-dir",
+        str(args.source_dir),
+        "--cache-path",
+        str(args.cache_path),
+        "--handoff-json",
+        str(search_handoff_json_path(args.source_dir)),
+        "--report-path",
+        str(search_repair_report_path(args.source_dir)),
+        "--progress-path",
+        str(progress_path),
+        "--max-rows",
+        str(args.search_repair_max_rows),
+        "--search-results-per-query",
+        str(args.search_repair_results_per_query),
+        "--max-candidate-geocode-attempts-per-row",
+        str(args.search_repair_max_candidate_geocode_attempts),
+    ]
+    for engine in args.search_repair_engine:
+        command.extend(["--engine", str(engine)])
+    for classification in args.search_repair_classification:
+        command.extend(["--classification", str(classification)])
+
+    started_at = time.time()
+    completed = subprocess.run(
+        command,
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    payload: dict[str, Any] = {
+        "command": command,
+        "returncode": int(completed.returncode),
+        "duration_seconds": round(time.time() - started_at, 3),
+    }
+    stdout = completed.stdout.strip()
+    stderr = completed.stderr.strip()
+    if stdout:
+        try:
+            payload["result"] = json.loads(stdout)
+        except Exception:
+            payload["stdout_tail"] = stdout[-4000:]
+    if stderr:
+        payload["stderr_tail"] = stderr[-4000:]
+    if completed.returncode != 0:
+        raise RuntimeError(f"search repair failed: returncode={completed.returncode} stderr={stderr[-400:]}")
+    result = payload.get("result")
+    if not isinstance(result, dict):
+        raise RuntimeError("search repair did not return JSON report payload")
+    merged = dict(result)
+    merged["subprocess"] = payload
+    merged["progress_path"] = str(progress_path)
+    return merged
+
+
 def write_daemon_state(path: Path, payload: dict[str, Any]) -> None:
     payload = dict(payload)
     payload["schema"] = "211-ai.portal_geocode_daemon.v1"
@@ -270,6 +356,8 @@ def run_geocode_pass(args: argparse.Namespace, *, pass_index: int, prior_state: 
         before,
         prior_state,
         retry_zero_hit_threshold=args.retry_zero_hit_threshold,
+        search_repair_enabled=args.search_repair_enabled,
+        search_repair_zero_hit_threshold=args.search_repair_zero_hit_threshold,
     )
     if mode == "idle":
         return {
@@ -292,6 +380,53 @@ def run_geocode_pass(args: argparse.Namespace, *, pass_index: int, prior_state: 
                 "reason": "zero_hit_retry_plateau",
                 "retry_zero_hit_threshold": args.retry_zero_hit_threshold,
                 "search_handoff": handoff,
+            },
+            "after": before,
+            "browser_refresh": None,
+            "sleep_seconds": args.idle_sleep_seconds,
+        }
+    if mode == "search_repair":
+        logger.info(
+            "starting search repair pass %d max_rows=%d unresolved=%d",
+            pass_index,
+            int(args.search_repair_max_rows),
+            int(before.get("cached_non_ok_remaining") or 0),
+        )
+        try:
+            result = run_search_repair_batch(args)
+            logger.info(
+                "completed search repair pass %d attempted=%d repaired=%d unrepaired=%d",
+                pass_index,
+                int(result.get("attempted_rows") or 0),
+                int(result.get("repaired_rows") or 0),
+                int(result.get("unrepaired_rows") or 0),
+            )
+        except Exception as exc:
+            logger.warning("search repair pass %d failed: %s", pass_index, exc)
+            result = {
+                "attempted_rows": 0,
+                "repaired_rows": 0,
+                "unrepaired_rows": 0,
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+        after = summarize_geocode_progress(source_dir=args.source_dir, cache_path=args.cache_path)
+        return {
+            "mode": "search_repair",
+            "pass_index": pass_index,
+            "before": before,
+            "result": result,
+            "after": after,
+            "browser_refresh": None,
+            "sleep_seconds": args.sleep_seconds,
+        }
+    if mode == "search_exhausted":
+        return {
+            "mode": "search_exhausted",
+            "pass_index": pass_index,
+            "before": before,
+            "result": {
+                "reason": "search_repair_zero_hit_plateau",
+                "search_repair_zero_hit_threshold": args.search_repair_zero_hit_threshold,
             },
             "after": before,
             "browser_refresh": None,
@@ -356,12 +491,40 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--sleep-seconds", type=float, default=DEFAULT_LOOP_SLEEP_SECONDS)
     parser.add_argument("--idle-sleep-seconds", type=float, default=DEFAULT_IDLE_SLEEP_SECONDS)
     parser.add_argument("--retry-zero-hit-threshold", type=int, default=DEFAULT_RETRY_ZERO_HIT_THRESHOLD)
+    parser.add_argument("--search-repair-max-rows", type=int, default=DEFAULT_SEARCH_REPAIR_BATCH_SIZE)
+    parser.add_argument("--search-repair-results-per-query", type=int, default=DEFAULT_SEARCH_REPAIR_RESULTS_PER_QUERY)
+    parser.add_argument(
+        "--search-repair-max-candidate-geocode-attempts",
+        type=int,
+        default=DEFAULT_SEARCH_REPAIR_MAX_CANDIDATE_GEOCODE_ATTEMPTS,
+    )
+    parser.add_argument("--search-repair-timeout-seconds", type=float, default=DEFAULT_SEARCH_REPAIR_TIMEOUT_SECONDS)
+    parser.add_argument("--search-repair-zero-hit-threshold", type=int, default=DEFAULT_SEARCH_REPAIR_ZERO_HIT_THRESHOLD)
+    parser.add_argument(
+        "--search-repair-engine",
+        action="append",
+        default=[],
+        help="Search engine order for post-Nominatim repair. May be repeated.",
+    )
+    parser.add_argument(
+        "--search-repair-classification",
+        action="append",
+        default=[],
+        help="Classification to include in search repair. May be repeated.",
+    )
+    parser.add_argument("--search-repair-enabled", dest="search_repair_enabled", action="store_true")
+    parser.add_argument("--no-search-repair-enabled", dest="search_repair_enabled", action="store_false")
     parser.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--refresh-browser-corpus", dest="refresh_browser_corpus", action="store_true")
     parser.add_argument("--no-refresh-browser-corpus", dest="refresh_browser_corpus", action="store_false")
-    parser.set_defaults(refresh_browser_corpus=True)
-    return parser.parse_args(argv)
+    parser.set_defaults(refresh_browser_corpus=True, search_repair_enabled=True)
+    args = parser.parse_args(argv)
+    if not args.search_repair_engine:
+        args.search_repair_engine = ["brave", "duckduckgo"]
+    if not args.search_repair_classification:
+        args.search_repair_classification = ["likely_provider_or_coverage_miss", "likely_malformed_input"]
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -389,6 +552,7 @@ def main(argv: list[str] | None = None) -> int:
                     "pass_count": pass_index - 1,
                     "phase": "scan",
                     "progress": progress,
+                    "search_repair_progress": safe_read_json(search_repair_progress_path(state_dir, args.state_prefix)),
                     "config": {
                         "source_dir": str(args.source_dir),
                         "cache_path": str(args.cache_path),
@@ -401,39 +565,66 @@ def main(argv: list[str] | None = None) -> int:
                         "sleep_seconds": args.sleep_seconds,
                         "idle_sleep_seconds": args.idle_sleep_seconds,
                         "retry_zero_hit_threshold": args.retry_zero_hit_threshold,
+                        "search_repair_enabled": args.search_repair_enabled,
+                        "search_repair_max_rows": args.search_repair_max_rows,
+                        "search_repair_results_per_query": args.search_repair_results_per_query,
+                        "search_repair_max_candidate_geocode_attempts": args.search_repair_max_candidate_geocode_attempts,
+                        "search_repair_timeout_seconds": args.search_repair_timeout_seconds,
+                        "search_repair_zero_hit_threshold": args.search_repair_zero_hit_threshold,
+                        "search_repair_engine": list(args.search_repair_engine),
+                        "search_repair_classification": list(args.search_repair_classification),
+                        "search_repair_progress_path": str(search_repair_progress_path(state_dir, args.state_prefix)),
                         "refresh_browser_corpus": args.refresh_browser_corpus,
                     },
                     "zero_hit_retry_streak": int(current_state.get("zero_hit_retry_streak") or 0),
+                    "search_zero_hit_streak": int(current_state.get("search_zero_hit_streak") or 0),
                     "nominatim_complete": bool(current_state.get("nominatim_complete")),
                 },
             )
             pass_result = run_geocode_pass(args, pass_index=pass_index, prior_state=current_state)
             finished_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
             next_zero_hit_retry_streak = int(current_state.get("zero_hit_retry_streak") or 0)
+            next_search_zero_hit_streak = int(current_state.get("search_zero_hit_streak") or 0)
             if pass_result["mode"] == "retry":
                 geocode_hits = int((pass_result.get("result") or {}).get("geocode_hits") or 0)
                 next_zero_hit_retry_streak = 0 if geocode_hits > 0 else next_zero_hit_retry_streak + 1
-            elif pass_result["mode"] in {"new", "idle"}:
+                next_search_zero_hit_streak = 0
+            elif pass_result["mode"] == "search_repair":
+                repaired_rows = int((pass_result.get("result") or {}).get("repaired_rows") or 0)
+                next_search_zero_hit_streak = 0 if repaired_rows > 0 else next_search_zero_hit_streak + 1
+            elif pass_result["mode"] in {"new", "idle", "search_handoff", "search_exhausted"}:
                 next_zero_hit_retry_streak = 0
+                if pass_result["mode"] != "search_exhausted":
+                    next_search_zero_hit_streak = 0
             next_nominatim_complete = bool(current_state.get("nominatim_complete"))
             if pass_result["mode"] == "search_handoff":
                 next_nominatim_complete = True
             write_daemon_state(
                 state_path,
                 {
-                    "status": "idle" if pass_result["mode"] in {"idle", "search_handoff"} else "running",
+                    "status": "idle" if pass_result["mode"] in {"idle", "search_handoff", "search_exhausted"} else "running",
                     "heartbeat_at": finished_at,
                     "pid": os.getpid(),
                     "pass_count": pass_index,
-                    "phase": ("search_ready" if pass_result["mode"] == "search_handoff" else ("sleep" if not args.once else "done")),
+                    "phase": (
+                        "search_ready"
+                        if pass_result["mode"] == "search_handoff"
+                        else (
+                            "search_exhausted"
+                            if pass_result["mode"] == "search_exhausted"
+                            else ("sleep" if not args.once else "done")
+                        )
+                    ),
                     "last_run_started_at": started_at,
                     "last_run_finished_at": finished_at,
                     "last_run_mode": pass_result["mode"],
                     "last_run_result": pass_result["result"],
                     "last_browser_refresh": pass_result["browser_refresh"],
                     "progress": pass_result["after"],
+                    "search_repair_progress": safe_read_json(search_repair_progress_path(state_dir, args.state_prefix)),
                     "next_sleep_seconds": pass_result["sleep_seconds"],
                     "zero_hit_retry_streak": next_zero_hit_retry_streak,
+                    "search_zero_hit_streak": next_search_zero_hit_streak,
                     "nominatim_complete": next_nominatim_complete,
                 },
             )

@@ -42,6 +42,7 @@ def test_repair_handoff_batch_updates_cache_and_report(tmp_path: Path, monkeypat
     handoff_path = source_dir / "handoff.json"
     cache_path = source_dir / "cache.json"
     report_path = source_dir / "report.json"
+    progress_path = source_dir / "progress.json"
 
     cache_payload = {
         "row-1": {
@@ -130,10 +131,15 @@ def test_repair_handoff_batch_updates_cache_and_report(tmp_path: Path, monkeypat
         handoff_json_path=handoff_path,
         report_path=report_path,
         max_rows=1,
+        progress_path=progress_path,
     )
 
     assert report["repaired_rows"] == 1
     updated_cache = json.loads(cache_path.read_text())
     assert updated_cache["row-1"]["status"] == "ok"
-    assert updated_cache["row-1"]["repair_strategy"] == "brave_search_extract"
+    assert updated_cache["row-1"]["repair_strategy"] == "search_extract"
     assert report_path.exists()
+    progress = json.loads(progress_path.read_text(encoding="utf-8"))
+    assert progress["status"] == "completed"
+    assert progress["attempted_rows"] == 1
+    assert progress["repaired_rows"] == 1

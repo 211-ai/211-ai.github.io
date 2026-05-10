@@ -1445,6 +1445,12 @@ body.playful-pulse .decor-shape {
   z-index: 12;
 }
 
+@media (max-width: 767px) {
+  .app:has(.settings-screen) .agent-chat-bottom-launcher {
+    display: none;
+  }
+}
+
 .agent-chat-bottom-sheet-toggle {
   bottom: calc(12px + env(safe-area-inset-bottom));
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
@@ -2702,6 +2708,27 @@ body.playful-pulse .decor-shape {
 .scope-option span {
   display: grid;
   gap: 3px;
+}
+
+.settings-summary {
+  margin-bottom: 4px;
+}
+
+.settings-option-list {
+  display: grid;
+  gap: 10px;
+}
+
+.settings-toggle {
+  background: #ffffff;
+}
+
+.settings-toggle input {
+  margin-top: 3px;
+}
+
+.settings-toggle small {
+  color: #5b6776;
 }
 
 .upload-dropzone {

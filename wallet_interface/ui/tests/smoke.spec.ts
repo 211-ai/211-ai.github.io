@@ -165,6 +165,42 @@ test("registration enforces minimum required profile fields", async ({ page }) =
   await expect(partnerRequests.getByText(/Needs partner help/i)).toBeVisible();
 });
 
+test("client settings edits profile and less-used preferences", async ({ page }, testInfo) => {
+  await openAppRoute(page, "/#/settings");
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel(/Legal or full name/i)).toBeVisible();
+  await expect(page.getByLabel(/Birth date/i)).toBeVisible();
+  await expect(page.getByLabel(/Photo or photo ID/i)).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="Government-help"]')).toBeVisible();
+  await expect(page.getByLabel(/Days between check-ins/i)).toBeVisible();
+  await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).toBeVisible();
+  await expect(page.getByLabel(/Housing service gaps/i)).toBeVisible();
+  await expect(page.getByRole("button", { name: /Account safety/i })).toBeVisible();
+
+  await page.getByLabel(/Legal or full name/i).fill("Settings User");
+  await page.getByLabel(/Days between check-ins/i).fill("12");
+  await page.getByLabel(/Allow Abby to prepare benefits notices/i).uncheck();
+  await page.getByLabel(/Housing service gaps/i).uncheck();
+  await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
+
+  await page.reload();
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel(/Legal or full name/i)).toHaveValue("Settings User");
+  await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
+  await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).not.toBeChecked();
+  await expect(page.getByLabel(/Housing service gaps/i)).not.toBeChecked();
+
+  if (!/Mobile/i.test(testInfo.project.name)) {
+    const nav = page.getByRole("navigation", { name: /Portal navigation/i });
+    await expect(nav.getByRole("button", { name: /^Register$/i })).toHaveCount(0);
+    await expect(nav.getByRole("button", { name: /^Settings$/i })).toBeVisible();
+    await expectFirstAboveSecond(
+      nav.getByRole("button", { name: /^Wallet$/i }),
+      nav.getByRole("button", { name: /^Settings$/i })
+    );
+  }
+});
+
 test("check-in interval cannot exceed thirty days", async ({ page }) => {
   await openAppRoute(page, "/#/check-in");
   await expect(page.getByRole("heading", { name: /Set your schedule/i })).toBeVisible({ timeout: 10000 });

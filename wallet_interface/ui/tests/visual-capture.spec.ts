@@ -119,6 +119,17 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "client-settings",
+    path: "/#/settings",
+    title: "Client settings",
+    state: "account preferences",
+    goals: [
+      "The settings page should make the profile form feel editable after registration.",
+      "Less-used preferences should be grouped below personal information without crowding the page.",
+      "The Settings navigation item should feel like a bottom-of-client-menu destination, not onboarding."
+    ]
+  },
+  {
     id: "check-in",
     path: "/#/check-in",
     title: "Check-in setup",
@@ -496,6 +507,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/exports": /Shareable wallet bundles/i,
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,
+  "/#/settings": /^Settings$/i,
   "/#/security": /Account safety/i,
   "/#/messages": /^Messages$/i,
   "/#/shelter": /Provider overview/i,

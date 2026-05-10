@@ -20,6 +20,7 @@ import {
   Mic,
   RefreshCw,
   Save,
+  Settings as SettingsIcon,
   ShieldCheck,
   Upload,
   UsersRound,
@@ -188,6 +189,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   contacts: ContactRound,
   "sharing-rules": ShieldCheck,
   uploads: FileUp,
+  settings: SettingsIcon,
   "social-services": HeartHandshake,
   interactions: History,
   shelter: UsersRound,
@@ -222,7 +224,7 @@ const providerRouteIds = new Set<RouteId>([
   "provider-proofs",
   "provider-operations"
 ]);
-const clientNavigationRoutes = routes.filter((route) => !providerRouteIds.has(route.id));
+const clientNavigationRoutes = routes.filter((route) => !providerRouteIds.has(route.id) && route.id !== "register");
 const providerNavigationRoutes = routes.filter((route) => providerRouteIds.has(route.id));
 
 type ProviderPortalView = "overview" | "clients" | "cases" | "messages" | "analytics" | "proofs" | "operations";
@@ -547,6 +549,7 @@ export function App() {
         accessRequests,
         grantReceipts,
         walletAuditEvents,
+        benefitsOptIn,
         analyticsOptIn,
         walletProofReceipts,
         exportBundleViews,
@@ -588,6 +591,7 @@ export function App() {
       accessRequests,
       exportBundleViews,
       grantReceipts,
+      benefitsOptIn,
       analyticsOptIn,
       policy,
       profile,
@@ -894,6 +898,21 @@ export function App() {
           <RegistrationScreen
             profile={profile}
             setProfile={setProfile}
+          />
+        ) : null}
+        {activeRoute === "settings" ? (
+          <SettingsScreen
+            analyticsOptIn={analyticsOptIn}
+            benefitsOptIn={benefitsOptIn}
+            navigate={navigate}
+            nextCheckIn={nextCheckIn}
+            policy={policy}
+            profile={profile}
+            setAnalyticsOptIn={setAnalyticsOptIn}
+            setBenefitsOptIn={setBenefitsOptIn}
+            setPolicy={setPolicy}
+            setProfile={setProfile}
+            walletConnected={Boolean(walletApiConfig)}
           />
         ) : null}
         {activeRoute === "check-in" ? (
@@ -1495,6 +1514,30 @@ function RegistrationScreen({
   profile: RegistrationProfileDraft;
   setProfile: (profile: RegistrationProfileDraft) => void;
 }) {
+  return (
+    <div className="screen">
+      <div className="page-title">
+        <p className="eyebrow">Registration</p>
+        <h1>Create your Abby profile</h1>
+      </div>
+      <p className="page-note">To start, add your name, birth date, photo or ID.</p>
+      <ProfileInformationForm profile={profile} setProfile={setProfile} />
+      <GovernmentHelpSection
+        requested={profile.servicePartnerHelpRequested}
+        requestedAt={profile.servicePartnerHelpRequestedAt}
+        onToggle={() => togglePartnerHelpRequest(profile, setProfile)}
+      />
+    </div>
+  );
+}
+
+function ProfileInformationForm({
+  profile,
+  setProfile
+}: {
+  profile: RegistrationProfileDraft;
+  setProfile: (profile: RegistrationProfileDraft) => void;
+}) {
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
   const [photoFileDetail, setPhotoFileDetail] = useState("");
   const [photoUploadError, setPhotoUploadError] = useState("");
@@ -1529,98 +1572,90 @@ function RegistrationScreen({
     });
   }
 
-  function togglePartnerHelpRequest() {
-    update({
-      servicePartnerHelpRequested: !profile.servicePartnerHelpRequested,
-      servicePartnerHelpRequestedAt: profile.servicePartnerHelpRequested ? "" : new Date().toISOString()
-    });
-  }
-
   return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Registration</p>
-        <h1>Create your Abby profile</h1>
-      </div>
-      <p className="page-note">To start, add your name, birth date, photo or ID.</p>
-      <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
-        <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
-          <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
-        </Field>
-        <Field help="Shown in the app when provided." label="Preferred name">
-          <input value={profile.preferredName} onChange={(event) => update({ preferredName: event.target.value })} />
-        </Field>
-        <Field help="Optional. You can use any words you want." label="Pronouns">
-          <input
-            placeholder="call me she/her, he/him, they/them"
-            value={profile.pronouns}
-            onChange={(event) => update({ pronouns: event.target.value })}
-          />
-        </Field>
-        <Field help="This helps tell people with the same name apart." label="Birth date" required>
-          <input
-            type="date"
-            value={profile.dateOfBirth}
-            onChange={(event) => update({ dateOfBirth: event.target.value })}
-          />
-        </Field>
-        <Field
-          error={photoUploadError}
-          help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
-          label="Photo or photo ID"
-          required
-        >
-          <input
-            accept={ID_DOCUMENT_ACCEPT_ATTR}
-            type="file"
-            onChange={handleProfileUploadChange}
-          />
-          {photoFileDetail ? (
-            <small className="registration-file-detail" aria-live="polite">
-              Selected file: {photoFileDetail}
-            </small>
-          ) : null}
-        </Field>
-        <hr className="form-divider full-span" />
-        <Field help="Used for text reminders." label="Phone">
-          <input value={profile.phone} onChange={(event) => update({ phone: event.target.value })} />
-        </Field>
-        <Field help="Used for email reminders." label="Email">
-          <input type="email" value={profile.email} onChange={(event) => update({ email: event.target.value })} />
-        </Field>
-        <Field help="Can be a neighborhood, shelter, or general area." label="Current safe location">
-          <input value={profile.currentLocation} onChange={(event) => update({ currentLocation: event.target.value })} />
-        </Field>
-        <Field help="Optional; useful for assisted setup." label="Preferred shelter">
-          <input
-            value={profile.shelterAffiliation}
-            onChange={(event) => update({ shelterAffiliation: event.target.value })}
-          />
-        </Field>
-        <div className="full-span">
-          <span className="field-label">Service needs</span>
-          <div className="chip-grid">
-            {serviceNeeds.map((need) => (
-              <button
-                aria-pressed={profile.serviceNeeds.includes(need)}
-                className="choice-chip"
-                key={need}
-                onClick={() => toggleNeed(need)}
-                type="button"
-              >
-                {need}
-              </button>
-            ))}
-          </div>
+    <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
+      <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
+        <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
+      </Field>
+      <Field help="Shown in the app when provided." label="Preferred name">
+        <input value={profile.preferredName} onChange={(event) => update({ preferredName: event.target.value })} />
+      </Field>
+      <Field help="Optional. You can use any words you want." label="Pronouns">
+        <input
+          placeholder="call me she/her, he/him, they/them"
+          value={profile.pronouns}
+          onChange={(event) => update({ pronouns: event.target.value })}
+        />
+      </Field>
+      <Field help="This helps tell people with the same name apart." label="Birth date" required>
+        <input
+          type="date"
+          value={profile.dateOfBirth}
+          onChange={(event) => update({ dateOfBirth: event.target.value })}
+        />
+      </Field>
+      <Field
+        error={photoUploadError}
+        help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
+        label="Photo or photo ID"
+        required
+      >
+        <input
+          accept={ID_DOCUMENT_ACCEPT_ATTR}
+          type="file"
+          onChange={handleProfileUploadChange}
+        />
+        {photoFileDetail ? (
+          <small className="registration-file-detail" aria-live="polite">
+            Selected file: {photoFileDetail}
+          </small>
+        ) : null}
+      </Field>
+      <hr className="form-divider full-span" />
+      <Field help="Used for text reminders." label="Phone">
+        <input value={profile.phone} onChange={(event) => update({ phone: event.target.value })} />
+      </Field>
+      <Field help="Used for email reminders." label="Email">
+        <input type="email" value={profile.email} onChange={(event) => update({ email: event.target.value })} />
+      </Field>
+      <Field help="Can be a neighborhood, shelter, or general area." label="Current safe location">
+        <input value={profile.currentLocation} onChange={(event) => update({ currentLocation: event.target.value })} />
+      </Field>
+      <Field help="Optional; useful for assisted setup." label="Preferred shelter">
+        <input
+          value={profile.shelterAffiliation}
+          onChange={(event) => update({ shelterAffiliation: event.target.value })}
+        />
+      </Field>
+      <div className="full-span">
+        <span className="field-label">Service needs</span>
+        <div className="chip-grid">
+          {serviceNeeds.map((need) => (
+            <button
+              aria-pressed={profile.serviceNeeds.includes(need)}
+              className="choice-chip"
+              key={need}
+              onClick={() => toggleNeed(need)}
+              type="button"
+            >
+              {need}
+            </button>
+          ))}
         </div>
-      </form>
-      <GovernmentHelpSection
-        requested={profile.servicePartnerHelpRequested}
-        requestedAt={profile.servicePartnerHelpRequestedAt}
-        onToggle={togglePartnerHelpRequest}
-      />
-    </div>
+      </div>
+    </form>
   );
+}
+
+function togglePartnerHelpRequest(
+  profile: RegistrationProfileDraft,
+  setProfile: (profile: RegistrationProfileDraft) => void
+) {
+  setProfile({
+    ...profile,
+    servicePartnerHelpRequested: !profile.servicePartnerHelpRequested,
+    servicePartnerHelpRequestedAt: profile.servicePartnerHelpRequested ? "" : new Date().toISOString()
+  });
 }
 
 function GovernmentHelpSection({
@@ -1662,6 +1697,168 @@ function formatRequestTimestamp(value: string): string {
   const timestamp = new Date(value);
   if (Number.isNaN(timestamp.getTime())) return "Requested";
   return `Requested ${timestamp.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+}
+
+function SettingsScreen({
+  analyticsOptIn,
+  benefitsOptIn,
+  navigate,
+  nextCheckIn,
+  policy,
+  profile,
+  setAnalyticsOptIn,
+  setBenefitsOptIn,
+  setPolicy,
+  setProfile,
+  walletConnected
+}: {
+  analyticsOptIn: Record<string, boolean>;
+  benefitsOptIn: boolean;
+  navigate: (route: RouteId) => void;
+  nextCheckIn: string;
+  policy: typeof defaultCheckInPolicy;
+  profile: RegistrationProfileDraft;
+  setAnalyticsOptIn: (value: Record<string, boolean>) => void;
+  setBenefitsOptIn: (optedIn: boolean) => void;
+  setPolicy: (policy: typeof defaultCheckInPolicy) => void;
+  setProfile: (profile: RegistrationProfileDraft) => void;
+  walletConnected: boolean;
+}) {
+  const updatePolicy = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
+  const toggleReminderChannel = (channel: CheckInChannel) => {
+    updatePolicy({
+      reminderChannels: policy.reminderChannels.includes(channel)
+        ? policy.reminderChannels.filter((item) => item !== channel)
+        : [...policy.reminderChannels, channel]
+    });
+  };
+  const profileComplete = Boolean(profile.legalName.trim() && profile.dateOfBirth && profile.photoAssetId);
+  const selectedAnalyticsStudyCount = analyticsStudies.filter((study) => analyticsOptIn[study.id] ?? true).length;
+
+  function toggleAnalyticsStudy(studyId: string) {
+    setAnalyticsOptIn({ ...analyticsOptIn, [studyId]: !(analyticsOptIn[studyId] ?? true) });
+  }
+
+  return (
+    <div className="screen settings-screen">
+      <div className="page-title">
+        <p className="eyebrow">Client portal</p>
+        <h1>Settings</h1>
+      </div>
+      <p className="page-note">Update your profile, check-in preferences, privacy choices, and account safety options.</p>
+      <div className="privacy-metrics settings-summary">
+        <StatusPanel label="Profile" value={profileComplete ? "Ready" : "Needs review"} tone={profileComplete ? "teal" : "gold"} />
+        <StatusPanel label="Check-ins" value={`${policy.intervalDays} days`} tone="teal" />
+        <StatusPanel label="Group facts" value={`${selectedAnalyticsStudyCount}/${analyticsStudies.length} on`} tone="gold" />
+        <StatusPanel label="Wallet" value={walletConnected ? "Connected" : "Local demo"} tone={walletConnected ? "teal" : "gold"} />
+      </div>
+
+      <Section title="Personal information">
+        <ProfileInformationForm profile={profile} setProfile={setProfile} />
+      </Section>
+      <GovernmentHelpSection
+        requested={profile.servicePartnerHelpRequested}
+        requestedAt={profile.servicePartnerHelpRequestedAt}
+        onToggle={() => togglePartnerHelpRequest(profile, setProfile)}
+      />
+
+      <Section title="Reminder preferences">
+        <div className="form-grid">
+          <Field help="Choose 1 to 30 days." label="Days between check-ins" required>
+            <input
+              max={30}
+              min={1}
+              type="number"
+              value={policy.intervalDays}
+              onChange={(event) =>
+                updatePolicy({ intervalDays: Math.max(1, Math.min(30, Number(event.target.value || 1))) })
+              }
+            />
+          </Field>
+          <Field help="Extra time after a missed check-in before Abby starts the next help step." label="Extra hours after a missed check-in">
+            <input
+              min={0}
+              type="number"
+              value={policy.gracePeriodHours}
+              onChange={(event) => updatePolicy({ gracePeriodHours: Number(event.target.value || 0) })}
+            />
+          </Field>
+        </div>
+        <div className="channel-controls" role="group" aria-label="Allowed reminder and check-in methods">
+          {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => (
+            <button
+              aria-pressed={policy.reminderChannels.includes(channel)}
+              className="choice-chip channel-toggle"
+              key={channel}
+              onClick={() => toggleReminderChannel(channel)}
+              type="button"
+            >
+              <span>{formatCheckInChannel(channel)} allowed</span>
+              <small>{policy.reminderChannels.includes(channel) ? "On" : "Off"}</small>
+            </button>
+          ))}
+        </div>
+        <label className="scope-option settings-toggle">
+          <input
+            checked={policy.escalationEnabled}
+            onChange={(event) => updatePolicy({ escalationEnabled: event.target.checked })}
+            type="checkbox"
+          />
+          <span>
+            <strong>Start the next help step after a missed check-in.</strong>
+            <small>Next scheduled check-in: {nextCheckIn}</small>
+          </span>
+        </label>
+      </Section>
+
+      <Section title="Privacy choices">
+        <div className="settings-option-list">
+          <label className="scope-option settings-toggle">
+            <input checked={benefitsOptIn} onChange={(event) => setBenefitsOptIn(event.target.checked)} type="checkbox" />
+            <span>
+              <strong>Allow Abby to prepare benefits notices.</strong>
+              <small>Agencies only receive the minimum details needed for a notice request.</small>
+            </span>
+          </label>
+          {analyticsStudies.map((study) => {
+            const selected = analyticsOptIn[study.id] ?? true;
+            return (
+              <label className="scope-option settings-toggle" key={study.id}>
+                <input checked={selected} onChange={() => toggleAnalyticsStudy(study.id)} type="checkbox" />
+                <span>
+                  <strong>{study.title}</strong>
+                  <small>{study.purpose}</small>
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </Section>
+
+      <Section title="Less-used tools">
+        <div className="tool-grid">
+          <button className="tool-tile" onClick={() => navigate("security")} type="button">
+            <LockKeyhole size={24} /> Account safety
+          </button>
+          <button className="tool-tile" onClick={() => navigate("proof-center")} type="button">
+            <ShieldCheck size={24} /> Proof settings
+          </button>
+          <button className="tool-tile" onClick={() => navigate("exports")} type="button">
+            <LogOut size={24} /> Export bundles
+          </button>
+          <button className="tool-tile" onClick={() => navigate("audit")} type="button">
+            <ClipboardCheck size={24} /> Consent history
+          </button>
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function formatCheckInChannel(channel: CheckInChannel): string {
+  if (channel === "sms") return "Texting";
+  if (channel === "email") return "Email";
+  return "Web";
 }
 
 function CheckInScreen({
