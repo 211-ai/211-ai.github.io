@@ -48,12 +48,11 @@ export const secondaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "analytics", label: "Analytics" },
   { id: "proof-center", label: "Proofs" },
   { id: "exports", label: "Exports" },
-  { id: "security", label: "Security" },
-  { id: "audit", label: "Audit" }
+  { id: "security", label: "Security" }
 ];
 
 export const appRoutes = [...primaryRoutes, ...secondaryRoutes];
-export const appRouteIds = appRoutes.map((route) => route.id);
+export const appRouteIds: RouteId[] = [...appRoutes.map((route) => route.id), "audit"];
 
 export const serviceNeeds = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation"];
 
