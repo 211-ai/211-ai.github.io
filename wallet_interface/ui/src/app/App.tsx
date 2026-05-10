@@ -186,7 +186,8 @@ const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
 const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
-const localPrecinctOptions = ["Local police precinct"];
+const LOCAL_PRECINCT_OPTIONS = ["Local police precinct"];
+const LOCAL_PRECINCT_RELATIONSHIP = "Local precinct";
 
 type LoginPortal = "client" | "provider";
 
@@ -332,6 +333,13 @@ function formatAnalyticsField(field: string): string {
     service_type: "service type"
   };
   return labels[field] ?? field.replace(/_/g, " ");
+}
+
+function createEntityId(prefix: string): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `${prefix}-${crypto.randomUUID()}`;
+  }
+  return `${prefix}-${Date.now()}`;
 }
 
 const analyticsNeverPublishedText =
@@ -2789,7 +2797,7 @@ function ContactsScreen({
   const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
   const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
-  const [requestedPrecinct, setRequestedPrecinct] = useState(localPrecinctOptions[0]);
+  const [requestedPrecinct, setRequestedPrecinct] = useState(LOCAL_PRECINCT_OPTIONS[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
   const userContact = profile.email || profile.phone || "abby@example.org";
@@ -2823,7 +2831,7 @@ function ContactsScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         type: "shelter_staff",
         displayName: shelterName,
         relationship: "Shelter",
@@ -2844,7 +2852,7 @@ function ContactsScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         displayName,
         relationship: draft.relationship,
         email: draft.email,
@@ -2874,10 +2882,10 @@ function ContactsScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         type: "police_precinct",
         displayName: precinctName,
-        relationship: "Local precinct",
+        relationship: LOCAL_PRECINCT_RELATIONSHIP,
         email: "",
         phone: "",
         agencyName: "",
@@ -3069,7 +3077,7 @@ function ContactsScreen({
                       : setRequestedPrecinct(event.target.value)
                   }
                 >
-                  {(providerType === "shelter" ? shelterOptions : localPrecinctOptions).map((providerName) => (
+                  {(providerType === "shelter" ? shelterOptions : LOCAL_PRECINCT_OPTIONS).map((providerName) => (
                     <option key={providerName} value={providerName}>
                       {providerName}
                     </option>
@@ -4552,7 +4560,7 @@ function ShelterScreen({
     setRecipients([
       ...recipients,
       {
-        id: `rec-${Date.now()}`,
+        id: createEntityId("rec"),
         type: "shelter_staff",
         displayName: shelterName,
         relationship: "Shelter",
