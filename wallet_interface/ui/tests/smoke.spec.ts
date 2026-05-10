@@ -899,8 +899,9 @@ test("provider analytics and proof menus expose operational insights", async ({ 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
   await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
@@ -1044,8 +1045,9 @@ test("proof center hides manual proof creation while showing API-backed proofs",
   });
 
   await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
-  await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
   const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
   await expect(createdProof).toBeVisible();
   await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();

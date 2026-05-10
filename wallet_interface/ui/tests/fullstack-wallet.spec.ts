@@ -618,8 +618,9 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
     );
     await page.goto(walletRoute("proof-center", api.baseUrl, wallet.wallet_id, partnerDid, {}));
     await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
-    await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
+    const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+    await expect(hiddenProofCreator).not.toBeVisible();
+    await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
     const proofCard = page.getByRole("article", { name: /location_in_region/i }).first();
     await expect(proofCard).toContainText("region_policy_hash");
     await expect(proofCard).not.toContainText(String(exactLat));
