@@ -962,7 +962,7 @@ test("proof center reviews proof certificates from a wallet QR screenshot", asyn
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByText(/Take a picture with your camera/i)).toBeVisible();
   await expect(page.getByLabel(/Take proof QR photo with camera/i)).toHaveAttribute("capture", "environment");
-  await page.getByLabel(/Choose proof QR screenshot/i).setInputFiles({
+  await page.getByLabel(/Upload proof QR picture/i).setInputFiles({
     buffer: Buffer.from(
       "iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAAB+UlEQVR4nO2bQYrjMBBFX40MvbRhDpCjyFebI80NrKPkBvLSoPBnIdmdpofB3eDYA1WLJCRv8eFTpa9KYmJnpR97SXDUUUcdddTRI1Fr1UEaHmY2AMzr2+PhAhzdVV19ihPA/BOLGcHcFSAUAOxIAY5+A523Fpo72iug9tsrBDj6HTQNQLoVbDxHgKP7UU087EwBjv6j1jnXC5iBmAdg7oqY4fnufLpWRxuazGoStJEgYgYbedRI+AoBju6p2lvPLdQXBIu1fjtagKNfv2+NAMxtLppZh35ZV5vuBQIc3VeSJOgLRKkOQWIGSQUgqNZ0ulZHn9zStDmjvH46QbXR3boYGlVosWJrNXrpL+gxAhzdhUr3N1WjoiQbCYLZjJgffm5dBl0nIUHt3JKkqS/U6SgV/Ny6CtrcijVRQBuCmQ+hw926Btq9vxSAxd8ddY2RLJRn9HStjm5uBZFGgL50BqEYdWO4WXa6VkdbyphgDYH1BNsy4WsEOLqv1pQBQFD1jV4i5tASvJ9b10Lj+524l6T7dunyBH8hdM2EGYg5SMrh4zLXN08XRtNtMSkH1UXU1C/+K5rrojEHkW6LQb8Y8f7mm6fLoJ++O05jKBbvHe1h2u5cp2t1tLmVapQIWBRALywNoZCGfKwAR7+Amv9rwVFHHXXU0f8I/QOFNg2uEDfTqgAAAABJRU5ErkJggg==",
       "base64"

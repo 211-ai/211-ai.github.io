@@ -6897,7 +6897,7 @@ function ProofCenterScreen({
             </span>
             <input
               accept={PROOF_QR_IMAGE_ACCEPT_ATTR}
-              aria-label="Choose proof QR screenshot"
+              aria-label="Upload proof QR picture"
               onChange={reviewQrScreenshot}
               type="file"
             />
