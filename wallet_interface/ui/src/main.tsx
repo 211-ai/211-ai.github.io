@@ -18,6 +18,14 @@ const shouldRegisterServiceWorker =
 if (shouldRegisterServiceWorker) {
   const serviceWorkerUrl = new URL("serviceWorker.js", window.location.href);
   const scopeUrl = new URL("./", serviceWorkerUrl);
+  const hadServiceWorkerController = Boolean(navigator.serviceWorker.controller);
+  let reloadingForServiceWorkerUpdate = false;
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadServiceWorkerController || reloadingForServiceWorkerUpdate) return;
+    reloadingForServiceWorkerUpdate = true;
+    window.location.reload();
+  });
 
   window.addEventListener("load", () => {
     registerServiceWorker(serviceWorkerUrl, scopeUrl).catch(() => {

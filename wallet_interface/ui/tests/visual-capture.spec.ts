@@ -348,6 +348,17 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "provider-case-management",
+    path: "/#/provider-cases",
+    title: "Provider case management",
+    state: "default caseload",
+    goals: [
+      "Case rows should show next steps, status, priority, and eligibility requirements without crowding.",
+      "Messaging and eligibility-proof actions should be visually available for each served client.",
+      "US citizenship and other criteria should read as proof requirements, not raw document disclosure."
+    ]
+  },
+  {
     id: "shelter-create-user-draft",
     path: "/#/provider-operations",
     title: "Shelter portal create-user draft",
@@ -488,6 +499,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/security": /Account safety/i,
   "/#/messages": /^Messages$/i,
   "/#/shelter": /Provider overview/i,
+  "/#/provider-cases": /Case management/i,
   "/#/provider-operations": /Staff operations/i,
   "/#/social-services": /Find support/i,
   "/#/uploads": /^Wallet$/i,
@@ -536,19 +548,23 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
     await seedCalendarCaptureState(page);
   }
 
-  if (scenarioPath === "/#/shelter" || scenarioPath === "/#/provider-operations") {
+  if (scenarioPath === "/#/shelter" || scenarioPath === "/#/provider-cases" || scenarioPath === "/#/provider-operations") {
     await verifyShelterStaffForCapture(page);
     if (scenarioPath !== "/#/shelter") {
       await page.goto(scenarioPath);
       await page.reload();
-      await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+      if (scenarioPath === "/#/provider-cases") {
+        await expect(page.locator("h1", { hasText: routeReadyHeadings[scenarioPath] })).toBeVisible();
+      } else {
+        await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();
+      }
     }
     return;
   }
   await page.goto(scenarioPath);
   await page.reload();
   await expect(page.locator(".screen")).toBeVisible();
-  if (scenarioPath === "/#/shelter") {
+  if (scenarioPath === "/#/shelter" || scenarioPath === "/#/provider-cases") {
     await expect(page.locator("h1", { hasText: routeReadyHeadings[scenarioPath] })).toBeVisible();
   } else {
     await expect(page.getByRole("heading", { name: routeReadyHeadings[scenarioPath] })).toBeVisible();

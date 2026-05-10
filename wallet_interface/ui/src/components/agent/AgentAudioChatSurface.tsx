@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
-import type { AgentMessage } from "../../agent/types";
+import type { AgentMessage, EvidenceBundle } from "../../agent/types";
 import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
+import {
+  buildVoiceFallbackText,
+  buildVoiceGraphRagPrompt,
+  selectEvidenceBundlesForMessage,
+} from "../../lib/voiceGraphRagPrompt";
 import { Button } from "../ui";
 
 type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "speaking" | "unavailable";
@@ -53,6 +58,7 @@ interface BrowserAudioContext {
 
 export function AgentAudioChatSurface({
   activeRouteLabel,
+  evidenceBundles = [],
   messages,
   open,
   responding,
@@ -61,6 +67,7 @@ export function AgentAudioChatSurface({
   onSend
 }: {
   activeRouteLabel: string;
+  evidenceBundles?: EvidenceBundle[];
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
@@ -190,7 +197,7 @@ export function AgentAudioChatSurface({
     if (!assistantMessage || assistantMessage.id === lastSpokenAssistantIdRef.current) return;
     lastSpokenAssistantIdRef.current = assistantMessage.id;
     void speakAssistantMessage(assistantMessage);
-  }, [messages, muted, open, responding, surface]);
+  }, [evidenceBundles, messages, muted, open, responding, surface]);
 
   useEffect(() => {
     if (responding && open) {
@@ -465,46 +472,69 @@ export function AgentAudioChatSurface({
     setStatusDetail("");
     setAudioDiagnostic("");
     const requestId = ++audioProgressRequestIdRef.current;
+    const userMessage = getLastUserMessageBefore(messages, message);
+    const prompt = buildVoiceGraphRagPrompt({
+      userText: userMessage?.content ?? "",
+      assistantText: message.content,
+      evidenceBundles: selectEvidenceBundlesForMessage(message, evidenceBundles),
+    });
+    const fallbackText = buildVoiceFallbackText(message.content);
     setModelProgress({
       phase: "queued",
       progress: 0,
       status: "Preparing audio reply.",
     });
     try {
-      const result = await clientAudioReplyService.generateAudio(message.content, {
+      const result = await clientAudioReplyService.generateVoiceReply({
+        prompt,
+        fallbackText,
+      }, {
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       if (audioProgressRequestIdRef.current !== requestId) return;
       setModelProgress(null);
-      if (!openRef.current || muted) return;
+      if (!openRef.current || mutedRef.current) return;
       if (result.kind === "audio") {
         const audioUrl = URL.createObjectURL(result.audioBlob);
         audioUrlRef.current = audioUrl;
         const audio = new Audio(audioUrl);
         audioRef.current = audio;
+        let usedPlaybackFallback = false;
+        const fallbackToBrowserSpeech = () => {
+          if (usedPlaybackFallback) return;
+          usedPlaybackFallback = true;
+          revokeAudioUrl();
+          audioRef.current = null;
+          setStatusDetail("Using browser speech output.");
+          setAudioDiagnostic("Generated audio could not be played in this browser.");
+          playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
+        };
         audio.onended = () => {
           revokeAudioUrl();
+          audioRef.current = null;
           setSessionState("ready");
           restartVoiceActivityDetectionSoon();
         };
         audio.onerror = () => {
-          revokeAudioUrl();
-          setStatusDetail("Audio playback failed.");
-          setSessionState("ready");
-          restartVoiceActivityDetectionSoon();
+          fallbackToBrowserSpeech();
         };
-        await audio.play();
+        await audio.play().catch(() => {
+          fallbackToBrowserSpeech();
+        });
         return;
       }
       setStatusDetail("Using browser speech output.");
       setAudioDiagnostic(result.fallbackReason);
-      playBrowserSpeech(result.text);
+      playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Audio reply failed.";
       if (audioProgressRequestIdRef.current === requestId) setModelProgress(null);
+      audioRef.current = null;
+      revokeAudioUrl();
       setStatusDetail(message);
       setAudioDiagnostic(message);
       setSessionState("ready");
+      restartVoiceActivityDetectionSoon();
     }
   }
 
@@ -687,7 +717,7 @@ export function AgentAudioChatSurface({
           <article className={`agent-audio-transcript-row agent-audio-transcript-${message.role}`} key={message.id}>
             <div className="agent-audio-transcript-meta">{message.role === "user" ? "You" : "Abby"}</div>
             <div className="agent-audio-transcript-bubble">
-              <p>{message.content}</p>
+              <p>{formatAudioTranscriptMessage(message)}</p>
             </div>
           </article>
         ))}
@@ -727,6 +757,16 @@ function reserveOpeningGreeting(): boolean {
 
 function getLastAssistantMessage(messages: AgentMessage[]): AgentMessage | undefined {
   return [...messages].reverse().find((message) => message.role === "assistant" && message.status === "complete");
+}
+
+function getLastUserMessageBefore(messages: AgentMessage[], assistantMessage: AgentMessage): AgentMessage | undefined {
+  const assistantIndex = messages.findIndex((message) => message.id === assistantMessage.id);
+  const candidates = assistantIndex >= 0 ? messages.slice(0, assistantIndex) : messages;
+  return [...candidates].reverse().find((message) => message.role === "user" && message.status === "complete");
+}
+
+function formatAudioTranscriptMessage(message: AgentMessage): string {
+  return message.role === "assistant" ? buildVoiceFallbackText(message.content) : message.content;
 }
 
 function getAudioSessionStatusLabel(sessionState: AudioSessionState, responding?: boolean): string {

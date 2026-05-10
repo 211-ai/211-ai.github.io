@@ -160,6 +160,7 @@ export function AgentChatDrawer({
 
             <AgentAudioChatSurface
               activeRouteLabel={activeRouteLabel}
+              evidenceBundles={evidenceBundles}
               messages={messages}
               onClose={onClose}
               onSend={onSend}

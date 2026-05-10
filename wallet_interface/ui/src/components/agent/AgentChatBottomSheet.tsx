@@ -125,6 +125,7 @@ export function AgentChatBottomSheet({
             {mode === "audio" ? (
               <AgentAudioChatSurface
                 activeRouteLabel={activeRouteLabel}
+                evidenceBundles={evidenceBundles}
                 messages={messages}
                 onClose={onClose}
                 onSend={onSend}

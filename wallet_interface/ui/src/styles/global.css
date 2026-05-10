@@ -947,17 +947,23 @@ body.playful-pulse .decor-shape {
 }
 
 .provider-client-item,
+.provider-case-item,
 .provider-message-item,
 .provider-proof-item,
 .provider-staff-row,
+.provider-staff-roster-item,
+.provider-activity-item,
 .client-message-item {
   align-items: flex-start;
 }
 
 .provider-client-item > div:first-child,
+.provider-case-item > div:first-child,
 .provider-message-item > div:first-child,
 .provider-proof-item > div:first-child,
 .provider-staff-row > div:first-child,
+.provider-staff-roster-item > div:first-child,
+.provider-activity-item > div:first-child,
 .client-message-item > div:first-child {
   display: grid;
   gap: 7px;
@@ -980,6 +986,98 @@ body.playful-pulse .decor-shape {
 
 .message-toolbar {
   max-width: 280px;
+}
+
+.provider-insight-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.provider-insight-card,
+.provider-need-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(127, 174, 180, 0.5);
+  border-radius: 8px;
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+}
+
+.provider-insight-card h3,
+.provider-need-card strong {
+  color: #07314a;
+  margin: 0;
+}
+
+.provider-need-card span {
+  color: #54677b;
+}
+
+.provider-meter {
+  background: #e3eeee;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.provider-meter span {
+  background: #0f7c73;
+  display: block;
+  height: 100%;
+  min-width: 8px;
+}
+
+.provider-admin-panel {
+  gap: 16px;
+}
+
+.provider-proof-queue .provider-proof-item {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.provider-proof-queue .provider-proof-item > .button {
+  justify-self: start;
+}
+
+.provider-case-item {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+}
+
+.provider-case-controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  width: 100%;
+}
+
+.provider-case-controls .field:last-child {
+  grid-column: 1 / -1;
+}
+
+.provider-case-controls textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.provider-case-criteria {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.provider-case-criterion {
+  align-items: center;
+  background: rgba(238, 247, 246, 0.78);
+  border: 1px solid #c9dddc;
+  border-radius: 8px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
 }
 
 .provider-message-form textarea,

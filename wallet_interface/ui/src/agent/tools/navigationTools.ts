@@ -33,6 +33,7 @@ const extraRouteAliases = {
   interactions: ["interaction history", "service history", "service interactions", "timeline"],
   shelter: ["provider overview", "provider portal", "shelter staff", "shelters", "shelter services", "beds"],
   "provider-clients": ["served clients", "clients served", "provider clients", "case list"],
+  "provider-cases": ["case management", "cases", "caseload", "service cases", "eligibility cases"],
   "provider-messages": ["provider messages", "send client messages", "client notifications", "notifications"],
   "provider-analytics": ["staff analytics", "provider analytics", "staff reports"],
   "provider-proofs": ["zk certificates", "zero knowledge certificates", "provider proofs", "proof certificates"],
@@ -72,6 +73,7 @@ const routeSummaries = {
       state.shelterProviderMessages?.length ?? 0
     } messages, and ${providerProofCount(state)} provider proof certificates.`,
   "provider-clients": (state) => `${state.shelterUserAccounts?.length ?? 0} served clients are visible.`,
+  "provider-cases": (state) => `${state.shelterCaseRecords?.length ?? 0} provider case records are visible.`,
   "provider-messages": (state) => `${state.shelterProviderMessages?.length ?? 0} provider messages are visible.`,
   "provider-analytics": (state) =>
     `${state.shelterStaffAccounts?.length ?? 0} provider staff accounts are available for analytics.`,

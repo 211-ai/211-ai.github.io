@@ -15,9 +15,10 @@ installWarningSuppression();
 
 type AudioWorkerRequest = {
   id: string;
-  type: "generateAudio" | "warmUp";
+  type: "generateAudio" | "generateVoiceReply" | "warmUp";
   data: {
     text?: string;
+    fallbackText?: string;
     modelName?: string;
   };
 };
@@ -31,6 +32,7 @@ interface AudioWorkerResponse {
     mimeType?: string;
     modelName?: string;
     provider?: "local-liquidai";
+    text?: string;
   };
   error?: string;
 }
@@ -40,6 +42,10 @@ let currentModelName = AUDIO_CHAT_CONFIG.defaultModel;
 let initializePromise: Promise<void> | null = null;
 let requestChain: Promise<void> = Promise.resolve();
 let liquidAudioRuntimePromise: Promise<LiquidAudioRuntime> | null = null;
+const DEFAULT_VOICE_FALLBACK_TEXT = "I found an answer, but local voice generation could not infer a spoken reply.";
+const TTS_SYSTEM_PROMPT = "Perform TTS. Use the UK female voice.";
+const INTERLEAVED_SYSTEM_PROMPT =
+  "You are Abby voice. Answer naturally using the user's app context and evidence. Do not read raw prompt labels, URLs, CIDs, or citation IDs aloud.";
 
 interface LiquidAudioRuntime {
   AudioModel: new () => LiquidAudioModel;
@@ -74,8 +80,26 @@ interface LiquidAudioModel {
       onToken?: (token: string, tokenId: number) => boolean | void;
     },
   ) => Promise<{ audioCodes: number[][]; textOutput?: string }>;
+  generateInterleavedFromText?: (
+    text: string,
+    options: {
+      maxNewTokens: number;
+      systemPrompt: string;
+      textTemperature: number;
+      audioTemperature: number;
+      audioTopK: number;
+      onAudioFrame?: (frame: number[], count: number) => void;
+      onToken?: (token: string, tokenId: number) => boolean | void;
+    },
+  ) => Promise<{ audioCodes?: number[][]; text?: string }>;
   decodeAudioCodes: (audioCodes: number[][]) => Promise<Float32Array>;
   reset?: () => void;
+}
+
+interface LiquidAudioGeneration {
+  audioCodes?: number[][];
+  text?: string;
+  textOutput?: string;
 }
 
 self.onmessage = (event: MessageEvent<AudioWorkerRequest>) => {
@@ -88,7 +112,7 @@ self.onmessage = (event: MessageEvent<AudioWorkerRequest>) => {
 
 async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
   try {
-    if (request.type !== "generateAudio" && request.type !== "warmUp") {
+    if (request.type !== "generateAudio" && request.type !== "generateVoiceReply" && request.type !== "warmUp") {
       throw new Error(`Unknown audio worker request: ${request.type}`);
     }
 
@@ -119,27 +143,36 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
     postProgress(request.id, {
       phase: "generating",
       progress: 90,
-      status: "Generating speech audio.",
+      status: request.type === "generateVoiceReply" ? "Generating voice reply with evidence." : "Generating speech audio.",
       modelName,
     });
     const maxAudioFrames = AUDIO_CHAT_CONFIG.maxAudioFrames;
-    const generation = await model.generateSpeech(text, {
-      maxNewTokens: maxAudioFrames,
-      systemPrompt: "Perform TTS. Use the UK female voice.",
-      textTemperature: 0.7,
-      audioTemperature: 0.8,
-      audioTopK: 64,
-      onAudioFrame: (_frame, count) => {
-        if (count !== 1 && count % 4 !== 0) return;
-        postProgress(request.id, {
-          phase: "generating",
-          progress: 90 + Math.min(6, (count / Math.max(1, maxAudioFrames)) * 6),
-          status: `Generating speech audio (${count} frames).`,
-          modelName,
+    let generatedText = "";
+    const generationStatus = request.type === "generateVoiceReply" ? "Generating voice reply" : "Generating speech audio";
+    const audioProgress = (_frame: number[], count: number) => {
+      if (count !== 1 && count % 4 !== 0) return;
+      postProgress(request.id, {
+        phase: "generating",
+        progress: 90 + Math.min(6, (count / Math.max(1, maxAudioFrames)) * 6),
+        status: `${generationStatus} (${count} frames).`,
+        modelName,
+      });
+    };
+    const tokenProgress = (token: string) => {
+      generatedText = token;
+    };
+    const generation: LiquidAudioGeneration = request.type === "generateVoiceReply" && model.generateInterleavedFromText
+      ? await generateVoiceReplyWithAudioFallback(model, text, getWorkerFallbackSpeechText(request), {
+          maxAudioFrames,
+          onAudioFrame: audioProgress,
+          onToken: tokenProgress,
+        })
+      : await generateSpeechAudio(model, request.type === "generateVoiceReply" ? getWorkerFallbackSpeechText(request) : text, {
+          maxAudioFrames,
+          onAudioFrame: audioProgress,
         });
-      },
-    });
-    if (!generation.audioCodes.length) {
+    const audioCodes = generation.audioCodes || [];
+    if (!audioCodes.length) {
       throw new Error("LiquidAI audio model completed without audio frames.");
     }
     postProgress(request.id, {
@@ -148,7 +181,7 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
       status: "Decoding generated audio.",
       modelName,
     });
-    const waveform = await model.decodeAudioCodes(generation.audioCodes);
+    const waveform = await model.decodeAudioCodes(audioCodes);
     const audioBlob = createWavBlob(waveform, 24000);
     postProgress(request.id, {
       phase: "ready",
@@ -164,6 +197,7 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
         mimeType: audioBlob.type || "audio/wav",
         modelName: currentModelName,
         provider: "local-liquidai",
+        text: normalizeGeneratedText(generation.text || generation.textOutput || generatedText),
       },
     });
   } catch (error) {
@@ -173,6 +207,69 @@ async function handleWorkerRequest(request: AudioWorkerRequest): Promise<void> {
       error: error instanceof Error ? error.message : "Audio worker failed",
     });
   }
+}
+
+async function generateVoiceReplyWithAudioFallback(
+  model: LiquidAudioModel,
+  text: string,
+  fallbackText: string,
+  options: {
+    maxAudioFrames: number;
+    onAudioFrame?: (frame: number[], count: number) => void;
+    onToken?: (token: string, tokenId: number) => boolean | void;
+  },
+): Promise<{ audioCodes?: number[][]; text?: string; textOutput?: string }> {
+  if (!model.generateInterleavedFromText) {
+    throw new Error("LiquidAI interleaved text-to-audio generation is unavailable.");
+  }
+  model.reset?.();
+  try {
+    const generation = await model.generateInterleavedFromText(text, {
+      maxNewTokens: options.maxAudioFrames,
+      systemPrompt: INTERLEAVED_SYSTEM_PROMPT,
+      textTemperature: 0.7,
+      audioTemperature: 0.8,
+      audioTopK: 64,
+      onAudioFrame: options.onAudioFrame,
+      onToken: options.onToken,
+    });
+    if (generation.audioCodes?.length) {
+      return generation;
+    }
+    const inferredText = normalizeGeneratedText(generation.text) || fallbackText;
+    const speech = await generateSpeechAudio(model, inferredText, options);
+    return {
+      ...speech,
+      text: inferredText,
+    };
+  } catch (error) {
+    console.warn("[AudioWorker] Interleaved voice generation failed; speaking sanitized fallback text.", error);
+    model.reset?.();
+    const speech = await generateSpeechAudio(model, fallbackText, options);
+    return {
+      ...speech,
+      text: fallbackText,
+    };
+  }
+}
+
+async function generateSpeechAudio(
+  model: LiquidAudioModel,
+  text: string,
+  options: {
+    maxAudioFrames: number;
+    onAudioFrame?: (frame: number[], count: number) => void;
+  },
+): Promise<LiquidAudioGeneration> {
+  const normalizedText = text.trim() || DEFAULT_VOICE_FALLBACK_TEXT;
+  return model.generateSpeech(normalizedText, {
+    maxNewTokens: options.maxAudioFrames,
+    systemPrompt: TTS_SYSTEM_PROMPT,
+    textTemperature: 0.7,
+    audioTemperature: 0.8,
+    audioTopK: 64,
+    onAudioFrame: options.onAudioFrame,
+  });
 }
 
 async function initialize(modelName: string, onProgress: (progress: AudioWorkerProgress) => void): Promise<LiquidAudioModel> {
@@ -267,7 +364,10 @@ async function loadLiquidAudioRuntime(): Promise<LiquidAudioRuntime> {
   if (liquidAudioRuntimePromise) {
     return liquidAudioRuntimePromise;
   }
-  liquidAudioRuntimePromise = createLiquidAudioRuntime();
+  liquidAudioRuntimePromise = createLiquidAudioRuntime().catch((error) => {
+    liquidAudioRuntimePromise = null;
+    throw error;
+  });
   return liquidAudioRuntimePromise;
 }
 
@@ -353,6 +453,9 @@ async function fetchRunnerSource(fileName: "audio-model.js" | "audio-processor.j
 }
 
 function createWavBlob(samples: Float32Array, sampleRate: number): Blob {
+  if (!samples.length) {
+    throw new Error("LiquidAI audio model decoded an empty waveform.");
+  }
   const numChannels = 1;
   const bytesPerSample = 2;
   const blockAlign = numChannels * bytesPerSample;
@@ -378,7 +481,8 @@ function createWavBlob(samples: Float32Array, sampleRate: number): Blob {
 
   let offset = 44;
   for (let index = 0; index < samples.length; index += 1) {
-    const sample = Math.max(-1, Math.min(1, samples[index]));
+    const rawSample = samples[index];
+    const sample = Number.isFinite(rawSample) ? Math.max(-1, Math.min(1, rawSample)) : 0;
     view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
     offset += bytesPerSample;
   }
@@ -394,6 +498,16 @@ function writeString(view: DataView, offset: number, value: string): void {
 
 function hasWebGPU(): boolean {
   return AUDIO_CHAT_CONFIG.enableWebGPU && typeof navigator !== "undefined" && Boolean((navigator as { gpu?: unknown }).gpu);
+}
+
+function normalizeGeneratedText(text: string | undefined): string | undefined {
+  const normalized = text?.replace(/\s+/g, " ").trim();
+  return normalized || undefined;
+}
+
+function getWorkerFallbackSpeechText(request: AudioWorkerRequest): string {
+  if (request.type !== "generateVoiceReply") return request.data.text?.trim() || "";
+  return request.data.fallbackText?.trim() || DEFAULT_VOICE_FALLBACK_TEXT;
 }
 
 function postProgress(id: string, progress: AudioWorkerProgress): void {

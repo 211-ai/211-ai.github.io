@@ -1015,5 +1015,5 @@ function singleVisibleServiceId(context: SurfaceContext): string | undefined {
 }
 
 function fallbackResponse(context: SurfaceContext): string {
-  return `You are on ${context.routeLabel}. I can explain this screen, navigate the app, answer public 211 service questions, and ask for confirmation before changing wallet data.`;
+  return `I can help on the ${context.routeLabel} screen: explain what is visible, navigate the app, answer public 211 service questions, and ask before changing wallet data.`;
 }

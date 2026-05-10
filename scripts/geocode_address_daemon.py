@@ -24,6 +24,7 @@ os.environ.setdefault("IPFS_DATASETS_PY_MINIMAL_IMPORTS", "1")
 from scraper.enrich_service_addresses import (  # noqa: E402
     DEFAULT_CACHE_PATH,
     DEFAULT_PORTAL_DIR,
+    build_geocode_miss_diagnostics_report,
     build_query_from_location_row,
     enrich_service_addresses,
     load_cache,
@@ -42,6 +43,7 @@ DEFAULT_BATCH_SIZE_NEW = 180
 DEFAULT_BATCH_SIZE_RETRY = 60
 DEFAULT_LOOP_SLEEP_SECONDS = 30.0
 DEFAULT_IDLE_SLEEP_SECONDS = 600.0
+DEFAULT_RETRY_ZERO_HIT_THRESHOLD = 8
 
 
 def daemon_pid_path(state_dir: Path, state_prefix: str) -> Path:
@@ -50,6 +52,14 @@ def daemon_pid_path(state_dir: Path, state_prefix: str) -> Path:
 
 def daemon_state_path(state_dir: Path, state_prefix: str) -> Path:
     return state_dir / f"{state_prefix}_state.json"
+
+
+def search_handoff_json_path(source_dir: Path) -> Path:
+    return source_dir / "geocode_search_handoff.json"
+
+
+def search_handoff_parquet_path(source_dir: Path) -> Path:
+    return source_dir / "geocode_search_handoff.parquet"
 
 
 def write_text_atomic(path: Path, text: str) -> None:
@@ -135,6 +145,85 @@ def choose_geocode_mode(summary: dict[str, Any]) -> str:
     return "idle"
 
 
+def choose_geocode_mode_with_state(summary: dict[str, Any], state: dict[str, Any], *, retry_zero_hit_threshold: int) -> str:
+    if int(summary.get("uncached_remaining") or 0) > 0:
+        return "new"
+    cached_non_ok_remaining = int(summary.get("cached_non_ok_remaining") or 0)
+    if cached_non_ok_remaining <= 0:
+        return "idle"
+    if bool(state.get("nominatim_complete")):
+        return "idle"
+    zero_hit_retry_streak = int(state.get("zero_hit_retry_streak") or 0)
+    if zero_hit_retry_streak >= max(1, int(retry_zero_hit_threshold)):
+        return "search_handoff"
+    return "retry"
+
+
+def build_search_handoff(source_dir: Path, cache_path: Path) -> dict[str, Any]:
+    diagnostics = build_geocode_miss_diagnostics_report(
+        cache_path=cache_path,
+        output_json_path=source_dir / "geocode_miss_diagnostics.json",
+        output_parquet_path=source_dir / "geocode_miss_diagnostics.parquet",
+    )
+    rows = diagnostics.get("rows") if isinstance(diagnostics.get("rows"), list) else []
+    handoff_rows: list[dict[str, Any]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        normalized_street = str(row.get("normalized_street_without_unit") or row.get("normalized_street") or row.get("street") or "").strip()
+        normalized_city = str(row.get("normalized_city") or row.get("city") or "").strip()
+        state = str(row.get("state") or "").strip()
+        postal_code = str(row.get("postal_code") or "").strip()
+        search_query = " ".join(part for part in [normalized_street, normalized_city, state, postal_code] if part).strip()
+        search_query_quoted = " ".join(
+            part
+            for part in [
+                f"\"{normalized_street}\"" if normalized_street else "",
+                f"\"{normalized_city}\"" if normalized_city else "",
+                state,
+                postal_code,
+            ]
+            if part
+        ).strip()
+        payload = dict(row)
+        payload["search_query"] = search_query
+        payload["search_query_quoted"] = search_query_quoted
+        handoff_rows.append(payload)
+
+    handoff_rows.sort(
+        key=lambda row: (
+            0 if row.get("classification") == "likely_provider_or_coverage_miss" else 1,
+            str(row.get("city") or ""),
+            str(row.get("street") or ""),
+            str(row.get("postal_code") or ""),
+        )
+    )
+    handoff = {
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "source": "nominatim_plateau_handoff",
+        "miss_count": len(handoff_rows),
+        "classification_counts": diagnostics.get("classification_counts") or {},
+        "search_stage_ready": True,
+        "rows": handoff_rows,
+    }
+    write_json_atomic(search_handoff_json_path(source_dir), handoff)
+    parquet_rows = []
+    for row in handoff_rows:
+        payload = dict(row)
+        payload["issue_tags_json"] = json.dumps(row.get("issue_tags") or [], separators=(",", ":"))
+        payload["search_params_json"] = json.dumps(row.get("search_params") or {}, separators=(",", ":"))
+        payload.pop("issue_tags", None)
+        payload.pop("search_params", None)
+        parquet_rows.append(payload)
+    pd.DataFrame(parquet_rows).to_parquet(search_handoff_parquet_path(source_dir), index=False)
+    return {
+        "miss_count": len(handoff_rows),
+        "classification_counts": handoff.get("classification_counts") or {},
+        "search_handoff_json": str(search_handoff_json_path(source_dir)),
+        "search_handoff_parquet": str(search_handoff_parquet_path(source_dir)),
+    }
+
+
 def refresh_browser_corpus(browser_output_dir: Path) -> dict[str, Any]:
     command = [
         sys.executable,
@@ -174,15 +263,36 @@ def write_daemon_state(path: Path, payload: dict[str, Any]) -> None:
     write_json_atomic(path, payload)
 
 
-def run_geocode_pass(args: argparse.Namespace, *, pass_index: int) -> dict[str, Any]:
+def run_geocode_pass(args: argparse.Namespace, *, pass_index: int, prior_state: dict[str, Any] | None = None) -> dict[str, Any]:
+    prior_state = prior_state or {}
     before = summarize_geocode_progress(source_dir=args.source_dir, cache_path=args.cache_path)
-    mode = choose_geocode_mode(before)
+    mode = choose_geocode_mode_with_state(
+        before,
+        prior_state,
+        retry_zero_hit_threshold=args.retry_zero_hit_threshold,
+    )
     if mode == "idle":
         return {
             "mode": "idle",
             "pass_index": pass_index,
             "before": before,
             "result": None,
+            "after": before,
+            "browser_refresh": None,
+            "sleep_seconds": args.idle_sleep_seconds,
+        }
+    if mode == "search_handoff":
+        handoff = build_search_handoff(args.source_dir, args.cache_path)
+        return {
+            "mode": "search_handoff",
+            "pass_index": pass_index,
+            "before": before,
+            "result": {
+                "nominatim_complete": True,
+                "reason": "zero_hit_retry_plateau",
+                "retry_zero_hit_threshold": args.retry_zero_hit_threshold,
+                "search_handoff": handoff,
+            },
             "after": before,
             "browser_refresh": None,
             "sleep_seconds": args.idle_sleep_seconds,
@@ -206,6 +316,7 @@ def run_geocode_pass(args: argparse.Namespace, *, pass_index: int) -> dict[str, 
         max_retries=args.max_retries,
         max_queries=batch_size,
         retry_misses=(mode == "retry"),
+        repair_malformed_retries=True,
         refresh_only=False,
         overwrite=False,
     )
@@ -244,6 +355,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument("--sleep-seconds", type=float, default=DEFAULT_LOOP_SLEEP_SECONDS)
     parser.add_argument("--idle-sleep-seconds", type=float, default=DEFAULT_IDLE_SLEEP_SECONDS)
+    parser.add_argument("--retry-zero-hit-threshold", type=int, default=DEFAULT_RETRY_ZERO_HIT_THRESHOLD)
     parser.add_argument("--log-level", default="INFO", choices=("DEBUG", "INFO", "WARNING", "ERROR"))
     parser.add_argument("--once", action="store_true")
     parser.add_argument("--refresh-browser-corpus", dest="refresh_browser_corpus", action="store_true")
@@ -261,7 +373,8 @@ def main(argv: list[str] | None = None) -> int:
     write_text_atomic(pid_path, f"{os.getpid()}\n")
     logger.setLevel(getattr(logging, args.log_level.upper(), logging.INFO))
 
-    pass_index = int(safe_read_json(state_path).get("pass_count") or 0)
+    current_state = safe_read_json(state_path)
+    pass_index = int(current_state.get("pass_count") or 0)
     try:
         while True:
             pass_index += 1
@@ -287,20 +400,32 @@ def main(argv: list[str] | None = None) -> int:
                         "max_retries": args.max_retries,
                         "sleep_seconds": args.sleep_seconds,
                         "idle_sleep_seconds": args.idle_sleep_seconds,
+                        "retry_zero_hit_threshold": args.retry_zero_hit_threshold,
                         "refresh_browser_corpus": args.refresh_browser_corpus,
                     },
+                    "zero_hit_retry_streak": int(current_state.get("zero_hit_retry_streak") or 0),
+                    "nominatim_complete": bool(current_state.get("nominatim_complete")),
                 },
             )
-            pass_result = run_geocode_pass(args, pass_index=pass_index)
+            pass_result = run_geocode_pass(args, pass_index=pass_index, prior_state=current_state)
             finished_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            next_zero_hit_retry_streak = int(current_state.get("zero_hit_retry_streak") or 0)
+            if pass_result["mode"] == "retry":
+                geocode_hits = int((pass_result.get("result") or {}).get("geocode_hits") or 0)
+                next_zero_hit_retry_streak = 0 if geocode_hits > 0 else next_zero_hit_retry_streak + 1
+            elif pass_result["mode"] in {"new", "idle"}:
+                next_zero_hit_retry_streak = 0
+            next_nominatim_complete = bool(current_state.get("nominatim_complete"))
+            if pass_result["mode"] == "search_handoff":
+                next_nominatim_complete = True
             write_daemon_state(
                 state_path,
                 {
-                    "status": "idle" if pass_result["mode"] == "idle" else "running",
+                    "status": "idle" if pass_result["mode"] in {"idle", "search_handoff"} else "running",
                     "heartbeat_at": finished_at,
                     "pid": os.getpid(),
                     "pass_count": pass_index,
-                    "phase": "sleep" if not args.once else "done",
+                    "phase": ("search_ready" if pass_result["mode"] == "search_handoff" else ("sleep" if not args.once else "done")),
                     "last_run_started_at": started_at,
                     "last_run_finished_at": finished_at,
                     "last_run_mode": pass_result["mode"],
@@ -308,8 +433,11 @@ def main(argv: list[str] | None = None) -> int:
                     "last_browser_refresh": pass_result["browser_refresh"],
                     "progress": pass_result["after"],
                     "next_sleep_seconds": pass_result["sleep_seconds"],
+                    "zero_hit_retry_streak": next_zero_hit_retry_streak,
+                    "nominatim_complete": next_nominatim_complete,
                 },
             )
+            current_state = safe_read_json(state_path)
             if args.once:
                 print(json.dumps(pass_result, indent=2))
                 return 0

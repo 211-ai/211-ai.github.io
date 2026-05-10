@@ -1,7 +1,8 @@
+import { shouldDeleteAppCache } from "./cachePolicy";
+
 const CACHE_VERSION = "portal-077-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
-const APP_CACHE_PREFIX = "abby-";
 const SHELL_CACHE_PREFIX = "abby-shell-";
 
 const PUBLIC_SERVICE_DETAIL_ASSETS = new Set([
@@ -30,19 +31,23 @@ type ServiceWorkerGlobal = typeof globalThis & {
   registration: {
     scope: string;
   };
+  clients: {
+    claim(): Promise<void>;
+  };
   addEventListener(type: "activate", listener: (event: ServiceWorkerLifecycleEvent) => void): void;
   addEventListener(type: "fetch", listener: (event: ServiceWorkerFetchEvent) => void): void;
   addEventListener(type: "install", listener: (event: ServiceWorkerLifecycleEvent) => void): void;
+  skipWaiting(): Promise<void>;
 };
 
 const sw = self as unknown as ServiceWorkerGlobal;
 
 sw.addEventListener("install", (event) => {
-  event.waitUntil(precacheShell());
+  event.waitUntil(Promise.all([precacheShell(), sw.skipWaiting()]));
 });
 
 sw.addEventListener("activate", (event) => {
-  event.waitUntil(deleteOldCaches());
+  event.waitUntil(Promise.all([deleteOldCaches(), sw.clients.claim()]));
 });
 
 sw.addEventListener("fetch", (event) => {
@@ -100,7 +105,7 @@ async function deleteOldCaches(): Promise<void> {
   const keys = await caches.keys();
   await Promise.all(
     keys
-      .filter((key) => key.startsWith(APP_CACHE_PREFIX) && !currentCaches.has(key) && !key.startsWith(SHELL_CACHE_PREFIX))
+      .filter((key) => shouldDeleteAppCache(key, currentCaches))
       .map((key) => caches.delete(key))
   );
 }
@@ -112,7 +117,7 @@ async function handleNavigation(request: Request): Promise<Response> {
   const hasPrivateUrl = hasPrivateWalletUrl(request.url);
 
   try {
-    const response = await fetch(requestWithCacheMode(request, hasPrivateUrl ? "no-store" : "default"));
+    const response = await fetch(requestWithCacheMode(request, hasPrivateUrl ? "no-store" : "reload"));
     if (!hasPrivateUrl && isCacheableResponse(response)) {
       await cache.put(shellRequest, response.clone());
       await cache.put(rootRequest, response.clone());

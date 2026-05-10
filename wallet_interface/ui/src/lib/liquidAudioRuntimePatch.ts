@@ -78,33 +78,11 @@ const RUNNER_PATCH_PATTERNS = [
   },
   {
     key: "vocoderDynamicOutputLocation",
-    label: "vocoder dynamic cache output location",
+    label: "vocoder WASM execution provider",
     pattern:
       /const\s+vocoderOpts\s*=\s*device\s*===\s*['"]webgpu['"]\s*\?\s*\{\s*preferredOutputLocation\s*:\s*\{\s*new_keys\s*:\s*['"]gpu-buffer['"]\s*,\s*new_values\s*:\s*['"]gpu-buffer['"]\s*,\s*depth_slices\s*:\s*['"]gpu-buffer['"]\s*\}\s*\}\s*:\s*\{\s*\};?/,
     replacement: () =>
-      "const vocoderOpts = { enableMemPattern: false }; // Dynamic vocoder KV caches change from length 0 to 1; GPU output binding can reuse an incompatible buffer.",
-  },
-  {
-    key: "vocoderNonZeroCacheData",
-    label: "vocoder non-zero cache backing arrays",
-    pattern:
-      /emptyKeysData\s*:\s*new\s+Float32Array\(0\),\s*emptyValuesData\s*:\s*new\s+Float32Array\(0\),/,
-    replacement: () =>
-      "emptyKeysData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim),\n      emptyValuesData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim),",
-  },
-  {
-    key: "vocoderNonZeroKeysCacheShape",
-    label: "vocoder non-zero keys cache tensor shape",
-    pattern:
-      /cache\.emptyKeysData,\s*\[\s*numLayers,\s*1,\s*numKvHeads,\s*0,\s*headDim\s*\]/,
-    replacement: () => "cache.emptyKeysData,\n      [numLayers, 1, numKvHeads, 1, headDim]",
-  },
-  {
-    key: "vocoderNonZeroValuesCacheShape",
-    label: "vocoder non-zero values cache tensor shape",
-    pattern:
-      /cache\.emptyValuesData,\s*\[\s*numLayers,\s*1,\s*numKvHeads,\s*0,\s*headDim\s*\]/,
-    replacement: () => "cache.emptyValuesData,\n      [numLayers, 1, numKvHeads, 1, headDim]",
+      "const vocoderOpts = { executionProviders: ['wasm'], enableMemPattern: false }; // The vocoder grows KV-cache tensors every frame; keep that dynamic stage off WebGPU to avoid output-buffer shape reuse failures.",
   },
   {
     key: "tokenizerEnvFetchCapture",

@@ -1,6 +1,7 @@
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "./audioChatConfig";
 
 type ClientAudioProvider = "local-liquidai" | "browser-speech";
+const LOCAL_AUDIO_RETRY_COOLDOWN_MS = 60_000;
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -13,6 +14,7 @@ interface AudioWorkerResponse {
   mimeType?: string;
   modelName?: string;
   provider?: ClientAudioProvider;
+  text?: string;
 }
 
 interface AudioWorkerMessage {
@@ -49,6 +51,7 @@ export type ClientAudioReplyResult =
       mimeType: string;
       modelName: string;
       provider: "local-liquidai";
+      text?: string;
     }
   | {
       kind: "browser-speech";
@@ -80,6 +83,12 @@ interface ClientAudioReplyServiceOptions {
   createWorker?: () => Worker;
   hasWebGPU?: () => boolean;
   hasSpeechSynthesis?: () => boolean;
+  now?: () => number;
+}
+
+export interface ClientVoiceReplyRequest {
+  prompt: string;
+  fallbackText: string;
 }
 
 export class ClientAudioReplyService {
@@ -87,14 +96,17 @@ export class ClientAudioReplyService {
   private requestCounter = 0;
   private pendingRequests = new Map<string, PendingRequest<AudioWorkerResponse>>();
   private localAudioUnavailableReason: string | undefined;
+  private localAudioUnavailableAt = 0;
   private readonly createWorker: () => Worker;
   private readonly hasWebGPU: () => boolean;
   private readonly hasSpeechSynthesis: () => boolean;
+  private readonly now: () => number;
 
   constructor(options: ClientAudioReplyServiceOptions = {}) {
     this.createWorker = options.createWorker ?? defaultCreateWorker;
     this.hasWebGPU = options.hasWebGPU ?? defaultHasWebGPU;
     this.hasSpeechSynthesis = options.hasSpeechSynthesis ?? defaultHasSpeechSynthesis;
+    this.now = options.now ?? Date.now;
   }
 
   async warmUp(options: ClientAudioProgressOptions = {}): Promise<ClientAudioWarmupResult> {
@@ -120,15 +132,15 @@ export class ClientAudioReplyService {
           provider: "local-liquidai",
         };
       } catch (error) {
-        this.localAudioUnavailableReason = formatError(error);
+        this.markLocalAudioUnavailable(formatError(error));
         this.restartWorker(this.localAudioUnavailableReason);
       }
     }
 
-    const fallbackReason = this.getLocalAudioFallbackReason(modelName);
     if (!this.hasSpeechSynthesis()) {
-      throw new Error(fallbackReason);
+      throw new Error(this.getLocalAudioFallbackReason(modelName, false));
     }
+    const fallbackReason = this.getLocalAudioFallbackReason(modelName, true);
     options.onProgress?.({
       phase: "fallback",
       progress: 100,
@@ -166,11 +178,12 @@ export class ClientAudioReplyService {
             mimeType: result.mimeType || result.audioBlob.type || "audio/wav",
             modelName: result.modelName || modelName,
             provider: "local-liquidai",
+            text: result.text,
           };
         }
         throw new Error("Audio worker completed without an audio blob.");
       } catch (error) {
-        this.localAudioUnavailableReason = formatError(error);
+        this.markLocalAudioUnavailable(formatError(error));
         this.restartWorker(this.localAudioUnavailableReason);
       }
     }
@@ -182,11 +195,62 @@ export class ClientAudioReplyService {
         modelName: AUDIO_CHAT_CONFIG.fallbackVoiceModel,
         provider: "browser-speech",
         fallbackForModel: modelName,
-        fallbackReason: this.getLocalAudioFallbackReason(modelName),
+        fallbackReason: this.getLocalAudioFallbackReason(modelName, true),
       };
     }
 
-    throw new Error(this.getLocalAudioFallbackReason(modelName));
+    throw new Error(this.getLocalAudioFallbackReason(modelName, false));
+  }
+
+  async generateVoiceReply(
+    input: ClientVoiceReplyRequest,
+    options: ClientAudioProgressOptions = {},
+  ): Promise<ClientAudioReplyResult> {
+    const normalizedPrompt = input.prompt.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    const normalizedFallback = input.fallbackText.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    if (!normalizedPrompt) {
+      throw new Error("Voice reply prompt is empty.");
+    }
+
+    const modelName = AUDIO_CHAT_CONFIG.defaultModel;
+    if (this.canAttemptLocalAudio()) {
+      try {
+        const result = await this.sendWorkerRequest(
+          "generateVoiceReply",
+          { text: normalizedPrompt, fallbackText: normalizedFallback, modelName },
+          AUDIO_CHAT_CONFIG.requestTimeoutMs,
+          "Voice reply generation timed out.",
+          options.onProgress,
+        );
+        if (result.audioBlob) {
+          return {
+            kind: "audio",
+            audioBlob: result.audioBlob,
+            mimeType: result.mimeType || result.audioBlob.type || "audio/wav",
+            modelName: result.modelName || modelName,
+            provider: "local-liquidai",
+            text: result.text,
+          };
+        }
+        throw new Error("Audio worker completed without an audio blob.");
+      } catch (error) {
+        this.markLocalAudioUnavailable(formatError(error));
+        this.restartWorker(this.localAudioUnavailableReason);
+      }
+    }
+
+    if (this.hasSpeechSynthesis()) {
+      return {
+        kind: "browser-speech",
+        text: normalizedFallback || "I found an answer, but local audio generation is not available.",
+        modelName: AUDIO_CHAT_CONFIG.fallbackVoiceModel,
+        provider: "browser-speech",
+        fallbackForModel: modelName,
+        fallbackReason: this.getLocalAudioFallbackReason(modelName, true),
+      };
+    }
+
+    throw new Error(this.getLocalAudioFallbackReason(modelName, false));
   }
 
   getStatus() {
@@ -201,25 +265,36 @@ export class ClientAudioReplyService {
   }
 
   private canAttemptLocalAudio(): boolean {
-    return AUDIO_CHAT_CONFIG.enableLocalAudio && !this.localAudioUnavailableReason && this.hasWebGPU();
+    if (!AUDIO_CHAT_CONFIG.enableLocalAudio || !this.hasWebGPU()) return false;
+    if (!this.localAudioUnavailableReason) return true;
+    if (this.now() - this.localAudioUnavailableAt < LOCAL_AUDIO_RETRY_COOLDOWN_MS) return false;
+    this.localAudioUnavailableReason = undefined;
+    this.localAudioUnavailableAt = 0;
+    return true;
   }
 
-  private getLocalAudioFallbackReason(modelName: string): string {
+  private getLocalAudioFallbackReason(modelName: string, speechFallbackAvailable = this.hasSpeechSynthesis()): string {
     if (!AUDIO_CHAT_CONFIG.enableLocalAudio) {
-      return "Local audio generation is disabled by configuration.";
+      return speechFallbackAvailable
+        ? "Local audio generation is disabled by configuration."
+        : "Local audio generation is disabled by configuration, and browser speech fallback is unavailable.";
     }
     if (!this.hasWebGPU()) {
-      return `${modelName} requires local WebGPU; using browser speech output instead.`;
+      return speechFallbackAvailable
+        ? `${modelName} requires local WebGPU; using browser speech output instead.`
+        : `${modelName} requires local WebGPU, and browser speech fallback is unavailable.`;
     }
-    return (
+    const reason =
       this.localAudioUnavailableReason ||
-      `${modelName} could not be started in the browser audio worker; using browser speech output instead.`
-    );
+      `${modelName} could not be started in the browser audio worker.`;
+    return speechFallbackAvailable
+      ? `${reason} Using browser speech output instead.`
+      : `${reason} Browser speech fallback is also unavailable.`;
   }
 
   private sendWorkerRequest(
-    type: "generateAudio" | "warmUp",
-    data: { text?: string; modelName: string },
+    type: "generateAudio" | "generateVoiceReply" | "warmUp",
+    data: { text?: string; fallbackText?: string; modelName: string },
     timeoutMs: number,
     timeoutMessage: string,
     onProgress?: (progress: ClientAudioProgress) => void,
@@ -268,9 +343,14 @@ export class ClientAudioReplyService {
       const error = new Error(event.message || "Audio worker failed.");
       this.pendingRequests.forEach((pending) => pending.reject(error));
       this.pendingRequests.clear();
-      this.localAudioUnavailableReason = error.message;
+      this.markLocalAudioUnavailable(error.message);
       this.restartWorker(error.message);
     };
+  }
+
+  private markLocalAudioUnavailable(reason: string): void {
+    this.localAudioUnavailableReason = reason;
+    this.localAudioUnavailableAt = this.now();
   }
 
   private restartWorker(reason = "Audio worker restarted."): void {

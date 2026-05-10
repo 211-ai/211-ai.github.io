@@ -55,8 +55,14 @@ import {
   patchAudioModelSource,
   patchTransformersWebSource,
 } from "../src/lib/liquidAudioRuntimePatch";
+import {
+  buildVoiceFallbackText,
+  buildVoiceGraphRagPrompt,
+  selectEvidenceBundlesForMessage,
+} from "../src/lib/voiceGraphRagPrompt";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
+import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -228,10 +234,11 @@ function installMemoryLocalStorage() {
 
 interface TestAudioWorkerRequest {
   id: string;
-  type: "generateAudio" | "warmUp";
+  type: "generateAudio" | "generateVoiceReply" | "warmUp";
   data: {
     modelName?: string;
     text?: string;
+    fallbackText?: string;
   };
 }
 
@@ -359,10 +366,9 @@ export class AudioModel {
     expect(patched).toContain("loadAudioEncoder = true");
     expect(patched).toContain("if (loadAudioEncoder)");
     expect(patched).toContain("enableMemPattern: false");
-    expect(patched).toContain("const vocoderOpts = { enableMemPattern: false };");
-    expect(patched).toContain("emptyKeysData: new Float32Array(numLayers * 1 * numKvHeads * 1 * headDim)");
-    expect(patched).toContain("[numLayers, 1, numKvHeads, 1, headDim]");
-    expect(patched).not.toContain("[numLayers, 1, numKvHeads, 0, headDim]");
+    expect(patched).toContain("const vocoderOpts = { executionProviders: ['wasm'], enableMemPattern: false };");
+    expect(patched).toContain("[numLayers, 1, numKvHeads, 0, headDim]");
+    expect(patched).not.toContain("[numLayers, 1, numKvHeads, 1, headDim]");
     expect(patched).not.toContain("new_keys: 'gpu-buffer'");
     expect(patched).toContain("const originalEnvFetch = env.fetch");
     expect(patched).toContain("env.fetch = globalThis.fetch");
@@ -611,8 +617,8 @@ export class AudioModel {
     expect(results).toHaveLength(2);
     expect(results.every((result) => result.kind === "fallback")).toBe(true);
     expect(results.map((result) => (result.kind === "fallback" ? result.fallbackReason : ""))).toEqual([
-      "Failed to fetch decoder_q4.onnx: 404",
-      "Failed to fetch decoder_q4.onnx: 404",
+      "Failed to fetch decoder_q4.onnx: 404 Using browser speech output instead.",
+      "Failed to fetch decoder_q4.onnx: 404 Using browser speech output instead.",
     ]);
   });
 
@@ -674,6 +680,247 @@ export class AudioModel {
         expect.objectContaining({ phase: "decoding", progress: 97 }),
       ]),
     );
+  });
+
+  test("sends evidence prompts to LiquidAI voice reply generation while preserving fallback speech", async () => {
+    let capturedRequest: TestAudioWorkerRequest | undefined;
+    const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      capturedRequest = message;
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        success: true,
+        data: {
+          audioBlob,
+          mimeType: "audio/wav",
+          modelName: message.data.modelName,
+          provider: "local-liquidai",
+          text: "A concise spoken answer.",
+        },
+      });
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const result = await service.generateVoiceReply({
+      prompt: "User voice query: where can I find food?\nEvidence bundle for reasoning:\n[1] Neighborhood Pantry.",
+      fallbackText: "Neighborhood Pantry can help with food today.",
+    });
+
+    expect(capturedRequest).toMatchObject({
+      type: "generateVoiceReply",
+      data: {
+        fallbackText: "Neighborhood Pantry can help with food today.",
+        modelName: AUDIO_CHAT_CONFIG.defaultModel,
+      },
+    });
+    expect(capturedRequest?.data.text).toContain("Evidence bundle for reasoning");
+    expect(result).toMatchObject({
+      kind: "audio",
+      audioBlob,
+      text: "A concise spoken answer.",
+    });
+  });
+
+  test("does not expose the hidden voice evidence prompt when local voice generation fails", async () => {
+    let capturedRequest: TestAudioWorkerRequest | undefined;
+    const worker = createAudioWorkerStub((message, activeWorker) => {
+      capturedRequest = message;
+      emitAudioWorkerMessage(activeWorker, {
+        id: message.id,
+        success: false,
+        error: "Interleaved audio generation failed.",
+      });
+    });
+    const service = new ClientAudioReplyService({
+      createWorker: () => worker as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+    });
+
+    const result = await service.generateVoiceReply({
+      prompt: "User voice query: food help\nEvidence bundle for reasoning:\n[1] Hidden evidence context.",
+      fallbackText: "Neighborhood Pantry can help with food today.",
+    });
+
+    expect(capturedRequest?.data.text).toContain("Hidden evidence context");
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      text: "Neighborhood Pantry can help with food today.",
+      provider: "browser-speech",
+    });
+    expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Hidden evidence context");
+    expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Evidence bundle for reasoning");
+  });
+
+  test("reports a clear failure when no local audio or browser speech path is available", async () => {
+    const service = new ClientAudioReplyService({
+      createWorker: () => {
+        throw new Error("Audio worker failed to start.");
+      },
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => false,
+    });
+
+    await expect(
+      service.generateVoiceReply({
+        prompt: "User voice query: food help",
+        fallbackText: "Fallback food answer.",
+      }),
+    ).rejects.toThrow(/Audio worker failed to start\. Browser speech fallback is also unavailable\./);
+  });
+
+  test("retries local LiquidAI audio after a transient failure cooldown", async () => {
+    let now = 1_000;
+    let requestCount = 0;
+    const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
+    const service = new ClientAudioReplyService({
+      createWorker: () =>
+        createAudioWorkerStub((message, activeWorker) => {
+          requestCount += 1;
+          if (requestCount === 1) {
+            emitAudioWorkerMessage(activeWorker, {
+              id: message.id,
+              success: false,
+              error: "WebGPU device lost.",
+            });
+            return;
+          }
+          emitAudioWorkerMessage(activeWorker, {
+            id: message.id,
+            success: true,
+            data: {
+              audioBlob,
+              mimeType: "audio/wav",
+              modelName: message.data.modelName,
+              provider: "local-liquidai",
+            },
+          });
+        }) as unknown as Worker,
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      now: () => now,
+    });
+
+    const firstResult = await service.generateVoiceReply({
+      prompt: "User voice query: food help",
+      fallbackText: "Fallback food answer.",
+    });
+    now += 60_001;
+    const secondResult = await service.generateVoiceReply({
+      prompt: "User voice query: food help again",
+      fallbackText: "Fallback food answer again.",
+    });
+
+    expect(firstResult).toMatchObject({
+      kind: "browser-speech",
+      text: "Fallback food answer.",
+    });
+    expect(secondResult).toMatchObject({
+      kind: "audio",
+      audioBlob,
+      provider: "local-liquidai",
+    });
+    expect(requestCount).toBe(2);
+  });
+
+  test("builds a voice GraphRAG prompt without exposing citations in browser-speech fallback", () => {
+    const evidence: EvidenceBundle = {
+      id: "evidence-food",
+      query: "food pantry near Portland",
+      generatedAt: NOW,
+      items: [
+        {
+          id: "svc-food-pantry-1",
+          title: "Neighborhood Food Pantry",
+          source: "211 service corpus",
+          snippet: "Offers pantry boxes and walk-in intake on weekday afternoons.",
+          citation: {
+            label: "211 food pantry record",
+            url: "https://example.test/pantry",
+            docId: "svc-food-pantry-1",
+          },
+        },
+        {
+          id: "duplicate-record-alias",
+          title: "Duplicate Neighborhood Food Pantry",
+          source: "211 service corpus",
+          snippet: "Duplicate copy of the pantry record.",
+          citation: {
+            label: "211 food pantry record duplicate",
+            url: "https://example.test/pantry-copy",
+            docId: "svc-food-pantry-1",
+          },
+        },
+      ],
+    };
+    const assistantMessage: AgentMessage = {
+      id: "message-assistant",
+      sessionId: "session-unit",
+      role: "assistant",
+      content: "Neighborhood Food Pantry offers pantry boxes.\n\nSources:\n[1] https://example.test/pantry",
+      createdAt: NOW,
+      status: "complete",
+      evidenceBundleIds: [evidence.id],
+    };
+
+    const selectedEvidence = selectEvidenceBundlesForMessage(assistantMessage, [evidence]);
+    const prompt = buildVoiceGraphRagPrompt({
+      userText: "where can I get food today?",
+      assistantText: assistantMessage.content,
+      evidenceBundles: selectedEvidence,
+    });
+    const fallbackText = buildVoiceFallbackText(assistantMessage.content);
+
+    expect(selectedEvidence).toEqual([evidence]);
+    expect(prompt).toContain("User voice query: where can I get food today?");
+    expect(prompt).toContain("Evidence bundle for reasoning:");
+    expect(prompt).toContain("Neighborhood Food Pantry");
+    expect(prompt).not.toContain("Duplicate Neighborhood Food Pantry");
+    expect(prompt).toContain("doc svc-food-pantry-1");
+    expect(prompt).toContain("sources are shown on screen");
+    expect(fallbackText).toBe("Neighborhood Food Pantry offers pantry boxes.");
+    expect(buildVoiceFallbackText(prompt)).toBe("Neighborhood Food Pantry offers pantry boxes.");
+  });
+
+  test("keeps evidence attached to the voice prompt when the draft answer is long", () => {
+    const evidence: EvidenceBundle = {
+      id: "evidence-food-long",
+      query: "food pantry near Portland",
+      generatedAt: NOW,
+      items: [{
+        id: "svc-food-pantry-1",
+        title: "Neighborhood Food Pantry",
+        source: "211 service corpus",
+        snippet: "Offers pantry boxes, walk-in intake, grocery pickup, and referrals for nearby meal sites.",
+        citation: {
+          label: "211 food pantry record",
+          docId: "svc-food-pantry-1",
+        },
+      }],
+    };
+    const prompt = buildVoiceGraphRagPrompt({
+      userText: "I need food assistance today and I want to know what is nearby.",
+      assistantText: `Neighborhood Food Pantry may be relevant. ${"More draft context. ".repeat(80)}`,
+      evidenceBundles: [evidence],
+    });
+
+    expect(prompt.length).toBeLessThanOrEqual(1200);
+    expect(prompt).toContain("Evidence bundle for reasoning:");
+    expect(prompt).toContain("Neighborhood Food Pantry");
+    expect(prompt).toContain("doc svc-food-pantry-1");
+  });
+
+  test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
+    const currentCaches = new Set(["abby-shell-portal-077-v1", "abby-public-service-detail-portal-077-v1"]);
+
+    expect(shouldDeleteAppCache("abby-shell-portal-076-v1", currentCaches)).toBe(true);
+    expect(shouldDeleteAppCache("abby-public-service-detail-portal-076-v1", currentCaches)).toBe(true);
+    expect(shouldDeleteAppCache("abby-shell-portal-077-v1", currentCaches)).toBe(false);
+    expect(shouldDeleteAppCache("workbox-precache-v1", currentCaches)).toBe(false);
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {

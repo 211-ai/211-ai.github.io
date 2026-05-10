@@ -66,6 +66,7 @@ class GeocodeServiceSpec:
         max_retries: int,
         sleep_seconds: float,
         idle_sleep_seconds: float,
+        retry_zero_hit_threshold: int,
         refresh_browser_corpus: bool,
     ) -> tuple[str, ...]:
         command = [
@@ -88,6 +89,8 @@ class GeocodeServiceSpec:
             str(sleep_seconds),
             "--idle-sleep-seconds",
             str(idle_sleep_seconds),
+            "--retry-zero-hit-threshold",
+            str(retry_zero_hit_threshold),
         ]
         command.append("--refresh-browser-corpus" if refresh_browser_corpus else "--no-refresh-browser-corpus")
         return tuple(command)
@@ -123,6 +126,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument("--sleep-seconds", type=float, default=30.0)
     parser.add_argument("--idle-sleep-seconds", type=float, default=600.0)
+    parser.add_argument("--retry-zero-hit-threshold", type=int, default=8)
     parser.add_argument("--restart-delay", type=int, default=5)
     parser.add_argument("--startup-wait", type=float, default=2.0)
     parser.add_argument("--refresh-browser-corpus", dest="refresh_browser_corpus", action="store_true")
@@ -262,6 +266,7 @@ def start_service(
     max_retries: int,
     sleep_seconds: float,
     idle_sleep_seconds: float,
+    retry_zero_hit_threshold: int,
     restart_delay: int,
     startup_wait: float,
     refresh_browser_corpus: bool,
@@ -285,6 +290,7 @@ def start_service(
             max_retries=max_retries,
             sleep_seconds=sleep_seconds,
             idle_sleep_seconds=idle_sleep_seconds,
+            retry_zero_hit_threshold=retry_zero_hit_threshold,
             refresh_browser_corpus=refresh_browser_corpus,
         ),
         out_path=spec.wrapper_out_path,
@@ -334,6 +340,7 @@ def main(argv: list[str] | None = None) -> int:
             max_retries=args.max_retries,
             sleep_seconds=args.sleep_seconds,
             idle_sleep_seconds=args.idle_sleep_seconds,
+            retry_zero_hit_threshold=args.retry_zero_hit_threshold,
             restart_delay=args.restart_delay,
             startup_wait=args.startup_wait,
             refresh_browser_corpus=args.refresh_browser_corpus,
@@ -351,6 +358,7 @@ def main(argv: list[str] | None = None) -> int:
             max_retries=args.max_retries,
             sleep_seconds=args.sleep_seconds,
             idle_sleep_seconds=args.idle_sleep_seconds,
+            retry_zero_hit_threshold=args.retry_zero_hit_threshold,
             restart_delay=args.restart_delay,
             startup_wait=args.startup_wait,
             refresh_browser_corpus=args.refresh_browser_corpus,

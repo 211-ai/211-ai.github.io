@@ -34,6 +34,7 @@ export const primaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "uploads", label: "Wallet" },
   { id: "shelter", label: "Overview" },
   { id: "provider-clients", label: "Clients served" },
+  { id: "provider-cases", label: "Case management" },
   { id: "provider-messages", label: "Client messages" },
   { id: "provider-analytics", label: "Staff analytics" },
   { id: "provider-proofs", label: "ZK certificates" },
@@ -136,6 +137,63 @@ export type ShelterProviderMessage = {
   createdAt: string;
 };
 
+export type ShelterCaseStatus = "intake" | "active" | "waiting_on_client" | "eligible" | "closed";
+export type ShelterCasePriority = "urgent" | "standard" | "monitor";
+export type ShelterEligibilityCriterion =
+  | "us_citizen"
+  | "service_area_resident"
+  | "income_eligible"
+  | "identity_verified";
+
+export type ShelterCaseRecord = {
+  id: string;
+  shelter: string;
+  clientId: string;
+  caseManagerStaffId: string;
+  status: ShelterCaseStatus;
+  priority: ShelterCasePriority;
+  goal: string;
+  nextStep: string;
+  dueDate: string;
+  services: string[];
+  notes: string;
+  eligibilityCriteria: ShelterEligibilityCriterion[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const providerEligibilityCriteria: Array<{
+  id: ShelterEligibilityCriterion;
+  label: string;
+  certificateType: string;
+  claim: string;
+}> = [
+  {
+    id: "us_citizen",
+    label: "US citizen",
+    certificateType: "us_citizenship",
+    claim: "Client meets US citizenship criteria without exposing source identity documents."
+  },
+  {
+    id: "service_area_resident",
+    label: "Service-area resident",
+    certificateType: "service_area_residency",
+    claim: "Client meets service-area residency criteria without exposing exact address."
+  },
+  {
+    id: "income_eligible",
+    label: "Income eligible",
+    certificateType: "income_eligibility",
+    claim: "Client meets income eligibility criteria without exposing income documents."
+  },
+  {
+    id: "identity_verified",
+    label: "Identity verified",
+    certificateType: "identity_verified",
+    claim: "Client identity has been verified without exposing the underlying identity document."
+  }
+];
+
 export const initialShelterUserAccounts: ShelterUserAccount[] = [
   {
     id: "user-demo-rose-abby",
@@ -196,6 +254,57 @@ export const initialShelterUserAccounts: ShelterUserAccount[] = [
     foundPermanentHousing: false,
     createdByStaffId: "staff-demo-downtown",
     createdAt: "2026-05-04T14:05:00.000Z"
+  }
+];
+
+export const initialShelterCaseRecords: ShelterCaseRecord[] = [
+  {
+    id: "case-demo-rose-abby",
+    shelter: "Rose City Shelter",
+    clientId: "user-demo-rose-abby",
+    caseManagerStaffId: "staff-demo-rose",
+    status: "active",
+    priority: "urgent",
+    goal: "Complete benefits referral and confirm shelter placement.",
+    nextStep: "Verify citizenship eligibility for benefits intake.",
+    dueDate: "2026-05-12",
+    services: ["Shelter", "Benefits", "Health"],
+    notes: "Needs a privacy-preserving eligibility proof before referral packet is shared.",
+    eligibilityCriteria: ["us_citizen", "identity_verified"],
+    createdAt: "2026-05-05T17:10:00.000Z",
+    updatedAt: "2026-05-07T17:45:00.000Z"
+  },
+  {
+    id: "case-demo-rose-casey",
+    shelter: "Rose City Shelter",
+    clientId: "user-demo-rose-casey",
+    caseManagerStaffId: "staff-demo-rose",
+    status: "eligible",
+    priority: "monitor",
+    goal: "Close transportation support after stable housing placement.",
+    nextStep: "Confirm final ride voucher was used.",
+    dueDate: "2026-05-14",
+    services: ["Food", "Transportation"],
+    notes: "Housing found. Keep case open until transportation handoff is complete.",
+    eligibilityCriteria: ["service_area_resident"],
+    createdAt: "2026-05-06T18:45:00.000Z",
+    updatedAt: "2026-05-07T19:05:00.000Z"
+  },
+  {
+    id: "case-demo-downtown-morgan",
+    shelter: "Downtown Outreach Shelter",
+    clientId: "user-demo-downtown-morgan",
+    caseManagerStaffId: "staff-demo-downtown",
+    status: "waiting_on_client",
+    priority: "standard",
+    goal: "Prepare legal-aid and benefits documentation.",
+    nextStep: "Wait for client to approve contact-list sharing.",
+    dueDate: "2026-05-15",
+    services: ["Legal", "Benefits"],
+    notes: "Bot check failed; complete assisted verification before sending documents.",
+    eligibilityCriteria: ["identity_verified", "income_eligible"],
+    createdAt: "2026-05-04T15:15:00.000Z",
+    updatedAt: "2026-05-06T20:20:00.000Z"
   }
 ];
 
@@ -275,6 +384,7 @@ export type PersistedAppState = {
   shelterContactRequests?: ShelterContactRequest[];
   shelterStaffAccounts?: ShelterStaffAccount[];
   shelterUserAccounts?: ShelterUserAccount[];
+  shelterCaseRecords?: ShelterCaseRecord[];
   shelterProviderMessages?: ShelterProviderMessage[];
   savedServices?: SavedService[];
   servicePlans?: ServicePlan[];
@@ -341,6 +451,9 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
     shelterUserAccounts: Array.isArray(persistedState.shelterUserAccounts)
       ? persistedState.shelterUserAccounts
       : initialShelterUserAccounts,
+    shelterCaseRecords: Array.isArray(persistedState.shelterCaseRecords)
+      ? persistedState.shelterCaseRecords
+      : initialShelterCaseRecords,
     shelterProviderMessages: Array.isArray(persistedState.shelterProviderMessages)
       ? persistedState.shelterProviderMessages
       : initialShelterProviderMessages,

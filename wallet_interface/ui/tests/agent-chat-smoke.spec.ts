@@ -157,6 +157,16 @@ test("voice chat automatically captures speech, routes the app command, and play
     .toBeGreaterThan(0);
   await expect
     .poll(() =>
+      page.evaluate(() => {
+        const messages = (window as typeof window & {
+          __abbyAudioWorkerMessages?: Array<{ type?: string; data?: { text?: string; fallbackText?: string } }>;
+        }).__abbyAudioWorkerMessages || [];
+        return messages.find((message) => message.type === "generateVoiceReply")?.data?.text || "";
+      }),
+    )
+    .toContain("User voice query: open services");
+  await expect
+    .poll(() =>
       page.evaluate(
         () =>
           ((window as typeof window & { __abbyWorkerScripts?: string[] }).__abbyWorkerScripts || []).filter((script) =>
@@ -165,6 +175,51 @@ test("voice chat automatically captures speech, routes the app command, and play
       ),
     )
     .toBe(0);
+});
+
+test("voice chat falls back to browser speech when generated audio playback fails", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "Mobile Safari", "Synthetic Audio playback failure is covered in Chromium.");
+  await installFakeSpeechSynthesis(page);
+  await installFakeAudioWorker(page, "success");
+  await installFakeSpeechRecognition(page, "open services");
+  await installFakeMicrophoneMeter(page);
+  await installFakeAudioPlayback(page, "play-error");
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant.getByText(/Audio model ready/i)).toBeVisible({ timeout: 10000 });
+
+  await expect(page.getByRole("heading", { name: /Find support/i })).toBeVisible({ timeout: 15000 });
+  await expect
+    .poll(() => page.evaluate(() => (window as typeof window & { __abbyAudioPlayCalls?: number }).__abbyAudioPlayCalls || 0))
+    .toBeGreaterThan(0);
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as typeof window & { __abbySpeechTexts?: string[] }).__abbySpeechTexts?.join(" ") || ""),
+    )
+    .toMatch(/Opened Services/i);
+});
+
+test("voice chat transcript hides source blocks from assistant audio bubbles", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "Mobile Safari", "Synthetic SpeechRecognition and audio transcript are covered in Chromium.");
+  await installFakeSpeechSynthesis(page);
+  await installFakeAudioWorker(page, "success");
+  await installFakeSpeechRecognition(page, "find food pantry evidence near Portland");
+  await installFakeMicrophoneMeter(page);
+  await installFakeAudioPlayback(page);
+  await installTiny211Corpus(page);
+  await enterSignedInApp(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant.getByLabel(/Voice conversation transcript/i)).toContainText(/food pantry evidence/i, {
+    timeout: 15000,
+  });
+  const transcript = voiceAssistant.getByLabel(/Voice conversation transcript/i);
+  await expect(transcript).toContainText(/Neighborhood Food Pantry|pantry/i, { timeout: 45000 });
+  await expect(transcript).not.toContainText(/Sources?:/i);
+  await expect(transcript).not.toContainText(/https?:\/\//i);
 });
 
 function visibleAssistant(page: Page): Locator {
@@ -224,6 +279,11 @@ async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "p
       writable: true,
       value: [],
     });
+    Object.defineProperty(window, "__abbyAudioWorkerMessages", {
+      configurable: true,
+      writable: true,
+      value: [],
+    });
     Object.defineProperty(navigator, "gpu", {
       configurable: true,
       value: {},
@@ -266,7 +326,10 @@ async function installFakeAudioWorker(page: Page, mode: FakeAudioWorkerMode = "p
         }
       }
 
-      postMessage(message: { id: string; type: string; data?: { modelName?: string } }) {
+      postMessage(message: { id: string; type: string; data?: { modelName?: string; text?: string; fallbackText?: string } }) {
+        (window as typeof window & {
+          __abbyAudioWorkerMessages?: Array<{ id: string; type: string; data?: { modelName?: string; text?: string; fallbackText?: string } }>;
+        }).__abbyAudioWorkerMessages?.push(message);
         const modelName = message.data?.modelName || "LiquidAI/LFM2.5-Audio-1.5B-ONNX";
         window.setTimeout(() => {
           this.onmessage?.({
@@ -526,8 +589,10 @@ async function installFakeMicrophoneMeter(page: Page): Promise<void> {
   });
 }
 
-async function installFakeAudioPlayback(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+type FakeAudioPlaybackMode = "success" | "play-error";
+
+async function installFakeAudioPlayback(page: Page, mode: FakeAudioPlaybackMode = "success"): Promise<void> {
+  await page.addInitScript((playbackMode: FakeAudioPlaybackMode) => {
     Object.defineProperty(window, "__abbyAudioPlayCalls", {
       configurable: true,
       writable: true,
@@ -546,6 +611,10 @@ async function installFakeAudioPlayback(page: Page): Promise<void> {
       async play() {
         const testWindow = window as typeof window & { __abbyAudioPlayCalls?: number };
         testWindow.__abbyAudioPlayCalls = (testWindow.__abbyAudioPlayCalls || 0) + 1;
+        if (playbackMode === "play-error") {
+          this.onerror?.();
+          throw new Error("Synthetic audio playback failure.");
+        }
         window.setTimeout(() => this.onended?.(), 10);
       }
 
@@ -558,7 +627,7 @@ async function installFakeAudioPlayback(page: Page): Promise<void> {
       configurable: true,
       value: FakeAudio,
     });
-  });
+  }, mode);
 }
 
 async function installTiny211Corpus(page: Page): Promise<void> {

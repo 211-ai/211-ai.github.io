@@ -102,6 +102,7 @@ const routeIds = [
   "interactions",
   "shelter",
   "provider-clients",
+  "provider-cases",
   "provider-messages",
   "provider-analytics",
   "provider-proofs",

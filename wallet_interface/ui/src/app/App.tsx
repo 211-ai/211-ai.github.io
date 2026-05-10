@@ -138,11 +138,16 @@ import {
   disclosureScopes,
   getRouteFromHash,
   primaryRoutes,
+  providerEligibilityCriteria,
   readPersistedAppState,
   secondaryRoutes,
   serviceNeeds,
   setLocationRouteHash,
   shelterOptions,
+  ShelterCasePriority,
+  ShelterCaseRecord,
+  ShelterCaseStatus,
+  ShelterEligibilityCriterion,
   ShelterProviderMessage,
   ShelterStaffAccount,
   ShelterUserAccount,
@@ -187,6 +192,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   interactions: History,
   shelter: UsersRound,
   "provider-clients": ContactRound,
+  "provider-cases": ClipboardCheck,
   "provider-messages": MessageSquare,
   "provider-analytics": BarChart3,
   "provider-proofs": ShieldCheck,
@@ -210,6 +216,7 @@ const secondaryNavigationRoutes = secondaryRoutes
 const providerRouteIds = new Set<RouteId>([
   "shelter",
   "provider-clients",
+  "provider-cases",
   "provider-messages",
   "provider-analytics",
   "provider-proofs",
@@ -218,10 +225,11 @@ const providerRouteIds = new Set<RouteId>([
 const clientNavigationRoutes = routes.filter((route) => !providerRouteIds.has(route.id));
 const providerNavigationRoutes = routes.filter((route) => providerRouteIds.has(route.id));
 
-type ProviderPortalView = "overview" | "clients" | "messages" | "analytics" | "proofs" | "operations";
+type ProviderPortalView = "overview" | "clients" | "cases" | "messages" | "analytics" | "proofs" | "operations";
 
 function getProviderPortalView(route: RouteId): ProviderPortalView {
   if (route === "provider-clients") return "clients";
+  if (route === "provider-cases") return "cases";
   if (route === "provider-messages") return "messages";
   if (route === "provider-analytics") return "analytics";
   if (route === "provider-proofs") return "proofs";
@@ -429,6 +437,9 @@ export function App() {
   const [shelterUserAccounts, setShelterUserAccounts] = useState<ShelterUserAccount[]>(
     () => defaultAppState.shelterUserAccounts
   );
+  const [shelterCaseRecords, setShelterCaseRecords] = useState<ShelterCaseRecord[]>(
+    () => defaultAppState.shelterCaseRecords
+  );
   const [shelterProviderMessages, setShelterProviderMessages] = useState<ShelterProviderMessage[]>(
     () => defaultAppState.shelterProviderMessages
   );
@@ -530,6 +541,7 @@ export function App() {
         shelterContactRequests,
         shelterStaffAccounts,
         shelterUserAccounts,
+        shelterCaseRecords,
         shelterProviderMessages,
         uploads,
         accessRequests,
@@ -584,6 +596,7 @@ export function App() {
       serviceInteractions,
       servicePlans,
       shelterContactRequests,
+      shelterCaseRecords,
       shelterProviderMessages,
       shelterStaffAccounts,
       shelterUserAccounts,
@@ -620,6 +633,7 @@ export function App() {
       shelterContactRequests,
       shelterStaffAccounts,
       shelterUserAccounts,
+      shelterCaseRecords,
       shelterProviderMessages,
       savedServices,
       servicePlans,
@@ -639,6 +653,7 @@ export function App() {
     serviceInteractions,
     servicePlans,
     shelterContactRequests,
+    shelterCaseRecords,
     shelterChecklist,
     shelterProviderMessages,
     shelterStaffAccounts,
@@ -999,9 +1014,11 @@ export function App() {
             navigate={navigate}
             profile={profile}
             proofReceipts={walletProofReceipts}
+            shelterCaseRecords={shelterCaseRecords}
             providerMessages={shelterProviderMessages}
             recipients={recipients}
             setContactRequests={setShelterContactRequests}
+            setShelterCaseRecords={setShelterCaseRecords}
             setProofReceipts={setWalletProofReceipts}
             setProviderMessages={setShelterProviderMessages}
             setRecipients={setRecipients}
@@ -3049,9 +3066,11 @@ function ShelterScreen({
   navigate,
   profile,
   proofReceipts,
+  shelterCaseRecords,
   providerMessages,
   recipients,
   setContactRequests,
+  setShelterCaseRecords,
   setProofReceipts,
   setProviderMessages,
   setRecipients,
@@ -3067,9 +3086,11 @@ function ShelterScreen({
   navigate: (route: RouteId) => void;
   profile: RegistrationProfileDraft;
   proofReceipts: ProofReceiptView[];
+  shelterCaseRecords: ShelterCaseRecord[];
   providerMessages: ShelterProviderMessage[];
   recipients: DisclosureRecipientDraft[];
   setContactRequests: (requests: ShelterContactRequest[]) => void;
+  setShelterCaseRecords: (records: ShelterCaseRecord[]) => void;
   setProofReceipts: (proofs: ProofReceiptView[]) => void;
   setProviderMessages: (messages: ShelterProviderMessage[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
@@ -3097,9 +3118,12 @@ function ShelterScreen({
   const [proofDraft, setProofDraft] = useState({
     clientId: "",
     proofType: "service_attendance",
+    criterionId: "" as ShelterEligibilityCriterion | "",
+    caseId: "",
     verifier: "Provider portal verifier",
     claim: "Client received services from this organization without exposing private documents."
   });
+  const [caseStatusFilter, setCaseStatusFilter] = useState<ShelterCaseStatus | "all">("all");
 
   const staffForShelter = shelterStaffAccounts.filter((account) => account.shelter === adminShelter);
   const verifiedStaffForOperatorShelter = shelterStaffAccounts.filter(
@@ -3108,6 +3132,7 @@ function ShelterScreen({
   const selectedOperator = shelterStaffAccounts.find((account) => account.id === operatorStaffId && account.verified);
   const activeProviderOperator = selectedOperator ?? verifiedStaffForOperatorShelter[0];
   const usersForOperatorShelter = shelterUserAccounts.filter((account) => account.shelter === operatorShelter);
+  const caseRecordsForShelter = shelterCaseRecords.filter((record) => record.shelter === operatorShelter);
   const requestsForOperatorShelter = contactRequests.filter((request) => request.shelterName === operatorShelter);
   const providerMessagesForShelter = providerMessages
     .filter((message) => message.shelter === operatorShelter)
@@ -3144,19 +3169,131 @@ function ShelterScreen({
   const housedClientCount = usersForOperatorShelter.filter((account) => account.foundPermanentHousing).length;
   const activeClientCount = Math.max(0, usersForOperatorShelter.length - housedClientCount);
   const verifiedStaffCount = verifiedStaffForOperatorShelter.length;
+  const allStaffForOperatorShelter = shelterStaffAccounts.filter((account) => account.shelter === operatorShelter);
+  const unverifiedStaffCount = allStaffForOperatorShelter.filter((account) => !account.verified).length;
+  const caseRows = caseRecordsForShelter
+    .map((record) => ({
+      record,
+      client: usersForOperatorShelter.find((account) => account.id === record.clientId),
+      caseManager: shelterStaffAccounts.find((account) => account.id === record.caseManagerStaffId)
+    }))
+    .filter((row): row is { record: ShelterCaseRecord; client: ShelterUserAccount; caseManager: ShelterStaffAccount | undefined } =>
+      Boolean(row.client)
+    )
+    .filter((row) => caseStatusFilter === "all" || row.record.status === caseStatusFilter)
+    .sort(
+      (left, right) =>
+        providerCasePriorityRank(left.record.priority) - providerCasePriorityRank(right.record.priority) ||
+        new Date(left.record.dueDate).getTime() - new Date(right.record.dueDate).getTime()
+    );
+  const openCaseCount = caseRecordsForShelter.filter((record) => record.status !== "closed").length;
+  const urgentCaseCount = caseRecordsForShelter.filter((record) => record.priority === "urgent" && record.status !== "closed").length;
+  const waitingCaseCount = caseRecordsForShelter.filter((record) => record.status === "waiting_on_client").length;
+  const eligibilityProofCount = providerProofsForShelter.filter((proof) => proof.publicInputs.eligibility_criterion).length;
+  const clientAnalytics = usersForOperatorShelter.map((client) => {
+    const clientMessages = providerMessagesForShelter.filter((message) => message.clientId === client.id);
+    const clientProofs = providerProofsForShelter.filter(
+      (proof) => proof.publicInputs.client_commitment === providerClientCommitment(client)
+    );
+    return {
+      client,
+      messageCount: clientMessages.length,
+      proofCount: clientProofs.length,
+      latestMessageAt: latestProviderTimestamp(clientMessages.map((message) => message.createdAt)),
+      latestProofAt: latestProviderTimestamp(clientProofs.map((proof) => proof.createdAt))
+    };
+  });
+  const clientsWithMessagesCount = clientAnalytics.filter((item) => item.messageCount > 0).length;
+  const clientsWithProofsCount = clientAnalytics.filter((item) => item.proofCount > 0).length;
+  const clientsWithoutMessagesCount = Math.max(0, usersForOperatorShelter.length - clientsWithMessagesCount);
+  const clientsWithoutProofsCount = Math.max(0, usersForOperatorShelter.length - clientsWithProofsCount);
+  const clientsMissingEmergencyContactCount = usersForOperatorShelter.filter(
+    (account) => !account.localPrecinctNotified && !account.foundPermanentHousing
+  ).length;
+  const failedHealthCheckCount = usersForOperatorShelter.filter((account) => account.easyBotCheckStatus === "failed").length;
+  const providerServiceNeedCounts = serviceNeeds
+    .map((need) => ({
+      need,
+      count: usersForOperatorShelter.filter((account) => account.serviceNeeds.includes(need)).length
+    }))
+    .filter((item) => item.count > 0)
+    .sort((left, right) => right.count - left.count || left.need.localeCompare(right.need));
+  const topServiceNeed = providerServiceNeedCounts[0];
+  const providerProofTypeCounts = providerProofsForShelter.reduce<Record<string, number>>((counts, proof) => {
+    const proofType = proof.publicInputs.certificate_type || proof.proofType.replace("provider_", "");
+    counts[proofType] = (counts[proofType] ?? 0) + 1;
+    return counts;
+  }, {});
+  const providerProofTypeRows = Object.entries(providerProofTypeCounts).sort(
+    ([leftType, leftCount], [rightType, rightCount]) => rightCount - leftCount || leftType.localeCompare(rightType)
+  );
+  const providerProofStaffRows = allStaffForOperatorShelter
+    .map((staff) => {
+      const proofs = providerProofsForShelter.filter((proof) => proof.publicInputs.staff_id === staff.id);
+      return {
+        staff,
+        proofCount: proofs.length,
+        latestProofAt: latestProviderTimestamp(proofs.map((proof) => proof.createdAt))
+      };
+    })
+    .sort((left, right) => right.proofCount - left.proofCount || left.staff.displayName.localeCompare(right.staff.displayName));
+  const providerRecentActivity = [
+    ...usersForOperatorShelter.map((account) => ({
+      id: `client-${account.id}`,
+      title: `${account.preferredName || account.legalName} added to service caseload`,
+      detail: `${account.serviceNeeds.length ? account.serviceNeeds.join(", ") : "No needs selected"} · ${
+        shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"
+      }`,
+      tone: account.foundPermanentHousing ? "success" : "warning",
+      createdAt: account.createdAt
+    })),
+    ...providerMessagesForShelter.map((message) => ({
+      id: `message-${message.id}`,
+      title: `Message sent to ${message.clientName}`,
+      detail: `${message.subject} · ${message.staffName}`,
+      tone: "neutral",
+      createdAt: message.createdAt
+    })),
+    ...providerProofsForShelter.map((proof) => ({
+      id: `proof-${proof.id}`,
+      title: `ZK certificate processed for ${providerProofClientLabel(proof, usersForOperatorShelter)}`,
+      detail: `${proof.publicInputs.certificate_type || proof.proofType.replace("provider_", "")} · ${proof.verifier}`,
+      tone: "success",
+      createdAt: proof.createdAt
+    })),
+    ...requestsForOperatorShelter.map((request) => ({
+      id: `request-${request.id}`,
+      title: `Contact request ${request.status}`,
+      detail: `${request.userName} · ${request.direction === "user_to_shelter" ? "client initiated" : "provider initiated"}`,
+      tone: request.status === "pending" ? "warning" : request.status === "approved" ? "success" : "neutral",
+      createdAt: request.decidedAt ?? request.createdAt
+    }))
+  ].sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()).slice(0, 8);
   const staffAnalytics = shelterStaffAccounts
     .filter((account) => account.shelter === operatorShelter)
     .map((staff) => {
       const servedClients = usersForOperatorShelter.filter((account) => account.createdByStaffId === staff.id);
       const staffMessages = providerMessagesForShelter.filter((message) => message.staffId === staff.id);
       const staffProofs = providerProofsForShelter.filter((proof) => proof.publicInputs.staff_id === staff.id);
+      const clientsWithProofs = servedClients.filter((client) =>
+        staffProofs.some((proof) => proof.publicInputs.client_commitment === providerClientCommitment(client))
+      ).length;
       return {
         staff,
         servedCount: servedClients.length,
         activeCount: servedClients.filter((account) => !account.foundPermanentHousing).length,
         housedCount: servedClients.filter((account) => account.foundPermanentHousing).length,
         messageCount: staffMessages.length,
-        proofCount: staffProofs.length
+        proofCount: staffProofs.length,
+        clientsNeedingProofCount: Math.max(0, servedClients.length - clientsWithProofs),
+        proofCoverage: formatProviderPercent(clientsWithProofs, servedClients.length),
+        lastActivityAt:
+          latestProviderTimestamp([
+            staff.updatedAt,
+            ...servedClients.map((account) => account.createdAt),
+            ...staffMessages.map((message) => message.createdAt),
+            ...staffProofs.map((proof) => proof.createdAt)
+          ]) ?? staff.updatedAt
       };
     })
     .sort((left, right) => right.servedCount - left.servedCount || left.staff.displayName.localeCompare(right.staff.displayName));
@@ -3221,6 +3358,25 @@ function ShelterScreen({
       createdAt: new Date().toISOString()
     };
     setShelterUserAccounts([...shelterUserAccounts, newUser]);
+    setShelterCaseRecords([
+      ...shelterCaseRecords,
+      {
+        id: `case-${Date.now()}`,
+        shelter: operatorShelter,
+        clientId: newUser.id,
+        caseManagerStaffId: selectedOperator.id,
+        status: "intake",
+        priority: userDraft.localPrecinctNotified ? "standard" : "urgent",
+        goal: "Complete intake and service plan.",
+        nextStep: "Confirm eligibility criteria and collect consent for referrals.",
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        services: userDraft.serviceNeeds,
+        notes: "Created from assisted provider registration.",
+        eligibilityCriteria: ["identity_verified"],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ]);
     setUserDraft(defaultManagedUserDraft);
     setManagedUserFileDetail("");
     setManagedUserUploadError("");
@@ -3228,18 +3384,36 @@ function ShelterScreen({
 
   function createStaffAccount(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!selectedOperator || !staffDraft.displayName.trim()) return;
+    if (!isShelterAdmin || !staffDraft.displayName.trim()) return;
 
     const newStaff: ShelterStaffAccount = {
       id: `staff-${Date.now()}`,
-      shelter: operatorShelter,
+      shelter: adminShelter,
       displayName: staffDraft.displayName.trim(),
       email: staffDraft.email.trim(),
-      verified: false,
+      verified: true,
       updatedAt: new Date().toISOString()
     };
     setShelterStaffAccounts([...shelterStaffAccounts, newStaff]);
     setStaffDraft({ displayName: "", email: "" });
+  }
+
+  function removeStaffAccount(staffId: string) {
+    setShelterStaffAccounts(shelterStaffAccounts.filter((account) => account.id !== staffId));
+    if (operatorStaffId === staffId) {
+      setOperatorStaffId("");
+    }
+  }
+
+  function updateStaffVerification(staffId: string, verified: boolean) {
+    setShelterStaffAccounts(
+      shelterStaffAccounts.map((item) =>
+        item.id === staffId ? { ...item, verified, updatedAt: new Date().toISOString() } : item
+      )
+    );
+    if (!verified && operatorStaffId === staffId) {
+      setOperatorStaffId("");
+    }
   }
 
   function shelterRecipientExists(shelterName: string) {
@@ -3310,6 +3484,16 @@ function ShelterScreen({
     navigate("provider-messages");
   }
 
+  function prepareCaseMessage(caseRecord: ShelterCaseRecord, client: ShelterUserAccount) {
+    setMessageDraft({
+      clientId: client.id,
+      channel: client.phone ? "sms" : client.email ? "email" : "in_app",
+      subject: `Case update: ${caseRecord.goal}`,
+      body: `Hi ${client.preferredName || client.legalName}, this is ${activeProviderOperator?.displayName ?? "your service provider"} from ${operatorShelter}. Your next step is: ${caseRecord.nextStep}`
+    });
+    navigate("provider-messages");
+  }
+
   function sendProviderMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!activeProviderOperator || !selectedMessageClient || !messageDraft.body.trim()) return;
@@ -3335,10 +3519,47 @@ function ShelterScreen({
     setProofDraft({
       clientId: client.id,
       proofType: "service_attendance",
+      criterionId: "",
+      caseId: "",
       verifier: `${operatorShelter} certificate verifier`,
       claim: "Client attended or received a service without exposing private documents."
     });
     navigate("provider-proofs");
+  }
+
+  function prepareEligibilityProof(
+    client: ShelterUserAccount,
+    criterionId: ShelterEligibilityCriterion,
+    caseRecord?: ShelterCaseRecord
+  ) {
+    const criterion = providerEligibilityCriteria.find((item) => item.id === criterionId);
+    setProofDraft({
+      clientId: client.id,
+      proofType: criterion?.certificateType ?? "eligibility",
+      criterionId,
+      caseId: caseRecord?.id ?? "",
+      verifier: `${operatorShelter} eligibility verifier`,
+      claim: criterion?.claim ?? "Client meets the selected eligibility criteria without exposing private documents."
+    });
+    navigate("provider-proofs");
+  }
+
+  function selectProofCriterion(criterionId: ShelterEligibilityCriterion | "") {
+    const criterion = providerEligibilityCriteria.find((item) => item.id === criterionId);
+    setProofDraft({
+      ...proofDraft,
+      criterionId,
+      proofType: criterion?.certificateType ?? proofDraft.proofType,
+      claim: criterion?.claim ?? proofDraft.claim
+    });
+  }
+
+  function updateCaseRecord(caseId: string, patch: Partial<ShelterCaseRecord>) {
+    setShelterCaseRecords(
+      shelterCaseRecords.map((record) =>
+        record.id === caseId ? { ...record, ...patch, updatedAt: new Date().toISOString() } : record
+      )
+    );
   }
 
   function processProviderProofCertificate(event: FormEvent<HTMLFormElement>) {
@@ -3367,8 +3588,15 @@ function ShelterScreen({
       publicInputs: {
         shelter: operatorShelter,
         client_commitment: appStableSuffix(`${selectedProofClient.id}:${selectedProofClient.dateOfBirth}`),
-      staff_id: activeProviderOperator.id,
+        staff_id: activeProviderOperator.id,
         certificate_type: proofDraft.proofType,
+        ...(proofDraft.criterionId
+          ? {
+              eligibility_criterion: proofDraft.criterionId,
+              eligibility_result: "meets_criteria"
+            }
+          : {}),
+        ...(proofDraft.caseId ? { case_id: proofDraft.caseId } : {}),
         issued_at: createdAt
       },
       witnessLabel: `${selectedProofClient.preferredName || selectedProofClient.legalName} service record`,
@@ -3397,6 +3625,7 @@ function ShelterScreen({
   const providerViewTitle: Record<ProviderPortalView, string> = {
     overview: "Provider overview",
     clients: "Clients served",
+    cases: "Case management",
     messages: "Client messages",
     analytics: "Staff analytics",
     proofs: "Zero-knowledge certificates",
@@ -3442,6 +3671,10 @@ function ShelterScreen({
               <ContactRound aria-hidden="true" size={18} />
               Clients
             </Button>
+            <Button onClick={() => navigate("provider-cases")} variant="secondary">
+              <ClipboardCheck aria-hidden="true" size={18} />
+              Cases
+            </Button>
             <Button onClick={() => navigate("provider-messages")} variant="secondary">
               <MessageSquare aria-hidden="true" size={18} />
               Messages
@@ -3462,6 +3695,9 @@ function ShelterScreen({
           </button>
           <button className="tool-tile" onClick={() => navigate("provider-operations")} type="button">
             <UsersRound size={24} /> Verify contact
+          </button>
+          <button className="tool-tile" onClick={() => navigate("provider-cases")} type="button">
+            <ClipboardCheck size={24} /> Manage cases
           </button>
           <button className="tool-tile" onClick={() => navigate("provider-analytics")} type="button">
             <ShieldCheck size={24} /> Review staff audit
@@ -3487,7 +3723,9 @@ function ShelterScreen({
       <Section title="Provider overview">
         <div className="dashboard-grid">
           <StatusPanel label="Clients served" value={String(usersForOperatorShelter.length)} tone="teal" />
+          <StatusPanel label="Open cases" value={String(openCaseCount)} tone="teal" />
           <StatusPanel label="Active support" value={String(activeClientCount)} tone="gold" />
+          <StatusPanel label="Urgent cases" value={String(urgentCaseCount)} tone="red" />
           <StatusPanel label="Messages sent" value={String(providerMessagesForShelter.length)} tone="teal" />
           <StatusPanel label="ZK certificates" value={String(providerProofsForShelter.length)} tone="gold" />
           <StatusPanel label="Verified staff" value={String(verifiedStaffCount)} tone="teal" />
@@ -3543,6 +3781,147 @@ function ShelterScreen({
           )}
         </div>
       </Section>
+      ) : null}
+      {view === "cases" ? (
+        <>
+          <Section title="Case management">
+            <div className="dashboard-grid">
+              <StatusPanel label="Open cases" value={String(openCaseCount)} tone="teal" />
+              <StatusPanel label="Urgent cases" value={String(urgentCaseCount)} tone="red" />
+              <StatusPanel label="Waiting on client" value={String(waitingCaseCount)} tone="gold" />
+              <StatusPanel label="Eligibility proofs" value={String(eligibilityProofCount)} tone="teal" />
+            </div>
+            <div className="message-toolbar">
+              <Field label="Case status">
+                <select value={caseStatusFilter} onChange={(event) => setCaseStatusFilter(event.target.value as typeof caseStatusFilter)}>
+                  <option value="all">All cases</option>
+                  <option value="intake">Intake</option>
+                  <option value="active">Active</option>
+                  <option value="waiting_on_client">Waiting on client</option>
+                  <option value="eligible">Eligible</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </Field>
+            </div>
+            <div className="list-stack provider-case-list">
+              {caseRows.length ? (
+                caseRows.map(({ record, client, caseManager }) => {
+                  const clientProofs = providerProofsForShelter.filter(
+                    (proof) =>
+                      proof.publicInputs.client_commitment === providerClientCommitment(client) &&
+                      (!proof.publicInputs.case_id || proof.publicInputs.case_id === record.id)
+                  );
+                  return (
+                    <article className="list-item provider-case-item" key={record.id}>
+                      <div>
+                        <h3>{client.preferredName || client.legalName}</h3>
+                        <p>{record.goal}</p>
+                        <div className="badge-row">
+                          <Badge tone={record.priority === "urgent" ? "warning" : "neutral"}>
+                            {providerCasePriorityLabel(record.priority)}
+                          </Badge>
+                          <Badge>{providerCaseStatusLabel(record.status)}</Badge>
+                          <Badge>Due {formatShelterDate(record.dueDate)}</Badge>
+                          <Badge>{caseManager?.displayName ?? "Unassigned"}</Badge>
+                          <Badge>{clientProofs.length} proof{clientProofs.length === 1 ? "" : "s"}</Badge>
+                        </div>
+                        <small>{record.services.length ? record.services.join(", ") : "No services selected"}</small>
+                      </div>
+                      <div className="provider-case-controls">
+                        <Field label="Status">
+                          <select
+                            value={record.status}
+                            onChange={(event) =>
+                              updateCaseRecord(record.id, { status: event.target.value as ShelterCaseStatus })
+                            }
+                          >
+                            <option value="intake">Intake</option>
+                            <option value="active">Active</option>
+                            <option value="waiting_on_client">Waiting on client</option>
+                            <option value="eligible">Eligible</option>
+                            <option value="closed">Closed</option>
+                          </select>
+                        </Field>
+                        <Field label="Priority">
+                          <select
+                            value={record.priority}
+                            onChange={(event) =>
+                              updateCaseRecord(record.id, { priority: event.target.value as ShelterCasePriority })
+                            }
+                          >
+                            <option value="urgent">Urgent</option>
+                            <option value="standard">Standard</option>
+                            <option value="monitor">Monitor</option>
+                          </select>
+                        </Field>
+                        <Field label="Due date">
+                          <input
+                            type="date"
+                            value={record.dueDate}
+                            onChange={(event) => updateCaseRecord(record.id, { dueDate: event.target.value })}
+                          />
+                        </Field>
+                        <Field label="Next step">
+                          <input
+                            value={record.nextStep}
+                            onChange={(event) => updateCaseRecord(record.id, { nextStep: event.target.value })}
+                          />
+                        </Field>
+                        <Field label="Case notes">
+                          <textarea
+                            rows={3}
+                            value={record.notes}
+                            onChange={(event) => updateCaseRecord(record.id, { notes: event.target.value })}
+                          />
+                        </Field>
+                      </div>
+                      <div className="provider-case-criteria">
+                        {record.eligibilityCriteria.map((criterionId) => {
+                          const proven = clientProofs.some(
+                            (proof) => proof.publicInputs.eligibility_criterion === criterionId
+                          );
+                          return (
+                            <div className="provider-case-criterion" key={`${record.id}-${criterionId}`}>
+                              <Badge tone={proven ? "success" : "warning"}>
+                                {providerEligibilityLabel(criterionId)} {proven ? "proved" : "needed"}
+                              </Badge>
+                              <Button
+                                disabled={!activeProviderOperator}
+                                onClick={() => prepareEligibilityProof(client, criterionId, record)}
+                                variant="secondary"
+                              >
+                                {criterionId === "us_citizen" ? "Prove US citizen" : "Prepare proof"}
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="row-actions">
+                        <Button disabled={!activeProviderOperator} onClick={() => prepareCaseMessage(record, client)} variant="secondary">
+                          <MessageSquare aria-hidden="true" size={18} />
+                          Message client
+                        </Button>
+                        <Button
+                          disabled={!activeProviderOperator}
+                          onClick={() => prepareEligibilityProof(client, record.eligibilityCriteria[0] ?? "identity_verified", record)}
+                          variant="secondary"
+                        >
+                          <ShieldCheck aria-hidden="true" size={18} />
+                          Eligibility proof
+                        </Button>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="empty-state">
+                  <h3>No cases in this view</h3>
+                  <p>Create a client account or change the status filter to see additional cases.</p>
+                </div>
+              )}
+            </div>
+          </Section>
+        </>
       ) : null}
       {view === "messages" ? (
       <Section title="Client notifications and messages">
@@ -3626,111 +4005,273 @@ function ShelterScreen({
       </Section>
       ) : null}
       {view === "analytics" ? (
-      <Section title="Staff analytics">
-        <div className="list-stack provider-staff-analytics">
-          {staffAnalytics.length ? (
-            staffAnalytics.map((item) => (
-              <article className="list-item provider-staff-row" key={`analytics-${item.staff.id}`}>
-                <div>
-                  <h3>{item.staff.displayName}</h3>
-                  <p>{item.staff.email || "No email provided"}</p>
-                  <div className="provider-staff-metrics" aria-label={`${item.staff.displayName} staff analytics`}>
-                    <span><strong>{item.servedCount}</strong> served</span>
-                    <span><strong>{item.activeCount}</strong> active</span>
-                    <span><strong>{item.housedCount}</strong> housed</span>
-                    <span><strong>{item.messageCount}</strong> messages</span>
-                    <span><strong>{item.proofCount}</strong> proofs</span>
-                  </div>
+        <>
+          <Section title="Operational insights">
+            <div className="dashboard-grid">
+              <StatusPanel label="Housing rate" value={formatProviderPercent(housedClientCount, usersForOperatorShelter.length)} tone="teal" />
+              <StatusPanel label="Message reach" value={formatProviderPercent(clientsWithMessagesCount, usersForOperatorShelter.length)} tone="gold" />
+              <StatusPanel label="Proof coverage" value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="teal" />
+              <StatusPanel label="Missing contact" value={String(clientsMissingEmergencyContactCount)} tone="red" />
+              <StatusPanel label="Health checks" value={String(failedHealthCheckCount)} tone="gold" />
+              <StatusPanel label="Staff inactive" value={String(unverifiedStaffCount)} tone="red" />
+            </div>
+            <div className="provider-insight-grid">
+              <article className="provider-insight-card">
+                <h3>Client support signals</h3>
+                <p>
+                  {activeClientCount} active client{activeClientCount === 1 ? "" : "s"} still need support.{" "}
+                  {topServiceNeed ? `${topServiceNeed.need} is the most common need.` : "No service needs have been selected yet."}
+                </p>
+                <div className="provider-staff-metrics" aria-label="Client support metrics">
+                  <span><strong>{clientsWithoutMessagesCount}</strong> no messages</span>
+                  <span><strong>{clientsWithoutProofsCount}</strong> no proofs</span>
+                  <span><strong>{pendingContactRequestCount}</strong> pending requests</span>
                 </div>
-                <Badge tone={item.staff.verified ? "success" : "warning"}>
-                  {item.staff.verified ? "Verified" : "Verification off"}
-                </Badge>
               </article>
-            ))
-          ) : (
-            <small>No staff analytics available for this shelter yet.</small>
-          )}
-        </div>
-      </Section>
+              <article className="provider-insight-card">
+                <h3>Staff operating picture</h3>
+                <p>
+                  {verifiedStaffCount} verified staff member{verifiedStaffCount === 1 ? "" : "s"} can act for {operatorShelter}.{" "}
+                  {unverifiedStaffCount ? `${unverifiedStaffCount} staff account${unverifiedStaffCount === 1 ? "" : "s"} need administrator review.` : "All listed staff are verified."}
+                </p>
+                <div className="provider-staff-metrics" aria-label="Staff activity metrics">
+                  <span><strong>{providerMessagesForShelter.length}</strong> messages</span>
+                  <span><strong>{providerProofsForShelter.length}</strong> ZK proofs</span>
+                  <span><strong>{providerRecentActivity.length}</strong> timeline events</span>
+                </div>
+              </article>
+            </div>
+          </Section>
+          <Section title="Client need distribution">
+            <div className="provider-insight-grid">
+              {providerServiceNeedCounts.length ? (
+                providerServiceNeedCounts.map((item) => (
+                  <article className="provider-need-card" key={item.need}>
+                    <strong>{item.need}</strong>
+                    <span>{item.count} client{item.count === 1 ? "" : "s"}</span>
+                    <div className="provider-meter" aria-label={`${item.need} clients`}>
+                      <span style={{ width: formatProviderPercent(item.count, usersForOperatorShelter.length) }} />
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <small>No service need data available for this provider yet.</small>
+              )}
+            </div>
+          </Section>
+          <Section title="Staff analytics">
+            <div className="list-stack provider-staff-analytics">
+              {staffAnalytics.length ? (
+                staffAnalytics.map((item) => (
+                  <article className="list-item provider-staff-row" key={`analytics-${item.staff.id}`}>
+                    <div>
+                      <h3>{item.staff.displayName}</h3>
+                      <p>{item.staff.email || "No email provided"}</p>
+                      <div className="provider-staff-metrics" aria-label={`${item.staff.displayName} staff analytics`}>
+                        <span><strong>{item.servedCount}</strong> served</span>
+                        <span><strong>{item.activeCount}</strong> active</span>
+                        <span><strong>{item.housedCount}</strong> housed</span>
+                        <span><strong>{item.messageCount}</strong> messages</span>
+                        <span><strong>{item.proofCount}</strong> proofs</span>
+                        <span><strong>{item.proofCoverage}</strong> proof coverage</span>
+                        <span><strong>{item.clientsNeedingProofCount}</strong> need proofs</span>
+                      </div>
+                      <small>Last activity: {formatProviderActivityDate(item.lastActivityAt)}</small>
+                    </div>
+                    <Badge tone={item.staff.verified ? "success" : "warning"}>
+                      {item.staff.verified ? "Verified" : "Verification off"}
+                    </Badge>
+                  </article>
+                ))
+              ) : (
+                <small>No staff analytics available for this provider yet.</small>
+              )}
+            </div>
+          </Section>
+          <Section title="Recent provider activity">
+            <div className="list-stack provider-activity-list">
+              {providerRecentActivity.length ? (
+                providerRecentActivity.map((activity) => (
+                  <article className="list-item provider-activity-item" key={activity.id}>
+                    <div>
+                      <h3>{activity.title}</h3>
+                      <p>{activity.detail}</p>
+                      <small>{formatProviderActivityDate(activity.createdAt)}</small>
+                    </div>
+                    <Badge tone={activity.tone}>{activity.tone}</Badge>
+                  </article>
+                ))
+              ) : (
+                <small>No provider activity has been recorded yet.</small>
+              )}
+            </div>
+          </Section>
+        </>
       ) : null}
       {view === "proofs" ? (
-      <Section title="Zero-knowledge proof certificates">
-        <p className="section-note">
-          Process certificates as public proof receipts. The public inputs use commitments and service metadata instead of raw client documents.
-        </p>
-        <form className="form-grid provider-proof-form" onSubmit={processProviderProofCertificate}>
-          <Field label="Client" required>
-            <select
-              value={proofDraft.clientId}
-              onChange={(event) => setProofDraft({ ...proofDraft, clientId: event.target.value })}
-            >
-              <option value="">Select client</option>
-              {usersForOperatorShelter.map((account) => (
-                <option key={`proof-${account.id}`} value={account.id}>
-                  {account.preferredName || account.legalName}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Certificate type" required>
-            <select
-              value={proofDraft.proofType}
-              onChange={(event) => setProofDraft({ ...proofDraft, proofType: event.target.value })}
-            >
-              <option value="service_attendance">Service attendance</option>
-              <option value="document_reviewed">Document reviewed</option>
-              <option value="benefits_referral">Benefits referral</option>
-              <option value="housing_step">Housing step completed</option>
-            </select>
-          </Field>
-          <Field label="Verifier" required>
-            <input
-              value={proofDraft.verifier}
-              onChange={(event) => setProofDraft({ ...proofDraft, verifier: event.target.value })}
-            />
-          </Field>
-          <Field label="Public claim" required>
-            <textarea
-              rows={3}
-              value={proofDraft.claim}
-              onChange={(event) => setProofDraft({ ...proofDraft, claim: event.target.value })}
-            />
-          </Field>
-          <div className="full-span row-actions">
-            <Button
-              disabled={!activeProviderOperator || !selectedProofClient || !proofDraft.claim.trim() || !proofDraft.verifier.trim()}
-              type="submit"
-            >
-              <ShieldCheck aria-hidden="true" size={18} />
-              Process certificate
-            </Button>
-          </div>
-        </form>
-        <div className="list-stack">
-          {providerProofsForShelter.length ? (
-            providerProofsForShelter.slice(0, 6).map((proof) => (
-              <article className="list-item provider-proof-item" key={proof.id}>
-                <div>
-                  <h3>{proof.claim}</h3>
-                  <p>{proof.verifier}</p>
-                  <div className="badge-row">
-                    <Badge tone="success">{proof.verificationStatus}</Badge>
-                    <Badge>{proof.proofType.replace("provider_", "").replace("_", " ")}</Badge>
-                    <Badge>{proof.publicInputs.certificate_type}</Badge>
-                    <Badge>{formatShelterDate(proof.createdAt)}</Badge>
-                  </div>
-                  <small>
-                    Client commitment <code>{proof.publicInputs.client_commitment}</code> · Artifact{" "}
-                    <code>{proof.proofArtifactRef}</code>
-                  </small>
+        <>
+          <Section title="Zero-knowledge proof certificates">
+            <p className="section-note">
+              Process certificates as public proof receipts. The public inputs use commitments and service metadata instead of raw client documents.
+            </p>
+            <div className="dashboard-grid">
+              <StatusPanel label="Verified proofs" value={String(providerProofsForShelter.length)} tone="teal" />
+              <StatusPanel label="Client coverage" value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="gold" />
+              <StatusPanel label="Need certificates" value={String(clientsWithoutProofsCount)} tone="red" />
+              <StatusPanel label="Certificate types" value={String(providerProofTypeRows.length)} tone="teal" />
+            </div>
+            <div className="provider-insight-grid">
+              <article className="provider-insight-card">
+                <h3>Certificate mix</h3>
+                <div className="provider-staff-metrics" aria-label="Provider proof type counts">
+                  {providerProofTypeRows.length ? (
+                    providerProofTypeRows.map(([proofType, count]) => (
+                      <span key={proofType}>
+                        <strong>{count}</strong> {proofType.replace("_", " ")}
+                      </span>
+                    ))
+                  ) : (
+                    <span><strong>0</strong> certificates</span>
+                  )}
                 </div>
               </article>
-            ))
-          ) : (
-            <small>No provider proof certificates processed yet.</small>
-          )}
-        </div>
-      </Section>
+              <article className="provider-insight-card">
+                <h3>Issuer activity</h3>
+                <div className="provider-staff-metrics" aria-label="Proof issuer counts">
+                  {providerProofStaffRows.length ? (
+                    providerProofStaffRows.map((item) => (
+                      <span key={`proof-staff-${item.staff.id}`}>
+                        <strong>{item.proofCount}</strong> {item.staff.displayName}
+                      </span>
+                    ))
+                  ) : (
+                    <span><strong>0</strong> issuers</span>
+                  )}
+                </div>
+              </article>
+            </div>
+            <form className="form-grid provider-proof-form" onSubmit={processProviderProofCertificate}>
+              <Field label="Client" required>
+                <select
+                  value={proofDraft.clientId}
+                  onChange={(event) => setProofDraft({ ...proofDraft, clientId: event.target.value })}
+                >
+                  <option value="">Select client</option>
+                  {usersForOperatorShelter.map((account) => (
+                    <option key={`proof-${account.id}`} value={account.id}>
+                      {account.preferredName || account.legalName}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Certificate type" required>
+                <select
+                  value={proofDraft.proofType}
+                  onChange={(event) => setProofDraft({ ...proofDraft, proofType: event.target.value })}
+                >
+                  <option value="service_attendance">Service attendance</option>
+                  <option value="document_reviewed">Document reviewed</option>
+                  <option value="benefits_referral">Benefits referral</option>
+                  <option value="housing_step">Housing step completed</option>
+                  <option value="us_citizenship">US citizenship</option>
+                  <option value="service_area_residency">Service-area residency</option>
+                  <option value="income_eligibility">Income eligibility</option>
+                  <option value="identity_verified">Identity verified</option>
+                </select>
+              </Field>
+              <Field help="Optional; adds public eligibility inputs without exposing source documents." label="Eligibility criterion">
+                <select
+                  value={proofDraft.criterionId}
+                  onChange={(event) => selectProofCriterion(event.target.value as ShelterEligibilityCriterion | "")}
+                >
+                  <option value="">No eligibility criterion</option>
+                  {providerEligibilityCriteria.map((criterion) => (
+                    <option key={criterion.id} value={criterion.id}>
+                      {criterion.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Verifier" required>
+                <input
+                  value={proofDraft.verifier}
+                  onChange={(event) => setProofDraft({ ...proofDraft, verifier: event.target.value })}
+                />
+              </Field>
+              <Field label="Public claim" required>
+                <textarea
+                  rows={3}
+                  value={proofDraft.claim}
+                  onChange={(event) => setProofDraft({ ...proofDraft, claim: event.target.value })}
+                />
+              </Field>
+              <div className="full-span row-actions">
+                <Button
+                  disabled={!activeProviderOperator || !selectedProofClient || !proofDraft.claim.trim() || !proofDraft.verifier.trim()}
+                  type="submit"
+                >
+                  <ShieldCheck aria-hidden="true" size={18} />
+                  Process certificate
+                </Button>
+              </div>
+            </form>
+          </Section>
+          <Section title="Certificate queue">
+            <div className="list-stack provider-proof-queue">
+              {clientAnalytics.length ? (
+                clientAnalytics.map((item) => (
+                  <article className="list-item provider-proof-item" key={`proof-queue-${item.client.id}`}>
+                    <div>
+                      <h3>{item.client.preferredName || item.client.legalName}</h3>
+                      <p>{item.client.serviceNeeds.length ? item.client.serviceNeeds.join(", ") : "No service needs selected"}</p>
+                      <div className="badge-row">
+                        <Badge tone={item.proofCount ? "success" : "warning"}>
+                          {item.proofCount ? `${item.proofCount} proof${item.proofCount === 1 ? "" : "s"}` : "Needs certificate"}
+                        </Badge>
+                        <Badge>{item.messageCount} message{item.messageCount === 1 ? "" : "s"}</Badge>
+                        {item.latestProofAt ? <Badge>{formatProviderActivityDate(item.latestProofAt)}</Badge> : null}
+                      </div>
+                    </div>
+                    <Button disabled={!activeProviderOperator} onClick={() => prepareProviderProof(item.client)} variant="secondary">
+                      Prepare certificate
+                    </Button>
+                  </article>
+                ))
+              ) : (
+                <small>No clients are available for certificate processing yet.</small>
+              )}
+            </div>
+          </Section>
+          <Section title="Verifier transparency log">
+            <div className="list-stack">
+              {providerProofsForShelter.length ? (
+                providerProofsForShelter.slice(0, 8).map((proof) => (
+                  <article className="list-item provider-proof-item" key={proof.id}>
+                    <div>
+                      <h3>{proof.claim}</h3>
+                      <p>{proof.verifier}</p>
+                      <div className="badge-row">
+                        <Badge tone="success">{proof.verificationStatus}</Badge>
+                        <Badge>{providerProofClientLabel(proof, usersForOperatorShelter)}</Badge>
+                        <Badge>{proof.publicInputs.certificate_type}</Badge>
+                        {proof.publicInputs.eligibility_criterion ? (
+                          <Badge>{providerEligibilityLabel(proof.publicInputs.eligibility_criterion as ShelterEligibilityCriterion)}</Badge>
+                        ) : null}
+                        <Badge>{formatProviderActivityDate(proof.createdAt)}</Badge>
+                      </div>
+                      <small>
+                        Client commitment <code>{proof.publicInputs.client_commitment}</code> · Artifact{" "}
+                        <code>{proof.proofArtifactRef}</code> · Circuit <code>{proof.circuitId}</code>
+                      </small>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <small>No provider proof certificates processed yet.</small>
+              )}
+            </div>
+          </Section>
+        </>
       ) : null}
       {view === "operations" ? (
         <>
@@ -3883,27 +4424,6 @@ function ShelterScreen({
                     >
                       Create user account
                     </Button>
-                  </div>
-                </form>
-              </Section>
-
-              <Section title="Create staff account">
-                <form className="form-grid" onSubmit={createStaffAccount}>
-                  <Field label="Staff name" required>
-                    <input
-                      value={staffDraft.displayName}
-                      onChange={(event) => setStaffDraft({ ...staffDraft, displayName: event.target.value })}
-                    />
-                  </Field>
-                  <Field label="Staff email">
-                    <input
-                      type="email"
-                      value={staffDraft.email}
-                      onChange={(event) => setStaffDraft({ ...staffDraft, email: event.target.value })}
-                    />
-                  </Field>
-                  <div className="full-span">
-                    <Button type="submit">Create staff account</Button>
                   </div>
                 </form>
               </Section>
@@ -4072,20 +4592,25 @@ function ShelterScreen({
           </label>
         </div>
       </Section>
-      <Section title="Shelter administrator">
+      <Section title="Provider administrator">
         <label className="consent-box">
           <input
             checked={isShelterAdmin}
-            onChange={(event) => setIsShelterAdmin(event.target.checked)}
+            onChange={(event) => {
+              setIsShelterAdmin(event.target.checked);
+              if (event.target.checked) {
+                setAdminShelter(operatorShelter);
+              }
+            }}
             type="checkbox"
           />
           <span>
-            <strong>I am shelter administrator</strong>
+            <strong>I am an administrator for this provider</strong>
           </span>
         </label>
         {isShelterAdmin ? (
-          <div className="shelter-staff-panel">
-            <Field label="Shelter" required>
+          <div className="shelter-staff-panel provider-admin-panel">
+            <Field label="Provider" required>
               <select value={adminShelter} onChange={(event) => setAdminShelter(event.target.value)}>
                 {shelterOptions.map((shelter) => (
                   <option key={shelter} value={shelter}>
@@ -4094,10 +4619,34 @@ function ShelterScreen({
                 ))}
               </select>
             </Field>
+            <Section title="Add staff member">
+              <form className="form-grid provider-admin-staff-form" onSubmit={createStaffAccount}>
+                <Field label="Staff name" required>
+                  <input
+                    value={staffDraft.displayName}
+                    onChange={(event) => setStaffDraft({ ...staffDraft, displayName: event.target.value })}
+                  />
+                </Field>
+                <Field label="Staff email">
+                  <input
+                    type="email"
+                    value={staffDraft.email}
+                    onChange={(event) => setStaffDraft({ ...staffDraft, email: event.target.value })}
+                  />
+                </Field>
+                <div className="full-span row-actions">
+                  <Button disabled={!staffDraft.displayName.trim()} type="submit">
+                    <UsersRound aria-hidden="true" size={18} />
+                    Add staff member
+                  </Button>
+                </div>
+              </form>
+            </Section>
+            <Section title="Provider staff roster">
             <div className="list-stack">
               {staffForShelter.length ? (
                 staffForShelter.map((account) => (
-                  <article className="list-item" key={account.id}>
+                  <article className="list-item provider-staff-roster-item" key={account.id}>
                     <div>
                       <h3>{account.displayName}</h3>
                       <p>{account.email || "No email provided"}</p>
@@ -4105,28 +4654,24 @@ function ShelterScreen({
                         <Badge tone={account.verified ? "success" : "warning"}>
                           {account.verified ? "Verified" : "Revoked"}
                         </Badge>
+                        <Badge>{formatShelterDate(account.updatedAt)}</Badge>
                       </div>
                     </div>
-                    <Button
-                      onClick={() =>
-                        setShelterStaffAccounts(
-                          shelterStaffAccounts.map((item) =>
-                            item.id === account.id
-                              ? { ...item, verified: !item.verified, updatedAt: new Date().toISOString() }
-                              : item
-                          )
-                        )
-                      }
-                      variant="secondary"
-                    >
-                      {account.verified ? "Revoke verification" : "Re-verify"}
-                    </Button>
+                    <div className="row-actions">
+                      <Button onClick={() => updateStaffVerification(account.id, !account.verified)} variant="secondary">
+                        {account.verified ? "Revoke access" : "Re-verify"}
+                      </Button>
+                      <Button onClick={() => removeStaffAccount(account.id)} variant="danger">
+                        Remove staff
+                      </Button>
+                    </div>
                   </article>
                 ))
               ) : (
                 <small>No staff accounts registered for this shelter yet.</small>
               )}
             </div>
+            </Section>
           </div>
         ) : null}
       </Section>
@@ -4141,9 +4686,63 @@ function contactLabelForShelterUser(account: ShelterUserAccount): string {
 }
 
 function formatShelterDate(value: string): string {
-  const date = new Date(value);
+  const dateOnly = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const date = dateOnly
+    ? new Date(Number(dateOnly[1]), Number(dateOnly[2]) - 1, Number(dateOnly[3]))
+    : new Date(value);
   if (Number.isNaN(date.getTime())) return value || "Date unavailable";
   return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
+
+function providerClientCommitment(account: ShelterUserAccount): string {
+  return appStableSuffix(`${account.id}:${account.dateOfBirth}`);
+}
+
+function providerProofClientLabel(proof: ProofReceiptView, accounts: ShelterUserAccount[]): string {
+  const client = accounts.find((account) => providerClientCommitment(account) === proof.publicInputs.client_commitment);
+  return client ? client.preferredName || client.legalName : "Committed client";
+}
+
+function providerCasePriorityRank(priority: ShelterCasePriority): number {
+  if (priority === "urgent") return 0;
+  if (priority === "standard") return 1;
+  return 2;
+}
+
+function providerCasePriorityLabel(priority: ShelterCasePriority): string {
+  if (priority === "urgent") return "Urgent";
+  if (priority === "standard") return "Standard";
+  return "Monitor";
+}
+
+function providerCaseStatusLabel(status: ShelterCaseStatus): string {
+  return status
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function providerEligibilityLabel(criterionId: ShelterEligibilityCriterion): string {
+  return providerEligibilityCriteria.find((criterion) => criterion.id === criterionId)?.label ?? criterionId;
+}
+
+function formatProviderPercent(value: number, total: number): string {
+  if (!total) return "0%";
+  return `${Math.round((value / total) * 100)}%`;
+}
+
+function latestProviderTimestamp(values: string[]): string | undefined {
+  return values
+    .map((value) => ({ value, time: new Date(value).getTime() }))
+    .filter((item) => Number.isFinite(item.time))
+    .sort((left, right) => right.time - left.time)[0]?.value;
+}
+
+function formatProviderActivityDate(value: string | undefined): string {
+  if (!value) return "No activity";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
 type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";

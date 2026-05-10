@@ -531,6 +531,64 @@ test("verified shelter staff can send a contact-list nudge", async ({ page }) =>
   await expect(nudge.getByText(/pending/i)).toBeVisible();
 });
 
+test("provider administrator can add and remove staff", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-operations");
+  await page.getByLabel(/Service organization/i).selectOption("Rose City Shelter");
+  await expect(page.getByRole("region", { name: /Add staff member/i })).toHaveCount(0);
+
+  await page.getByLabel(/I am an administrator for this provider/i).check();
+  const addStaff = page.getByRole("region", { name: /Add staff member/i });
+  await addStaff.getByLabel(/Staff name/i).fill("Taylor Admin");
+  await addStaff.getByLabel(/Staff email/i).fill("taylor@rose.example");
+  await addStaff.getByRole("button", { name: /Add staff member/i }).click();
+
+  const roster = page.getByRole("region", { name: /Provider staff roster/i });
+  const newStaff = roster.locator(".provider-staff-roster-item").filter({ hasText: "Taylor Admin" });
+  await expect(newStaff.getByText(/Verified/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Revoke access/i }).click();
+  await expect(newStaff.getByText(/Revoked/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Re-verify/i }).click();
+  await expect(newStaff.getByText(/Verified/i)).toBeVisible();
+  await newStaff.getByRole("button", { name: /Remove staff/i }).click();
+  await expect(roster.locator(".provider-staff-roster-item").filter({ hasText: "Taylor Admin" })).toHaveCount(0);
+});
+
+test("provider case management sends messages and proves eligibility criteria", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-cases");
+  await expect(page.locator("h1", { hasText: /Case management/i })).toBeVisible();
+  const caseSection = page.locator('section[aria-labelledby="Case-management"]');
+  const abbyCase = caseSection.locator(".provider-case-item").filter({ hasText: "Abby" });
+  await expect(abbyCase.getByLabel("Next step")).toHaveValue(/Verify citizenship eligibility/i);
+  await abbyCase.getByLabel("Status").selectOption("eligible");
+  await expect(abbyCase.getByLabel("Status")).toHaveValue("eligible");
+
+  await abbyCase.getByRole("button", { name: /Message client/i }).click();
+  const messageSection = page.locator('section[aria-labelledby="Client-notifications-and-messages"]');
+  await expect(page.locator("h1", { hasText: /Client messages/i })).toBeVisible();
+  await messageSection.getByRole("textbox", { name: /Message/i }).fill("Your case is ready for eligibility verification.");
+  await messageSection.getByRole("button", { name: /Send message/i }).click();
+  await expect(messageSection.locator(".provider-message-item").filter({ hasText: /ready for eligibility verification/i })).toBeVisible();
+
+  await page.goto("/#/provider-cases");
+  const refreshedAbbyCase = page.locator('section[aria-labelledby="Case-management"] .provider-case-item').filter({ hasText: "Abby" });
+  await refreshedAbbyCase.getByRole("button", { name: /Prove US citizen/i }).click();
+  const proofSection = page.locator('section[aria-labelledby="Zero-knowledge-proof-certificates"]');
+  await expect(page.locator("h1", { hasText: /Zero-knowledge certificates/i })).toBeVisible();
+  await expect(proofSection.getByLabel("Eligibility criterion")).toHaveValue("us_citizen");
+  await expect(proofSection.getByLabel("Certificate type")).toHaveValue("us_citizenship");
+  await proofSection.getByRole("button", { name: /Process certificate/i }).click();
+
+  const transparencyLog = page.getByRole("region", { name: /Verifier transparency log/i });
+  const citizenshipProof = transparencyLog.locator(".provider-proof-item").filter({ hasText: /US citizenship criteria/i });
+  await expect(citizenshipProof).toBeVisible();
+  await expect(citizenshipProof.getByText("US citizen", { exact: true })).toBeVisible();
+  await expect(citizenshipProof.getByText(/Client commitment/i)).toBeVisible();
+
+  await page.goto("/#/provider-cases");
+  const provedCase = page.locator('section[aria-labelledby="Case-management"] .provider-case-item').filter({ hasText: "Abby" });
+  await expect(provedCase.getByText(/US citizen proved/i)).toBeVisible();
+});
+
 test("provider portal sends client messages and processes ZK certificates", async ({ page }) => {
   await openAppRoute(page, "/#/shelter");
   await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible();
@@ -562,10 +620,28 @@ test("provider portal sends client messages and processes ZK certificates", asyn
   await proofSection.getByLabel("Certificate type").selectOption("benefits_referral");
   await proofSection.getByLabel("Public claim").fill("Client received a benefits referral without exposing private documents.");
   await proofSection.getByRole("button", { name: /Process certificate/i }).click();
-  const processedProof = proofSection.locator(".provider-proof-item").filter({ hasText: /Client received a benefits referral/i });
+  const processedProof = page
+    .getByRole("region", { name: /Verifier transparency log/i })
+    .locator(".provider-proof-item")
+    .filter({ hasText: /Client received a benefits referral/i });
   await expect(processedProof).toBeVisible();
   await expect(processedProof.getByText(/Client commitment/i)).toBeVisible();
   await expect(processedProof.getByText(/verified/i)).toBeVisible();
+});
+
+test("provider analytics and proof menus expose operational insights", async ({ page }) => {
+  await openAppRoute(page, "/#/provider-analytics");
+  await expect(page.locator("h1", { hasText: /Staff analytics/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Operational insights/i })).toContainText(/Proof coverage/i);
+  await expect(page.getByRole("region", { name: /Operational insights/i })).toContainText(/Message reach/i);
+  await expect(page.getByRole("region", { name: /Client need distribution/i })).toContainText(/Shelter/i);
+  await expect(page.getByRole("region", { name: /Recent provider activity/i })).toContainText(/Message sent/i);
+
+  await page.goto("/#/provider-proofs");
+  await expect(page.locator("h1", { hasText: /Zero-knowledge certificates/i })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Zero-knowledge proof certificates/i })).toContainText(/Client coverage/i);
+  await expect(page.getByRole("region", { name: /Certificate queue/i })).toContainText(/Needs certificate/i);
+  await expect(page.getByRole("region", { name: /Verifier transparency log/i })).toBeVisible();
 });
 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
