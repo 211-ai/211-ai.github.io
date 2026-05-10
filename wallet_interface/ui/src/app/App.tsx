@@ -237,7 +237,13 @@ const routeIcons: Record<RouteId, typeof Home> = {
   audit: ClipboardCheck
 };
 
-const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection", "exports", "security"]);
+const removedStandaloneRoutes = new Set<RouteId>([
+  "sharing-rules",
+  "recipient-access",
+  "benefits-protection",
+  "exports",
+  "security"
+]);
 const routes = primaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
@@ -7612,9 +7618,7 @@ function AccountSafetySection({
     <Section
       title="Account safety"
       actions={
-        <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>
-          {hasCurrentSnapshot ? "backup ready" : "no backup"}
-        </Badge>
+        <Badge tone={hasCurrentSnapshot ? "success" : "warning"}>{hasCurrentSnapshot ? "backup ready" : "no backup"}</Badge>
       }
     >
       {!apiConfig ? (

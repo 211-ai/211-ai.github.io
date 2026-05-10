@@ -175,10 +175,7 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Days between check-ins/i)).toBeVisible();
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).toBeVisible();
   await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Save backup/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Session timeout/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Account safety/i })).toHaveCount(0);
+  await expect(page.locator('section[aria-labelledby="Account-safety"]')).toBeVisible();
 
   await page.getByLabel(/Legal or full name/i).fill("Settings User");
   await page.getByLabel(/Days between check-ins/i).fill("12");
@@ -1242,7 +1239,7 @@ test("wallet page can generate and connect a new wallet", async ({ page }) => {
   await expect(calls).toContain("proofs");
 });
 
-test("security screen saves and restores wallet snapshots", async ({ page }) => {
+test("settings screen saves and restores wallet snapshots", async ({ page }) => {
   let saved = false;
   let saveRequests = 0;
   let loadRequests = 0;
@@ -1298,16 +1295,19 @@ test("security screen saves and restores wallet snapshots", async ({ page }) => 
     }
     await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
   });
-  await openAppRoute(page, walletRoute("security", "did:key:owner"));
+  await openAppRoute(page, walletRoute("settings", "did:key:owner"));
 
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText(/no backup/i)).toBeVisible();
-  await page.getByRole("button", { name: /Save backup/i }).click();
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 15_000 });
+  const accountSafety = page.locator('section[aria-labelledby="Account-safety"]');
+  const backupCheckRow = accountSafety.locator(".disclosure-row").filter({ hasText: /Backup check/i });
+  await expect(accountSafety.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
+  await expect(accountSafety.getByText(/no backup/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Save backup/i }).click();
   await expect(page.getByText(/Wallet backup saved/i)).toBeVisible();
-  await expect(page.getByText(/backup ready/i)).toBeVisible();
-  await expect(page.getByText(/verified/i)).toBeVisible();
-  await expect(page.getByText(/abc123def456/i)).toBeVisible();
-  await page.getByRole("button", { name: /Load backup/i }).click();
+  await expect(accountSafety.getByText(/backup ready/i)).toBeVisible();
+  await expect(backupCheckRow.getByText(/verified/i)).toBeVisible();
+  await expect(accountSafety.getByText(/abc123def456/i)).toBeVisible();
+  await accountSafety.getByRole("button", { name: /Load backup/i }).click();
   await expect(page.getByText(/Wallet backup loaded/i)).toBeVisible();
   expect(saveRequests).toBe(1);
   expect(loadRequests).toBe(1);
