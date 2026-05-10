@@ -26,6 +26,7 @@ import {
   UsersRound,
   Wrench
 } from "lucide-react";
+import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
@@ -59,8 +60,17 @@ import {
   getFilecoinStorageConfig,
   toFilecoinStoragePatch,
   uploadFileToFilecoinStorage,
+  uploadProofBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
+import {
+  buildWalletProofBundlePayload,
+  buildWalletProofReviewUrl,
+  readWalletProofBundlePayloadFromUrl,
+  reviewWalletProofBundleReference,
+  reviewWalletProofQrScreenshot,
+  type WalletProofQrReview
+} from "../services/walletProofReview";
 import {
   CheckInChannel,
   AuditEvent,
@@ -549,6 +559,12 @@ const hiddenProofCenterProofTypes = new Set(["location" + "_distance"]);
 
 function visibleProofCenterProofs(proofs: ProofReceiptView[]) {
   return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
+}
+
+function summarizeWalletProofClaims(proofs: ProofReceiptView[]) {
+  const claims = proofs.map((proof) => proof.claim);
+  if (claims.length <= 3) return claims.join(", ") || "Wallet proof summary";
+  return `${claims.slice(0, 3).join(", ")}, +${claims.length - 3} more`;
 }
 
 export function App() {
@@ -1197,6 +1213,7 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             recipients={recipients}
             uploads={uploads}
@@ -3123,12 +3140,14 @@ function ContactsScreen({
 
 function UploadsScreen({
   apiConfig,
+  proofs,
   refreshWalletAuditEvents,
   recipients,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
+  proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
@@ -3141,10 +3160,69 @@ function UploadsScreen({
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
   const filecoinStorageReady = Boolean(filecoinStorageConfig);
   const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
+  const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
+  const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
+  const [walletProofBundleCid, setWalletProofBundleCid] = useState("");
+  const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
+  const walletProofBundlePayload = useMemo(
+    () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
+    [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
+  );
+  const walletProofBundleReference = walletProofBundleCid ? `ipfs://${walletProofBundleCid}` : walletProofBundlePayload;
+  const walletProofReviewUrl = useMemo(
+    () => buildWalletProofReviewUrl(walletProofBundleReference),
+    [walletProofBundleReference]
+  );
+  const walletQrPayloadLabel = filecoinStorageReady
+    ? walletProofBundleCid || "Publishing IPFS CID…"
+    : "Connect IPFS/Filecoin storage to generate a CID.";
 
   useEffect(() => {
     uploadsRef.current = uploads;
   }, [uploads]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!filecoinStorageConfig || walletQrProofs.length === 0) {
+      setWalletProofBundleCid("");
+      setWalletQrCodeUrl("");
+      setWalletQrStatus("failed");
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setWalletQrStatus("loading");
+    void uploadProofBundleToFilecoinStorage(walletProofBundlePayload, {
+      clientConfig: filecoinStorageConfig,
+      walletConfig: apiConfig
+    })
+      .then(async (result) => {
+        const cid = result.ipfsCid || result.cid;
+        if (!cid) throw new Error("The storage backend did not return a CID. Verify the IPFS/Filecoin storage configuration.");
+        const nextQrCodeUrl = await QRCode.toDataURL(cid, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 220
+        });
+        if (!cancelled) {
+          setWalletProofBundleCid(cid);
+          setWalletQrCodeUrl(nextQrCodeUrl);
+          setWalletQrStatus("ready");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setWalletProofBundleCid("");
+          setWalletQrCodeUrl("");
+          setWalletQrStatus("failed");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [apiConfig?.actorDid, apiConfig?.walletId, filecoinStorageConfig, walletProofBundlePayload, walletQrProofs.length]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -3328,6 +3406,59 @@ function UploadsScreen({
         <p className="eyebrow">Wallet</p>
         <h1>Wallet</h1>
       </div>
+      <Section
+        title="Share wallet proof QR"
+        actions={<Badge tone={walletQrProofs.length > 0 ? "success" : "warning"}>{walletQrProofs.length} proof claims</Badge>}
+      >
+        <div className="wallet-proof-qr-panel">
+          {walletQrCodeUrl ? (
+            <img
+              alt="Wallet proof QR code"
+              className="wallet-proof-qr-image"
+              height={220}
+              src={walletQrCodeUrl}
+              width={220}
+            />
+          ) : (
+            <div aria-live="polite" className="wallet-proof-qr-placeholder">
+              {walletQrStatus === "loading"
+                ? "Publishing the wallet proof bundle to IPFS/Filecoin…"
+                : filecoinStorageReady
+                  ? "Wallet proof QR is unavailable right now."
+                  : "Connect IPFS/Filecoin storage to generate a CID-backed wallet proof QR."}
+            </div>
+          )}
+          <div className="wallet-proof-qr-details">
+            <strong>Scan to open the client proof bundle</strong>
+            <small>
+              Services staff can scan this QR or upload a screenshot in Proof Center to review public proof claims without
+              exposing the underlying files.
+            </small>
+            <div className="badge-row">
+              <Badge tone="info">IPFS CID QR</Badge>
+              <Badge>{apiConfig?.walletId ?? "localWallet"}</Badge>
+              {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
+            </div>
+            <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>QR payload</strong>
+                <span>{walletQrPayloadLabel}</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Includes</strong>
+                <span>{summarizeWalletProofClaims(walletQrProofs)}</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Opens</strong>
+                <span>Proof Center review from an IPFS CID-backed proof bundle</span>
+              </div>
+            </div>
+            <a className="button button-secondary" href={walletProofReviewUrl}>
+              Open proof review
+            </a>
+          </div>
+        </div>
+      </Section>
       <Section
         title="Add wallet file"
         actions={
@@ -6330,6 +6461,35 @@ function ProofCenterScreen({
   const [regionId, setRegionId] = useState("multnomah_county");
   const [grantId, setGrantId] = useState("");
   const [proofStatus, setProofStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
+  const [reviewStatus, setReviewStatus] = useState<"idle" | "reviewing" | "reviewed" | "failed">("idle");
+  const [reviewError, setReviewError] = useState("");
+  const [reviewedQrProofs, setReviewedQrProofs] = useState<WalletProofQrReview | null>(null);
+  const linkedWalletProofBundle = useMemo(
+    () => (typeof window === "undefined" ? undefined : readWalletProofBundlePayloadFromUrl(window.location.href)),
+    []
+  );
+
+  useEffect(() => {
+    if (!linkedWalletProofBundle) return;
+    let cancelled = false;
+    setReviewStatus("reviewing");
+    void reviewWalletProofBundleReference(linkedWalletProofBundle, window.location.href, "Wallet proof bundle link", window.location.href)
+      .then((review) => {
+        if (cancelled) return;
+        setReviewedQrProofs(review);
+        setReviewError("");
+        setReviewStatus("reviewed");
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        setReviewedQrProofs(null);
+        setReviewError(error instanceof Error ? error.message : "Unable to review the wallet proof QR.");
+        setReviewStatus("failed");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [linkedWalletProofBundle]);
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -6352,6 +6512,24 @@ function ProofCenterScreen({
     }
   }
 
+  async function reviewQrScreenshot(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setReviewStatus("reviewing");
+    setReviewError("");
+    try {
+      const review = await reviewWalletProofQrScreenshot(file);
+      setReviewedQrProofs(review);
+      setReviewStatus("reviewed");
+    } catch (error) {
+      setReviewedQrProofs(null);
+      setReviewError(error instanceof Error ? error.message : "Unable to review the wallet proof QR.");
+      setReviewStatus("failed");
+    }
+  }
+
   return (
     <div className="screen">
       <div className="page-title">
@@ -6359,8 +6537,70 @@ function ProofCenterScreen({
         <h1>Verified wallet claims</h1>
       </div>
       <p className="page-note">
-        Proof receipts expose public claims and verifier details without showing raw documents or precise location.
+        Proof receipts expose public claims and verifier details without showing raw documents or precise location. You can
+        also upload a wallet QR screenshot to review proof certificates stored on IPFS/Filecoin.
       </p>
+      <article className="proof-card" aria-label="Review wallet proof QR">
+        <div className="scope-header">
+          <div>
+            <h3>Review wallet proof QR</h3>
+            <p>Decode a QR screenshot, follow its IPFS/Filecoin bundle, and review the public claims.</p>
+          </div>
+          <Badge tone={reviewStatus === "reviewed" ? "success" : "neutral"}>QR proof review</Badge>
+        </div>
+        <div className="upload-controls">
+          <label className="upload-dropzone">
+            <Upload aria-hidden="true" size={28} />
+            <span>Choose a screenshot of the wallet QR code</span>
+            <small>Only public proof claims are shown after the linked bundle loads.</small>
+            <span className="upload-picker">
+              <FileUp aria-hidden="true" size={18} /> Select screenshot
+            </span>
+            <input
+              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+              aria-label="Choose proof QR screenshot"
+              onChange={reviewQrScreenshot}
+              type="file"
+            />
+          </label>
+        </div>
+        {reviewStatus === "reviewing" ? <StatusBanner tone="info">Reading the QR screenshot and loading proof certificates.</StatusBanner> : null}
+        {reviewStatus === "failed" ? <StatusBanner tone="warning">{reviewError}</StatusBanner> : null}
+        {reviewedQrProofs ? (
+          <div className="capability-preview" role="group" aria-label="QR proof bundle summary">
+            <div className="scope-header">
+              <div>
+                <h4>{reviewedQrProofs.bundleTitle || "Wallet proof bundle reviewed"}</h4>
+                <p>{reviewedQrProofs.sourceLabel}</p>
+              </div>
+              <Badge tone="success">{visibleProofCenterProofs(reviewedQrProofs.proofs).length} claims</Badge>
+            </div>
+            <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>Source</strong>
+                <span>{reviewedQrProofs.sourceUrl || reviewedQrProofs.sourceLabel}</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Claims ready to review</strong>
+                <span>{visibleProofCenterProofs(reviewedQrProofs.proofs).map((proof) => proof.claim).join(", ")}</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Privacy</strong>
+                <span>Only public claims, verifier labels, and disclosed proof inputs are shown.</span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </article>
+      {reviewedQrProofs ? (
+        <Section title="Reviewed QR proof certificates">
+          <div className="list-stack">
+            {visibleProofCenterProofs(reviewedQrProofs.proofs).map((proof) => (
+              <ProofReceiptCard key={`review-${proof.id}`} proof={proof} sourceLabel="From QR bundle" />
+            ))}
+          </div>
+        </Section>
+      ) : null}
       <article className="proof-card" aria-label="Create location region proof">
         <div className="scope-header">
           <div>
@@ -6420,83 +6660,104 @@ function ProofCenterScreen({
       </article>
       <div className="list-stack">
         {visibleProofCenterProofs(proofs).map((proof) => {
-          const titleId = `proof-title-${proof.id}`;
-
           return (
-            <article aria-labelledby={titleId} className="proof-card" key={proof.id}>
-              <div className="scope-header">
-                <div>
-                  <h3 id={titleId}>{proof.claim}</h3>
-                  <p>
-                    {proof.proofType} · {proof.proofSystem} · {proof.verifier}
-                  </p>
-                </div>
-                <Badge tone={proof.simulated ? "warning" : "success"}>
-                  {proof.simulated ? "Simulated" : proof.verificationStatus}
-                </Badge>
-              </div>
-              <div className="badge-row">
-                <Badge>{proof.createdAt}</Badge>
-                <Badge>{proof.witnessLabel}</Badge>
-              </div>
-              <div
-                className="capability-preview"
-                role="group"
-                aria-label={`${proof.claim} proof capability preview`}
-              >
-                <div className="scope-header">
-                  <div>
-                    <h4>What this allows</h4>
-                    <p>{proof.proofType} · public inputs only</p>
-                  </div>
-                  <Badge tone={proof.simulated ? "warning" : "success"}>
-                    {proof.simulated ? "development proof" : "verified proof"}
-                  </Badge>
-                </div>
-                <div className="disclosure-package">
-                  <div className="disclosure-row">
-                    <strong>Ability</strong>
-                    <span>proof/verify</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Verification</strong>
-                    <span>{proof.verificationStatus}</span>
-                  </div>
-                  {proof.circuitId ? (
-                    <div className="disclosure-row">
-                      <strong>Circuit</strong>
-                      <span>{proof.circuitId}</span>
-                    </div>
-                  ) : null}
-                  {proof.verifierDigest ? (
-                    <div className="disclosure-row">
-                      <strong>Verifier digest</strong>
-                      <span>{proof.verifierDigest.slice(0, 16)}...</span>
-                    </div>
-                  ) : null}
-                  <div className="disclosure-row">
-                    <strong>Public inputs</strong>
-                    <span>{Object.keys(proof.publicInputs).join(", ")}</span>
-                  </div>
-                  <div className="disclosure-row">
-                    <strong>Not allowed</strong>
-                    <span>{nonGrantedCapabilities(["proof/verify"]).join(", ")}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="proof-inputs" aria-label={`${proof.claim} public inputs`}>
-                {Object.entries(proof.publicInputs).map(([key, value]) => (
-                  <div className="disclosure-row" key={key}>
-                    <strong>{key}</strong>
-                    <span>{value}</span>
-                  </div>
-                ))}
-              </div>
-            </article>
+            <ProofReceiptCard key={proof.id} proof={proof} />
           );
         })}
       </div>
     </div>
+  );
+}
+
+function ProofReceiptCard({
+  proof,
+  sourceLabel
+}: {
+  proof: ProofReceiptView;
+  sourceLabel?: string;
+}) {
+  const titleId = `proof-title-${proof.id}`;
+  const publicInputKeys = Object.keys(proof.publicInputs);
+
+  return (
+    <article aria-labelledby={titleId} className="proof-card">
+      <div className="scope-header">
+        <div>
+          <h3 id={titleId}>{proof.claim}</h3>
+          <p>
+            {proof.proofType} · {proof.proofSystem} · {proof.verifier}
+          </p>
+        </div>
+        <Badge tone={proof.simulated ? "warning" : "success"}>
+          {proof.simulated ? "Simulated" : proof.verificationStatus}
+        </Badge>
+      </div>
+      <div className="badge-row">
+        <Badge>{proof.createdAt}</Badge>
+        <Badge>{proof.witnessLabel}</Badge>
+        {sourceLabel ? <Badge>{sourceLabel}</Badge> : null}
+      </div>
+      <div
+        className="capability-preview"
+        role="group"
+        aria-label={`${proof.claim} proof capability preview`}
+      >
+        <div className="scope-header">
+          <div>
+            <h4>What this allows</h4>
+            <p>{proof.proofType} · public inputs only</p>
+          </div>
+          <Badge tone={proof.simulated ? "warning" : "success"}>
+            {proof.simulated ? "development proof" : "verified proof"}
+          </Badge>
+        </div>
+        <div className="disclosure-package">
+          <div className="disclosure-row">
+            <strong>Ability</strong>
+            <span>proof/verify</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Verification</strong>
+            <span>{proof.verificationStatus}</span>
+          </div>
+          {proof.circuitId ? (
+            <div className="disclosure-row">
+              <strong>Circuit</strong>
+              <span>{proof.circuitId}</span>
+            </div>
+          ) : null}
+          {proof.verifierDigest ? (
+            <div className="disclosure-row">
+              <strong>Verifier digest</strong>
+              <span>{proof.verifierDigest.slice(0, 16)}...</span>
+            </div>
+          ) : null}
+          <div className="disclosure-row">
+            <strong>Public inputs</strong>
+            <span>{publicInputKeys.length ? publicInputKeys.join(", ") : "No public inputs included"}</span>
+          </div>
+          <div className="disclosure-row">
+            <strong>Not allowed</strong>
+            <span>{nonGrantedCapabilities(["proof/verify"]).join(", ")}</span>
+          </div>
+        </div>
+      </div>
+      <div className="proof-inputs" aria-label={`${proof.claim} public inputs`}>
+        {publicInputKeys.length ? (
+          Object.entries(proof.publicInputs).map(([key, value]) => (
+            <div className="disclosure-row" key={key}>
+              <strong>{key}</strong>
+              <span>{value}</span>
+            </div>
+          ))
+        ) : (
+          <div className="disclosure-row">
+            <strong>Summary</strong>
+            <span>No additional public inputs were disclosed.</span>
+          </div>
+        )}
+      </div>
+    </article>
   );
 }
 

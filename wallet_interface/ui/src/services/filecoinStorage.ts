@@ -117,6 +117,32 @@ export async function uploadWalletRecordToFilecoinStorage(
   return postToFilecoinStorage(clientConfig, body, "application/json");
 }
 
+export async function uploadProofBundleToFilecoinStorage(
+  bundlePayload: string,
+  {
+    clientConfig = getFilecoinStorageConfig(),
+    walletConfig
+  }: {
+    clientConfig?: FilecoinStorageClientConfig;
+    walletConfig?: WalletApiConfig;
+  } = {}
+): Promise<FilecoinUploadResponse> {
+  if (!clientConfig) throw new Error("Filecoin storage backend is not configured.");
+  const file = new File([bundlePayload], "wallet-proof-bundle.json", { type: "application/json" });
+  const metadata: FilecoinUploadRequestMetadata = {
+    actorDid: walletConfig?.actorDid,
+    fileName: file.name,
+    mimeType: file.type,
+    sha256: await sha256Hex(file),
+    sizeBytes: file.size,
+    walletId: walletConfig?.walletId
+  };
+  const form = new FormData();
+  form.set("file", file, file.name);
+  form.set("metadata", JSON.stringify(metadata));
+  return postToFilecoinStorage(clientConfig, form);
+}
+
 export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<UploadItem> {
   const ipfsCid = result.ipfsCid || result.cid;
   return {
