@@ -985,80 +985,10 @@ test("proof center reviews proof certificates from a wallet QR screenshot", asyn
   await expect(incomeProof).toContainText(/Rapid rehousing/i);
 });
 
-test("proof center can create an API-backed location region proof", async ({ page }) => {
-  let createRequests = 0;
-  await page.route("**/wallets/**", async (route) => {
-    const url = new URL(route.request().url());
-    const path = url.pathname;
-    if (path.endsWith("/access-requests")) {
-      await route.fulfill({ json: { requests: [] } });
-      return;
-    }
-    if (path.endsWith("/grant-receipts")) {
-      await route.fulfill({ json: { receipts: [] } });
-      return;
-    }
-    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
-      await route.fulfill({ json: { records: [] } });
-      return;
-    }
-    if (path.endsWith("/audit")) {
-      await route.fulfill({ json: { events: [] } });
-      return;
-    }
-    if (path.endsWith("/proofs")) {
-      await route.fulfill({ json: { proofs: [] } });
-      return;
-    }
-    if (path.endsWith("/locations/rec-location-current/region-proofs")) {
-      createRequests += 1;
-      expect(route.request().method()).toBe("POST");
-      expect(await route.request().postDataJSON()).toMatchObject({
-        actor_did: "did:key:owner",
-        region_id: "multnomah_county"
-      });
-      await route.fulfill({
-        json: {
-          proof_id: "proof-deterministic-location",
-          wallet_id: "wallet-demo",
-          proof_type: "location_region",
-          statement: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            witness_commitment: "commitment"
-          },
-          verifier_id: "deterministic-location-region-v0.1",
-          public_inputs: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            region_policy_hash: "425551d64c5b78caa09fd67d24b099c1ca8749bc9747daa0ae84a69cf3507e3e"
-          },
-          proof_hash: "proofhash",
-          witness_record_ids: ["rec-location-current"],
-          is_simulated: false,
-          proof_system: "deterministic-test-proof",
-          circuit_id: "deterministic-location-region-v0.1",
-          verifier_digest: "digest1234567890abcdef",
-          proof_artifact_ref: "deterministic-proof://proofhash",
-          verification_status: "verified",
-          created_at: "2026-05-03T18:04:00Z"
-        }
-      });
-      return;
-    }
-    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
-  });
-
+test("proof center hides manual location region proof creation", async ({ page }) => {
   await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
-  await page.getByRole("button", { name: /Create proof/i }).click();
-  await expect(page.getByText(/Proof receipt created/i)).toBeVisible();
-  const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
-  await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();
-  await expect(createdProof.locator(".scope-header").getByText("verified", { exact: true })).toBeVisible();
-  await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
-  await expect(createdProof.getByText(/^lat$/i)).not.toBeVisible();
-  await expect(createdProof.getByText(/^lon$/i)).not.toBeVisible();
-  expect(createRequests).toBe(1);
+  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
+  await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
 });
 
 test("wallet screen shows export and proof sharing tools", async ({ page }) => {
