@@ -175,7 +175,10 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Days between check-ins/i)).toBeVisible();
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).toBeVisible();
   await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /Account safety/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Save backup/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Session timeout/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Account safety/i })).toHaveCount(0);
 
   await page.getByLabel(/Legal or full name/i).fill("Settings User");
   await page.getByLabel(/Days between check-ins/i).fill("12");
@@ -189,6 +192,10 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).not.toBeChecked();
   await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).not.toBeChecked();
+
+  await openAppRoute(page, "/#/security");
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
 
   if (!/Mobile/i.test(testInfo.project.name)) {
     const nav = page.getByRole("navigation", { name: /Portal navigation/i });
