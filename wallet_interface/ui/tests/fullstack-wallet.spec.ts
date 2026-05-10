@@ -606,13 +606,20 @@ test("pilot readiness covers partner access, proof, analytics, revocation, and a
       `/wallets/${wallet.wallet_id}/locations/${location.record_id}/region-proof-grants`,
       { issuer_did: ownerDid, audience_did: partnerDid }
     );
+    await apiJson(
+      api.baseUrl,
+      "POST",
+      `/wallets/${wallet.wallet_id}/locations/${location.record_id}/region-proofs`,
+      {
+        actor_did: partnerDid,
+        grant_id: regionGrant.grant_id,
+        region_id: "multnomah_county"
+      }
+    );
     await page.goto(walletRoute("proof-center", api.baseUrl, wallet.wallet_id, partnerDid, {}));
     await visibleHeadingOrDiagnostics(page, /Verified wallet claims/i, diagnostics);
-    await page.getByLabel(/Location record ID/i).fill(location.record_id);
-    await page.getByLabel(/Region ID/i).fill("multnomah_county");
-    await page.getByLabel(/Grant ID/i).fill(regionGrant.grant_id);
-    await page.getByRole("button", { name: /Create proof/i }).click();
-    await expect(page.getByText(/Proof receipt created/i)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
     const proofCard = page.getByRole("article", { name: /location_in_region/i }).first();
     await expect(proofCard).toContainText("region_policy_hash");
     await expect(proofCard).not.toContainText(String(exactLat));
