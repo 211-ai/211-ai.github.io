@@ -10,6 +10,7 @@ import type {
   WalletGrantReceipt
 } from "../models/abby";
 import { InteractionTimeline } from "../components/services/InteractionTimeline";
+import { Badge } from "../components/ui";
 import type { WalletApiConfig } from "../services/walletApi";
 
 export function InteractionsScreen({
@@ -45,15 +46,26 @@ export function InteractionsScreen({
   servicePlans?: ServicePlan[];
   uploads?: UploadItem[];
 }) {
+  const nextFollowUpCount = interactions.filter((interaction) => Boolean(interaction.next_follow_up_at)).length;
+  const connectedSourceLabel = apiConfig ? `Connected wallet: ${apiConfig.walletId}` : "Browser session only";
+  const pageNote = apiConfig
+    ? `Showing service interactions synced from the connected wallet. ${nextFollowUpCount} follow-up reminders are ready to carry into Calendar.`
+    : "Showing service interactions saved in this browser session.";
+
   return (
-    <div className="screen">
+    <div className="screen interactions-screen">
       <div className="page-title">
         <p className="eyebrow">Services</p>
         <h1>Interaction history</h1>
       </div>
-      {!apiConfig ? (
-        <p className="page-note">Showing service interactions saved in this browser session.</p>
-      ) : null}
+      <div className="interaction-page-intro">
+        <p className="page-note">{pageNote}</p>
+        <div className="badge-row">
+          <Badge tone={apiConfig ? "success" : "neutral"}>{connectedSourceLabel}</Badge>
+          <Badge tone="info">{interactions.length} recorded events</Badge>
+          <Badge tone="neutral">{nextFollowUpCount} calendar follow-ups</Badge>
+        </div>
+      </div>
       <InteractionTimeline
         accessRequests={accessRequests}
         auditEvents={auditEvents}

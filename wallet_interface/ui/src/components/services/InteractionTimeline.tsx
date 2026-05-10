@@ -45,6 +45,19 @@ export interface InteractionTimelinePrivacySummary {
   uploadReferenceCount: number;
 }
 
+interface InteractionTimelineSummary {
+  appointmentCount: number;
+  followUpCount: number;
+  overdueFollowUpCount: number;
+  serviceCount: number;
+}
+
+interface InteractionDayGroup {
+  dayKey: string;
+  items: ServiceInteractionEvent[];
+  label: string;
+}
+
 type ServiceOption = {
   id: string;
   label: string;
@@ -153,6 +166,7 @@ export function InteractionTimeline({
     () => filterInteractionTimelineEvents(interactions, filters, { servicePlans }),
     [filters, interactions, servicePlans]
   );
+  const now = useMemo(() => new Date(), []);
   const privacySummary = useMemo(
     () =>
       getInteractionTimelinePrivacySummary({
@@ -164,6 +178,12 @@ export function InteractionTimeline({
       }),
     [auditEvents, filteredInteractions, grantReceipts, proofReceipts, uploads]
   );
+  const timelineSummary = useMemo(
+    () => getInteractionTimelineSummary({ interactions: filteredInteractions, now, servicePlans }),
+    [filteredInteractions, now, servicePlans]
+  );
+  const interactionGroups = useMemo(() => groupInteractionsByDay(filteredInteractions, now), [filteredInteractions, now]);
+  const calendarPreview = useMemo(() => buildCalendarPreview(filteredInteractions, now), [filteredInteractions, now]);
   const requestCount = accessRequests.length;
 
   function updateFilter(patch: Partial<InteractionTimelineFilters>) {
@@ -192,162 +212,234 @@ export function InteractionTimeline({
       title="Interaction timeline"
     >
       {error ? <StatusBanner tone="warning">Interactions could not refresh: {error}</StatusBanner> : null}
-      <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
-        <div className="form-grid">
-          <Field label="Service">
-            <select
-              value={filters.serviceDocId}
-              onChange={(event) => updateFilter({ serviceDocId: event.target.value })}
-            >
-              <option value="">All services</option>
-              {serviceOptions.map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Worker">
-            <select value={filters.worker} onChange={(event) => updateFilter({ worker: event.target.value })}>
-              <option value="">All workers and counterparties</option>
-              {workerOptions.map((worker) => (
-                <option key={worker.id} value={worker.id}>
-                  {worker.label}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Status">
-            <select value={filters.status} onChange={(event) => updateFilter({ status: event.target.value })}>
-              <option value="">All statuses</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {formatStatus(status)}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Time">
-            <select
-              value={filters.time}
-              onChange={(event) => updateFilter({ time: event.target.value as InteractionTimeFilter })}
-            >
-              <option value="all">All time</option>
-              <option value="today">Today</option>
-              <option value="past_7_days">Past 7 days</option>
-              <option value="past_30_days">Past 30 days</option>
-              <option value="follow_up_due">Follow-up due</option>
-              <option value="custom">Custom range</option>
-            </select>
-          </Field>
-        </div>
-        {filters.time === "custom" ? (
-          <div className="form-grid">
-            <Field label="From">
-              <input
-                type="date"
-                value={filters.fromDate}
-                onChange={(event) => updateFilter({ fromDate: event.target.value })}
-              />
-            </Field>
-            <Field label="To">
-              <input
-                type="date"
-                value={filters.toDate}
-                onChange={(event) => updateFilter({ toDate: event.target.value })}
-              />
-            </Field>
-          </div>
-        ) : null}
-        <div className="row-actions">
-          <Badge tone="info">
-            <Filter aria-hidden="true" size={14} />
-            {filteredInteractions.length} of {interactions.length}
-          </Badge>
-          <Button onClick={resetFilters} variant="secondary">
-            <RotateCcw aria-hidden="true" size={18} />
-            Reset filters
-          </Button>
-        </div>
-      </form>
+      <section className="interaction-summary-grid" aria-label="Interaction summary">
+        <article className="interaction-summary-card">
+          <span>Visible interactions</span>
+          <strong>{filteredInteractions.length}</strong>
+          <small>{interactions.length} total recorded for this wallet view.</small>
+        </article>
+        <article className="interaction-summary-card">
+          <span>Services involved</span>
+          <strong>{timelineSummary.serviceCount}</strong>
+          <small>Unique services represented in the current timeline.</small>
+        </article>
+        <article className="interaction-summary-card">
+          <span>Calendar carry-over</span>
+          <strong>{timelineSummary.followUpCount + timelineSummary.appointmentCount}</strong>
+          <small>{timelineSummary.followUpCount} follow-ups and {timelineSummary.appointmentCount} plan appointments.</small>
+        </article>
+        <article className="interaction-summary-card">
+          <span>Follow-up due</span>
+          <strong>{timelineSummary.overdueFollowUpCount}</strong>
+          <small>Interactions that should already be visible on the calendar.</small>
+        </article>
+      </section>
 
-      <div className="review-panel" aria-label="Safe audit metadata boundary">
-        <div>
-          <h3>Audit boundary</h3>
-          <p className="page-note">
-            Private notes and protected record or grant identifiers stay referenced, not expanded in this timeline.
-          </p>
-        </div>
-        <div className="badge-row">
-          <Badge tone="neutral">{privacySummary.auditEventCount} audit events</Badge>
-          <Badge tone="neutral">{requestCount} worker requests</Badge>
-          <Badge tone="success">
-            <ShieldCheck aria-hidden="true" size={14} />
-            {privacySummary.privateNoteReferenceCount} private note refs
-          </Badge>
-          <Badge tone="info">{privacySummary.protectedRecordReferenceCount} record refs</Badge>
-          <Badge tone="info">{privacySummary.grantReferenceCount} grant refs</Badge>
-          <Badge tone="neutral">{privacySummary.proofReceiptCount} proof receipts</Badge>
-          <Badge tone="neutral">{privacySummary.uploadReferenceCount} upload refs</Badge>
+      <div className="interaction-history-layout">
+        <aside className="interaction-history-sidebar">
+          <form
+            aria-label="Interaction filters"
+            className="review-panel interaction-filter-panel"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <div>
+              <h3>Filter timeline</h3>
+              <p className="page-note">Refine the wallet-backed history by service, worker, status, or date range.</p>
+            </div>
+            <div className="form-grid">
+              <Field label="Service">
+                <select
+                  value={filters.serviceDocId}
+                  onChange={(event) => updateFilter({ serviceDocId: event.target.value })}
+                >
+                  <option value="">All services</option>
+                  {serviceOptions.map((service) => (
+                    <option key={service.id} value={service.id}>
+                      {service.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Worker">
+                <select value={filters.worker} onChange={(event) => updateFilter({ worker: event.target.value })}>
+                  <option value="">All workers and counterparties</option>
+                  {workerOptions.map((worker) => (
+                    <option key={worker.id} value={worker.id}>
+                      {worker.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Status">
+                <select value={filters.status} onChange={(event) => updateFilter({ status: event.target.value })}>
+                  <option value="">All statuses</option>
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {formatStatus(status)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="Time">
+                <select
+                  value={filters.time}
+                  onChange={(event) => updateFilter({ time: event.target.value as InteractionTimeFilter })}
+                >
+                  <option value="all">All time</option>
+                  <option value="today">Today</option>
+                  <option value="past_7_days">Past 7 days</option>
+                  <option value="past_30_days">Past 30 days</option>
+                  <option value="follow_up_due">Follow-up due</option>
+                  <option value="custom">Custom range</option>
+                </select>
+              </Field>
+            </div>
+            {filters.time === "custom" ? (
+              <div className="form-grid">
+                <Field label="From">
+                  <input
+                    type="date"
+                    value={filters.fromDate}
+                    onChange={(event) => updateFilter({ fromDate: event.target.value })}
+                  />
+                </Field>
+                <Field label="To">
+                  <input
+                    type="date"
+                    value={filters.toDate}
+                    onChange={(event) => updateFilter({ toDate: event.target.value })}
+                  />
+                </Field>
+              </div>
+            ) : null}
+            <div className="row-actions">
+              <Badge tone="info">
+                <Filter aria-hidden="true" size={14} />
+                {filteredInteractions.length} of {interactions.length}
+              </Badge>
+              <Button onClick={resetFilters} variant="secondary">
+                <RotateCcw aria-hidden="true" size={18} />
+                Reset filters
+              </Button>
+            </div>
+          </form>
+
+          <div className="review-panel interaction-calendar-panel">
+            <div>
+              <h3>Calendar handoff</h3>
+              <p className="page-note">
+                Follow-up times recorded here feed the Calendar screen alongside scheduled plan appointments.
+              </p>
+            </div>
+            {calendarPreview.length ? (
+              <div className="interaction-calendar-preview-list">
+                {calendarPreview.map((preview) => (
+                  <article className="interaction-calendar-preview" key={preview.interaction_id}>
+                    <strong>{preview.next_action || formatInteractionType(preview.interaction_type)}</strong>
+                    <small>{serviceLabelForInteraction(preview, serviceOptions)}</small>
+                    <small>{formatTimestamp(preview.next_follow_up_at || "")}</small>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="page-note">No follow-up reminders are scheduled from the current interaction set.</p>
+            )}
+          </div>
+
+          <div className="review-panel" aria-label="Safe audit metadata boundary">
+            <div>
+              <h3>Audit boundary</h3>
+              <p className="page-note">
+                Private notes and protected record or grant identifiers stay referenced, not expanded in this timeline.
+              </p>
+            </div>
+            <div className="badge-row">
+              <Badge tone="neutral">{privacySummary.auditEventCount} audit events</Badge>
+              <Badge tone="neutral">{requestCount} worker requests</Badge>
+              <Badge tone="success">
+                <ShieldCheck aria-hidden="true" size={14} />
+                {privacySummary.privateNoteReferenceCount} private note refs
+              </Badge>
+              <Badge tone="info">{privacySummary.protectedRecordReferenceCount} record refs</Badge>
+              <Badge tone="info">{privacySummary.grantReferenceCount} grant refs</Badge>
+              <Badge tone="neutral">{privacySummary.proofReceiptCount} proof receipts</Badge>
+              <Badge tone="neutral">{privacySummary.uploadReferenceCount} upload refs</Badge>
+            </div>
+          </div>
+        </aside>
+
+        <div className="interaction-history-main">
+          {!interactions.length ? (
+            <StatusBanner tone="info">No service interactions have been recorded for this wallet yet.</StatusBanner>
+          ) : null}
+          {interactions.length && !filteredInteractions.length ? (
+            <StatusBanner tone="info">No interactions match the selected filters.</StatusBanner>
+          ) : null}
+          {interactionGroups.length ? (
+            <div className="timeline interaction-day-groups" aria-label="Service interaction timeline">
+              {interactionGroups.map((group) => (
+                <section className="interaction-day-group" key={group.dayKey}>
+                  <div className="interaction-day-header">
+                    <h3>{group.label}</h3>
+                    <Badge tone="neutral">{group.items.length} events</Badge>
+                  </div>
+                  <div className="interaction-day-list">
+                    {group.items.map((interaction) => (
+                      <TimelineEvent
+                        interaction={interaction}
+                        key={interaction.interaction_id}
+                        now={now}
+                        onOpenPlan={onOpenPlan}
+                        onOpenService={onOpenService}
+                        serviceLabel={serviceLabelForInteraction(interaction, serviceOptions)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
-
-      {!interactions.length ? (
-        <StatusBanner tone="info">No service interactions have been recorded for this wallet yet.</StatusBanner>
-      ) : null}
-      {interactions.length && !filteredInteractions.length ? (
-        <StatusBanner tone="info">No interactions match the selected filters.</StatusBanner>
-      ) : null}
-      {filteredInteractions.length ? (
-        <div className="timeline" aria-label="Service interaction timeline">
-          {filteredInteractions.map((interaction) => (
-            <TimelineEvent
-              interaction={interaction}
-              key={interaction.interaction_id}
-              onOpenPlan={onOpenPlan}
-              onOpenService={onOpenService}
-              serviceLabel={serviceLabelForInteraction(interaction, serviceOptions)}
-            />
-          ))}
-        </div>
-      ) : null}
     </Section>
   );
 }
 
 function TimelineEvent({
   interaction,
+  now,
   onOpenPlan,
   onOpenService,
   serviceLabel
 }: {
   interaction: ServiceInteractionEvent;
+  now: Date;
   onOpenPlan?: (docId: string) => void;
   onOpenService?: (docId: string) => void;
   serviceLabel: string;
 }) {
   const protectedReferenceCount = (interaction.related_grant_ids?.length ?? 0) + (interaction.related_record_ids?.length ?? 0);
+  const followUpAt = normalizeDate(interaction.next_follow_up_at);
+  const hasOverdueFollowUp = Boolean(followUpAt && followUpAt.getTime() <= now.getTime());
+  const detailParts = [interaction.counterparty_name, interaction.counterparty_contact].filter(Boolean);
+  const metaItems = [
+    { label: "When", value: formatTimestamp(interaction.timestamp || interaction.created_at) },
+    detailParts.length ? { label: "Contact", value: detailParts.join(" · ") } : null,
+    interaction.outcome ? { label: "Outcome", value: interaction.outcome } : null,
+    interaction.next_action ? { label: "Next step", value: interaction.next_action } : null,
+    followUpAt ? { label: hasOverdueFollowUp ? "Follow-up due" : "Follow-up scheduled", value: formatTimestamp(interaction.next_follow_up_at || "") } : null
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
   return (
-    <article className="timeline-event">
+    <article className={`timeline-event ${hasOverdueFollowUp ? "timeline-event-overdue" : ""}`}>
       <span aria-hidden="true" />
-      <div>
-        <h3>{formatInteractionType(interaction.interaction_type)}</h3>
-        <p>
-          {serviceLabel} · {formatTimestamp(interaction.timestamp || interaction.created_at)}
-        </p>
-        {interaction.counterparty_name || interaction.counterparty_contact ? (
-          <small>
-            {[interaction.counterparty_name, interaction.counterparty_contact].filter(Boolean).join(" · ")}
-          </small>
-        ) : null}
-        {interaction.outcome ? <small>{interaction.outcome}</small> : null}
-        {interaction.next_action || interaction.next_follow_up_at ? (
-          <small>
-            {[interaction.next_action, interaction.next_follow_up_at ? `Follow up ${formatTimestamp(interaction.next_follow_up_at)}` : ""]
-              .filter(Boolean)
-              .join(" · ")}
-          </small>
-        ) : null}
+      <div className="interaction-event-shell">
+        <div className="interaction-event-header">
+          <div>
+            <h3>{formatInteractionType(interaction.interaction_type)}</h3>
+            <p>{serviceLabel}</p>
+          </div>
+          {hasOverdueFollowUp ? <Badge tone="warning">Follow-up due</Badge> : null}
+        </div>
         <div className="badge-row">
           <Badge tone={toneForStatus(interaction.status)}>{formatStatus(interaction.status || "recorded")}</Badge>
           {interaction.channel ? <Badge tone="neutral">{formatStatus(interaction.channel)}</Badge> : null}
@@ -358,6 +450,14 @@ function TimelineEvent({
           {protectedReferenceCount ? <Badge tone="info">{protectedReferenceCount} protected refs</Badge> : null}
           {interaction.source_content_cid ? <Badge tone="neutral">source {shortId(interaction.source_content_cid)}</Badge> : null}
         </div>
+        <dl className="interaction-event-meta">
+          {metaItems.map((item) => (
+            <div key={`${interaction.interaction_id}-${item.label}`}>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
         {onOpenPlan || onOpenService ? (
           <div className="row-actions">
             {onOpenService ? (
@@ -377,6 +477,60 @@ function TimelineEvent({
       </div>
     </article>
   );
+}
+
+function getInteractionTimelineSummary({
+  interactions,
+  now,
+  servicePlans
+}: {
+  interactions: ServiceInteractionEvent[];
+  now: Date;
+  servicePlans: ServicePlan[];
+}): InteractionTimelineSummary {
+  const serviceCount = new Set(interactions.map((interaction) => interaction.service_doc_id).filter(Boolean)).size;
+  const followUpDates = interactions.map((interaction) => normalizeDate(interaction.next_follow_up_at)).filter(Boolean) as Date[];
+  const appointmentCount = servicePlans.filter((plan) => Boolean(normalizeDate(plan.appointment_at))).length;
+  return {
+    appointmentCount,
+    followUpCount: followUpDates.length,
+    overdueFollowUpCount: followUpDates.filter((date) => date.getTime() <= now.getTime()).length,
+    serviceCount
+  };
+}
+
+function groupInteractionsByDay(interactions: ServiceInteractionEvent[], now: Date): InteractionDayGroup[] {
+  const groups = new Map<string, ServiceInteractionEvent[]>();
+
+  for (const interaction of interactions) {
+    const date = normalizeDate(interaction.timestamp || interaction.created_at) ?? new Date(0);
+    const key = dayKey(date);
+    const current = groups.get(key) ?? [];
+    current.push(interaction);
+    groups.set(key, current);
+  }
+
+  return Array.from(groups.entries())
+    .map(([key, items]) => ({
+      dayKey: key,
+      items,
+      label: formatTimelineDayLabel(key, now)
+    }))
+    .sort((left, right) => right.dayKey.localeCompare(left.dayKey));
+}
+
+function buildCalendarPreview(interactions: ServiceInteractionEvent[], now: Date): ServiceInteractionEvent[] {
+  return interactions
+    .filter((interaction) => Boolean(normalizeDate(interaction.next_follow_up_at)))
+    .sort((left, right) => {
+      const leftTime = normalizeDate(left.next_follow_up_at)?.getTime() ?? 0;
+      const rightTime = normalizeDate(right.next_follow_up_at)?.getTime() ?? 0;
+      const leftDistance = Math.abs(leftTime - now.getTime());
+      const rightDistance = Math.abs(rightTime - now.getTime());
+      if (leftDistance !== rightDistance) return leftDistance - rightDistance;
+      return left.interaction_id.localeCompare(right.interaction_id);
+    })
+    .slice(0, 3);
 }
 
 function buildServiceOptions(
@@ -585,6 +739,30 @@ function formatTimestamp(value: string): string {
     hour: "numeric",
     minute: "2-digit",
     month: "short",
+    year: "numeric"
+  });
+}
+
+function dayKey(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
+function formatTimelineDayLabel(value: string, now: Date): string {
+  const [year, month, day] = value.split("-").map((segment) => Number.parseInt(segment, 10));
+  const date =
+    Number.isFinite(year) && Number.isFinite(month) && Number.isFinite(day)
+      ? new Date(year, month - 1, day)
+      : undefined;
+  if (!date) return value;
+  const today = startOfDay(now);
+  const candidate = startOfDay(date);
+  const dayOffset = Math.round((today.getTime() - candidate.getTime()) / (24 * 60 * 60 * 1000));
+  if (dayOffset === 0) return "Today";
+  if (dayOffset === 1) return "Yesterday";
+  return date.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "long",
+    weekday: "long",
     year: "numeric"
   });
 }

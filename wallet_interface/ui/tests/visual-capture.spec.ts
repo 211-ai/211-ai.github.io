@@ -171,6 +171,17 @@ const captureScenarios: CaptureScenario[] = [
     }
   },
   {
+    id: "interactions-history",
+    path: "/#/interactions",
+    title: "Interaction history",
+    state: "seeded interaction timeline",
+    goals: [
+      "Wallet interaction history should read like a clear two-column workspace on desktop and stack cleanly on mobile.",
+      "Summary cards, filters, calendar handoff, and the grouped timeline should all remain visible without crowding.",
+      "Follow-up due events should stand out without exposing sensitive note content."
+    ]
+  },
+  {
     id: "calendar-scheduled-services",
     path: "/#/calendar",
     title: "Calendar schedule",
@@ -502,6 +513,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
   "/#/exports": /Shareable wallet bundles/i,
+  "/#/interactions": /Interaction history/i,
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,
   "/#/settings": /^Settings$/i,
@@ -552,6 +564,10 @@ async function openCaptureScenario(page: Page, scenarioPath: string) {
     (key) => window.localStorage.setItem(key, JSON.stringify({ username: "visual-reviewer" })),
     appSessionKey
   );
+
+  if (scenarioPath === "/#/interactions") {
+    await seedInteractionsCaptureState(page);
+  }
 
   if (scenarioPath === "/#/calendar") {
     await seedCalendarCaptureState(page);
@@ -656,6 +672,121 @@ async function seedCalendarCaptureState(page: Page) {
       );
     },
     { appointmentAt, followUpAt, lastCheckInAt, reminderAt }
+  );
+}
+
+async function seedInteractionsCaptureState(page: Page) {
+  const now = Date.now();
+  const appointmentAt = new Date(now + 28 * 60 * 60 * 1000).toISOString();
+  const reminderAt = new Date(now + 24 * 60 * 60 * 1000).toISOString();
+  const dueFollowUpAt = new Date(now - 6 * 60 * 60 * 1000).toISOString();
+  const upcomingFollowUpAt = new Date(now + 42 * 60 * 60 * 1000).toISOString();
+  const recordedAt = new Date(now - 12 * 60 * 60 * 1000).toISOString();
+
+  await page.evaluate(
+    ({ appointmentAt, dueFollowUpAt, recordedAt, reminderAt, upcomingFollowUpAt }) => {
+      window.localStorage.setItem(
+        "abby-ui-state-v1",
+        JSON.stringify({
+          savedServices: [
+            {
+              saved_service_id: "saved-food-pantry",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              title: "Food pantry intake",
+              label: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              notes: "",
+              saved_at: recordedAt,
+              updated_at: recordedAt
+            }
+          ],
+          servicePlans: [
+            {
+              plan_id: "plan-interactions-capture",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment and confirm next pickup window.",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What should I bring next time?"],
+              appointment_at: appointmentAt,
+              reminder_at: reminderAt,
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: ["int-capture-1"],
+              private_notes_record_id: "",
+              created_at: recordedAt,
+              updated_at: recordedAt
+            }
+          ],
+          serviceInteractions: [
+            {
+              interaction_id: "int-capture-1",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:example:user",
+              counterparty_name: "Pantry intake desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: recordedAt,
+              status: "active",
+              outcome: "Appointment confirmed.",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: upcomingFollowUpAt,
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: recordedAt,
+              updated_at: recordedAt,
+              metadata: {}
+            },
+            {
+              interaction_id: "int-capture-2",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "called_provider",
+              channel: "phone",
+              actor_did: "did:example:user",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0199",
+              timestamp: recordedAt,
+              status: "needs_follow_up",
+              outcome: "Left a voicemail.",
+              notes_record_id: "",
+              next_action: "Call back if no response",
+              next_follow_up_at: dueFollowUpAt,
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "restricted",
+              created_at: recordedAt,
+              updated_at: recordedAt,
+              metadata: {}
+            }
+          ]
+        })
+      );
+    },
+    { appointmentAt, dueFollowUpAt, recordedAt, reminderAt, upcomingFollowUpAt }
   );
 }
 
