@@ -322,5 +322,5 @@ function formatOpenRouterStatus(status: ClientLlmRuntimeStatus["openRouter"]): s
   if (status.configured) {
     return `cloud fallback ready (${status.credentialSource})`;
   }
-  return "add key for cloud fallback";
+  return "configure HTTPS proxy for cloud fallback";
 }

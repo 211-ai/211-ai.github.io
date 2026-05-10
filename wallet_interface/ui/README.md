@@ -72,32 +72,38 @@ placed in `localStorage` under `abby-wallet-api-config` with `apiBaseUrl`,
 Non-secret demo config can also be supplied as URL parameters:
 `walletApiBaseUrl`, `walletId`, and `actorDid`.
 
-## Local LLM and OpenRouter fallback
+## Cloud-first LLM and audio routing (GitHub Pages)
 
-The assistant defaults to the browser WebGPU LiquidAI LFM2.5 ONNX model. The
-runtime keeps using deterministic app fallbacks when no model is available, and
-can optionally call OpenRouter while the local model is downloading, warming up,
-or when WebGPU is unavailable.
+The static GitHub Pages build is cloud-first: first user-visible text generation
+is sent to the OpenRouter proxy immediately, and first voice/audio generation is
+sent to the voice proxy immediately. Local model warmup is background-only and
+must not block first responses.
 
-For the static GitHub Pages build, do not embed a shared OpenRouter key in the
-bundle. Add a per-browser key from the assistant runtime panel, or provide a
-server-side proxy with:
+Production proxy defaults:
 
 ```bash
-VITE_OPENROUTER_PROXY_URL=https://your-proxy.example.com/api/chat/completions
+VITE_OPENROUTER_PROXY_URL=https://animegf.chat:8787/api/openrouter/chat/completions
+VITE_VOICE_PROXY_BASE_URL=https://animegf.chat:8790/api/voice
+VITE_VOICE_PROXY_INFER_URL=https://animegf.chat:8790/api/voice/infer
 ```
 
-Self-hosted builds can also set `VITE_OPENROUTER_API_KEY`, but that value is
-visible to anyone who can load the frontend bundle. OpenRouter fallback does not
-send prompts that explicitly include private wallet context unless
-`VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT=true` is set.
+Browser safety requirements:
+
+- Use HTTPS proxy URLs only.
+- Do not use private/internal browser endpoints (for example `10.8.0.1` or `10.8.0.0/24`).
+- Do not send upstream provider API keys from the browser.
+- OpenRouter requests with private wallet context remain blocked unless
+  `VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT=true`.
 
 Default OpenRouter model IDs:
 
 ```bash
 VITE_OPENROUTER_INSTRUCT_MODEL=liquid/lfm-2.5-1.2b-instruct:free
 VITE_OPENROUTER_THINKING_MODEL=liquid/lfm-2.5-1.2b-thinking:free
-VITE_OPENROUTER_FALLBACK_DELAY=3500
+VITE_OPENROUTER_FALLBACK_DELAY=5000
+VITE_CLIENT_REQUEST_TIMEOUT=12000
+VITE_LOCAL_PROBE_TIMEOUT=10000
+VITE_LOCAL_PERF_BENCHMARK_TIMEOUT=8000
 ```
 
 ## Development

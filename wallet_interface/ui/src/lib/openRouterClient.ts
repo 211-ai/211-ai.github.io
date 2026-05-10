@@ -65,7 +65,7 @@ export async function generateOpenRouterText(options: {
     throw new Error("OpenRouter fallback is disabled.");
   }
   if (!status.configured) {
-    throw new Error("OpenRouter fallback needs an API key or proxy endpoint.");
+    throw new Error("OpenRouter proxy endpoint is unavailable. Configure VITE_OPENROUTER_PROXY_URL with a public HTTPS URL.");
   }
 
   const model = selectOpenRouterModel(options.localModelName);
@@ -110,18 +110,12 @@ function selectOpenRouterModel(localModelName: string): string {
 }
 
 function getOpenRouterEndpoint(): string {
-  return resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl) || resolvePublicHttpsUrl(LLM_CONFIG.openRouterEndpoint);
+  return resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl);
 }
 
 function getOpenRouterCredentialSource(): OpenRouterRuntimeStatus["credentialSource"] {
   if (resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl)) {
     return "proxy";
-  }
-  if (readStoredOpenRouterApiKey()) {
-    return "browser";
-  }
-  if (LLM_CONFIG.openRouterApiKey.trim()) {
-    return "build";
   }
   return "none";
 }
@@ -131,12 +125,6 @@ function buildOpenRouterHeaders(): HeadersInit {
     "Content-Type": "application/json",
     "X-OpenRouter-Experimental-Metadata": "enabled",
   };
-  if (!resolvePublicHttpsUrl(LLM_CONFIG.openRouterProxyUrl)) {
-    const apiKey = readStoredOpenRouterApiKey() || LLM_CONFIG.openRouterApiKey.trim();
-    if (apiKey) {
-      headers.Authorization = `Bearer ${apiKey}`;
-    }
-  }
   const origin = getBrowserOrigin();
   if (origin) {
     headers["HTTP-Referer"] = origin;
