@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
+import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
 
@@ -1856,6 +1857,83 @@ def test_wallet_api_ops_health_accepts_shared_secret_header(tmp_path, monkeypatc
     )
     assert response.status_code == 200
     assert response.json()["check_count"] >= 1
+
+
+def test_wallet_api_missing_person_dead_drop_email_uses_server_smtp(monkeypatch) -> None:
+    class FakeSmtpClient:
+        sent_messages = []
+
+        def __init__(self, host: str, port: int, timeout: int) -> None:
+            self.host = host
+            self.port = port
+            self.timeout = timeout
+            self.starttls_called = False
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def starttls(self) -> None:
+            self.starttls_called = True
+
+        def login(self, username: str, password: str) -> None:
+            return None
+
+        def send_message(self, message):
+            self.__class__.sent_messages.append(message)
+            return {}
+
+    monkeypatch.setenv("WALLET_DEAD_DROP_SMTP_HOST", "smtp.example.org")
+    monkeypatch.setenv("WALLET_DEAD_DROP_FROM_EMAIL", "abby@example.org")
+    monkeypatch.setattr(wallet_api_module.smtplib, "SMTP", FakeSmtpClient)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
+        json={
+            "to_email": "missing@police.portlandoregon.gov",
+            "subject": "Missing person report dead drop bundle",
+            "body": "Please review attached wallet bundle.",
+            "bundle": {"schemaVersion": "abby-missing-person-dead-drop-v1", "walletContents": []},
+            "bundle_filename": "dead-drop.json",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "sent"
+    assert payload["to_email"] == "missing@police.portlandoregon.gov"
+    assert payload["bundle_filename"] == "dead-drop.json"
+    assert payload["message_id"]
+    assert len(FakeSmtpClient.sent_messages) == 1
+    sent_message = FakeSmtpClient.sent_messages[0]
+    attachment = next(sent_message.iter_attachments())
+    assert sent_message["To"] == "missing@police.portlandoregon.gov"
+    assert sent_message["Subject"] == "Missing person report dead drop bundle"
+    assert attachment.get_filename() == "dead-drop.json"
+
+
+def test_wallet_api_missing_person_dead_drop_email_requires_smtp_config(monkeypatch) -> None:
+    monkeypatch.delenv("WALLET_DEAD_DROP_SMTP_HOST", raising=False)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
+        json={
+            "to_email": "missing@police.portlandoregon.gov",
+            "subject": "Missing person report dead drop bundle",
+            "body": "Please review attached wallet bundle.",
+            "bundle": {"schemaVersion": "abby-missing-person-dead-drop-v1", "walletContents": []},
+            "bundle_filename": "dead-drop.json",
+        },
+    )
+
+    assert response.status_code == 503
+    assert "WALLET_DEAD_DROP_SMTP_HOST" in response.json()["detail"]
 
 
 def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:

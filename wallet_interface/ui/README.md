@@ -20,6 +20,11 @@ access-request and receipt state for demos and tests.
 The uploads screen also uses the same API config to list encrypted document
 records and add files through the multipart wallet document endpoint, with a
 text-document fallback for simpler local API deployments.
+The missing-person dead-drop safety setting also uses this API config: when a
+wallet API is connected, Abby sends the dead-drop bundle to
+`missing@police.portlandoregon.gov` through the backend endpoint
+`POST /wallets/{wallet_id}/dead-drops/missing-person` instead of generating a
+local mailto draft.
 API-backed uploads expose owner document viewing through the wallet decrypt
 endpoint; plaintext is shown only after the connected wallet actor requests it.
 Owners can also create record-scoped grants from an uploaded document for
