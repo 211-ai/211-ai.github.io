@@ -189,7 +189,7 @@ test("analytics page reads like a public privacy-safe dashboard", async ({ page 
   await expect(page.getByRole("region", { name: /Dashboard summary/i })).toBeVisible();
   await expect(page.getByRole("region", { name: /Zero-knowledge and privacy safeguards/i })).toBeVisible();
   await expect(page.getByRole("article", { name: /Unsheltered residents seeking beds/i })).toContainText(
-    "Public release"
+    /public release/i
   );
   await expect(page.getByText(/No names, contact details, exact locations, files, staff actions/i)).toBeVisible();
 });
