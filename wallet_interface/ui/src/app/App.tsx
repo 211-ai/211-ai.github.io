@@ -332,6 +332,15 @@ function formatDeadDropFileTimestamp(date = new Date()): string {
   return date.toISOString().replace(/[:.]/g, "-");
 }
 
+function isMissingPersonDeadDropDue(policy: CheckInPolicyDraft): boolean {
+  const lastCheckInAtMs = Date.parse(policy.lastCheckInAt);
+  if (!Number.isFinite(lastCheckInAtMs)) return false;
+  const intervalDays = Math.max(1, Math.round(policy.intervalDays || 1));
+  const gracePeriodHours = Math.max(0, Math.round(policy.gracePeriodHours || 0));
+  const dueAtMs = lastCheckInAtMs + intervalDays * 24 * 60 * 60 * 1000 + gracePeriodHours * 60 * 60 * 1000;
+  return Date.now() >= dueAtMs;
+}
+
 function buildMissingPersonDeadDropBundle(
   profile: RegistrationProfileDraft,
   uploads: UploadItem[],
@@ -513,6 +522,9 @@ export function App() {
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
   const [missingPersonDeadDropEnabled, setMissingPersonDeadDropEnabled] = useState(
     defaultAppState.missingPersonDeadDropEnabled
+  );
+  const [missingPersonDeadDropLastSentForCheckInAt, setMissingPersonDeadDropLastSentForCheckInAt] = useState(
+    defaultAppState.missingPersonDeadDropLastSentForCheckInAt
   );
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -698,12 +710,14 @@ export function App() {
       benefitsOptIn,
       analyticsOptIn,
       missingPersonDeadDropEnabled,
+      missingPersonDeadDropLastSentForCheckInAt,
       shelterChecklist
     });
   }, [
     analyticsOptIn,
     benefitsOptIn,
     missingPersonDeadDropEnabled,
+    missingPersonDeadDropLastSentForCheckInAt,
     policy,
     profile,
     recipients,
@@ -824,6 +838,9 @@ export function App() {
       ].join("\n");
       const subject = "Missing person report dead drop bundle";
       window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      if (isMissingPersonDeadDropDue(policy)) {
+        setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
+      }
       return true;
     } catch (error) {
       if (import.meta.env.DEV) {
@@ -832,6 +849,21 @@ export function App() {
       return false;
     }
   }
+
+  useEffect(() => {
+    if (!missingPersonDeadDropEnabled || !policy.escalationEnabled) return;
+    if (!isMissingPersonDeadDropDue(policy)) return;
+    if (missingPersonDeadDropLastSentForCheckInAt === policy.lastCheckInAt) return;
+
+    const sent = sendMissingPersonDeadDrop();
+    if (sent) {
+      setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
+    }
+  }, [
+    missingPersonDeadDropEnabled,
+    missingPersonDeadDropLastSentForCheckInAt,
+    policy
+  ]);
 
   function openServiceDetailFromServices(docId: string) {
     setServicePlanDocId(null);
@@ -1968,8 +2000,9 @@ function SettingsScreen({
             <span>
               <strong>Enable missing-person dead drop for Portland Police.</strong>
               <small>
-                When enabled, Abby downloads a local JSON wallet bundle and opens an email draft to{" "}
-                {PORTLAND_POLICE_MISSING_EMAIL}. You must attach the file and send it.
+                When enabled, Abby automatically prepares a dead-drop bundle and opens an email draft to{" "}
+                {PORTLAND_POLICE_MISSING_EMAIL} after a missed check-in passes your schedule and grace period. You
+                must attach the file and send it.
               </small>
             </span>
           </label>
@@ -1984,7 +2017,7 @@ function SettingsScreen({
               onClick={handleSendMissingPersonDeadDrop}
               variant="secondary"
             >
-              <Bell size={18} /> Prepare and email dead drop
+              <Bell size={18} /> Prepare and email dead drop now
             </Button>
           </div>
           {deadDropStatus === "sent" ? (
