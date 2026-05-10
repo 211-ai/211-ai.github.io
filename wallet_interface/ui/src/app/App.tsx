@@ -26,6 +26,7 @@ import {
   UsersRound,
   Wrench
 } from "lucide-react";
+import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
@@ -53,7 +54,14 @@ import {
   uploadFileToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
-import { reviewWalletProofQrScreenshot, type WalletProofQrReview } from "../services/walletProofReview";
+import {
+  buildWalletProofBundlePayload,
+  buildWalletProofReviewUrl,
+  readWalletProofBundlePayloadFromUrl,
+  reviewWalletProofBundlePayload,
+  reviewWalletProofQrScreenshot,
+  type WalletProofQrReview
+} from "../services/walletProofReview";
 import {
   CheckInChannel,
   AuditEvent,
@@ -1183,6 +1191,7 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             recipients={recipients}
             uploads={uploads}
@@ -2892,12 +2901,14 @@ function ContactsScreen({
 
 function UploadsScreen({
   apiConfig,
+  proofs,
   refreshWalletAuditEvents,
   recipients,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
+  proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   recipients: DisclosureRecipientDraft[];
   uploads: UploadItem[];
@@ -2910,10 +2921,39 @@ function UploadsScreen({
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
   const filecoinStorageReady = Boolean(filecoinStorageConfig);
   const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
+  const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
+  const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
+  const walletProofBundlePayload = useMemo(
+    () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
+    [apiConfig?.actorDid, apiConfig?.walletId, walletQrProofs]
+  );
+  const walletProofReviewUrl = useMemo(
+    () => buildWalletProofReviewUrl(walletProofBundlePayload),
+    [walletProofBundlePayload]
+  );
 
   useEffect(() => {
     uploadsRef.current = uploads;
   }, [uploads]);
+
+  useEffect(() => {
+    let cancelled = false;
+    QRCode.toDataURL(walletProofReviewUrl, {
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 220
+    })
+      .then((nextQrCodeUrl: string) => {
+        if (!cancelled) setWalletQrCodeUrl(nextQrCodeUrl);
+      })
+      .catch(() => {
+        if (!cancelled) setWalletQrCodeUrl("");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [walletProofReviewUrl]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -3097,6 +3137,50 @@ function UploadsScreen({
         <p className="eyebrow">Wallet</p>
         <h1>Wallet</h1>
       </div>
+      <Section
+        title="Share wallet proof QR"
+        actions={<Badge tone={walletQrProofs.length > 0 ? "success" : "warning"}>{walletQrProofs.length} proof claims</Badge>}
+      >
+        <div className="wallet-proof-qr-panel">
+          {walletQrCodeUrl ? (
+            <img
+              alt="Wallet proof QR code"
+              className="wallet-proof-qr-image"
+              height={220}
+              src={walletQrCodeUrl}
+              width={220}
+            />
+          ) : (
+            <div aria-live="polite" className="wallet-proof-qr-placeholder">
+              QR code unavailable
+            </div>
+          )}
+          <div className="wallet-proof-qr-details">
+            <strong>Scan to open the client proof bundle</strong>
+            <small>
+              Services staff can scan this QR or upload a screenshot in Proof Center to review public proof claims without
+              exposing the underlying files.
+            </small>
+            <div className="badge-row">
+              <Badge>{apiConfig?.walletId ?? "local-wallet"}</Badge>
+              {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
+            </div>
+            <div className="disclosure-package">
+              <div className="disclosure-row">
+                <strong>Includes</strong>
+                <span>{walletQrProofs.length > 0 ? walletQrProofs.map((proof) => proof.claim).join(", ") : "Wallet proof summary"}</span>
+              </div>
+              <div className="disclosure-row">
+                <strong>Opens</strong>
+                <span>Proof Center review with public inputs only</span>
+              </div>
+            </div>
+            <a className="button button-secondary" href={walletProofReviewUrl}>
+              Open proof review
+            </a>
+          </div>
+        </div>
+      </Section>
       <Section
         title="Add wallet file"
         actions={
@@ -5916,6 +6000,30 @@ function ProofCenterScreen({
   const [reviewStatus, setReviewStatus] = useState<"idle" | "reviewing" | "reviewed" | "failed">("idle");
   const [reviewError, setReviewError] = useState("");
   const [reviewedQrProofs, setReviewedQrProofs] = useState<WalletProofQrReview | null>(null);
+  const linkedWalletProofBundle = useMemo(
+    () => (typeof window === "undefined" ? undefined : readWalletProofBundlePayloadFromUrl(window.location.href)),
+    []
+  );
+
+  useEffect(() => {
+    if (!linkedWalletProofBundle) return;
+    try {
+      setReviewedQrProofs(
+        reviewWalletProofBundlePayload(
+          linkedWalletProofBundle,
+          window.location.href,
+          "Wallet proof bundle link",
+          window.location.href
+        )
+      );
+      setReviewError("");
+      setReviewStatus("reviewed");
+    } catch (error) {
+      setReviewedQrProofs(null);
+      setReviewError(error instanceof Error ? error.message : "Unable to review the wallet proof QR.");
+      setReviewStatus("failed");
+    }
+  }, [linkedWalletProofBundle]);
 
   async function createProof(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

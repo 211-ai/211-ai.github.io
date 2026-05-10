@@ -1191,6 +1191,23 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
   expect(storageRequests).toBe(1);
 });
 
+test("wallet page renders a scannable proof QR that opens proof center review", async ({ page }) => {
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  const qrImage = page.getByRole("img", { name: /Wallet proof QR code/i });
+  await expect(qrImage).toBeVisible();
+  await expect(page.getByText(/Scan to open the client proof bundle/i)).toBeVisible();
+  await expect(page.getByText(/Location is in service region/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open proof review/i })).toBeVisible();
+  const qrSource = await qrImage.getAttribute("src");
+  expect(qrSource).toMatch(/^data:image\/png;base64,/);
+
+  await page.getByRole("link", { name: /Open proof review/i }).click();
+  await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Client wallet proof bundle/i);
+  await expect(page.getByRole("article", { name: /Location is in service region/i }).first()).toContainText(/From QR bundle|Wallet proof bundle link/i);
+});
+
 test("recipient receipt can create an encrypted derived analysis artifact", async ({ page }) => {
   test.setTimeout(60_000);
   let analysisRequests = 0;

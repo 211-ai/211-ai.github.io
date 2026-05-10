@@ -2788,6 +2788,47 @@ body.playful-pulse .decor-shape {
   padding: 12px;
 }
 
+.wallet-proof-qr-panel {
+  align-items: center;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(127, 174, 180, 0.36);
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin-bottom: 14px;
+  padding: 14px;
+}
+
+.wallet-proof-qr-image,
+.wallet-proof-qr-placeholder {
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 12px;
+  height: 220px;
+  width: 220px;
+}
+
+.wallet-proof-qr-placeholder {
+  align-items: center;
+  color: #4b5563;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+}
+
+.wallet-proof-qr-details {
+  display: grid;
+  gap: 10px;
+}
+
+.wallet-proof-qr-details small {
+  color: #4b5563;
+  line-height: 1.5;
+}
+
 .wallet-storage-panel div {
   display: grid;
   gap: 3px;
@@ -4931,6 +4972,15 @@ textarea:focus-visible,
 }
 
 @media (max-width: 760px) {
+  .wallet-proof-qr-panel {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .wallet-proof-qr-details {
+    width: 100%;
+  }
+
   .wallet-storage-panel {
     grid-template-columns: 1fr;
   }

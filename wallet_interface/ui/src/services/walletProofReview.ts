@@ -3,6 +3,7 @@ import type { ProofReceiptView } from "../models/abby";
 const qrImageAcceptedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const defaultIpfsGateways = ["https://w3s.link/ipfs/", "https://ipfs.io/ipfs/"];
 const cidPattern = /\b(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})\b/;
+const walletProofBundleParam = "walletProofBundle";
 
 type BarcodeDetectorLike = {
   detect(source: ImageBitmapSource): Promise<Array<{ rawValue?: string }>>;
@@ -23,6 +24,78 @@ export type WalletProofQrReview = {
   sourceUrl?: string;
 };
 
+export function buildWalletProofBundlePayload({
+  actorDid,
+  proofs,
+  walletId
+}: {
+  actorDid?: string;
+  proofs: ProofReceiptView[];
+  walletId?: string;
+}): string {
+  return JSON.stringify({
+    title: "Client wallet proof bundle",
+    generatedAt: new Date().toISOString(),
+    proofs: proofs.map((proof) => ({
+      claim: proof.claim,
+      createdAt: proof.createdAt,
+      id: proof.id,
+      proofArtifactRef: proof.proofArtifactRef,
+      proofSystem: proof.proofSystem,
+      proofType: proof.proofType,
+      publicInputs: proof.publicInputs,
+      simulated: proof.simulated,
+      verificationStatus: proof.verificationStatus,
+      verifier: proof.verifier,
+      verifierDigest: proof.verifierDigest,
+      witnessLabel: proof.witnessLabel
+    })),
+    wallet: {
+      actorDid,
+      id: walletId,
+      label: walletId ? `Wallet ${walletId}` : "Client wallet"
+    }
+  });
+}
+
+export function buildWalletProofReviewUrl(bundlePayload: string, baseUrl = currentBaseUrl()): string {
+  const url = new URL(baseUrl);
+  url.searchParams.set(walletProofBundleParam, bundlePayload);
+  url.hash = "/proof-center";
+  return url.toString();
+}
+
+export function reviewWalletProofBundlePayload(
+  payload: string | unknown,
+  qrValue = "wallet-proof-bundle",
+  sourceLabel = "Wallet proof bundle from QR",
+  sourceUrl?: string
+): WalletProofQrReview {
+  const parsedPayload = typeof payload === "string" ? parseJson(payload) ?? payload : payload;
+  const bundle = unwrapProofPayload(parsedPayload);
+  const proofs = normalizeProofs(bundle);
+
+  if (proofs.length === 0) {
+    throw new Error("No proof certificates were found in the QR-linked bundle.");
+  }
+
+  return {
+    bundleTitle: readBundleTitle(bundle),
+    proofs,
+    qrValue,
+    sourceLabel,
+    sourceUrl
+  };
+}
+
+export function readWalletProofBundlePayloadFromUrl(urlValue: string): string | undefined {
+  try {
+    return new URL(urlValue, currentBaseUrl()).searchParams.get(walletProofBundleParam) ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function reviewWalletProofQrScreenshot(file: File): Promise<WalletProofQrReview> {
   if (!qrImageAcceptedTypes.has(file.type)) {
     throw new Error("Upload a PNG, JPEG, or WebP screenshot of the wallet QR code.");
@@ -31,20 +104,7 @@ export async function reviewWalletProofQrScreenshot(file: File): Promise<WalletP
   const qrValue = (await readQrValue(file)).trim();
   const locator = parseReviewLocator(qrValue);
   const resolved = await resolveReviewLocator(locator);
-  const payload = unwrapProofPayload(resolved.payload);
-  const proofs = normalizeProofs(payload);
-
-  if (proofs.length === 0) {
-    throw new Error("No proof certificates were found in the QR-linked bundle.");
-  }
-
-  return {
-    bundleTitle: readBundleTitle(payload),
-    proofs,
-    qrValue,
-    sourceLabel: resolved.sourceLabel,
-    sourceUrl: resolved.sourceUrl
-  };
+  return reviewWalletProofBundlePayload(resolved.payload, qrValue, resolved.sourceLabel, resolved.sourceUrl);
 }
 
 async function readQrValue(file: File): Promise<string> {
@@ -113,6 +173,14 @@ function parseReviewLocator(qrValue: string): ReviewLocator {
   }
 
   if (/^https?:\/\//i.test(qrValue)) {
+    const inlinePayload = readWalletProofBundlePayloadFromUrl(qrValue);
+    if (inlinePayload) {
+      return {
+        kind: "inline",
+        payload: inlinePayload,
+        sourceLabel: "Wallet proof bundle link"
+      };
+    }
     return { kind: "url", url: qrValue, sourceLabel: labelForUrl(qrValue) };
   }
 
@@ -318,4 +386,11 @@ function firstString(...values: Array<unknown>): string | undefined {
     if (typeof value === "string" && value.trim()) return value.trim();
   }
   return undefined;
+}
+
+function currentBaseUrl(): string {
+  if (typeof window === "undefined") {
+    return "http://localhost/";
+  }
+  return window.location.href;
 }
