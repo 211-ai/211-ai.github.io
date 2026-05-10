@@ -441,6 +441,19 @@ function buildMissingPersonDeadDropEmail(
   };
 }
 
+function buildMissingPersonDeadDropSyncPayload(
+  enabled: boolean,
+  policy: CheckInPolicyDraft,
+  profile: RegistrationProfileDraft,
+  uploads: UploadItem[],
+  recipients: DisclosureRecipientDraft[]
+) {
+  return {
+    enabled,
+    ...buildMissingPersonDeadDropEmail(policy, profile, uploads, recipients)
+  };
+}
+
 function normalizeLoginContact(value: string): string {
   const trimmed = value.trim();
   if (trimmed.includes("@")) return trimmed.toLowerCase();
@@ -858,22 +871,19 @@ export function App() {
       return false;
     }
     try {
-      const request = buildMissingPersonDeadDropEmail(policy, profile, uploads, recipients);
+      const request = buildMissingPersonDeadDropSyncPayload(true, policy, profile, uploads, recipients);
       await saveMissingPersonDeadDrop(walletApiConfig, {
-        enabled: true,
         toEmail: request.toEmail,
         subject: request.subject,
         body: request.body,
         bundle: request.bundle,
         bundleFileName: request.bundleFileName,
         dueAt: request.dueAt,
+        enabled: request.enabled,
         lastCheckInAt: request.lastCheckInAt
       });
       await dispatchMissingPersonDeadDrop(walletApiConfig);
-      lastSyncedDeadDropPayloadRef.current = JSON.stringify({
-        enabled: true,
-        ...request
-      });
+      lastSyncedDeadDropPayloadRef.current = JSON.stringify(request);
       if (isMissingPersonDeadDropDue(policy)) {
         setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
       }
@@ -891,11 +901,14 @@ export function App() {
       lastSyncedDeadDropPayloadRef.current = "";
       return;
     }
-    const request = buildMissingPersonDeadDropEmail(policy, profile, uploads, recipients);
-    const payload = JSON.stringify({
-      enabled: missingPersonDeadDropEnabled,
-      ...request
-    });
+    const request = buildMissingPersonDeadDropSyncPayload(
+      missingPersonDeadDropEnabled,
+      policy,
+      profile,
+      uploads,
+      recipients
+    );
+    const payload = JSON.stringify(request);
     if (lastSyncedDeadDropPayloadRef.current === payload) {
       return;
     }

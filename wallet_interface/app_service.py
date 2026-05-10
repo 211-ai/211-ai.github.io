@@ -1200,9 +1200,10 @@ class WalletInterfaceService:
                 continue
             if not record.enabled or not record.body.strip() or not record.bundle:
                 continue
-            if record.last_sent_for_check_in_at and _same_portal_timestamp(
+            already_sent_for_current_check_in = record.last_sent_for_check_in_at and _same_portal_timestamp(
                 record.last_sent_for_check_in_at, record.last_check_in_at
-            ):
+            )
+            if already_sent_for_current_check_in:
                 continue
             if due_at <= current:
                 due_records.append(record)
