@@ -1187,6 +1187,15 @@ body.playful-pulse .decor-shape {
   margin: 0;
 }
 
+.interactions-screen {
+  gap: 18px;
+}
+
+.interaction-page-intro {
+  display: grid;
+  gap: 10px;
+}
+
 .section-note {
   font-weight: 600;
 }
@@ -1196,6 +1205,88 @@ body.playful-pulse .decor-shape {
 .timeline {
   display: grid;
   gap: 12px;
+}
+
+.interaction-summary-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.interaction-summary-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #d8dee6;
+  border-radius: 12px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px;
+}
+
+.interaction-summary-card span,
+.interaction-summary-card small {
+  color: #5b6776;
+}
+
+.interaction-summary-card strong {
+  color: #17202a;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.interaction-history-layout {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+}
+
+.interaction-history-sidebar,
+.interaction-history-main,
+.interaction-day-list,
+.interaction-calendar-preview-list {
+  display: grid;
+  gap: 12px;
+}
+
+.interaction-filter-panel,
+.interaction-calendar-panel {
+  align-content: start;
+}
+
+.interaction-day-groups {
+  gap: 16px;
+}
+
+.interaction-day-group {
+  display: grid;
+  gap: 10px;
+}
+
+.interaction-day-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.interaction-day-header h3 {
+  margin: 0;
+}
+
+.interaction-calendar-preview {
+  background: #f8fafc;
+  border: 1px solid #dce3ec;
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+}
+
+.interaction-calendar-preview strong,
+.interaction-calendar-preview small {
+  display: block;
 }
 
 .review-row,
@@ -3075,12 +3166,61 @@ body.playful-pulse .decor-shape {
   grid-template-columns: 16px minmax(0, 1fr);
 }
 
+.timeline-event-overdue {
+  border-color: #e0b94f;
+  box-shadow: 0 0 0 1px rgba(224, 185, 79, 0.15);
+}
+
+.interaction-event-shell {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.interaction-event-header {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.interaction-event-meta {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.interaction-event-meta div {
+  align-items: baseline;
+  border-top: 1px solid #edf2f7;
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
+  padding-top: 8px;
+}
+
+.interaction-event-meta dt {
+  color: #5b6776;
+  font-weight: 800;
+}
+
+.interaction-event-meta dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .timeline-event > span {
   background: #1d4ed8;
   border-radius: 50%;
   height: 12px;
   margin-top: 5px;
   width: 12px;
+}
+
+.timeline-event-overdue > span {
+  background: #c47b00;
 }
 
 @media (min-width: 640px) {
@@ -5168,6 +5308,10 @@ textarea:focus-visible,
 }
 
 @media (max-width: 900px) {
+  .interaction-history-layout {
+    grid-template-columns: 1fr;
+  }
+
   .calendar-event-item {
     grid-template-columns: minmax(92px, auto) minmax(0, 1fr);
   }
@@ -5180,6 +5324,16 @@ textarea:focus-visible,
 }
 
 @media (max-width: 560px) {
+  .interaction-event-header,
+  .interaction-day-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .interaction-event-meta div {
+    grid-template-columns: 1fr;
+  }
+
   .calendar-event-item {
     grid-template-columns: 1fr;
   }

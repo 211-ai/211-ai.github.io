@@ -335,6 +335,176 @@ test("calendar collects service appointments and follow-ups", async ({ page }) =
   await expect(page.getByRole("button", { name: /Add to calendar/i }).first()).toBeVisible();
 });
 
+test("wallet-backed interaction history feeds the timeline and calendar", async ({ page }, testInfo) => {
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      await route.fulfill({
+        json: {
+          saved_services: [
+            {
+              saved_service_id: "saved-food-pantry",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              title: "Food pantry intake",
+              label: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              notes: "",
+              saved_at: "2026-05-03T18:00:00Z",
+              updated_at: "2026-05-03T18:00:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      await route.fulfill({
+        json: {
+          plans: [
+            {
+              plan_id: "plan-wallet-history",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              service_title: "Food pantry intake",
+              provider_name: "Neighborhood Food Pantry",
+              goal: "Attend pantry appointment and confirm next pickup window.",
+              steps: ["Bring photo ID"],
+              documents_needed: ["Photo ID"],
+              questions_to_ask: ["What should I bring next time?"],
+              appointment_at: "2026-05-12T18:00:00.000Z",
+              reminder_at: "2026-05-12T16:00:00.000Z",
+              travel_target: "Bus 12 to 4th Ave",
+              assigned_worker_recipient_id: "",
+              status: "active",
+              related_interaction_ids: ["int-wallet-history-1"],
+              private_notes_record_id: "",
+              created_at: "2026-05-10T16:30:00.000Z",
+              updated_at: "2026-05-10T16:30:00.000Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      await route.fulfill({
+        json: {
+          interactions: [
+            {
+              interaction_id: "int-wallet-history-1",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-food-pantry-1",
+              source_content_cid: "cid-food",
+              source_page_cid: "page-food",
+              provider_name: "Neighborhood Food Pantry",
+              program_name: "Food pantry intake",
+              interaction_type: "appointment_scheduled",
+              channel: "phone",
+              actor_did: "did:key:owner",
+              counterparty_name: "Pantry intake desk",
+              counterparty_contact: "503-555-0100",
+              timestamp: "2026-05-10T16:30:00.000Z",
+              status: "active",
+              outcome: "Appointment confirmed for Tuesday.",
+              notes_record_id: "",
+              next_action: "Bring paperwork",
+              next_follow_up_at: "2026-05-11T12:00:00.000Z",
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "private",
+              created_at: "2026-05-10T16:30:00.000Z",
+              updated_at: "2026-05-10T16:30:00.000Z",
+              metadata: {}
+            },
+            {
+              interaction_id: "int-wallet-history-2",
+              wallet_id: "wallet-demo",
+              service_doc_id: "svc-clinic-1",
+              source_content_cid: "cid-clinic",
+              source_page_cid: "page-clinic",
+              provider_name: "Health Clinic",
+              program_name: "Clinic intake",
+              interaction_type: "called_provider",
+              channel: "phone",
+              actor_did: "did:key:owner",
+              counterparty_name: "Clinic desk",
+              counterparty_contact: "503-555-0199",
+              timestamp: "2026-05-09T14:00:00.000Z",
+              status: "needs_follow_up",
+              outcome: "Left a voicemail.",
+              notes_record_id: "",
+              next_action: "Call back if no response",
+              next_follow_up_at: "2026-05-10T09:00:00.000Z",
+              source_action_url: "",
+              related_grant_ids: [],
+              related_record_ids: [],
+              privacy_level: "restricted",
+              created_at: "2026-05-09T14:00:00.000Z",
+              updated_at: "2026-05-09T14:00:00.000Z",
+              metadata: {}
+            }
+          ]
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: `unexpected wallet API call for ${path}` } });
+  });
+
+  await openAppRoute(page, walletRoute("interactions", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /Interaction history/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByText(/Connected wallet: wallet-demo/i)).toBeVisible();
+  await expect(page.getByText(/2 recorded events/i)).toBeVisible();
+  await expect(page.getByText(/Calendar carry-over/i)).toBeVisible();
+  await expect(page.locator(".interaction-calendar-preview").filter({ hasText: /Bring paperwork/i })).toBeVisible();
+  await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toBeVisible();
+  await expect(page.getByText(/Follow-up times recorded here feed the Calendar screen/i)).toBeVisible();
+
+  const sidebar = page.locator(".interaction-history-sidebar");
+  const main = page.locator(".interaction-history-main");
+  const sidebarBox = await sidebar.boundingBox();
+  const mainBox = await main.boundingBox();
+  expect(sidebarBox, "expected interaction sidebar to have a layout box").not.toBeNull();
+  expect(mainBox, "expected interaction main column to have a layout box").not.toBeNull();
+  if (/Mobile/i.test(testInfo.project.name)) {
+    expect(sidebarBox!.y).toBeLessThan(mainBox!.y);
+  } else {
+    expect(sidebarBox!.x).toBeLessThan(mainBox!.x);
+  }
+
+  await page.goto(walletRoute("calendar", "did:key:owner"));
+  await expect(page.getByRole("heading", { name: /^Calendar$/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("article").filter({ hasText: /Bring paperwork/i })).toBeVisible();
+  await expect(page.getByRole("article").filter({ hasText: /Food pantry intake/i })).toBeVisible();
+});
+
 test("hash navigation updates the active screen without a full reload", async ({ page }) => {
   await openAppRoute(page, "/");
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible();
