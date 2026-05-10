@@ -5763,9 +5763,6 @@ function AnalyticsScreen({
 
   const selectedStudyCount = analyticsStudies.filter((study) => isStudySelected(study.id)).length;
   const pausedStudyCount = analyticsStudies.filter((study) => study.status === "paused").length;
-  const totalPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.epsilonBudget, 0);
-  const spentPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.spentBudget, 0);
-  const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
   const cohortFloorValues = analyticsStudies.map((study) => study.minCohortSize);
   const cohortFloorMin = cohortFloorValues.length ? Math.min(...cohortFloorValues) : 0;
   const cohortFloorMax = cohortFloorValues.length ? Math.max(...cohortFloorValues) : 0;
@@ -5846,8 +5843,7 @@ function AnalyticsScreen({
     { label: "Mock proof certificates", value: String(analyticsProofCertificates.length), tone: "teal" },
     { label: "Shelter requests this week", value: shelterRequestsTotal.toLocaleString(), tone: "red" },
     { label: "Average shelter fill rate", value: `${shelterFillRate}%`, tone: "gold" },
-    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" },
-    { label: "Privacy budget left", value: privacyBudgetLeft.toFixed(2), tone: "gold" }
+    { label: "Referral-to-housing rate", value: `${referralToHousingRate}%`, tone: "teal" }
   ];
   const populationSignals = [
     {
@@ -6074,7 +6070,7 @@ function AnalyticsScreen({
           </div>
           <div className="disclosure-row">
             <strong>Proven before publication</strong>
-            <span>Minimum cohort size, provider participation floor, approved schema, and remaining privacy budget</span>
+            <span>Minimum cohort size, provider participation floor, and approved schema</span>
           </div>
           <div className="disclosure-row">
             <strong>Never published</strong>
@@ -6090,12 +6086,10 @@ function AnalyticsScreen({
         <div className="privacy-metrics">
           <StatusPanel label="Measures live" value={String(selectedStudyCount)} tone="teal" />
           <StatusPanel label="Measures paused" value={String(pausedStudyCount)} tone="gold" />
-          <StatusPanel label="Privacy left" value={privacyBudgetLeft.toFixed(2)} tone="gold" />
         </div>
         <div className="analytics-grid">
           {analyticsStudies.map((study) => {
             const selected = isStudySelected(study.id);
-            const budgetRemaining = Math.max(0, study.epsilonBudget - study.spentBudget);
             const titleId = `analytics-title-${study.id}`;
             const publicationStatus = study.status === "paused" ? "paused" : selected ? "public release" : "withheld";
             return (
@@ -6112,7 +6106,6 @@ function AnalyticsScreen({
                 <div className="privacy-metrics">
                   <StatusPanel label="Minimum cohort" value={String(study.minCohortSize)} tone="teal" />
                   <StatusPanel label="Approved fields" value={String(study.fields.length)} tone="teal" />
-                  <StatusPanel label="Privacy left" value={budgetRemaining.toFixed(2)} tone="gold" />
                 </div>
                 <div className="badge-row">
                   {study.fields.map((field) => (

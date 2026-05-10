@@ -387,7 +387,7 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
   const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
   await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();
-  await expect(housingStudy.locator(".privacy-metrics").getByText(/Privacy left/i)).toBeVisible();
+  await expect(housingStudy.locator(".privacy-metrics").getByText(/Privacy left/i)).toHaveCount(0);
   await expect(housingStudy.getByText("county", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need type", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need_category", { exact: true })).toHaveCount(0);
@@ -395,6 +395,7 @@ test("analytics consent shows privacy controls and safe details", async ({ page 
   await expect(preview.getByText(/What the public can learn/i)).toBeVisible();
   await expect(preview.getByText(/Published total/i)).toBeVisible();
   await expect(preview.getByText(/Never published/i)).toBeVisible();
+  await expect(page.getByText(/privacy budget left/i)).toHaveCount(0);
 });
 
 test("analytics consent preserves opt-out after refresh", async ({ page }) => {
