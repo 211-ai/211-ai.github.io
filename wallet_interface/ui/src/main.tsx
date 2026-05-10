@@ -19,12 +19,12 @@ if (shouldRegisterServiceWorker) {
   const serviceWorkerUrl = new URL("serviceWorker.js", window.location.href);
   const scopeUrl = new URL("./", serviceWorkerUrl);
   const hadServiceWorkerController = Boolean(navigator.serviceWorker.controller);
-  let reloadingForServiceWorkerUpdate = false;
+  let notifiedServiceWorkerUpdate = false;
 
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadServiceWorkerController || reloadingForServiceWorkerUpdate) return;
-    reloadingForServiceWorkerUpdate = true;
-    window.location.reload();
+    if (!hadServiceWorkerController || notifiedServiceWorkerUpdate) return;
+    notifiedServiceWorkerUpdate = true;
+    console.info("[Abby] A new app version is ready and will be used on the next refresh.");
   });
 
   window.addEventListener("load", () => {
