@@ -168,22 +168,32 @@ export const auditEvents: AuditEvent[] = [
 export const analyticsStudies: AnalyticsStudy[] = [
   {
     id: "study-1",
-    title: "Housing service gaps",
-    purpose: "Count where housing help is missing.",
-    fields: ["county", "need_category"],
-    minCohortSize: 10,
-    epsilonBudget: 1,
-    spentBudget: 0.25,
+    title: "Unsheltered residents seeking beds",
+    purpose: "Publish verified nightly shelter demand by county and need type without releasing row-level requests.",
+    fields: ["county", "need_category", "age_group"],
+    minCohortSize: 25,
+    epsilonBudget: 1.5,
+    spentBudget: 0.45,
     status: "available"
   },
   {
     id: "study-2",
-    title: "Food access demand",
-    purpose: "Count where food help is needed without exact locations.",
-    fields: ["county", "need_category"],
-    minCohortSize: 15,
+    title: "Provider capacity gap alerts",
+    purpose: "Publish where provider networks are full or building waitlists without exposing any program roster.",
+    fields: ["county", "service_type"],
+    minCohortSize: 20,
+    epsilonBudget: 1.2,
+    spentBudget: 0.3,
+    status: "available"
+  },
+  {
+    id: "study-3",
+    title: "Housing placements after referral",
+    purpose: "Publish how often verified referrals lead to housing placement at a safe group level.",
+    fields: ["county", "housing_outcome"],
+    minCohortSize: 30,
     epsilonBudget: 1,
-    spentBudget: 0,
+    spentBudget: 0.2,
     status: "paused"
   }
 ];

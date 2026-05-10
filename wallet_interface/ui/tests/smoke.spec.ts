@@ -174,13 +174,13 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.locator('section[aria-labelledby="Government-help"]')).toBeVisible();
   await expect(page.getByLabel(/Days between check-ins/i)).toBeVisible();
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).toBeVisible();
-  await expect(page.getByLabel(/Housing service gaps/i)).toBeVisible();
+  await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).toBeVisible();
   await expect(page.getByRole("button", { name: /Account safety/i })).toBeVisible();
 
   await page.getByLabel(/Legal or full name/i).fill("Settings User");
   await page.getByLabel(/Days between check-ins/i).fill("12");
   await page.getByLabel(/Allow Abby to prepare benefits notices/i).uncheck();
-  await page.getByLabel(/Housing service gaps/i).uncheck();
+  await page.getByLabel(/Unsheltered residents seeking beds/i).uncheck();
   await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
 
   await page.reload();
@@ -188,7 +188,7 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Legal or full name/i)).toHaveValue("Settings User");
   await expect(page.getByLabel(/Days between check-ins/i)).toHaveValue("12");
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).not.toBeChecked();
-  await expect(page.getByLabel(/Housing service gaps/i)).not.toBeChecked();
+  await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).not.toBeChecked();
 
   if (!/Mobile/i.test(testInfo.project.name)) {
     const nav = page.getByRole("navigation", { name: /Portal navigation/i });
@@ -368,29 +368,29 @@ test("mobile menu opens navigation and routes to contacts", async ({ page }, tes
 
 test("analytics consent shows privacy controls and safe details", async ({ page }) => {
   await openAppRoute(page, "/#/analytics");
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
-  const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  await expect(housingStudy.getByLabel(/Allow this choice/i)).toBeChecked();
-  await expect(housingStudy.locator(".privacy-metrics").getByText(/Group size/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
+  const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  await expect(housingStudy.getByLabel(/Include this measure/i)).toBeChecked();
+  await expect(housingStudy.locator(".privacy-metrics").getByText(/Minimum cohort/i)).toBeVisible();
   await expect(housingStudy.locator(".privacy-metrics").getByText(/Privacy left/i)).toBeVisible();
   await expect(housingStudy.getByText("county", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need type", { exact: true })).toBeVisible();
   await expect(housingStudy.getByText("need_category", { exact: true })).toHaveCount(0);
-  const preview = housingStudy.getByLabel(/Housing service gaps analytics capability preview/i);
-  await expect(preview.getByText(/share group facts/i)).toBeVisible();
-  await expect(preview.getByText(/open file contents/i)).toBeVisible();
-  await expect(preview.getByText(/ask group questions/i)).toBeVisible();
+  const preview = housingStudy.getByLabel(/Unsheltered residents seeking beds public analytics preview/i);
+  await expect(preview.getByText(/What the public can learn/i)).toBeVisible();
+  await expect(preview.getByText(/Published total/i)).toBeVisible();
+  await expect(preview.getByText(/Never published/i)).toBeVisible();
 });
 
 test("analytics consent preserves opt-out after refresh", async ({ page }) => {
   await openAppRoute(page, "/#/analytics");
-  const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  const studyOptIn = housingStudy.getByLabel(/Allow this choice/i);
+  const housingStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  const studyOptIn = housingStudy.getByLabel(/Include this measure/i);
   await studyOptIn.uncheck();
   await expect(studyOptIn).not.toBeChecked();
   await page.reload();
-  const reloadedStudy = page.getByRole("article", { name: /Housing service gaps/i });
-  await expect(reloadedStudy.getByLabel(/Allow this choice/i)).not.toBeChecked();
+  const reloadedStudy = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+  await expect(reloadedStudy.getByLabel(/Include this measure/i)).not.toBeChecked();
 });
 
 test("removed standalone sharing, benefits, and recipient routes fall back home", async ({ page }) => {

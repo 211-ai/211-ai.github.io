@@ -396,47 +396,44 @@ const captureScenarios: CaptureScenario[] = [
   {
     id: "analytics",
     path: "/#/analytics",
-    title: "Analytics tools and group facts choice",
+    title: "Public analytics dashboard review",
     state: "default",
     goals: [
-      "The admin introspection area should distinguish project admins from service organization admins.",
-      "Admin tools should make aggregate-only guardrails explicit.",
-      "Group facts choices should start checked unless the user saved them as off.",
-      "The user should be able to turn off each available choice in plain language.",
-      "Safe detail badges should be clearly separated from personal records.",
-      "Group size and privacy-left limits should be understandable."
+      "The screen should read like a public dashboard instead of an internal consent tool.",
+      "Population and provider sections should surface high-level homelessness and service capacity metrics.",
+      "Zero-knowledge and privacy guardrails should be prominent and easy to understand.",
+      "Published measure controls should clearly distinguish live, withheld, and paused releases.",
+      "Metric cards should remain scannable on mobile and desktop."
     ]
   },
   {
     id: "analytics-consented",
     path: "/#/analytics",
-    title: "Analytics tools selected study",
+    title: "Public analytics dashboard with measure included",
     state: "one choice on",
     goals: [
-      "Admin introspection should stay separate from resident consent choices.",
-      "The selected choice should be visually distinct from paused or available choices.",
-      "Safe detail badges should remain visible after consent is on.",
-      "Privacy-left and group-size limits should stay prominent."
+      "The included measure should read as part of the public release workflow.",
+      "Live, withheld, and paused states should stay visually distinct.",
+      "Privacy and publication details should remain visible after interaction."
     ],
     prepare: async (page) => {
-      const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-      await housingStudy.getByRole("checkbox").check();
+      const releaseMeasure = page.getByRole("article", { name: /Provider capacity gap alerts/i });
+      await releaseMeasure.getByRole("checkbox").check();
     }
   },
   {
     id: "analytics-one-choice-off",
     path: "/#/analytics",
-    title: "Analytics tools with one group fact option off",
+    title: "Public analytics dashboard with measure withheld",
     state: "one choice off",
     goals: [
-      "Admin introspection should remain aggregate-only when a resident choice is off.",
-      "The off choice should be visually clear without making the user feel punished.",
-      "Available and paused choices should remain easy to compare.",
-      "Group size and privacy-left labels should remain visible."
+      "Withholding a measure should be visually clear without hiding privacy guardrails.",
+      "Live and paused measures should remain easy to compare.",
+      "Publication workflow controls should stay understandable."
     ],
     prepare: async (page) => {
-      const housingStudy = page.getByRole("article", { name: /Housing service gaps/i });
-      await housingStudy.getByRole("checkbox").uncheck();
+      const releaseMeasure = page.getByRole("article", { name: /Unsheltered residents seeking beds/i });
+      await releaseMeasure.getByRole("checkbox").uncheck();
     }
   },
   {
@@ -500,7 +497,7 @@ const artifactRoot = path.resolve(process.cwd(), "artifacts/ui-screenshots/lates
 const appSessionKey = "abby-ui-session-v1";
 const routeReadyHeadings: Record<string, RegExp> = {
   "/": /Welcome to your safety plan!/i,
-  "/#/analytics": /Share group facts, not your name/i,
+  "/#/analytics": /Homelessness and service capacity dashboard/i,
   "/#/calendar": /^Calendar$/i,
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
