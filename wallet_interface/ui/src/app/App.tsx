@@ -1121,8 +1121,15 @@ export function App() {
           <HomeScreen
             navigate={navigate}
             nextCheckIn={nextCheckIn}
+            onOpenService={openServiceDetailFromServices}
+            policy={policy}
+            profile={profile}
             recipients={recipients}
+            serviceInteractions={serviceInteractions}
+            servicePlans={servicePlans}
             showReviewActions={signedInUser.toLowerCase().includes("reviewer")}
+            signedInUser={signedInUser}
+            providerMessages={shelterProviderMessages}
             uploads={uploads}
           />
         ) : null}
@@ -1663,16 +1670,126 @@ function LoginScreen({
 function HomeScreen({
   navigate,
   nextCheckIn,
+  onOpenService,
+  policy,
+  profile,
+  providerMessages,
   recipients,
+  serviceInteractions,
+  servicePlans,
   showReviewActions,
+  signedInUser,
   uploads
 }: {
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
+  onOpenService: (docId: string) => void;
+  policy: CheckInPolicyDraft;
+  profile: RegistrationProfileDraft;
+  providerMessages: ShelterProviderMessage[];
   recipients: DisclosureRecipientDraft[];
+  serviceInteractions: ServiceInteractionEvent[];
+  servicePlans: ServicePlan[];
   showReviewActions: boolean;
+  signedInUser: string;
   uploads: UploadItem[];
 }) {
+  const [homeSuggestions, setHomeSuggestions] = useState<HomeServiceSuggestion[]>([]);
+  const [homeSuggestionsLoading, setHomeSuggestionsLoading] = useState(false);
+  const selectedNeeds = useMemo(
+    () => Array.from(new Set(profile.serviceNeeds.map((value) => value.trim()).filter(Boolean))).slice(0, 3),
+    [profile.serviceNeeds]
+  );
+  const inboxMessages = useMemo(
+    () =>
+      providerMessages
+        .filter((message) => messageMatchesClient(message, profile, signedInUser))
+        .filter((message) => !message.clientArchivedAt)
+        .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()),
+    [profile, providerMessages, signedInUser]
+  );
+  const featuredMessages = useMemo(() => {
+    const unread = inboxMessages.filter((message) => !message.clientReadAt);
+    return (unread.length ? unread : inboxMessages).slice(0, 3);
+  }, [inboxMessages]);
+  const urgentCalendarItems = useMemo(
+    () => buildHomeCalendarItems({ policy, serviceInteractions, servicePlans }).slice(0, 3),
+    [policy, serviceInteractions, servicePlans]
+  );
+
+  useEffect(() => {
+    let canceled = false;
+
+    async function loadHomeSuggestions() {
+      if (!selectedNeeds.length) {
+        setHomeSuggestions([]);
+        return;
+      }
+
+      setHomeSuggestionsLoading(true);
+      try {
+        const searchBundles = await Promise.all(
+          selectedNeeds.map(async (need) => {
+            const query = `${need} near me`;
+            const [results, preferredClusterIds] = await Promise.all([
+              search211Info(query, 3).catch(() => []),
+              resolvePreferred211ServiceClusterIds(query, 8).catch(() => []),
+            ]);
+            return {
+              need,
+              results: results.slice(0, 2),
+              preferredClusterIds,
+            };
+          })
+        );
+
+        const uniqueResults: Array<{ need: string; result: SearchResult }> = [];
+        const seenDocIds = new Set<string>();
+        const allPreferredClusterIds = new Set<number>();
+        for (const bundle of searchBundles) {
+          for (const clusterId of bundle.preferredClusterIds) {
+            allPreferredClusterIds.add(clusterId);
+          }
+          for (const result of bundle.results) {
+            if (seenDocIds.has(result.docId)) continue;
+            seenDocIds.add(result.docId);
+            uniqueResults.push({ need: bundle.need, result });
+          }
+        }
+
+        const visibleResults = uniqueResults.slice(0, 4);
+        const locationRows = visibleResults.length
+          ? await load211ServiceLocationsSlice({
+              serviceDocIds: visibleResults.map((entry) => entry.result.docId),
+            }).catch(() => [])
+          : [];
+        const locationLabels = buildSearchResultLocationLabels(
+          visibleResults.map((entry) => entry.result),
+          locationRows,
+          Array.from(allPreferredClusterIds)
+        );
+
+        if (canceled) return;
+        setHomeSuggestions(
+          visibleResults.map(({ need, result }) => ({
+            need,
+            result,
+            locationLabel: locationLabels[result.docId] || getServiceLocationLabel(result.document),
+          }))
+        );
+      } finally {
+        if (!canceled) {
+          setHomeSuggestionsLoading(false);
+        }
+      }
+    }
+
+    void loadHomeSuggestions();
+    return () => {
+      canceled = true;
+    };
+  }, [selectedNeeds]);
+
   return (
     <div className="screen home-screen">
       <div className="page-title home-hero">
@@ -1692,6 +1809,113 @@ function HomeScreen({
             <span className="checkin-panel-cta">Check in now</span>
           </button>
         </div>
+      </Section>
+      <Section title="Closest help for your needs">
+        {selectedNeeds.length ? (
+          homeSuggestionsLoading ? (
+            <StatusBanner tone="info">Finding nearby help for {selectedNeeds.join(", ")}.</StatusBanner>
+          ) : homeSuggestions.length ? (
+            <div className="list-stack" aria-label="Nearby services for selected needs">
+              {homeSuggestions.map(({ need, result, locationLabel }) => {
+                const document = result.document;
+                const program = document.program_name || document.title || "Program not listed";
+                const provider = document.provider_name || "Provider not listed";
+                return (
+                  <article className="list-item" key={`${need}:${result.docId}`}>
+                    <div>
+                      <h3>{program}</h3>
+                      <p>{provider}</p>
+                      <small className="upload-machine-summary">{result.snippet}</small>
+                      <div className="badge-row">
+                        <Badge>{need}</Badge>
+                        {locationLabel ? <Badge>{locationLabel}</Badge> : null}
+                      </div>
+                    </div>
+                    <div className="row-actions list-item-action">
+                      <Button onClick={() => onOpenService(result.docId)} variant="secondary">
+                        Open service
+                      </Button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <StatusBanner tone="info">No nearby matches are ready yet. Open Services to run a broader search.</StatusBanner>
+          )
+        ) : (
+          <div className="empty-state">
+            <h3>No help categories selected yet</h3>
+            <p>Add the kinds of help you want in registration or settings so Abby can pin nearby services here.</p>
+            <div className="row-actions">
+              <Button onClick={() => navigate("settings")} variant="secondary">Update settings</Button>
+            </div>
+          </div>
+        )}
+      </Section>
+      <Section title="New messages">
+        {featuredMessages.length ? (
+          <div className="list-stack" aria-label="New service staff messages">
+            {featuredMessages.map((message) => (
+              <article className="list-item" key={message.id}>
+                <div>
+                  <h3>{message.subject}</h3>
+                  <p>{message.body}</p>
+                  <div className="badge-row">
+                    <Badge>{message.shelter}</Badge>
+                    <Badge tone={message.clientReadAt ? "neutral" : "warning"}>
+                      {message.clientReadAt ? "Read" : "Unread"}
+                    </Badge>
+                    <Badge>{formatShelterDate(message.createdAt)}</Badge>
+                  </div>
+                  <small>From {message.staffName}</small>
+                </div>
+                <div className="row-actions list-item-action">
+                  <Button onClick={() => navigate("messages")} variant="secondary">
+                    Open messages
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <StatusBanner tone="info">No new provider messages are waiting for you.</StatusBanner>
+        )}
+      </Section>
+      <Section title="Urgent calendar items">
+        {urgentCalendarItems.length ? (
+          <div className="list-stack" aria-label="Urgent calendar items">
+            {urgentCalendarItems.map((item) => {
+              const serviceDocId = item.serviceDocId;
+              return (
+                <article className="list-item" key={item.id}>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.detail}</p>
+                    <div className="badge-row">
+                      <Badge>{item.kindLabel}</Badge>
+                      <Badge tone={item.urgencyTone}>{item.urgencyLabel}</Badge>
+                      {item.location ? <Badge>{item.location}</Badge> : null}
+                    </div>
+                    <small>{formatHomeDateTime(item.startsAt)}</small>
+                  </div>
+                  <div className="row-actions list-item-action">
+                    <Button onClick={() => navigate("calendar")} variant="secondary">
+                      Open calendar
+                    </Button>
+                    {serviceDocId ? (
+                      <Button onClick={() => onOpenService(serviceDocId)} variant="secondary">
+                        Open service
+                      </Button>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <StatusBanner tone="info">No urgent calendar items are scheduled right now.</StatusBanner>
+        )}
       </Section>
       {showReviewActions ? (
         <div className="home-actions" aria-label="Safety plan setup">
@@ -3552,6 +3776,129 @@ function toLocalSavedService(result: SearchResult, walletId = "local-wallet"): S
 
 function formatCount(value: number): string {
   return new Intl.NumberFormat("en-US").format(Math.max(0, Math.trunc(value || 0)));
+}
+
+type HomeServiceSuggestion = {
+  need: string;
+  result: SearchResult;
+  locationLabel: string;
+};
+
+type HomeCalendarItem = {
+  id: string;
+  title: string;
+  detail: string;
+  kindLabel: string;
+  urgencyLabel: string;
+  urgencyTone: "neutral" | "warning" | "info";
+  startsAt: Date;
+  location?: string;
+  serviceDocId?: string;
+};
+
+function buildHomeCalendarItems({
+  policy,
+  serviceInteractions,
+  servicePlans,
+}: {
+  policy: CheckInPolicyDraft;
+  serviceInteractions: ServiceInteractionEvent[];
+  servicePlans: ServicePlan[];
+}): HomeCalendarItem[] {
+  const now = new Date();
+  const twoWeeksAhead = now.getTime() + 14 * 24 * 60 * 60 * 1000;
+  const items: HomeCalendarItem[] = [];
+
+  for (const plan of servicePlans) {
+    const startsAt = parseHomeDate(plan.appointment_at);
+    if (!startsAt) continue;
+    const urgency = describeHomeUrgency(startsAt, now);
+    if (!urgency || startsAt.getTime() > twoWeeksAhead) continue;
+    items.push({
+      id: `plan:${plan.plan_id}`,
+      title: plan.service_title || plan.provider_name || "Service appointment",
+      detail: plan.goal || "Scheduled service appointment.",
+      kindLabel: "Appointment",
+      urgencyLabel: urgency.label,
+      urgencyTone: urgency.tone,
+      startsAt,
+      location: plan.travel_target.trim() || undefined,
+      serviceDocId: plan.service_doc_id || undefined,
+    });
+  }
+
+  for (const interaction of serviceInteractions) {
+    const startsAt = parseHomeDate(interaction.next_follow_up_at);
+    if (!startsAt) continue;
+    const urgency = describeHomeUrgency(startsAt, now);
+    if (!urgency || startsAt.getTime() > twoWeeksAhead) continue;
+    items.push({
+      id: `follow-up:${interaction.interaction_id}`,
+      title: interaction.next_action || interaction.program_name || interaction.provider_name || "Service follow-up",
+      detail: interaction.outcome || interaction.program_name || "Follow up with this provider.",
+      kindLabel: "Follow-up",
+      urgencyLabel: urgency.label,
+      urgencyTone: urgency.tone,
+      startsAt,
+      serviceDocId: interaction.service_doc_id || undefined,
+    });
+  }
+
+  const nextCheckInAt = parseHomeDate(policy.lastCheckInAt);
+  if (nextCheckInAt && policy.intervalDays > 0) {
+    nextCheckInAt.setDate(nextCheckInAt.getDate() + policy.intervalDays);
+    const urgency = describeHomeUrgency(nextCheckInAt, now);
+    if (urgency) {
+      items.push({
+        id: `check-in:${policy.lastCheckInAt}:${policy.intervalDays}`,
+        title: "Check in with Abby",
+        detail: `Reminder channels: ${policy.reminderChannels.join(", ") || "web"}.`,
+        kindLabel: "Check-in",
+        urgencyLabel: urgency.label,
+        urgencyTone: urgency.tone,
+        startsAt: nextCheckInAt,
+      });
+    }
+  }
+
+  return items.sort((left, right) => left.startsAt.getTime() - right.startsAt.getTime());
+}
+
+function parseHomeDate(value: string): Date | null {
+  if (!value.trim()) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function describeHomeUrgency(
+  startsAt: Date,
+  now: Date,
+): { label: string; tone: "neutral" | "warning" | "info" } | null {
+  const deltaMs = startsAt.getTime() - now.getTime();
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (deltaMs < 0) {
+    return { label: "Overdue", tone: "warning" };
+  }
+  if (deltaMs <= dayMs) {
+    return { label: "Today", tone: "warning" };
+  }
+  if (deltaMs <= 2 * dayMs) {
+    return { label: "Tomorrow", tone: "warning" };
+  }
+  if (deltaMs <= 7 * dayMs) {
+    return { label: `In ${Math.round(deltaMs / dayMs)} days`, tone: "info" };
+  }
+  return { label: formatShelterDate(startsAt.toISOString()), tone: "neutral" };
+}
+
+function formatHomeDateTime(value: Date): string {
+  return value.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function buildSearchResultLocationLabels(
