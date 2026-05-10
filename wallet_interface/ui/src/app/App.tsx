@@ -5743,10 +5743,16 @@ function AnalyticsScreen({
   const totalPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.epsilonBudget, 0);
   const spentPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.spentBudget, 0);
   const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
-  const cohortFloorMin = analyticsStudies.reduce((min, study) => Math.min(min, study.minCohortSize), Number.POSITIVE_INFINITY);
-  const cohortFloorMax = analyticsStudies.reduce((max, study) => Math.max(max, study.minCohortSize), 0);
+  const cohortFloorValues = analyticsStudies.map((study) => study.minCohortSize);
+  const cohortFloorMin = cohortFloorValues.length ? Math.min(...cohortFloorValues) : 0;
+  const cohortFloorMax = cohortFloorValues.length ? Math.max(...cohortFloorValues) : 0;
   const cohortFloorLabel =
-    cohortFloorMin === cohortFloorMax ? String(cohortFloorMin) : `${cohortFloorMin}-${cohortFloorMax}`;
+    cohortFloorValues.length === 0
+      ? "0"
+      : cohortFloorMin === cohortFloorMax
+        ? String(cohortFloorMin)
+        : `${cohortFloorMin}-${cohortFloorMax}`;
+  const providerPublicationFloor = 3;
   const summaryPanels = [
     { label: "People in verified cohorts", value: "2,480", tone: "teal" },
     { label: "Providers submitting proofs", value: "38", tone: "teal" },
@@ -5823,7 +5829,7 @@ function AnalyticsScreen({
     },
     {
       detail:
-        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than 3 provider organizations are represented.`,
+        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than ${providerPublicationFloor} provider organizations are represented.`,
       title: "Suppression for small groups"
     },
     {
