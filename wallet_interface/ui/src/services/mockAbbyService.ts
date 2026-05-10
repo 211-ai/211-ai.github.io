@@ -195,6 +195,16 @@ export const analyticsStudies: AnalyticsStudy[] = [
     epsilonBudget: 1,
     spentBudget: 0.2,
     status: "paused"
+  },
+  {
+    id: "study-4",
+    title: "Drug abuse and rehab statistics",
+    purpose: "Publish how many people start rehab intake and active recovery planning without exposing treatment records.",
+    fields: ["county", "treatment_pathway", "referral_source"],
+    minCohortSize: 18,
+    epsilonBudget: 1.1,
+    spentBudget: 0.26,
+    status: "available"
   }
 ];
 
@@ -351,6 +361,41 @@ const analyticsOutreachReleaseBatches = [
   }
 ];
 
+const analyticsRecoveryReleaseBatches = [
+  {
+    treatmentPathway: "detox",
+    pathwayLabel: "detox referrals",
+    referralSource: "street_outreach",
+    treatmentReferrals: 58,
+    intakesCompleted: 36,
+    activeRecoveryPlans: 31
+  },
+  {
+    treatmentPathway: "residential_treatment",
+    pathwayLabel: "residential treatment",
+    referralSource: "emergency_shelter",
+    treatmentReferrals: 47,
+    intakesCompleted: 29,
+    activeRecoveryPlans: 26
+  },
+  {
+    treatmentPathway: "outpatient_treatment",
+    pathwayLabel: "outpatient treatment",
+    referralSource: "medical_outreach",
+    treatmentReferrals: 66,
+    intakesCompleted: 48,
+    activeRecoveryPlans: 44
+  },
+  {
+    treatmentPathway: "medication_assisted_treatment",
+    pathwayLabel: "medication-assisted treatment",
+    referralSource: "benefits_navigation",
+    treatmentReferrals: 39,
+    intakesCompleted: 30,
+    activeRecoveryPlans: 27
+  }
+];
+
 let analyticsProofSequence = 2;
 
 function nextAnalyticsProofMetadata(prefix: string) {
@@ -492,6 +537,41 @@ const analyticsProofReceipts: ProofReceiptView[] = [
           assigned_followups: String(assignedFollowups)
         },
         witnessLabel: "Outreach follow-up release batch",
+        simulated: true
+      };
+    })
+  ),
+  ...analyticsRecoveryReleaseBatches.flatMap((batch, batchIndex) =>
+    analyticsCountyProfiles.map((countyProfile) => {
+      const treatmentReferrals = Math.round(batch.treatmentReferrals * countyProfile.scale) + batchIndex * 2;
+      const intakesCompleted = Math.min(
+        treatmentReferrals - 1,
+        Math.round(batch.intakesCompleted * countyProfile.scale) + batchIndex
+      );
+      const activeRecoveryPlans = Math.min(
+        intakesCompleted - 1,
+        Math.round(batch.activeRecoveryPlans * countyProfile.scale) + batchIndex
+      );
+      const metadata = nextAnalyticsProofMetadata("analytics-recovery");
+      return {
+        ...metadata,
+        proofType: "analytics_recovery_outcome",
+        claim: `Drug rehab intake outcomes in ${countyProfile.county} county ${batch.pathwayLabel}`,
+        verifier: `${countyProfile.label} recovery verifier`,
+        proofSystem: "simulated_zk_certificate",
+        verificationStatus: "verified",
+        circuitId: "analytics-recovery-outcome-v1",
+        publicInputs: {
+          certificate_type: "recovery_outcome",
+          study_id: "study-4",
+          county: countyProfile.county,
+          treatment_pathway: batch.treatmentPathway,
+          referral_source: batch.referralSource,
+          treatment_referrals: String(treatmentReferrals),
+          intakes_completed: String(intakesCompleted),
+          active_recovery_plans: String(activeRecoveryPlans)
+        },
+        witnessLabel: "Recovery services release batch",
         simulated: true
       };
     })
