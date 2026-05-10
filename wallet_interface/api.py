@@ -965,7 +965,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                     {
                         "wallet_id": record.wallet_id,
                         "status": "failed",
-                        "detail": str(exc),
+                        "detail": "dead-drop dispatch failed",
                     }
                 )
         return {

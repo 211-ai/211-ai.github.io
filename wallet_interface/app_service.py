@@ -170,6 +170,14 @@ def _portal_datetime(value: str | None) -> datetime | None:
         return None
 
 
+def _same_portal_timestamp(left: str | None, right: str | None) -> bool:
+    left_dt = _portal_datetime(left)
+    right_dt = _portal_datetime(right)
+    if left_dt is not None and right_dt is not None:
+        return left_dt == right_dt
+    return str(left or "").strip() == str(right or "").strip()
+
+
 def _portal_id(prefix: str) -> str:
     return f"{prefix}-{uuid4().hex}"
 
@@ -1192,7 +1200,9 @@ class WalletInterfaceService:
                 continue
             if not record.enabled or not record.body.strip() or not record.bundle:
                 continue
-            if record.last_sent_for_check_in_at and record.last_sent_for_check_in_at == record.last_check_in_at:
+            if record.last_sent_for_check_in_at and _same_portal_timestamp(
+                record.last_sent_for_check_in_at, record.last_check_in_at
+            ):
                 continue
             if due_at <= current:
                 due_records.append(record)

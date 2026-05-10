@@ -401,7 +401,9 @@ function buildMissingPersonDeadDropEmail(
   recipients: DisclosureRecipientDraft[]
 ) {
   const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
-  const timestampSource = getMissingPersonDeadDropDueAt(policy) || policy.lastCheckInAt || new Date().toISOString();
+  const dueAt = getMissingPersonDeadDropDueAt(policy);
+  const lastCheckInAt = Number.isFinite(Date.parse(policy.lastCheckInAt)) ? policy.lastCheckInAt : "";
+  const timestampSource = dueAt || lastCheckInAt || new Date().toISOString();
   const fileName = `abby-missing-person-wallet-dead-drop-${formatDeadDropFileTimestamp(new Date(timestampSource))}.json`;
   const personLabel = bundle.person.preferredName || "Unknown";
   const walletLines = bundle.walletContents.length
@@ -434,7 +436,7 @@ function buildMissingPersonDeadDropEmail(
     body,
     bundle,
     bundleFileName: fileName,
-    dueAt: getMissingPersonDeadDropDueAt(policy),
+    dueAt,
     lastCheckInAt: policy.lastCheckInAt
   };
 }
@@ -585,7 +587,7 @@ export function App() {
   const [agentChatOpen, setAgentChatOpen] = useState(false);
   const [agentChatMode, setAgentChatMode] = useState<AgentChatMode>("text");
   const walletApiConfig = useMemo(readWalletApiConfig, []);
-  const deadDropSyncPayloadRef = useRef("");
+  const lastSyncedDeadDropPayloadRef = useRef("");
   const walletDeadDropReady = Boolean(walletApiConfig?.actorDid);
 
   function openAgentChatMode(mode: AgentChatMode) {
@@ -868,7 +870,7 @@ export function App() {
         lastCheckInAt: request.lastCheckInAt
       });
       await dispatchMissingPersonDeadDrop(walletApiConfig);
-      deadDropSyncPayloadRef.current = JSON.stringify({
+      lastSyncedDeadDropPayloadRef.current = JSON.stringify({
         enabled: true,
         ...request
       });
@@ -886,7 +888,7 @@ export function App() {
 
   useEffect(() => {
     if (!walletApiConfig || !walletDeadDropReady) {
-      deadDropSyncPayloadRef.current = "";
+      lastSyncedDeadDropPayloadRef.current = "";
       return;
     }
     const request = buildMissingPersonDeadDropEmail(policy, profile, uploads, recipients);
@@ -894,7 +896,7 @@ export function App() {
       enabled: missingPersonDeadDropEnabled,
       ...request
     });
-    if (deadDropSyncPayloadRef.current === payload) {
+    if (lastSyncedDeadDropPayloadRef.current === payload) {
       return;
     }
     let cancelled = false;
@@ -910,7 +912,7 @@ export function App() {
     })
       .then(() => {
         if (!cancelled) {
-          deadDropSyncPayloadRef.current = payload;
+          lastSyncedDeadDropPayloadRef.current = payload;
         }
       })
       .catch((error) => {
