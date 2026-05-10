@@ -163,6 +163,7 @@ const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf
 const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
+const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
 
 type LoginPortal = "client" | "provider";
 
@@ -327,6 +328,54 @@ function toShortSummaryTitle(text: string): string {
   return title;
 }
 
+function formatDeadDropFileTimestamp(date = new Date()): string {
+  return date.toISOString().replace(/[:.]/g, "-");
+}
+
+function buildMissingPersonDeadDropBundle(
+  profile: RegistrationProfileDraft,
+  uploads: UploadItem[],
+  recipients: DisclosureRecipientDraft[]
+) {
+  const preferredName = profile.preferredName.trim() || profile.legalName.trim() || "Unknown";
+  const policeRecipients = recipients
+    .filter((recipient) => recipient.type === "police_precinct")
+    .map((recipient) => ({
+      name: recipient.displayName,
+      precinct: recipient.precinctName,
+      email: recipient.email,
+      phone: recipient.phone
+    }));
+
+  return {
+    schemaVersion: "abby-missing-person-dead-drop-v1",
+    generatedAt: new Date().toISOString(),
+    policeNotificationTarget: PORTLAND_POLICE_MISSING_EMAIL,
+    person: {
+      preferredName,
+      legalName: profile.legalName.trim(),
+      dateOfBirth: profile.dateOfBirth,
+      phone: profile.phone.trim(),
+      email: profile.email.trim(),
+      currentLocation: profile.currentLocation.trim(),
+      shelterAffiliation: profile.shelterAffiliation.trim()
+    },
+    walletContents: uploads.map((upload) => ({
+      id: upload.id,
+      fileName: upload.fileName,
+      machineSummary: upload.machineSummary,
+      category: upload.category,
+      sensitivity: upload.sensitivity,
+      status: upload.status,
+      shared: upload.shared,
+      sharingMode: upload.sharingMode ?? "private",
+      decentralizedStorageStatus: upload.decentralizedStorageStatus ?? "not_configured",
+      decentralizedStorageProvider: upload.decentralizedStorageProvider ?? "local"
+    })),
+    knownPoliceRecipients: policeRecipients
+  };
+}
+
 function normalizeLoginContact(value: string): string {
   const trimmed = value.trim();
   if (trimmed.includes("@")) return trimmed.toLowerCase();
@@ -462,6 +511,9 @@ export function App() {
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
+  const [missingPersonDeadDropEnabled, setMissingPersonDeadDropEnabled] = useState(
+    defaultAppState.missingPersonDeadDropEnabled
+  );
   const [shelterChecklist, setShelterChecklist] = useState(() => defaultAppState.shelterChecklist);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [agentChatOpen, setAgentChatOpen] = useState(false);
@@ -645,11 +697,13 @@ export function App() {
       proofReceipts: walletProofReceipts,
       benefitsOptIn,
       analyticsOptIn,
+      missingPersonDeadDropEnabled,
       shelterChecklist
     });
   }, [
     analyticsOptIn,
     benefitsOptIn,
+    missingPersonDeadDropEnabled,
     policy,
     profile,
     recipients,
@@ -725,6 +779,58 @@ export function App() {
     setServicePlanDocId(null);
     setServiceDetailDocId(null);
     setMobileNavOpen(false);
+  }
+
+  function sendMissingPersonDeadDrop(): boolean {
+    try {
+      const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
+      const bundleJson = JSON.stringify(bundle, null, 2);
+      const timestamp = formatDeadDropFileTimestamp();
+      const fileName = `abby-missing-person-wallet-dead-drop-${timestamp}.json`;
+      const blob = new Blob([bundleJson], { type: "application/json" });
+      const blobUrl = URL.createObjectURL(blob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = blobUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      URL.revokeObjectURL(blobUrl);
+
+      const personLabel = bundle.person.preferredName || "Unknown";
+      const walletLines = bundle.walletContents.length
+        ? bundle.walletContents
+            .map((item, index) => `${index + 1}. ${item.fileName} (${item.category}, ${item.sensitivity}, ${item.status})`)
+            .join("\n")
+        : "No wallet files are currently stored.";
+      const body = [
+        "Hello Portland Police Missing Persons Unit,",
+        "",
+        `Please use this Abby emergency dead-drop bundle to support a missing-person report for ${personLabel}.`,
+        "",
+        `Name: ${bundle.person.legalName || bundle.person.preferredName || "Unknown"}`,
+        `Date of birth: ${bundle.person.dateOfBirth || "Unknown"}`,
+        `Phone: ${bundle.person.phone || "Unknown"}`,
+        `Email: ${bundle.person.email || "Unknown"}`,
+        `Last known location: ${bundle.person.currentLocation || "Unknown"}`,
+        "",
+        `Wallet contents (${bundle.walletContents.length}):`,
+        walletLines,
+        "",
+        `Dead-drop JSON bundle was generated locally as: ${fileName}`,
+        "Please review the attached bundle file for structured evidence metadata.",
+        "",
+        "Submitted from Abby missing-person safety setting."
+      ].join("\n");
+      const subject = "Missing person report dead drop bundle";
+      window.location.href = `mailto:${PORTLAND_POLICE_MISSING_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      return true;
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Missing-person dead-drop preparation failed", error);
+      }
+      return false;
+    }
   }
 
   function openServiceDetailFromServices(docId: string) {
@@ -904,14 +1010,17 @@ export function App() {
           <SettingsScreen
             analyticsOptIn={analyticsOptIn}
             benefitsOptIn={benefitsOptIn}
+            missingPersonDeadDropEnabled={missingPersonDeadDropEnabled}
             navigate={navigate}
             nextCheckIn={nextCheckIn}
             policy={policy}
             profile={profile}
             setAnalyticsOptIn={setAnalyticsOptIn}
             setBenefitsOptIn={setBenefitsOptIn}
+            setMissingPersonDeadDropEnabled={setMissingPersonDeadDropEnabled}
             setPolicy={setPolicy}
             setProfile={setProfile}
+            sendMissingPersonDeadDrop={sendMissingPersonDeadDrop}
             walletConnected={Boolean(walletApiConfig)}
           />
         ) : null}
@@ -1702,26 +1811,32 @@ function formatRequestTimestamp(value: string): string {
 function SettingsScreen({
   analyticsOptIn,
   benefitsOptIn,
+  missingPersonDeadDropEnabled,
   navigate,
   nextCheckIn,
   policy,
   profile,
   setAnalyticsOptIn,
   setBenefitsOptIn,
+  setMissingPersonDeadDropEnabled,
   setPolicy,
   setProfile,
+  sendMissingPersonDeadDrop,
   walletConnected
 }: {
   analyticsOptIn: Record<string, boolean>;
   benefitsOptIn: boolean;
+  missingPersonDeadDropEnabled: boolean;
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
   policy: typeof defaultCheckInPolicy;
   profile: RegistrationProfileDraft;
   setAnalyticsOptIn: (value: Record<string, boolean>) => void;
   setBenefitsOptIn: (optedIn: boolean) => void;
+  setMissingPersonDeadDropEnabled: (enabled: boolean) => void;
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   setProfile: (profile: RegistrationProfileDraft) => void;
+  sendMissingPersonDeadDrop: () => boolean;
   walletConnected: boolean;
 }) {
   const updatePolicy = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
@@ -1734,9 +1849,21 @@ function SettingsScreen({
   };
   const profileComplete = Boolean(profile.legalName.trim() && profile.dateOfBirth && profile.photoAssetId);
   const selectedAnalyticsStudyCount = analyticsStudies.filter((study) => analyticsOptIn[study.id] ?? true).length;
+  const [deadDropStatus, setDeadDropStatus] = useState<"idle" | "sent" | "failed">("idle");
 
   function toggleAnalyticsStudy(studyId: string) {
     setAnalyticsOptIn({ ...analyticsOptIn, [studyId]: !(analyticsOptIn[studyId] ?? true) });
+  }
+
+  useEffect(() => {
+    if (!missingPersonDeadDropEnabled) {
+      setDeadDropStatus("idle");
+    }
+  }, [missingPersonDeadDropEnabled]);
+
+  function handleSendMissingPersonDeadDrop() {
+    const sent = sendMissingPersonDeadDrop();
+    setDeadDropStatus(sent ? "sent" : "failed");
   }
 
   return (
@@ -1832,6 +1959,42 @@ function SettingsScreen({
               </label>
             );
           })}
+          <label className="scope-option settings-toggle">
+            <input
+              checked={missingPersonDeadDropEnabled}
+              onChange={(event) => setMissingPersonDeadDropEnabled(event.target.checked)}
+              type="checkbox"
+            />
+            <span>
+              <strong>Enable missing-person dead drop for Portland Police.</strong>
+              <small>
+                When enabled, Abby downloads a local JSON wallet bundle and opens an email draft to{" "}
+                {PORTLAND_POLICE_MISSING_EMAIL}. You must attach the file and send it.
+              </small>
+            </span>
+          </label>
+          <div className="row-actions">
+            <Button
+              ariaLabel={
+                missingPersonDeadDropEnabled
+                  ? "Prepare and email dead drop"
+                  : "Prepare and email dead drop (disabled)"
+              }
+              disabled={!missingPersonDeadDropEnabled}
+              onClick={handleSendMissingPersonDeadDrop}
+              variant="secondary"
+            >
+              <Bell size={18} /> Prepare and email dead drop
+            </Button>
+          </div>
+          {deadDropStatus === "sent" ? (
+            <StatusBanner tone="success">
+              Dead-drop bundle downloaded. Please attach the file to the email draft and send.
+            </StatusBanner>
+          ) : null}
+          {deadDropStatus === "failed" ? (
+            <StatusBanner tone="warning">Could not prepare the dead-drop bundle. Please try again.</StatusBanner>
+          ) : null}
         </div>
       </Section>
 

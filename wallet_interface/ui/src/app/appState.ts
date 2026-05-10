@@ -393,6 +393,7 @@ export type PersistedAppState = {
   proofReceipts?: ProofReceiptView[];
   benefitsOptIn?: boolean;
   analyticsOptIn?: Record<string, boolean>;
+  missingPersonDeadDropEnabled?: boolean;
   shelterChecklist?: typeof defaultShelterChecklist;
 };
 
@@ -467,6 +468,7 @@ export function createDefaultAppState(persistedState: PersistedAppState = {}): R
       persistedState.analyticsOptIn && typeof persistedState.analyticsOptIn === "object"
         ? persistedState.analyticsOptIn
         : {},
+    missingPersonDeadDropEnabled: persistedState.missingPersonDeadDropEnabled ?? false,
     shelterChecklist: {
       ...defaultShelterChecklist,
       ...persistedState.shelterChecklist
