@@ -697,6 +697,78 @@ test("proof center shows public proof inputs without private coordinates", async
   await expect(regionProof.getByText(/^lon$/i)).not.toBeVisible();
 });
 
+test("proof center reviews proof certificates from a wallet QR screenshot", async ({ page }) => {
+  await page.addInitScript(() => {
+    class MockBarcodeDetector {
+      async detect() {
+        return [{ rawValue: "ipfs://bafyproofbundlecid" }];
+      }
+    }
+
+    Object.defineProperty(window, "BarcodeDetector", {
+      configurable: true,
+      value: MockBarcodeDetector
+    });
+  });
+
+  await page.route("https://w3s.link/ipfs/bafyproofbundlecid", async (route) => {
+    await route.fulfill({
+      json: {
+        title: "Homeless services proof bundle",
+        proofs: [
+          {
+            proof_id: "proof-us-citizenship",
+            proof_type: "us_citizenship",
+            claim: "US citizenship verified",
+            verifier_id: "shelter-enrollment-verifier",
+            proof_system: "groth16",
+            verification_status: "verified",
+            public_inputs: {
+              claim: "us_citizenship_verified",
+              issuing_authority: "State identity verifier"
+            },
+            witness_label: "Citizenship certificate",
+            created_at: "2026-05-08T10:30:00Z"
+          },
+          {
+            proof_id: "proof-income",
+            proof_type: "income_eligibility",
+            claim: "Income eligibility verified",
+            verifier_id: "housing-benefits-verifier",
+            proof_system: "groth16",
+            verification_status: "verified",
+            public_inputs: {
+              claim: "income_eligible",
+              program: "Rapid rehousing"
+            },
+            witness_label: "Income proof",
+            created_at: "2026-05-08T10:31:00Z"
+          }
+        ]
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/proof-center");
+  await page.getByLabel(/Choose proof QR screenshot/i).setInputFiles({
+    buffer: Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO5W5iUAAAAASUVORK5CYII=",
+      "base64"
+    ),
+    mimeType: "image/png",
+    name: "wallet-qr.png"
+  });
+
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Homeless services proof bundle/i);
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/US citizenship verified/i);
+  await expect(page.getByLabel(/QR proof bundle summary/i)).toContainText(/Income eligibility verified/i);
+  const citizenshipProof = page.getByRole("article", { name: /US citizenship verified/i });
+  await expect(citizenshipProof).toContainText(/From QR bundle/i);
+  await expect(citizenshipProof).toContainText(/State identity verifier/i);
+  const incomeProof = page.getByRole("article", { name: /Income eligibility verified/i });
+  await expect(incomeProof).toContainText(/Rapid rehousing/i);
+});
+
 test("proof center can create an API-backed location region proof", async ({ page }) => {
   let createRequests = 0;
   await page.route("**/wallets/**", async (route) => {
