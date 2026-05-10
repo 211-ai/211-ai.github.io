@@ -2165,7 +2165,12 @@ def _send_dead_drop_email(
     sender_domain = sender.rsplit("@", 1)[-1].strip() if "@" in sender else ""
     message["Message-Id"] = make_msgid(domain=sender_domain or None)
     message.set_content(body)
-    message.add_attachment(bundle_json.encode("utf-8"), maintype="application", subtype="json", filename=bundle_filename)
+    message.add_attachment(
+        bundle_json.encode("utf-8"),
+        maintype="application",
+        subtype="json",
+        filename=bundle_filename,
+    )
 
     smtp_factory = smtplib.SMTP_SSL if smtp_use_ssl else smtplib.SMTP
     with smtp_factory(smtp_host, smtp_port, timeout=20) as smtp:

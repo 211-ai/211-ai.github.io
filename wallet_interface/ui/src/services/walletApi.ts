@@ -476,7 +476,7 @@ export async function sendMissingPersonDeadDropEmail(
     bundle,
     bundleFileName
   }: {
-    toEmail?: string;
+    toEmail: string;
     subject: string;
     body: string;
     bundle: Record<string, unknown>;

@@ -821,6 +821,7 @@ export function App() {
         `Wallet contents (${bundle.walletContents.length}):`,
         walletLines,
         "",
+        `Dead-drop JSON bundle filename: ${fileName}`,
         "Please review the attached dead-drop JSON bundle for structured evidence metadata.",
         "",
         "Submitted from Abby missing-person safety setting."
@@ -831,7 +832,8 @@ export function App() {
           body,
           bundle,
           bundleFileName: fileName,
-          subject
+          subject,
+          toEmail: PORTLAND_POLICE_MISSING_EMAIL
         });
       } else {
         const bundleJson = JSON.stringify(bundle, null, 2);
