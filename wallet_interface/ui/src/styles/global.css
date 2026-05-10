@@ -4368,10 +4368,11 @@ a {
   --abby-watercolor-landscape: url("/assets/png/from-reference/reference-landscape-clean.png");
   --abby-watercolor-bridge: url("/assets/png/from-reference/reference-bridge-skyline-clean.png");
   --abby-watercolor-evergreens: url("/assets/png/from-reference/reference-evergreens-clean.png");
-  --abby-header-asset: url("/assets/png/from-preview/preview-header-landscape.png");
+  --abby-header-asset: url("/assets/png/from-preview/0cdb73e7-a67b-49bc-a86c-124fd11b7f84.png");
+  --abby-footer-asset: url("/assets/png/from-preview/3617b5dc-8709-4912-9be1-e13b616dd96f.png");
   --abby-card-asset: url("/assets/png/from-preview/preview-card-wash-right.png");
-  --abby-sidebar-wash: url("/assets/png/from-preview/preview-sidebar-wash.png");
-  --abby-sidebar-evergreens: url("/assets/png/from-preview/preview-sidebar-evergreens.png");
+  --abby-sidebar-wash: url("/assets/png/from-preview/e13f6dbb-bf35-40e1-86eb-7f3ddb41d4bc.png");
+  --abby-sidebar-evergreens: none;
   --abby-quick-action-asset: url("/assets/png/from-preview/preview-quick-action-wash.png");
   --abby-support-asset: url("/assets/png/from-preview/preview-support-bridge-watermark.png");
   --abby-support-badge: url("/assets/png/from-preview/preview-support-badge.png");
@@ -4723,7 +4724,9 @@ textarea:focus-visible,
 }
 
 .home-footer {
-  background: rgba(250, 251, 248, 0.48);
+  background:
+    linear-gradient(90deg, rgba(250, 251, 248, 0.88), rgba(250, 251, 248, 0.62)),
+    var(--abby-footer-asset) center bottom / min(100%, 1100px) auto no-repeat;
   border-bottom: 1px solid rgba(127, 174, 180, 0.3);
   padding-bottom: 16px;
 }
@@ -4787,11 +4790,11 @@ textarea:focus-visible,
   .sidebar {
     background:
       linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(243, 248, 246, 0.9)),
-      var(--abby-sidebar-wash) left top / 100% 100% no-repeat;
+      var(--abby-sidebar-wash) center bottom / cover no-repeat;
   }
 
   .sidebar::before {
-    background: var(--abby-watercolor-bridge) 12px bottom / 250px auto no-repeat;
+    background: none;
     bottom: 0;
     content: "";
     height: 220px;
@@ -4803,8 +4806,8 @@ textarea:focus-visible,
   }
 
   .sidebar::after {
-    background: var(--abby-sidebar-evergreens) bottom center / contain no-repeat;
-    opacity: 0.42;
+    background: var(--abby-sidebar-evergreens);
+    opacity: 0;
   }
 
   .home-hero {
