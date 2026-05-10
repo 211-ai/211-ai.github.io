@@ -15,7 +15,7 @@ import {
 } from "../lib/graphrag";
 import { backendDetectionWorkerService } from "../lib/backendDetectionWorkerService";
 import { clientEmbeddingWorkerService } from "../lib/clientEmbeddingWorkerService";
-import { resolvePreferred211ServiceClusterIds } from "../lib/graphrag/serviceGeoPreference";
+import { resolvePreferred211SearchCoordinates, resolvePreferred211ServiceClusterIds } from "../lib/graphrag/serviceGeoPreference";
 import type {
   CorpusDocument,
   GraphCommunitySearchResult,
@@ -164,7 +164,11 @@ const ADDRESS_PATTERN =
 export async function search211Info(query: string, limit = 10, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
   const initialFilters = preferredServiceFilters(limit, options);
-  const preferredClusterIds = await resolvePreferredServiceClusterIds(query, initialFilters);
+  const [preferredClusterIds, currentCoordinates] = await Promise.all([
+    resolvePreferredServiceClusterIds(query, initialFilters),
+    resolvePreferred211SearchCoordinates(query, { allowPrompt: true }),
+  ]);
+  const searchCoordinates = currentCoordinates || undefined;
   const initialResults = await withMainThreadSearchFallback(
     () =>
       ragSearchWorkerService.search(query, {
@@ -173,6 +177,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         queryEmbedding,
         limit,
         preferredClusterIds,
+        currentCoordinates: searchCoordinates,
       }),
     () =>
       search211Corpus(query, {
@@ -181,6 +186,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         queryEmbedding,
         limit,
         preferredClusterIds,
+        currentCoordinates: searchCoordinates,
       }),
   );
   if (initialResults.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
@@ -194,6 +200,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
+        currentCoordinates: searchCoordinates,
       }),
     () =>
       search211Corpus(query, {
@@ -201,6 +208,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
         mode: queryEmbedding ? "hybrid" : "keyword",
         queryEmbedding,
         limit,
+        currentCoordinates: searchCoordinates,
       }),
   );
 }
@@ -208,19 +216,48 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
 export async function build211InfoEvidence(query: string, limit = 6, options: GraphRagRetrievalOptions = {}) {
   const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
   const initialFilters = preferredServiceFilters(limit, options);
-  const preferredClusterIds = await resolvePreferredServiceClusterIds(query, initialFilters);
+  const [preferredClusterIds, currentCoordinates] = await Promise.all([
+    resolvePreferredServiceClusterIds(query, initialFilters),
+    resolvePreferred211SearchCoordinates(query, { allowPrompt: true }),
+  ]);
+  const searchCoordinates = currentCoordinates || undefined;
   const initialEvidence = await withMainThreadSearchFallback(
     () =>
-      ragSearchWorkerService.buildEvidence(query, { filters: initialFilters, queryEmbedding, limit, preferredClusterIds }),
-    () => build211GraphRagEvidence(query, { filters: initialFilters, queryEmbedding, limit, preferredClusterIds }),
+      ragSearchWorkerService.buildEvidence(query, {
+        filters: initialFilters,
+        queryEmbedding,
+        limit,
+        preferredClusterIds,
+        currentCoordinates: searchCoordinates,
+      }),
+    () =>
+      build211GraphRagEvidence(query, {
+        filters: initialFilters,
+        queryEmbedding,
+        limit,
+        preferredClusterIds,
+        currentCoordinates: searchCoordinates,
+      }),
   );
   if (initialEvidence.results.length > 0 || !shouldFallbackToAllDocuments(options, initialFilters)) {
     return initialEvidence;
   }
   const allDocumentFilters = fallbackFilters(limit, options);
   return withMainThreadSearchFallback(
-    () => ragSearchWorkerService.buildEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
-    () => build211GraphRagEvidence(query, { filters: allDocumentFilters, queryEmbedding, limit }),
+    () =>
+      ragSearchWorkerService.buildEvidence(query, {
+        filters: allDocumentFilters,
+        queryEmbedding,
+        limit,
+        currentCoordinates: searchCoordinates,
+      }),
+    () =>
+      build211GraphRagEvidence(query, {
+        filters: allDocumentFilters,
+        queryEmbedding,
+        limit,
+        currentCoordinates: searchCoordinates,
+      }),
   );
 }
 

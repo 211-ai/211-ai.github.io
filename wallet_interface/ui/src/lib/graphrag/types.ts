@@ -476,10 +476,14 @@ export interface SearchResult {
   pageCid: string;
   document: CorpusDocument;
   score: number;
+  duplicateCount?: number;
+  mergedDocIds?: string[];
+  distanceMiles?: number;
   scoreParts: {
     keyword: number;
     vector: number;
     metadata: number;
+    proximity?: number;
   };
   snippet: string;
 }

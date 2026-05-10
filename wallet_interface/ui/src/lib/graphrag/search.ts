@@ -19,6 +19,7 @@ import {
   getServiceSearchMetadataText,
   isServiceDocument,
 } from "./serviceDocument";
+import { haversineMiles } from "./serviceGeoPreference";
 import type {
   Bm25Document,
   CorpusDocument,
@@ -26,6 +27,7 @@ import type {
   GraphCommunitySearchResult,
   GraphGeoClusterRecord,
   GraphGeoClusterSearchResult,
+  SearchCoordinates,
   SearchFilters,
   SearchMode,
   SearchResult,
@@ -76,6 +78,7 @@ export async function search211Corpus(
     limit?: number;
     candidateLimit?: number;
     preferredClusterIds?: number[];
+    currentCoordinates?: SearchCoordinates;
   } = {},
 ): Promise<SearchResult[]> {
   const trimmedQuery = query.trim();
@@ -136,6 +139,7 @@ export async function search211Corpus(
     normalizedKeyword,
     normalizedVector,
     geoScores,
+    options.currentCoordinates,
     limit,
   );
   if (serviceClusterResults.length === 0) {
@@ -375,6 +379,7 @@ async function searchPreferredServiceClusters(
     mode: SearchMode;
     queryEmbedding?: Float32Array | number[];
     preferredClusterIds: number[];
+    currentCoordinates?: SearchCoordinates;
   },
 ): Promise<SearchResult[]> {
   if (!options.preferredClusterIds.length || !isServiceOnlySearch(options.filters)) {
@@ -414,6 +419,7 @@ async function searchPreferredServiceClusters(
       normalizedKeyword,
       normalizedVector,
       new Map(),
+      options.currentCoordinates,
       options.limit,
     );
     if (results.length > bestResults.length) {
@@ -469,6 +475,7 @@ function rankSearchResults(
   normalizedKeyword: Map<string, number>,
   normalizedVector: Map<string, number>,
   geoScores: Map<string, number>,
+  currentCoordinates: SearchCoordinates | undefined,
   limit: number,
 ): SearchResult[] {
   const effectiveCandidates = new Set(candidates);
@@ -490,10 +497,19 @@ function rankSearchResults(
     if (!document || !matchesFilters(document, filters)) {
       continue;
     }
-    const result = scoreSearchResult(document, docId, query, mode, normalizedKeyword, normalizedVector, geoScores);
+    const result = scoreSearchResult(
+      document,
+      docId,
+      query,
+      mode,
+      normalizedKeyword,
+      normalizedVector,
+      geoScores,
+      currentCoordinates,
+    );
     results.push(result);
   }
-  return results.sort((left, right) => right.score - left.score).slice(0, limit);
+  return mergeDuplicateSearchResults(results).sort(compareSearchResults).slice(0, limit);
 }
 
 function scoreSearchResult(
@@ -504,16 +520,19 @@ function scoreSearchResult(
   normalizedKeyword: Map<string, number>,
   normalizedVector: Map<string, number>,
   geoScores: Map<string, number>,
+  currentCoordinates?: SearchCoordinates,
 ): SearchResult {
   const keyword = normalizedKeyword.get(docId) || 0;
   const vector = normalizedVector.get(docId) || 0;
   const metadata = metadataScore(document, query, geoScores.get(docId) || 0);
+  const distanceMiles = computeDocumentDistanceMiles(document, currentCoordinates);
+  const proximity = proximityScore(distanceMiles, document);
   const score =
     mode === "keyword"
-      ? keyword * 2 + metadata
+      ? keyword * 2 + metadata + proximity * 1.2
       : mode === "vector"
-        ? vector * 2 + metadata * 0.5
-        : keyword * 1.4 + vector * 2 + metadata;
+        ? vector * 2 + metadata * 0.5 + proximity
+        : keyword * 1.4 + vector * 2 + metadata + proximity * 1.2;
 
   return {
     docId,
@@ -521,20 +540,126 @@ function scoreSearchResult(
     pageCid: document.source_page_cid,
     document,
     score,
-    scoreParts: { keyword, vector, metadata },
+    duplicateCount: 1,
+    mergedDocIds: [docId],
+    distanceMiles,
+    scoreParts: { keyword, vector, metadata, proximity },
     snippet: buildSnippet(document.text, query),
   };
 }
 
 function mergeSearchResults(primary: SearchResult[], secondary: SearchResult[], limit: number): SearchResult[] {
-  const byDocId = new Map<string, SearchResult>();
-  for (const result of [...primary, ...secondary]) {
-    const current = byDocId.get(result.docId);
-    if (!current || result.score > current.score) {
-      byDocId.set(result.docId, result);
+  return mergeDuplicateSearchResults([...primary, ...secondary]).sort(compareSearchResults).slice(0, limit);
+}
+
+function mergeDuplicateSearchResults(results: SearchResult[]): SearchResult[] {
+  const byMergeKey = new Map<string, SearchResult>();
+  for (const result of results) {
+    const mergeKey = buildSearchResultMergeKey(result.document, result.docId);
+    const current = byMergeKey.get(mergeKey);
+    if (!current) {
+      byMergeKey.set(mergeKey, {
+        ...result,
+        duplicateCount: result.duplicateCount || 1,
+        mergedDocIds: [...(result.mergedDocIds || [result.docId])],
+      });
+      continue;
     }
+    const mergedDocIds = dedupeStringList([...(current.mergedDocIds || [current.docId]), result.docId]);
+    const better = compareSearchResults(result, current) < 0 ? result : current;
+    byMergeKey.set(mergeKey, {
+      ...better,
+      duplicateCount: mergedDocIds.length,
+      mergedDocIds,
+      distanceMiles: pickPreferredDistance(current.distanceMiles, result.distanceMiles),
+      score: Math.max(current.score, result.score) + Math.min(0.12, (mergedDocIds.length - 1) * 0.04),
+      scoreParts: {
+        keyword: Math.max(current.scoreParts.keyword, result.scoreParts.keyword),
+        vector: Math.max(current.scoreParts.vector, result.scoreParts.vector),
+        metadata: Math.max(current.scoreParts.metadata, result.scoreParts.metadata),
+        proximity: Math.max(current.scoreParts.proximity || 0, result.scoreParts.proximity || 0),
+      },
+    });
   }
-  return [...byDocId.values()].sort((left, right) => right.score - left.score).slice(0, limit);
+  return [...byMergeKey.values()];
+}
+
+function compareSearchResults(left: SearchResult, right: SearchResult): number {
+  const scoreDelta = right.score - left.score;
+  if (Math.abs(scoreDelta) > 1e-6) {
+    return scoreDelta;
+  }
+  const leftDistance = left.distanceMiles ?? Number.POSITIVE_INFINITY;
+  const rightDistance = right.distanceMiles ?? Number.POSITIVE_INFINITY;
+  if (leftDistance !== rightDistance) {
+    return leftDistance - rightDistance;
+  }
+  return left.docId.localeCompare(right.docId);
+}
+
+function buildSearchResultMergeKey(document: CorpusDocument, docId: string): string {
+  if (!isServiceDocument(document)) {
+    return `doc:${docId}`;
+  }
+  const primaryAddress = getPrimaryAddress(document);
+  const providerKey = normalizeMergeKeyPart(document.provider_name);
+  const programKey = normalizeMergeKeyPart(document.program_name || document.title);
+  const titleKey = normalizeMergeKeyPart(document.title);
+  const locationKey = normalizeMergeKeyPart(
+    primaryAddress?.address ||
+      primaryAddress?.maps_query ||
+      [primaryAddress?.street, primaryAddress?.city || document.city, primaryAddress?.state || document.state]
+        .filter(Boolean)
+        .join(" "),
+  );
+  const fallbackLocationKey = normalizeMergeKeyPart(
+    [document.city, document.state, document.source_content_cid].filter(Boolean).join(" "),
+  );
+  return `service:${providerKey}|${programKey}|${titleKey}|${locationKey || fallbackLocationKey || docId}`;
+}
+
+function normalizeMergeKeyPart(value: string | undefined): string {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function computeDocumentDistanceMiles(
+  document: CorpusDocument,
+  currentCoordinates?: SearchCoordinates,
+): number | undefined {
+  if (!currentCoordinates || !isServiceDocument(document)) {
+    return undefined;
+  }
+  if (typeof document.geo_lat !== "number" || typeof document.geo_lon !== "number") {
+    return undefined;
+  }
+  return haversineMiles(currentCoordinates, { lat: document.geo_lat, lon: document.geo_lon });
+}
+
+function proximityScore(distanceMiles: number | undefined, document: CorpusDocument): number {
+  if (distanceMiles == null || !Number.isFinite(distanceMiles) || !isServiceDocument(document)) {
+    return 0;
+  }
+  if (distanceMiles <= 1) return 1.35;
+  if (distanceMiles <= 3) return 1.1;
+  if (distanceMiles <= 5) return 0.9;
+  if (distanceMiles <= 10) return 0.65;
+  if (distanceMiles <= 25) return 0.35;
+  return 0.1;
+}
+
+function pickPreferredDistance(...values: Array<number | undefined>): number | undefined {
+  const finite = values.filter((value): value is number => value != null && Number.isFinite(value));
+  if (!finite.length) {
+    return undefined;
+  }
+  return Math.min(...finite);
+}
+
+function dedupeStringList(values: string[]): string[] {
+  return [...new Set(values.filter(Boolean))];
 }
 
 function metadataScore(document: CorpusDocument, query: string, geoBoost: number): number {

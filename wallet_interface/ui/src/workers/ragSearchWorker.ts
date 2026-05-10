@@ -4,6 +4,7 @@ import type {
   GraphCommunitySearchResult,
   GraphGeoClusterSearchResult,
   GraphRagEvidence,
+  SearchCoordinates,
   SearchFilters,
   SearchMode,
   SearchResult,
@@ -20,6 +21,7 @@ type RagSearchWorkerRequest =
         mode?: SearchMode;
         queryEmbedding?: number[];
         preferredClusterIds?: number[];
+        currentCoordinates?: SearchCoordinates;
       };
     }
   | {
@@ -31,6 +33,7 @@ type RagSearchWorkerRequest =
         limit?: number;
         queryEmbedding?: number[];
         preferredClusterIds?: number[];
+        currentCoordinates?: SearchCoordinates;
       };
     }
   | {
@@ -87,6 +90,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
         queryEmbedding,
         limit: data.limit || 10,
         preferredClusterIds: data.preferredClusterIds,
+        currentCoordinates: data.currentCoordinates,
       });
       postResponse({ id, success: true, data: { results } });
       return;
@@ -99,6 +103,7 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
         queryEmbedding,
         limit: data.limit || 6,
         preferredClusterIds: data.preferredClusterIds,
+        currentCoordinates: data.currentCoordinates,
       });
       postResponse({ id, success: true, data: { evidence } });
       return;

@@ -2,6 +2,7 @@ import type {
   GraphCommunitySearchResult,
   GraphGeoClusterSearchResult,
   GraphRagEvidence,
+  SearchCoordinates,
   SearchFilters,
   SearchMode,
   SearchResult,
@@ -37,6 +38,7 @@ class RagSearchWorkerService {
       mode?: SearchMode;
       queryEmbedding?: Float32Array | number[];
       preferredClusterIds?: number[];
+      currentCoordinates?: SearchCoordinates;
     } = {},
   ): Promise<SearchResult[]> {
     const response = await this.sendWorkerRequest(
@@ -48,6 +50,7 @@ class RagSearchWorkerService {
         mode: options.mode,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
         preferredClusterIds: options.preferredClusterIds,
+        currentCoordinates: options.currentCoordinates,
       },
       90000,
     );
@@ -61,6 +64,7 @@ class RagSearchWorkerService {
       limit?: number;
       queryEmbedding?: Float32Array | number[];
       preferredClusterIds?: number[];
+      currentCoordinates?: SearchCoordinates;
     } = {},
   ): Promise<GraphRagEvidence> {
     const response = await this.sendWorkerRequest(
@@ -71,6 +75,7 @@ class RagSearchWorkerService {
         limit: options.limit,
         queryEmbedding: serializeEmbedding(options.queryEmbedding),
         preferredClusterIds: options.preferredClusterIds,
+        currentCoordinates: options.currentCoordinates,
       },
       90000,
     );

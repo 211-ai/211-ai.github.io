@@ -1,6 +1,6 @@
 import { get211RelatedGraph } from "./corpus";
 import { search211Corpus } from "./search";
-import type { GraphEdge, GraphNode, GraphRagEvidence, SearchFilters, SearchResult } from "./types";
+import type { GraphEdge, GraphNode, GraphRagEvidence, SearchCoordinates, SearchFilters, SearchResult } from "./types";
 
 export interface GraphRagAnswer {
   question: string;
@@ -25,6 +25,7 @@ export async function build211GraphRagEvidence(
     filters?: SearchFilters;
     limit?: number;
     preferredClusterIds?: number[];
+    currentCoordinates?: SearchCoordinates;
   } = {},
 ): Promise<GraphRagEvidence> {
   const results = await search211Corpus(query, {
@@ -33,6 +34,7 @@ export async function build211GraphRagEvidence(
     queryEmbedding: options.queryEmbedding,
     limit: options.limit || 6,
     preferredClusterIds: options.preferredClusterIds,
+    currentCoordinates: options.currentCoordinates,
   });
   const related = await get211RelatedGraph(results.map((result) => result.docId));
   return {

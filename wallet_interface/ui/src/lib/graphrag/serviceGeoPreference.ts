@@ -14,7 +14,7 @@ export async function resolvePreferred211ServiceClusterIds(query: string, limit 
   if (!clusterManifest?.clusters?.length) {
     return [];
   }
-  const coordinates = await getPreferredBrowserCoordinates(query);
+  const coordinates = await resolvePreferred211SearchCoordinates(query, { allowPrompt: true });
   if (!coordinates) {
     return [];
   }
@@ -23,11 +23,18 @@ export async function resolvePreferred211ServiceClusterIds(query: string, limit 
     .map((cluster) => cluster.clusterId);
 }
 
+export async function resolvePreferred211SearchCoordinates(
+  query: string,
+  options: { allowPrompt?: boolean } = {},
+): Promise<SearchCoordinates | null> {
+  return getPreferredBrowserCoordinates(query, options.allowPrompt === true);
+}
+
 export function isLocationBiasedSearchQuery(query: string): boolean {
   return LOCATION_BIASED_QUERY_PATTERN.test(query);
 }
 
-async function getPreferredBrowserCoordinates(query: string): Promise<SearchCoordinates | null> {
+async function getPreferredBrowserCoordinates(query: string, allowPrompt: boolean): Promise<SearchCoordinates | null> {
   if (typeof navigator === "undefined" || !navigator.geolocation) {
     return null;
   }
@@ -39,7 +46,7 @@ async function getPreferredBrowserCoordinates(query: string): Promise<SearchCoor
   }
 
   const permissionState = await queryGeolocationPermissionState();
-  const shouldPrompt = isLocationBiasedSearchQuery(query);
+  const shouldPrompt = allowPrompt || isLocationBiasedSearchQuery(query);
   if (permissionState === "denied") {
     return null;
   }
@@ -114,7 +121,7 @@ function rankClustersByDistance(
     .sort((left, right) => left.distanceMiles - right.distanceMiles || left.clusterId - right.clusterId);
 }
 
-function haversineMiles(from: SearchCoordinates, to: SearchCoordinates): number {
+export function haversineMiles(from: SearchCoordinates, to: SearchCoordinates): number {
   const earthRadiusMiles = 3958.7613;
   const lat1 = toRadians(from.lat);
   const lat2 = toRadians(to.lat);
