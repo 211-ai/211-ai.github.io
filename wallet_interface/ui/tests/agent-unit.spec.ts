@@ -1466,12 +1466,12 @@ export class AudioModel {
         }),
         generateStructuredText: async () => ({
           ok: true,
-          text: "{\"action\":\"call_tool\",\"tool\":\"navigate\",\"input\":{\"route\":\"exports\"},\"message\":\"Open Exports.\"}",
+          text: "{\"action\":\"call_tool\",\"tool\":\"navigate\",\"input\":{\"route\":\"security\"},\"message\":\"Open Security.\"}",
           json: {
             action: "call_tool",
             tool: "navigate",
-            input: { route: "exports" },
-            message: "Open Exports.",
+            input: { route: "security" },
+            message: "Open Security.",
           },
           modelName: "test-local-model",
         }),
@@ -1483,7 +1483,7 @@ export class AudioModel {
     await controller.sendMessage("organize my verified packet");
 
     expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate"]);
-    expect(invoked[0].input).toEqual({ route: "exports" });
+    expect(invoked[0].input).toEqual({ route: "security" });
   });
 
   test("can disable local LLM reasoning for a single chat turn", async () => {

@@ -448,17 +448,6 @@ const captureScenarios: CaptureScenario[] = [
     ]
   },
   {
-    id: "exports",
-    path: "/#/exports",
-    title: "Export center",
-    state: "default",
-    goals: [
-      "Export bundle creation should communicate that records stay encrypted.",
-      "Recipient and record fields should fit on mobile.",
-      "Existing export status should be easy to scan."
-    ]
-  },
-  {
     id: "security",
     path: "/#/security",
     title: "Security settings",
@@ -466,7 +455,7 @@ const captureScenarios: CaptureScenario[] = [
     goals: [
       "Security preferences should read as saved settings, not temporary reveal controls.",
       "Shared-device guidance should be visible without exposing sensitive data.",
-      "Bot check copy should make prototype limits clear."
+      "Encrypted export bundle controls should fit cleanly alongside backup actions."
     ]
   },
   {
@@ -501,7 +490,6 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/calendar": /^Calendar$/i,
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
-  "/#/exports": /Shareable wallet bundles/i,
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,
   "/#/settings": /^Settings$/i,
