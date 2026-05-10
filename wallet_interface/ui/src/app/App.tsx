@@ -186,7 +186,8 @@ const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
 const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
-const LOCAL_PRECINCT_OPTIONS = ["Local police precinct"];
+const DEFAULT_LOCAL_PRECINCT = "Local police precinct";
+const LOCAL_PRECINCT_OPTIONS = [DEFAULT_LOCAL_PRECINCT];
 const LOCAL_PRECINCT_RELATIONSHIP = "Local precinct";
 
 type LoginPortal = "client" | "provider";
@@ -339,7 +340,11 @@ function createEntityId(prefix: string): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return `${prefix}-${crypto.randomUUID()}`;
   }
-  return `${prefix}-${Date.now()}`;
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function isLocalPrecinctRecipient(recipient: DisclosureRecipientDraft, precinctName: string): boolean {
+  return recipient.type === "police_precinct" && (recipient.precinctName === precinctName || recipient.displayName === precinctName);
 }
 
 const analyticsNeverPublishedText =
@@ -2816,11 +2821,7 @@ function ContactsScreen({
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
-  const hasSavedRequestedPrecinct = recipients.some(
-    (recipient) =>
-      recipient.type === "police_precinct" &&
-      (recipient.precinctName === requestedPrecinct || recipient.displayName === requestedPrecinct)
-  );
+  const hasSavedRequestedPrecinct = recipients.some((recipient) => isLocalPrecinctRecipient(recipient, requestedPrecinct));
   const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId);
 
   function addShelterRecipient(shelterName: string) {
@@ -2869,13 +2870,7 @@ function ContactsScreen({
   }
 
   function addPrecinctRecipient(precinctName: string) {
-    if (
-      recipients.some(
-        (recipient) =>
-          recipient.type === "police_precinct" &&
-          (recipient.precinctName === precinctName || recipient.displayName === precinctName)
-      )
-    ) {
+    if (recipients.some((recipient) => isLocalPrecinctRecipient(recipient, precinctName))) {
       return;
     }
 
