@@ -90,7 +90,7 @@ VITE_VOICE_PROXY_INFER_URL=https://animegf.chat:8790/api/voice/infer
 Browser safety requirements:
 
 - Use HTTPS proxy URLs only.
-- Do not use private/internal browser endpoints (for example `10.8.0.x`).
+- Do not use private/internal browser endpoints (for example `10.8.0.1` or `10.8.0.0/24`).
 - Do not send upstream provider API keys from the browser.
 - OpenRouter requests with private wallet context remain blocked unless
   `VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT=true`.

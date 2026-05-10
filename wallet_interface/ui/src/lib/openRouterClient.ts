@@ -65,7 +65,7 @@ export async function generateOpenRouterText(options: {
     throw new Error("OpenRouter fallback is disabled.");
   }
   if (!status.configured) {
-    throw new Error("OpenRouter proxy endpoint is unavailable.");
+    throw new Error("OpenRouter proxy endpoint is unavailable. Configure VITE_OPENROUTER_PROXY_URL with a public HTTPS URL.");
   }
 
   const model = selectOpenRouterModel(options.localModelName);
