@@ -906,7 +906,9 @@ test("provider analytics and proof menus expose operational insights", async ({ 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
-  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
   await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
@@ -992,10 +994,74 @@ test("proof center reviews proof certificates from a wallet QR screenshot", asyn
   await expect(incomeProof).toContainText(/Rapid rehousing/i);
 });
 
-test("proof center hides manual location region proof creation", async ({ page }) => {
+test("proof center hides manual proof creation while showing API-backed proofs", async ({ page }) => {
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({
+        json: {
+          proofs: [
+            {
+              proof_id: "proof-deterministic-location",
+              wallet_id: "wallet-demo",
+              proof_type: "location_region",
+              statement: {
+                claim: "location_in_region",
+                region_id: "multnomah_county",
+                witness_commitment: "commitment"
+              },
+              verifier_id: "deterministic-location-region-v0.1",
+              public_inputs: {
+                claim: "location_in_region",
+                region_id: "multnomah_county",
+                region_policy_hash: "425551d64c5b78caa09fd67d24b099c1ca8749bc9747daa0ae84a69cf3507e3e"
+              },
+              proof_hash: "proofhash",
+              witness_record_ids: ["rec-location-current"],
+              is_simulated: false,
+              proof_system: "deterministic-test-proof",
+              circuit_id: "deterministic-location-region-v0.1",
+              verifier_digest: "digest1234567890abcdef",
+              proof_artifact_ref: "deterministic-proof://proofhash",
+              verification_status: "verified",
+              created_at: "2026-05-03T18:04:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
+  });
+
   await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
-  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
-  await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
+  const hiddenProofCreator = page.locator('article[aria-label="Create location region proof"]');
+  await expect(hiddenProofCreator).not.toBeVisible();
+  await expect(hiddenProofCreator.locator('button[type="submit"]')).not.toBeVisible();
+  const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
+  await expect(createdProof).toBeVisible();
+  await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();
+  await expect(createdProof.locator(".scope-header").getByText("verified", { exact: true })).toBeVisible();
+  await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
+  await expect(createdProof.getByText(/^lat$/i)).not.toBeVisible();
+  await expect(createdProof.getByText(/^lon$/i)).not.toBeVisible();
 });
 
 test("wallet screen shows export and proof sharing tools", async ({ page }) => {
