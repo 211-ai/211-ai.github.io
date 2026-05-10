@@ -190,6 +190,10 @@ test("client settings edits profile and less-used preferences", async ({ page },
   await expect(page.getByLabel(/Allow Abby to prepare benefits notices/i)).not.toBeChecked();
   await expect(page.getByLabel(/Unsheltered residents seeking beds/i)).not.toBeChecked();
 
+  await openAppRoute(page, "/#/security");
+  await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
+
   if (!/Mobile/i.test(testInfo.project.name)) {
     const nav = page.getByRole("navigation", { name: /Portal navigation/i });
     await expect(nav.getByRole("button", { name: /^Register$/i })).toHaveCount(0);
@@ -487,16 +491,19 @@ test("wallet-backed interaction history feeds the timeline and calendar", async 
   await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toBeVisible();
   await expect(page.getByText(/Follow-up times recorded here feed the Calendar screen/i)).toBeVisible();
 
-  const sidebar = page.locator(".interaction-history-sidebar");
+  const filters = page.locator(".interaction-filter-panel");
+  const calendar = page.locator(".interaction-calendar-panel");
   const main = page.locator(".interaction-history-main");
-  const sidebarBox = await sidebar.boundingBox();
+  const filtersBox = await filters.boundingBox();
+  const calendarBox = await calendar.boundingBox();
   const mainBox = await main.boundingBox();
-  expect(sidebarBox, "expected interaction sidebar to have a layout box").not.toBeNull();
+  expect(filtersBox, "expected interaction filters to have a layout box").not.toBeNull();
+  expect(calendarBox, "expected interaction calendar preview to have a layout box").not.toBeNull();
   expect(mainBox, "expected interaction main column to have a layout box").not.toBeNull();
-  if (/Mobile/i.test(testInfo.project.name)) {
-    expect(sidebarBox!.y).toBeLessThan(mainBox!.y);
-  } else {
-    expect(sidebarBox!.x).toBeLessThan(mainBox!.x);
+  expect(filtersBox!.y).toBeLessThan(mainBox!.y);
+  expect(calendarBox!.y).toBeLessThan(mainBox!.y);
+  if (!/Mobile/i.test(testInfo.project.name)) {
+    expect(Math.abs(filtersBox!.x - mainBox!.x)).toBeLessThan(24);
   }
 
   await page.goto(walletRoute("calendar", "did:key:owner"));
@@ -899,9 +906,7 @@ test("provider analytics and proof menus expose operational insights", async ({ 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toBeVisible();
-  await expect(page.getByLabel(/Create proof capability preview/i).getByText(/location\/prove_region/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /Create proof/i })).toBeDisabled();
+  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
   await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
@@ -987,80 +992,10 @@ test("proof center reviews proof certificates from a wallet QR screenshot", asyn
   await expect(incomeProof).toContainText(/Rapid rehousing/i);
 });
 
-test("proof center can create an API-backed location region proof", async ({ page }) => {
-  let createRequests = 0;
-  await page.route("**/wallets/**", async (route) => {
-    const url = new URL(route.request().url());
-    const path = url.pathname;
-    if (path.endsWith("/access-requests")) {
-      await route.fulfill({ json: { requests: [] } });
-      return;
-    }
-    if (path.endsWith("/grant-receipts")) {
-      await route.fulfill({ json: { receipts: [] } });
-      return;
-    }
-    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
-      await route.fulfill({ json: { records: [] } });
-      return;
-    }
-    if (path.endsWith("/audit")) {
-      await route.fulfill({ json: { events: [] } });
-      return;
-    }
-    if (path.endsWith("/proofs")) {
-      await route.fulfill({ json: { proofs: [] } });
-      return;
-    }
-    if (path.endsWith("/locations/rec-location-current/region-proofs")) {
-      createRequests += 1;
-      expect(route.request().method()).toBe("POST");
-      expect(await route.request().postDataJSON()).toMatchObject({
-        actor_did: "did:key:owner",
-        region_id: "multnomah_county"
-      });
-      await route.fulfill({
-        json: {
-          proof_id: "proof-deterministic-location",
-          wallet_id: "wallet-demo",
-          proof_type: "location_region",
-          statement: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            witness_commitment: "commitment"
-          },
-          verifier_id: "deterministic-location-region-v0.1",
-          public_inputs: {
-            claim: "location_in_region",
-            region_id: "multnomah_county",
-            region_policy_hash: "425551d64c5b78caa09fd67d24b099c1ca8749bc9747daa0ae84a69cf3507e3e"
-          },
-          proof_hash: "proofhash",
-          witness_record_ids: ["rec-location-current"],
-          is_simulated: false,
-          proof_system: "deterministic-test-proof",
-          circuit_id: "deterministic-location-region-v0.1",
-          verifier_digest: "digest1234567890abcdef",
-          proof_artifact_ref: "deterministic-proof://proofhash",
-          verification_status: "verified",
-          created_at: "2026-05-03T18:04:00Z"
-        }
-      });
-      return;
-    }
-    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call" } });
-  });
-
+test("proof center hides manual location region proof creation", async ({ page }) => {
   await openAppRoute(page, walletRoute("proof-center", "did:key:owner"));
-  await page.getByRole("button", { name: /Create proof/i }).click();
-  await expect(page.getByText(/Proof receipt created/i)).toBeVisible();
-  const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
-  await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();
-  await expect(createdProof.locator(".scope-header").getByText("verified", { exact: true })).toBeVisible();
-  await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
-  await expect(createdProof.getByText(/^lat$/i)).not.toBeVisible();
-  await expect(createdProof.getByText(/^lon$/i)).not.toBeVisible();
-  expect(createRequests).toBe(1);
+  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
+  await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
 });
 
 test("wallet screen shows export and proof sharing tools", async ({ page }) => {
