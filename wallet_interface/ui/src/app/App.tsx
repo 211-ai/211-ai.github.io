@@ -231,7 +231,7 @@ const routeIcons: Record<RouteId, typeof Home> = {
   audit: ClipboardCheck
 };
 
-const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection"]);
+const removedStandaloneRoutes = new Set<RouteId>(["sharing-rules", "recipient-access", "benefits-protection", "exports"]);
 const routes = primaryRoutes
   .filter((route) => !removedStandaloneRoutes.has(route.id))
   .map((route) => ({ ...route, icon: routeIcons[route.id] }));
@@ -263,6 +263,7 @@ function getProviderPortalView(route: RouteId): ProviderPortalView {
 }
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
+  if (route === "exports") return "security";
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
 }
 
@@ -1363,16 +1364,15 @@ export function App() {
             setProofs={setWalletProofReceipts}
           />
         ) : null}
-        {activeRoute === "exports" ? (
-          <ExportCenterScreen
+        {activeRoute === "security" ? (
+          <SecurityScreen
             apiConfig={walletApiConfig}
             bundles={exportBundleViews}
+            onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
             setBundles={setExportBundleViews}
           />
         ) : null}
-        {activeRoute === "security" ? (
-          <SecurityScreen apiConfig={walletApiConfig} onSnapshotLoaded={refreshWalletAfterSnapshotLoad} />
-        ) : null}
+        {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
@@ -2404,10 +2404,7 @@ function SettingsScreen({
           <button className="tool-tile" onClick={() => navigate("proof-center")} type="button">
             <ShieldCheck size={24} /> Proof settings
           </button>
-          <button className="tool-tile" onClick={() => navigate("exports")} type="button">
-            <LogOut size={24} /> Export bundles
-          </button>
-          <button className="tool-tile" onClick={() => navigate("interactions")} type="button">
+          <button className="tool-tile" onClick={() => navigate("audit")} type="button">
             <ClipboardCheck size={24} /> Consent history
           </button>
         </div>
@@ -7085,14 +7082,7 @@ function ExportCenterScreen({
   }
 
   return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Encrypted exports</p>
-        <h1>Shareable wallet bundles</h1>
-      </div>
-      <p className="page-note">
-        Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal plaintext.
-      </p>
+    <>
       {!apiConfig ? (
         <StatusBanner tone="warning">Connect Abby before you make live export bundles.</StatusBanner>
       ) : null}
@@ -7100,7 +7090,11 @@ function ExportCenterScreen({
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
       {importStatus === "imported" ? <StatusBanner tone="success">Export descriptors imported.</StatusBanner> : null}
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
-      <Section title="Create export bundle">
+      <Section title="Manage encrypted export bundles">
+        <p className="page-note">
+          Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal
+          plaintext.
+        </p>
         <form className="form-grid export-builder" onSubmit={createBundle}>
           <Field label="Recipient DID" required>
             <input
@@ -7163,56 +7157,58 @@ function ExportCenterScreen({
           </div>
         </form>
       </Section>
-      <div className="list-stack">
-        {bundles.map((bundle) => {
-          const titleId = `export-title-${bundle.id}`;
+      <Section title="Recent export bundles">
+        <div className="list-stack">
+          {bundles.map((bundle) => {
+            const titleId = `export-title-${bundle.id}`;
 
-          return (
-            <article aria-labelledby={titleId} className="export-card" key={bundle.id}>
-              <div className="scope-header">
-                <div>
-                  <h3 id={titleId}>{bundle.audienceName}</h3>
-                  <p>{bundle.bundleId}</p>
+            return (
+              <article aria-labelledby={titleId} className="export-card" key={bundle.id}>
+                <div className="scope-header">
+                  <div>
+                    <h3 id={titleId}>{bundle.audienceName}</h3>
+                    <p>{bundle.bundleId}</p>
+                  </div>
+                  <Badge tone={bundle.verificationOk && bundle.storageOk ? "success" : "warning"}>
+                    {!bundle.verificationOk ? "receipt invalid" : bundle.storageOk ? "storage verified" : "storage missing"}
+                  </Badge>
                 </div>
-                <Badge tone={bundle.verificationOk && bundle.storageOk ? "success" : "warning"}>
-                  {!bundle.verificationOk ? "receipt invalid" : bundle.storageOk ? "storage verified" : "storage missing"}
-                </Badge>
-              </div>
-              <div className="privacy-metrics">
-                <StatusPanel label="Records" value={String(bundle.recordCount)} tone="teal" />
-                <StatusPanel label="Proofs" value={String(bundle.proofCount)} tone="gold" />
-              </div>
-              <div className="receipt-hash-row">
-                <span>Bundle hash</span>
-                <code>{bundle.bundleHash}</code>
-              </div>
-              <div className="badge-row">
-                <Badge tone={bundle.hashOk ? "success" : "warning"}>
-                  {bundle.hashOk ? "hash verified" : "hash mismatch"}
-                </Badge>
-                <Badge tone={bundle.schemaOk ? "success" : "warning"}>
-                  {bundle.schemaOk ? "schema verified" : "schema failed"}
-                </Badge>
-                <Badge>{bundle.createdAt}</Badge>
-                <Badge tone={bundle.imported ? "success" : "neutral"}>
-                  {bundle.imported ? "import verified" : "not imported"}
-                </Badge>
-              </div>
-              {bundle.schemaError ? <p className="receipt-error">{bundle.schemaError}</p> : null}
-              <div className="row-actions">
-                <Button
-                  disabled={!apiConfig || !bundle.bundle || bundle.imported || importingBundleId === bundle.bundleId}
-                  onClick={() => importBundle(bundle)}
-                  variant="secondary"
-                >
-                  <ShieldCheck size={18} /> {importingBundleId === bundle.bundleId ? "Importing" : "Import descriptors"}
-                </Button>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </div>
+                <div className="privacy-metrics">
+                  <StatusPanel label="Records" value={String(bundle.recordCount)} tone="teal" />
+                  <StatusPanel label="Proofs" value={String(bundle.proofCount)} tone="gold" />
+                </div>
+                <div className="receipt-hash-row">
+                  <span>Bundle hash</span>
+                  <code>{bundle.bundleHash}</code>
+                </div>
+                <div className="badge-row">
+                  <Badge tone={bundle.hashOk ? "success" : "warning"}>
+                    {bundle.hashOk ? "hash verified" : "hash mismatch"}
+                  </Badge>
+                  <Badge tone={bundle.schemaOk ? "success" : "warning"}>
+                    {bundle.schemaOk ? "schema verified" : "schema failed"}
+                  </Badge>
+                  <Badge>{bundle.createdAt}</Badge>
+                  <Badge tone={bundle.imported ? "success" : "neutral"}>
+                    {bundle.imported ? "import verified" : "not imported"}
+                  </Badge>
+                </div>
+                {bundle.schemaError ? <p className="receipt-error">{bundle.schemaError}</p> : null}
+                <div className="row-actions">
+                  <Button
+                    disabled={!apiConfig || !bundle.bundle || bundle.imported || importingBundleId === bundle.bundleId}
+                    onClick={() => importBundle(bundle)}
+                    variant="secondary"
+                  >
+                    <ShieldCheck size={18} /> {importingBundleId === bundle.bundleId ? "Importing" : "Import descriptors"}
+                  </Button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </Section>
+    </>
   );
 }
 
@@ -7234,10 +7230,14 @@ function shortHash(value?: string): string {
 
 function SecurityScreen({
   apiConfig,
-  onSnapshotLoaded
+  bundles,
+  onSnapshotLoaded,
+  setBundles
 }: {
   apiConfig?: WalletApiConfig;
+  bundles: ExportBundleView[];
   onSnapshotLoaded: () => Promise<void> | void;
+  setBundles: (bundles: ExportBundleView[]) => void;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
@@ -7353,6 +7353,7 @@ function SecurityScreen({
           </Button>
         </div>
       </Section>
+      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <div className="tool-grid">
         <button className="tool-tile" type="button">
           <LockKeyhole size={24} /> Session timeout

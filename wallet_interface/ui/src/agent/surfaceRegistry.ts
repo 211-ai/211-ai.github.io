@@ -223,7 +223,7 @@ const surfaceTools: Record<RouteId, AgentCommandName[]> = {
     "verify_proof_status"
   ],
   exports: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle"],
-  security: [...commonReadTools, "save_wallet_snapshot", "restore_wallet_snapshot"],
+  security: [...commonReadTools, "create_verified_export_bundle", "import_export_bundle", "save_wallet_snapshot", "restore_wallet_snapshot"],
   audit: [
     ...commonReadTools,
     "refresh_wallet_audit",
@@ -689,7 +689,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   create_verified_export_bundle: {
     title: "Create verified export bundle",
     permissionLevel: "wallet_write",
-    surfaces: ["exports"],
+    surfaces: ["exports", "security"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
@@ -699,7 +699,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   import_export_bundle: {
     title: "Import export bundle",
     permissionLevel: "wallet_write",
-    surfaces: ["exports"],
+    surfaces: ["exports", "security"],
     requiresConfirmation: true,
     requiresWalletUnlock: true,
     requiresUserPresence: true,
