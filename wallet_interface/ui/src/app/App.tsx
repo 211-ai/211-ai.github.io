@@ -314,6 +314,9 @@ function formatAnalyticsField(field: string): string {
   return labels[field] ?? field.replace(/_/g, " ");
 }
 
+const analyticsNeverPublishedText =
+  "No names, contact details, exact locations, files, staff actions, case notes, or individual service histories";
+
 function toShortSummaryTitle(text: string): string {
   const cleaned = text
     .replace(/machine\s+summary\s*:\s*/gi, " ")
@@ -5740,6 +5743,10 @@ function AnalyticsScreen({
   const totalPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.epsilonBudget, 0);
   const spentPrivacyBudget = analyticsStudies.reduce((sum, study) => sum + study.spentBudget, 0);
   const privacyBudgetLeft = Math.max(0, totalPrivacyBudget - spentPrivacyBudget);
+  const cohortFloorMin = analyticsStudies.reduce((min, study) => Math.min(min, study.minCohortSize), Number.POSITIVE_INFINITY);
+  const cohortFloorMax = analyticsStudies.reduce((max, study) => Math.max(max, study.minCohortSize), 0);
+  const cohortFloorLabel =
+    cohortFloorMin === cohortFloorMax ? String(cohortFloorMin) : `${cohortFloorMin}-${cohortFloorMax}`;
   const summaryPanels = [
     { label: "People in verified cohorts", value: "2,480", tone: "teal" },
     { label: "Providers submitting proofs", value: "38", tone: "teal" },
@@ -5816,12 +5823,11 @@ function AnalyticsScreen({
     },
     {
       detail:
-        "Breakdowns stay hidden whenever fewer than 25 people or fewer than 3 provider organizations are represented.",
+        `Breakdowns stay hidden whenever fewer than the configured cohort floor (${cohortFloorLabel} people) or fewer than 3 provider organizations are represented.`,
       title: "Suppression for small groups"
     },
     {
-      detail:
-        "No names, contact details, exact locations, uploaded files, staff actions, or case notes are published to this dashboard.",
+      detail: `${analyticsNeverPublishedText} are published to this dashboard.`,
       title: "No row-level activity disclosure"
     }
   ];
@@ -5919,7 +5925,7 @@ function AnalyticsScreen({
           </div>
           <div className="disclosure-row">
             <strong>Never published</strong>
-            <span>No names, contact details, exact locations, files, staff actions, or individual service histories</span>
+            <span>{analyticsNeverPublishedText}</span>
           </div>
         </div>
       </Section>
@@ -5985,7 +5991,7 @@ function AnalyticsScreen({
                     </div>
                     <div className="disclosure-row">
                       <strong>Never published</strong>
-                      <span>No names, exact locations, files, staff actions, or individual service histories</span>
+                      <span>{analyticsNeverPublishedText}</span>
                     </div>
                   </div>
                 </div>
