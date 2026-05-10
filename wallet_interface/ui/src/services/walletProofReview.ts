@@ -71,7 +71,10 @@ export function reviewWalletProofBundlePayload(
   sourceLabel = "Wallet proof bundle from QR",
   sourceUrl?: string
 ): WalletProofQrReview {
-  const parsedPayload = typeof payload === "string" ? parseJson(payload) ?? payload : payload;
+  const parsedPayload = typeof payload === "string" ? parseJson(payload) : payload;
+  if (typeof payload === "string" && parsedPayload === undefined) {
+    throw new Error("The wallet proof bundle link is invalid.");
+  }
   const bundle = unwrapProofPayload(parsedPayload);
   const proofs = normalizeProofs(bundle);
 

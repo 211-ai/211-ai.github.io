@@ -2928,6 +2928,7 @@ function UploadsScreen({
   const filecoinStorageReady = Boolean(filecoinStorageConfig);
   const verifiedRecipients = recipients.filter((recipient) => recipient.verified);
   const [walletQrCodeUrl, setWalletQrCodeUrl] = useState("");
+  const [walletQrStatus, setWalletQrStatus] = useState<"loading" | "ready" | "failed">("loading");
   const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
   const walletProofBundlePayload = useMemo(
     () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
@@ -2944,16 +2945,23 @@ function UploadsScreen({
 
   useEffect(() => {
     let cancelled = false;
+    setWalletQrStatus("loading");
     QRCode.toDataURL(walletProofReviewUrl, {
       errorCorrectionLevel: "M",
       margin: 1,
       width: 220
     })
       .then((nextQrCodeUrl: string) => {
-        if (!cancelled) setWalletQrCodeUrl(nextQrCodeUrl);
+        if (!cancelled) {
+          setWalletQrCodeUrl(nextQrCodeUrl);
+          setWalletQrStatus("ready");
+        }
       })
       .catch(() => {
-        if (!cancelled) setWalletQrCodeUrl("");
+        if (!cancelled) {
+          setWalletQrCodeUrl("");
+          setWalletQrStatus("failed");
+        }
       });
 
     return () => {
@@ -3158,7 +3166,7 @@ function UploadsScreen({
             />
           ) : (
             <div aria-live="polite" className="wallet-proof-qr-placeholder">
-              QR code unavailable
+              {walletQrStatus === "loading" ? "Preparing wallet proof QR…" : "Wallet proof QR is unavailable right now."}
             </div>
           )}
           <div className="wallet-proof-qr-details">
