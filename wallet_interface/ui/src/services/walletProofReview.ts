@@ -16,6 +16,13 @@ type ReviewLocator =
   | { kind: "url"; sourceLabel: string; url: string }
   | { kind: "cid"; cid: string; sourceLabel: string };
 
+type ProofArtifactLocator = { cid: string } | { url: string };
+type LinkedProofReference = ProofArtifactLocator & {
+  claim: string;
+  id: string;
+  proofType: string;
+};
+
 export type WalletProofQrReview = {
   bundleTitle?: string;
   proofs: ProofReceiptView[];
@@ -44,7 +51,7 @@ export function buildWalletProofBundlePayload({
         proofType: proof.proofType
       };
     })
-    .filter((proof): proof is NonNullable<typeof proof> => Boolean(proof));
+    .filter((proof): proof is LinkedProofReference => Boolean(proof));
   const inlineProofs = proofs
     .filter((proof) => !parseProofArtifactLocator(proof.proofArtifactRef))
     .map((proof) => ({
@@ -300,7 +307,7 @@ function unwrapProofPayload(payload: unknown): unknown {
   return record.proofBundle ?? record.walletProofBundle ?? record;
 }
 
-async function hydrateProofBundle(payload: unknown): Promise<unknown> {
+async function hydrateProofBundle(payload: unknown): Promise<Record<string, unknown> | unknown> {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return payload;
   const record = unwrapProofPayload(payload) as Record<string, unknown>;
   const linkedProofs = readLinkedProofs(record);
@@ -440,7 +447,7 @@ function normalizeCid(value: string): string {
   return value.replace(/^ipfs:\/\//, "").replace(/^\/?ipfs\//, "");
 }
 
-function parseProofArtifactLocator(value: string | undefined): Record<string, string> | undefined {
+function parseProofArtifactLocator(value: string | undefined): ProofArtifactLocator | undefined {
   if (!value) return undefined;
   if (/^https?:\/\//i.test(value)) return { url: value };
   if (/^ipfs:\/\//i.test(value) || /^\/?ipfs\//i.test(value) || cidPattern.test(value)) {

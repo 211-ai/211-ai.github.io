@@ -2941,6 +2941,9 @@ function UploadsScreen({
     () => buildWalletProofReviewUrl(walletProofBundleReference),
     [walletProofBundleReference]
   );
+  const walletQrPayloadLabel = filecoinStorageReady
+    ? walletProofBundleCid || "Publishing IPFS CID…"
+    : "Connect IPFS/Filecoin storage to generate a CID.";
 
   useEffect(() => {
     uploadsRef.current = uploads;
@@ -2964,7 +2967,7 @@ function UploadsScreen({
     })
       .then(async (result) => {
         const cid = result.ipfsCid || result.cid;
-        if (!cid) throw new Error("The storage backend did not return a CID.");
+        if (!cid) throw new Error("The storage backend did not return a CID. Verify the IPFS/Filecoin storage configuration.");
         const nextQrCodeUrl = await QRCode.toDataURL(cid, {
           errorCorrectionLevel: "M",
           margin: 1,
@@ -3207,7 +3210,7 @@ function UploadsScreen({
             <div className="disclosure-package">
               <div className="disclosure-row">
                 <strong>QR payload</strong>
-                <span>{walletProofBundleCid || (filecoinStorageReady ? "Publishing IPFS CID…" : "Connect IPFS/Filecoin storage to generate a CID.")}</span>
+                <span>{walletQrPayloadLabel}</span>
               </div>
               <div className="disclosure-row">
                 <strong>Includes</strong>
