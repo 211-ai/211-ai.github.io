@@ -3,6 +3,7 @@ import {
   Archive,
   Bell,
   BarChart3,
+  Camera,
   CalendarCheck,
   CalendarClock,
   ClipboardCheck,
@@ -180,6 +181,7 @@ import {
 const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
+const PROOF_QR_IMAGE_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp";
 const ID_DOCUMENT_ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
 const MAGIC_LOGIN_PARAM = "abbyLogin";
@@ -6874,7 +6876,8 @@ function ProofCenterScreen({
       </div>
       <p className="page-note">
         Proof receipts expose public claims and verifier details without showing raw documents or precise location. You can
-        also upload a wallet QR screenshot to review proof certificates stored on IPFS/Filecoin.
+        also upload a wallet QR screenshot or take a photo with your camera to review proof certificates stored on
+        IPFS/Filecoin.
       </p>
       <article className="proof-card" aria-label="Review wallet proof QR">
         <div className="scope-header">
@@ -6887,14 +6890,29 @@ function ProofCenterScreen({
         <div className="upload-controls">
           <label className="upload-dropzone">
             <Upload aria-hidden="true" size={28} />
-            <span>Choose a screenshot of the wallet QR code</span>
+            <span>Upload a screenshot or picture of the wallet QR code</span>
             <small>Only public proof claims are shown after the linked bundle loads.</small>
             <span className="upload-picker">
-              <FileUp aria-hidden="true" size={18} /> Select screenshot
+              <FileUp aria-hidden="true" size={18} /> Upload picture
             </span>
             <input
-              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+              accept={PROOF_QR_IMAGE_ACCEPT_ATTR}
               aria-label="Choose proof QR screenshot"
+              onChange={reviewQrScreenshot}
+              type="file"
+            />
+          </label>
+          <label className="upload-dropzone">
+            <Camera aria-hidden="true" size={28} />
+            <span>Take a picture with your camera</span>
+            <small>On supported devices, this opens the camera to capture the QR code.</small>
+            <span className="upload-picker">
+              <Camera aria-hidden="true" size={18} /> Open camera
+            </span>
+            <input
+              accept={PROOF_QR_IMAGE_ACCEPT_ATTR}
+              aria-label="Take proof QR photo with camera"
+              capture="environment"
               onChange={reviewQrScreenshot}
               type="file"
             />
