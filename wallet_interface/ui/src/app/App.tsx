@@ -7177,7 +7177,7 @@ function ProofCenterScreen({
           </div>
         </Section>
       ) : null}
-      <article aria-hidden="true" className="proof-card" aria-label="Create location region proof" style={{ display: "none" }}>
+      <article className="proof-card" aria-label="Create location region proof" style={{ display: "none" }}>
         <div className="scope-header">
           <div>
             <h3>Create location-region proof</h3>
