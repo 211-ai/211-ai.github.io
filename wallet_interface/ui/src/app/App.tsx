@@ -3630,7 +3630,7 @@ function UploadsScreen({
           </div>
           <div className="disclosure-row">
             <strong>Owner DID</strong>
-            <span>{apiConfig?.actorDid ?? "Will be generated with the next wallet"}</span>
+            <span>{apiConfig?.actorDid ?? "Will be generated when creating a new wallet"}</span>
           </div>
           <div className="disclosure-row">
             <strong>Backend</strong>
@@ -3638,7 +3638,11 @@ function UploadsScreen({
           </div>
         </div>
         <div className="row-actions">
-          <Button disabled={!apiBaseUrl || walletCreateStatus === "creating"} onClick={() => void generateWallet()}>
+          <Button
+            ariaLabel={walletCreateStatus === "creating" ? "Generating a new wallet" : "Generate new wallet"}
+            disabled={!apiBaseUrl || walletCreateStatus === "creating"}
+            onClick={() => void generateWallet()}
+          >
             <Archive size={18} /> {walletCreateStatus === "creating" ? "Generating" : "Generate new wallet"}
           </Button>
         </div>

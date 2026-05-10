@@ -1284,7 +1284,7 @@ test("wallet page can generate and connect a new wallet", async ({ page }) => {
     await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
   });
 
-  const createRoute = `/?walletApiBaseUrl=${encodeURIComponent(decodeURIComponent(walletApiBaseUrl))}#/uploads`;
+  const createRoute = `/?walletApiBaseUrl=${walletApiBaseUrl}#/uploads`;
   await openAppRoute(page, createRoute);
   await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
   await page.getByRole("button", { name: /Generate new wallet/i }).click();
