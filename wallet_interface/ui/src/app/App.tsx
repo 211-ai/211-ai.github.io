@@ -2495,7 +2495,7 @@ function SettingsScreen({
 
       <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
 
-      <Section title="More tools">
+      <Section title="Less-used tools">
         <div className="tool-grid">
           <button className="tool-tile" onClick={() => navigate("proof-center")} type="button">
             <ShieldCheck size={24} /> Proof settings
