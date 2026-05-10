@@ -552,6 +552,12 @@ function visibleProofCenterProofs(proofs: ProofReceiptView[]) {
   return proofs.filter((proof) => !hiddenProofCenterProofTypes.has(proof.proofType));
 }
 
+function summarizeWalletProofClaims(proofs: ProofReceiptView[]) {
+  const claims = proofs.map((proof) => proof.claim);
+  if (claims.length <= 3) return claims.join(", ") || "Wallet proof summary";
+  return `${claims.slice(0, 3).join(", ")}, +${claims.length - 3} more`;
+}
+
 export function App() {
   const persistedState = useMemo(() => readPersistedAppState(), []);
   const defaultAppState = useMemo(() => createDefaultAppState(persistedState), [persistedState]);
@@ -3162,13 +3168,13 @@ function UploadsScreen({
               exposing the underlying files.
             </small>
             <div className="badge-row">
-              <Badge>{apiConfig?.walletId ?? "local-wallet"}</Badge>
+              <Badge>{apiConfig?.walletId ?? "localWallet"}</Badge>
               {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
             </div>
             <div className="disclosure-package">
               <div className="disclosure-row">
                 <strong>Includes</strong>
-                <span>{walletQrProofs.length > 0 ? walletQrProofs.map((proof) => proof.claim).join(", ") : "Wallet proof summary"}</span>
+                <span>{summarizeWalletProofClaims(walletQrProofs)}</span>
               </div>
               <div className="disclosure-row">
                 <strong>Opens</strong>

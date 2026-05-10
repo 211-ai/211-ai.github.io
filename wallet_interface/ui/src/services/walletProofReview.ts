@@ -392,5 +392,5 @@ function currentBaseUrl(): string {
   if (typeof window === "undefined") {
     return "http://localhost/";
   }
-  return window.location.href;
+  return `${window.location.origin}${window.location.pathname}`;
 }
