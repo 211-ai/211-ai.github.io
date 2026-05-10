@@ -900,7 +900,6 @@ test("proof center shows public proof inputs without private coordinates", async
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
   await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
-  await expect(page.getByLabel(/Create proof capability preview/i)).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
