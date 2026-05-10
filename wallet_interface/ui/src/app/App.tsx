@@ -1286,7 +1286,7 @@ export function App() {
             walletPortalLoading={walletPortalLoading}
           />
         ) : null}
-        {activeRoute === "interactions" ? (
+        {activeRoute === "interactions" || activeRoute === "audit" ? (
           <InteractionsScreen
             accessRequests={accessRequests}
             apiConfig={walletApiConfig}
@@ -1373,7 +1373,6 @@ export function App() {
         {activeRoute === "security" ? (
           <SecurityScreen apiConfig={walletApiConfig} onSnapshotLoaded={refreshWalletAfterSnapshotLoad} />
         ) : null}
-        {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
       </main>
       <AgentChatDrawer
         activeRouteLabel={getRouteLabel(activeRoute)}
@@ -2408,7 +2407,7 @@ function SettingsScreen({
           <button className="tool-tile" onClick={() => navigate("exports")} type="button">
             <LogOut size={24} /> Export bundles
           </button>
-          <button className="tool-tile" onClick={() => navigate("audit")} type="button">
+          <button className="tool-tile" onClick={() => navigate("interactions")} type="button">
             <ClipboardCheck size={24} /> Consent history
           </button>
         </div>
@@ -7364,35 +7363,6 @@ function SecurityScreen({
         <button className="tool-tile" type="button">
           <ShieldCheck size={24} /> Bot check settings
         </button>
-      </div>
-    </div>
-  );
-}
-
-function AuditScreen({ events }: { events: AuditEvent[] }) {
-  return (
-    <div className="screen">
-      <div className="page-title">
-        <p className="eyebrow">Audit</p>
-        <h1>Consent and access history</h1>
-      </div>
-      <div className="timeline">
-        {events.map((event) => (
-          <article className="timeline-event" key={event.id}>
-            <span aria-hidden="true" />
-            <div>
-              <h3>{event.action}</h3>
-              <p>
-                {event.actor} · {event.timestamp}
-              </p>
-              {event.resource || event.decision || event.grantId ? (
-                <small>
-                  {[event.decision, event.resource, event.grantId].filter(Boolean).join(" · ")}
-                </small>
-              ) : null}
-            </div>
-          </article>
-        ))}
       </div>
     </div>
   );

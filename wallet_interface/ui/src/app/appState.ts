@@ -48,8 +48,7 @@ export const secondaryRoutes: Array<{ id: RouteId; label: string }> = [
   { id: "analytics", label: "Analytics" },
   { id: "proof-center", label: "Proofs" },
   { id: "exports", label: "Exports" },
-  { id: "security", label: "Security" },
-  { id: "audit", label: "Audit" }
+  { id: "security", label: "Security" }
 ];
 
 export const appRoutes = [...primaryRoutes, ...secondaryRoutes];
