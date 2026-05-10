@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   Bell,
@@ -795,7 +795,7 @@ export function App() {
     setMobileNavOpen(false);
   }
 
-  function sendMissingPersonDeadDrop(): boolean {
+  const sendMissingPersonDeadDrop = useCallback((): boolean => {
     try {
       const bundle = buildMissingPersonDeadDropBundle(profile, uploads, recipients);
       const bundleJson = JSON.stringify(bundle, null, 2);
@@ -848,21 +848,19 @@ export function App() {
       }
       return false;
     }
-  }
+  }, [policy, profile, recipients, uploads]);
 
   useEffect(() => {
     if (!missingPersonDeadDropEnabled || !policy.escalationEnabled) return;
     if (!isMissingPersonDeadDropDue(policy)) return;
     if (missingPersonDeadDropLastSentForCheckInAt === policy.lastCheckInAt) return;
 
-    const sent = sendMissingPersonDeadDrop();
-    if (sent) {
-      setMissingPersonDeadDropLastSentForCheckInAt(policy.lastCheckInAt);
-    }
+    sendMissingPersonDeadDrop();
   }, [
     missingPersonDeadDropEnabled,
     missingPersonDeadDropLastSentForCheckInAt,
-    policy
+    policy,
+    sendMissingPersonDeadDrop
   ]);
 
   function openServiceDetailFromServices(docId: string) {
