@@ -1364,12 +1364,13 @@ test("settings screen saves and restores wallet snapshots", async ({ page }) => 
 
   await expect(page.getByRole("heading", { name: /^Settings$/i })).toBeVisible({ timeout: 15_000 });
   const accountSafety = page.locator('section[aria-labelledby="Account-safety"]');
+  const backupCheckRow = accountSafety.locator(".disclosure-row").filter({ hasText: /Backup check/i });
   await expect(accountSafety.getByRole("heading", { name: /Account safety/i })).toBeVisible({ timeout: 15_000 });
   await expect(accountSafety.getByText(/no backup/i)).toBeVisible();
   await accountSafety.getByRole("button", { name: /Save backup/i }).click();
   await expect(page.getByText(/Wallet backup saved/i)).toBeVisible();
   await expect(accountSafety.getByText(/backup ready/i)).toBeVisible();
-  await expect(accountSafety.getByText(/^verified$/i)).toBeVisible();
+  await expect(backupCheckRow.getByText(/verified/i)).toBeVisible();
   await expect(accountSafety.getByText(/abc123def456/i)).toBeVisible();
   await accountSafety.getByRole("button", { name: /Load backup/i }).click();
   await expect(page.getByText(/Wallet backup loaded/i)).toBeVisible();
