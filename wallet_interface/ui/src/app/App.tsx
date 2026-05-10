@@ -293,7 +293,7 @@ function readSignedInUser(): string {
 
 function createGeneratedWalletOwnerDid(seed?: string): string {
   const normalizedSeed = seed?.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-  return `did:key:${normalizedSeed ? `${normalizedSeed}-` : ""}${randomBase64Url(12)}`;
+  return `did:key:${normalizedSeed ? `${normalizedSeed}-` : ""}${randomBase64Url(16)}`;
 }
 
 function resolveWalletOwnerDid(signedInUser: string, walletConfig?: WalletApiConfig): string {
@@ -3589,7 +3589,7 @@ function UploadsScreen({
     setWalletCreateStatus("creating");
     setWalletCreateError("");
     const ownerDid = resolveWalletOwnerDid(signedInUser, apiConfig);
-    const ownerKeyHex = randomHex(32);
+    const issuerKeyHex = randomHex(32);
 
     try {
       const wallet = await createWallet({ apiBaseUrl, ownerDid });
@@ -3597,7 +3597,7 @@ function UploadsScreen({
         apiBaseUrl,
         walletId: wallet.wallet_id,
         actorDid: wallet.owner_did,
-        issuerKeyHex: ownerKeyHex,
+        issuerKeyHex,
         audienceKeyHex: undefined
       });
       setWalletCreateStatus("created");
