@@ -15,7 +15,9 @@ import {
   load211ArtifactManifest,
   load211Documents,
   load211GeneratedManifest,
+  load211ServiceLocationsSlice,
   type CorpusDocument,
+  type ServiceLocationRecord,
 } from "../lib/graphrag";
 import { build211InfoServiceProvenance } from "../services/graphRagService";
 
@@ -27,16 +29,17 @@ type ServiceDetailMetadata = {
 };
 
 type ServiceDetailState =
-  | { status: "loading"; document: null; metadata: null; error: "" }
-  | { status: "ready"; document: CorpusDocument; metadata: ServiceDetailMetadata; error: "" }
-  | { status: "not-found"; document: null; metadata: ServiceDetailMetadata | null; error: "" }
-  | { status: "error"; document: null; metadata: null; error: string };
+  | { status: "loading"; document: null; metadata: null; locations: ServiceLocationRecord[]; error: "" }
+  | { status: "ready"; document: CorpusDocument; metadata: ServiceDetailMetadata; locations: ServiceLocationRecord[]; error: "" }
+  | { status: "not-found"; document: null; metadata: ServiceDetailMetadata | null; locations: ServiceLocationRecord[]; error: "" }
+  | { status: "error"; document: null; metadata: null; locations: ServiceLocationRecord[]; error: string };
 
 export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: () => void }) {
   const [state, setState] = useState<ServiceDetailState>({
     status: "loading",
     document: null,
     metadata: null,
+    locations: [],
     error: "",
   });
 
@@ -44,7 +47,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
     let canceled = false;
 
     async function loadServiceDetail() {
-      setState({ status: "loading", document: null, metadata: null, error: "" });
+      setState({ status: "loading", document: null, metadata: null, locations: [], error: "" });
       try {
         const documentsState = await load211Documents();
         const [artifactManifestResult, generatedManifestResult] = await Promise.allSettled([
@@ -62,6 +65,10 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           documentsState.documentByContentCid.get(docId) ??
           documentsState.documents.find((item) => item.source_page_cid === docId) ??
           null;
+        const locations = document
+          ? await load211ServiceLocationsSlice({ serviceDocIds: [document.doc_id] }).catch(() => [])
+          : [];
+        if (canceled) return;
         const documentsArtifact = artifactManifest?.artifacts.find((artifact) => artifact.role === "documents");
         const metadata: ServiceDetailMetadata = {
           buildManifestCid:
@@ -77,8 +84,8 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
 
         setState(
           document
-            ? { status: "ready", document, metadata, error: "" }
-            : { status: "not-found", document: null, metadata, error: "" },
+            ? { status: "ready", document, metadata, locations, error: "" }
+            : { status: "not-found", document: null, metadata, locations: [], error: "" },
         );
       } catch (error) {
         if (canceled) return;
@@ -86,6 +93,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           status: "error",
           document: null,
           metadata: null,
+          locations: [],
           error: error instanceof Error ? error.message : "Service detail unavailable",
         });
       }
@@ -150,6 +158,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
   const location = getServiceLocationLabel(document);
   const phones = getServicePhones(document);
   const addresses = getServiceAddresses(document);
+  const detailedLocations = state.locations;
   const intakeText = getPrimaryIntakeText(document);
   const eligibilityText = getPrimaryEligibilityText(document);
   const requiredDocumentsText = getPrimaryRequiredDocumentsText(document);
@@ -209,12 +218,32 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {addresses.length ? (
             <article className="list-item">
               <div>
-                <h3>Address</h3>
+                <h3>{detailedLocations.length ? "Embedded address summary" : "Address"}</h3>
                 <p>{addresses.map((item) => item.address || item.maps_query).filter(Boolean).join(" · ")}</p>
               </div>
               {location ? <Badge tone="success">{location}</Badge> : null}
             </article>
           ) : null}
+          {detailedLocations.map((item) => {
+            const addressText = item.address || item.maps_query || [item.street, item.city, item.state, item.postal_code].filter(Boolean).join(", ");
+            const mapHref = item.google_maps_url || item.apple_maps_url || item.geo_url || "";
+            return (
+              <article className="list-item" key={item.location_id || `${item.service_doc_id}:${item.address}`}>
+                <div>
+                  <h3>{item.label || "Service location"}</h3>
+                  <p>{addressText || "Location available without a formatted address."}</p>
+                  {item.geo_precision ? <p className="supporting-copy">Geo precision: {item.geo_precision}</p> : null}
+                </div>
+                {mapHref ? (
+                  <a className="button button-secondary" href={mapHref} rel="noreferrer" target="_blank">
+                    Open map
+                  </a>
+                ) : item.geo_cluster_id != null ? (
+                  <Badge tone="success">Cluster {item.geo_cluster_id}</Badge>
+                ) : null}
+              </article>
+            );
+          })}
           {areaServedText ? (
             <article className="list-item">
               <div>

@@ -14,6 +14,8 @@ import type {
   GraphNeighborhoodShard,
   GraphNode,
   RetrievalGeoShardManifest,
+  ServiceLocationIndex,
+  ServiceLocationRecord,
   ServiceGeoIndex,
 } from "./types";
 import { loadDocumentsFromParquet, queryParquetRows, type DuckDbDocumentQuery } from "./duckdbDocuments";
@@ -38,9 +40,11 @@ let graphIndexPromise: Promise<GraphNeighborhoodIndex> | null = null;
 let communitiesPromise: Promise<GraphCommunity[]> | null = null;
 let documentCommunitiesPromise: Promise<DocumentCommunity[]> | null = null;
 let serviceGeoIndexPromise: Promise<ServiceGeoIndex> | null = null;
+let serviceLocationIndexPromise: Promise<ServiceLocationIndex> | null = null;
 let documentGeoClusterPromise: Promise<DocumentGeoClusterManifest> | null = null;
 let retrievalGeoShardManifestPromise: Promise<RetrievalGeoShardManifest> | null = null;
 let graphGeoClusterManifestPromise: Promise<GraphGeoClusterManifest> | null = null;
+const serviceLocationSlicePromises = new Map<string, Promise<ServiceLocationRecord[]>>();
 const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
 const documentSlicePromises = new Map<string, Promise<CorpusState>>();
 const bm25GeoShardPromises = new Map<string, Promise<Bm25Payload>>();
@@ -311,6 +315,52 @@ export async function load211ServiceGeoIndex(): Promise<ServiceGeoIndex> {
   return serviceGeoIndexPromise;
 }
 
+export async function load211ServiceLocationIndex(): Promise<ServiceLocationIndex> {
+  if (!serviceLocationIndexPromise) {
+    serviceLocationIndexPromise = fetch211CorpusJson<ServiceLocationIndex>("generated/service-location-index.json");
+  }
+  return serviceLocationIndexPromise;
+}
+
+export async function load211ServiceLocationsSlice(options: {
+  clusterIds?: number[];
+  includeUnclusteredLocations?: boolean;
+  serviceDocIds?: string[];
+  limit?: number;
+} = {}): Promise<ServiceLocationRecord[]> {
+  const manifest = await load211ArtifactManifest();
+  const parquetArtifact = findArtifactBySuffix(manifest, "generated/service-locations.parquet");
+  if (!parquetArtifact) {
+    return [];
+  }
+  const cacheKey = JSON.stringify({
+    clusterIds: options.clusterIds || [],
+    includeUnclusteredLocations: Boolean(options.includeUnclusteredLocations),
+    serviceDocIds: options.serviceDocIds || [],
+    limit: options.limit || 0,
+  });
+  if (!serviceLocationSlicePromises.has(cacheKey)) {
+    serviceLocationSlicePromises.set(
+      cacheKey,
+      queryParquetRows(get211CorpusAssetUrl(parquetArtifact.path), {
+        clusterIds: options.clusterIds,
+        includeNullCluster: Boolean(options.includeUnclusteredLocations),
+        serviceDocIds: options.serviceDocIds,
+        clusterColumn: "geo_cluster_id",
+        orderBy: options.clusterIds?.length
+          ? [
+              "coalesce(geo_cluster_id, 999999) ASC",
+              "service_doc_id ASC",
+              "location_id ASC",
+            ]
+          : ["service_doc_id ASC", "location_id ASC"],
+        limit: options.limit,
+      }).then((rows) => rows.map((row) => buildServiceLocationRecord(row))),
+    );
+  }
+  return serviceLocationSlicePromises.get(cacheKey)!;
+}
+
 export async function load211DocumentGeoClusters(): Promise<DocumentGeoClusterManifest> {
   if (!documentGeoClusterPromise) {
     documentGeoClusterPromise = fetch211CorpusJson<DocumentGeoClusterManifest>("generated/document-geo-clusters.json");
@@ -517,6 +567,31 @@ function buildDocumentCommunitiesFromRows(rows: Record<string, unknown>[]): Docu
     geo_cluster_ids_json: stringValue(row.geo_cluster_ids_json),
     cluster_count: numberValue(row.cluster_count),
   }));
+}
+
+function buildServiceLocationRecord(row: Record<string, unknown>): ServiceLocationRecord {
+  return {
+    service_doc_id: stringValue(row.service_doc_id),
+    location_id: stringValue(row.location_id),
+    label: stringValue(row.label),
+    address: stringValue(row.address),
+    street: stringValue(row.street),
+    city: stringValue(row.city),
+    state: stringValue(row.state),
+    postal_code: stringValue(row.postal_code),
+    source_url: stringValue(row.source_url),
+    source_content_cid: stringValue(row.source_content_cid),
+    source_page_cid: stringValue(row.source_page_cid),
+    maps_query: stringValue(row.maps_query),
+    apple_maps_url: stringValue(row.apple_maps_url),
+    google_maps_url: stringValue(row.google_maps_url),
+    geo_url: stringValue(row.geo_url),
+    geo_lat: numberOrNull(row.geo_lat),
+    geo_lon: numberOrNull(row.geo_lon),
+    geo_precision: stringValue(row.geo_precision),
+    geo_cluster_id: numberOrNull(row.geo_cluster_id),
+    service_geo_cluster_id: numberOrNull(row.service_geo_cluster_id),
+  };
 }
 
 function buildContentCidToDocIds(

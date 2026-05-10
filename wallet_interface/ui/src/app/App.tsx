@@ -46,7 +46,15 @@ import {
 import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
-import { getPrimaryIntakeText, getServiceLocationLabel, load211GeneratedManifest, type SearchResult } from "../lib/graphrag";
+import {
+  getPrimaryIntakeText,
+  getServiceLocationLabel,
+  load211GeneratedManifest,
+  load211ServiceLocationsSlice,
+  resolvePreferred211ServiceClusterIds,
+  type SearchResult,
+  type ServiceLocationRecord
+} from "../lib/graphrag";
 import {
   getFilecoinStorageConfig,
   toFilecoinStoragePatch,
@@ -3286,6 +3294,7 @@ function SocialServicesScreen({
   const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [resultLocationLabels, setResultLocationLabels] = useState<Record<string, string>>({});
   const [searchStatus, setSearchStatus] = useState<"idle" | "loading" | "complete" | "error">("idle");
   const [searchError, setSearchError] = useState("");
   const [savingDocIds, setSavingDocIds] = useState<string[]>([]);
@@ -3323,11 +3332,22 @@ function SocialServicesScreen({
     setSearchStatus("loading");
     setSearchError("");
     try {
-      const searchResults = await search211Info(trimmedQuery, 18);
-      setResults(searchResults.slice(0, 12));
+      const [searchResults, preferredClusterIds] = await Promise.all([
+        search211Info(trimmedQuery, 18),
+        resolvePreferred211ServiceClusterIds(trimmedQuery, 8).catch(() => []),
+      ]);
+      const visibleResults = searchResults.slice(0, 12);
+      const locationRows = visibleResults.length
+        ? await load211ServiceLocationsSlice({
+            serviceDocIds: visibleResults.map((result) => result.docId),
+          }).catch(() => [])
+        : [];
+      setResults(visibleResults);
+      setResultLocationLabels(buildSearchResultLocationLabels(visibleResults, locationRows, preferredClusterIds));
       setSearchStatus("complete");
     } catch (error) {
       setResults([]);
+      setResultLocationLabels({});
       setSearchStatus("error");
       setSearchError(error instanceof Error ? error.message : "Search failed");
     }
@@ -3405,7 +3425,7 @@ function SocialServicesScreen({
               const document = result.document;
               const provider = document.provider_name || "Provider not listed";
               const program = document.program_name || document.title || "Program not listed";
-              const location = getServiceLocationLabel(document);
+              const location = resultLocationLabels[result.docId] || getServiceLocationLabel(document);
               const intake = getPrimaryIntakeText(document);
               return (
                 <article className="list-item" key={result.docId}>
@@ -3532,6 +3552,57 @@ function toLocalSavedService(result: SearchResult, walletId = "local-wallet"): S
 
 function formatCount(value: number): string {
   return new Intl.NumberFormat("en-US").format(Math.max(0, Math.trunc(value || 0)));
+}
+
+function buildSearchResultLocationLabels(
+  results: SearchResult[],
+  locationRows: ServiceLocationRecord[],
+  preferredClusterIds: number[],
+): Record<string, string> {
+  const preferredClusterSet = new Set(preferredClusterIds);
+  const rowsByDocId = new Map<string, ServiceLocationRecord[]>();
+  for (const row of locationRows) {
+    if (!row.service_doc_id) continue;
+    const existing = rowsByDocId.get(row.service_doc_id) || [];
+    existing.push(row);
+    rowsByDocId.set(row.service_doc_id, existing);
+  }
+
+  const labels: Record<string, string> = {};
+  for (const result of results) {
+    const row = choosePreferredServiceLocation(rowsByDocId.get(result.docId) || [], preferredClusterSet);
+    const label = formatServiceLocationLabel(row);
+    if (label) {
+      labels[result.docId] = label;
+    }
+  }
+  return labels;
+}
+
+function choosePreferredServiceLocation(
+  rows: ServiceLocationRecord[],
+  preferredClusterIds: Set<number>,
+): ServiceLocationRecord | null {
+  if (!rows.length) return null;
+  const rankedRows = [...rows].sort((left, right) => {
+    const leftPreferred = left.geo_cluster_id != null && preferredClusterIds.has(left.geo_cluster_id) ? 1 : 0;
+    const rightPreferred = right.geo_cluster_id != null && preferredClusterIds.has(right.geo_cluster_id) ? 1 : 0;
+    if (leftPreferred !== rightPreferred) return rightPreferred - leftPreferred;
+    const leftHasAddress = formatServiceLocationLabel(left) ? 1 : 0;
+    const rightHasAddress = formatServiceLocationLabel(right) ? 1 : 0;
+    if (leftHasAddress !== rightHasAddress) return rightHasAddress - leftHasAddress;
+    return String(left.location_id).localeCompare(String(right.location_id));
+  });
+  return rankedRows[0] || null;
+}
+
+function formatServiceLocationLabel(location: ServiceLocationRecord | null | undefined): string {
+  if (!location) return "";
+  return (
+    location.address ||
+    location.maps_query ||
+    [location.street, location.city, location.state, location.postal_code].filter(Boolean).join(", ")
+  );
 }
 
 function appStableSuffix(value: string): string {

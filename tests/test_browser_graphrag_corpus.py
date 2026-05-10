@@ -304,6 +304,34 @@ def _make_portal_parquet(root: Path) -> Path:
     return portal_path
 
 
+def _make_portal_locations_parquet(root: Path) -> Path:
+    location_path = root / "service_locations.parquet"
+    _write_parquet(
+        location_path,
+        [
+            {
+                "service_doc_id": "service:cid-service",
+                "location_id": "service:cid-service:location:0",
+                "label": "service_address",
+                "address": "123 Main St, Portland, OR 97204",
+                "street": "123 Main St",
+                "city": "Portland",
+                "state": "OR",
+                "postal_code": "97204",
+                "source_url": "https://example.org/food",
+                "source_content_cid": "cid-service",
+                "source_page_cid": "cid-page",
+                "maps_query": "123 Main St Portland OR 97204",
+                "apple_maps_url": "https://maps.apple.com/?q=123+Main+St+Portland+OR+97204",
+                "google_maps_url": "https://www.google.com/maps/search/?api=1&query=123+Main+St+Portland+OR+97204",
+                "geo_url": "geo:0,0?q=123+Main+St+Portland+OR+97204",
+                "geo_json": json.dumps({"lat": 45.537123, "lon": -122.650925, "precision": "address_geocode"}),
+            }
+        ],
+    )
+    return location_path
+
+
 def _make_place_centroid_file(root: Path) -> Path:
     centroid_path = root / "place_centroids.txt"
     centroid_path.write_text(
@@ -322,6 +350,7 @@ def _make_place_centroid_file(root: Path) -> Path:
 def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     package_dir = _make_package(tmp_path)
     portal_parquet_path = _make_portal_parquet(tmp_path)
+    portal_location_parquet_path = _make_portal_locations_parquet(tmp_path)
     place_centroid_path = _make_place_centroid_file(tmp_path)
     output_dir = tmp_path / "browser_corpus"
 
@@ -329,6 +358,7 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
         package_dir=package_dir,
         output_dir=output_dir,
         portal_parquet_path=portal_parquet_path,
+        portal_location_parquet_path=portal_location_parquet_path,
         place_centroid_path=place_centroid_path,
         max_terms_per_document=8,
         max_edges_per_document=4,
@@ -354,11 +384,13 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     graph_shard = json.loads((output_dir / graph_index["docIdToShard"]["service:cid-service"]).read_text())
     communities = json.loads((output_dir / "generated" / "graph-communities.json").read_text())
     service_geo_index = json.loads((output_dir / "generated" / "service-geo-index.json").read_text())
+    service_location_index = json.loads((output_dir / "generated" / "service-location-index.json").read_text())
     geo_clusters = json.loads((output_dir / "generated" / "document-geo-clusters.json").read_text())
     retrieval_geo_shards = json.loads((output_dir / "generated" / "retrieval-geo-shards.json").read_text())
     graph_geo_clusters = json.loads((output_dir / "generated" / "graph-geo-clusters.json").read_text())
     bm25_parquet = pd.read_parquet(output_dir / "generated" / "bm25-documents.parquet").to_dict(orient="records")
     embedding_parquet = pd.read_parquet(output_dir / "generated" / "embeddings.parquet").to_dict(orient="records")
+    service_locations_parquet = pd.read_parquet(output_dir / "generated" / "service-locations.parquet").to_dict(orient="records")
     graph_communities_parquet = pd.read_parquet(output_dir / "generated" / "graph-communities.parquet").to_dict(
         orient="records"
     )
@@ -368,6 +400,7 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     artifacts = json.loads((output_dir / "artifacts.manifest.json").read_text())
     bm25_parquet_file = pq.ParquetFile(output_dir / "generated" / "bm25-documents.parquet")
     embedding_parquet_file = pq.ParquetFile(output_dir / "generated" / "embeddings.parquet")
+    service_locations_parquet_file = pq.ParquetFile(output_dir / "generated" / "service-locations.parquet")
     bm25_parquet_by_id = {row["doc_id"]: row for row in bm25_parquet}
     embedding_parquet_by_id = {row["doc_id"]: row for row in embedding_parquet}
 
@@ -419,6 +452,14 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert retrieval_geo_shards["clusterIdToEmbeddingRowGroupIndexes"]["0"] == [0]
     assert retrieval_geo_shards["shards"][0]["bm25RowGroupIndexes"] == [0]
     assert retrieval_geo_shards["shards"][0]["embeddingRowGroupIndexes"] == [0]
+    assert service_location_index["locationCount"] == 1
+    assert service_location_index["clusteredLocationCount"] == 1
+    assert service_location_index["clusterIdToLocationRowGroupIndexes"]["0"] == [0]
+    assert service_location_index["contentCidToLocationIds"]["cid-service"] == ["service:cid-service:location:0"]
+    assert service_location_index["contentCidToClusterIds"]["cid-service"] == [0]
+    assert service_locations_parquet[0]["geo_cluster_id"] == 0
+    assert service_locations_parquet[0]["service_geo_cluster_id"] == 0
+    assert service_locations_parquet_file.metadata.num_row_groups == 1
     assert graph_communities_parquet[0]["community_id"] == "community:food"
     assert graph_communities_parquet[0]["geo_cluster_id"] == 0
     assert document_communities_parquet[1]["community_id"] == "community:food"
@@ -433,6 +474,8 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert any(artifact["path"] == "generated/retrieval-geo-shards.json" for artifact in artifacts["artifacts"])
     assert any(artifact["path"] == "generated/bm25-documents.parquet" for artifact in artifacts["artifacts"])
     assert any(artifact["path"] == "generated/embeddings.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/service-locations.parquet" for artifact in artifacts["artifacts"])
+    assert any(artifact["path"] == "generated/service-location-index.json" for artifact in artifacts["artifacts"])
     assert any(artifact["path"] == "generated/graph-communities.parquet" for artifact in artifacts["artifacts"])
     assert any(artifact["path"] == "generated/document-communities.parquet" for artifact in artifacts["artifacts"])
     assert any(artifact["path"] == "generated/graph-geo-clusters.json" for artifact in artifacts["artifacts"])
@@ -442,6 +485,9 @@ def test_build_browser_graphrag_corpus_writes_static_assets(tmp_path: Path):
     assert generated_manifest["serviceAddressCount"] == 1
     assert generated_manifest["serviceIntakeStepCount"] == 1
     assert generated_manifest["serviceRequiredDocumentCount"] == 1
+    assert generated_manifest["serviceLocationCount"] == 1
+    assert generated_manifest["clusteredServiceLocationCount"] == 1
+    assert generated_manifest["serviceLocationParquetRowGroupCount"] == 1
     assert generated_manifest["geoClusterCount"] == 1
     assert generated_manifest["geoClusteredServiceCount"] == 1
     assert generated_manifest["documentParquetRowGroupCount"] == 2

@@ -25,6 +25,7 @@ DEFAULT_PACKAGE_DIR = Path("data/retrieval_package")
 DEFAULT_OUTPUT_DIR = Path("wallet_interface/ui/public/corpus/211-info/current")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_PORTAL_PARQUET = REPO_ROOT / "data" / "portal" / "documents.portal.parquet"
+DEFAULT_PORTAL_LOCATION_PARQUET = REPO_ROOT / "data" / "portal" / "service_locations.parquet"
 DEFAULT_GEO_REFERENCE_DIR = REPO_ROOT / "data" / "reference" / "geo"
 DEFAULT_BROWSER_EMBEDDING_MODEL_BY_PYTHON_MODEL = {
     "BAAI/bge-small-en-v1.5": "Xenova/bge-small-en-v1.5",
@@ -435,6 +436,18 @@ def build_cluster_row_group_indexes(row_group_records: list[dict[str, Any]]) -> 
     return {cluster_id: values for cluster_id, values in sorted(cluster_to_row_groups.items())}
 
 
+def resolve_portal_location_parquet_path(
+    portal_parquet_path: Path,
+    portal_location_parquet_path: Path | None,
+) -> Path:
+    if portal_location_parquet_path is not None:
+        return portal_location_parquet_path
+    sibling_path = portal_parquet_path.with_name("service_locations.parquet")
+    if sibling_path.exists():
+        return sibling_path
+    return DEFAULT_PORTAL_LOCATION_PARQUET
+
+
 def file_record(path: Path) -> dict[str, Any]:
     return {
         "path": path.as_posix(),
@@ -452,6 +465,151 @@ def build_content_cid_to_doc_ids(rows: Iterable[dict[str, Any]]) -> dict[str, li
             continue
         cid_to_doc_ids[content_cid].append(doc_id)
     return {cid: sorted(set(doc_ids)) for cid, doc_ids in sorted(cid_to_doc_ids.items())}
+
+
+def build_geo_cluster_centroids(geo_cluster_manifest: dict[str, Any]) -> dict[int, tuple[float, float]]:
+    centroids: dict[int, tuple[float, float]] = {}
+    for cluster in geo_cluster_manifest.get("clusters", []):
+        cluster_id = cluster.get("clusterId")
+        centroid = cluster.get("centroid") if isinstance(cluster.get("centroid"), dict) else {}
+        lat = centroid.get("lat") if isinstance(centroid, dict) else None
+        lon = centroid.get("lon") if isinstance(centroid, dict) else None
+        if not isinstance(cluster_id, int) or cluster_id < 0 or lat is None or lon is None:
+            continue
+        centroids[cluster_id] = (float(lat), float(lon))
+    return centroids
+
+
+def nearest_geo_cluster_id(
+    *,
+    lat: float | None,
+    lon: float | None,
+    service_cluster_id: int | None,
+    cluster_centroids: dict[int, tuple[float, float]],
+) -> int | None:
+    if lat is None or lon is None:
+        return service_cluster_id if isinstance(service_cluster_id, int) and service_cluster_id >= 0 else None
+    if not cluster_centroids:
+        return service_cluster_id if isinstance(service_cluster_id, int) and service_cluster_id >= 0 else None
+
+    mean_lat_radians = math.radians(sum(point[0] for point in cluster_centroids.values()) / len(cluster_centroids))
+    projected_lon = lon * math.cos(mean_lat_radians)
+    best_cluster_id: int | None = None
+    best_distance: float | None = None
+    for cluster_id, (cluster_lat, cluster_lon) in cluster_centroids.items():
+        distance = ((cluster_lon * math.cos(mean_lat_radians)) - projected_lon) ** 2 + (cluster_lat - lat) ** 2
+        if best_distance is None or distance < best_distance:
+            best_distance = distance
+            best_cluster_id = cluster_id
+    return best_cluster_id
+
+
+def build_service_location_artifacts(
+    *,
+    output_dir: Path,
+    generated_dir: Path,
+    portal_location_rows: list[dict[str, Any]],
+    documents: list[dict[str, Any]],
+    geo_cluster_manifest: dict[str, Any],
+    non_service_row_group_size: int,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    service_cluster_by_doc_id = {
+        str(document.get("doc_id", "")): int(document["geo_cluster_id"])
+        for document in documents
+        if document.get("doc_type") == "service" and isinstance(document.get("geo_cluster_id"), int)
+    }
+    cluster_centroids = build_geo_cluster_centroids(geo_cluster_manifest)
+    rows: list[dict[str, Any]] = []
+    cluster_id_to_location_ids: dict[str, set[str]] = defaultdict(set)
+    content_cid_to_location_ids: dict[str, set[str]] = defaultdict(set)
+    content_cid_to_cluster_ids: dict[str, set[int]] = defaultdict(set)
+    doc_id_to_location_ids: dict[str, set[str]] = defaultdict(set)
+    doc_id_to_cluster_ids: dict[str, set[int]] = defaultdict(set)
+    location_id_to_cluster_id: dict[str, int | None] = {}
+
+    for row in portal_location_rows:
+        service_doc_id = str(row.get("service_doc_id", "") or "")
+        location_id = str(row.get("location_id", "") or "")
+        source_content_cid = str(row.get("source_content_cid", "") or "")
+        service_cluster_id = service_cluster_by_doc_id.get(service_doc_id)
+        geo_cluster_id = nearest_geo_cluster_id(
+            lat=row.get("geo_lat"),
+            lon=row.get("geo_lon"),
+            service_cluster_id=service_cluster_id,
+            cluster_centroids=cluster_centroids,
+        )
+        rows.append(
+            {
+                **row,
+                "geo_cluster_id": geo_cluster_id,
+                "service_geo_cluster_id": service_cluster_id,
+            }
+        )
+        if location_id:
+            location_id_to_cluster_id[location_id] = geo_cluster_id
+        if service_doc_id and location_id:
+            doc_id_to_location_ids[service_doc_id].add(location_id)
+        if source_content_cid and location_id:
+            content_cid_to_location_ids[source_content_cid].add(location_id)
+        if isinstance(geo_cluster_id, int) and geo_cluster_id >= 0:
+            if location_id:
+                cluster_id_to_location_ids[str(geo_cluster_id)].add(location_id)
+            if source_content_cid:
+                content_cid_to_cluster_ids[source_content_cid].add(geo_cluster_id)
+            if service_doc_id:
+                doc_id_to_cluster_ids[service_doc_id].add(geo_cluster_id)
+
+    parquet_record, row_group_records = write_cluster_field_grouped_parquet(
+        generated_dir / "service-locations.parquet",
+        rows,
+        cluster_field="geo_cluster_id",
+        unclustered_row_group_size=non_service_row_group_size,
+        sort_key=lambda row: (
+            str(row.get("service_doc_id", "")),
+            str(row.get("location_id", "")),
+            str(row.get("source_content_cid", "")),
+        ),
+    )
+    index_payload = {
+        "schemaVersion": 1,
+        "locationCount": len(rows),
+        "clusteredLocationCount": sum(
+            1 for row in rows if isinstance(row.get("geo_cluster_id"), int) and row["geo_cluster_id"] >= 0
+        ),
+        "unclusteredLocationCount": sum(
+            1 for row in rows if not isinstance(row.get("geo_cluster_id"), int) or row["geo_cluster_id"] < 0
+        ),
+        "parquetPath": Path(parquet_record["path"]).relative_to(output_dir).as_posix(),
+        "rowGroupCount": len(row_group_records),
+        "clusterIdToLocationRowGroupIndexes": build_cluster_row_group_indexes(row_group_records),
+        "clusterIdToLocationIds": {
+            cluster_id: sorted(location_ids)
+            for cluster_id, location_ids in sorted(cluster_id_to_location_ids.items())
+        },
+        "contentCidToLocationIds": {
+            content_cid: sorted(location_ids)
+            for content_cid, location_ids in sorted(content_cid_to_location_ids.items())
+        },
+        "contentCidToClusterIds": {
+            content_cid: sorted(cluster_ids)
+            for content_cid, cluster_ids in sorted(content_cid_to_cluster_ids.items())
+        },
+        "docIdToLocationIds": {
+            doc_id: sorted(location_ids)
+            for doc_id, location_ids in sorted(doc_id_to_location_ids.items())
+        },
+        "docIdToClusterIds": {
+            doc_id: sorted(cluster_ids)
+            for doc_id, cluster_ids in sorted(doc_id_to_cluster_ids.items())
+        },
+        "locationIdToClusterId": location_id_to_cluster_id,
+    }
+    index_record = write_json(generated_dir / "service-location-index.json", index_payload)
+    artifact_records = [
+        relative_manifest_record(output_dir, parquet_record, "geo"),
+        relative_manifest_record(output_dir, index_record, "geo"),
+    ]
+    return index_payload, artifact_records
 
 
 def compact_text(value: Any, max_chars: int) -> tuple[str, bool]:
@@ -529,6 +687,70 @@ def load_portal_service_details(portal_parquet_path: Path) -> dict[str, dict[str
             "geo": json_value(row.get("geo"), {"lat": None, "lon": None, "precision": "none"}),
         }
     return details
+
+
+def load_portal_service_locations(portal_location_parquet_path: Path) -> list[dict[str, Any]]:
+    if not portal_location_parquet_path.exists():
+        return []
+
+    frame = pd.read_parquet(
+        portal_location_parquet_path,
+        columns=[
+            "service_doc_id",
+            "location_id",
+            "label",
+            "address",
+            "street",
+            "city",
+            "state",
+            "postal_code",
+            "source_url",
+            "source_content_cid",
+            "source_page_cid",
+            "maps_query",
+            "apple_maps_url",
+            "google_maps_url",
+            "geo_url",
+            "geo_json",
+        ],
+    ).fillna("")
+
+    locations: list[dict[str, Any]] = []
+    for row in frame.to_dict(orient="records"):
+        geo_payload = json_value(row.get("geo_json"), {"lat": None, "lon": None, "precision": "none"})
+        lat = geo_payload.get("lat") if isinstance(geo_payload, dict) else None
+        lon = geo_payload.get("lon") if isinstance(geo_payload, dict) else None
+        try:
+            geo_lat = float(lat) if lat not in ("", None) else None
+        except (TypeError, ValueError):
+            geo_lat = None
+        try:
+            geo_lon = float(lon) if lon not in ("", None) else None
+        except (TypeError, ValueError):
+            geo_lon = None
+        locations.append(
+            {
+                "service_doc_id": str(row.get("service_doc_id", "") or ""),
+                "location_id": str(row.get("location_id", "") or ""),
+                "label": str(row.get("label", "") or ""),
+                "address": str(row.get("address", "") or ""),
+                "street": str(row.get("street", "") or ""),
+                "city": str(row.get("city", "") or ""),
+                "state": str(row.get("state", "") or ""),
+                "postal_code": str(row.get("postal_code", "") or ""),
+                "source_url": str(row.get("source_url", "") or ""),
+                "source_content_cid": str(row.get("source_content_cid", "") or ""),
+                "source_page_cid": str(row.get("source_page_cid", "") or ""),
+                "maps_query": str(row.get("maps_query", "") or ""),
+                "apple_maps_url": str(row.get("apple_maps_url", "") or ""),
+                "google_maps_url": str(row.get("google_maps_url", "") or ""),
+                "geo_url": str(row.get("geo_url", "") or ""),
+                "geo_lat": geo_lat,
+                "geo_lon": geo_lon,
+                "geo_precision": str(geo_payload.get("precision") or "none") if isinstance(geo_payload, dict) else "none",
+            }
+        )
+    return locations
 
 
 def load_documents(
@@ -1919,6 +2141,7 @@ def build_browser_graphrag_corpus(
     package_dir: Path = DEFAULT_PACKAGE_DIR,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
     portal_parquet_path: Path = DEFAULT_PORTAL_PARQUET,
+    portal_location_parquet_path: Path | None = None,
     geo_reference_dir: Path = DEFAULT_GEO_REFERENCE_DIR,
     place_centroid_path: Path | None = None,
     max_documents: int = 0,
@@ -1936,7 +2159,12 @@ def build_browser_graphrag_corpus(
     generated_dir.mkdir(parents=True, exist_ok=True)
 
     source_manifest = read_manifest(package_dir)
-    portal_service_details = load_portal_service_details(portal_parquet_path.resolve())
+    portal_parquet_path = portal_parquet_path.resolve()
+    portal_location_parquet_path = resolve_portal_location_parquet_path(
+        portal_parquet_path,
+        portal_location_parquet_path.resolve() if portal_location_parquet_path else None,
+    )
+    portal_service_details = load_portal_service_details(portal_parquet_path)
     documents = load_documents(
         package_dir,
         portal_service_details=portal_service_details,
@@ -2070,6 +2298,15 @@ def build_browser_graphrag_corpus(
     service_geo_index = build_service_geo_index(documents)
     service_geo_record = write_json(generated_dir / "service-geo-index.json", service_geo_index)
     artifact_records.append(relative_manifest_record(output_dir, service_geo_record, "geo"))
+    location_index, location_records = build_service_location_artifacts(
+        output_dir=output_dir,
+        generated_dir=generated_dir,
+        portal_location_rows=load_portal_service_locations(portal_location_parquet_path),
+        documents=documents,
+        geo_cluster_manifest=geo_cluster_manifest,
+        non_service_row_group_size=non_service_row_group_size,
+    )
+    artifact_records.extend(location_records)
     document_geo_cluster_record = write_json(generated_dir / "document-geo-clusters.json", geo_cluster_manifest)
     artifact_records.append(relative_manifest_record(output_dir, document_geo_cluster_record, "geo"))
 
@@ -2081,6 +2318,9 @@ def build_browser_graphrag_corpus(
         "serviceAddressCount": service_address_count,
         "serviceIntakeStepCount": service_intake_step_count,
         "serviceRequiredDocumentCount": service_required_document_count,
+        "serviceLocationCount": int(location_index.get("locationCount") or 0),
+        "clusteredServiceLocationCount": int(location_index.get("clusteredLocationCount") or 0),
+        "serviceLocationParquetRowGroupCount": int(location_index.get("rowGroupCount") or 0),
         "embeddingCount": int(embedding_index["count"]),
         "embeddingDimension": int(embedding_index["dimension"]),
         "embeddingModel": embedding_index["embeddingModel"],
@@ -2150,6 +2390,9 @@ def build_browser_graphrag_corpus(
         "geo_cluster_count": int(geo_cluster_manifest["clusterCount"]),
         "geo_clustered_service_count": int(geo_cluster_manifest["clusteredServiceCount"]),
         "geo_unclustered_service_count": int(geo_cluster_manifest["unclusteredServiceCount"]),
+        "service_location_count": int(location_index.get("locationCount") or 0),
+        "clustered_service_location_count": int(location_index.get("clusteredLocationCount") or 0),
+        "service_location_parquet_row_group_count": int(location_index.get("rowGroupCount") or 0),
         "document_parquet_row_group_count": int(geo_cluster_manifest.get("rowGroupCount", 0)),
         "geo_retrieval_shard_count": int(retrieval_geo_shards["shardCount"]),
         "geo_retrieval_shard_content_cid_count": len(retrieval_geo_shards["contentCidToShardIds"]),
@@ -2169,6 +2412,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--package-dir", type=Path, default=DEFAULT_PACKAGE_DIR)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--portal-parquet-path", type=Path, default=DEFAULT_PORTAL_PARQUET)
+    parser.add_argument("--portal-location-parquet-path", type=Path, default=None)
     parser.add_argument("--geo-reference-dir", type=Path, default=DEFAULT_GEO_REFERENCE_DIR)
     parser.add_argument("--place-centroid-path", type=Path, default=None)
     parser.add_argument("--max-documents", type=int, default=0, help="Optional cap for smoke builds")
@@ -2188,6 +2432,7 @@ def main(argv: list[str] | None = None) -> None:
         package_dir=args.package_dir,
         output_dir=args.output_dir,
         portal_parquet_path=args.portal_parquet_path,
+        portal_location_parquet_path=args.portal_location_parquet_path,
         geo_reference_dir=args.geo_reference_dir,
         place_centroid_path=args.place_centroid_path,
         max_documents=args.max_documents,

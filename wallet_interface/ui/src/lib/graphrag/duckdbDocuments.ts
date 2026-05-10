@@ -11,6 +11,7 @@ export interface DuckDbParquetQuery {
   clusterFilterDocTypes?: string[];
   docTypes?: string[];
   docIds?: string[];
+  serviceDocIds?: string[];
   limit?: number;
   orderBy?: string[];
   columns?: string[];
@@ -228,6 +229,9 @@ function buildReadParquetQuery(parquetUrl: string, query: DuckDbParquetQuery): s
   }
   if (query.docIds?.length) {
     whereClauses.push(`doc_id IN (${query.docIds.map(sqlStringLiteral).join(", ")})`);
+  }
+  if (query.serviceDocIds?.length) {
+    whereClauses.push(`service_doc_id IN (${query.serviceDocIds.map(sqlStringLiteral).join(", ")})`);
   }
 
   const selectColumns = query.columns?.length ? query.columns.join(", ") : "*";

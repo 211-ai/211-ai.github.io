@@ -36,6 +36,9 @@ export interface GeneratedCorpusManifest {
   serviceAddressCount?: number;
   serviceIntakeStepCount?: number;
   serviceRequiredDocumentCount?: number;
+  serviceLocationCount?: number;
+  clusteredServiceLocationCount?: number;
+  serviceLocationParquetRowGroupCount?: number;
   geoClusterCount?: number;
   geoClusteredServiceCount?: number;
   geoUnclusteredServiceCount?: number;
@@ -289,6 +292,45 @@ export interface ServiceGeoIndex {
   docsByCity: Record<string, string[]>;
   docsByState: Record<string, string[]>;
   docsByPlaceTerm: Record<string, string[]>;
+}
+
+export interface ServiceLocationRecord {
+  service_doc_id: string;
+  location_id: string;
+  label: string;
+  address: string;
+  street: string;
+  city: string;
+  state: string;
+  postal_code: string;
+  source_url: string;
+  source_content_cid: string;
+  source_page_cid: string;
+  maps_query: string;
+  apple_maps_url: string;
+  google_maps_url: string;
+  geo_url: string;
+  geo_lat?: number | null;
+  geo_lon?: number | null;
+  geo_precision?: string;
+  geo_cluster_id?: number | null;
+  service_geo_cluster_id?: number | null;
+}
+
+export interface ServiceLocationIndex {
+  schemaVersion: number;
+  locationCount: number;
+  clusteredLocationCount: number;
+  unclusteredLocationCount: number;
+  parquetPath: string;
+  rowGroupCount: number;
+  clusterIdToLocationRowGroupIndexes: Record<string, number[]>;
+  clusterIdToLocationIds: Record<string, string[]>;
+  contentCidToLocationIds: Record<string, string[]>;
+  contentCidToClusterIds: Record<string, number[]>;
+  docIdToLocationIds: Record<string, string[]>;
+  docIdToClusterIds: Record<string, number[]>;
+  locationIdToClusterId: Record<string, number | null>;
 }
 
 export interface SearchCoordinates {
