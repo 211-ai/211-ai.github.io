@@ -419,6 +419,7 @@ export function isAppRouteId(value: unknown): value is RouteId {
 }
 
 export function routeToHash(route: RouteId): string {
+  if (route === "exports") return "#/uploads";
   return route === "home" ? "#/" : `#/${route}`;
 }
 

@@ -307,6 +307,7 @@ const captureScenarios: CaptureScenario[] = [
     title: "Wallet",
     state: "default",
     goals: [
+      "Wallet export and import controls should sit cleanly beside proof sharing and file upload tools.",
       "The wallet upload affordance should work for camera/mobile and desktop file upload.",
       "Per-file sharing controls should make private versus selected-contact access visually distinct.",
       "The wallet should show IPFS/Filecoin backend readiness without exposing credentials."
@@ -501,7 +502,7 @@ const routeReadyHeadings: Record<string, RegExp> = {
   "/#/calendar": /^Calendar$/i,
   "/#/check-in": /Set your schedule/i,
   "/#/contacts": /People who can help/i,
-  "/#/exports": /Shareable wallet bundles/i,
+  "/#/exports": /^Wallet$/i,
   "/#/interactions": /Interaction history/i,
   "/#/proof-center": /Verified wallet claims/i,
   "/#/register": /Create your Abby profile/i,

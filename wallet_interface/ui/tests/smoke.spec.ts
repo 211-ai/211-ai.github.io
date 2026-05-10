@@ -1055,10 +1055,11 @@ test("proof center can create an API-backed location region proof", async ({ pag
   expect(createRequests).toBe(1);
 });
 
-test("security screen shows migrated export bundles", async ({ page }) => {
-  await openAppRoute(page, "/#/security");
-  await expect(page.getByRole("heading", { name: /Account safety/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Manage encrypted export bundles/i })).toBeVisible();
+test("wallet screen shows export and proof sharing tools", async ({ page }) => {
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Export or import wallet bundles/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Share wallet proof QR/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Create bundle/i })).toBeDisabled();
   const preview = page.getByLabel("Export capability preview");
   await expect(preview.getByText(/export\/create/i)).toBeVisible();
@@ -1199,7 +1200,7 @@ test("configured exports create verify and import encrypted descriptors", async 
   await page.route("**/exports/**", handleWalletApiRoute);
 
   await page.goto(
-    walletRoute("security", "did:key:owner", {
+    walletRoute("uploads", "did:key:owner", {
       audienceKeyHex: "22".repeat(32),
       issuerKeyHex: "11".repeat(32)
     })

@@ -266,7 +266,7 @@ function getProviderPortalView(route: RouteId): ProviderPortalView {
 }
 
 function normalizeAppRoute(route: RouteId, walletConfig = readWalletApiConfig()): RouteId {
-  if (route === "exports") return "security";
+  if (route === "exports") return "uploads";
   return removedStandaloneRoutes.has(route) && !walletConfig ? "home" : route;
 }
 
@@ -1255,9 +1255,11 @@ export function App() {
         {activeRoute === "uploads" ? (
           <UploadsScreen
             apiConfig={walletApiConfig}
+            bundles={exportBundleViews}
             proofs={walletProofReceipts}
             refreshWalletAuditEvents={refreshWalletAuditEvents}
             recipients={recipients}
+            setBundles={setExportBundleViews}
             uploads={uploads}
             setUploads={setUploads}
           />
@@ -1381,9 +1383,7 @@ export function App() {
         {activeRoute === "security" ? (
           <SecurityScreen
             apiConfig={walletApiConfig}
-            bundles={exportBundleViews}
             onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
-            setBundles={setExportBundleViews}
           />
         ) : null}
         {activeRoute === "audit" ? <AuditScreen events={walletAuditEvents} /> : null}
@@ -3237,16 +3237,20 @@ function ContactsScreen({
 
 function UploadsScreen({
   apiConfig,
+  bundles,
   proofs,
   refreshWalletAuditEvents,
   recipients,
+  setBundles,
   uploads,
   setUploads
 }: {
   apiConfig?: WalletApiConfig;
+  bundles: ExportBundleView[];
   proofs: ProofReceiptView[];
   refreshWalletAuditEvents: () => Promise<void>;
   recipients: DisclosureRecipientDraft[];
+  setBundles: (bundles: ExportBundleView[]) => void;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
 }) {
@@ -3556,6 +3560,7 @@ function UploadsScreen({
           </div>
         </div>
       </Section>
+      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <Section
         title="Add wallet file"
         actions={
@@ -7164,7 +7169,7 @@ function ExportCenterScreen({
       {exportStatus === "failed" ? <StatusBanner tone="warning">Export bundle creation failed.</StatusBanner> : null}
       {importStatus === "imported" ? <StatusBanner tone="success">Export descriptors imported.</StatusBanner> : null}
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
-      <Section title="Manage encrypted export bundles">
+      <Section title="Export or import wallet bundles">
         <p className="page-note">
           Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal
           plaintext.
@@ -7304,14 +7309,10 @@ function shortHash(value?: string): string {
 
 function SecurityScreen({
   apiConfig,
-  bundles,
-  onSnapshotLoaded,
-  setBundles
+  onSnapshotLoaded
 }: {
   apiConfig?: WalletApiConfig;
-  bundles: ExportBundleView[];
   onSnapshotLoaded: () => Promise<void> | void;
-  setBundles: (bundles: ExportBundleView[]) => void;
 }) {
   const [snapshotIds, setSnapshotIds] = useState<string[]>([]);
   const [snapshotStatus, setSnapshotStatus] = useState<"idle" | "saving" | "saved" | "loading" | "loaded" | "failed">(
@@ -7427,7 +7428,6 @@ function SecurityScreen({
           </Button>
         </div>
       </Section>
-      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <div className="tool-grid">
         <button className="tool-tile" type="button">
           <LockKeyhole size={24} /> Session timeout
