@@ -1047,6 +1047,7 @@ test("proof center hides manual proof creation while showing API-backed proofs",
   await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Create proof/i })).toHaveCount(0);
   const createdProof = page.getByRole("article", { name: /location_in_region/i }).first();
+  await expect(createdProof).toBeVisible();
   await expect(createdProof.getByText(/deterministic-test-proof/i)).toBeVisible();
   await expect(createdProof.locator(".scope-header").getByText("verified", { exact: true })).toBeVisible();
   await expect(createdProof.getByText(/multnomah_county/i)).toBeVisible();
