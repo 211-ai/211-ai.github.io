@@ -176,8 +176,8 @@ const captureScenarios: CaptureScenario[] = [
     title: "Interaction history",
     state: "seeded interaction timeline",
     goals: [
-      "Wallet interaction history should read like a clear two-column workspace on desktop and stack cleanly on mobile.",
-      "Summary cards, filters, calendar handoff, and the grouped timeline should all remain visible without crowding.",
+      "Wallet interaction history should read like one unified flow instead of a split sidebar layout.",
+      "Summary cards, filters, calendar handoff, audit details, and the grouped timeline should all remain visible without crowding.",
       "Follow-up due events should stand out without exposing sensitive note content."
     ]
   },

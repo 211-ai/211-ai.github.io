@@ -487,16 +487,19 @@ test("wallet-backed interaction history feeds the timeline and calendar", async 
   await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toBeVisible();
   await expect(page.getByText(/Follow-up times recorded here feed the Calendar screen/i)).toBeVisible();
 
-  const sidebar = page.locator(".interaction-history-sidebar");
+  const filters = page.locator(".interaction-filter-panel");
+  const calendar = page.locator(".interaction-calendar-panel");
   const main = page.locator(".interaction-history-main");
-  const sidebarBox = await sidebar.boundingBox();
+  const filtersBox = await filters.boundingBox();
+  const calendarBox = await calendar.boundingBox();
   const mainBox = await main.boundingBox();
-  expect(sidebarBox, "expected interaction sidebar to have a layout box").not.toBeNull();
+  expect(filtersBox, "expected interaction filters to have a layout box").not.toBeNull();
+  expect(calendarBox, "expected interaction calendar preview to have a layout box").not.toBeNull();
   expect(mainBox, "expected interaction main column to have a layout box").not.toBeNull();
-  if (/Mobile/i.test(testInfo.project.name)) {
-    expect(sidebarBox!.y).toBeLessThan(mainBox!.y);
-  } else {
-    expect(sidebarBox!.x).toBeLessThan(mainBox!.x);
+  expect(filtersBox!.y).toBeLessThan(mainBox!.y);
+  expect(calendarBox!.y).toBeLessThan(mainBox!.y);
+  if (!/Mobile/i.test(testInfo.project.name)) {
+    expect(Math.abs(filtersBox!.x - mainBox!.x)).toBeLessThan(24);
   }
 
   await page.goto(walletRoute("calendar", "did:key:owner"));
