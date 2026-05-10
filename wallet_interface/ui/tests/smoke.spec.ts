@@ -899,9 +899,7 @@ test("provider analytics and proof menus expose operational insights", async ({ 
 test("proof center shows public proof inputs without private coordinates", async ({ page }) => {
   await openAppRoute(page, "/#/proof-center");
   await expect(page.getByRole("heading", { name: /Verified wallet claims/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /Create location-region proof/i })).toBeVisible();
-  await expect(page.getByLabel(/Create proof capability preview/i).getByText(/location\/prove_region/i)).toBeVisible();
-  await expect(page.getByRole("button", { name: /Create proof/i })).toBeDisabled();
+  await expect(page.locator('article[aria-label="Create location region proof"]')).toBeHidden();
   const regionProof = page.getByRole("article", { name: /Location is in service region/i });
   const preview = regionProof.getByLabel(/Location is in service region proof capability preview/i);
   await expect(regionProof.getByText(/multnomah_county/i)).toBeVisible();
