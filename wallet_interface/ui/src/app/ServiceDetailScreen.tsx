@@ -298,7 +298,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
       <Section title="Summary">
         <div className="review-panel">
           <p className="supporting-copy" style={{ overflowWrap: "anywhere" }}>
-            {toReadableSummary(document.text)}
+            {toReadableSummary(document, detailedLocations)}
           </p>
         </div>
       </Section>
@@ -308,8 +308,83 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
   );
 }
 
-function toReadableSummary(text: string): string {
-  const cleanText = text.replace(/\s+/g, " ").trim();
+const SUMMARY_NOISE_PATTERNS = [
+  /Print\s*&\s*Share\s*X\s*Print\s*&\s*Share\s*Print\s*PDF/gi,
+  /Print\s*&\s*Share/gi,
+  /Get Directions/gi,
+  /Visit Website/gi,
+  /Main phone/gi,
+];
+
+function toReadableSummary(document: CorpusDocument, detailedLocations: ServiceLocationRecord[]): string {
+  const cleanText = sanitizeSummaryText(document.text);
   if (!cleanText) return "No source summary is available for this 211 record.";
-  return cleanText.length > 700 ? `${cleanText.slice(0, 700).trim()}...` : cleanText;
+
+  const exclusionValues = buildSummaryExclusionValues(document, detailedLocations);
+  const summarySegments = cleanText
+    .split(/(?<=[.!?])\s+|\s{2,}|\s+[\u2022\-]\s+/)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .filter((segment) => !isDuplicateStructuredSummarySegment(segment, exclusionValues));
+
+  const summary = summarySegments.join(" ").replace(/\s+/g, " ").trim();
+  if (!summary) return "No non-duplicative source summary is available for this 211 record.";
+  return summary.length > 700 ? `${summary.slice(0, 700).trim()}...` : summary;
+}
+
+function sanitizeSummaryText(text: string): string {
+  let value = text.replace(/\s+/g, " ").trim();
+  for (const pattern of SUMMARY_NOISE_PATTERNS) {
+    value = value.replace(pattern, " ");
+  }
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function buildSummaryExclusionValues(document: CorpusDocument, detailedLocations: ServiceLocationRecord[]): string[] {
+  const addressValues = getServiceAddresses(document)
+    .flatMap((item) => [item.label, item.address, item.maps_query, item.street, item.city, item.state, item.postal_code]);
+  const locationValues = detailedLocations.flatMap((item) => [
+    item.label,
+    item.address,
+    item.maps_query,
+    item.street,
+    item.city,
+    item.state,
+    item.postal_code,
+  ]);
+  const phoneValues = getServicePhones(document).flatMap((item) => [item.label, item.value]);
+  const exclusionValues = [
+    document.provider_name,
+    document.program_name,
+    document.title,
+    getServiceLocationLabel(document),
+    getPrimaryIntakeText(document),
+    getPrimaryEligibilityText(document),
+    getPrimaryRequiredDocumentsText(document),
+    getServiceAreaServedText(document),
+    getServiceTravelInfoText(document),
+    ...addressValues,
+    ...locationValues,
+    ...phoneValues,
+  ];
+  return exclusionValues
+    .map(normalizeSummaryComparisonText)
+    .filter((value) => value.length >= 12);
+}
+
+function isDuplicateStructuredSummarySegment(segment: string, exclusionValues: string[]): boolean {
+  const normalizedSegment = normalizeSummaryComparisonText(segment);
+  if (!normalizedSegment || normalizedSegment.length < 12) {
+    return false;
+  }
+  return exclusionValues.some(
+    (value) => normalizedSegment.includes(value) || value.includes(normalizedSegment),
+  );
+}
+
+function normalizeSummaryComparisonText(value: string | undefined): string {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }

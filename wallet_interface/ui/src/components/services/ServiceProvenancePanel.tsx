@@ -6,8 +6,9 @@ export function ServiceProvenancePanel({ report }: { report: ServiceProvenanceRe
   const fieldsWithSpans = report.fields.filter((field) => field.sourceSpans.length > 0).length;
 
   return (
-    <Section title="Source and provenance" eyebrow="Grounding">
-      <div className="list-stack">
+    <div aria-hidden="true" style={{ display: "none" }}>
+      <Section title="Source and provenance" eyebrow="Grounding">
+        <div className="list-stack">
         <article className="list-item">
           <div>
             <h3>Source URL</h3>
@@ -65,13 +66,14 @@ export function ServiceProvenancePanel({ report }: { report: ServiceProvenanceRe
           />
         </div>
 
-        <div className="list-stack" aria-label="Field provenance">
-          {report.fields.map((field) => (
-            <FieldProvenanceRow field={field} key={field.key} />
-          ))}
+          <div className="list-stack" aria-label="Field provenance">
+            {report.fields.map((field) => (
+              <FieldProvenanceRow field={field} key={field.key} />
+            ))}
+          </div>
         </div>
-      </div>
-    </Section>
+      </Section>
+    </div>
   );
 }
 
