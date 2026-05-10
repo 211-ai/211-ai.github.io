@@ -456,6 +456,23 @@ export interface MissingPersonDeadDropDispatchResponse {
   message_id?: string;
 }
 
+export interface MissingPersonDeadDropConfig {
+  wallet_id: string;
+  actor_did: string;
+  enabled: boolean;
+  to_email: string;
+  subject: string;
+  body: string;
+  bundle: Record<string, unknown>;
+  bundle_filename: string;
+  due_at: string;
+  last_check_in_at: string;
+  last_sent_at?: string;
+  last_sent_for_check_in_at?: string;
+  last_message_id?: string;
+  last_error?: string;
+}
+
 export async function loadWalletAccessState(config: Pick<WalletApiConfig, "apiBaseUrl" | "walletId">): Promise<{
   accessRequests: WalletAccessRequest[];
   grantReceipts: WalletGrantReceipt[];
@@ -485,11 +502,55 @@ export async function sendMissingPersonDeadDropEmail(
 ): Promise<MissingPersonDeadDropDispatchResponse> {
   const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
   return postJson<MissingPersonDeadDropDispatchResponse>(url, "Missing-person dead-drop email", {
+    actor_did: requiredActorDid(config),
     to_email: toEmail,
     subject,
     body,
     bundle,
     bundle_filename: bundleFileName
+  });
+}
+
+export async function saveMissingPersonDeadDrop(
+  config: WalletApiConfig,
+  {
+    enabled,
+    toEmail,
+    subject,
+    body,
+    bundle,
+    bundleFileName,
+    dueAt,
+    lastCheckInAt
+  }: {
+    enabled: boolean;
+    toEmail: string;
+    subject: string;
+    body: string;
+    bundle: Record<string, unknown>;
+    bundleFileName: string;
+    dueAt: string;
+    lastCheckInAt: string;
+  }
+): Promise<MissingPersonDeadDropConfig> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person`, normalizedBaseUrl(config.apiBaseUrl));
+  return putJson<MissingPersonDeadDropConfig>(url, "Missing-person dead-drop configuration", {
+    actor_did: requiredActorDid(config),
+    enabled,
+    to_email: toEmail,
+    subject,
+    body,
+    bundle,
+    bundle_filename: bundleFileName,
+    due_at: dueAt,
+    last_check_in_at: lastCheckInAt
+  });
+}
+
+export async function dispatchMissingPersonDeadDrop(config: WalletApiConfig): Promise<MissingPersonDeadDropDispatchResponse> {
+  const url = new URL(`/wallets/${config.walletId}/dead-drops/missing-person/dispatch`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<MissingPersonDeadDropDispatchResponse>(url, "Missing-person dead-drop dispatch", {
+    actor_did: requiredActorDid(config)
   });
 }
 
@@ -1981,6 +2042,18 @@ async function postJson<T>(url: URL, label: string, body: unknown): Promise<T> {
   return (await response.json()) as T;
 }
 
+async function putJson<T>(url: URL, label: string, body: unknown): Promise<T> {
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    method: "PUT"
+  });
+  if (!response.ok) {
+    throw new Error(`${label} request failed with status ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
 async function patchJson<T>(url: URL, label: string, body: unknown): Promise<T> {
   const response = await fetch(url, {
     body: JSON.stringify(body),
@@ -2008,7 +2081,7 @@ async function postAccessRequestDecision(
 
 function requiredActorDid(config: WalletApiConfig): string {
   if (!config.actorDid) {
-    throw new Error("VITE_DEMO_ACTOR_DID is required for access-request mutations");
+    throw new Error("VITE_DEMO_ACTOR_DID is required for wallet mutations");
   }
   return config.actorDid;
 }

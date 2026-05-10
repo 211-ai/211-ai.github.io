@@ -36,6 +36,10 @@ ensure_ipfs_datasets_py_path()
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
 
 
+PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
+OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
+
+
 def _cors_origins_from_env() -> list[str]:
     origins = [
         origin.strip()
@@ -553,11 +557,28 @@ class DerivedServiceMatchRequest(BaseModel):
 
 
 class MissingPersonDeadDropEmailRequest(BaseModel):
-    to_email: str = "missing@police.portlandoregon.gov"
+    actor_did: str
+    to_email: str = PORTLAND_POLICE_MISSING_EMAIL
     subject: str = "Missing person report dead drop bundle"
     body: str
     bundle: Dict[str, Any]
     bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+
+
+class MissingPersonDeadDropConfigRequest(BaseModel):
+    actor_did: str
+    enabled: bool = False
+    to_email: str = PORTLAND_POLICE_MISSING_EMAIL
+    subject: str = "Missing person report dead drop bundle"
+    body: str = ""
+    bundle: Dict[str, Any] = Field(default_factory=dict)
+    bundle_filename: str = "abby-missing-person-wallet-dead-drop.json"
+    due_at: str = ""
+    last_check_in_at: str = ""
+
+
+class MissingPersonDeadDropDispatchRequest(BaseModel):
+    actor_did: str
 
 
 def _ops_health_shared_secret() -> str:
@@ -572,6 +593,15 @@ def _extract_bearer_token(authorization: str | None) -> str:
     if scheme.lower() != "bearer":
         return ""
     return token.strip()
+
+
+def _require_portland_police_missing_email(to_email: str) -> str:
+    normalized = str(to_email or "").strip().lower()
+    if normalized != PORTLAND_POLICE_MISSING_EMAIL:
+        raise ValueError(
+            f"missing-person dead drop recipient must be {PORTLAND_POLICE_MISSING_EMAIL}"
+        )
+    return PORTLAND_POLICE_MISSING_EMAIL
 
 
 def create_app(*, service: WalletInterfaceService | None = None):
@@ -775,11 +805,14 @@ def create_app(*, service: WalletInterfaceService | None = None):
     ) -> Dict[str, Any]:
         try:
             app_service.get_wallet(wallet_id)
+            app_service._require_portal_actor(wallet_id, request.actor_did)
         except Exception as exc:
-            raise HTTPException(status_code=404, detail=str(exc)) from exc
+            status_code = 404 if "not found" in str(exc).lower() else 400
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
         try:
+            to_email = _require_portland_police_missing_email(request.to_email)
             envelope = _send_dead_drop_email(
-                to_email=request.to_email,
+                to_email=to_email,
                 subject=request.subject,
                 body=request.body,
                 bundle=request.bundle,
@@ -788,15 +821,160 @@ def create_app(*, service: WalletInterfaceService | None = None):
             return {
                 "wallet_id": wallet_id,
                 "status": "sent",
-                "to_email": request.to_email,
+                "to_email": to_email,
                 "subject": request.subject,
                 "bundle_filename": request.bundle_filename,
                 **envelope,
             }
         except RuntimeError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
         except Exception as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/dead-drops/missing-person")
+    def get_missing_person_dead_drop(wallet_id: str) -> Dict[str, Any]:
+        try:
+            return app_service.get_missing_person_dead_drop(wallet_id).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.put("/wallets/{wallet_id}/dead-drops/missing-person")
+    def save_missing_person_dead_drop(wallet_id: str, request: MissingPersonDeadDropConfigRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.save_missing_person_dead_drop(
+                wallet_id,
+                actor_did=request.actor_did,
+                enabled=request.enabled,
+                to_email=_require_portland_police_missing_email(request.to_email),
+                subject=request.subject,
+                body=request.body,
+                bundle=request.bundle,
+                bundle_filename=request.bundle_filename,
+                due_at=request.due_at,
+                last_check_in_at=request.last_check_in_at,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/dead-drops/missing-person/dispatch")
+    def dispatch_missing_person_dead_drop(
+        wallet_id: str, request: MissingPersonDeadDropDispatchRequest
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_missing_person_dead_drop_for_dispatch(
+                wallet_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            envelope = _send_dead_drop_email(
+                to_email=_require_portland_police_missing_email(record.to_email),
+                subject=record.subject,
+                body=record.body,
+                bundle=record.bundle,
+                bundle_filename=record.bundle_filename,
+            )
+            updated = app_service.mark_missing_person_dead_drop_sent(
+                wallet_id,
+                actor_did=request.actor_did,
+                message_id=str(envelope.get("message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "to_email": updated.to_email,
+                "subject": updated.subject,
+                "bundle_filename": updated.bundle_filename,
+                **envelope,
+            }
+        except RuntimeError as exc:
+            app_service.mark_missing_person_dead_drop_failed(
+                wallet_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_missing_person_dead_drop_failed(
+                wallet_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/dead-drops/missing-person/process-due")
+    def process_due_missing_person_dead_drops(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due dead-drop processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="dead-drop processing authorization required")
+        try:
+            due_records = app_service.list_due_missing_person_dead_drops()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                envelope = _send_dead_drop_email(
+                    to_email=_require_portland_police_missing_email(record.to_email),
+                    subject=record.subject,
+                    body=record.body,
+                    bundle=record.bundle,
+                    bundle_filename=record.bundle_filename,
+                )
+                app_service.mark_missing_person_dead_drop_sent(
+                    record.wallet_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    message_id=str(envelope.get("message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "status": "sent",
+                        "message_id": str(envelope.get("message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_missing_person_dead_drop_failed(
+                    record.wallet_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "status": "failed",
+                        "detail": str(exc),
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
 
     @app.post("/wallets/{wallet_id}/locations/{location_record_id}/coarse-grants")
     def create_coarse_location_grant(

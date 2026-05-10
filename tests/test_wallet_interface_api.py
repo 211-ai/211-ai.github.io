@@ -1894,6 +1894,7 @@ def test_wallet_api_missing_person_dead_drop_email_uses_server_smtp(monkeypatch)
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
         json={
+            "actor_did": "did:key:owner",
             "to_email": "missing@police.portlandoregon.gov",
             "subject": "Missing person report dead drop bundle",
             "body": "Please review attached wallet bundle.",
@@ -1924,6 +1925,7 @@ def test_wallet_api_missing_person_dead_drop_email_requires_smtp_config(monkeypa
     response = client.post(
         f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
         json={
+            "actor_did": "did:key:owner",
             "to_email": "missing@police.portlandoregon.gov",
             "subject": "Missing person report dead drop bundle",
             "body": "Please review attached wallet bundle.",
@@ -1934,6 +1936,89 @@ def test_wallet_api_missing_person_dead_drop_email_requires_smtp_config(monkeypa
 
     assert response.status_code == 503
     assert "WALLET_DEAD_DROP_SMTP_HOST" in response.json()["detail"]
+
+
+def test_wallet_api_missing_person_dead_drop_config_processes_due_and_persists(tmp_path, monkeypatch) -> None:
+    class FakeSmtpClient:
+        sent_messages = []
+
+        def __init__(self, host: str, port: int, timeout: int) -> None:
+            self.host = host
+            self.port = port
+            self.timeout = timeout
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def starttls(self) -> None:
+            return None
+
+        def login(self, username: str, password: str) -> None:
+            return None
+
+        def send_message(self, message):
+            self.__class__.sent_messages.append(message)
+            return {}
+
+    monkeypatch.setenv("WALLET_DEAD_DROP_SMTP_HOST", "smtp.example.org")
+    monkeypatch.setenv("WALLET_DEAD_DROP_FROM_EMAIL", "abby@example.org")
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "ops-secret")
+    monkeypatch.setattr(wallet_api_module.smtplib, "SMTP", FakeSmtpClient)
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    configure_response = client.put(
+        f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
+        json={
+            "actor_did": "did:key:owner",
+            "enabled": True,
+            "to_email": "missing@police.portlandoregon.gov",
+            "subject": "Missing person report dead drop bundle",
+            "body": "Please review attached wallet bundle.",
+            "bundle": {"schemaVersion": "abby-missing-person-dead-drop-v1", "walletContents": []},
+            "bundle_filename": "dead-drop.json",
+            "due_at": "2024-01-01T00:00:00Z",
+            "last_check_in_at": "2023-12-30T00:00:00Z",
+        },
+    )
+
+    assert configure_response.status_code == 200
+    assert configure_response.json()["enabled"] is True
+
+    process_response = client.post(
+        "/ops/dead-drops/missing-person/process-due",
+        headers={"x-wallet-ops-shared-secret": "ops-secret"},
+    )
+
+    assert process_response.status_code == 200
+    payload = process_response.json()
+    assert payload["due_count"] == 1
+    assert payload["sent_count"] == 1
+    assert payload["failed_count"] == 0
+    assert len(FakeSmtpClient.sent_messages) == 1
+
+    state_response = client.get(f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person")
+    assert state_response.status_code == 200
+    state_payload = state_response.json()
+    assert state_payload["last_sent_for_check_in_at"] == "2023-12-30T00:00:00Z"
+    assert state_payload["last_message_id"]
+
+    snapshot_response = client.post(f"/wallets/{wallet['wallet_id']}/snapshot")
+    assert snapshot_response.status_code == 200
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    restored_client = _client_with_service(restored_service)
+    load_response = restored_client.post("/wallets/snapshots/load-all")
+    assert load_response.status_code == 200
+
+    restored_state = restored_client.get(f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person")
+    assert restored_state.status_code == 200
+    assert restored_state.json()["last_message_id"] == state_payload["last_message_id"]
+    assert restored_state.json()["enabled"] is True
 
 
 def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:
