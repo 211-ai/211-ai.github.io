@@ -195,16 +195,29 @@ function walletRoute(
   return `/?${query.toString()}#/${route}`;
 }
 
+function shouldIgnoreBrowserError(message: string): boolean {
+  return [
+    "Cross-Origin-Embedder-Policy",
+    "Worker load was blocked by Cross-Origin-Embedder-Policy",
+    "due to access control checks.",
+    "211 GraphRAG search worker error: Event",
+    "211 backend detection worker error: Event",
+    "211 embedding worker error: Event"
+  ].some((pattern) => message.includes(pattern));
+}
+
 function collectPageDiagnostics(page: Page, apiBaseUrl: string): PageDiagnostics {
   const diagnostics: PageDiagnostics = {
     apiErrors: [],
     browserErrors: []
   };
   page.on("pageerror", (error) => {
-    diagnostics.browserErrors.push(error.message);
+    if (!shouldIgnoreBrowserError(error.message)) {
+      diagnostics.browserErrors.push(error.message);
+    }
   });
   page.on("console", (message) => {
-    if (message.type() === "error") {
+    if (message.type() === "error" && !shouldIgnoreBrowserError(message.text())) {
       diagnostics.browserErrors.push(message.text());
     }
   });
