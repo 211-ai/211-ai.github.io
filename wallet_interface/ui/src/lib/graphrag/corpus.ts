@@ -22,7 +22,7 @@ import { loadDocumentsFromParquet, queryParquetRows, type DuckDbDocumentQuery } 
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
-const CORPUS_BASE_URL = resolveCorpusBaseUrl(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
+let corpusBaseUrl = resolveCorpusBaseUrl(configuredCorpusBaseUrl || DEFAULT_CORPUS_BASE_URL);
 
 interface CorpusState {
   documents: CorpusDocument[];
@@ -51,12 +51,21 @@ const bm25GeoShardPromises = new Map<string, Promise<Bm25Payload>>();
 const embeddingGeoShardPromises = new Map<string, Promise<{ index: EmbeddingIndex; vectors: Float32Array }>>();
 
 export function get211CorpusBaseUrl(): string {
-  return CORPUS_BASE_URL;
+  return corpusBaseUrl;
+}
+
+export function set211CorpusBaseUrl(value: string): void {
+  const nextBaseUrl = resolveCorpusBaseUrl(value);
+  if (nextBaseUrl === corpusBaseUrl) {
+    return;
+  }
+  corpusBaseUrl = nextBaseUrl;
+  reset211CorpusCaches();
 }
 
 export async function load211ArtifactManifest(): Promise<CorpusArtifactManifest> {
   if (!artifactManifestPromise) {
-    artifactManifestPromise = fetch(`${CORPUS_BASE_URL}/artifacts.manifest.json`, { cache: "no-store" }).then(
+    artifactManifestPromise = fetch(`${corpusBaseUrl}/artifacts.manifest.json`, { cache: "no-store" }).then(
       async (response) => {
         if (!response.ok) {
           throw new Error(`Failed to load 211 corpus manifest: ${response.status}`);
@@ -451,7 +460,29 @@ export async function fetch211CorpusArrayBuffer(relativePath: string): Promise<A
 
 export function get211CorpusAssetUrl(relativePath: string): string {
   const cleanPath = relativePath.replace(/^\/+/, "");
-  return new URL(cleanPath, `${CORPUS_BASE_URL}/`).toString();
+  return new URL(cleanPath, `${corpusBaseUrl}/`).toString();
+}
+
+function reset211CorpusCaches(): void {
+  artifactManifestPromise = null;
+  generatedManifestPromise = null;
+  documentsPromise = null;
+  documentIndexPromise = null;
+  bm25Promise = null;
+  embeddingsPromise = null;
+  graphIndexPromise = null;
+  communitiesPromise = null;
+  documentCommunitiesPromise = null;
+  serviceGeoIndexPromise = null;
+  serviceLocationIndexPromise = null;
+  documentGeoClusterPromise = null;
+  retrievalGeoShardManifestPromise = null;
+  graphGeoClusterManifestPromise = null;
+  serviceLocationSlicePromises.clear();
+  graphShardPromises.clear();
+  documentSlicePromises.clear();
+  bm25GeoShardPromises.clear();
+  embeddingGeoShardPromises.clear();
 }
 
 function stripTrailingSlash(value: string): string {

@@ -47,14 +47,20 @@ import type { RouteId } from "../src/models/abby";
 import {
   build211GraphRagPrompt,
   DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
+  get211CorpusAssetUrl,
+  get211CorpusBaseUrl,
   mergeDuplicateSearchResults,
   ragSearchWorkerService,
+  set211CorpusBaseUrl,
 } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import {
+  primeVoiceChatActivation,
+  reserveOpeningGreetingForCurrentOpen,
+  resetOpeningGreetingReservation,
   buildVoiceInferenceFallbackRequest,
   resolveAudioOpeningClipUrl,
   resolveVoiceGeneratedReplyText,
@@ -1240,11 +1246,35 @@ export class AudioModel {
     );
   });
 
+  test("reserves the opening clip only once per voice-chat open session", () => {
+    resetOpeningGreetingReservation();
+
+    expect(reserveOpeningGreetingForCurrentOpen()).toBe(true);
+    expect(reserveOpeningGreetingForCurrentOpen()).toBe(false);
+
+    primeVoiceChatActivation();
+
+    expect(reserveOpeningGreetingForCurrentOpen()).toBe(true);
+    resetOpeningGreetingReservation();
+  });
+
   test("concatenates compact citation summaries with their source labels", () => {
     expect(buildCitationSummaryText("Rapid testing available today.", "211 service corpus")).toBe(
       "Rapid testing available today. · 211 service corpus",
     );
     expect(buildCitationSummaryText(undefined, "211 service corpus")).toBe("211 service corpus");
+  });
+
+  test("builds corpus asset URLs from an overridden absolute corpus base", () => {
+    const originalCorpusBaseUrl = get211CorpusBaseUrl();
+    try {
+      set211CorpusBaseUrl("https://example.com/211-AI/corpus/211-info/current");
+      expect(get211CorpusAssetUrl("generated/documents.json")).toBe(
+        "https://example.com/211-AI/corpus/211-info/current/generated/documents.json",
+      );
+    } finally {
+      set211CorpusBaseUrl(originalCorpusBaseUrl);
+    }
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {

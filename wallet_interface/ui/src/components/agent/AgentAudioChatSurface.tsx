@@ -52,7 +52,7 @@ class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
 
 registerProcessor("abby-voice-capture-processor", AbbyVoiceCaptureProcessor);
 `;
-let lastOpeningGreetingAt = 0;
+let openingGreetingReservedForCurrentOpen = false;
 let primedOpeningClipAudio: HTMLAudioElement | null = null;
 let primedOpeningClipPromise: Promise<HTMLAudioElement | null> | null = null;
 let lastSpeechRecognitionWarmupAt = 0;
@@ -98,8 +98,21 @@ function tryResolveAudioOpeningClipUrl(): string | null {
 }
 
 export function primeVoiceChatActivation(): void {
+  resetOpeningGreetingReservation();
   void primeOpeningClipPlayback();
   warmupSpeechRecognition();
+}
+
+export function reserveOpeningGreetingForCurrentOpen(): boolean {
+  if (openingGreetingReservedForCurrentOpen) {
+    return false;
+  }
+  openingGreetingReservedForCurrentOpen = true;
+  return true;
+}
+
+export function resetOpeningGreetingReservation(): void {
+  openingGreetingReservedForCurrentOpen = false;
 }
 
 interface BrowserAudioContext {
@@ -191,6 +204,7 @@ export function AgentAudioChatSurface({
 
   useEffect(() => {
     if (open && !openRef.current) {
+      resetOpeningGreetingReservation();
       lastSpokenAssistantIdRef.current = getLastAssistantMessage(messages)?.id;
       audioOutputReadyRef.current = false;
       setSessionState("ready");
@@ -257,7 +271,7 @@ export function AgentAudioChatSurface({
     warmupSpeechRecognition();
     const run = () => {
       if (!openRef.current || !voiceDetectionEnabledRef.current) return;
-      if (!mutedRef.current && reserveOpeningGreeting()) {
+      if (!mutedRef.current && reserveOpeningGreetingForCurrentOpen()) {
         sessionStateRef.current = "speaking";
         setSessionState("speaking");
         setStatusDetail("Testing voice output.");
@@ -1085,13 +1099,6 @@ function isAudioSurfaceActive(surface: AgentAudioSurface): boolean {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") return true;
   const desktop = window.matchMedia(AUDIO_SURFACE_DESKTOP_QUERY).matches;
   return desktop ? surface === "drawer" : surface === "sheet";
-}
-
-function reserveOpeningGreeting(): boolean {
-  const now = Date.now();
-  if (now - lastOpeningGreetingAt < 1500) return false;
-  lastOpeningGreetingAt = now;
-  return true;
 }
 
 function getLastAssistantMessage(messages: AgentMessage[]): AgentMessage | undefined {

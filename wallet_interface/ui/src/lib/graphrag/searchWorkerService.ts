@@ -7,6 +7,7 @@ import type {
   SearchMode,
   SearchResult,
 } from "./types";
+import { get211CorpusBaseUrl } from "./corpus";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -195,11 +196,21 @@ class RagSearchWorkerService {
 
   private async createWorker(): Promise<void> {
     try {
-      this.worker = await this.instantiateWorker();
-      this.worker.onmessage = this.handleWorkerMessage.bind(this);
-      this.worker.onerror = this.handleWorkerError.bind(this);
+      const worker = await this.instantiateWorker();
+      worker.onmessage = this.handleWorkerMessage.bind(this);
+      worker.onerror = this.handleWorkerError.bind(this);
+      this.worker = worker;
+      await this.sendWorkerRequestWithWorker(
+        worker,
+        "configure",
+        {
+          corpusBaseUrl: get211CorpusBaseUrl(),
+        },
+        5000,
+      );
     } catch (error) {
       console.error("Failed to create 211 GraphRAG search worker:", error);
+      this.worker?.terminate();
       this.worker = null;
     }
   }
@@ -222,6 +233,15 @@ class RagSearchWorkerService {
       throw new Error("211 GraphRAG search worker is not available");
     }
 
+    return this.sendWorkerRequestWithWorker(worker, type, data, timeoutMs);
+  }
+
+  private async sendWorkerRequestWithWorker(
+    worker: Worker,
+    type: string,
+    data: unknown,
+    timeoutMs: number,
+  ): Promise<RagSearchWorkerPayload> {
     return new Promise((resolve, reject) => {
       const id = `rag_${++this.requestCounter}`;
       const timeout = window.setTimeout(() => {

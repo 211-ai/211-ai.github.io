@@ -1,3 +1,4 @@
+import { set211CorpusBaseUrl } from "../lib/graphrag/corpus";
 import { build211GraphRagEvidence } from "../lib/graphrag/graphRag";
 import { search211Corpus, search211GraphCommunities, search211GraphGeoClusters } from "../lib/graphrag/search";
 import type {
@@ -11,6 +12,13 @@ import type {
 } from "../lib/graphrag/types";
 
 type RagSearchWorkerRequest =
+  | {
+      id: string;
+      type: "configure";
+      data: {
+        corpusBaseUrl: string;
+      };
+    }
   | {
       id: string;
       type: "search";
@@ -77,6 +85,12 @@ self.onmessage = async (event: MessageEvent<RagSearchWorkerRequest>) => {
   const { id, type, data } = event.data;
 
   try {
+    if (type === "configure") {
+      set211CorpusBaseUrl(data.corpusBaseUrl);
+      postResponse({ id, success: true, data: { ready: true } });
+      return;
+    }
+
     if (type === "status") {
       postResponse({ id, success: true, data: { ready: true } });
       return;
