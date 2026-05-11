@@ -2,7 +2,11 @@ const DEFAULT_VOICE_PROXY_SAMPLE_RATE = 16_000;
 const DEFAULT_VOICE_PROXY_SILENCE_MS = 240;
 
 export function createVoiceProxyFormData(input: {
+  mode?: "tts" | "voice-reply";
   text: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+  fallbackText?: string;
   audioBlob?: Blob;
 }): FormData {
   const text = input.text.trim();
@@ -12,11 +16,47 @@ export function createVoiceProxyFormData(input: {
 
   const audioBlob = input.audioBlob ?? createSilentWavBlob();
   assertWavAudioBlob(audioBlob);
+  const systemPrompt = input.systemPrompt?.trim();
+  const userPrompt = input.userPrompt?.trim();
+  const fallbackText = input.fallbackText?.trim();
 
   const formData = new FormData();
   formData.append("audio", audioBlob, "input.wav");
   formData.append("text", text);
+  if (input.mode) {
+    formData.append("mode", input.mode);
+  }
+  if (systemPrompt) {
+    formData.append("systemPrompt", systemPrompt);
+    formData.append("system_prompt", systemPrompt);
+  }
+  if (userPrompt) {
+    formData.append("userPrompt", userPrompt);
+    formData.append("user_prompt", userPrompt);
+  }
+  if (fallbackText) {
+    formData.append("fallbackText", fallbackText);
+    formData.append("fallback_text", fallbackText);
+  }
   return formData;
+}
+
+export function createVoiceProxyTtsBody(input: {
+  text: string;
+  voiceDescription?: string;
+}): URLSearchParams {
+  const text = input.text.trim();
+  if (!text) {
+    throw new Error("Voice proxy text prompt is empty.");
+  }
+
+  const body = new URLSearchParams();
+  body.set("text", text);
+  const voiceDescription = input.voiceDescription?.trim();
+  if (voiceDescription) {
+    body.set("voice_description", voiceDescription);
+  }
+  return body;
 }
 
 export function createSilentWavBlob(

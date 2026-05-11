@@ -59,13 +59,14 @@ import {
 import {
   buildVoiceFallbackText,
   buildVoiceGraphRagPrompt,
+  buildVoiceGraphRagPromptParts,
   selectEvidenceBundlesForMessage,
 } from "../src/lib/voiceGraphRagPrompt";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
-import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
+import { createSilentWavBlob, createVoiceProxyFormData, createVoiceProxyTtsBody } from "../src/lib/voiceProxyPayload";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -713,6 +714,8 @@ export class AudioModel {
       generateRemoteAudio: async (options) => {
         expect(options.mode).toBe("tts");
         expect(options.text).toBe("Neighborhood Pantry can help with food today.");
+        expect(options.userPrompt).toBeUndefined();
+        expect(options.systemPrompt).toBeUndefined();
         expect(options.fallbackText).toBeUndefined();
         return {
           audioBlob,
@@ -1102,20 +1105,42 @@ export class AudioModel {
     ).toBe(true);
   });
 
-  test("builds multipart WAV uploads for the remote voice proxy", async () => {
+  test("builds multipart WAV uploads for the remote infer voice proxy route", async () => {
     const formData = createVoiceProxyFormData({
-      text: "Please answer briefly and describe the audio.",
+      mode: "voice-reply",
+      text: "where can I find food today?",
+      userPrompt: "where can I find food today?",
+      systemPrompt: "App draft answer: Pantry boxes are available.\nEvidence bundle for reasoning:\n[1] Neighborhood Pantry.",
+      fallbackText: "Pantry boxes are available.",
     });
 
     const audio = formData.get("audio");
     const text = formData.get("text");
+    const mode = formData.get("mode");
+    const userPrompt = formData.get("userPrompt");
+    const systemPrompt = formData.get("systemPrompt");
+    const fallbackText = formData.get("fallbackText");
 
-    expect(text).toBe("Please answer briefly and describe the audio.");
+    expect(text).toBe("where can I find food today?");
+    expect(mode).toBe("voice-reply");
+    expect(userPrompt).toBe("where can I find food today?");
+    expect(systemPrompt).toContain("Evidence bundle for reasoning:");
+    expect(fallbackText).toBe("Pantry boxes are available.");
     expect(audio).toBeTruthy();
     expect(typeof (audio as Blob | null)?.arrayBuffer).toBe("function");
     expect((audio as Blob | null)?.type ?? "").toBe("audio/wav");
     expect((audio as { name?: string } | null)?.name ?? "").toBe("input.wav");
     expect((await (audio as Blob).arrayBuffer()).byteLength).toBeGreaterThan(44);
+  });
+
+  test("builds urlencoded text-only uploads for the remote TTS voice proxy route", () => {
+    const body = createVoiceProxyTtsBody({
+      text: "Pantry boxes are available today.",
+      voiceDescription: "Warm, steady, supportive voice.",
+    });
+
+    expect(body.get("text")).toBe("Pantry boxes are available today.");
+    expect(body.get("voice_description")).toBe("Warm, steady, supportive voice.");
   });
 
   test("rejects non-WAV audio uploads for the remote voice proxy", () => {

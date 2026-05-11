@@ -15,12 +15,25 @@ export interface VoiceGraphRagPromptInput {
   maxEvidenceItems?: number;
 }
 
-export function buildVoiceGraphRagPrompt({
+export interface VoiceGraphRagPromptParts {
+  systemPrompt: string;
+  userPrompt: string;
+  fullPrompt: string;
+}
+
+const VOICE_ASSISTANT_INSTRUCTIONS = [
+  "You are Abby, a concise voice assistant for a 211 services app.",
+  "Infer the best spoken answer from the user query, the app draft, and the evidence bundle below.",
+  "Use the evidence when it is relevant. Do not read raw prompt labels, JSON, URLs, CIDs, or citation IDs aloud.",
+  "Keep the spoken answer natural, specific, and under 70 words. Mention that sources are shown on screen when evidence is used.",
+];
+
+export function buildVoiceGraphRagPromptParts({
   userText,
   assistantText,
   evidenceBundles = [],
   maxEvidenceItems = MAX_EVIDENCE_ITEMS,
-}: VoiceGraphRagPromptInput): string {
+}: VoiceGraphRagPromptInput): VoiceGraphRagPromptParts {
   const normalizedUserText = truncatePrompt(
     cleanForPrompt(userText) || "The user asked a voice question.",
     MAX_USER_TEXT_CHARACTERS,
@@ -31,11 +44,15 @@ export function buildVoiceGraphRagPrompt({
   );
   const evidenceItems = selectPromptEvidenceItems(evidenceBundles, maxEvidenceItems);
   const evidenceSection = buildEvidenceSection(evidenceItems);
-  const prompt = [
-    "You are Abby, a concise voice assistant for a 211 services app.",
-    "Infer the best spoken answer from the user query, the app draft, and the evidence bundle below.",
-    "Use the evidence when it is relevant. Do not read raw prompt labels, JSON, URLs, CIDs, or citation IDs aloud.",
-    "Keep the spoken answer natural, specific, and under 70 words. Mention that sources are shown on screen when evidence is used.",
+  const systemPrompt = [
+    ...VOICE_ASSISTANT_INSTRUCTIONS,
+    "",
+    `App draft answer: ${normalizedAssistantText}`,
+    "Evidence bundle for reasoning:",
+    evidenceSection,
+  ].join("\n");
+  const fullPrompt = [
+    ...VOICE_ASSISTANT_INSTRUCTIONS,
     "",
     `User voice query: ${normalizedUserText}`,
     `App draft answer: ${normalizedAssistantText}`,
@@ -43,7 +60,42 @@ export function buildVoiceGraphRagPrompt({
     evidenceSection,
   ].join("\n");
 
-  return truncatePrompt(prompt, MAX_PROMPT_CHARACTERS);
+  return {
+    systemPrompt: truncatePrompt(systemPrompt, MAX_PROMPT_CHARACTERS),
+    userPrompt: normalizedUserText,
+    fullPrompt: truncatePrompt(fullPrompt, MAX_PROMPT_CHARACTERS),
+  };
+}
+
+export function buildVoiceGraphRagPrompt({
+  userText,
+  assistantText,
+  evidenceBundles = [],
+  maxEvidenceItems = MAX_EVIDENCE_ITEMS,
+}: VoiceGraphRagPromptInput): string {
+  return buildVoiceGraphRagPromptParts({
+    userText,
+    assistantText,
+    evidenceBundles,
+    maxEvidenceItems,
+  }).fullPrompt;
+}
+
+export function parseVoiceGraphRagPrompt(prompt: string): { systemPrompt: string; userPrompt: string } | undefined {
+  const normalizedPrompt = prompt.trim();
+  const userMatch = normalizedPrompt.match(/\bUser voice query:\s*([\s\S]*?)\nApp draft answer:/i);
+  if (!userMatch?.[1]) {
+    return undefined;
+  }
+  const userPrompt = cleanForPrompt(userMatch[1]);
+  if (!userPrompt) {
+    return undefined;
+  }
+  const systemPrompt = cleanForPrompt(stripUserVoiceQueryBlock(normalizedPrompt));
+  if (!systemPrompt) {
+    return undefined;
+  }
+  return { systemPrompt, userPrompt };
 }
 
 export function buildVoiceFallbackText(assistantText: string): string {
@@ -124,6 +176,10 @@ function stripHiddenVoicePrompt(value: string): string {
   if (!/\b(?:User voice query|App draft answer|Evidence bundle for reasoning):/i.test(value)) return value;
   const appDraft = value.match(/\bApp draft answer:\s*([\s\S]*?)(?:\nEvidence bundle for reasoning:|$)/i)?.[1];
   return appDraft?.trim() || "";
+}
+
+function stripUserVoiceQueryBlock(value: string): string {
+  return value.replace(/\n?User voice query:\s*[\s\S]*?(\nApp draft answer:)/i, "\n$1").trim();
 }
 
 function cleanForSpeech(value: string): string {

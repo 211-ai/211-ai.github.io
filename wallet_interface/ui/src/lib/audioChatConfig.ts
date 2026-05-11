@@ -8,6 +8,10 @@ export const AUDIO_CHAT_CONFIG = {
     (import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined) || "https://animegf.chat:8790/api/voice",
   voiceProxyInferUrl:
     (import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) || "https://animegf.chat:8790/api/voice/infer",
+  voiceProxyTtsUrl:
+    (import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined) || "https://animegf.chat:8790/api/voice/tts",
+  voiceProxySttUrl:
+    (import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) || "https://animegf.chat:8790/api/voice/stt",
   enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
   enableMobileLocalAudio: import.meta.env?.VITE_ENABLE_MOBILE_LOCAL_AUDIO === "true",
   enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",

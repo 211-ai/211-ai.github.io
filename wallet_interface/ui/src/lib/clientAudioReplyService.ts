@@ -4,6 +4,7 @@ import {
   isRemoteVoiceProxyConfigured,
   type RemoteAudioGenerationResult,
 } from "./remoteAudioClient";
+import { parseVoiceGraphRagPrompt } from "./voiceGraphRagPrompt";
 
 type ClientAudioProvider = "remote-voice-proxy" | "local-liquidai" | "browser-speech";
 const LOCAL_AUDIO_RETRY_COOLDOWN_MS = 60_000;
@@ -94,6 +95,8 @@ interface ClientAudioReplyServiceOptions {
   generateRemoteAudio?: (options: {
     mode: "tts" | "voice-reply";
     text: string;
+    systemPrompt?: string;
+    userPrompt?: string;
     fallbackText?: string;
     localModelName?: string;
     audioBlob?: Blob;
@@ -107,6 +110,8 @@ interface ClientAudioReplyServiceOptions {
 
 export interface ClientVoiceReplyRequest {
   prompt: string;
+  systemPrompt?: string;
+  userPrompt?: string;
   fallbackText: string;
   audioBlob?: Blob;
 }
@@ -125,6 +130,8 @@ export class ClientAudioReplyService {
   private readonly generateRemoteAudio: (options: {
     mode: "tts" | "voice-reply";
     text: string;
+    systemPrompt?: string;
+    userPrompt?: string;
     fallbackText?: string;
     localModelName?: string;
     audioBlob?: Blob;
@@ -295,6 +302,11 @@ export class ClientAudioReplyService {
     options: ClientAudioProgressOptions = {},
   ): Promise<ClientAudioReplyResult> {
     const normalizedPrompt = input.prompt.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    const parsedPrompt = parseVoiceGraphRagPrompt(normalizedPrompt);
+    const normalizedSystemPrompt = (input.systemPrompt?.trim() || parsedPrompt?.systemPrompt || "")
+      .slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    const normalizedUserPrompt = (input.userPrompt?.trim() || parsedPrompt?.userPrompt || "")
+      .slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
     const normalizedFallback = input.fallbackText.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
     const normalizedSpeechText = normalizedFallback || normalizedPrompt;
     if (!normalizedPrompt) {
@@ -307,7 +319,7 @@ export class ClientAudioReplyService {
       try {
         return await this.generateProxyAudio({
           mode: "tts",
-          text: normalizedSpeechText,
+          text: normalizedFallback || normalizedPrompt,
           audioBlob: input.audioBlob,
           localModelName: modelName,
           onProgress: options.onProgress,
@@ -430,6 +442,8 @@ export class ClientAudioReplyService {
   private async generateProxyAudio(options: {
     mode: "tts" | "voice-reply";
     text: string;
+    systemPrompt?: string;
+    userPrompt?: string;
     fallbackText?: string;
     audioBlob?: Blob;
     localModelName: string;
@@ -444,6 +458,8 @@ export class ClientAudioReplyService {
     const result = await this.generateRemoteAudio({
       mode: options.mode,
       text: options.text,
+      systemPrompt: options.systemPrompt,
+      userPrompt: options.userPrompt,
       fallbackText: options.fallbackText,
       audioBlob: options.audioBlob,
       localModelName: options.localModelName,

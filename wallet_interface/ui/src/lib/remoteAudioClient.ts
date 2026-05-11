@@ -1,6 +1,6 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
-import { createVoiceProxyFormData } from "./voiceProxyPayload";
+import { createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
   audioBlob: Blob;
@@ -10,31 +10,26 @@ export interface RemoteAudioGenerationResult {
 }
 
 export function isRemoteVoiceProxyConfigured(): boolean {
-  return Boolean(getRemoteVoiceProxyEndpoint());
+  return Boolean(getRemoteVoiceProxyEndpoint("tts") || getRemoteVoiceProxyEndpoint("voice-reply"));
 }
 
 export async function generateRemoteAudio(options: {
   mode: "tts" | "voice-reply";
   text: string;
+  systemPrompt?: string;
+  userPrompt?: string;
   fallbackText?: string;
   localModelName?: string;
   audioBlob?: Blob;
 }): Promise<RemoteAudioGenerationResult> {
-  const endpoint = getRemoteVoiceProxyEndpoint();
+  const endpoint = getRemoteVoiceProxyEndpoint(options.mode);
   if (!AUDIO_CHAT_CONFIG.voiceProxyEnabled || !endpoint) {
     throw new Error("Voice proxy is unavailable.");
   }
 
   let response: Response;
   try {
-    response = await fetchWithTimeout(endpoint, {
-      method: "POST",
-      headers: buildHeaders(),
-      body: createVoiceProxyFormData({
-        audioBlob: options.audioBlob,
-        text: options.text,
-      }),
-    });
+    response = await fetchWithTimeout(endpoint, buildRequestInit(options));
   } catch (error) {
     throw new Error(formatRemoteAudioNetworkError(endpoint, error));
   }
@@ -61,8 +56,11 @@ export async function generateRemoteAudio(options: {
   return normalized;
 }
 
-function getRemoteVoiceProxyEndpoint(): string {
-  return resolvePublicHttpsUrl(AUDIO_CHAT_CONFIG.voiceProxyInferUrl);
+function getRemoteVoiceProxyEndpoint(mode: "tts" | "voice-reply"): string {
+  const endpoint = mode === "tts"
+    ? AUDIO_CHAT_CONFIG.voiceProxyTtsUrl
+    : AUDIO_CHAT_CONFIG.voiceProxyInferUrl;
+  return resolvePublicHttpsUrl(endpoint);
 }
 
 function buildHeaders(): HeadersInit {
@@ -75,6 +73,41 @@ function buildHeaders(): HeadersInit {
     headers["X-Client-Origin"] = origin;
   }
   return headers;
+}
+
+function buildRequestInit(options: {
+  mode: "tts" | "voice-reply";
+  text: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+  fallbackText?: string;
+  audioBlob?: Blob;
+}): RequestInit {
+  if (options.mode === "tts") {
+    return {
+      method: "POST",
+      headers: {
+        ...buildHeaders(),
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+      body: createVoiceProxyTtsBody({
+        text: options.text,
+      }),
+    };
+  }
+
+  return {
+    method: "POST",
+    headers: buildHeaders(),
+    body: createVoiceProxyFormData({
+      mode: options.mode,
+      audioBlob: options.audioBlob,
+      text: options.text,
+      systemPrompt: options.systemPrompt,
+      userPrompt: options.userPrompt,
+      fallbackText: options.fallbackText,
+    }),
+  };
 }
 
 async function fetchWithTimeout(endpoint: string, init: RequestInit): Promise<Response> {

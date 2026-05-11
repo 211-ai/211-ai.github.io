@@ -5,7 +5,7 @@ import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import {
   buildVoiceFallbackText,
-  buildVoiceGraphRagPrompt,
+  buildVoiceGraphRagPromptParts,
   selectEvidenceBundlesForMessage,
 } from "../../lib/voiceGraphRagPrompt";
 import { createWavBlobFromFloat32Chunks } from "../../lib/voiceProxyPayload";
@@ -21,6 +21,7 @@ type BrowserAudioWorkletNode = AudioWorkletNode;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
+const AUDIO_OPENING_CLIP_URL = `${import.meta.env.BASE_URL}assets/audio/intro.wav`;
 const VAD_MIN_RMS = 0.025;
 const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;
@@ -146,6 +147,7 @@ export function AgentAudioChatSurface({
   const vadSpeechFramesRef = useRef(0);
   const vadLastTriggerAtRef = useRef(0);
   const voiceDetectionEnabledRef = useRef(voiceDetectionEnabled);
+  const audioOutputReadyRef = useRef(false);
 
   useEffect(() => {
     mutedRef.current = muted;
@@ -162,6 +164,7 @@ export function AgentAudioChatSurface({
   useEffect(() => {
     if (open && !openRef.current) {
       lastSpokenAssistantIdRef.current = getLastAssistantMessage(messages)?.id;
+      audioOutputReadyRef.current = false;
       setSessionState("ready");
       setStatusDetail("");
       setAudioDiagnostic("");
@@ -173,6 +176,7 @@ export function AgentAudioChatSurface({
     if (!open && openRef.current) {
       audioProgressRequestIdRef.current += 1;
       voiceDetectionEnabledRef.current = false;
+      audioOutputReadyRef.current = false;
       cancelListening();
       stopPlayback();
       pendingVoiceTranscriptRef.current = "";
@@ -197,18 +201,22 @@ export function AgentAudioChatSurface({
         if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
         setModelProgress(null);
         if (result.kind === "local-ready") {
+          audioOutputReadyRef.current = true;
           setStatusDetail("Audio model ready.");
           setAudioDiagnostic("");
         } else if (result.kind === "remote-ready") {
+          audioOutputReadyRef.current = true;
           setStatusDetail("Voice proxy ready.");
           setAudioDiagnostic("");
         } else {
+          audioOutputReadyRef.current = false;
           setStatusDetail("Browser speech output ready.");
           setAudioDiagnostic(result.fallbackReason);
         }
       })
       .catch((error) => {
         if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
+        audioOutputReadyRef.current = false;
         const message = error instanceof Error ? error.message : "Audio model warmup failed.";
         setModelProgress(null);
         setStatusDetail(message);
@@ -224,6 +232,12 @@ export function AgentAudioChatSurface({
         sessionStateRef.current = "speaking";
         setSessionState("speaking");
         setStatusDetail("Testing voice output.");
+        if (!audioOutputReadyRef.current) {
+          playOpeningClip(() => {
+            void startVoiceActivityDetection();
+          });
+          return;
+        }
         playBrowserSpeech(AUDIO_OPENING_GREETING, () => {
           void startVoiceActivityDetection();
         });
@@ -619,11 +633,12 @@ export function AgentAudioChatSurface({
     const requestId = ++audioProgressRequestIdRef.current;
     const userText = resolveVoiceReplyUserText(messages, message, pendingVoiceTranscriptRef.current);
     pendingVoiceTranscriptRef.current = "";
-    const prompt = buildVoiceGraphRagPrompt({
+    const promptParts = buildVoiceGraphRagPromptParts({
       userText,
       assistantText: message.content,
       evidenceBundles: selectEvidenceBundlesForMessage(message, evidenceBundles),
     });
+    const prompt = promptParts.fullPrompt;
     const fallbackText = buildVoiceFallbackText(message.content);
     setModelProgress({
       phase: "queued",
@@ -633,6 +648,8 @@ export function AgentAudioChatSurface({
     try {
       const result = await clientAudioReplyService.generateVoiceReply({
         prompt,
+        systemPrompt: promptParts.systemPrompt,
+        userPrompt: promptParts.userPrompt,
         fallbackText,
         audioBlob: lastCapturedVoiceBlobRef.current || undefined,
       }, {
@@ -767,6 +784,28 @@ export function AgentAudioChatSurface({
     };
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
+  }
+
+  function playOpeningClip(onComplete?: () => void) {
+    const audio = new Audio(AUDIO_OPENING_CLIP_URL);
+    audioRef.current = audio;
+    audio.onended = () => {
+      detachAudioElement(audio);
+      audioRef.current = null;
+      sessionStateRef.current = "ready";
+      setSessionState("ready");
+      onComplete?.();
+    };
+    audio.onerror = () => {
+      detachAudioElement(audio);
+      audioRef.current = null;
+      playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+    };
+    void audio.play().catch(() => {
+      detachAudioElement(audio);
+      audioRef.current = null;
+      playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+    });
   }
 
   function stopPlayback() {
