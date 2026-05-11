@@ -51,8 +51,13 @@ import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChat
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import {
   buildVoiceInferenceFallbackRequest,
+  formatVoiceOutputModeLabel,
   resolveVoiceReplyUserText,
 } from "../src/components/agent/AgentAudioChatSurface";
+import {
+  formatTextRoutingMode,
+  formatVoiceRoutingMode,
+} from "../src/components/agent/AgentRuntimeStatus";
 import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
@@ -1130,6 +1135,22 @@ export class AudioModel {
     expect(request.systemPrompt).toContain("Neighborhood Food Pantry");
     expect(request.prompt).toContain("User voice query: where can I get food today?");
     expect(request.fallbackText).toBe("OpenRouter text generation failed.");
+  });
+
+  test("formats visible routing badges for text and voice modes", () => {
+    expect(formatTextRoutingMode()).toBe("Text: GraphRAG + query -> LLM (proxy-only)");
+    expect(formatVoiceRoutingMode({
+      remoteAudioEnabled: true,
+      remoteAudioConfigured: true,
+      remoteAudioEndpoint: "https://animegf.chat:8790/api/voice/infer",
+      localAudioEnabled: true,
+      localAudioAvailable: true,
+      localAudioReady: false,
+      fallbackVoiceAvailable: true,
+    })).toBe("Voice: default GraphRAG + query -> LLM -> TTS; fallback -> voice inference");
+    expect(formatVoiceOutputModeLabel("tts-primary")).toBe("Mode: default GraphRAG + query -> LLM -> TTS");
+    expect(formatVoiceOutputModeLabel("voice-inference-fallback")).toBe("Mode: fallback GraphRAG + query -> voice inference");
+    expect(formatVoiceOutputModeLabel("browser-speech")).toBe("Mode: browser speech fallback");
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
