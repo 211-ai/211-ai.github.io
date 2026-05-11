@@ -232,13 +232,7 @@ export function AgentAudioChatSurface({
         sessionStateRef.current = "speaking";
         setSessionState("speaking");
         setStatusDetail("Testing voice output.");
-        if (!audioOutputReadyRef.current) {
-          playOpeningClip(() => {
-            void startVoiceActivityDetection();
-          });
-          return;
-        }
-        playBrowserSpeech(AUDIO_OPENING_GREETING, () => {
+        playOpeningClip(() => {
           void startVoiceActivityDetection();
         });
         return;

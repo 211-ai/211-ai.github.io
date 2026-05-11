@@ -125,22 +125,22 @@ test("voice chat on iPhone uses browser speech instead of downloading the local 
 });
 
 test("voice chat speaks an opening greeting when the audio surface opens", async ({ page }) => {
-  await installFakeSpeechSynthesis(page);
   await installFakeAudioWorker(page, "success");
+  await installFakeAudioPlayback(page);
   await enterSignedInApp(page);
 
   await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
 
   await expect
     .poll(() =>
-      page.evaluate(() => (window as typeof window & { __abbySpeechSpeakCalls?: number }).__abbySpeechSpeakCalls || 0),
+      page.evaluate(() => (window as typeof window & { __abbyAudioPlayCalls?: number }).__abbyAudioPlayCalls || 0),
     )
     .toBeGreaterThan(0);
   await expect
     .poll(() =>
-      page.evaluate(() => (window as typeof window & { __abbySpeechTexts?: string[] }).__abbySpeechTexts?.join(" ") || ""),
+      page.evaluate(() => (window as typeof window & { __abbyAudioSources?: string[] }).__abbyAudioSources?.join(" ") || ""),
     )
-    .toMatch(/Abby voice/i);
+    .toContain("assets/audio/intro.wav");
 });
 
 test("voice chat validates microphone input level while listening", async ({ page }, testInfo) => {
@@ -622,6 +622,11 @@ async function installFakeAudioPlayback(page: Page, mode: FakeAudioPlaybackMode 
       writable: true,
       value: 0,
     });
+    Object.defineProperty(window, "__abbyAudioSources", {
+      configurable: true,
+      writable: true,
+      value: [],
+    });
 
     class FakeAudio {
       onended: (() => void) | null = null;
@@ -633,8 +638,9 @@ async function installFakeAudioPlayback(page: Page, mode: FakeAudioPlaybackMode 
       }
 
       async play() {
-        const testWindow = window as typeof window & { __abbyAudioPlayCalls?: number };
+        const testWindow = window as typeof window & { __abbyAudioPlayCalls?: number; __abbyAudioSources?: string[] };
         testWindow.__abbyAudioPlayCalls = (testWindow.__abbyAudioPlayCalls || 0) + 1;
+        testWindow.__abbyAudioSources = [...(testWindow.__abbyAudioSources || []), this.src];
         if (playbackMode === "play-error") {
           this.onerror?.();
           throw new Error("Synthetic audio playback failure.");
