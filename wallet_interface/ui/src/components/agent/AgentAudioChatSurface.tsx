@@ -89,6 +89,14 @@ export function resolveAudioOpeningClipUrl(
   return baseReference ? new URL(relativePath, baseReference).toString() : relativePath;
 }
 
+function tryResolveAudioOpeningClipUrl(): string | null {
+  try {
+    return resolveAudioOpeningClipUrl();
+  } catch {
+    return null;
+  }
+}
+
 export function primeVoiceChatActivation(): void {
   void primeOpeningClipPlayback();
   warmupSpeechRecognition();
@@ -820,8 +828,13 @@ export function AgentAudioChatSurface({
   }
 
   async function playOpeningClip(onComplete?: () => void) {
+    const openingClipUrl = tryResolveAudioOpeningClipUrl();
     const primedAudio = await consumePrimedOpeningClip();
-    const audio = primedAudio || new Audio(resolveAudioOpeningClipUrl());
+    if (!primedAudio && !openingClipUrl) {
+      playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+      return;
+    }
+    const audio = primedAudio || new Audio(openingClipUrl ?? undefined);
     audio.preload = "auto";
     audio.setAttribute("playsinline", "true");
     audioRef.current = audio;
@@ -846,14 +859,18 @@ export function AgentAudioChatSurface({
       clearPrimedOpeningClip(audio);
       detachAudioElement(audio);
       audioRef.current = null;
-      playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+      sessionStateRef.current = "ready";
+      setSessionState("ready");
+      onComplete?.();
     };
     if (!primedAudio || audio.paused) {
       await audio.play().catch(() => {
         clearPrimedOpeningClip(audio);
         detachAudioElement(audio);
         audioRef.current = null;
-        playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+        sessionStateRef.current = "ready";
+        setSessionState("ready");
+        onComplete?.();
       });
     }
   }
@@ -1143,7 +1160,11 @@ async function primeOpeningClipPlayback(): Promise<HTMLAudioElement | null> {
   if (typeof Audio === "undefined") {
     return null;
   }
-  const audio = new Audio(resolveAudioOpeningClipUrl());
+  const openingClipUrl = tryResolveAudioOpeningClipUrl();
+  if (!openingClipUrl) {
+    return null;
+  }
+  const audio = new Audio(openingClipUrl);
   audio.preload = "auto";
   audio.setAttribute("playsinline", "true");
   primedOpeningClipPromise = audio
