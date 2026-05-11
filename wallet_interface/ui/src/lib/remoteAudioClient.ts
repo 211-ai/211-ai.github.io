@@ -1,5 +1,6 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
+import { createVoiceProxyFormData } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
   audioBlob: Blob;
@@ -17,6 +18,7 @@ export async function generateRemoteAudio(options: {
   text: string;
   fallbackText?: string;
   localModelName?: string;
+  audioBlob?: Blob;
 }): Promise<RemoteAudioGenerationResult> {
   const endpoint = getRemoteVoiceProxyEndpoint();
   if (!AUDIO_CHAT_CONFIG.voiceProxyEnabled || !endpoint) {
@@ -28,15 +30,9 @@ export async function generateRemoteAudio(options: {
     response = await fetchWithTimeout(endpoint, {
       method: "POST",
       headers: buildHeaders(),
-      body: JSON.stringify({
-        mode: options.mode,
+      body: createVoiceProxyFormData({
+        audioBlob: options.audioBlob,
         text: options.text,
-        fallback_text: options.fallbackText,
-        local_model: options.localModelName,
-        format: "wav",
-        metadata: {
-          app: "abby-211",
-        },
       }),
     });
   } catch (error) {
@@ -71,7 +67,6 @@ function getRemoteVoiceProxyEndpoint(): string {
 
 function buildHeaders(): HeadersInit {
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     Accept: "audio/wav, audio/*, application/json",
   };
   const origin = getBrowserOrigin();
@@ -156,11 +151,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function formatRemoteAudioNetworkError(endpoint: string, error: unknown): string {
   if (error instanceof DOMException && error.name === "AbortError") {
-    return `Voice proxy request to ${endpoint} timed out.`;
+    return `Voice proxy request to ${endpoint} timed out before any HTTP response. local fallback attempted: pending caller decision.`;
   }
   const message = error instanceof Error ? error.message.trim() : String(error).trim();
   if (/failed to fetch/i.test(message) || /networkerror/i.test(message)) {
-    return `Voice proxy request to ${endpoint} failed before any HTTP response. The server may be offline, refusing connections, or blocked by TLS/CORS.`;
+    return `Voice proxy request to ${endpoint} failed before any HTTP response. Failure type: network, CORS, TLS, or connection refused. local fallback attempted: pending caller decision.`;
   }
   return `Voice proxy request to ${endpoint} failed: ${message || "Unknown network error."}`;
 }

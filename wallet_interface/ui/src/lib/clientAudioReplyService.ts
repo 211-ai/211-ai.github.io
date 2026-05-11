@@ -96,6 +96,7 @@ interface ClientAudioReplyServiceOptions {
     text: string;
     fallbackText?: string;
     localModelName?: string;
+    audioBlob?: Blob;
   }) => Promise<RemoteAudioGenerationResult>;
   getLocalAudioBlockReason?: () => string | undefined;
   hasWebGPU?: () => boolean;
@@ -107,6 +108,7 @@ interface ClientAudioReplyServiceOptions {
 export interface ClientVoiceReplyRequest {
   prompt: string;
   fallbackText: string;
+  audioBlob?: Blob;
 }
 
 export class ClientAudioReplyService {
@@ -125,6 +127,7 @@ export class ClientAudioReplyService {
     text: string;
     fallbackText?: string;
     localModelName?: string;
+    audioBlob?: Blob;
   }) => Promise<RemoteAudioGenerationResult>;
   private readonly getLocalAudioBlockReason: () => string | undefined;
   private readonly hasWebGPU: () => boolean;
@@ -305,6 +308,7 @@ export class ClientAudioReplyService {
         return await this.generateProxyAudio({
           mode: "tts",
           text: normalizedSpeechText,
+          audioBlob: input.audioBlob,
           localModelName: modelName,
           onProgress: options.onProgress,
         });
@@ -368,6 +372,7 @@ export class ClientAudioReplyService {
       remoteAudioEndpoint: AUDIO_CHAT_CONFIG.voiceProxyInferUrl,
       remoteAudioLastError: this.remoteAudioLastError,
       remoteAudioLastUsedAt: this.remoteAudioLastUsedAt,
+      remoteAudioProxyMode: "multipart-wav",
       localAudioEnabled: AUDIO_CHAT_CONFIG.enableLocalAudio,
       localAudioAvailable: this.canAttemptLocalAudio(AUDIO_CHAT_CONFIG.defaultModel),
       localAudioReady: this.localAudioReady,
@@ -426,6 +431,7 @@ export class ClientAudioReplyService {
     mode: "tts" | "voice-reply";
     text: string;
     fallbackText?: string;
+    audioBlob?: Blob;
     localModelName: string;
     onProgress?: (progress: ClientAudioProgress) => void;
   }): Promise<ClientAudioReplyResult> {
@@ -439,6 +445,7 @@ export class ClientAudioReplyService {
       mode: options.mode,
       text: options.text,
       fallbackText: options.fallbackText,
+      audioBlob: options.audioBlob,
       localModelName: options.localModelName,
     });
     this.remoteAudioLastError = undefined;

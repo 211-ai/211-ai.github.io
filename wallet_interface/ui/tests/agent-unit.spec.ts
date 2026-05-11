@@ -64,6 +64,7 @@ import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "..
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
+import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -1074,6 +1075,33 @@ export class AudioModel {
         "https://endomorphosis.github.io/211-AI/",
       ),
     ).toBe(true);
+  });
+
+  test("builds multipart WAV uploads for the remote voice proxy", async () => {
+    const formData = createVoiceProxyFormData({
+      text: "Please answer briefly and describe the audio.",
+    });
+
+    const audio = formData.get("audio");
+    const text = formData.get("text");
+
+    expect(text).toBe("Please answer briefly and describe the audio.");
+    expect(audio).toBeTruthy();
+    expect(typeof (audio as Blob | null)?.arrayBuffer).toBe("function");
+    expect((audio as Blob | null)?.type ?? "").toBe("audio/wav");
+    expect((audio as { name?: string } | null)?.name ?? "").toBe("input.wav");
+    expect((await (audio as Blob).arrayBuffer()).byteLength).toBeGreaterThan(44);
+  });
+
+  test("rejects non-WAV audio uploads for the remote voice proxy", () => {
+    expect(() =>
+      createVoiceProxyFormData({
+        text: "Describe the audio.",
+        audioBlob: new Blob(["not wav"], { type: "audio/webm" }),
+      }),
+    ).toThrow(/Voice proxy requires WAV input/);
+
+    expect(createSilentWavBlob().type).toBe("audio/wav");
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {

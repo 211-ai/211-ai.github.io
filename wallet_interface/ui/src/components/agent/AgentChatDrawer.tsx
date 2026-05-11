@@ -168,6 +168,7 @@ export function AgentChatDrawer({
               responding={responding}
               surface="drawer"
             />
+            <AgentRuntimeStatus open={open} showModelSelector={false} />
           </aside>
         ) : null}
       </div>

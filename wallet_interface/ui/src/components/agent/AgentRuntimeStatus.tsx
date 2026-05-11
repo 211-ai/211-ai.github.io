@@ -42,6 +42,19 @@ interface ClientLlmRuntimeStatus {
   error?: string;
 }
 
+interface ClientAudioRuntimeStatus {
+  remoteAudioEnabled: boolean;
+  remoteAudioConfigured: boolean;
+  remoteAudioEndpoint: string;
+  remoteAudioLastError?: string;
+  remoteAudioLastUsedAt?: string;
+  remoteAudioProxyMode?: string;
+  localAudioEnabled: boolean;
+  localAudioAvailable: boolean;
+  localAudioReady: boolean;
+  fallbackVoiceAvailable: boolean;
+}
+
 const unavailableCapabilities: ClientLlmRuntimeCapabilities = {
   webGPU: false,
   webGPUShaderF16: false,
@@ -62,6 +75,7 @@ const initialStatus: ClientLlmRuntimeStatus = {
 
 export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: boolean; showModelSelector?: boolean }) {
   const [status, setStatus] = useState<ClientLlmRuntimeStatus>(initialStatus);
+  const [audioStatus, setAudioStatus] = useState<ClientAudioRuntimeStatus | null>(null);
   const [selectedModel, setSelectedModel] = useState("");
   const [openRouterKeyDraft, setOpenRouterKeyDraft] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,6 +84,7 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
     setLoading(true);
     try {
       const { clientLLMWorkerService } = await import("../../lib/clientLLMWorkerService");
+      const { clientAudioReplyService } = await import("../../lib/clientAudioReplyService");
       const [workerCapabilities, serviceStatus] = await Promise.all([
         clientLLMWorkerService.getCapabilities(),
         Promise.resolve(clientLLMWorkerService.getStatus()),
@@ -82,6 +97,7 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
         capabilities: workerCapabilities.capabilities || serviceStatus.capabilities,
       };
       setStatus(nextStatus);
+      setAudioStatus(clientAudioReplyService.getStatus());
       setSelectedModel(nextStatus.currentModel);
     } catch (error) {
       setStatus({
@@ -239,6 +255,28 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
               {formatOpenRouterStatus(status.openRouter)}
             </small>
           </div>
+          {audioStatus ? (
+            <div className="agent-runtime-audio">
+              <small className={audioStatus.remoteAudioConfigured ? "agent-runtime-cloud-ready" : undefined}>
+                <Cloud aria-hidden="true" size={12} />
+                {formatVoiceProxyStatus(audioStatus)}
+              </small>
+              <dl className="agent-runtime-details" aria-label="Voice proxy details">
+                <div>
+                  <dt>Voice proxy</dt>
+                  <dd>{audioStatus.remoteAudioConfigured ? "ready" : audioStatus.remoteAudioEnabled ? "unreachable" : "off"}</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>{audioStatus.remoteAudioProxyMode || "multipart-wav"}</dd>
+                </div>
+                <div>
+                  <dt>Fallback</dt>
+                  <dd>{audioStatus.localAudioReady ? "local ready" : audioStatus.fallbackVoiceAvailable ? "browser speech" : "none"}</dd>
+                </div>
+              </dl>
+            </div>
+          ) : null}
         </>
       ) : null}
       <button
@@ -323,4 +361,17 @@ function formatOpenRouterStatus(status: ClientLlmRuntimeStatus["openRouter"]): s
     return `cloud fallback ready (${status.credentialSource})`;
   }
   return "configure HTTPS proxy for cloud fallback";
+}
+
+function formatVoiceProxyStatus(status: ClientAudioRuntimeStatus): string {
+  if (!status.remoteAudioEnabled) {
+    return "voice proxy off";
+  }
+  if (status.remoteAudioLastError) {
+    return "voice proxy error";
+  }
+  if (status.remoteAudioConfigured) {
+    return "voice proxy ready";
+  }
+  return "voice proxy unavailable";
 }
