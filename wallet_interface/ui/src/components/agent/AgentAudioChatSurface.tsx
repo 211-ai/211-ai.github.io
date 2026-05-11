@@ -4,6 +4,7 @@ import type { AgentMessage, EvidenceBundle } from "../../agent/types";
 import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
 import { clientLLMWorkerService } from "../../lib/clientLLMWorkerService";
+import { AgentCitationLink } from "./AgentCitationLink";
 import {
   buildVoiceFallbackText,
   buildVoiceGraphRagPromptParts,
@@ -29,6 +30,7 @@ const VAD_VOICE_BAND_RATIO = 0.38;
 const VAD_TRIGGER_FRAMES = 5;
 const VAD_RETRIGGER_COOLDOWN_MS = 1200;
 const MIC_CAPTURE_WORKLET_NAME = "abby-voice-capture-processor";
+const VOICE_RESPONSE_MAX_TOKENS = 512;
 const MIC_CAPTURE_WORKLET_SOURCE = `
 class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
   process(inputs, outputs) {
@@ -42,14 +44,7 @@ class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
     }
     if (output?.[0]) {
       output[0].fill(0);
-        const generatedReply = await clientLLMWorkerService.tryGenerateText(
-          {
-            prompt: voiceInferenceRequest.prompt,
-            systemPrompt: voiceInferenceRequest.systemPrompt,
-            userPrompt: voiceInferenceRequest.userPrompt,
-          },
-          120,
-        );
+    }
     return true;
   }
 }
@@ -657,7 +652,7 @@ export function AgentAudioChatSurface({
             systemPrompt: voiceInferenceRequest.systemPrompt,
             userPrompt: voiceInferenceRequest.userPrompt,
           },
-          120,
+          VOICE_RESPONSE_MAX_TOKENS,
         );
         if (generatedReply.ok) {
           preferredSpeechText = resolveVoiceGeneratedReplyText(generatedReply.text, preferredSpeechText);
@@ -1014,6 +1009,21 @@ export function AgentAudioChatSurface({
             <div className="agent-audio-transcript-meta">{message.role === "user" ? "You" : "Abby"}</div>
             <div className="agent-audio-transcript-bubble">
               <p>{formatAudioTranscriptMessage(message)}</p>
+              {message.role === "assistant" ? (
+                <div className="agent-audio-transcript-evidence">
+                  {getAudioTranscriptEvidenceItems(message, evidenceBundles).map((item, index) => (
+                    <div className="agent-audio-transcript-evidence-item" key={`${message.id}:${item.id}:${index}`}>
+                      <AgentCitationLink
+                        citation={normalizeAudioEvidenceCitation(item.citation, index)}
+                        compact
+                        score={item.score}
+                        source={item.source}
+                        title={item.title}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </article>
         ))}
@@ -1109,6 +1119,32 @@ export function resolveVoiceGeneratedReplyText(generatedText: string, fallbackTe
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {
   return message.role === "assistant" ? buildVoiceFallbackText(message.content) : message.content;
+}
+
+function getAudioTranscriptEvidenceItems(
+  message: AgentMessage,
+  evidenceBundles: EvidenceBundle[],
+  limit = 4,
+): EvidenceBundle["items"] {
+  const items = selectEvidenceBundlesForMessage(message, evidenceBundles).flatMap((bundle) => bundle.items);
+  const selected: EvidenceBundle["items"] = [];
+  const seen = new Set<string>();
+  for (const item of items) {
+    const identity = `${item.citation.docId || item.citation.url || item.id}`.toLowerCase();
+    if (seen.has(identity)) continue;
+    seen.add(identity);
+    selected.push(item);
+    if (selected.length >= limit) break;
+  }
+  return selected;
+}
+
+function normalizeAudioEvidenceCitation(citation: EvidenceBundle["items"][number]["citation"], index: number) {
+  if (citation.label.trim()) return citation;
+  return {
+    ...citation,
+    label: `[${index + 1}]`,
+  };
 }
 
 function getAudioSessionStatusLabel(sessionState: AudioSessionState, responding?: boolean): string {

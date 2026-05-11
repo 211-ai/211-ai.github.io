@@ -2304,6 +2304,19 @@ body.playful-pulse .decor-shape {
   white-space: pre-wrap;
 }
 
+.agent-audio-transcript-evidence {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.agent-audio-transcript-evidence-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px;
+}
+
 .agent-audio-spinner {
   animation: agent-audio-spin 1s linear infinite;
 }
@@ -2360,6 +2373,14 @@ body.playful-pulse .decor-shape {
 .agent-citation-provenance {
   display: grid;
   gap: 8px;
+}
+
+.agent-citation-link-compact .agent-citation-provenance {
+  display: none;
+}
+
+.agent-citation-link-compact .agent-citation-title {
+  font-size: 12px;
 }
 
 .agent-evidence-bundle {
@@ -4611,7 +4632,6 @@ body {
 }
 
 .login-panel::before {
-  background: var(--abby-watercolor-evergreens) right bottom / 200px auto no-repeat;
   bottom: 0;
   content: "";
   height: 240px;

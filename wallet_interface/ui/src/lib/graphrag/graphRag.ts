@@ -9,7 +9,7 @@ export interface GraphRagAnswer {
   usedLocalModel: boolean;
 }
 
-export const DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS = 150;
+export const DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS = 512;
 
 interface GraphRagPromptOptions {
   maxResults?: number;
@@ -65,17 +65,7 @@ export async function answerWith211GraphRag(
   if (evidence.results.length === 0) {
     return {
       question: trimmedQuestion,
-      answer:
-        "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.",
-      evidence,
-      usedLocalModel: false,
-    };
-  }
-
-  if (options.useLocalModel === false || shouldDisableLocalLlm()) {
-    return {
-      question: trimmedQuestion,
-      answer: buildEvidenceSummary(evidence.results),
+      answer: build211GraphRagFallbackAnswer(evidence.results),
       evidence,
       usedLocalModel: false,
     };
@@ -88,17 +78,18 @@ export async function answerWith211GraphRag(
       options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
     );
     const answer = clean211GraphRagModelAnswer(rawAnswer);
+    const grounded = isGrounded211GraphRagAnswer(answer);
     return {
       question: trimmedQuestion,
-      answer: isGrounded211GraphRagAnswer(answer) ? answer : buildEvidenceSummary(evidence.results),
+      answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211GraphRagFallbackAnswer(evidence.results),
       evidence,
-      usedLocalModel: isGrounded211GraphRagAnswer(answer),
+      usedLocalModel: grounded && options.useLocalModel !== false && !shouldDisableLocalLlm(),
     };
   } catch (error) {
     console.warn("211 GraphRAG local model unavailable; falling back to evidence summary", error);
     return {
       question: trimmedQuestion,
-      answer: buildEvidenceSummary(evidence.results),
+      answer: build211GraphRagFallbackAnswer(evidence.results),
       evidence,
       usedLocalModel: false,
     };
@@ -165,6 +156,13 @@ export function buildEvidenceSummary(results: SearchResult[]): string {
   return `The strongest local 211 corpus matches are:\n\n${lead}\n\nUse the cited source pages or contact 211/the listed provider to confirm current availability and eligibility.`;
 }
 
+export function build211GraphRagFallbackAnswer(results: SearchResult[]): string {
+  if (results.length === 0) {
+    return "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.";
+  }
+  return "I found local 211 services that may help. Review the linked results below to compare options and confirm current availability and eligibility.";
+}
+
 function formatGraphContext(
   nodes: GraphNode[],
   edges: GraphEdge[],
@@ -202,6 +200,10 @@ export function clean211GraphRagModelAnswer(answer: string): string {
     .replace(/<\|[^>]+?\|>/g, "")
     .replace(/^answer:\s*/i, "")
     .trim();
+}
+
+export function format211GraphRagDisplayedAnswer(answer: string): string {
+  return answer.replace(/\n+Sources:\s*[\s\S]*$/i, "").trim();
 }
 
 export function isGrounded211GraphRagAnswer(answer: string): boolean {

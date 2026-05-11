@@ -44,7 +44,7 @@ import type {
 } from "../src/agent/types";
 import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
-import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
+import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS, ragSearchWorkerService } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
@@ -69,6 +69,7 @@ import {
 import type { ClientLlmPromptInput } from "../src/lib/clientLlmPrompting";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
+import { answer211InfoQuestion, build211InfoFallbackSummary } from "../src/services/graphRagService";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
@@ -1656,7 +1657,7 @@ export class AudioModel {
 
     const prompt = build211GraphRagPrompt("Which food pantry should I try?", evidence);
 
-    expect(DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS).toBeLessThanOrEqual(160);
+    expect(DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS).toBe(512);
     expect(prompt).toContain("Keep it under 120 words");
     expect(prompt).toContain("Cite every bullet");
     expect(prompt).toContain("[4] Provider 4");
@@ -1664,6 +1665,21 @@ export class AudioModel {
     expect(prompt).toContain("Graph node 8");
     expect(prompt).not.toContain("Graph node 9");
     expect(prompt.length).toBeLessThan(5200);
+  });
+
+  test("formats 211 fallback summaries without dumping inline source blocks", () => {
+    const evidence: GraphRagEvidence = {
+      query: "hello testing",
+      results: [createSearchResult("svc-health-1", "NARA Wellness Center")],
+      nodes: [],
+      edges: [],
+    };
+
+    const summary = build211InfoFallbackSummary(evidence);
+
+    expect(summary).toContain("Review the linked results below");
+    expect(summary).not.toContain("The strongest local 211 corpus matches are");
+    expect(summary).not.toContain("Sources:");
   });
 
   test("keeps every registered tool tied to a concrete permission policy", () => {
@@ -1943,6 +1959,115 @@ export class AudioModel {
       service.pendingRequests = originalState.pendingRequests;
       service.requestCounter = originalState.requestCounter;
       service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
+  test("uses proxy-first LLM synthesis for 211 answers even when local model use is disabled", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+      buildEvidence: ragSearchWorkerService.buildEvidence,
+    };
+    const evidence: GraphRagEvidence = {
+      query: "hello testing",
+      results: [createSearchResult("svc-health-1", "NARA Wellness Center")],
+      nodes: [],
+      edges: [],
+    };
+    let requestBody: any;
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "wasm";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
+      service.capabilities = {
+        webGPU: false,
+        webGPUError: "navigator.gpu is unavailable",
+        webGPUShaderF16: false,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async () => {
+        throw new Error("local worker should not be used before OpenRouter");
+      };
+      ragSearchWorkerService.buildEvidence = async () => evidence;
+      globalThis.fetch = async (_input, init) => {
+        requestBody = JSON.parse(String(init?.body || "{}"));
+        return new Response(
+          JSON.stringify({
+            model: "liquid/lfm-2.5-1.2b-instruct:free",
+            choices: [{ message: { role: "assistant", content: "NARA Wellness Center may be relevant for health services [1]." } }],
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 200 },
+        );
+      };
+
+      const result = await answer211InfoQuestion("hello testing", {
+        useLocalModel: false,
+        serviceOnly: false,
+        maxTokens: 512,
+      });
+
+      expect(result.answer).toBe("NARA Wellness Center may be relevant for health services [1].");
+      expect(result.answer).not.toContain("The strongest local 211 corpus matches are");
+      expect(result.usedLocalModel).toBe(false);
+      expect(requestBody.max_tokens).toBe(512);
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      ragSearchWorkerService.buildEvidence = originalState.buildEvidence;
       globalThis.fetch = originalState.fetch;
       restoreStorage();
     }

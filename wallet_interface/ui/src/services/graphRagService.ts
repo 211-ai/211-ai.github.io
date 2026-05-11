@@ -1,9 +1,11 @@
 import {
+  build211GraphRagFallbackAnswer,
   build211GraphRagEvidence,
   build211GraphRagPrompt,
   buildEvidenceSummary,
   clean211GraphRagModelAnswer,
   DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
+  format211GraphRagDisplayedAnswer,
   get211CorpusBaseUrl,
   isGrounded211GraphRagAnswer,
   load211ArtifactManifest,
@@ -482,10 +484,7 @@ export function format211InfoCitations(results: SearchResult[], limit = 6): stri
 }
 
 export function build211InfoFallbackSummary(evidence: GraphRagEvidence): string {
-  if (evidence.results.length === 0) {
-    return "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.";
-  }
-  return append211InfoSources(buildEvidenceSummary(evidence.results), evidence.results);
+  return build211GraphRagFallbackAnswer(evidence.results);
 }
 
 export async function get211InfoRuntimeStatus(): Promise<GraphRagRuntimeStatus> {
@@ -568,15 +567,6 @@ export async function answer211InfoQuestion(
     };
   }
 
-  if (options.useLocalModel === false) {
-    return {
-      question: trimmedQuestion,
-      answer: build211InfoFallbackSummary(evidence),
-      evidence,
-      usedLocalModel: false,
-    };
-  }
-
   try {
     const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
     const rawAnswer = await clientLLMWorkerService.generateText(
@@ -587,9 +577,9 @@ export async function answer211InfoQuestion(
     const grounded = isGrounded211GraphRagAnswer(answer);
     return {
       question: trimmedQuestion,
-      answer: grounded ? append211InfoSources(answer, evidence.results) : build211InfoFallbackSummary(evidence),
+      answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211InfoFallbackSummary(evidence),
       evidence,
-      usedLocalModel: grounded,
+      usedLocalModel: grounded && options.useLocalModel !== false,
     };
   } catch (error) {
     console.warn("211 GraphRAG local model unavailable; falling back to evidence summary", error);
@@ -685,14 +675,6 @@ async function getLlmStatus(): Promise<GraphRagRuntimeStatus["llm"]> {
       error: error instanceof Error ? error.message : "LLM runtime status unavailable",
     };
   }
-}
-
-function append211InfoSources(answer: string, results: SearchResult[]): string {
-  if (results.length === 0 || /\nSources:\s*/i.test(answer)) {
-    return answer;
-  }
-  const sources = format211InfoCitations(results);
-  return sources ? `${answer}\n\nSources:\n${sources}` : answer;
 }
 
 async function tryGenerateQueryEmbedding(query: string, enabled = false): Promise<Float32Array | undefined> {
