@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../../agent/types";
-import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
+import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
-import { buildVoiceFallbackText } from "../../lib/voiceGraphRagPrompt";
+import {
+  buildVoiceFallbackText,
+  buildVoiceGraphRagPromptParts,
+  selectEvidenceBundlesForMessage,
+} from "../../lib/voiceGraphRagPrompt";
 import { createWavBlobFromFloat32Chunks } from "../../lib/voiceProxyPayload";
 import { Button } from "../ui";
 
@@ -628,70 +632,96 @@ export function AgentAudioChatSurface({
       progress: 0,
       status: "Preparing audio reply.",
     });
+    const voiceInferenceRequest = buildVoiceInferenceFallbackRequest({
+      messages,
+      assistantMessage: message,
+      evidenceBundles,
+      pendingVoiceTranscript: pendingVoiceTranscriptRef.current,
+      audioBlob: lastCapturedVoiceBlobRef.current || undefined,
+    });
+    pendingVoiceTranscriptRef.current = "";
     try {
-      const result = await clientAudioReplyService.generateAudio(fallbackText || message.content, {
-        onProgress: (progress) => updateModelProgress(requestId, progress),
-      });
-      lastCapturedVoiceBlobRef.current = null;
-      if (audioProgressRequestIdRef.current !== requestId) return;
-      setModelProgress(null);
-      if (!openRef.current || mutedRef.current) return;
-      if (result.kind === "audio") {
-        const audioUrl = URL.createObjectURL(result.audioBlob);
-        audioUrlRef.current = audioUrl;
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
-        let usedPlaybackFallback = false;
-        const fallbackToBrowserSpeech = async () => {
-          if (usedPlaybackFallback) return;
-          usedPlaybackFallback = true;
-          const playedWithWebAudio = await playAudioBlobWithWebAudio(result.audioBlob, () => {
-            setSessionState("ready");
-            restartVoiceActivityDetectionSoon();
+      const result = message.status === "failed"
+        ? await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
+            onProgress: (progress) => updateModelProgress(requestId, progress),
+          })
+        : await clientAudioReplyService.generateAudio(fallbackText || message.content, {
+            onProgress: (progress) => updateModelProgress(requestId, progress),
           });
-          if (playedWithWebAudio) {
-            detachAudioElement(audio);
-            revokeAudioUrl();
-            audioRef.current = null;
-            setStatusDetail("Playing audio reply.");
-            setAudioDiagnostic("");
-            return;
-          }
-          detachAudioElement(audio);
-          revokeAudioUrl();
-          audioRef.current = null;
-          setStatusDetail("Using browser speech output.");
-          setAudioDiagnostic("Generated audio could not be played in this browser.");
-          playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
-        };
-        audio.onended = () => {
-          detachAudioElement(audio);
-          revokeAudioUrl();
-          audioRef.current = null;
+      lastCapturedVoiceBlobRef.current = null;
+      await playAudioReplyResult(result, fallbackText, requestId);
+    } catch (error) {
+      const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
+      try {
+        const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
+          onProgress: (progress) => updateModelProgress(requestId, progress),
+        });
+        lastCapturedVoiceBlobRef.current = null;
+        await playAudioReplyResult(result, fallbackText, requestId);
+        return;
+      } catch (voiceInferenceError) {
+        const message = voiceInferenceError instanceof Error ? voiceInferenceError.message : audioErrorMessage;
+        if (audioProgressRequestIdRef.current === requestId) setModelProgress(null);
+        audioRef.current = null;
+        revokeAudioUrl();
+        setStatusDetail(message);
+        setAudioDiagnostic(message);
+        setSessionState("ready");
+        restartVoiceActivityDetectionSoon();
+      }
+    }
+  }
+
+  async function playAudioReplyResult(result: ClientAudioReplyResult, fallbackText: string, requestId: number) {
+    if (audioProgressRequestIdRef.current !== requestId) return;
+    setModelProgress(null);
+    if (!openRef.current || mutedRef.current) return;
+    if (result.kind === "audio") {
+      const audioUrl = URL.createObjectURL(result.audioBlob);
+      audioUrlRef.current = audioUrl;
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
+      let usedPlaybackFallback = false;
+      const fallbackToBrowserSpeech = async () => {
+        if (usedPlaybackFallback) return;
+        usedPlaybackFallback = true;
+        const playedWithWebAudio = await playAudioBlobWithWebAudio(result.audioBlob, () => {
           setSessionState("ready");
           restartVoiceActivityDetectionSoon();
-        };
-        audio.onerror = () => {
-          void fallbackToBrowserSpeech();
-        };
-        await audio.play().catch(() => {
-          return fallbackToBrowserSpeech();
         });
-        return;
-      }
-      setStatusDetail("Using browser speech output.");
-      setAudioDiagnostic(result.fallbackReason);
-      playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Audio reply failed.";
-      if (audioProgressRequestIdRef.current === requestId) setModelProgress(null);
-      audioRef.current = null;
-      revokeAudioUrl();
-      setStatusDetail(message);
-      setAudioDiagnostic(message);
-      setSessionState("ready");
-      restartVoiceActivityDetectionSoon();
+        if (playedWithWebAudio) {
+          detachAudioElement(audio);
+          revokeAudioUrl();
+          audioRef.current = null;
+          setStatusDetail("Playing audio reply.");
+          setAudioDiagnostic("");
+          return;
+        }
+        detachAudioElement(audio);
+        revokeAudioUrl();
+        audioRef.current = null;
+        setStatusDetail("Using browser speech output.");
+        setAudioDiagnostic("Generated audio could not be played in this browser.");
+        playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
+      };
+      audio.onended = () => {
+        detachAudioElement(audio);
+        revokeAudioUrl();
+        audioRef.current = null;
+        setSessionState("ready");
+        restartVoiceActivityDetectionSoon();
+      };
+      audio.onerror = () => {
+        void fallbackToBrowserSpeech();
+      };
+      await audio.play().catch(() => {
+        return fallbackToBrowserSpeech();
+      });
+      return;
     }
+    setStatusDetail("Using browser speech output.");
+    setAudioDiagnostic(result.fallbackReason);
+    playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
   }
 
   function updateModelProgress(requestId: number, progress: ClientAudioProgress) {
@@ -1005,6 +1035,28 @@ export function resolveVoiceReplyUserText(
     return transcriptText;
   }
   return getLastUserMessageBefore(messages, assistantMessage)?.content.trim() ?? "";
+}
+
+export function buildVoiceInferenceFallbackRequest(input: {
+  messages: AgentMessage[];
+  assistantMessage: AgentMessage;
+  evidenceBundles?: EvidenceBundle[];
+  pendingVoiceTranscript?: string;
+  audioBlob?: Blob;
+}): ClientVoiceReplyRequest {
+  const userText = resolveVoiceReplyUserText(input.messages, input.assistantMessage, input.pendingVoiceTranscript);
+  const promptParts = buildVoiceGraphRagPromptParts({
+    userText,
+    assistantText: input.assistantMessage.content,
+    evidenceBundles: selectEvidenceBundlesForMessage(input.assistantMessage, input.evidenceBundles || []),
+  });
+  return {
+    prompt: promptParts.fullPrompt,
+    systemPrompt: promptParts.systemPrompt,
+    userPrompt: promptParts.userPrompt,
+    fallbackText: buildVoiceFallbackText(input.assistantMessage.content),
+    audioBlob: input.audioBlob,
+  };
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {

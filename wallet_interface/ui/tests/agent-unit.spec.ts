@@ -49,7 +49,10 @@ import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
-import { resolveVoiceReplyUserText } from "../src/components/agent/AgentAudioChatSurface";
+import {
+  buildVoiceInferenceFallbackRequest,
+  resolveVoiceReplyUserText,
+} from "../src/components/agent/AgentAudioChatSurface";
 import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
@@ -1075,6 +1078,58 @@ export class AudioModel {
 
     expect(resolveVoiceReplyUserText(messages, messages[1], "latest transcribed request")).toBe("latest transcribed request");
     expect(resolveVoiceReplyUserText(messages, messages[1], "   ")).toBe("older typed request");
+  });
+
+  test("builds a voice inference fallback request from the transcript and attached evidence", () => {
+    const evidence: EvidenceBundle = {
+      id: "evidence-food-fallback",
+      query: "food pantry near Portland",
+      generatedAt: NOW,
+      items: [
+        {
+          id: "svc-food-pantry-fallback",
+          title: "Neighborhood Food Pantry",
+          source: "211 service corpus",
+          snippet: "Offers pantry boxes and grocery pickup.",
+          citation: {
+            label: "211 food pantry record",
+            docId: "svc-food-pantry-fallback",
+          },
+        },
+      ],
+    };
+    const messages: AgentMessage[] = [
+      {
+        id: "user-voice-1",
+        sessionId: "session-unit",
+        role: "user",
+        content: "older typed request",
+        createdAt: NOW,
+        status: "complete",
+      },
+      {
+        id: "assistant-failed-1",
+        sessionId: "session-unit",
+        role: "assistant",
+        content: "OpenRouter text generation failed.",
+        createdAt: NOW,
+        status: "failed",
+        evidenceBundleIds: [evidence.id],
+      },
+    ];
+
+    const request = buildVoiceInferenceFallbackRequest({
+      messages,
+      assistantMessage: messages[1],
+      evidenceBundles: [evidence],
+      pendingVoiceTranscript: "where can I get food today?",
+    });
+
+    expect(request.userPrompt).toBe("where can I get food today?");
+    expect(request.systemPrompt).toContain("Evidence bundle for reasoning:");
+    expect(request.systemPrompt).toContain("Neighborhood Food Pantry");
+    expect(request.prompt).toContain("User voice query: where can I get food today?");
+    expect(request.fallbackText).toBe("OpenRouter text generation failed.");
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
