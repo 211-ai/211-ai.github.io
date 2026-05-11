@@ -1,4 +1,8 @@
-import { isPromptEligibleForRemoteLlm } from "./clientLlmPrompting";
+import {
+  isPromptEligibleForRemoteLlm,
+  resolveClientLlmPromptText,
+  type ClientLlmPromptInput,
+} from "./clientLlmPrompting";
 import { LLM_CONFIG, getClientLlmModelInfo } from "./llmConfig";
 import {
   clearOpenRouterApiKey,
@@ -52,8 +56,8 @@ export interface ClientLlmStructuredTextResult extends ClientLlmTextGenerationRe
 }
 
 export interface ClientLlmRuntimeService {
-  tryGenerateText: (prompt: string, maxTokens?: number) => Promise<ClientLlmTextGenerationResult>;
-  generateStructuredText: (prompt: string, maxTokens?: number) => Promise<ClientLlmStructuredTextResult>;
+  tryGenerateText: (prompt: ClientLlmPromptInput, maxTokens?: number) => Promise<ClientLlmTextGenerationResult>;
+  generateStructuredText: (prompt: ClientLlmPromptInput, maxTokens?: number) => Promise<ClientLlmStructuredTextResult>;
 }
 
 class ClientLLMWorkerService {
@@ -158,8 +162,9 @@ class ClientLLMWorkerService {
     this.isInitialized = true;
   }
 
-  async generateText(prompt: string, maxTokens = 180, didRestart = false): Promise<string> {
+  async generateText(prompt: ClientLlmPromptInput, maxTokens = 180, didRestart = false): Promise<string> {
     const generationId = ++this.generationCounter;
+    const promptText = resolveClientLlmPromptText(prompt);
     if (LLM_CONFIG.preferOpenRouter && this.isOpenRouterFallbackUsable(prompt)) {
       try {
         return await this.generateTextWithOpenRouter(prompt, maxTokens, "proxy_first", generationId);
@@ -186,7 +191,7 @@ class ClientLLMWorkerService {
       }
     }
 
-    const localPromise = this.generateLocalText(prompt, maxTokens, didRestart, generationId);
+    const localPromise = this.generateLocalText(promptText, maxTokens, didRestart, generationId);
     if (LLM_CONFIG.preferOpenRouter || !this.shouldRaceOpenRouterFallback(prompt)) {
       return localPromise;
     }
@@ -194,7 +199,7 @@ class ClientLLMWorkerService {
     return this.raceLocalWithOpenRouterFallback(localPromise, prompt, maxTokens, generationId);
   }
 
-  async tryGenerateText(prompt: string, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
+  async tryGenerateText(prompt: ClientLlmPromptInput, maxTokens = 180): Promise<ClientLlmTextGenerationResult> {
     try {
       const text = await this.generateText(prompt, maxTokens);
       return {
@@ -212,7 +217,7 @@ class ClientLLMWorkerService {
     }
   }
 
-  async generateStructuredText(prompt: string, maxTokens = 180): Promise<ClientLlmStructuredTextResult> {
+  async generateStructuredText(prompt: ClientLlmPromptInput, maxTokens = 180): Promise<ClientLlmStructuredTextResult> {
     const result = await this.tryGenerateText(prompt, maxTokens);
     if (!result.ok) return result;
 
@@ -464,7 +469,7 @@ class ClientLLMWorkerService {
     });
   }
 
-  private shouldRaceOpenRouterFallback(prompt: string): boolean {
+  private shouldRaceOpenRouterFallback(prompt: ClientLlmPromptInput): boolean {
     return this.isOpenRouterFallbackUsable(prompt);
   }
 
@@ -476,14 +481,14 @@ class ClientLLMWorkerService {
     return LLM_CONFIG.preferOpenRouter && ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS;
   }
 
-  private getNoUsableTextProviderReason(prompt: string): string {
+  private getNoUsableTextProviderReason(prompt: ClientLlmPromptInput): string {
     if (this.isOpenRouterFallbackUsable(prompt)) {
       return this.openRouterLastError || "OpenRouter text generation failed.";
     }
     return "OpenRouter text generation is required, but the proxy is unavailable or the prompt is not eligible for remote inference.";
   }
 
-  private getImmediateOpenRouterFallbackReason(prompt: string): string | undefined {
+  private getImmediateOpenRouterFallbackReason(prompt: ClientLlmPromptInput): string | undefined {
     if (!this.isOpenRouterFallbackUsable(prompt)) {
       return undefined;
     }
@@ -504,14 +509,14 @@ class ClientLLMWorkerService {
     return undefined;
   }
 
-  private isOpenRouterFallbackUsable(prompt: string): boolean {
+  private isOpenRouterFallbackUsable(prompt: ClientLlmPromptInput): boolean {
     const status = this.getOpenRouterStatus();
     return status.enabled && status.configured && isPromptEligibleForRemoteLlm(prompt);
   }
 
   private async raceLocalWithOpenRouterFallback(
     localPromise: Promise<string>,
-    prompt: string,
+    prompt: ClientLlmPromptInput,
     maxTokens: number,
     generationId: number,
   ): Promise<string> {
@@ -544,13 +549,13 @@ class ClientLLMWorkerService {
   }
 
   private async generateTextWithOpenRouter(
-    prompt: string,
+    prompt: ClientLlmPromptInput,
     maxTokens: number,
     fallbackReason: string,
     generationId: number,
   ): Promise<string> {
     const result = await generateOpenRouterText({
-      prompt,
+      prompt: prompt as unknown as string,
       maxTokens,
       localModelName: this.currentModel,
       fallbackReason,

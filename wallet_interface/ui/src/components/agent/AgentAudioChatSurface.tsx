@@ -42,7 +42,14 @@ class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
     }
     if (output?.[0]) {
       output[0].fill(0);
-    }
+        const generatedReply = await clientLLMWorkerService.tryGenerateText(
+          {
+            prompt: voiceInferenceRequest.prompt,
+            systemPrompt: voiceInferenceRequest.systemPrompt,
+            userPrompt: voiceInferenceRequest.userPrompt,
+          },
+          120,
+        );
     return true;
   }
 }

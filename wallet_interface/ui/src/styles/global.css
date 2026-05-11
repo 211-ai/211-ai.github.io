@@ -2067,6 +2067,7 @@ body.playful-pulse .decor-shape {
 }
 
 .agent-audio-session-status {
+  display: none;
   margin: 0;
 }
 
@@ -2220,7 +2221,7 @@ body.playful-pulse .decor-shape {
 }
 
 .agent-audio-route {
-  display: grid;
+  display: none;
   gap: 2px;
   justify-items: center;
   min-width: 0;
@@ -4395,7 +4396,7 @@ html {
 body {
   background:
     linear-gradient(180deg, rgba(250, 251, 248, 0.82), rgba(243, 248, 246, 0.94)),
-    var(--abby-preview-f) center top / min(960px, 88vw) auto no-repeat;
+    var(--abby-preview-f) center top / min(960px, 88vw) auto no-repeat,
     linear-gradient(135deg, #fafbf8 0%, #f5f9f7 48%, #eaf5f8 100%);
   color: var(--abby-ink);
   overflow-x: hidden;

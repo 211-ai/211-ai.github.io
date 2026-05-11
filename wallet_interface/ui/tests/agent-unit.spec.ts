@@ -66,6 +66,7 @@ import {
   buildVoiceGraphRagPromptParts,
   selectEvidenceBundlesForMessage,
 } from "../src/lib/voiceGraphRagPrompt";
+import type { ClientLlmPromptInput } from "../src/lib/clientLlmPrompting";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
@@ -117,7 +118,7 @@ interface TestableClientLLMWorkerService {
   requestCounter: number;
   initialize: (modelName?: string) => Promise<void>;
   switchModel: (modelName: string) => Promise<void>;
-  generateText: (prompt: string, maxTokens?: number) => Promise<string>;
+  generateText: (prompt: ClientLlmPromptInput, maxTokens?: number) => Promise<string>;
   getCapabilities: () => Promise<TestLlmWorkerResponse>;
   getStatus: () => {
     currentDevice: ClientLlmDevice;
@@ -1051,10 +1052,43 @@ export class AudioModel {
       evidenceBundles: [evidence],
     });
 
-    expect(prompt.length).toBeLessThanOrEqual(1200);
+    expect(prompt.length).toBeGreaterThan(1200);
+    expect(prompt.length).toBeLessThanOrEqual(3600);
     expect(prompt).toContain("Evidence bundle for reasoning:");
     expect(prompt).toContain("Neighborhood Food Pantry");
     expect(prompt).toContain("doc svc-food-pantry-1");
+  });
+
+  test("routes audio general questions through GraphRAG when requested", async () => {
+    const invoked: AgentToolCall[] = [];
+    let localLlmCalls = 0;
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      localLlmService: {
+        tryGenerateText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM response should not run");
+        },
+        generateStructuredText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM tool selection should not run");
+        },
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("fasting", {
+      disableLocalLlmReasoning: true,
+      preferGraphRagForGeneralQuestions: true,
+    });
+
+    expect(localLlmCalls).toBe(0);
+    expect(invoked.map((toolCall) => toolCall.name)).toEqual(["answer_211_question"]);
+    expect(invoked[0].input).toMatchObject({
+      question: "fasting",
+      useLocalModel: false,
+    });
   });
 
   test("prefers the finalized transcript when resolving voice reply user text", () => {
@@ -1662,7 +1696,7 @@ export class AudioModel {
       enableLocalLlmResponses: true,
       localLlmService: {
         tryGenerateText: async (prompt) => {
-          prompts.push(prompt);
+          prompts.push(typeof prompt === "string" ? prompt : prompt.prompt);
           return {
             ok: true,
             text: "Abby: I can explain this screen and help you move to the right app surface.",
@@ -1880,6 +1914,138 @@ export class AudioModel {
       expect(requestBody.top_k).toBe(50);
       expect(service.lastGenerationProvider).toBe("openrouter");
       expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
+  test("sends voice system and user prompts separately to OpenRouter", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+    };
+    let requestBody: any;
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "wasm";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
+      service.capabilities = {
+        webGPU: false,
+        webGPUError: "navigator.gpu is unavailable",
+        webGPUShaderF16: false,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async () => {
+        throw new Error("local worker should not be used before OpenRouter");
+      };
+      globalThis.fetch = async (_input, init) => {
+        requestBody = JSON.parse(String(init?.body || "{}"));
+        return new Response(
+          JSON.stringify({
+            model: "liquid/lfm-2.5-1.2b-instruct:free",
+            choices: [{ message: { role: "assistant", content: "remote answer" } }],
+          }),
+          { headers: { "Content-Type": "application/json" }, status: 200 },
+        );
+      };
+
+      const promptParts = buildVoiceGraphRagPromptParts({
+        userText: "where can I break my fast tonight?",
+        assistantText: "Neighborhood Food Pantry can help today. Sources are shown on screen.",
+        evidenceBundles: [
+          {
+            id: "evidence-voice-openrouter",
+            query: "food pantry near Portland",
+            generatedAt: NOW,
+            items: [
+              {
+                id: "svc-food-openrouter",
+                title: "Neighborhood Food Pantry",
+                source: "211 service corpus",
+                snippet: "Offers pantry boxes and grocery pickup.",
+                citation: {
+                  label: "211 food pantry record",
+                  docId: "svc-food-openrouter",
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      const text = await service.generateText(
+        {
+          prompt: promptParts.fullPrompt,
+          systemPrompt: promptParts.systemPrompt,
+          userPrompt: promptParts.userPrompt,
+        },
+        64,
+      );
+
+      expect(text).toBe("remote answer");
+      expect(requestBody.messages).toEqual([
+        { role: "system", content: promptParts.systemPrompt },
+        { role: "user", content: promptParts.userPrompt },
+      ]);
+      expect(requestBody.messages[0].content).toContain("Evidence bundle for reasoning:");
+      expect(requestBody.messages[0].content).not.toContain("User voice query:");
+      expect(requestBody.messages[1].content).toBe("where can I break my fast tonight?");
+      expect(requestBody.max_tokens).toBe(64);
     } finally {
       service.worker = originalState.worker;
       service.isInitialized = originalState.isInitialized;

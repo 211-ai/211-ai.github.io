@@ -5,6 +5,14 @@ export interface ClientLlmChatMessage {
   content: string;
 }
 
+export interface ClientLlmPromptParts {
+  prompt: string;
+  systemPrompt?: string;
+  userPrompt?: string;
+}
+
+export type ClientLlmPromptInput = string | ClientLlmPromptParts;
+
 export interface ClientLlmGenerationParameters {
   do_sample?: boolean;
   temperature?: number;
@@ -13,8 +21,16 @@ export interface ClientLlmGenerationParameters {
   repetition_penalty?: number;
 }
 
-export function buildClientLlmChatMessages(prompt: string): ClientLlmChatMessage[] {
-  const assistantPrompt = parseAbbyAssistantResponsePrompt(prompt);
+export function buildClientLlmChatMessages(prompt: ClientLlmPromptInput): ClientLlmChatMessage[] {
+  if (typeof prompt !== "string") {
+    const structuredMessages = buildStructuredPromptMessages(prompt);
+    if (structuredMessages) {
+      return structuredMessages;
+    }
+  }
+
+  const promptText = flattenClientLlmPrompt(prompt);
+  const assistantPrompt = parseAbbyAssistantResponsePrompt(promptText);
   if (assistantPrompt) {
     return [
       {
@@ -35,7 +51,7 @@ export function buildClientLlmChatMessages(prompt: string): ClientLlmChatMessage
     ];
   }
 
-  const jsonMode = /\bReturn only one JSON object\b/i.test(prompt);
+  const jsonMode = /\bReturn only one JSON object\b/i.test(promptText);
   return [
     {
       role: "system",
@@ -45,7 +61,7 @@ export function buildClientLlmChatMessages(prompt: string): ClientLlmChatMessage
     },
     {
       role: "user",
-      content: prompt,
+      content: promptText,
     },
   ];
 }
@@ -83,12 +99,17 @@ export function getClientLlmGenerationParameters(modelName: string): ClientLlmGe
   };
 }
 
-export function isPromptEligibleForRemoteLlm(prompt: string): boolean {
+export function isPromptEligibleForRemoteLlm(prompt: ClientLlmPromptInput): boolean {
+  const promptText = flattenClientLlmPrompt(prompt);
   if (LLM_CONFIG.openRouterAllowPrivateContext) {
     return true;
   }
-  return !/"privateContext(?:Included|Allowed)"\s*:\s*true/i.test(prompt) &&
-    !/"permissionLevel"\s*:\s*"wallet_private"/i.test(prompt);
+  return !/"privateContext(?:Included|Allowed)"\s*:\s*true/i.test(promptText) &&
+    !/"permissionLevel"\s*:\s*"wallet_private"/i.test(promptText);
+}
+
+export function resolveClientLlmPromptText(prompt: ClientLlmPromptInput): string {
+  return typeof prompt === "string" ? prompt : prompt.prompt;
 }
 
 function isLiquidLfmModel(modelName: string): boolean {
@@ -120,4 +141,29 @@ function parseAbbyAssistantResponsePrompt(prompt: string): { systemContext: stri
   }
 
   return { systemContext, userMessage };
+}
+
+function buildStructuredPromptMessages(prompt: ClientLlmPromptParts): ClientLlmChatMessage[] | undefined {
+  const systemPrompt = prompt.systemPrompt?.trim();
+  const userPrompt = prompt.userPrompt?.trim();
+  if (!systemPrompt || !userPrompt) {
+    return undefined;
+  }
+  return [
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
+      role: "user",
+      content: userPrompt,
+    },
+  ];
+}
+
+function flattenClientLlmPrompt(prompt: ClientLlmPromptInput): string {
+  if (typeof prompt === "string") {
+    return prompt;
+  }
+  return [prompt.prompt, prompt.systemPrompt?.trim(), prompt.userPrompt?.trim()].filter(Boolean).join("\n");
 }

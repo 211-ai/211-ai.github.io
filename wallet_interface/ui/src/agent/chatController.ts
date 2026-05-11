@@ -283,14 +283,14 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       context,
       pendingConfirmations: session.confirmations.filter((confirmation) => confirmation.status === "pending")
     });
+    const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (turn.confirmationDecision) {
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
     }
     if (sendOptions.preferGraphRagForGeneralQuestions && shouldRouteGeneralQuestionToGraphRag(turn)) {
-      turn = createGraphRagAnswerTurn(content);
+      turn = createGraphRagAnswerTurn(content, localLlmReasoningEnabled);
     }
-    const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (!localLlmReasoningEnabled) {
       if (shouldTryLocalLlmResponse(turn)) {
         turn = {
@@ -908,14 +908,14 @@ function shouldRouteGeneralQuestionToGraphRag(turn: AgentPlannedTurn): boolean {
   return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
 }
 
-function createGraphRagAnswerTurn(content: string): AgentPlannedTurn {
+function createGraphRagAnswerTurn(content: string, useLocalModel = true): AgentPlannedTurn {
   return {
     intentKind: "service_navigation",
     summary: "Answer with GraphRAG evidence and LLM synthesis.",
     tools: [
       {
         name: "answer_211_question",
-        input: { question: content, useLocalModel: true },
+        input: { question: content, useLocalModel },
         title: getToolDefinition("answer_211_question").title,
       },
     ],
