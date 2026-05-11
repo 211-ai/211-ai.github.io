@@ -9,6 +9,7 @@ import {
 } from "./openRouterClient";
 
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
+const ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS = import.meta.env?.VITE_ALLOW_LOCAL_LLM_FALLBACK === "true";
 type ClientLlmProvider = "local" | "openrouter";
 
 interface PendingRequest<T> {
@@ -84,7 +85,7 @@ class ClientLLMWorkerService {
 
   constructor() {
     this.initializeWorker();
-    if (LLM_CONFIG.preferOpenRouter) {
+    if (this.shouldWarmLocalInBackground()) {
       this.startLocalWarmupInBackground();
     }
   }
@@ -160,13 +161,19 @@ class ClientLLMWorkerService {
   async generateText(prompt: string, maxTokens = 180, didRestart = false): Promise<string> {
     const generationId = ++this.generationCounter;
     if (LLM_CONFIG.preferOpenRouter && this.isOpenRouterFallbackUsable(prompt)) {
-      this.startLocalWarmupInBackground();
       try {
         return await this.generateTextWithOpenRouter(prompt, maxTokens, "proxy_first", generationId);
       } catch (error) {
         this.recordOpenRouterError(error);
+        if (!this.shouldAllowLocalFallback()) {
+          throw toError(error, "OpenRouter text generation failed.");
+        }
         console.warn(`OpenRouter proxy unavailable; using local LLM path. ${formatError(error)}`, error);
       }
+    }
+
+    if (LLM_CONFIG.preferOpenRouter && !this.shouldAllowLocalFallback()) {
+      throw new Error(this.getNoUsableTextProviderReason(prompt));
     }
 
     const remoteFallbackReason = this.getImmediateOpenRouterFallbackReason(prompt);
@@ -334,6 +341,9 @@ class ClientLLMWorkerService {
   }
 
   private startLocalWarmupInBackground(modelName = this.currentModel): void {
+    if (!this.shouldWarmLocalInBackground()) {
+      return;
+    }
     if (this.localWarmupPromise || this.isInitialized || this.isInitializing || !this.worker) {
       return;
     }
@@ -458,6 +468,21 @@ class ClientLLMWorkerService {
     return this.isOpenRouterFallbackUsable(prompt);
   }
 
+  private shouldAllowLocalFallback(): boolean {
+    return !LLM_CONFIG.preferOpenRouter || ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS;
+  }
+
+  private shouldWarmLocalInBackground(): boolean {
+    return LLM_CONFIG.preferOpenRouter && ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS;
+  }
+
+  private getNoUsableTextProviderReason(prompt: string): string {
+    if (this.isOpenRouterFallbackUsable(prompt)) {
+      return this.openRouterLastError || "OpenRouter text generation failed.";
+    }
+    return "OpenRouter text generation is required, but the proxy is unavailable or the prompt is not eligible for remote inference.";
+  }
+
   private getImmediateOpenRouterFallbackReason(prompt: string): string | undefined {
     if (!this.isOpenRouterFallbackUsable(prompt)) {
       return undefined;
@@ -555,6 +580,10 @@ class ClientLLMWorkerService {
 
 function isWorkerRestartRequiredError(error: unknown): boolean {
   return error instanceof Error && error.message.startsWith(WORKER_RESTART_REQUIRED_PREFIX);
+}
+
+function toError(error: unknown, fallbackMessage: string): Error {
+  return error instanceof Error ? error : new Error(fallbackMessage);
 }
 
 function formatWorkerRestartReason(error: unknown): string {

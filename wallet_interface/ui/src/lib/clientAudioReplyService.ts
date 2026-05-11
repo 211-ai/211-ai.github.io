@@ -93,7 +93,7 @@ interface ClientAudioProgressOptions {
 interface ClientAudioReplyServiceOptions {
   createWorker?: () => Worker;
   generateRemoteAudio?: (options: {
-    mode: "voice-reply";
+    mode: "tts" | "voice-reply";
     text: string;
     systemPrompt?: string;
     userPrompt?: string;
@@ -128,7 +128,7 @@ export class ClientAudioReplyService {
   private remoteAudioLastUsedAt: string | undefined;
   private readonly createWorker: () => Worker;
   private readonly generateRemoteAudio: (options: {
-    mode: "voice-reply";
+    mode: "tts" | "voice-reply";
     text: string;
     systemPrompt?: string;
     userPrompt?: string;
@@ -241,7 +241,7 @@ export class ClientAudioReplyService {
       this.startLocalWarmupInBackground();
       try {
         return await this.generateProxyAudio({
-          mode: "voice-reply",
+          mode: "tts",
           text: normalizedText,
           localModelName: modelName,
           onProgress: options.onProgress,
@@ -443,7 +443,7 @@ export class ClientAudioReplyService {
   }
 
   private async generateProxyAudio(options: {
-    mode: "voice-reply";
+    mode: "tts" | "voice-reply";
     text: string;
     systemPrompt?: string;
     userPrompt?: string;

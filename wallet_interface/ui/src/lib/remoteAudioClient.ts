@@ -1,6 +1,6 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
-import { createVoiceProxyFormData } from "./voiceProxyPayload";
+import { createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
   audioBlob: Blob;
@@ -10,11 +10,11 @@ export interface RemoteAudioGenerationResult {
 }
 
 export function isRemoteVoiceProxyConfigured(): boolean {
-  return Boolean(getRemoteVoiceProxyEndpoint("voice-reply"));
+  return Boolean(getRemoteVoiceProxyEndpoint("tts") || getRemoteVoiceProxyEndpoint("voice-reply"));
 }
 
 export async function generateRemoteAudio(options: {
-  mode: "voice-reply";
+  mode: "tts" | "voice-reply";
   text: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -56,14 +56,20 @@ export async function generateRemoteAudio(options: {
   return normalized;
 }
 
-function getRemoteVoiceProxyEndpoint(_mode: "voice-reply"): string {
+function getRemoteVoiceProxyEndpoint(mode: "tts" | "voice-reply"): string {
+  if (mode === "tts") {
+    return resolvePublicHttpsUrl(AUDIO_CHAT_CONFIG.voiceProxyTtsUrl);
+  }
   return resolvePublicHttpsUrl(AUDIO_CHAT_CONFIG.voiceProxyInferUrl);
 }
 
-function buildHeaders(): HeadersInit {
+function buildHeaders(mode: "tts" | "voice-reply"): HeadersInit {
   const headers: Record<string, string> = {
     Accept: "audio/wav, audio/*, application/json",
   };
+  if (mode === "tts") {
+    headers["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8";
+  }
   const origin = getBrowserOrigin();
   if (origin) {
     headers["X-Title"] = "Abby 211";
@@ -73,16 +79,23 @@ function buildHeaders(): HeadersInit {
 }
 
 function buildRequestInit(options: {
-  mode: "voice-reply";
+  mode: "tts" | "voice-reply";
   text: string;
   systemPrompt?: string;
   userPrompt?: string;
   fallbackText?: string;
   audioBlob?: Blob;
 }): RequestInit {
+  if (options.mode === "tts") {
+    return {
+      method: "POST",
+      headers: buildHeaders(options.mode),
+      body: createVoiceProxyTtsBody({ text: options.text }),
+    };
+  }
   return {
     method: "POST",
-    headers: buildHeaders(),
+    headers: buildHeaders(options.mode),
     body: createVoiceProxyFormData({
       mode: options.mode,
       audioBlob: options.audioBlob,

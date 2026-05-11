@@ -107,6 +107,7 @@ interface TestableClientLLMWorkerService {
   lastGenerationProvider: "local" | "openrouter";
   generationCounter: number;
   generationWinnerId: number;
+  localWarmupPromise: Promise<void> | null;
   capabilities: TestLlmCapabilities;
   pendingRequests: Map<string, { reject: (reason?: unknown) => void }>;
   requestCounter: number;
@@ -692,7 +693,7 @@ export class AudioModel {
     );
   });
 
-  test("uses the voice proxy before local audio generation and warms local audio in the background", async () => {
+  test("uses the voice proxy TTS route before local audio generation and warms local audio in the background", async () => {
     const workerRequests: string[] = [];
     const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
     const progressEvents: ClientAudioProgress[] = [];
@@ -729,13 +730,9 @@ export class AudioModel {
       voiceProxyEnabled: true,
     });
 
-    const result = await service.generateVoiceReply(
-      {
-        prompt: "User voice query: where can I find food?\nEvidence bundle for reasoning:\n[1] Neighborhood Pantry.",
-        fallbackText: "Neighborhood Pantry can help with food today.",
-      },
-      { onProgress: (progress) => progressEvents.push(progress) },
-    );
+    const result = await service.generateAudio("Neighborhood Pantry can help with food today.", {
+      onProgress: (progress) => progressEvents.push(progress),
+    });
 
     expect(result).toMatchObject({
       kind: "audio",
@@ -1709,6 +1706,7 @@ export class AudioModel {
       lastGenerationProvider: service.lastGenerationProvider,
       generationCounter: service.generationCounter,
       generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
       capabilities: service.capabilities,
       pendingRequests: service.pendingRequests,
       requestCounter: service.requestCounter,
@@ -1732,6 +1730,7 @@ export class AudioModel {
       service.lastGenerationModel = LLM_CONFIG.defaultModel;
       service.lastGenerationProvider = "local";
       service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
       service.capabilities = {
         webGPU: false,
         webGPUError: "navigator.gpu is unavailable",
@@ -1761,7 +1760,7 @@ export class AudioModel {
       const text = await service.generateText("What can you do?", 64);
 
       expect(text).toBe("remote answer");
-      expect(calls).toEqual(["initialize"]);
+      expect(calls).toEqual([]);
       expect(requestBody.model).toBe("liquid/lfm-2.5-1.2b-instruct:free");
       expect(requestBody.messages[0]).toMatchObject({ role: "system" });
       expect(requestBody.max_tokens).toBe(64);
@@ -1783,6 +1782,7 @@ export class AudioModel {
       service.lastGenerationProvider = originalState.lastGenerationProvider;
       service.generationCounter = originalState.generationCounter;
       service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
       service.capabilities = originalState.capabilities;
       service.pendingRequests = originalState.pendingRequests;
       service.requestCounter = originalState.requestCounter;
@@ -1792,7 +1792,7 @@ export class AudioModel {
     }
   });
 
-  test("uses OpenRouter while the local LLM is still warming up", async () => {
+  test("uses OpenRouter without starting local LLM warmup when proxy-first mode is enabled", async () => {
     const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
     const restoreStorage = installMemoryLocalStorage();
     const originalState = {
@@ -1810,6 +1810,7 @@ export class AudioModel {
       lastGenerationProvider: service.lastGenerationProvider,
       generationCounter: service.generationCounter,
       generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
       capabilities: service.capabilities,
       pendingRequests: service.pendingRequests,
       requestCounter: service.requestCounter,
@@ -1833,6 +1834,7 @@ export class AudioModel {
       service.lastGenerationModel = LLM_CONFIG.defaultModel;
       service.lastGenerationProvider = "local";
       service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
       service.capabilities = {
         webGPU: true,
         webGPUShaderF16: true,
@@ -1845,24 +1847,6 @@ export class AudioModel {
       service.requestCounter = 0;
       service.sendWorkerRequest = async (type, data) => {
         calls.push(`${type}:${data.modelName || ""}`);
-        await new Promise((resolve) => setTimeout(resolve, 25));
-        if (type === "initialize") {
-          service.isInitialized = true;
-          return {
-            isInitialized: true,
-            modelName: data.modelName,
-            device: "webgpu",
-            capabilities: service.capabilities,
-          };
-        }
-        if (type === "generate") {
-          return {
-            text: "local answer",
-            modelName: LLM_CONFIG.defaultModel,
-            device: "webgpu",
-            capabilities: service.capabilities,
-          };
-        }
         throw new Error(`Unexpected worker request ${type}`);
       };
       globalThis.fetch = async () =>
@@ -1875,10 +1859,10 @@ export class AudioModel {
         );
 
       const text = await service.generateText("Summarize housing options.", 80);
-      await new Promise((resolve) => setTimeout(resolve, 60));
 
       expect(text).toBe("remote during warmup");
-      expect(calls).toContain(`initialize:${LLM_CONFIG.defaultModel}`);
+  expect(calls).toEqual([]);
+  expect(service.localWarmupPromise).toBeNull();
       expect(service.lastGenerationProvider).toBe("openrouter");
       expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
     } finally {
@@ -1896,6 +1880,7 @@ export class AudioModel {
       service.lastGenerationProvider = originalState.lastGenerationProvider;
       service.generationCounter = originalState.generationCounter;
       service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
       service.capabilities = originalState.capabilities;
       service.pendingRequests = originalState.pendingRequests;
       service.requestCounter = originalState.requestCounter;
@@ -1905,7 +1890,7 @@ export class AudioModel {
     }
   });
 
-  test("prefers OpenRouter for the first response even when the local model is available", async () => {
+  test("prefers OpenRouter for the first response without touching the local model", async () => {
     const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
     const restoreStorage = installMemoryLocalStorage();
     const originalState = {
@@ -1922,6 +1907,7 @@ export class AudioModel {
       lastGenerationProvider: service.lastGenerationProvider,
       generationCounter: service.generationCounter,
       generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
       capabilities: service.capabilities,
       pendingRequests: service.pendingRequests,
       requestCounter: service.requestCounter,
@@ -1944,6 +1930,7 @@ export class AudioModel {
       service.lastGenerationModel = LLM_CONFIG.defaultModel;
       service.lastGenerationProvider = "local";
       service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
       service.capabilities = {
         webGPU: true,
         webGPUShaderF16: true,
@@ -1980,10 +1967,10 @@ export class AudioModel {
         );
 
       const text = await service.generateText("Find food nearby.", 72);
-      await new Promise((resolve) => setTimeout(resolve, 20));
 
       expect(text).toBe("proxy-first answer");
-      expect(calls).toEqual([`initialize:${LLM_CONFIG.defaultModel}`]);
+  expect(calls).toEqual([]);
+  expect(service.localWarmupPromise).toBeNull();
       expect(service.lastGenerationProvider).toBe("openrouter");
       expect(service.lastGenerationModel).toBe("liquid/lfm-2.5-1.2b-instruct:free");
     } finally {
@@ -2000,6 +1987,92 @@ export class AudioModel {
       service.lastGenerationProvider = originalState.lastGenerationProvider;
       service.generationCounter = originalState.generationCounter;
       service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
+      service.capabilities = originalState.capabilities;
+      service.pendingRequests = originalState.pendingRequests;
+      service.requestCounter = originalState.requestCounter;
+      service.sendWorkerRequest = originalState.sendWorkerRequest;
+      globalThis.fetch = originalState.fetch;
+      restoreStorage();
+    }
+  });
+
+  test("throws the OpenRouter failure instead of falling back to local LLM when proxy-first mode is enabled", async () => {
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const restoreStorage = installMemoryLocalStorage();
+    const originalState = {
+      worker: service.worker,
+      isInitialized: service.isInitialized,
+      isInitializing: service.isInitializing,
+      currentModel: service.currentModel,
+      currentDevice: service.currentDevice,
+      capabilitiesKnown: service.capabilitiesKnown,
+      webGPUFallbackReason: service.webGPUFallbackReason,
+      openRouterLastError: service.openRouterLastError,
+      openRouterLastUsedAt: service.openRouterLastUsedAt,
+      lastGenerationModel: service.lastGenerationModel,
+      lastGenerationProvider: service.lastGenerationProvider,
+      generationCounter: service.generationCounter,
+      generationWinnerId: service.generationWinnerId,
+      localWarmupPromise: service.localWarmupPromise,
+      capabilities: service.capabilities,
+      pendingRequests: service.pendingRequests,
+      requestCounter: service.requestCounter,
+      sendWorkerRequest: service.sendWorkerRequest,
+      fetch: globalThis.fetch,
+    };
+    const calls: string[] = [];
+
+    try {
+      globalThis.localStorage.setItem(OPENROUTER_API_KEY_STORAGE_KEY, "test-openrouter-key");
+      service.worker = { terminate: () => undefined };
+      service.isInitialized = false;
+      service.isInitializing = false;
+      service.currentModel = LLM_CONFIG.defaultModel;
+      service.currentDevice = "webgpu";
+      service.capabilitiesKnown = true;
+      service.webGPUFallbackReason = undefined;
+      service.openRouterLastError = undefined;
+      service.openRouterLastUsedAt = undefined;
+      service.lastGenerationModel = LLM_CONFIG.defaultModel;
+      service.lastGenerationProvider = "local";
+      service.generationWinnerId = 0;
+      service.localWarmupPromise = null;
+      service.capabilities = {
+        webGPU: true,
+        webGPUShaderF16: true,
+        simd: true,
+        wasmThreads: true,
+        crossOriginIsolated: true,
+        sharedArrayBuffer: true,
+      };
+      service.pendingRequests = new Map();
+      service.requestCounter = 0;
+      service.sendWorkerRequest = async (type) => {
+        calls.push(type);
+        throw new Error("local worker should stay idle");
+      };
+      globalThis.fetch = async () => new Response("proxy failed", { headers: { "Content-Type": "text/plain" }, status: 502 });
+
+      await expect(service.generateText("Need housing help.", 72)).rejects.toThrow(/OpenRouter request failed with 502/i);
+
+      expect(calls).toEqual([]);
+      expect(service.openRouterLastError).toMatch(/502/);
+    } finally {
+      service.worker = originalState.worker;
+      service.isInitialized = originalState.isInitialized;
+      service.isInitializing = originalState.isInitializing;
+      service.currentModel = originalState.currentModel;
+      service.currentDevice = originalState.currentDevice;
+      service.capabilitiesKnown = originalState.capabilitiesKnown;
+      service.webGPUFallbackReason = originalState.webGPUFallbackReason;
+      service.openRouterLastError = originalState.openRouterLastError;
+      service.openRouterLastUsedAt = originalState.openRouterLastUsedAt;
+      service.lastGenerationModel = originalState.lastGenerationModel;
+      service.lastGenerationProvider = originalState.lastGenerationProvider;
+      service.generationCounter = originalState.generationCounter;
+      service.generationWinnerId = originalState.generationWinnerId;
+      service.localWarmupPromise = originalState.localWarmupPromise;
       service.capabilities = originalState.capabilities;
       service.pendingRequests = originalState.pendingRequests;
       service.requestCounter = originalState.requestCounter;

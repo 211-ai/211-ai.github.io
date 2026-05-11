@@ -3,11 +3,7 @@ import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../../agent/types";
 import type { ClientAudioProgress } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
-import {
-  buildVoiceFallbackText,
-  buildVoiceGraphRagPromptParts,
-  selectEvidenceBundlesForMessage,
-} from "../../lib/voiceGraphRagPrompt";
+import { buildVoiceFallbackText } from "../../lib/voiceGraphRagPrompt";
 import { createWavBlobFromFloat32Chunks } from "../../lib/voiceProxyPayload";
 import { Button } from "../ui";
 
@@ -21,7 +17,7 @@ type BrowserAudioWorkletNode = AudioWorkletNode;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
-const AUDIO_OPENING_CLIP_URL = `${import.meta.env.BASE_URL}assets/audio/intro.wav`;
+const AUDIO_OPENING_CLIP_URL = `${import.meta.env?.BASE_URL || "/"}assets/audio/intro.wav`;
 const VAD_MIN_RMS = 0.025;
 const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;
@@ -625,14 +621,7 @@ export function AgentAudioChatSurface({
     setStatusDetail("");
     setAudioDiagnostic("");
     const requestId = ++audioProgressRequestIdRef.current;
-    const userText = resolveVoiceReplyUserText(messages, message, pendingVoiceTranscriptRef.current);
     pendingVoiceTranscriptRef.current = "";
-    const promptParts = buildVoiceGraphRagPromptParts({
-      userText,
-      assistantText: message.content,
-      evidenceBundles: selectEvidenceBundlesForMessage(message, evidenceBundles),
-    });
-    const prompt = promptParts.fullPrompt;
     const fallbackText = buildVoiceFallbackText(message.content);
     setModelProgress({
       phase: "queued",
@@ -640,13 +629,7 @@ export function AgentAudioChatSurface({
       status: "Preparing audio reply.",
     });
     try {
-      const result = await clientAudioReplyService.generateVoiceReply({
-        prompt,
-        systemPrompt: promptParts.systemPrompt,
-        userPrompt: promptParts.userPrompt,
-        fallbackText,
-        audioBlob: lastCapturedVoiceBlobRef.current || undefined,
-      }, {
+      const result = await clientAudioReplyService.generateAudio(fallbackText || message.content, {
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       lastCapturedVoiceBlobRef.current = null;
