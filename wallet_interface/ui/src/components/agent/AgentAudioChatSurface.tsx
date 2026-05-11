@@ -18,7 +18,6 @@ type BrowserAudioContextConstructor = new () => BrowserAudioContext;
 type BrowserScriptProcessorNode = ScriptProcessorNode & { onaudioprocess: ((event: AudioProcessingEvent) => void) | null };
 type BrowserAudioWorklet = { addModule: (moduleUrl: string) => Promise<void> };
 type BrowserAudioWorkletNode = AudioWorkletNode;
-type VoiceOutputMode = "tts-primary" | "voice-inference-fallback" | "browser-speech";
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
@@ -114,7 +113,6 @@ export function AgentAudioChatSurface({
   const [muted, setMuted] = useState(false);
   const [statusDetail, setStatusDetail] = useState("");
   const [audioDiagnostic, setAudioDiagnostic] = useState("");
-  const [voiceOutputMode, setVoiceOutputMode] = useState<VoiceOutputMode>("tts-primary");
   const [voiceDetectionEnabled, setVoiceDetectionEnabled] = useState(true);
   const finalTranscriptRef = useRef("");
   const pendingVoiceTranscriptRef = useRef("");
@@ -170,7 +168,6 @@ export function AgentAudioChatSurface({
       setSessionState("ready");
       setStatusDetail("");
       setAudioDiagnostic("");
-      setVoiceOutputMode("tts-primary");
       setMicLevel(0);
       setVoiceDetectionEnabled(true);
       voiceDetectionEnabledRef.current = true;
@@ -207,17 +204,14 @@ export function AgentAudioChatSurface({
           audioOutputReadyRef.current = true;
           setStatusDetail("Audio model ready.");
           setAudioDiagnostic("");
-          setVoiceOutputMode("tts-primary");
         } else if (result.kind === "remote-ready") {
           audioOutputReadyRef.current = true;
           setStatusDetail("Voice proxy ready.");
           setAudioDiagnostic("");
-          setVoiceOutputMode("tts-primary");
         } else {
           audioOutputReadyRef.current = false;
           setStatusDetail("Browser speech output ready.");
           setAudioDiagnostic(result.fallbackReason);
-          setVoiceOutputMode("browser-speech");
         }
       })
       .catch((error) => {
@@ -647,7 +641,6 @@ export function AgentAudioChatSurface({
     });
     pendingVoiceTranscriptRef.current = "";
     try {
-      setVoiceOutputMode(message.status === "failed" ? "voice-inference-fallback" : "tts-primary");
       const result = message.status === "failed"
         ? await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
             onProgress: (progress) => updateModelProgress(requestId, progress),
@@ -660,7 +653,6 @@ export function AgentAudioChatSurface({
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
       try {
-        setVoiceOutputMode("voice-inference-fallback");
         const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
           onProgress: (progress) => updateModelProgress(requestId, progress),
         });
@@ -710,7 +702,6 @@ export function AgentAudioChatSurface({
         audioRef.current = null;
         setStatusDetail("Using browser speech output.");
         setAudioDiagnostic("Generated audio could not be played in this browser.");
-        setVoiceOutputMode("browser-speech");
         playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
       };
       audio.onended = () => {
@@ -730,7 +721,6 @@ export function AgentAudioChatSurface({
     }
     setStatusDetail("Using browser speech output.");
     setAudioDiagnostic(result.fallbackReason);
-    setVoiceOutputMode("browser-speech");
     playBrowserSpeech(result.text, restartVoiceActivityDetectionSoon);
   }
 
@@ -902,9 +892,6 @@ export function AgentAudioChatSurface({
       <div className="agent-current-task agent-audio-session-status" role="status">
         <small>Voice chat</small>
         <span>{statusDetail || statusLabel}</span>
-        <div className="agent-audio-mode-badge" aria-label="Voice output mode">
-          {formatVoiceOutputModeLabel(voiceOutputMode)}
-        </div>
       </div>
 
       {modelProgress ? (
@@ -1070,16 +1057,6 @@ export function buildVoiceInferenceFallbackRequest(input: {
     fallbackText: buildVoiceFallbackText(input.assistantMessage.content),
     audioBlob: input.audioBlob,
   };
-}
-
-export function formatVoiceOutputModeLabel(mode: VoiceOutputMode): string {
-  if (mode === "voice-inference-fallback") {
-    return "Mode: fallback GraphRAG + query -> voice inference";
-  }
-  if (mode === "browser-speech") {
-    return "Mode: browser speech fallback";
-  }
-  return "Mode: default GraphRAG + query -> LLM -> TTS";
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {

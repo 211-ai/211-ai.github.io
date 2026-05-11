@@ -46,20 +46,13 @@ import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
 import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
-import { get211CorpusAssetUrl } from "../src/lib/graphrag/corpus";
-import { ragSearchWorkerService } from "../src/lib/graphrag/searchWorkerService";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import {
   buildVoiceInferenceFallbackRequest,
-  formatVoiceOutputModeLabel,
   resolveVoiceReplyUserText,
 } from "../src/components/agent/AgentAudioChatSurface";
-import {
-  formatTextRoutingMode,
-  formatVoiceRoutingMode,
-} from "../src/components/agent/AgentRuntimeStatus";
 import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
@@ -74,7 +67,6 @@ import {
 } from "../src/lib/voiceGraphRagPrompt";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
-import { answer211InfoQuestion } from "../src/services/graphRagService";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
@@ -1140,22 +1132,6 @@ export class AudioModel {
     expect(request.fallbackText).toBe("OpenRouter text generation failed.");
   });
 
-  test("formats visible routing badges for text and voice modes", () => {
-    expect(formatTextRoutingMode()).toBe("Text: GraphRAG + query -> LLM (proxy-only)");
-    expect(formatVoiceRoutingMode({
-      remoteAudioEnabled: true,
-      remoteAudioConfigured: true,
-      remoteAudioEndpoint: "https://animegf.chat:8790/api/voice/infer",
-      localAudioEnabled: true,
-      localAudioAvailable: true,
-      localAudioReady: false,
-      fallbackVoiceAvailable: true,
-    })).toBe("Voice: default GraphRAG + query -> LLM -> TTS; fallback -> voice inference");
-    expect(formatVoiceOutputModeLabel("tts-primary")).toBe("Mode: default GraphRAG + query -> LLM -> TTS");
-    expect(formatVoiceOutputModeLabel("voice-inference-fallback")).toBe("Mode: fallback GraphRAG + query -> voice inference");
-    expect(formatVoiceOutputModeLabel("browser-speech")).toBe("Mode: browser speech fallback");
-  });
-
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
     const currentCaches = new Set(["abby-shell-portal-077-v1", "abby-public-service-detail-portal-077-v1"]);
 
@@ -1743,7 +1719,7 @@ export class AudioModel {
     expect(controller.getSnapshot().messages.at(-1)?.content).not.toMatch(/You are on home\./);
   });
 
-  test("preserves GraphRAG LLM answers when local LLM reasoning is disabled", async () => {
+  test("disables local GraphRAG model answers when local LLM reasoning is disabled", async () => {
     const invoked: AgentToolCall[] = [];
     const controller = createAgentChatController({
       surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
@@ -1764,77 +1740,8 @@ export class AudioModel {
     expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate", "answer_211_question"]);
     expect(invoked[1].input).toMatchObject({
       question: "tell me about 211 shelter eligibility",
-      useLocalModel: true,
+      useLocalModel: false,
     });
-  });
-
-  test("routes general audio turns through the GraphRAG answer tool", async () => {
-    const invoked: AgentToolCall[] = [];
-    let localLlmCalls = 0;
-    const controller = createAgentChatController({
-      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
-      localLlmService: {
-        tryGenerateText: async () => {
-          localLlmCalls += 1;
-          throw new Error("local LLM response should not run");
-        },
-        generateStructuredText: async () => {
-          localLlmCalls += 1;
-          throw new Error("local LLM tool selection should not run");
-        },
-      },
-      now: () => NOW,
-      createId: (prefix) => `${prefix}-unit`,
-    });
-
-    await controller.sendMessage("what should I do next", {
-      disableLocalLlmReasoning: true,
-      preferGraphRagForGeneralQuestions: true,
-    });
-
-    expect(localLlmCalls).toBe(0);
-    expect(invoked.map((toolCall) => toolCall.name)).toEqual(["answer_211_question"]);
-    expect(invoked[0].input).toMatchObject({
-      question: "what should I do next",
-      useLocalModel: true,
-    });
-  });
-
-  test("calls the GraphRAG LLM path even when retrieval returns no evidence", async () => {
-    const originalBuildEvidence = ragSearchWorkerService.buildEvidence.bind(ragSearchWorkerService);
-    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
-    const originalGenerateText = service.generateText.bind(service);
-    const prompts: string[] = [];
-
-    try {
-      ragSearchWorkerService.buildEvidence = async (query: string) => ({
-        query,
-        results: [],
-        nodes: [],
-        edges: [],
-      });
-      service.generateText = async (prompt: string) => {
-        prompts.push(prompt);
-        return "No matching records were retrieved, so tell the user to contact 211 directly.";
-      };
-
-      const result = await answer211InfoQuestion("where can I get help today?");
-
-      expect(prompts).toHaveLength(1);
-      expect(prompts[0]).toContain("Question: where can I get help today?");
-      expect(result.answer).toContain("I could not find a relevant record in the local 211 corpus");
-      expect(result.usedLocalModel).toBe(false);
-    } finally {
-      ragSearchWorkerService.buildEvidence = originalBuildEvidence;
-      service.generateText = originalGenerateText;
-    }
-  });
-
-  test("builds GraphRAG corpus asset URLs without requiring an absolute base URL", () => {
-    expect(() => get211CorpusAssetUrl("generated/generated-manifest.json")).not.toThrow();
-    expect(get211CorpusAssetUrl("generated/generated-manifest.json")).toContain(
-      "/corpus/211-info/current/generated/generated-manifest.json",
-    );
   });
 
   test("uses OpenRouter when WebGPU is unavailable for the default client LLM", async () => {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Check, Cloud, Cpu, Gauge, KeyRound, RefreshCw, Trash2, Zap } from "lucide-react";
-import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../../lib/llmConfig";
+import { SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../../lib/llmConfig";
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
 
@@ -254,9 +254,6 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
               <Cloud aria-hidden="true" size={12} />
               {formatOpenRouterStatus(status.openRouter)}
             </small>
-            <div className="agent-runtime-routing-badges" aria-label="Assistant routing mode">
-              <span className="agent-runtime-routing-badge">{formatTextRoutingMode()}</span>
-            </div>
           </div>
           {audioStatus ? (
             <div className="agent-runtime-audio">
@@ -264,9 +261,6 @@ export function AgentRuntimeStatus({ open, showModelSelector = true }: { open: b
                 <Cloud aria-hidden="true" size={12} />
                 {formatVoiceProxyStatus(audioStatus)}
               </small>
-              <div className="agent-runtime-routing-badges" aria-label="Voice routing mode">
-                <span className="agent-runtime-routing-badge">{formatVoiceRoutingMode(audioStatus)}</span>
-              </div>
               <dl className="agent-runtime-details" aria-label="Voice proxy details">
                 <div>
                   <dt>Voice proxy</dt>
@@ -367,30 +361,6 @@ function formatOpenRouterStatus(status: ClientLlmRuntimeStatus["openRouter"]): s
     return `cloud fallback ready (${status.credentialSource})`;
   }
   return "configure HTTPS proxy for cloud fallback";
-}
-
-export function formatTextRoutingMode(): string {
-  return LLM_CONFIG.preferOpenRouter && !allowLocalLlmFallback()
-    ? "Text: GraphRAG + query -> LLM (proxy-only)"
-    : LLM_CONFIG.preferOpenRouter
-      ? "Text: GraphRAG + query -> LLM (proxy first)"
-      : "Text: GraphRAG + query -> LLM (local allowed)";
-}
-
-export function formatVoiceRoutingMode(status: ClientAudioRuntimeStatus): string {
-  if (!status.remoteAudioEnabled) {
-    return "Voice: browser/local only";
-  }
-  if (!status.remoteAudioConfigured) {
-    return status.fallbackVoiceAvailable
-      ? "Voice: TTS unavailable; browser/local fallback"
-      : "Voice: TTS unavailable";
-  }
-  return "Voice: default GraphRAG + query -> LLM -> TTS; fallback -> voice inference";
-}
-
-function allowLocalLlmFallback(): boolean {
-  return import.meta.env?.VITE_ALLOW_LOCAL_LLM_FALLBACK === "true";
 }
 
 function formatVoiceProxyStatus(status: ClientAudioRuntimeStatus): string {
