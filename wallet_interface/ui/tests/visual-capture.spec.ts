@@ -737,8 +737,10 @@ async function seedInteractionsCaptureState(page: Page) {
 
 async function verifyShelterStaffForCapture(page: Page) {
   await page.goto("/#/shelter");
-  await expect(page.locator("h1", { hasText: /Provider overview/i })).toBeVisible();
-  await page.getByLabel(/Staff identity/i).selectOption("staff-demo-rose");
+  await expect(page.locator(".screen")).toBeVisible();
+  const staffIdentity = page.getByLabel(/Staff identity/i);
+  await expect(staffIdentity).toBeVisible({ timeout: 15000 });
+  await staffIdentity.selectOption("staff-demo-rose");
 }
 
 async function captureScenarioScreenshot(page: Page, outputPath: string): Promise<string[]> {
