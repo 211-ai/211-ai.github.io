@@ -49,6 +49,7 @@ import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
+import { resolveVoiceReplyUserText } from "../src/components/agent/AgentAudioChatSurface";
 import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
@@ -1050,6 +1051,30 @@ export class AudioModel {
     expect(prompt).toContain("Evidence bundle for reasoning:");
     expect(prompt).toContain("Neighborhood Food Pantry");
     expect(prompt).toContain("doc svc-food-pantry-1");
+  });
+
+  test("prefers the finalized transcript when resolving voice reply user text", () => {
+    const messages: AgentMessage[] = [
+      {
+        id: "user-older",
+        sessionId: "session-unit",
+        role: "user",
+        content: "older typed request",
+        createdAt: NOW,
+        status: "complete",
+      },
+      {
+        id: "assistant-1",
+        sessionId: "session-unit",
+        role: "assistant",
+        content: "Here is the answer.",
+        createdAt: NOW,
+        status: "complete",
+      },
+    ];
+
+    expect(resolveVoiceReplyUserText(messages, messages[1], "latest transcribed request")).toBe("latest transcribed request");
+    expect(resolveVoiceReplyUserText(messages, messages[1], "   ")).toBe("older typed request");
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {

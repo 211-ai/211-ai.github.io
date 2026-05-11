@@ -114,6 +114,7 @@ export function AgentAudioChatSurface({
   const [audioDiagnostic, setAudioDiagnostic] = useState("");
   const [voiceDetectionEnabled, setVoiceDetectionEnabled] = useState(true);
   const finalTranscriptRef = useRef("");
+  const pendingVoiceTranscriptRef = useRef("");
   const audioProgressRequestIdRef = useRef(0);
   const lastSpokenAssistantIdRef = useRef<string | undefined>(getLastAssistantMessage(messages)?.id);
   const micAnalyserRef = useRef<AnalyserNode | null>(null);
@@ -174,6 +175,7 @@ export function AgentAudioChatSurface({
       voiceDetectionEnabledRef.current = false;
       cancelListening();
       stopPlayback();
+      pendingVoiceTranscriptRef.current = "";
       setInterimTranscript("");
       setModelProgress(null);
       setAudioDiagnostic("");
@@ -322,6 +324,7 @@ export function AgentAudioChatSurface({
       const transcript = finalTranscriptRef.current.trim();
       setInterimTranscript("");
       if (transcript) {
+        pendingVoiceTranscriptRef.current = transcript;
         onSend(transcript);
         setSessionState("thinking");
         setStatusDetail("");
@@ -614,9 +617,10 @@ export function AgentAudioChatSurface({
     setStatusDetail("");
     setAudioDiagnostic("");
     const requestId = ++audioProgressRequestIdRef.current;
-    const userMessage = getLastUserMessageBefore(messages, message);
+    const userText = resolveVoiceReplyUserText(messages, message, pendingVoiceTranscriptRef.current);
+    pendingVoiceTranscriptRef.current = "";
     const prompt = buildVoiceGraphRagPrompt({
-      userText: userMessage?.content ?? "",
+      userText,
       assistantText: message.content,
       evidenceBundles: selectEvidenceBundlesForMessage(message, evidenceBundles),
     });
@@ -652,12 +656,14 @@ export function AgentAudioChatSurface({
             restartVoiceActivityDetectionSoon();
           });
           if (playedWithWebAudio) {
+            detachAudioElement(audio);
             revokeAudioUrl();
             audioRef.current = null;
             setStatusDetail("Playing audio reply.");
             setAudioDiagnostic("");
             return;
           }
+          detachAudioElement(audio);
           revokeAudioUrl();
           audioRef.current = null;
           setStatusDetail("Using browser speech output.");
@@ -665,6 +671,7 @@ export function AgentAudioChatSurface({
           playBrowserSpeech(fallbackText, restartVoiceActivityDetectionSoon);
         };
         audio.onended = () => {
+          detachAudioElement(audio);
           revokeAudioUrl();
           audioRef.current = null;
           setSessionState("ready");
@@ -764,7 +771,7 @@ export function AgentAudioChatSurface({
 
   function stopPlayback() {
     if (audioRef.current) {
-      audioRef.current.pause();
+      detachAudioElement(audioRef.current);
       audioRef.current = null;
     }
     playbackSourceRef.current?.stop();
@@ -789,6 +796,14 @@ export function AgentAudioChatSurface({
       URL.revokeObjectURL(audioUrlRef.current);
       audioUrlRef.current = null;
     }
+  }
+
+  function detachAudioElement(audio: HTMLAudioElement) {
+    audio.pause();
+    audio.onended = null;
+    audio.onerror = null;
+    audio.removeAttribute("src");
+    audio.load();
   }
 
   function toggleMuted() {
@@ -962,6 +977,18 @@ function getLastUserMessageBefore(messages: AgentMessage[], assistantMessage: Ag
   const assistantIndex = messages.findIndex((message) => message.id === assistantMessage.id);
   const candidates = assistantIndex >= 0 ? messages.slice(0, assistantIndex) : messages;
   return [...candidates].reverse().find((message) => message.role === "user" && message.status === "complete");
+}
+
+export function resolveVoiceReplyUserText(
+  messages: AgentMessage[],
+  assistantMessage: AgentMessage,
+  pendingVoiceTranscript?: string,
+): string {
+  const transcriptText = pendingVoiceTranscript?.trim();
+  if (transcriptText) {
+    return transcriptText;
+  }
+  return getLastUserMessageBefore(messages, assistantMessage)?.content.trim() ?? "";
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {
