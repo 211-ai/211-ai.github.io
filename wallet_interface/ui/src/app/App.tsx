@@ -1720,7 +1720,7 @@ function LoginScreen({
     <main className="login-page">
       <form className="login-panel" onSubmit={submitLogin}>
         <div className="login-brand">
-          <img alt="Abby" className="login-logo" src="/assets/abby-icon.png" />
+          <img alt="Abby logo" className="login-logo" src="/assets/abby-logo.png" />
           <h1 className="sr-only">Sign in to Abby</h1>
         </div>
         <div className="login-portal-actions" aria-label="Choose portal" role="group">
