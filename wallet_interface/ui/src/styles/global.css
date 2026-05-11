@@ -4600,15 +4600,16 @@ body {
 .login-page {
   align-items: center;
   background:
-    linear-gradient(180deg, rgba(250, 251, 248, 0.22), rgba(250, 251, 248, 0.94) 55%),
-    var(--abby-watercolor-page) center 4% / min(1020px, 96vw) auto no-repeat;
+    linear-gradient(180deg, rgba(250, 251, 248, 0.14) 0%, rgba(250, 251, 248, 0.72) 35%, rgba(250, 251, 248, 0.9) 55%, rgba(250, 251, 248, 0.55) 88%),
+    var(--abby-preview-e) center bottom / min(1600px, 110vw) auto no-repeat,
+    var(--abby-watercolor-page) center top / min(960px, 88vw) auto no-repeat;
   padding: clamp(24px, 7vh, 72px) 18px;
 }
 
 .login-panel {
   background:
-    linear-gradient(180deg, rgba(250, 251, 248, 0.97), rgba(250, 251, 248, 0.94)),
-    var(--abby-support-asset) right bottom / 78% auto no-repeat,
+    linear-gradient(180deg, rgba(250, 251, 248, 0.98) 0%, rgba(250, 251, 248, 0.88) 55%, rgba(250, 251, 248, 0.74) 100%),
+    var(--abby-watercolor-landscape) center bottom / min(520px, 95%) auto no-repeat,
     var(--abby-bridge-svg) right bottom / 88% auto no-repeat;
   border-color: rgba(127, 174, 180, 0.62);
   border-radius: var(--abby-radius-lg);
@@ -4620,20 +4621,20 @@ body {
 }
 
 .login-panel::before {
-  background: var(--abby-watercolor-evergreens) right bottom / 170px auto no-repeat;
-  bottom: 4px;
+  background: var(--abby-watercolor-evergreens) right bottom / 200px auto no-repeat;
+  bottom: 0;
   content: "";
-  height: 180px;
-  opacity: 0.16;
+  height: 240px;
+  opacity: 0.28;
   pointer-events: none;
   position: absolute;
-  right: -16px;
-  width: 210px;
+  right: -12px;
+  width: 240px;
   z-index: -1;
 }
 
 .login-panel::after {
-  opacity: 0.18;
+  opacity: 0.26;
 }
 
 .login-brand {
@@ -4959,7 +4960,8 @@ textarea:focus-visible,
 
   .login-page {
     align-items: start;
-    background-size: 920px auto;
+    /* gradient, panorama, mountain-wash */
+    background-size: auto, min(800px, 140vw) auto, min(660px, 90vw) auto;
     padding: 72px 16px 28px;
   }
 
@@ -5090,7 +5092,7 @@ textarea:focus-visible,
 
 .login-logo {
   display: block;
-  height: 128px;
+  height: 160px;
   max-width: 100%;
   object-fit: contain;
   width: 100%;
