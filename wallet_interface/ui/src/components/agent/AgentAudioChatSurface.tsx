@@ -3,6 +3,7 @@ import { Loader2, Mic, MicOff, PhoneOff, Volume2, VolumeX } from "lucide-react";
 import type { AgentMessage, EvidenceBundle } from "../../agent/types";
 import type { ClientAudioProgress, ClientAudioReplyResult, ClientVoiceReplyRequest } from "../../lib/clientAudioReplyService";
 import { clientAudioReplyService } from "../../lib/clientAudioReplyService";
+import { clientLLMWorkerService } from "../../lib/clientLLMWorkerService";
 import {
   buildVoiceFallbackText,
   buildVoiceGraphRagPromptParts,
@@ -625,31 +626,52 @@ export function AgentAudioChatSurface({
     setStatusDetail("");
     setAudioDiagnostic("");
     const requestId = ++audioProgressRequestIdRef.current;
-    pendingVoiceTranscriptRef.current = "";
     const fallbackText = buildVoiceFallbackText(message.content);
+    const pendingVoiceTranscript = pendingVoiceTranscriptRef.current;
     setModelProgress({
       phase: "queued",
       progress: 0,
       status: "Preparing audio reply.",
     });
-    const voiceInferenceRequest = buildVoiceInferenceFallbackRequest({
+    let voiceInferenceRequest = buildVoiceInferenceFallbackRequest({
       messages,
       assistantMessage: message,
       evidenceBundles,
-      pendingVoiceTranscript: pendingVoiceTranscriptRef.current,
+      pendingVoiceTranscript,
       audioBlob: lastCapturedVoiceBlobRef.current || undefined,
     });
     pendingVoiceTranscriptRef.current = "";
     try {
-      const result = message.status === "failed"
-        ? await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
-            onProgress: (progress) => updateModelProgress(requestId, progress),
-          })
-        : await clientAudioReplyService.generateAudio(fallbackText || message.content, {
+      let preferredSpeechText = voiceInferenceRequest.fallbackText || fallbackText || message.content;
+      if (message.status !== "failed") {
+        const generatedReply = await clientLLMWorkerService.tryGenerateText(voiceInferenceRequest.prompt, 120);
+        if (generatedReply.ok) {
+          preferredSpeechText = resolveVoiceGeneratedReplyText(generatedReply.text, preferredSpeechText);
+          voiceInferenceRequest = buildVoiceInferenceFallbackRequest({
+            messages,
+            assistantMessage: message,
+            evidenceBundles,
+            pendingVoiceTranscript,
+            audioBlob: lastCapturedVoiceBlobRef.current || undefined,
+            assistantText: preferredSpeechText,
+            fallbackText: preferredSpeechText,
+          });
+          const ttsResult = await clientAudioReplyService.generateAudio(preferredSpeechText, {
             onProgress: (progress) => updateModelProgress(requestId, progress),
           });
+          if (ttsResult.kind === "audio") {
+            lastCapturedVoiceBlobRef.current = null;
+            await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
+            return;
+          }
+        }
+      }
+
+      const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
+        onProgress: (progress) => updateModelProgress(requestId, progress),
+      });
       lastCapturedVoiceBlobRef.current = null;
-      await playAudioReplyResult(result, fallbackText, requestId);
+      await playAudioReplyResult(result, voiceInferenceRequest.fallbackText || fallbackText, requestId);
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
       try {
@@ -657,7 +679,7 @@ export function AgentAudioChatSurface({
           onProgress: (progress) => updateModelProgress(requestId, progress),
         });
         lastCapturedVoiceBlobRef.current = null;
-        await playAudioReplyResult(result, fallbackText, requestId);
+        await playAudioReplyResult(result, voiceInferenceRequest.fallbackText || fallbackText, requestId);
         return;
       } catch (voiceInferenceError) {
         const message = voiceInferenceError instanceof Error ? voiceInferenceError.message : audioErrorMessage;
@@ -1043,20 +1065,32 @@ export function buildVoiceInferenceFallbackRequest(input: {
   evidenceBundles?: EvidenceBundle[];
   pendingVoiceTranscript?: string;
   audioBlob?: Blob;
+  assistantText?: string;
+  fallbackText?: string;
 }): ClientVoiceReplyRequest {
   const userText = resolveVoiceReplyUserText(input.messages, input.assistantMessage, input.pendingVoiceTranscript);
+  const assistantText = input.assistantText?.trim() || input.assistantMessage.content;
   const promptParts = buildVoiceGraphRagPromptParts({
     userText,
-    assistantText: input.assistantMessage.content,
+    assistantText,
     evidenceBundles: selectEvidenceBundlesForMessage(input.assistantMessage, input.evidenceBundles || []),
   });
   return {
     prompt: promptParts.fullPrompt,
     systemPrompt: promptParts.systemPrompt,
     userPrompt: promptParts.userPrompt,
-    fallbackText: buildVoiceFallbackText(input.assistantMessage.content),
+    fallbackText: input.fallbackText?.trim() || buildVoiceFallbackText(assistantText),
     audioBlob: input.audioBlob,
   };
+}
+
+export function resolveVoiceGeneratedReplyText(generatedText: string, fallbackText: string): string {
+  return (
+    buildVoiceFallbackText(generatedText)
+      .replace(/^Abby\s*:\s*/i, "")
+      .replace(/^Assistant\s*:\s*/i, "")
+      .trim() || fallbackText.trim()
+  );
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {

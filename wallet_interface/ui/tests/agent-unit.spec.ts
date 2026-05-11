@@ -51,6 +51,7 @@ import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChat
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import {
   buildVoiceInferenceFallbackRequest,
+  resolveVoiceGeneratedReplyText,
   resolveVoiceReplyUserText,
 } from "../src/components/agent/AgentAudioChatSurface";
 import {
@@ -1130,6 +1131,62 @@ export class AudioModel {
     expect(request.systemPrompt).toContain("Neighborhood Food Pantry");
     expect(request.prompt).toContain("User voice query: where can I get food today?");
     expect(request.fallbackText).toBe("OpenRouter text generation failed.");
+  });
+
+  test("uses the generated spoken reply text for TTS and voice inference fallback", () => {
+    const evidence: EvidenceBundle = {
+      id: "evidence-food-generated",
+      query: "food pantry near Portland",
+      generatedAt: NOW,
+      items: [
+        {
+          id: "svc-food-generated",
+          title: "Neighborhood Food Pantry",
+          source: "211 service corpus",
+          snippet: "Offers pantry boxes and grocery pickup.",
+          citation: {
+            label: "211 food pantry record",
+            docId: "svc-food-generated",
+          },
+        },
+      ],
+    };
+    const messages: AgentMessage[] = [
+      {
+        id: "user-voice-generated",
+        sessionId: "session-unit",
+        role: "user",
+        content: "older typed request",
+        createdAt: NOW,
+        status: "complete",
+      },
+      {
+        id: "assistant-generated",
+        sessionId: "session-unit",
+        role: "assistant",
+        content: "Original app draft answer.",
+        createdAt: NOW,
+        status: "complete",
+        evidenceBundleIds: [evidence.id],
+      },
+    ];
+
+    const spokenReply = resolveVoiceGeneratedReplyText(
+      "Abby: Neighborhood Food Pantry can help today. Sources are shown on screen.",
+      "Original app draft answer.",
+    );
+    const request = buildVoiceInferenceFallbackRequest({
+      messages,
+      assistantMessage: messages[1],
+      evidenceBundles: [evidence],
+      pendingVoiceTranscript: "where can I get food today?",
+      assistantText: spokenReply,
+      fallbackText: spokenReply,
+    });
+
+    expect(spokenReply).toBe("Neighborhood Food Pantry can help today. Sources are shown on screen.");
+    expect(request.prompt).toContain("App draft answer: Neighborhood Food Pantry can help today. Sources are shown on screen.");
+    expect(request.fallbackText).toBe("Neighborhood Food Pantry can help today. Sources are shown on screen.");
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
