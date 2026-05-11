@@ -1,4 +1,5 @@
 import { shouldDeleteAppCache } from "./cachePolicy";
+import { shouldHandleServiceWorkerRequest } from "./fetchPolicy";
 
 const CACHE_VERSION = "portal-077-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
@@ -52,7 +53,7 @@ sw.addEventListener("activate", (event) => {
 
 sw.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (!isHttpRequest(request)) return;
+  if (!shouldHandleServiceWorkerRequest(request.url, sw.registration.scope)) return;
 
   if (isNavigationRequest(request)) {
     event.respondWith(handleNavigation(request));
@@ -330,10 +331,6 @@ function buildStaleAppScriptRecovery(): string {
   }
 });
 `;
-}
-
-function isHttpRequest(request: Request): boolean {
-  return request.url.startsWith("http://") || request.url.startsWith("https://");
 }
 
 function isNavigationRequest(request: Request): boolean {

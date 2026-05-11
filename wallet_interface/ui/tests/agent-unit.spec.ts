@@ -63,6 +63,7 @@ import {
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
+import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -1056,6 +1057,22 @@ export class AudioModel {
     expect(shouldDeleteAppCache("abby-public-service-detail-portal-076-v1", currentCaches)).toBe(true);
     expect(shouldDeleteAppCache("abby-shell-portal-077-v1", currentCaches)).toBe(false);
     expect(shouldDeleteAppCache("workbox-precache-v1", currentCaches)).toBe(false);
+  });
+
+  test("does not route cross-origin voice proxy requests through the service worker", () => {
+    expect(
+      shouldHandleServiceWorkerRequest(
+        "https://animegf.chat:8790/api/voice/infer",
+        "https://endomorphosis.github.io/211-AI/",
+      ),
+    ).toBe(false);
+
+    expect(
+      shouldHandleServiceWorkerRequest(
+        "https://endomorphosis.github.io/211-AI/assets/app-example.js",
+        "https://endomorphosis.github.io/211-AI/",
+      ),
+    ).toBe(true);
   });
 
   test("validates command schemas and rejects malformed command payloads", () => {
