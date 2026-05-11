@@ -17,8 +17,11 @@ type CaptureViewport = "desktop" | "mobile";
 type ScreenshotManifestEntry = Omit<CaptureScenario, "prepare"> & {
   viewport: CaptureViewport;
   screenshotPath: string;
+  screenshotPaths?: string[];
   multimodalPrompt: string;
 };
+
+const MAX_SCREENSHOT_DIMENSION = 32767;
 
 const captureScenarios: CaptureScenario[] = [
   {
@@ -738,6 +741,68 @@ async function verifyShelterStaffForCapture(page: Page) {
   await page.getByLabel(/Staff identity/i).selectOption("staff-demo-rose");
 }
 
+async function captureScenarioScreenshot(page: Page, outputPath: string): Promise<string[]> {
+  try {
+    await page.screenshot({
+      fullPage: true,
+      scale: "css",
+      path: outputPath,
+    });
+    return [outputPath];
+  } catch (error) {
+    if (!isScreenshotDimensionLimitError(error)) {
+      throw error;
+    }
+  }
+
+  return captureScenarioScreenshotTiles(page, outputPath);
+}
+
+async function captureScenarioScreenshotTiles(page: Page, outputPath: string): Promise<string[]> {
+  const viewportSize = page.viewportSize();
+  const viewportHeight = viewportSize?.height ?? await page.evaluate(() => window.innerHeight);
+  const totalHeight = await page.evaluate(() => Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight,
+    document.documentElement.clientHeight,
+  ));
+  const maxScrollTop = Math.max(0, totalHeight - viewportHeight);
+  const scrollStep = Math.max(1, viewportHeight - 120);
+  const positions = new Set<number>();
+  for (let top = 0; top <= maxScrollTop; top += scrollStep) {
+    positions.add(Math.min(top, maxScrollTop));
+  }
+  positions.add(maxScrollTop);
+
+  const ext = path.extname(outputPath);
+  const base = outputPath.slice(0, outputPath.length - ext.length);
+  const partPaths: string[] = [];
+
+  let index = 0;
+  for (const top of [...positions].sort((left, right) => left - right)) {
+    index += 1;
+    await page.evaluate((value) => window.scrollTo(0, value), top);
+    await page.waitForTimeout(50);
+    const partPath = `${base}-part-${String(index).padStart(2, "0")}${ext}`;
+    await page.screenshot({
+      fullPage: false,
+      scale: "css",
+      path: partPath,
+    });
+    partPaths.push(partPath);
+  }
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(50);
+  return partPaths;
+}
+
+function isScreenshotDimensionLimitError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /Cannot take screenshot larger than 32767 pixels on any dimension/i.test(message) ||
+    new RegExp(String(MAX_SCREENSHOT_DIMENSION)).test(message);
+}
+
 test("capture Abby UI screenshots for multimodal UX review", async ({ page }, testInfo) => {
   test.setTimeout(240000);
   const viewport = projectSlug(testInfo.project.name);
@@ -757,10 +822,8 @@ test("capture Abby UI screenshots for multimodal UX review", async ({ page }, te
     }
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(50);
-    await page.screenshot({
-      fullPage: true,
-      path: path.join(viewportDir, `${route.id}.png`)
-    });
+    const screenshotPaths = await captureScenarioScreenshot(page, path.join(viewportDir, `${route.id}.png`));
+    const relativeScreenshotPaths = screenshotPaths.map((screenshotPath) => path.relative(process.cwd(), screenshotPath));
 
     manifest.push({
       id: route.id,
@@ -769,7 +832,8 @@ test("capture Abby UI screenshots for multimodal UX review", async ({ page }, te
       state: route.state,
       goals: route.goals,
       viewport,
-      screenshotPath: path.relative(process.cwd(), path.join(viewportDir, `${route.id}.png`)),
+      screenshotPath: relativeScreenshotPaths[0],
+      screenshotPaths: relativeScreenshotPaths.length > 1 ? relativeScreenshotPaths : undefined,
       multimodalPrompt: buildPrompt(route, viewport)
     });
   }
