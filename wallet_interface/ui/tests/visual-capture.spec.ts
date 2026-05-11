@@ -737,8 +737,10 @@ async function seedInteractionsCaptureState(page: Page) {
 
 async function verifyShelterStaffForCapture(page: Page) {
   await page.goto("/#/shelter");
+  await page.reload();
   await expect(page.locator(".screen")).toBeVisible();
-  const staffIdentity = page.getByLabel(/Staff identity/i);
+  await expect(page.locator("h1", { hasText: routeReadyHeadings["/#/shelter"] })).toBeVisible({ timeout: 15000 });
+  const staffIdentity = page.getByRole("combobox", { name: /Staff identity/i });
   await expect(staffIdentity).toBeVisible({ timeout: 15000 });
   await staffIdentity.selectOption("staff-demo-rose");
 }
