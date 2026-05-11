@@ -4429,15 +4429,17 @@ body {
 }
 
 .screen > .page-title::after {
-  background: var(--abby-header-asset) right top / contain no-repeat;
+  background:
+    radial-gradient(128% 120% at 100% 0, rgba(250, 251, 248, 0) 56%, rgba(250, 251, 248, 0.62) 100%),
+    var(--abby-header-asset) 108% -8% / min(680px, 72vw) auto no-repeat;
   content: "";
-  height: 136px;
-  opacity: 0.46;
+  height: 152px;
+  opacity: 0.54;
   pointer-events: none;
   position: absolute;
-  right: -10px;
-  top: -6px;
-  width: min(610px, 64vw);
+  right: -22px;
+  top: -18px;
+  width: min(720px, 76vw);
   z-index: -1;
 }
 
@@ -4512,9 +4514,9 @@ body {
 
 .topbar::before {
   background:
-    radial-gradient(130% 150% at 104% 50%, rgba(250, 251, 248, 0) 42%, rgba(250, 251, 248, 0.28) 78%, rgba(250, 251, 248, 0.62) 100%),
-    linear-gradient(90deg, rgba(250, 251, 248, 0.14), rgba(250, 251, 248, 0.02)),
-    var(--abby-header-asset) 104% 54% / min(500px, 42vw) auto no-repeat;
+    radial-gradient(142% 158% at 106% 52%, rgba(250, 251, 248, 0) 38%, rgba(250, 251, 248, 0.22) 70%, rgba(250, 251, 248, 0.56) 100%),
+    linear-gradient(90deg, rgba(250, 251, 248, 0.18), rgba(250, 251, 248, 0.04)),
+    var(--abby-header-asset) 112% 52% / min(560px, 46vw) auto no-repeat;
   content: "";
   inset: 0;
   opacity: 0.98;
@@ -4524,7 +4526,7 @@ body {
 }
 
 .topbar::after {
-  background: linear-gradient(90deg, rgba(250, 251, 248, 0.96) 0%, rgba(250, 251, 248, 0.84) 34%, rgba(250, 251, 248, 0.22) 72%, rgba(250, 251, 248, 0.08) 92%, rgba(250, 251, 248, 0.02) 100%);
+  background: linear-gradient(90deg, rgba(250, 251, 248, 0.96) 0%, rgba(250, 251, 248, 0.86) 36%, rgba(250, 251, 248, 0.28) 72%, rgba(250, 251, 248, 0.12) 90%, rgba(250, 251, 248, 0.04) 100%);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -4751,7 +4753,9 @@ textarea:focus-visible,
 }
 
 .home-footer {
-  background: linear-gradient(90deg, rgba(250, 251, 248, 0.92), rgba(250, 251, 248, 0.68));
+  background:
+    linear-gradient(180deg, rgba(250, 251, 248, 0.94), rgba(245, 250, 248, 0.76)),
+    linear-gradient(90deg, rgba(250, 251, 248, 0.9), rgba(250, 251, 248, 0.64));
   border-bottom: 1px solid rgba(127, 174, 180, 0.3);
   border-top: 1px solid rgba(127, 174, 180, 0.24);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
@@ -4761,20 +4765,20 @@ textarea:focus-visible,
 }
 
 .home-footer::before {
-  background: var(--abby-footer-asset) center bottom / 108% auto no-repeat;
+  background:
+    radial-gradient(150% 120% at 50% 100%, rgba(250, 251, 248, 0) 50%, rgba(250, 251, 248, 0.52) 100%),
+    var(--abby-footer-asset) center 112% / 120% auto no-repeat;
   content: "";
-  inset: 0;
-  opacity: 0.93;
+  inset: -12px -18px -34px;
+  opacity: 0.86;
   pointer-events: none;
   position: absolute;
-  transform: scale(1.06);
-  transform-origin: center bottom;
 }
 
 .home-footer::after {
   background:
-    radial-gradient(135% 120% at 50% 100%, rgba(250, 251, 248, 0) 58%, rgba(250, 251, 248, 0.48) 100%),
-    linear-gradient(90deg, rgba(250, 251, 248, 0.94) 0%, rgba(250, 251, 248, 0.72) 34%, rgba(250, 251, 248, 0.24) 72%, rgba(250, 251, 248, 0.2) 100%);
+    radial-gradient(140% 120% at 50% 100%, rgba(250, 251, 248, 0) 48%, rgba(250, 251, 248, 0.56) 100%),
+    linear-gradient(90deg, rgba(250, 251, 248, 0.94) 0%, rgba(250, 251, 248, 0.76) 34%, rgba(250, 251, 248, 0.28) 72%, rgba(250, 251, 248, 0.22) 100%);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -4844,8 +4848,9 @@ textarea:focus-visible,
 @media (min-width: 760px) {
   .sidebar {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0.88), rgba(243, 248, 246, 0.56)),
-      var(--abby-sidebar-wash) 52% 42% / 132% 132% no-repeat;
+      linear-gradient(180deg, rgba(250, 251, 248, 0.9), rgba(243, 248, 246, 0.6)),
+      radial-gradient(138% 118% at -12% 26%, rgba(250, 251, 248, 0.54), rgba(250, 251, 248, 0) 62%),
+      var(--abby-sidebar-wash) 50% 34% / 144% 144% no-repeat;
     border-right: 1px solid rgba(127, 174, 180, 0.45);
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.68);
     isolation: isolate;
@@ -4855,22 +4860,24 @@ textarea:focus-visible,
 
   .sidebar::before {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0.04), rgba(250, 251, 248, 0.2)),
-      var(--abby-sidebar-wash) 50% 30% / 138% 138% no-repeat;
+      linear-gradient(180deg, rgba(250, 251, 248, 0.06), rgba(250, 251, 248, 0.22)),
+      var(--abby-sidebar-wash) 48% 24% / 146% 146% no-repeat;
     content: "";
     inset: 0;
-    opacity: 0.96;
+    opacity: 0.88;
     pointer-events: none;
     position: absolute;
     z-index: 0;
   }
 
   .sidebar::after {
-    background: linear-gradient(180deg, rgba(250, 251, 248, 0.08), rgba(7, 49, 74, 0.14) 78%, rgba(7, 49, 74, 0.2) 100%);
+    background:
+      linear-gradient(180deg, rgba(250, 251, 248, 0.08), rgba(7, 49, 74, 0.1) 74%, rgba(7, 49, 74, 0.16) 100%),
+      radial-gradient(80% 52% at 0 100%, rgba(7, 49, 74, 0.08), rgba(7, 49, 74, 0) 72%);
     bottom: 0;
     content: "";
     left: 0;
-    opacity: 1;
+    opacity: 0.84;
     pointer-events: none;
     position: absolute;
     right: 0;
@@ -4957,12 +4964,14 @@ textarea:focus-visible,
 
   .screen > .page-title::after {
     bottom: 0;
-    height: 88px;
+    height: 94px;
     left: 0;
-    opacity: 0.25;
+    opacity: 0.34;
     right: auto;
     top: auto;
     width: 100%;
+    background-position: center 100%;
+    background-size: 132% auto;
   }
 
   .page-title h1 {
@@ -5195,25 +5204,25 @@ textarea:focus-visible,
 
   .sidebar::before {
     background:
-      linear-gradient(180deg, rgba(250, 251, 248, 0), rgba(250, 251, 248, 0.86) 64%),
-      var(--abby-sidebar-wash) 54% 36% / 140% 140% no-repeat,
-      var(--abby-watercolor-bridge) left bottom / 252px auto no-repeat;
-    opacity: 0.2;
+      linear-gradient(180deg, rgba(250, 251, 248, 0), rgba(250, 251, 248, 0.82) 56%, rgba(250, 251, 248, 0.92) 100%),
+      var(--abby-sidebar-wash) 54% 34% / 146% 146% no-repeat,
+      var(--abby-watercolor-bridge) left calc(100% + 8px) / 272px auto no-repeat;
+    opacity: 0.26;
   }
 
   .sidebar::after {
-    bottom: 18px;
+    bottom: 10px;
     left: auto;
-    opacity: 0.34;
-    right: 12px;
-    width: 132px;
+    opacity: 0.26;
+    right: 8px;
+    width: 144px;
   }
 
   .portal-provider .sidebar {
     background:
       linear-gradient(180deg, rgba(250, 251, 248, 0.96), rgba(232, 244, 243, 0.92)),
-      var(--abby-watercolor-bridge) left bottom / 284px auto no-repeat,
-      var(--abby-sidebar-wash) 50% 36% / 138% 132% no-repeat;
+      var(--abby-watercolor-bridge) left calc(100% + 10px) / 300px auto no-repeat,
+      var(--abby-sidebar-wash) 50% 34% / 144% 136% no-repeat;
   }
 }
 
