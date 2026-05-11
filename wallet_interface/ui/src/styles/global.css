@@ -2443,7 +2443,12 @@ body.playful-pulse .decor-shape {
   align-items: start;
   display: grid;
   gap: 6px;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.agent-citation-primary > span {
+  display: block;
+  min-width: 0;
 }
 
 .agent-citation-label {
@@ -2452,6 +2457,9 @@ body.playful-pulse .decor-shape {
   color: #0f766e;
   font-size: 12px;
   font-weight: 800;
+  justify-self: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 2px 6px;
 }
 
