@@ -66,7 +66,7 @@ import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "..
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
-import { createSilentWavBlob, createVoiceProxyFormData, createVoiceProxyTtsBody } from "../src/lib/voiceProxyPayload";
+import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
 
 const NOW = "2026-05-05T12:00:00.000Z";
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
@@ -1131,16 +1131,6 @@ export class AudioModel {
     expect((audio as Blob | null)?.type ?? "").toBe("audio/wav");
     expect((audio as { name?: string } | null)?.name ?? "").toBe("input.wav");
     expect((await (audio as Blob).arrayBuffer()).byteLength).toBeGreaterThan(44);
-  });
-
-  test("builds urlencoded text-only uploads for the remote TTS voice proxy route", () => {
-    const body = createVoiceProxyTtsBody({
-      text: "Pantry boxes are available today.",
-      voiceDescription: "Warm, steady, supportive voice.",
-    });
-
-    expect(body.get("text")).toBe("Pantry boxes are available today.");
-    expect(body.get("voice_description")).toBe("Warm, steady, supportive voice.");
   });
 
   test("rejects non-WAV audio uploads for the remote voice proxy", () => {

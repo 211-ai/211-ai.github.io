@@ -1,6 +1,6 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
-import { createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
+import { createVoiceProxyFormData } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
   audioBlob: Blob;
@@ -10,11 +10,11 @@ export interface RemoteAudioGenerationResult {
 }
 
 export function isRemoteVoiceProxyConfigured(): boolean {
-  return Boolean(getRemoteVoiceProxyEndpoint("tts") || getRemoteVoiceProxyEndpoint("voice-reply"));
+  return Boolean(getRemoteVoiceProxyEndpoint("voice-reply"));
 }
 
 export async function generateRemoteAudio(options: {
-  mode: "tts" | "voice-reply";
+  mode: "voice-reply";
   text: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -56,11 +56,8 @@ export async function generateRemoteAudio(options: {
   return normalized;
 }
 
-function getRemoteVoiceProxyEndpoint(mode: "tts" | "voice-reply"): string {
-  const endpoint = mode === "tts"
-    ? AUDIO_CHAT_CONFIG.voiceProxyTtsUrl
-    : AUDIO_CHAT_CONFIG.voiceProxyInferUrl;
-  return resolvePublicHttpsUrl(endpoint);
+function getRemoteVoiceProxyEndpoint(_mode: "voice-reply"): string {
+  return resolvePublicHttpsUrl(AUDIO_CHAT_CONFIG.voiceProxyInferUrl);
 }
 
 function buildHeaders(): HeadersInit {
@@ -76,26 +73,13 @@ function buildHeaders(): HeadersInit {
 }
 
 function buildRequestInit(options: {
-  mode: "tts" | "voice-reply";
+  mode: "voice-reply";
   text: string;
   systemPrompt?: string;
   userPrompt?: string;
   fallbackText?: string;
   audioBlob?: Blob;
 }): RequestInit {
-  if (options.mode === "tts") {
-    return {
-      method: "POST",
-      headers: {
-        ...buildHeaders(),
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-      },
-      body: createVoiceProxyTtsBody({
-        text: options.text,
-      }),
-    };
-  }
-
   return {
     method: "POST",
     headers: buildHeaders(),
