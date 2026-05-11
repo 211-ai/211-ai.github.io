@@ -1757,8 +1757,8 @@ body.playful-pulse .decor-shape {
 .agent-chat-mark {
   align-items: center;
   background: #e6f5f2;
-  border-radius: 8px;
-  color: #0f766e;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
   display: inline-flex;
   height: 38px;
   justify-content: center;
@@ -1767,6 +1767,9 @@ body.playful-pulse .decor-shape {
 
 .agent-current-task {
   background: #f8fafc;
+  justify-self: start;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   border-bottom: 1px solid #e5e7eb;
   display: grid;
   gap: 3px;
@@ -1776,11 +1779,21 @@ body.playful-pulse .decor-shape {
 .agent-current-task small {
   color: #0f766e;
   font-size: 12px;
+.agent-citation-summary {
+  color: #526071;
+  font-size: 12px;
+  line-height: 1.45;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .agent-current-task span {
+.agent-citation-link-compact .agent-citation-summary {
+  font-size: 11px;
+}
   color: #3b4553;
   font-size: 13px;
 }

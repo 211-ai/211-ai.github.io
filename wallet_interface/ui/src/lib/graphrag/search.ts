@@ -552,7 +552,7 @@ function mergeSearchResults(primary: SearchResult[], secondary: SearchResult[], 
   return mergeDuplicateSearchResults([...primary, ...secondary]).sort(compareSearchResults).slice(0, limit);
 }
 
-function mergeDuplicateSearchResults(results: SearchResult[]): SearchResult[] {
+export function mergeDuplicateSearchResults(results: SearchResult[]): SearchResult[] {
   const byMergeKey = new Map<string, SearchResult>();
   for (const result of results) {
     const mergeKey = buildSearchResultMergeKey(result.document, result.docId);
@@ -605,17 +605,33 @@ function buildSearchResultMergeKey(document: CorpusDocument, docId: string): str
   const providerKey = normalizeMergeKeyPart(document.provider_name);
   const programKey = normalizeMergeKeyPart(document.program_name || document.title);
   const titleKey = normalizeMergeKeyPart(document.title);
+  const geoKey = buildServiceGeoMergeKey(document, primaryAddress);
   const locationKey = normalizeMergeKeyPart(
-    primaryAddress?.address ||
-      primaryAddress?.maps_query ||
-      [primaryAddress?.street, primaryAddress?.city || document.city, primaryAddress?.state || document.state]
+    primaryAddress?.maps_query ||
+      [
+        primaryAddress?.street,
+        primaryAddress?.city || document.city,
+        primaryAddress?.state || document.state,
+        primaryAddress?.postal_code,
+      ]
         .filter(Boolean)
-        .join(" "),
+        .join(" ") ||
+      primaryAddress?.address,
   );
+  const sourceKey = normalizeMergeKeyPart(document.source_content_cid || document.source_page_cid || document.source_url);
   const fallbackLocationKey = normalizeMergeKeyPart(
     [document.city, document.state, document.source_content_cid].filter(Boolean).join(" "),
   );
-  return `service:${providerKey}|${programKey}|${titleKey}|${locationKey || fallbackLocationKey || docId}`;
+  return `service:${providerKey}|${programKey}|${titleKey}|${geoKey || locationKey || sourceKey || fallbackLocationKey || docId}`;
+}
+
+function buildServiceGeoMergeKey(document: CorpusDocument, primaryAddress?: ReturnType<typeof getPrimaryAddress>): string {
+  const latitude = primaryAddress?.geo?.lat ?? document.geo_lat;
+  const longitude = primaryAddress?.geo?.lon ?? document.geo_lon;
+  if (typeof latitude !== "number" || typeof longitude !== "number") {
+    return "";
+  }
+  return `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
 }
 
 function normalizeMergeKeyPart(value: string | undefined): string {

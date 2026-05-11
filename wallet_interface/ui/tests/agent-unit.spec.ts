@@ -44,16 +44,23 @@ import type {
 } from "../src/agent/types";
 import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
-import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS, ragSearchWorkerService } from "../src/lib/graphrag";
+import {
+  build211GraphRagPrompt,
+  DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
+  mergeDuplicateSearchResults,
+  ragSearchWorkerService,
+} from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
 import {
   buildVoiceInferenceFallbackRequest,
+  resolveAudioOpeningClipUrl,
   resolveVoiceGeneratedReplyText,
   resolveVoiceReplyUserText,
 } from "../src/components/agent/AgentAudioChatSurface";
+import { buildCitationSummaryText } from "../src/components/agent/AgentCitationLink";
 import {
   formatLiquidAudioLoadProgress,
   getLiquidAudioRunnerPatchDiagnostics,
@@ -1224,6 +1231,22 @@ export class AudioModel {
     expect(request.fallbackText).toBe("Neighborhood Food Pantry can help today. Sources are shown on screen.");
   });
 
+  test("resolves the intro clip against the document base URI", () => {
+    expect(resolveAudioOpeningClipUrl("https://example.com/211-AI/index.html", "./")).toBe(
+      "https://example.com/211-AI/assets/audio/intro.wav",
+    );
+    expect(resolveAudioOpeningClipUrl("https://example.com/app/", "/211-AI/")).toBe(
+      "https://example.com/211-AI/assets/audio/intro.wav",
+    );
+  });
+
+  test("concatenates compact citation summaries with their source labels", () => {
+    expect(buildCitationSummaryText("Rapid testing available today.", "211 service corpus")).toBe(
+      "Rapid testing available today. · 211 service corpus",
+    );
+    expect(buildCitationSummaryText(undefined, "211 service corpus")).toBe("211 service corpus");
+  });
+
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
     const currentCaches = new Set(["abby-shell-portal-077-v1", "abby-public-service-detail-portal-077-v1"]);
 
@@ -1665,6 +1688,84 @@ export class AudioModel {
     expect(prompt).toContain("Graph node 8");
     expect(prompt).not.toContain("Graph node 9");
     expect(prompt.length).toBeLessThan(5200);
+  });
+
+  test("merges duplicate service results that share identity and coordinates", () => {
+    const first = createSearchResult("svc-health-1", "NARA Wellness Center");
+    first.contentCid = "shared-cid";
+    first.pageCid = "shared-page";
+    first.document.source_content_cid = "shared-cid";
+    first.document.source_page_cid = "shared-page";
+    first.document.source_url = "https://211.example.test/services/nara-wellness";
+    first.document.geo_lat = 45.5231;
+    first.document.geo_lon = -122.6765;
+    first.document.addresses = [
+      {
+        address: "123 Main Street, Portland, OR 97204",
+        city: "Portland",
+        state: "OR",
+        street: "123 Main Street",
+      },
+    ];
+
+    const second = createSearchResult("svc-health-2", "NARA Wellness Center");
+    second.contentCid = "shared-cid";
+    second.pageCid = "shared-page";
+    second.document.source_content_cid = "shared-cid";
+    second.document.source_page_cid = "shared-page";
+    second.document.source_url = "https://211.example.test/services/nara-wellness";
+    second.document.geo_lat = 45.52311;
+    second.document.geo_lon = -122.67649;
+    second.document.addresses = [
+      {
+        address: "123 Main St., Portland, OR",
+        city: "Portland",
+        state: "OR",
+        street: "123 Main St",
+      },
+    ];
+
+    const merged = mergeDuplicateSearchResults([first, second]);
+
+    expect(merged).toHaveLength(1);
+    expect(merged[0].duplicateCount).toBe(2);
+    expect([...(merged[0].mergedDocIds || [])].sort()).toEqual(["svc-health-1", "svc-health-2"]);
+  });
+
+  test("keeps distinct service locations separate even when provider details match", () => {
+    const first = createSearchResult("svc-food-1", "Neighborhood Pantry");
+    first.contentCid = "shared-cid";
+    first.document.source_content_cid = "shared-cid";
+    first.document.source_url = "https://211.example.test/services/neighborhood-pantry";
+    first.document.geo_lat = 45.5231;
+    first.document.geo_lon = -122.6765;
+    first.document.addresses = [
+      {
+        address: "123 Main Street, Portland, OR 97204",
+        city: "Portland",
+        state: "OR",
+        street: "123 Main Street",
+      },
+    ];
+
+    const second = createSearchResult("svc-food-2", "Neighborhood Pantry");
+    second.contentCid = "shared-cid";
+    second.document.source_content_cid = "shared-cid";
+    second.document.source_url = "https://211.example.test/services/neighborhood-pantry";
+    second.document.geo_lat = 45.5299;
+    second.document.geo_lon = -122.7001;
+    second.document.addresses = [
+      {
+        address: "456 Oak Avenue, Portland, OR 97205",
+        city: "Portland",
+        state: "OR",
+        street: "456 Oak Avenue",
+      },
+    ];
+
+    const merged = mergeDuplicateSearchResults([first, second]);
+
+    expect(merged).toHaveLength(2);
   });
 
   test("formats 211 fallback summaries without dumping inline source blocks", () => {

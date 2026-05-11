@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
+import { primeVoiceChatActivation } from "../components/agent/AgentAudioChatSurface";
 import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
 import { getRouteLabel } from "../agent/surfaceRegistry";
 import {
@@ -726,13 +727,20 @@ export function App() {
   }, []);
 
   function openAgentChatMode(mode: AgentChatMode) {
+    if (mode === "audio") {
+      primeVoiceChatActivation();
+    }
     setAgentChatMode(mode);
     setAgentChatOpen(true);
   }
 
   function toggleAgentChatMode(mode: AgentChatMode) {
+    const nextOpen = !(agentChatOpen && agentChatMode === mode);
+    if (mode === "audio" && nextOpen) {
+      primeVoiceChatActivation();
+    }
     setAgentChatMode(mode);
-    setAgentChatOpen((open) => (open && agentChatMode === mode ? false : true));
+    setAgentChatOpen(nextOpen);
   }
 
   async function refreshWalletAccessState() {

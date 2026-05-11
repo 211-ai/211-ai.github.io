@@ -25,6 +25,7 @@ class RagSearchWorkerService {
   private worker: Worker | null = null;
   private requestCounter = 0;
   private pendingRequests = new Map<string, PendingRequest<RagSearchWorkerPayload>>();
+  private workerInitPromise: Promise<void> | null = null;
 
   constructor() {
     this.initializeWorker();
@@ -145,14 +146,7 @@ class RagSearchWorkerService {
     if (typeof Worker === "undefined") {
       return;
     }
-    try {
-      this.worker = new Worker(new URL("../../workers/ragSearchWorker.ts", import.meta.url), { type: "module" });
-      this.worker.onmessage = this.handleWorkerMessage.bind(this);
-      this.worker.onerror = this.handleWorkerError.bind(this);
-    } catch (error) {
-      console.error("Failed to create 211 GraphRAG search worker:", error);
-      this.worker = null;
-    }
+    void this.ensureWorker();
   }
 
   private handleWorkerMessage(event: MessageEvent): void {
@@ -183,11 +177,50 @@ class RagSearchWorkerService {
     }
   }
 
-  private sendWorkerRequest(type: string, data: unknown, timeoutMs: number): Promise<RagSearchWorkerPayload> {
-    if (!this.worker) {
+  private async ensureWorker(): Promise<Worker | null> {
+    if (typeof Worker === "undefined") {
+      return null;
+    }
+    if (this.worker) {
+      return this.worker;
+    }
+    if (!this.workerInitPromise) {
+      this.workerInitPromise = this.createWorker().finally(() => {
+        this.workerInitPromise = null;
+      });
+    }
+    await this.workerInitPromise;
+    return this.worker;
+  }
+
+  private async createWorker(): Promise<void> {
+    try {
+      this.worker = await this.instantiateWorker();
+      this.worker.onmessage = this.handleWorkerMessage.bind(this);
+      this.worker.onerror = this.handleWorkerError.bind(this);
+    } catch (error) {
+      console.error("Failed to create 211 GraphRAG search worker:", error);
+      this.worker = null;
+    }
+  }
+
+  private async instantiateWorker(): Promise<Worker> {
+    try {
+      return new Worker(new URL("../../workers/ragSearchWorker.ts", import.meta.url), { type: "module" });
+    } catch (error) {
+      if (!shouldRetryRagWorkerWithBundledImport(error)) {
+        throw error;
+      }
+      const module = await import("../../workers/ragSearchWorker?worker");
+      return new module.default();
+    }
+  }
+
+  private async sendWorkerRequest(type: string, data: unknown, timeoutMs: number): Promise<RagSearchWorkerPayload> {
+    const worker = await this.ensureWorker();
+    if (!worker) {
       throw new Error("211 GraphRAG search worker is not available");
     }
-    const worker = this.worker;
 
     return new Promise((resolve, reject) => {
       const id = `rag_${++this.requestCounter}`;
@@ -212,6 +245,11 @@ class RagSearchWorkerService {
       worker.postMessage({ id, type, data });
     });
   }
+}
+
+function shouldRetryRagWorkerWithBundledImport(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error || "");
+  return /Failed to construct 'URL'/i.test(message) || /Invalid base URL/i.test(message);
 }
 
 function serializeEmbedding(embedding?: Float32Array | number[]): number[] | undefined {

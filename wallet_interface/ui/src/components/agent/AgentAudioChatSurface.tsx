@@ -17,13 +17,12 @@ type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "sp
 type AgentAudioSurface = "drawer" | "sheet";
 type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserAudioContextConstructor = new () => BrowserAudioContext;
-type BrowserScriptProcessorNode = ScriptProcessorNode & { onaudioprocess: ((event: AudioProcessingEvent) => void) | null };
 type BrowserAudioWorklet = { addModule: (moduleUrl: string) => Promise<void> };
 type BrowserAudioWorkletNode = AudioWorkletNode;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
-const AUDIO_OPENING_CLIP_URL = `${import.meta.env?.BASE_URL || "/"}assets/audio/intro.wav`;
+const AUDIO_OPENING_CLIP_PATH = "assets/audio/intro.wav";
 const VAD_MIN_RMS = 0.025;
 const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;
@@ -31,6 +30,8 @@ const VAD_TRIGGER_FRAMES = 5;
 const VAD_RETRIGGER_COOLDOWN_MS = 1200;
 const MIC_CAPTURE_WORKLET_NAME = "abby-voice-capture-processor";
 const VOICE_RESPONSE_MAX_TOKENS = 512;
+const SPEECH_RECOGNITION_WARMUP_ABORT_MS = 180;
+const SPEECH_RECOGNITION_WARMUP_COOLDOWN_MS = 8000;
 const MIC_CAPTURE_WORKLET_SOURCE = `
 class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
   process(inputs, outputs) {
@@ -52,6 +53,9 @@ class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
 registerProcessor("abby-voice-capture-processor", AbbyVoiceCaptureProcessor);
 `;
 let lastOpeningGreetingAt = 0;
+let primedOpeningClipAudio: HTMLAudioElement | null = null;
+let primedOpeningClipPromise: Promise<HTMLAudioElement | null> | null = null;
+let lastSpeechRecognitionWarmupAt = 0;
 
 interface BrowserSpeechRecognition extends EventTarget {
   continuous: boolean;
@@ -75,6 +79,21 @@ interface BrowserSpeechRecognitionEvent {
   }>;
 }
 
+export function resolveAudioOpeningClipUrl(
+  documentBaseUri?: string,
+  baseUrl = String(import.meta.env?.BASE_URL || "/"),
+): string {
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  const baseReference = documentBaseUri || (typeof document !== "undefined" ? document.baseURI : undefined);
+  const relativePath = `${normalizedBase}${AUDIO_OPENING_CLIP_PATH}`;
+  return baseReference ? new URL(relativePath, baseReference).toString() : relativePath;
+}
+
+export function primeVoiceChatActivation(): void {
+  void primeOpeningClipPlayback();
+  warmupSpeechRecognition();
+}
+
 interface BrowserAudioContext {
   sampleRate?: number;
   state?: AudioContextState;
@@ -84,7 +103,6 @@ interface BrowserAudioContext {
   createBiquadFilter?: () => BiquadFilterNode;
   createGain?: () => GainNode;
   createMediaStreamSource: (stream: MediaStream) => MediaStreamAudioSourceNode;
-  createScriptProcessor?: (bufferSize?: number, numberOfInputChannels?: number, numberOfOutputChannels?: number) => BrowserScriptProcessorNode;
   decodeAudioData?: (audioData: ArrayBuffer) => Promise<AudioBuffer>;
   destination: AudioDestinationNode;
   resume?: () => Promise<void>;
@@ -130,7 +148,6 @@ export function AgentAudioChatSurface({
   const micSampleRateRef = useRef(48000);
   const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
-  const micCaptureProcessorRef = useRef<BrowserScriptProcessorNode | null>(null);
   const micCaptureWorkletRef = useRef<BrowserAudioWorkletNode | null>(null);
   const micCaptureSinkRef = useRef<GainNode | null>(null);
   const micCaptureChunksRef = useRef<Float32Array[]>([]);
@@ -229,20 +246,22 @@ export function AgentAudioChatSurface({
 
   useEffect(() => {
     if (!open || !voiceDetectionEnabled || !isAudioSurfaceActive(surface)) return;
-    const timeout = window.setTimeout(() => {
+    warmupSpeechRecognition();
+    const run = () => {
       if (!openRef.current || !voiceDetectionEnabledRef.current) return;
       if (!mutedRef.current && reserveOpeningGreeting()) {
         sessionStateRef.current = "speaking";
         setSessionState("speaking");
         setStatusDetail("Testing voice output.");
-        playOpeningClip(() => {
+        void playOpeningClip(() => {
           void startVoiceActivityDetection();
         });
         return;
       }
       void startVoiceActivityDetection();
-    }, 120);
-    return () => window.clearTimeout(timeout);
+    };
+    run();
+    return undefined;
   }, [open, surface, voiceDetectionEnabled]);
 
   useEffect(() => {
@@ -412,7 +431,6 @@ export function AgentAudioChatSurface({
           micCaptureChunksRef.current.push(new Float32Array(chunk));
         };
         micCaptureWorkletRef.current = worklet;
-        micCaptureProcessorRef.current = null;
         return true;
       } catch {
         micCaptureWorkletRef.current = null;
@@ -420,23 +438,6 @@ export function AgentAudioChatSurface({
         URL.revokeObjectURL(moduleUrl);
       }
     }
-
-    const processor = audioContext.createScriptProcessor?.(4096, 1, 1) || null;
-    if (!processor) {
-      micCaptureProcessorRef.current = null;
-      micCaptureWorkletRef.current = null;
-      return false;
-    }
-    source.connect(processor);
-    processor.connect(silentSink);
-    silentSink.connect(audioContext.destination);
-    processor.onaudioprocess = (event) => {
-      if (!micCaptureEnabledRef.current) return;
-      const channelData = event.inputBuffer.getChannelData(0);
-      if (!channelData?.length) return;
-      micCaptureChunksRef.current.push(new Float32Array(channelData));
-    };
-    micCaptureProcessorRef.current = processor;
     micCaptureWorkletRef.current = null;
     return true;
   }
@@ -490,7 +491,6 @@ export function AgentAudioChatSurface({
         const captureConnected = await setupVoiceCaptureNode(audioContext, source, silentSink);
         micCaptureSinkRef.current = captureConnected ? silentSink : null;
       } else {
-        micCaptureProcessorRef.current = null;
         micCaptureWorkletRef.current = null;
         micCaptureSinkRef.current = null;
       }
@@ -543,11 +543,6 @@ export function AgentAudioChatSurface({
     }
     micFilterNodesRef.current.forEach((node) => node.disconnect());
     micFilterNodesRef.current = [];
-    if (micCaptureProcessorRef.current) {
-      micCaptureProcessorRef.current.onaudioprocess = null;
-      micCaptureProcessorRef.current.disconnect();
-      micCaptureProcessorRef.current = null;
-    }
     if (micCaptureWorkletRef.current) {
       micCaptureWorkletRef.current.port.onmessage = null;
       micCaptureWorkletRef.current.disconnect();
@@ -824,10 +819,23 @@ export function AgentAudioChatSurface({
     window.speechSynthesis.speak(utterance);
   }
 
-  function playOpeningClip(onComplete?: () => void) {
-    const audio = new Audio(AUDIO_OPENING_CLIP_URL);
+  async function playOpeningClip(onComplete?: () => void) {
+    const primedAudio = await consumePrimedOpeningClip();
+    const audio = primedAudio || new Audio(resolveAudioOpeningClipUrl());
+    audio.preload = "auto";
+    audio.setAttribute("playsinline", "true");
     audioRef.current = audio;
+    if (audio.ended) {
+      clearPrimedOpeningClip(audio);
+      detachAudioElement(audio);
+      audioRef.current = null;
+      sessionStateRef.current = "ready";
+      setSessionState("ready");
+      onComplete?.();
+      return;
+    }
     audio.onended = () => {
+      clearPrimedOpeningClip(audio);
       detachAudioElement(audio);
       audioRef.current = null;
       sessionStateRef.current = "ready";
@@ -835,19 +843,24 @@ export function AgentAudioChatSurface({
       onComplete?.();
     };
     audio.onerror = () => {
+      clearPrimedOpeningClip(audio);
       detachAudioElement(audio);
       audioRef.current = null;
       playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
     };
-    void audio.play().catch(() => {
-      detachAudioElement(audio);
-      audioRef.current = null;
-      playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
-    });
+    if (!primedAudio || audio.paused) {
+      await audio.play().catch(() => {
+        clearPrimedOpeningClip(audio);
+        detachAudioElement(audio);
+        audioRef.current = null;
+        playBrowserSpeech(AUDIO_OPENING_GREETING, onComplete);
+      });
+    }
   }
 
   function stopPlayback() {
     if (audioRef.current) {
+      clearPrimedOpeningClip(audioRef.current);
       detachAudioElement(audioRef.current);
       audioRef.current = null;
     }
@@ -890,6 +903,7 @@ export function AgentAudioChatSurface({
   }
 
   function resumeVoiceDetection() {
+    warmupSpeechRecognition();
     setVoiceDetectionEnabled(true);
     voiceDetectionEnabledRef.current = true;
     void startVoiceActivityDetection();
@@ -899,6 +913,7 @@ export function AgentAudioChatSurface({
     if (!openRef.current || !voiceDetectionEnabledRef.current) return;
     window.setTimeout(() => {
       if (openRef.current && voiceDetectionEnabledRef.current && !recognitionRef.current) {
+        warmupSpeechRecognition();
         void startVoiceActivityDetection();
       }
     }, 220);
@@ -1018,6 +1033,7 @@ export function AgentAudioChatSurface({
                         compact
                         score={item.score}
                         source={item.source}
+                        summary={item.snippet}
                         title={item.title}
                       />
                     </div>
@@ -1115,6 +1131,94 @@ export function resolveVoiceGeneratedReplyText(generatedText: string, fallbackTe
       .replace(/^Assistant\s*:\s*/i, "")
       .trim() || fallbackText.trim()
   );
+}
+
+async function primeOpeningClipPlayback(): Promise<HTMLAudioElement | null> {
+  if (primedOpeningClipAudio) {
+    return primedOpeningClipAudio;
+  }
+  if (primedOpeningClipPromise) {
+    return primedOpeningClipPromise;
+  }
+  if (typeof Audio === "undefined") {
+    return null;
+  }
+  const audio = new Audio(resolveAudioOpeningClipUrl());
+  audio.preload = "auto";
+  audio.setAttribute("playsinline", "true");
+  primedOpeningClipPromise = audio
+    .play()
+    .then(() => {
+      primedOpeningClipAudio = audio;
+      return audio;
+    })
+    .catch(() => {
+      clearPrimedOpeningClip(audio);
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+      return null;
+    })
+    .finally(() => {
+      primedOpeningClipPromise = null;
+    });
+  return primedOpeningClipPromise;
+}
+
+async function consumePrimedOpeningClip(): Promise<HTMLAudioElement | null> {
+  if (primedOpeningClipAudio) {
+    return primedOpeningClipAudio;
+  }
+  if (primedOpeningClipPromise) {
+    return primedOpeningClipPromise;
+  }
+  return null;
+}
+
+function clearPrimedOpeningClip(audio?: HTMLAudioElement | null): void {
+  if (!audio || primedOpeningClipAudio === audio) {
+    primedOpeningClipAudio = null;
+  }
+}
+
+function warmupSpeechRecognition(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  const Recognition = getSpeechRecognitionConstructor();
+  if (!Recognition) {
+    return;
+  }
+  const now = Date.now();
+  if (now - lastSpeechRecognitionWarmupAt < SPEECH_RECOGNITION_WARMUP_COOLDOWN_MS) {
+    return;
+  }
+  lastSpeechRecognitionWarmupAt = now;
+  try {
+    const recognition = new Recognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = navigator.language || "en-US";
+    recognition.onresult = () => {
+      try {
+        recognition.abort();
+      } catch {
+        // Ignore warmup teardown errors.
+      }
+    };
+    recognition.onerror = () => undefined;
+    recognition.onend = () => undefined;
+    recognition.start();
+    window.setTimeout(() => {
+      try {
+        recognition.abort();
+      } catch {
+        // Ignore warmup teardown errors.
+      }
+    }, SPEECH_RECOGNITION_WARMUP_ABORT_MS);
+  } catch {
+    lastSpeechRecognitionWarmupAt = 0;
+  }
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {
