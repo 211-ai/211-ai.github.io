@@ -651,7 +651,14 @@ export function AgentAudioChatSurface({
     try {
       let preferredSpeechText = voiceInferenceRequest.fallbackText || fallbackText || message.content;
       if (message.status !== "failed") {
-        const generatedReply = await clientLLMWorkerService.tryGenerateText(voiceInferenceRequest.prompt, 120);
+        const generatedReply = await clientLLMWorkerService.tryGenerateText(
+          {
+            prompt: voiceInferenceRequest.prompt,
+            systemPrompt: voiceInferenceRequest.systemPrompt,
+            userPrompt: voiceInferenceRequest.userPrompt,
+          },
+          120,
+        );
         if (generatedReply.ok) {
           preferredSpeechText = resolveVoiceGeneratedReplyText(generatedReply.text, preferredSpeechText);
           voiceInferenceRequest = buildVoiceInferenceFallbackRequest({

@@ -1,4 +1,4 @@
-import { buildClientLlmChatMessages, getClientLlmGenerationParameters } from "./clientLlmPrompting";
+import { buildClientLlmChatMessages, getClientLlmGenerationParameters, type ClientLlmPromptInput } from "./clientLlmPrompting";
 import { LLM_CONFIG } from "./llmConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
 
@@ -55,7 +55,7 @@ export function clearOpenRouterApiKey(): void {
 }
 
 export async function generateOpenRouterText(options: {
-  prompt: string;
+  prompt: ClientLlmPromptInput;
   maxTokens: number;
   localModelName: string;
   fallbackReason: string;

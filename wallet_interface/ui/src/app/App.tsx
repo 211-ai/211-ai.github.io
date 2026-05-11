@@ -1467,7 +1467,8 @@ export function App() {
         }}
         onSend={(message) => {
           void agentChat.sendMessage(message, {
-            disableLocalLlmReasoning: agentChatMode === "audio"
+            disableLocalLlmReasoning: agentChatMode === "audio",
+            preferGraphRagForGeneralQuestions: agentChatMode === "audio",
           });
         }}
         open={agentChatOpen}

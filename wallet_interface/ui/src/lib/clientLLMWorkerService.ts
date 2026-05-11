@@ -555,7 +555,7 @@ class ClientLLMWorkerService {
     generationId: number,
   ): Promise<string> {
     const result = await generateOpenRouterText({
-      prompt: prompt as unknown as string,
+      prompt,
       maxTokens,
       localModelName: this.currentModel,
       fallbackReason,
