@@ -1413,6 +1413,16 @@ export class AudioModel {
     expect(savePolicy.gate).toBe("write_wallet");
     expect(confirmationRiskForGate(savePolicy.gate)).toBe("high");
 
+    expect(evaluateAgentToolPermissionPolicy("answer_211_question", {
+      route: "home",
+      allowedSurfaces: getToolDefinition("answer_211_question").surfaces,
+      grantedPermissionLevel: "public",
+      walletUnlocked: true,
+      privateContextAllowed: false,
+      userPresent: true,
+      toolTitle: "Answer 211 question",
+    })).toMatchObject({ ok: true });
+
     expect(evaluateAgentToolPermissionPolicy("save_service", {
       route: "home",
       allowedSurfaces: ["social-services"],

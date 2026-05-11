@@ -126,7 +126,7 @@ const walletPrivateContext: SurfaceContextProviderDefinition = {
   permissionLevel: "wallet_private"
 };
 
-const commonReadTools: AgentCommandName[] = ["navigate", "read_surface_context"];
+const commonReadTools: AgentCommandName[] = ["navigate", "read_surface_context", "search_211_services", "answer_211_question"];
 
 const surfaceTools: Record<RouteId, AgentCommandName[]> = {
   home: commonReadTools,
@@ -284,6 +284,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     title: "Search the 211 service index",
     permissionLevel: "public",
     surfaces: [
+      "home",
       "social-services",
       "shelter",
       "provider-clients",
@@ -300,6 +301,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
     title: "Answer 211 question",
     permissionLevel: "public",
     surfaces: [
+      "home",
       "social-services",
       "shelter",
       "provider-clients",
