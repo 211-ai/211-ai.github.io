@@ -1740,7 +1740,7 @@ export class AudioModel {
     expect(controller.getSnapshot().messages.at(-1)?.content).not.toMatch(/You are on home\./);
   });
 
-  test("disables local GraphRAG model answers when local LLM reasoning is disabled", async () => {
+  test("preserves GraphRAG LLM answers when local LLM reasoning is disabled", async () => {
     const invoked: AgentToolCall[] = [];
     const controller = createAgentChatController({
       surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
@@ -1761,7 +1761,7 @@ export class AudioModel {
     expect(invoked.map((toolCall) => toolCall.name)).toEqual(["navigate", "answer_211_question"]);
     expect(invoked[1].input).toMatchObject({
       question: "tell me about 211 shelter eligibility",
-      useLocalModel: false,
+      useLocalModel: true,
     });
   });
 

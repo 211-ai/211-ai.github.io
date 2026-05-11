@@ -283,7 +283,6 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     }
     const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (!localLlmReasoningEnabled) {
-      turn = disableLocalModelForTurn(turn);
       if (shouldTryLocalLlmResponse(turn)) {
         turn = {
           ...turn,
@@ -893,22 +892,6 @@ function readableToolName(name: string): string {
 
 function fallbackResponse(context: SurfaceContext): string {
   return `I can help on the ${context.routeLabel} screen: explain what is visible, navigate the app, answer public 211 service questions, and ask before changing wallet data.`;
-}
-
-function disableLocalModelForTurn(turn: AgentPlannedTurn): AgentPlannedTurn {
-  return {
-    ...turn,
-    tools: turn.tools.map((tool) => {
-      if (tool.name !== "answer_211_question" || !isRecord(tool.input)) return tool;
-      return {
-        ...tool,
-        input: {
-          ...tool.input,
-          useLocalModel: false
-        }
-      };
-    })
-  };
 }
 
 function deterministicResponseWithoutLocalReasoning(content: string, context: SurfaceContext): string {
