@@ -559,14 +559,6 @@ export async function answer211InfoQuestion(
               limit: 6,
             }),
         );
-  if (evidence.results.length === 0) {
-    return {
-      question: trimmedQuestion,
-      answer: build211InfoFallbackSummary(evidence),
-      evidence,
-      usedLocalModel: false,
-    };
-  }
 
   if (options.useLocalModel === false) {
     return {

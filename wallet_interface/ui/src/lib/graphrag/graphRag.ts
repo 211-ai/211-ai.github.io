@@ -62,15 +62,6 @@ export async function answerWith211GraphRag(
     queryEmbedding: options.queryEmbedding,
     limit: 6,
   });
-  if (evidence.results.length === 0) {
-    return {
-      question: trimmedQuestion,
-      answer:
-        "I could not find a relevant record in the local 211 corpus for that question. For immediate service navigation, contact 211 directly.",
-      evidence,
-      usedLocalModel: false,
-    };
-  }
 
   if (options.useLocalModel === false || shouldDisableLocalLlm()) {
     return {

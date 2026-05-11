@@ -46,6 +46,8 @@ import type { AppActionResult } from "../src/app/appActions";
 import type { RouteId } from "../src/models/abby";
 import { build211GraphRagPrompt, DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS } from "../src/lib/graphrag";
 import type { GraphRagEvidence, SearchResult } from "../src/lib/graphrag";
+import { get211CorpusAssetUrl } from "../src/lib/graphrag/corpus";
+import { ragSearchWorkerService } from "../src/lib/graphrag/searchWorkerService";
 import { clientLLMWorkerService } from "../src/lib/clientLLMWorkerService";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../src/lib/audioChatConfig";
 import { ClientAudioReplyService, type ClientAudioProgress } from "../src/lib/clientAudioReplyService";
@@ -72,6 +74,7 @@ import {
 } from "../src/lib/voiceGraphRagPrompt";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, type ClientLlmModel } from "../src/lib/llmConfig";
 import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
+import { answer211InfoQuestion } from "../src/services/graphRagService";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
@@ -1795,6 +1798,43 @@ export class AudioModel {
       question: "what should I do next",
       useLocalModel: true,
     });
+  });
+
+  test("calls the GraphRAG LLM path even when retrieval returns no evidence", async () => {
+    const originalBuildEvidence = ragSearchWorkerService.buildEvidence.bind(ragSearchWorkerService);
+    const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
+    const originalGenerateText = service.generateText.bind(service);
+    const prompts: string[] = [];
+
+    try {
+      ragSearchWorkerService.buildEvidence = async (query: string) => ({
+        query,
+        results: [],
+        nodes: [],
+        edges: [],
+      });
+      service.generateText = async (prompt: string) => {
+        prompts.push(prompt);
+        return "No matching records were retrieved, so tell the user to contact 211 directly.";
+      };
+
+      const result = await answer211InfoQuestion("where can I get help today?");
+
+      expect(prompts).toHaveLength(1);
+      expect(prompts[0]).toContain("Question: where can I get help today?");
+      expect(result.answer).toContain("I could not find a relevant record in the local 211 corpus");
+      expect(result.usedLocalModel).toBe(false);
+    } finally {
+      ragSearchWorkerService.buildEvidence = originalBuildEvidence;
+      service.generateText = originalGenerateText;
+    }
+  });
+
+  test("builds GraphRAG corpus asset URLs without requiring an absolute base URL", () => {
+    expect(() => get211CorpusAssetUrl("generated/generated-manifest.json")).not.toThrow();
+    expect(get211CorpusAssetUrl("generated/generated-manifest.json")).toContain(
+      "/corpus/211-info/current/generated/generated-manifest.json",
+    );
   });
 
   test("uses OpenRouter when WebGPU is unavailable for the default client LLM", async () => {

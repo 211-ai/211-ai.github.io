@@ -451,7 +451,15 @@ export async function fetch211CorpusArrayBuffer(relativePath: string): Promise<A
 
 export function get211CorpusAssetUrl(relativePath: string): string {
   const cleanPath = relativePath.replace(/^\/+/, "");
-  return new URL(cleanPath, `${CORPUS_BASE_URL}/`).toString();
+  return joinCorpusAssetUrl(CORPUS_BASE_URL, cleanPath);
+}
+
+function joinCorpusAssetUrl(baseUrl: string, relativePath: string): string {
+  const normalizedBaseUrl = ensureTrailingSlash(baseUrl);
+  if (/^[a-z][a-z\d+.-]*:\/\//i.test(normalizedBaseUrl)) {
+    return new URL(relativePath, normalizedBaseUrl).toString();
+  }
+  return `${stripTrailingSlash(normalizedBaseUrl)}/${relativePath}`;
 }
 
 function stripTrailingSlash(value: string): string {
