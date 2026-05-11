@@ -16,6 +16,8 @@ type AgentAudioSurface = "drawer" | "sheet";
 type SpeechRecognitionConstructor = new () => BrowserSpeechRecognition;
 type BrowserAudioContextConstructor = new () => BrowserAudioContext;
 type BrowserScriptProcessorNode = ScriptProcessorNode & { onaudioprocess: ((event: AudioProcessingEvent) => void) | null };
+type BrowserAudioWorklet = { addModule: (moduleUrl: string) => Promise<void> };
+type BrowserAudioWorkletNode = AudioWorkletNode;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
 const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
@@ -24,6 +26,27 @@ const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;
 const VAD_TRIGGER_FRAMES = 5;
 const VAD_RETRIGGER_COOLDOWN_MS = 1200;
+const MIC_CAPTURE_WORKLET_NAME = "abby-voice-capture-processor";
+const MIC_CAPTURE_WORKLET_SOURCE = `
+class AbbyVoiceCaptureProcessor extends AudioWorkletProcessor {
+  process(inputs, outputs) {
+    const input = inputs[0];
+    const output = outputs[0];
+    const channel = input?.[0];
+    if (channel?.length) {
+      const copy = new Float32Array(channel.length);
+      copy.set(channel);
+      this.port.postMessage(copy, [copy.buffer]);
+    }
+    if (output?.[0]) {
+      output[0].fill(0);
+    }
+    return true;
+  }
+}
+
+registerProcessor("abby-voice-capture-processor", AbbyVoiceCaptureProcessor);
+`;
 let lastOpeningGreetingAt = 0;
 
 interface BrowserSpeechRecognition extends EventTarget {
@@ -51,12 +74,14 @@ interface BrowserSpeechRecognitionEvent {
 interface BrowserAudioContext {
   sampleRate?: number;
   state?: AudioContextState;
+  audioWorklet?: BrowserAudioWorklet;
   close: () => Promise<void>;
   createAnalyser: () => AnalyserNode;
   createBiquadFilter?: () => BiquadFilterNode;
   createGain?: () => GainNode;
   createMediaStreamSource: (stream: MediaStream) => MediaStreamAudioSourceNode;
   createScriptProcessor?: (bufferSize?: number, numberOfInputChannels?: number, numberOfOutputChannels?: number) => BrowserScriptProcessorNode;
+  decodeAudioData?: (audioData: ArrayBuffer) => Promise<AudioBuffer>;
   destination: AudioDestinationNode;
   resume?: () => Promise<void>;
 }
@@ -101,6 +126,7 @@ export function AgentAudioChatSurface({
   const micSourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const micCaptureProcessorRef = useRef<BrowserScriptProcessorNode | null>(null);
+  const micCaptureWorkletRef = useRef<BrowserAudioWorkletNode | null>(null);
   const micCaptureSinkRef = useRef<GainNode | null>(null);
   const micCaptureChunksRef = useRef<Float32Array[]>([]);
   const micCaptureEnabledRef = useRef(false);
@@ -109,6 +135,8 @@ export function AgentAudioChatSurface({
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
+  const playbackAudioContextRef = useRef<BrowserAudioContext | null>(null);
+  const playbackSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const sessionStateRef = useRef(sessionState);
   const openRef = useRef(open);
@@ -350,6 +378,55 @@ export function AgentAudioChatSurface({
     stopMicrophoneMeter();
   }
 
+  async function setupVoiceCaptureNode(audioContext: BrowserAudioContext, source: MediaStreamAudioSourceNode, silentSink: GainNode): Promise<boolean> {
+    if (typeof AudioWorkletNode !== "undefined" && audioContext.audioWorklet) {
+      const moduleUrl = URL.createObjectURL(new Blob([MIC_CAPTURE_WORKLET_SOURCE], { type: "text/javascript" }));
+      try {
+        await audioContext.audioWorklet.addModule(moduleUrl);
+        const worklet = new AudioWorkletNode(audioContext as unknown as AudioContext, MIC_CAPTURE_WORKLET_NAME, {
+          numberOfInputs: 1,
+          numberOfOutputs: 1,
+          outputChannelCount: [1],
+        }) as BrowserAudioWorkletNode;
+        source.connect(worklet);
+        worklet.connect(silentSink);
+        silentSink.connect(audioContext.destination);
+        worklet.port.onmessage = (event: MessageEvent<Float32Array>) => {
+          if (!micCaptureEnabledRef.current) return;
+          const chunk = event.data;
+          if (!chunk?.length) return;
+          micCaptureChunksRef.current.push(new Float32Array(chunk));
+        };
+        micCaptureWorkletRef.current = worklet;
+        micCaptureProcessorRef.current = null;
+        return true;
+      } catch {
+        micCaptureWorkletRef.current = null;
+      } finally {
+        URL.revokeObjectURL(moduleUrl);
+      }
+    }
+
+    const processor = audioContext.createScriptProcessor?.(4096, 1, 1) || null;
+    if (!processor) {
+      micCaptureProcessorRef.current = null;
+      micCaptureWorkletRef.current = null;
+      return false;
+    }
+    source.connect(processor);
+    processor.connect(silentSink);
+    silentSink.connect(audioContext.destination);
+    processor.onaudioprocess = (event) => {
+      if (!micCaptureEnabledRef.current) return;
+      const channelData = event.inputBuffer.getChannelData(0);
+      if (!channelData?.length) return;
+      micCaptureChunksRef.current.push(new Float32Array(channelData));
+    };
+    micCaptureProcessorRef.current = processor;
+    micCaptureWorkletRef.current = null;
+    return true;
+  }
+
   async function startMicrophoneMeter({ detectVoiceActivity }: { detectVoiceActivity: boolean }): Promise<boolean> {
     stopMicrophoneMeter();
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -378,7 +455,6 @@ export function AgentAudioChatSurface({
       analyser.fftSize = 512;
       analyser.smoothingTimeConstant = 0.72;
       const source = audioContext.createMediaStreamSource(stream);
-      const processor = audioContext.createScriptProcessor?.(4096, 1, 1) || null;
       const silentSink = audioContext.createGain?.() || null;
       const highPass = audioContext.createBiquadFilter?.();
       const lowPass = audioContext.createBiquadFilter?.();
@@ -395,21 +471,13 @@ export function AgentAudioChatSurface({
         source.connect(analyser);
         micFilterNodesRef.current = [];
       }
-      if (processor && silentSink) {
+      if (silentSink) {
         silentSink.gain.value = 0;
-        source.connect(processor);
-        processor.connect(silentSink);
-        silentSink.connect(audioContext.destination);
-        processor.onaudioprocess = (event) => {
-          if (!micCaptureEnabledRef.current) return;
-          const channelData = event.inputBuffer.getChannelData(0);
-          if (!channelData?.length) return;
-          micCaptureChunksRef.current.push(new Float32Array(channelData));
-        };
-        micCaptureProcessorRef.current = processor;
-        micCaptureSinkRef.current = silentSink;
+        const captureConnected = await setupVoiceCaptureNode(audioContext, source, silentSink);
+        micCaptureSinkRef.current = captureConnected ? silentSink : null;
       } else {
         micCaptureProcessorRef.current = null;
+        micCaptureWorkletRef.current = null;
         micCaptureSinkRef.current = null;
       }
       micAudioContextRef.current = audioContext;
@@ -465,6 +533,11 @@ export function AgentAudioChatSurface({
       micCaptureProcessorRef.current.onaudioprocess = null;
       micCaptureProcessorRef.current.disconnect();
       micCaptureProcessorRef.current = null;
+    }
+    if (micCaptureWorkletRef.current) {
+      micCaptureWorkletRef.current.port.onmessage = null;
+      micCaptureWorkletRef.current.disconnect();
+      micCaptureWorkletRef.current = null;
     }
     micCaptureSinkRef.current?.disconnect();
     micCaptureSinkRef.current = null;
@@ -571,9 +644,20 @@ export function AgentAudioChatSurface({
         const audio = new Audio(audioUrl);
         audioRef.current = audio;
         let usedPlaybackFallback = false;
-        const fallbackToBrowserSpeech = () => {
+        const fallbackToBrowserSpeech = async () => {
           if (usedPlaybackFallback) return;
           usedPlaybackFallback = true;
+          const playedWithWebAudio = await playAudioBlobWithWebAudio(result.audioBlob, () => {
+            setSessionState("ready");
+            restartVoiceActivityDetectionSoon();
+          });
+          if (playedWithWebAudio) {
+            revokeAudioUrl();
+            audioRef.current = null;
+            setStatusDetail("Playing audio reply.");
+            setAudioDiagnostic("");
+            return;
+          }
           revokeAudioUrl();
           audioRef.current = null;
           setStatusDetail("Using browser speech output.");
@@ -587,10 +671,10 @@ export function AgentAudioChatSurface({
           restartVoiceActivityDetectionSoon();
         };
         audio.onerror = () => {
-          fallbackToBrowserSpeech();
+          void fallbackToBrowserSpeech();
         };
         await audio.play().catch(() => {
-          fallbackToBrowserSpeech();
+          return fallbackToBrowserSpeech();
         });
         return;
       }
@@ -613,6 +697,43 @@ export function AgentAudioChatSurface({
     if (audioProgressRequestIdRef.current !== requestId || !openRef.current) return;
     setModelProgress(progress);
     setStatusDetail(progress.status);
+  }
+
+  async function playAudioBlobWithWebAudio(audioBlob: Blob, onComplete?: () => void): Promise<boolean> {
+    const AudioContextConstructor = getAudioContextConstructor();
+    if (!AudioContextConstructor) {
+      return false;
+    }
+    const audioContext = new AudioContextConstructor();
+    try {
+      if (audioContext.state === "suspended" && audioContext.resume) {
+        await audioContext.resume();
+      }
+      if (!audioContext.decodeAudioData) {
+        await audioContext.close().catch(() => undefined);
+        return false;
+      }
+      const audioBuffer = await audioContext.decodeAudioData(await audioBlob.arrayBuffer());
+      const source = (audioContext as unknown as AudioContext).createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.onended = () => {
+        source.disconnect();
+        playbackSourceRef.current = null;
+        playbackAudioContextRef.current = null;
+        void audioContext.close().catch(() => undefined);
+        onComplete?.();
+      };
+      playbackAudioContextRef.current = audioContext;
+      playbackSourceRef.current = source;
+      source.start();
+      return true;
+    } catch {
+      playbackSourceRef.current = null;
+      playbackAudioContextRef.current = null;
+      await audioContext.close().catch(() => undefined);
+      return false;
+    }
   }
 
   function playBrowserSpeech(text: string, onComplete?: () => void) {
@@ -645,6 +766,13 @@ export function AgentAudioChatSurface({
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
+    }
+    playbackSourceRef.current?.stop();
+    playbackSourceRef.current?.disconnect();
+    playbackSourceRef.current = null;
+    if (playbackAudioContextRef.current) {
+      void playbackAudioContextRef.current.close().catch(() => undefined);
+      playbackAudioContextRef.current = null;
     }
     if (utteranceRef.current && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
