@@ -293,6 +293,7 @@ export class ClientAudioReplyService {
   ): Promise<ClientAudioReplyResult> {
     const normalizedPrompt = input.prompt.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
     const normalizedFallback = input.fallbackText.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    const normalizedSpeechText = normalizedFallback || normalizedPrompt;
     if (!normalizedPrompt) {
       throw new Error("Voice reply prompt is empty.");
     }
@@ -302,9 +303,8 @@ export class ClientAudioReplyService {
       this.startLocalWarmupInBackground();
       try {
         return await this.generateProxyAudio({
-          mode: "voice-reply",
-          text: normalizedPrompt,
-          fallbackText: normalizedFallback,
+          mode: "tts",
+          text: normalizedSpeechText,
           localModelName: modelName,
           onProgress: options.onProgress,
         });

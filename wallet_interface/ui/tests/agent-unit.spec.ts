@@ -709,8 +709,9 @@ export class AudioModel {
           }
         }) as unknown as Worker,
       generateRemoteAudio: async (options) => {
-        expect(options.mode).toBe("voice-reply");
-        expect(options.text).toContain("Evidence bundle for reasoning");
+        expect(options.mode).toBe("tts");
+        expect(options.text).toBe("Neighborhood Pantry can help with food today.");
+        expect(options.fallbackText).toBeUndefined();
         return {
           audioBlob,
           mimeType: "audio/wav",

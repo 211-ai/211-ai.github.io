@@ -23,20 +23,25 @@ export async function generateRemoteAudio(options: {
     throw new Error("Voice proxy is unavailable.");
   }
 
-  const response = await fetchWithTimeout(endpoint, {
-    method: "POST",
-    headers: buildHeaders(),
-    body: JSON.stringify({
-      mode: options.mode,
-      text: options.text,
-      fallback_text: options.fallbackText,
-      local_model: options.localModelName,
-      format: "wav",
-      metadata: {
-        app: "abby-211",
-      },
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(endpoint, {
+      method: "POST",
+      headers: buildHeaders(),
+      body: JSON.stringify({
+        mode: options.mode,
+        text: options.text,
+        fallback_text: options.fallbackText,
+        local_model: options.localModelName,
+        format: "wav",
+        metadata: {
+          app: "abby-211",
+        },
+      }),
+    });
+  } catch (error) {
+    throw new Error(formatRemoteAudioNetworkError(endpoint, error));
+  }
 
   if (!response.ok) {
     throw new Error(`Voice proxy request failed with ${response.status}: ${await response.text()}`);
@@ -147,4 +152,15 @@ function getBrowserOrigin(): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function formatRemoteAudioNetworkError(endpoint: string, error: unknown): string {
+  if (error instanceof DOMException && error.name === "AbortError") {
+    return `Voice proxy request to ${endpoint} timed out.`;
+  }
+  const message = error instanceof Error ? error.message.trim() : String(error).trim();
+  if (/failed to fetch/i.test(message) || /networkerror/i.test(message)) {
+    return `Voice proxy request to ${endpoint} failed before any HTTP response. The server may be offline, refusing connections, or blocked by TLS/CORS.`;
+  }
+  return `Voice proxy request to ${endpoint} failed: ${message || "Unknown network error."}`;
 }
