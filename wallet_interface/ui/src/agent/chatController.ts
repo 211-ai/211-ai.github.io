@@ -79,6 +79,7 @@ export interface AgentChatControllerOptions {
 export interface AgentChatSendOptions {
   retryOfMessageId?: string;
   disableLocalLlmReasoning?: boolean;
+  preferGraphRagForGeneralQuestions?: boolean;
 }
 
 export interface AgentChatController {
@@ -96,6 +97,7 @@ export interface AgentChatController {
 interface RetryRequest {
   content?: string;
   disableLocalLlmReasoning?: boolean;
+  preferGraphRagForGeneralQuestions?: boolean;
   tool?: AgentPlannedTool;
 }
 
@@ -226,7 +228,11 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     } catch (error) {
       const chatError = toChatError(error);
       appendMessage(createMessage(sessionId, "assistant", chatError.message, "failed"));
-      setError(chatError, { content: trimmed, disableLocalLlmReasoning: sendOptions.disableLocalLlmReasoning });
+      setError(chatError, {
+        content: trimmed,
+        disableLocalLlmReasoning: sendOptions.disableLocalLlmReasoning,
+        preferGraphRagForGeneralQuestions: sendOptions.preferGraphRagForGeneralQuestions,
+      });
     } finally {
       responding = false;
       emit();
@@ -280,6 +286,9 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
     if (turn.confirmationDecision) {
       await resolveConfirmationFromMessage(turn.confirmationDecision.confirmationId, turn.confirmationDecision.approved);
       return;
+    }
+    if (sendOptions.preferGraphRagForGeneralQuestions && shouldRouteGeneralQuestionToGraphRag(turn)) {
+      turn = createGraphRagAnswerTurn(content);
     }
     const localLlmReasoningEnabled = !sendOptions.disableLocalLlmReasoning;
     if (!localLlmReasoningEnabled) {
@@ -558,7 +567,8 @@ export function createAgentChatController(options: AgentChatControllerOptions): 
       const userMessage = [...session.messages].reverse().find((message) => message.role === "user");
       await sendMessage(retryRequest.content, {
         retryOfMessageId: userMessage?.id,
-        disableLocalLlmReasoning: retryRequest.disableLocalLlmReasoning
+        disableLocalLlmReasoning: retryRequest.disableLocalLlmReasoning,
+        preferGraphRagForGeneralQuestions: retryRequest.preferGraphRagForGeneralQuestions,
       });
     }
   }
@@ -892,6 +902,24 @@ function readableToolName(name: string): string {
 
 function fallbackResponse(context: SurfaceContext): string {
   return `I can help on the ${context.routeLabel} screen: explain what is visible, navigate the app, answer public 211 service questions, and ask before changing wallet data.`;
+}
+
+function shouldRouteGeneralQuestionToGraphRag(turn: AgentPlannedTurn): boolean {
+  return turn.intentKind === "general_question" && turn.tools.length === 0 && !turn.confirmationDecision;
+}
+
+function createGraphRagAnswerTurn(content: string): AgentPlannedTurn {
+  return {
+    intentKind: "service_navigation",
+    summary: "Answer with GraphRAG evidence and LLM synthesis.",
+    tools: [
+      {
+        name: "answer_211_question",
+        input: { question: content, useLocalModel: true },
+        title: getToolDefinition("answer_211_question").title,
+      },
+    ],
+  };
 }
 
 function deterministicResponseWithoutLocalReasoning(content: string, context: SurfaceContext): string {

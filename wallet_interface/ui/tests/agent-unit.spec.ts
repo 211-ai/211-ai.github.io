@@ -1765,6 +1765,38 @@ export class AudioModel {
     });
   });
 
+  test("routes general audio turns through the GraphRAG answer tool", async () => {
+    const invoked: AgentToolCall[] = [];
+    let localLlmCalls = 0;
+    const controller = createAgentChatController({
+      surfaceApi: createFakeSurfaceApi(createSurfaceContext("home"), invoked),
+      localLlmService: {
+        tryGenerateText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM response should not run");
+        },
+        generateStructuredText: async () => {
+          localLlmCalls += 1;
+          throw new Error("local LLM tool selection should not run");
+        },
+      },
+      now: () => NOW,
+      createId: (prefix) => `${prefix}-unit`,
+    });
+
+    await controller.sendMessage("what should I do next", {
+      disableLocalLlmReasoning: true,
+      preferGraphRagForGeneralQuestions: true,
+    });
+
+    expect(localLlmCalls).toBe(0);
+    expect(invoked.map((toolCall) => toolCall.name)).toEqual(["answer_211_question"]);
+    expect(invoked[0].input).toMatchObject({
+      question: "what should I do next",
+      useLocalModel: true,
+    });
+  });
+
   test("uses OpenRouter when WebGPU is unavailable for the default client LLM", async () => {
     const service = clientLLMWorkerService as unknown as TestableClientLLMWorkerService;
     const restoreStorage = installMemoryLocalStorage();
