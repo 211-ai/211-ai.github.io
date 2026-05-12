@@ -42,6 +42,40 @@ jobs:
           ONNXRUNTIME_NODE_INSTALL: skip
         run: npm ci
 
+      - name: Write Pages runtime config
+        env:
+          ABBY_PAGES_WALLET_API_BASE_URL: ${{ vars.ABBY_PAGES_WALLET_API_BASE_URL }}
+          ABBY_PAGES_WALLET_ID: ${{ vars.ABBY_PAGES_WALLET_ID }}
+          ABBY_PAGES_ACTOR_DID: ${{ vars.ABBY_PAGES_ACTOR_DID }}
+          ABBY_PAGES_FILECOIN_UPLOAD_URL: ${{ vars.ABBY_PAGES_FILECOIN_UPLOAD_URL }}
+        run: |
+          node <<'EOF'
+          const fs = require('fs');
+
+          const normalize = (value) => {
+            if (typeof value !== 'string') return undefined;
+            const trimmed = value.trim();
+            return trimmed ? trimmed : undefined;
+          };
+
+          const config = {};
+          const walletApiBaseUrl = normalize(process.env.ABBY_PAGES_WALLET_API_BASE_URL);
+          const walletId = normalize(process.env.ABBY_PAGES_WALLET_ID);
+          const actorDid = normalize(process.env.ABBY_PAGES_ACTOR_DID);
+          const filecoinUploadUrl = normalize(process.env.ABBY_PAGES_FILECOIN_UPLOAD_URL);
+
+          if (walletApiBaseUrl && walletId) {
+            config.walletApi = { apiBaseUrl: walletApiBaseUrl, walletId };
+            if (actorDid) config.walletApi.actorDid = actorDid;
+          }
+
+          if (filecoinUploadUrl) {
+            config.filecoinStorage = { uploadUrl: filecoinUploadUrl };
+          }
+
+          fs.writeFileSync('public/runtime-config.json', JSON.stringify(config, null, 2) + '\n');
+          EOF
+
       - name: Build
         run: npm run build
 

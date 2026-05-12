@@ -232,7 +232,30 @@ Repository API endpoints:
 ## UI Export Wiring
 
 The React UI keeps static demo export cards when no backend is configured. To
-hydrate the Exports screen from a real wallet export bundle, set:
+hydrate the Exports screen from a real wallet export bundle, set either
+build-time env vars or the static runtime file
+`wallet_interface/ui/public/runtime-config.json`.
+
+`runtime-config.json` is the safer option for split deployments because the
+same built bundle can run on GitHub Pages, a local static server, or a
+containerized UI without rebuilding.
+
+Example runtime config:
+
+```json
+{
+  "walletApi": {
+    "apiBaseUrl": "https://wallet-api.example.com",
+    "walletId": "wallet-demo",
+    "actorDid": "did:key:demo"
+  },
+  "filecoinStorage": {
+    "uploadUrl": "https://storage.example.com/upload"
+  }
+}
+```
+
+For the wallet API connection, set:
 
 - `VITE_WALLET_API_BASE_URL` to the FastAPI base URL
 - `VITE_DEMO_WALLET_ID` to the active wallet ID
@@ -254,3 +277,14 @@ bundle from recipient DID and record IDs. That flow calls:
 Set `VITE_DEMO_ACTOR_DID` for the issuer/controller DID. Set
 `VITE_DEMO_ISSUER_KEY_HEX` and `VITE_DEMO_AUDIENCE_KEY_HEX` when the backend
 requires signed UCAN grants or invocations.
+
+Runtime resolution order for the live wallet connection is:
+
+1. URL query params such as `walletApiBaseUrl` and `walletId`
+2. `runtime-config.json`
+3. browser local storage
+4. Vite `VITE_*` env vars
+
+For IPFS/Filecoin upload integration, the UI now also reads
+`filecoinStorage.uploadUrl` and `filecoinStorage.clientToken` from
+`runtime-config.json`. Do not put private secrets into a static Pages build.

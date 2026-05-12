@@ -19,7 +19,11 @@ def test_wallet_deploy_reference_files_exist() -> None:
         DEPLOY_ROOT / "Dockerfile.api",
         DEPLOY_ROOT / "Dockerfile.ui",
         DEPLOY_ROOT / "docker-compose.wallet.yml",
+        DEPLOY_ROOT / "40-runtime-config.sh",
+        DEPLOY_ROOT / "nginx.211-ai.com.conf",
+        DEPLOY_ROOT / "install_211_ai_nginx.sh",
         DEPLOY_ROOT / "env.production.example",
+        DEPLOY_ROOT / "runtime-config.template.json",
         DEPLOY_ROOT / "storage-retention.example.json",
         DOCS_ROOT / "WALLET_OPERATOR_INTEGRATOR_REFERENCE.md",
         DOCS_ROOT / "WALLET_PROOF_VERIFIER_CONTRACT.md",
@@ -45,6 +49,14 @@ def test_wallet_deploy_reference_files_exist() -> None:
 
 def test_wallet_compose_references_api_ui_and_ops() -> None:
     compose = (DEPLOY_ROOT / "docker-compose.wallet.yml").read_text(encoding="utf-8")
+    nginx = (DEPLOY_ROOT / "nginx.conf").read_text(encoding="utf-8")
+    host_nginx = (DEPLOY_ROOT / "nginx.211-ai.com.conf").read_text(encoding="utf-8")
+    install_script = (DEPLOY_ROOT / "install_211_ai_nginx.sh").read_text(encoding="utf-8")
+    dockerfile_api = (DEPLOY_ROOT / "Dockerfile.api").read_text(encoding="utf-8")
+    dockerfile_ui = (DEPLOY_ROOT / "Dockerfile.ui").read_text(encoding="utf-8")
+    runtime_template = (DEPLOY_ROOT / "runtime-config.template.json").read_text(encoding="utf-8")
+    runtime_entrypoint = (DEPLOY_ROOT / "40-runtime-config.sh").read_text(encoding="utf-8")
+    env_example = (DEPLOY_ROOT / "env.production.example").read_text(encoding="utf-8")
 
     assert "wallet-api:" in compose
     assert "wallet-ops:" in compose
@@ -70,10 +82,43 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF" in compose
     assert "WALLET_BACKUP_PURGE_POLICY_REF" in compose
     assert "WALLET_ALERT_RETENTION_POLICY_REF" in compose
+    assert "VITE_WALLET_API_BASE_URL" in compose
+    assert "ABBY_RUNTIME_WALLET_API_BASE_URL" in compose
+    assert "ABBY_RUNTIME_WALLET_ID" in compose
+    assert "ABBY_RUNTIME_FILECOIN_UPLOAD_URL" in compose
+    assert '"127.0.0.1:8080:8080"' in compose
     readme = (DEPLOY_ROOT / "README.md").read_text(encoding="utf-8")
     assert "--validate-proof-contract" in readme
     assert "--validate-target-signoff-packet" in readme
     assert "storage-retention.example.json" in readme
+    assert "211-ai.com" in readme
+    assert "abby.network" in readme
+    assert "abetterbridgetoyou.com" in readme
+    assert "ABBY_RUNTIME_*" in readme
+    assert '"python-multipart>=0.0.9"' in dockerfile_api
+    assert "ARG VITE_WALLET_API_BASE_URL=same-origin" in dockerfile_ui
+    assert "runtime-config.template.json" in dockerfile_ui
+    assert "40-runtime-config.sh" in dockerfile_ui
+    assert "server_name 211-ai.com www.211-ai.com abby.network www.abby.network abetterbridgetoyou.com www.abetterbridgetoyou.com;" in nginx
+    assert "proxy_pass http://wallet-api:8000/wallets;" in nginx
+    assert "proxy_pass http://wallet-api:8000/ops/;" in nginx
+    assert "proxy_pass http://wallet-api:8000/analytics/;" in nginx
+    assert "listen 443 ssl http2;" in host_nginx
+    assert "ssl_certificate /etc/letsencrypt/live/211-ai.com/fullchain.pem;" in host_nginx
+    assert "ssl_certificate /etc/letsencrypt/live/abby.network/fullchain.pem;" in host_nginx
+    assert "ssl_certificate /etc/letsencrypt/live/abetterbridgetoyou.com/fullchain.pem;" in host_nginx
+    assert "proxy_pass http://127.0.0.1:8080;" in host_nginx
+    assert 'TARGET_AVAILABLE="/etc/nginx/sites-available/211-ai.com.conf"' in install_script
+    assert "nginx -t" in install_script
+    assert "systemctl reload nginx" in install_script
+    assert '"walletApi": {' in runtime_template
+    assert '${ABBY_RUNTIME_WALLET_API_BASE_URL}' in runtime_template
+    assert '${ABBY_RUNTIME_FILECOIN_UPLOAD_URL}' in runtime_template
+    assert "envsubst" in runtime_entrypoint
+    assert "/usr/share/nginx/html/runtime-config.json" in runtime_entrypoint
+    assert "ABBY_RUNTIME_WALLET_API_BASE_URL=same-origin" in env_example
+    assert "ABBY_RUNTIME_WALLET_ID=" in env_example
+    assert "ABBY_RUNTIME_FILECOIN_UPLOAD_URL=" in env_example
 
 
 def test_wallet_kubernetes_manifests_reference_ops_and_persistence() -> None:

@@ -1,4 +1,5 @@
 import type { UploadItem } from "../models/abby";
+import { readRuntimeFilecoinStorageConfig } from "../lib/runtimeConfig";
 import type { WalletApiConfig } from "./walletApi";
 
 const FILECOIN_STORAGE_CONFIG_KEY = "abby-filecoin-storage-config";
@@ -43,6 +44,7 @@ export type FilecoinUploadResponse = {
 export function getFilecoinStorageConfig(): FilecoinStorageClientConfig | undefined {
   const uploadUrl =
     readStoredFilecoinStorageConfig().uploadUrl ||
+    readRuntimeFilecoinStorageConfig()?.uploadUrl ||
     readEnv("VITE_FILECOIN_STORAGE_UPLOAD_URL") ||
     readEnv("VITE_IPFS_FILECOIN_UPLOAD_URL");
   if (!uploadUrl) return undefined;
@@ -50,6 +52,7 @@ export function getFilecoinStorageConfig(): FilecoinStorageClientConfig | undefi
     uploadUrl,
     clientToken:
       readStoredFilecoinStorageConfig().clientToken ||
+      readRuntimeFilecoinStorageConfig()?.clientToken ||
       readEnv("VITE_FILECOIN_STORAGE_CLIENT_TOKEN") ||
       readEnv("VITE_IPFS_FILECOIN_CLIENT_TOKEN")
   };

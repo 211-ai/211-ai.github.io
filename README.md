@@ -48,6 +48,23 @@ pip install -r requirements.txt
 ```
 
 ### 3) UI environment (Abby)
+For the wallet API, zero-knowledge proof flows, and IPFS/Filecoin-backed
+encrypted storage integrations, also install the wallet Python dependencies:
+
+```bash
+./scripts/install_wallet_python_dependencies.sh
+```
+
+That helper installs the FastAPI wallet runtime from `requirements.txt`,
+initializes the `ipfs_datasets_py` git submodule if needed, and installs the
+wallet core package editable so the proof backends and storage adapters are
+available locally.
+
+---
+
+## Usage
+
+### Quick start — scrape everything
 
 ```bash
 npm --prefix wallet_interface/ui ci

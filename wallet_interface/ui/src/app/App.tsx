@@ -65,6 +65,7 @@ import {
   uploadProofBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
+import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../lib/runtimeConfig";
 import {
   buildWalletProofBundlePayload,
   buildWalletProofReviewUrl,
@@ -1489,8 +1490,9 @@ export function App() {
 }
 
 function readWalletApiConfig(): WalletApiConfig | undefined {
-  const apiBaseUrl = import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined;
+  const apiBaseUrl = resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
   const walletId = import.meta.env.VITE_DEMO_WALLET_ID as string | undefined;
+  const runtimeConfig = readRuntimeWalletApiConfig();
   const envConfig =
     apiBaseUrl && walletId
       ? {
@@ -1501,20 +1503,41 @@ function readWalletApiConfig(): WalletApiConfig | undefined {
           audienceKeyHex: import.meta.env.VITE_DEMO_AUDIENCE_KEY_HEX as string | undefined
         }
       : undefined;
-  return readUrlWalletApiConfig() ?? readStoredWalletApiConfig() ?? envConfig;
+  return (
+    readUrlWalletApiConfig() ??
+    (runtimeConfig
+      ? {
+          apiBaseUrl: runtimeConfig.apiBaseUrl,
+          walletId: runtimeConfig.walletId,
+          actorDid: runtimeConfig.actorDid,
+          issuerKeyHex: runtimeConfig.issuerKeyHex,
+          audienceKeyHex: runtimeConfig.audienceKeyHex
+        }
+      : undefined) ??
+    readStoredWalletApiConfig() ??
+    envConfig
+  );
 }
 
 function readWalletApiBaseUrl(): string | undefined {
   const urlBaseUrl = readUrlWalletApiBaseUrl();
   if (urlBaseUrl) return urlBaseUrl;
+  const runtimeBaseUrl = readRuntimeWalletApiBaseUrl();
+  if (runtimeBaseUrl) return runtimeBaseUrl;
   const storedBaseUrl = readStoredWalletApiBaseUrl();
   if (storedBaseUrl) return storedBaseUrl;
-  return (import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined) ?? undefined;
+  return resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
 }
 
 function readUrlWalletApiBaseUrl(): string | undefined {
   if (typeof window === "undefined") return undefined;
   return new URL(window.location.href).searchParams.get("walletApiBaseUrl") ?? undefined;
+}
+
+function resolveWalletApiBaseUrl(apiBaseUrl: string | undefined): string | undefined {
+  const trimmed = apiBaseUrl?.trim();
+  if (!trimmed) return undefined;
+  return trimmed === "same-origin" ? window.location.origin : trimmed;
 }
 
 function readUrlWalletApiConfig(): WalletApiConfig | undefined {

@@ -155,6 +155,13 @@ The repository workflow at `.github/workflows/abby-ui-pages.yml` builds this
 subdirectory and publishes `wallet_interface/ui/dist` with GitHub Actions Pages.
 In the repository settings, set Pages source to "GitHub Actions".
 
+The workflow can also write `public/runtime-config.json` from non-secret GitHub
+Actions variables before the build. Use repository or environment variables
+such as `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
+`ABBY_PAGES_ACTOR_DID`, and optional `ABBY_PAGES_FILECOIN_UPLOAD_URL` when you
+want the Pages sandbox to point at a live backend like `https://211-ai.com`
+without committing a runtime-config change.
+
 The UI is mobile-first and also includes desktop layouts. The mobile home screen
 keeps the required primary actions as two cards: "Emergency contacts" followed
 by "Social services".

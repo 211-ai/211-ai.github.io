@@ -1,13 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./app/App";
+import { loadRuntimeConfig } from "./lib/runtimeConfig";
 import "./styles/global.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+void bootstrap();
 
 const enablePwaInAutomation = import.meta.env.VITE_ENABLE_PWA_IN_AUTOMATION === "true";
 const shouldRegisterServiceWorker =
@@ -40,4 +37,13 @@ async function registerServiceWorker(serviceWorkerUrl: URL, scopeUrl: URL): Prom
     type: "module",
   });
   await registration.update().catch(() => undefined);
+}
+
+async function bootstrap(): Promise<void> {
+  await loadRuntimeConfig();
+  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
 }

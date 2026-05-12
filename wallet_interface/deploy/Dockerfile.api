@@ -10,7 +10,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" pydantic
+    && python -m pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" pydantic "python-multipart>=0.0.9"
 
 COPY ipfs_datasets_py /app/ipfs_datasets_py
 COPY wallet_interface /app/wallet_interface
