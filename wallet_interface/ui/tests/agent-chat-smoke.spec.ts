@@ -73,6 +73,83 @@ test("front page assistant button opens voice chat", async ({ page }) => {
   await expect(voiceAssistant.getByRole("button", { name: /Start voice chat/i })).toBeVisible();
 });
 
+test("mobile assistant sheet expands to a near full-screen view", async ({ page }, testInfo) => {
+  test.skip(!isMobileProject(testInfo.project.name), "Bottom-sheet expansion is covered in mobile projects.");
+  await enterSignedInApp(page);
+  await openTextAssistant(page);
+
+  const assistant = visibleAssistant(page);
+  await expect(assistant).toBeVisible();
+
+  const viewport = page.viewportSize();
+  expect(viewport).not.toBeNull();
+
+  const collapsedRect = await assistant.boundingBox();
+  expect(collapsedRect).not.toBeNull();
+
+  await assistant.getByRole("button", { name: /Expand assistant sheet/i }).first().click();
+  await expect(assistant.getByRole("button", { name: /Collapse assistant sheet/i }).first()).toBeVisible();
+
+  const expandedRect = await assistant.boundingBox();
+  expect(expandedRect).not.toBeNull();
+  expect(expandedRect!.height).toBeGreaterThan((collapsedRect?.height || 0) + 120);
+  expect(expandedRect!.height / viewport!.height).toBeGreaterThan(0.85);
+  expect(expandedRect!.width / viewport!.width).toBeGreaterThan(0.95);
+  expect(expandedRect!.y).toBeLessThan(24);
+});
+
+test("mobile assistant sheet lets users scroll existing chat history after expansion", async ({ page }, testInfo) => {
+  test.skip(!isMobileProject(testInfo.project.name), "Bottom-sheet scrolling is covered in mobile projects.");
+  test.setTimeout(90000);
+  await enterSignedInApp(page);
+  await installTiny211Corpus(page);
+  await openTextAssistant(page);
+
+  const assistant = visibleAssistant(page);
+  await assistant.getByRole("button", { name: /Expand assistant sheet/i }).first().click();
+  await expect(assistant.getByRole("button", { name: /Collapse assistant sheet/i }).first()).toBeVisible();
+
+  await sendAssistantMessage(assistant, "open services");
+  await expect(page.getByRole("heading", { name: /Find support/i })).toBeVisible({ timeout: 15000 });
+
+  await sendAssistantMessage(assistant, "find food pantry evidence near Portland");
+  await expect(assistant.getByText(/Found \d+ service records/i).first()).toBeVisible({ timeout: 45000 });
+
+  const firstDocId = await firstEvidenceDocId(assistant);
+  await sendAssistantMessage(assistant, `save service ${firstDocId}`);
+  const confirmation = assistant.getByRole("region", { name: /Confirmation required: Save service/i });
+  await expect(confirmation).toBeVisible({ timeout: 15000 });
+  await confirmation.getByRole("button", { name: /Confirm Save service/i }).click();
+  await expect(assistant.getByText(new RegExp(`^Saved service ${escapeRegex(firstDocId)}\\.$`)).first()).toBeVisible({
+    timeout: 45000,
+  });
+
+  const messageList = assistant.locator(".agent-message-list");
+  await expect.poll(() => getScrollCapacity(messageList)).toBeGreaterThan(80);
+
+  const scrollMetrics = await messageList.evaluate(async (node) => {
+    const element = node as HTMLDivElement;
+    const maxScroll = element.scrollHeight - element.clientHeight;
+    element.scrollTop = 0;
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+    const topBefore = element.scrollTop;
+    element.scrollTop = element.scrollHeight;
+    await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+    return {
+      clientHeight: element.clientHeight,
+      maxScroll,
+      scrollHeight: element.scrollHeight,
+      topAfter: element.scrollTop,
+      topBefore,
+    };
+  });
+
+  expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight);
+  expect(scrollMetrics.maxScroll).toBeGreaterThan(80);
+  expect(scrollMetrics.topBefore).toBe(0);
+  expect(scrollMetrics.topAfter).toBeGreaterThan(80);
+});
+
 test("voice chat shows local audio model warmup progress", async ({ page }) => {
   await installFakeAudioWorker(page);
   await enterSignedInApp(page);
@@ -128,6 +205,7 @@ test("voice chat speaks an opening greeting when the audio surface opens", async
   await installFakeAudioWorker(page, "success");
   await installFakeAudioPlayback(page);
   await enterSignedInApp(page);
+  await resetAudioPlaybackLog(page);
 
   await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
 
@@ -141,6 +219,35 @@ test("voice chat speaks an opening greeting when the audio surface opens", async
       page.evaluate(() => (window as typeof window & { __abbyAudioSources?: string[] }).__abbyAudioSources?.join(" ") || ""),
     )
     .toContain("assets/audio/intro.wav");
+});
+
+test("voice chat plays the intro clip only once per open session", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "Mobile Chrome", "Intro replay semantics are covered in the mobile Chromium bottom-sheet surface.");
+  await installFakeAudioWorker(page, "success");
+  await installFakeAudioPlayback(page);
+  await installFakeSpeechRecognition(page, "open services", 5000);
+  await installFakeMicrophoneMeter(page, "quiet");
+  await enterSignedInApp(page);
+  await resetAudioPlaybackLog(page);
+
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  const voiceAssistant = visibleVoiceAssistant(page);
+  await expect(voiceAssistant).toBeVisible();
+
+  await expect.poll(() => getAudioPlayCallCount(page)).toBe(1);
+  await expect.poll(() => getAudioSourceLog(page)).toContain("assets/audio/intro.wav");
+  await expect(voiceAssistant.getByRole("button", { name: /Pause voice detection/i })).toBeVisible({ timeout: 10000 });
+
+  await voiceAssistant.getByRole("button", { name: /Pause voice detection/i }).click();
+  await expect(voiceAssistant.getByRole("button", { name: /Start voice chat/i })).toBeVisible({ timeout: 5000 });
+
+  await voiceAssistant.getByRole("button", { name: /Start voice chat/i }).click();
+  await expect(voiceAssistant.getByRole("button", { name: /Pause voice detection/i })).toBeVisible({ timeout: 10000 });
+  await expect.poll(() => getAudioPlayCallCount(page)).toBe(1);
+
+  await voiceAssistant.getByRole("button", { name: /Close voice chat|Close voice assistant|Close assistant/i }).first().click();
+  await visibleClosedLauncher(page).getByRole("button", { name: /Open voice chat/i }).click();
+  await expect.poll(() => getAudioPlayCallCount(page)).toBe(2);
 });
 
 test("voice chat validates microphone input level while listening", async ({ page }, testInfo) => {
@@ -542,8 +649,10 @@ async function installFakeSpeechRecognition(page: Page, transcript: string, dela
   }, { spokenText: transcript, resultDelayMs: delayMs });
 }
 
-async function installFakeMicrophoneMeter(page: Page): Promise<void> {
-  await page.addInitScript(() => {
+type FakeMicrophoneMeterMode = "voice-activity" | "quiet";
+
+async function installFakeMicrophoneMeter(page: Page, mode: FakeMicrophoneMeterMode = "voice-activity"): Promise<void> {
+  await page.addInitScript((meterMode: FakeMicrophoneMeterMode) => {
     Object.defineProperty(navigator, "mediaDevices", {
       configurable: true,
       value: {
@@ -567,11 +676,15 @@ async function installFakeMicrophoneMeter(page: Page): Promise<void> {
 
       getByteTimeDomainData(data: Uint8Array) {
         for (let index = 0; index < data.length; index += 1) {
-          data[index] = index % 2 === 0 ? 72 : 184;
+          data[index] = meterMode === "quiet" ? (index % 2 === 0 ? 126 : 130) : index % 2 === 0 ? 72 : 184;
         }
       }
 
       getByteFrequencyData(data: Uint8Array) {
+        if (meterMode === "quiet") {
+          data.fill(4);
+          return;
+        }
         for (let index = 0; index < data.length; index += 1) {
           data[index] = index > 0 && index < 37 ? 220 : 6;
         }
@@ -610,7 +723,7 @@ async function installFakeMicrophoneMeter(page: Page): Promise<void> {
       configurable: true,
       value: FakeAudioContext,
     });
-  });
+  }, mode);
 }
 
 type FakeAudioPlaybackMode = "success" | "play-error";
@@ -629,8 +742,11 @@ async function installFakeAudioPlayback(page: Page, mode: FakeAudioPlaybackMode 
     });
 
     class FakeAudio {
+      ended = false;
       onended: (() => void) | null = null;
       onerror: (() => void) | null = null;
+      paused = true;
+      preload = "";
       src = "";
 
       constructor(src?: string) {
@@ -641,14 +757,36 @@ async function installFakeAudioPlayback(page: Page, mode: FakeAudioPlaybackMode 
         const testWindow = window as typeof window & { __abbyAudioPlayCalls?: number; __abbyAudioSources?: string[] };
         testWindow.__abbyAudioPlayCalls = (testWindow.__abbyAudioPlayCalls || 0) + 1;
         testWindow.__abbyAudioSources = [...(testWindow.__abbyAudioSources || []), this.src];
+        this.paused = false;
+        this.ended = false;
         if (playbackMode === "play-error") {
           this.onerror?.();
           throw new Error("Synthetic audio playback failure.");
         }
-        window.setTimeout(() => this.onended?.(), 10);
+        window.setTimeout(() => {
+          this.ended = true;
+          this.onended?.();
+        }, 10);
       }
 
       pause() {
+        this.paused = true;
+        return undefined;
+      }
+
+      load() {
+        return undefined;
+      }
+
+      removeAttribute(name: string) {
+        if (name === "src") {
+          this.src = "";
+          this.ended = false;
+          this.paused = true;
+        }
+      }
+
+      setAttribute(_name: string, _value: string) {
         return undefined;
       }
     }
@@ -770,6 +908,35 @@ async function firstEvidenceDocId(assistant: Locator): Promise<string> {
   const firstEvidenceItem = assistant.locator(".agent-evidence-item").first();
   await expect(firstEvidenceItem).toBeVisible();
   return (await firstEvidenceItem.locator("dl div").filter({ hasText: "Doc ID" }).locator("dd").innerText()).trim();
+}
+
+async function getScrollCapacity(locator: Locator): Promise<number> {
+  return locator.evaluate((node) => node.scrollHeight - node.clientHeight);
+}
+
+async function getAudioPlayCallCount(page: Page): Promise<number> {
+  return page.evaluate(() => (window as typeof window & { __abbyAudioPlayCalls?: number }).__abbyAudioPlayCalls || 0);
+}
+
+async function getAudioSourceLog(page: Page): Promise<string> {
+  return page.evaluate(
+    () => (window as typeof window & { __abbyAudioSources?: string[] }).__abbyAudioSources?.join(" ") || "",
+  );
+}
+
+async function resetAudioPlaybackLog(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const testWindow = window as typeof window & {
+      __abbyAudioPlayCalls?: number;
+      __abbyAudioSources?: string[];
+    };
+    testWindow.__abbyAudioPlayCalls = 0;
+    testWindow.__abbyAudioSources = [];
+  });
+}
+
+function isMobileProject(projectName: string): boolean {
+  return /^Mobile /.test(projectName);
 }
 
 function escapeRegex(value: string): string {
