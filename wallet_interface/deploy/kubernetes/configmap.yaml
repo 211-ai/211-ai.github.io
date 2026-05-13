@@ -6,7 +6,9 @@ metadata:
 data:
   WALLET_REPOSITORY_ROOT: /var/lib/211-ai/wallet-repository
   WALLET_STORAGE_CONFIG: |
-    {"primary":{"type":"local","root":"/var/lib/211-ai/wallet-blobs"}}
+    {"primary":{"type":"local","root":"/var/lib/211-ai/wallet-blobs"},"mirrors":[{"type":"ipfs","pin":true}]}
+  IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI: "1"
+  IPFS_HOST: /dns/replace-with-kubo-api-host/tcp/5001/http
   WALLET_STORAGE_RETENTION_POLICY_REF: docs/WALLET_RETENTION_POLICY.md@2026-05-05
   WALLET_STORAGE_IPFS_PINNING_POLICY_REF: replace-with-private-ipfs-pinset-policy-id
   WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF: replace-with-filecoin-deal-policy-id-or-not-used

@@ -42,6 +42,9 @@ jobs:
           ONNXRUNTIME_NODE_INSTALL: skip
         run: npm ci
 
+      - name: Run Filecoin polling regression check
+        run: npm run test:filecoin-polling
+
       - name: Write Pages runtime config
         env:
           ABBY_PAGES_WALLET_API_BASE_URL: ${{ vars.ABBY_PAGES_WALLET_API_BASE_URL }}

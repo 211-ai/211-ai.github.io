@@ -60,6 +60,7 @@ import {
 } from "../lib/graphrag";
 import {
   getFilecoinStorageConfig,
+  pollFilecoinStorageStatus,
   toFilecoinStoragePatch,
   uploadFileToFilecoinStorage,
   uploadProofBundleToFilecoinStorage,
@@ -3522,6 +3523,9 @@ function UploadsScreen({
     }
     setFilecoinUploadIds((uploadIds) => [...uploadIds, upload.id]);
     updateUpload(upload.id, {
+      filecoinPinRequestId: undefined,
+      filecoinPinStatus: undefined,
+      filecoinPinStatusUrl: undefined,
       decentralizedStorageMessage: "Uploading through the configured backend.",
       decentralizedStorageStatus: "uploading"
     });
@@ -3533,6 +3537,7 @@ function UploadsScreen({
         walletConfig: apiConfig
       });
       updateUpload(upload.id, toFilecoinStoragePatch(result));
+      void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
         decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
@@ -3547,7 +3552,13 @@ function UploadsScreen({
     if (!filecoinStorageConfig) return;
     setFilecoinUploadIds((uploadIds) => [...uploadIds, upload.id]);
     updateUpload(upload.id, {
-      decentralizedStorageMessage: "Sending wallet record to the storage backend.",
+      filecoinPinRequestId: undefined,
+      filecoinPinStatus: undefined,
+      filecoinPinStatusUrl: undefined,
+      decentralizedStorageMessage:
+        upload.filecoinPinStatus === "failed"
+          ? "Retrying Filecoin persistence for this wallet record."
+          : "Sending wallet record to the storage backend.",
       decentralizedStorageStatus: "uploading"
     });
     try {
@@ -3556,6 +3567,7 @@ function UploadsScreen({
         walletConfig: apiConfig
       });
       updateUpload(upload.id, toFilecoinStoragePatch(result));
+      void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
         decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
@@ -3589,6 +3601,26 @@ function UploadsScreen({
 
   function updateUpload(uploadId: string, patch: Partial<UploadItem>) {
     replaceUploads(uploadsRef.current.map((item) => (item.id === uploadId ? { ...item, ...patch } : item)));
+  }
+
+  async function monitorFilecoinPersistence(uploadId: string, initialResult: Parameters<typeof toFilecoinStoragePatch>[0]) {
+    if (!filecoinStorageConfig) return;
+    if (!(initialResult.filecoinPinRequestId || initialResult.requestId)) return;
+    try {
+      await pollFilecoinStorageStatus(initialResult, {
+        clientConfig: filecoinStorageConfig,
+        onUpdate: (nextResult) => {
+          updateUpload(uploadId, toFilecoinStoragePatch(nextResult));
+        }
+      });
+    } catch (error) {
+      updateUpload(uploadId, {
+        decentralizedStorageMessage:
+          error instanceof Error
+            ? `Stored on IPFS, but Filecoin status polling failed: ${error.message}`
+            : "Stored on IPFS, but Filecoin status polling failed."
+      });
+    }
   }
 
   function allowSharing(upload: UploadItem) {
@@ -3816,14 +3848,14 @@ function UploadsScreen({
                   {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
                 </Button>
               ) : null}
-              {filecoinStorageReady && upload.recordId && upload.decentralizedStorageStatus !== "stored" ? (
+              {filecoinStorageReady && upload.recordId && shouldShowFilecoinAction(upload) ? (
                 <Button
                   disabled={filecoinUploadIds.includes(upload.id)}
                   onClick={() => void storeWalletRecordOnFilecoin(upload)}
                   variant="secondary"
                 >
                   <Upload aria-hidden="true" size={18} />
-                  {filecoinUploadIds.includes(upload.id) ? "Storing" : "Store on IPFS/Filecoin"}
+                  {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
                 </Button>
               ) : null}
               <Button
@@ -3888,6 +3920,9 @@ function sharingBadge(upload: UploadItem): string {
 }
 
 function filecoinBadge(upload: UploadItem): string {
+  if (upload.filecoinPinStatus === "queued") return "Filecoin queued";
+  if (upload.filecoinPinStatus === "pinning") return "Filecoin pinning";
+  if (upload.filecoinPinStatus === "failed") return "IPFS only";
   if (upload.decentralizedStorageStatus === "stored") return "IPFS/Filecoin";
   if (upload.decentralizedStorageStatus === "uploading") return "storing";
   if (upload.decentralizedStorageStatus === "failed") return "storage failed";
@@ -3895,10 +3930,23 @@ function filecoinBadge(upload: UploadItem): string {
 }
 
 function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
+  if (upload.filecoinPinStatus === "queued" || upload.filecoinPinStatus === "pinning") return "info";
+  if (upload.filecoinPinStatus === "failed") return "warning";
   if (upload.decentralizedStorageStatus === "stored") return "success";
   if (upload.decentralizedStorageStatus === "uploading") return "info";
   if (upload.decentralizedStorageStatus === "failed") return "danger";
   return "neutral";
+}
+
+function shouldShowFilecoinAction(upload: UploadItem): boolean {
+  return upload.decentralizedStorageStatus !== "stored" || upload.filecoinPinStatus === "failed";
+}
+
+function filecoinActionLabel(upload: UploadItem, inProgress: boolean): string {
+  if (upload.filecoinPinStatus === "failed") {
+    return inProgress ? "Retrying" : "Retry Filecoin";
+  }
+  return inProgress ? "Storing" : "Store on IPFS/Filecoin";
 }
 
 function shortStorageId(value: string): string {

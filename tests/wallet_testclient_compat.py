@@ -62,7 +62,14 @@ def _patch_starlette_testclient() -> None:
     ) -> httpx.Response:
         del extensions
         merged_url = self._merge_url(url)
-        redirect = self._choose_redirect_arg(follow_redirects, allow_redirects)
+        if hasattr(self, "_choose_redirect_arg"):
+            redirect = self._choose_redirect_arg(follow_redirects, allow_redirects)
+        elif follow_redirects is not None:
+            redirect = follow_redirects
+        elif allow_redirects is not None:
+            redirect = allow_redirects
+        else:
+            redirect = getattr(self, "follow_redirects", True)
         merged_headers = httpx.Headers(self.headers)
         if headers is not None:
             merged_headers.update(headers)

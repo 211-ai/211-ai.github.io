@@ -30,6 +30,10 @@ export type FilecoinUploadResponse = {
   cid?: string;
   dealId?: string;
   filecoinDealId?: string;
+  info?: Record<string, unknown>;
+  filecoinPinInfo?: Record<string, unknown>;
+  filecoinPinRequestId?: string;
+  filecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
   filecoinPieceCid?: string;
   gatewayUrl?: string;
   ipfsCid?: string;
@@ -37,8 +41,16 @@ export type FilecoinUploadResponse = {
   pieceCid?: string;
   provider?: UploadItem["decentralizedStorageProvider"] | string;
   requestId?: string;
+  statusUrl?: string;
   status?: string;
   url?: string;
+};
+
+export type FilecoinStatusPollOptions = {
+  clientConfig?: FilecoinStorageClientConfig;
+  maxAttempts?: number;
+  onUpdate?: (result: FilecoinUploadResponse) => void;
+  pollIntervalMs?: number;
 };
 
 export function getFilecoinStorageConfig(): FilecoinStorageClientConfig | undefined {
@@ -148,14 +160,55 @@ export async function uploadProofBundleToFilecoinStorage(
 
 export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<UploadItem> {
   const ipfsCid = result.ipfsCid || result.cid;
+  const filecoinPinInfo =
+    (isRecord(result.filecoinPinInfo) ? result.filecoinPinInfo : undefined) ||
+    (isRecord(result.info) ? result.info : undefined);
+  const filecoinPinStatus = normalizeFilecoinPinStatus(result);
   return {
-    decentralizedStorageMessage: result.message || (ipfsCid ? "Stored on IPFS/Filecoin." : "Storage request completed."),
+    decentralizedStorageMessage: buildFilecoinStorageMessage(result, ipfsCid, filecoinPinStatus),
     decentralizedStorageProvider: normalizeStorageProvider(result.provider),
     decentralizedStorageStatus: "stored",
     filecoinDealId: result.filecoinDealId || result.dealId,
-    filecoinPieceCid: result.filecoinPieceCid || result.pieceCid,
+    filecoinPieceCid: result.filecoinPieceCid || result.pieceCid || readInfoString(filecoinPinInfo, "synapse_piece_cid"),
+    filecoinPinRequestId: result.filecoinPinRequestId || result.requestId,
+    filecoinPinStatus,
+    filecoinPinStatusUrl: result.statusUrl,
     ipfsCid
   };
+}
+
+export async function pollFilecoinStorageStatus(
+  initialResult: FilecoinUploadResponse,
+  {
+    clientConfig = getFilecoinStorageConfig(),
+    maxAttempts = 12,
+    onUpdate,
+    pollIntervalMs = 1000
+  }: FilecoinStatusPollOptions = {}
+): Promise<FilecoinUploadResponse | undefined> {
+  const requestId = initialResult.filecoinPinRequestId || initialResult.requestId;
+  if (!requestId || !clientConfig) return undefined;
+
+  let latestResult = initialResult;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    const currentStatus = normalizeFilecoinPinStatus(latestResult);
+    if (currentStatus === "pinned" || currentStatus === "failed") {
+      return latestResult;
+    }
+    await wait(pollIntervalMs);
+    const nextResult = await fetchFilecoinStorageStatus(requestId, clientConfig, latestResult.statusUrl);
+    const nextFilecoinPinStatus = normalizeFilecoinPinStatus(nextResult);
+    latestResult = {
+      ...latestResult,
+      ...nextResult,
+      filecoinPinStatus: nextFilecoinPinStatus ?? latestResult.filecoinPinStatus,
+      message: nextResult.message,
+      requestId,
+      statusUrl: nextResult.statusUrl || latestResult.statusUrl
+    };
+    onUpdate?.(latestResult);
+  }
+  return latestResult;
 }
 
 function readStoredFilecoinStorageConfig(): StoredFilecoinStorageConfig {
@@ -198,6 +251,25 @@ async function postToFilecoinStorage(
   return payload as FilecoinUploadResponse;
 }
 
+async function fetchFilecoinStorageStatus(
+  requestId: string,
+  clientConfig: FilecoinStorageClientConfig,
+  statusUrl?: string
+): Promise<FilecoinUploadResponse> {
+  const headers = new Headers();
+  if (clientConfig.clientToken) headers.set("authorization", `Bearer ${clientConfig.clientToken}`);
+  const response = await fetch(resolveStatusUrl(requestId, clientConfig, statusUrl), {
+    headers,
+    method: "GET"
+  });
+  const payload = await readJsonResponse(response);
+  if (!response.ok) {
+    const errorPayload = payload as { error?: string; message?: string };
+    throw new Error(errorPayload.message || errorPayload.error || `Filecoin status request failed with ${response.status}.`);
+  }
+  return payload as FilecoinUploadResponse;
+}
+
 async function readJsonResponse(response: Response): Promise<Record<string, string> | FilecoinUploadResponse> {
   const text = await response.text();
   if (!text) return {};
@@ -218,4 +290,50 @@ function normalizeStorageProvider(provider: FilecoinUploadResponse["provider"]):
     return provider;
   }
   return "ipfs-filecoin";
+}
+
+function buildFilecoinStorageMessage(
+  result: FilecoinUploadResponse,
+  ipfsCid: string | undefined,
+  filecoinPinStatus: UploadItem["filecoinPinStatus"]
+): string {
+  if (result.message?.trim()) return result.message;
+  if (filecoinPinStatus === "queued") return "Stored on IPFS. Queued for Filecoin persistence.";
+  if (filecoinPinStatus === "pinning") return "Stored on IPFS. Filecoin persistence is in progress.";
+  if (filecoinPinStatus === "pinned") return "Stored on IPFS and confirmed by Filecoin persistence.";
+  if (filecoinPinStatus === "failed") return "Stored on IPFS, but Filecoin persistence failed.";
+  return ipfsCid ? "Stored on IPFS/Filecoin." : "Storage request completed.";
+}
+
+function normalizeFilecoinPinStatus(result: FilecoinUploadResponse): UploadItem["filecoinPinStatus"] {
+  const rawStatus = (result.filecoinPinStatus || result.status || "").trim().toLowerCase();
+  if (rawStatus === "queued" || rawStatus === "pinning" || rawStatus === "pinned" || rawStatus === "failed") {
+    return rawStatus;
+  }
+  return undefined;
+}
+
+function readInfoString(info: Record<string, unknown> | undefined, key: string): string | undefined {
+  const value = info?.[key];
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object";
+}
+
+function resolveStatusUrl(requestId: string, clientConfig: FilecoinStorageClientConfig, statusUrl?: string): string {
+  const baseUrl = typeof window === "undefined" ? "http://localhost/" : window.location.href;
+  if (statusUrl?.trim()) {
+    return new URL(statusUrl, baseUrl).toString();
+  }
+  const uploadUrl = new URL(clientConfig.uploadUrl, baseUrl);
+  uploadUrl.pathname = `${uploadUrl.pathname.replace(/\/$/, "")}/status/${encodeURIComponent(requestId)}`;
+  uploadUrl.search = "";
+  uploadUrl.hash = "";
+  return uploadUrl.toString();
+}
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 }

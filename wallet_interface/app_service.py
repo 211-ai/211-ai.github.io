@@ -506,6 +506,122 @@ class MissingPersonDeadDropRecord:
 
 
 @dataclass
+class SmsNotificationRecord:
+    notification_id: str
+    wallet_id: str
+    actor_did: str = ""
+    to_phone: str = ""
+    message: str = ""
+    reason: str = ""
+    status: str = "queued"
+    due_at: str = ""
+    sent_at: str = ""
+    last_error: str = ""
+    last_provider_message_id: str = ""
+    last_dispatched_reason: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "notification_id": self.notification_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "to_phone": self.to_phone,
+            "message": self.message,
+            "reason": self.reason,
+            "status": self.status,
+            "due_at": self.due_at,
+            "sent_at": self.sent_at,
+            "last_error": self.last_error,
+            "last_provider_message_id": self.last_provider_message_id,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "SmsNotificationRecord":
+        return cls(
+            notification_id=str(payload.get("notification_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            message=str(payload.get("message") or ""),
+            reason=str(payload.get("reason") or ""),
+            status=str(payload.get("status") or "queued"),
+            due_at=str(payload.get("due_at") or ""),
+            sent_at=str(payload.get("sent_at") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_provider_message_id=str(payload.get("last_provider_message_id") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
+class PhoneCallNotificationRecord:
+    notification_id: str
+    wallet_id: str
+    actor_did: str = ""
+    to_phone: str = ""
+    script: str = ""
+    reason: str = ""
+    status: str = "queued"
+    due_at: str = ""
+    called_at: str = ""
+    last_error: str = ""
+    last_provider_call_id: str = ""
+    last_dispatched_reason: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "notification_id": self.notification_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "to_phone": self.to_phone,
+            "script": self.script,
+            "reason": self.reason,
+            "status": self.status,
+            "due_at": self.due_at,
+            "called_at": self.called_at,
+            "last_error": self.last_error,
+            "last_provider_call_id": self.last_provider_call_id,
+            "last_dispatched_reason": self.last_dispatched_reason,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "PhoneCallNotificationRecord":
+        return cls(
+            notification_id=str(payload.get("notification_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            script=str(payload.get("script") or ""),
+            reason=str(payload.get("reason") or ""),
+            status=str(payload.get("status") or "queued"),
+            due_at=str(payload.get("due_at") or ""),
+            called_at=str(payload.get("called_at") or ""),
+            last_error=str(payload.get("last_error") or ""),
+            last_provider_call_id=str(payload.get("last_provider_call_id") or ""),
+            last_dispatched_reason=str(payload.get("last_dispatched_reason") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
 class ServicePlanShareGrantResult:
     grant: Any
     receipt: Any | None
@@ -569,6 +685,8 @@ class WalletInterfaceService:
         self.service_plans: Dict[str, ServicePlanRecord] = {}
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
         self.missing_person_dead_drops: Dict[str, MissingPersonDeadDropRecord] = {}
+        self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
+        self.phone_call_notifications: Dict[str, PhoneCallNotificationRecord] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
             if auto_persist is None
@@ -903,6 +1021,20 @@ class WalletInterfaceService:
                 record.to_dict()
                 for record in sorted(self.missing_person_dead_drops.values(), key=lambda item: item.wallet_id)
             ],
+            "sms_notifications": [
+                record.to_dict()
+                for record in sorted(
+                    self.sms_notifications.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
+                )
+            ],
+            "phone_call_notifications": [
+                record.to_dict()
+                for record in sorted(
+                    self.phone_call_notifications.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
+                )
+            ],
         }
 
     def _save_portal_state(self) -> Path | None:
@@ -962,6 +1094,24 @@ class WalletInterfaceService:
             )
             if record.wallet_id
         }
+        self.sms_notifications = {
+            record.notification_id: record
+            for record in (
+                SmsNotificationRecord.from_dict(item)
+                for item in payload.get("sms_notifications", [])
+                if isinstance(item, Mapping)
+            )
+            if record.notification_id
+        }
+        self.phone_call_notifications = {
+            record.notification_id: record
+            for record in (
+                PhoneCallNotificationRecord.from_dict(item)
+                for item in payload.get("phone_call_notifications", [])
+                if isinstance(item, Mapping)
+            )
+            if record.notification_id
+        }
 
     def _wallet_principals(self, wallet_id: str) -> set[str]:
         wallet = self.wallet_service._wallet(wallet_id)
@@ -995,6 +1145,12 @@ class WalletInterfaceService:
 
     def _missing_person_dead_drop_resource(self, wallet_id: str) -> str:
         return _portal_resource(wallet_id, "dead-drops", "missing-person")
+
+    def _sms_notification_resource(self, wallet_id: str, notification_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"sms/{notification_id}")
+
+    def _phone_call_notification_resource(self, wallet_id: str, notification_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"calls/{notification_id}")
 
     def create_wallet(
         self,
@@ -1208,6 +1364,330 @@ class WalletInterfaceService:
             if due_at <= current:
                 due_records.append(record)
         return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id))
+
+    def list_sms_notifications(self, wallet_id: str) -> List[SmsNotificationRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.sms_notifications.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.created_at, item.notification_id),
+        )
+
+    def queue_sms_notification(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        to_phone: str,
+        message: str,
+        due_at: str = "",
+        reason: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> SmsNotificationRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        normalized_phone = str(to_phone or "").strip()
+        normalized_message = str(message or "")
+        if not normalized_phone:
+            raise ValueError("to_phone is required")
+        if not normalized_message.strip():
+            raise ValueError("message is required")
+        normalized_due_at = str(due_at or "").strip()
+        if normalized_due_at and _portal_datetime(normalized_due_at) is None:
+            raise ValueError("due_at must be an ISO 8601 timestamp")
+        now = _portal_now()
+        record = SmsNotificationRecord(
+            notification_id=_portal_id("sms"),
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            to_phone=normalized_phone,
+            message=normalized_message,
+            reason=str(reason or "").strip(),
+            status="queued",
+            due_at=normalized_due_at,
+            sent_at="",
+            last_error="",
+            last_provider_message_id="",
+            last_dispatched_reason="",
+            metadata=dict(metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.sms_notifications[record.notification_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_queue",
+            resource=self._sms_notification_resource(wallet_id, record.notification_id),
+            details={
+                "to_phone": record.to_phone,
+                "due_at": record.due_at,
+                "reason": record.reason,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_sms_notification(self, wallet_id: str, notification_id: str) -> SmsNotificationRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.sms_notifications.get(notification_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("sms notification not found")
+        return record
+
+    def get_sms_notification_for_dispatch(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> SmsNotificationRecord:
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.get_sms_notification(wallet_id, notification_id)
+        if record.status not in {"queued", "failed"}:
+            raise ValueError("sms notification is not pending")
+        if not record.to_phone.strip():
+            raise ValueError("sms notification phone is missing")
+        if not record.message.strip():
+            raise ValueError("sms notification message is missing")
+        return record
+
+    def mark_sms_notification_sent(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        provider_message_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> SmsNotificationRecord:
+        record = self.get_sms_notification_for_dispatch(wallet_id, notification_id)
+        now = str(dispatched_at or _portal_now())
+        record.status = "sent"
+        record.sent_at = now
+        record.last_error = ""
+        record.last_provider_message_id = str(provider_message_id or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_dispatch",
+            resource=self._sms_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "provider_message_id": record.last_provider_message_id,
+                "sent_at": record.sent_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_sms_notification_failed(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> SmsNotificationRecord:
+        record = self.get_sms_notification(wallet_id, notification_id)
+        now = str(failed_at or _portal_now())
+        record.status = "failed"
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/sms_error",
+            resource=self._sms_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_sms_notifications(self, *, now: str | None = None) -> List[SmsNotificationRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[SmsNotificationRecord] = []
+        for record in self.sms_notifications.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if record.status != "queued" or not record.to_phone.strip() or not record.message.strip():
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id, item.notification_id))
+
+    def list_phone_call_notifications(self, wallet_id: str) -> List[PhoneCallNotificationRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.phone_call_notifications.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.created_at, item.notification_id),
+        )
+
+    def queue_phone_call_notification(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        to_phone: str,
+        script: str,
+        due_at: str = "",
+        reason: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> PhoneCallNotificationRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        normalized_phone = str(to_phone or "").strip()
+        normalized_script = str(script or "")
+        if not normalized_phone:
+            raise ValueError("to_phone is required")
+        if not normalized_script.strip():
+            raise ValueError("script is required")
+        normalized_due_at = str(due_at or "").strip()
+        if normalized_due_at and _portal_datetime(normalized_due_at) is None:
+            raise ValueError("due_at must be an ISO 8601 timestamp")
+        now = _portal_now()
+        record = PhoneCallNotificationRecord(
+            notification_id=_portal_id("call"),
+            wallet_id=wallet_id,
+            actor_did=str(actor_did or ""),
+            to_phone=normalized_phone,
+            script=normalized_script,
+            reason=str(reason or "").strip(),
+            status="queued",
+            due_at=normalized_due_at,
+            called_at="",
+            last_error="",
+            last_provider_call_id="",
+            last_dispatched_reason="",
+            metadata=dict(metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.phone_call_notifications[record.notification_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_queue",
+            resource=self._phone_call_notification_resource(wallet_id, record.notification_id),
+            details={
+                "to_phone": record.to_phone,
+                "due_at": record.due_at,
+                "reason": record.reason,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def get_phone_call_notification(self, wallet_id: str, notification_id: str) -> PhoneCallNotificationRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.phone_call_notifications.get(notification_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("phone call notification not found")
+        return record
+
+    def get_phone_call_notification_for_dispatch(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        if actor_did is not None:
+            self._require_portal_actor(wallet_id, actor_did)
+        record = self.get_phone_call_notification(wallet_id, notification_id)
+        if record.status not in {"queued", "failed"}:
+            raise ValueError("phone call notification is not pending")
+        if not record.to_phone.strip():
+            raise ValueError("phone call notification phone is missing")
+        if not record.script.strip():
+            raise ValueError("phone call notification script is missing")
+        return record
+
+    def mark_phone_call_notification_sent(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        provider_call_id: str,
+        dispatched_reason: str,
+        dispatched_at: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        record = self.get_phone_call_notification_for_dispatch(wallet_id, notification_id)
+        now = str(dispatched_at or _portal_now())
+        record.status = "sent"
+        record.called_at = now
+        record.last_error = ""
+        record.last_provider_call_id = str(provider_call_id or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_dispatch",
+            resource=self._phone_call_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "provider_call_id": record.last_provider_call_id,
+                "called_at": record.called_at,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def mark_phone_call_notification_failed(
+        self,
+        wallet_id: str,
+        notification_id: str,
+        *,
+        actor_did: str,
+        error: str,
+        dispatched_reason: str,
+        failed_at: str | None = None,
+    ) -> PhoneCallNotificationRecord:
+        record = self.get_phone_call_notification(wallet_id, notification_id)
+        now = str(failed_at or _portal_now())
+        record.status = "failed"
+        record.last_error = str(error or "")
+        record.last_dispatched_reason = str(dispatched_reason or "")
+        record.updated_at = now
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="notification/call_error",
+            resource=self._phone_call_notification_resource(wallet_id, notification_id),
+            details={
+                "reason": record.last_dispatched_reason,
+                "error": record.last_error,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
+
+    def list_due_phone_call_notifications(self, *, now: str | None = None) -> List[PhoneCallNotificationRecord]:
+        current = _portal_datetime(now or _portal_now())
+        if current is None:
+            raise ValueError("invalid due timestamp")
+        due_records: List[PhoneCallNotificationRecord] = []
+        for record in self.phone_call_notifications.values():
+            due_at = _portal_datetime(record.due_at)
+            if due_at is None:
+                continue
+            if record.status != "queued" or not record.to_phone.strip() or not record.script.strip():
+                continue
+            if due_at <= current:
+                due_records.append(record)
+        return sorted(due_records, key=lambda item: (item.due_at, item.wallet_id, item.notification_id))
 
     def remove_controller(
         self,
@@ -2956,6 +3436,23 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return plaintext
+
+    def export_record_plaintext(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        grant_id: str | None = None,
+        actor_secret: bytes | None = None,
+    ) -> bytes:
+        return self.wallet_service.decrypt_record(
+            wallet_id,
+            record_id,
+            actor_did=actor_did,
+            grant_id=grant_id,
+            actor_secret=actor_secret,
+        )
 
     def rotate_record_key(
         self,

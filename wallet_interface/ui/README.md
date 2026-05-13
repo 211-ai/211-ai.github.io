@@ -125,6 +125,7 @@ For focused checks:
 
 ```bash
 npm run test:smoke
+npm run test:filecoin-polling
 npm run test:fullstack
 npm run test:visual
 npm run test:refinement
@@ -132,6 +133,67 @@ npm run review:visual:dry-run
 npm run review:tasks
 npm run review:prompts -- --include-blocked
 ```
+
+Smoke and visual Playwright runs need host browser libraries in addition to the
+downloaded browser bundles. On Ubuntu, inspect the required packages with:
+
+```bash
+npx playwright install-deps --dry-run
+```
+
+On this host, Chromium and WebKit were blocked until the system provided
+`libnspr4`, `libgtk-4-1`, `libavif13`, and the GStreamer bad-plugins runtime
+that provides `libgstcodecparsers-1.0.so.0`.
+
+The Playwright npm scripts now run a Linux host-dependency preflight before any
+browser launch. When that guard fails, fix the missing shared libraries instead
+of retrying the same browser command. Set `PLAYWRIGHT_SKIP_HOST_DEPS_CHECK=1`
+only when you intentionally want the raw Playwright launcher failure. To inspect
+that preflight directly, run `npm run doctor:playwright`.
+
+When Docker is available, you can bypass host browser libraries entirely with
+the containerized runner:
+
+```bash
+npm run test:smoke:container -- --project="Desktop Chrome"
+```
+
+For arbitrary Playwright arguments, use:
+
+```bash
+npm run test:container -- tests/smoke.spec.ts --project="Desktop Chrome"
+```
+
+The container helper uses the matching official Playwright image for the
+installed version and runs as the current UID/GID, so it does not leave
+root-owned test artifacts behind in the workspace.
+
+When those host libraries are unavailable, the repo also includes a manual
+retry harness for the wallet-record Filecoin flow:
+
+```bash
+npm run build
+npm run mock:filecoin-retry
+```
+
+Then open `http://127.0.0.1:4174/manual-filecoin-retry`. The helper page seeds
+the demo wallet session and redirects to the uploads screen with a same-origin
+mock wallet API and `/filecoin-upload` bridge. The expected manual sequence is:
+
+- Click `Store on IPFS/Filecoin` for `Benefits letter`.
+- Confirm the item changes to `IPFS only` and shows `Retry Filecoin`.
+- Click `Retry Filecoin` and confirm the item finishes with `Stored on IPFS and confirmed by Filecoin persistence.`
+
+For a browserless regression check of the same status-merge behavior, run:
+
+```bash
+npm run test:filecoin-polling
+```
+
+Avoid running UI builds as `root`. A root-owned `dist/` tree causes the
+Playwright web server build to fail with `EACCES: permission denied, unlink
+'dist/assets/...'`. If that happens, either restore ownership with `chown` or
+move the whole `dist/` directory aside from its parent directory and rebuild.
 
 The visual test writes review screenshots and manifests to
 `artifacts/ui-screenshots/latest/`, including default and stateful UI scenarios.
@@ -160,7 +222,10 @@ Actions variables before the build. Use repository or environment variables
 such as `ABBY_PAGES_WALLET_API_BASE_URL`, `ABBY_PAGES_WALLET_ID`, optional
 `ABBY_PAGES_ACTOR_DID`, and optional `ABBY_PAGES_FILECOIN_UPLOAD_URL` when you
 want the Pages sandbox to point at a live backend like `https://211-ai.com`
-without committing a runtime-config change.
+without committing a runtime-config change. A bundled same-origin deployment can
+set `ABBY_RUNTIME_FILECOIN_UPLOAD_URL=/filecoin-upload`; a Pages sandbox should
+usually point `ABBY_PAGES_FILECOIN_UPLOAD_URL` at the live origin explicitly,
+for example `https://211-ai.com/filecoin-upload`.
 
 The UI is mobile-first and also includes desktop layouts. The mobile home screen
 keeps the required primary actions as two cards: "Emergency contacts" followed

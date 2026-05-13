@@ -152,6 +152,32 @@ Configure `WALLET_OPS_HEALTH_SHARED_SECRET` for authenticated due-processing,
 and set `WALLET_REPOSITORY_ROOT` when you need armed dead drops to survive API
 restarts.
 
+For generic server-side text delivery, the API now supports queueable SMS
+notifications with `POST /wallets/{wallet_id}/notifications/sms/queue`,
+inspection via `GET /wallets/{wallet_id}/notifications/sms`, manual dispatch
+via `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`,
+and due-message processing from server automation with
+`POST /ops/notifications/sms/process-due`. These routes persist state in the
+wallet repository so queued or failed SMS records survive API restarts.
+
+Configure `WALLET_SMS_WEBHOOK_URL` to point at an HTTP SMS gateway or internal
+adapter. Optional auth and timeout settings are `WALLET_SMS_BACKEND=http`,
+`WALLET_SMS_BEARER_TOKEN`, `WALLET_SMS_HTTP_HEADER_NAME`,
+`WALLET_SMS_HTTP_HEADER_VALUE`, and `WALLET_SMS_TIMEOUT_SECONDS`.
+
+For generic server-side phone-agent delivery, the API now also supports queued
+call notifications with `POST /wallets/{wallet_id}/notifications/calls/queue`,
+inspection via `GET /wallets/{wallet_id}/notifications/calls`, manual dispatch
+via `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`,
+and due-call processing through `POST /ops/notifications/calls/process-due`.
+These routes persist call records in the wallet repository, matching the SMS
+queue semantics.
+
+Configure `WALLET_CALL_WEBHOOK_URL` to point at a trusted phone-agent or voice
+gateway. Optional auth and timeout settings are `WALLET_CALL_BACKEND=http`,
+`WALLET_CALL_BEARER_TOKEN`, `WALLET_CALL_HTTP_HEADER_NAME`,
+`WALLET_CALL_HTTP_HEADER_VALUE`, and `WALLET_CALL_TIMEOUT_SECONDS`.
+
 ## Wallet Storage Configuration
 
 `WalletInterfaceService` builds the core `ipfs_datasets_py.wallet` storage
@@ -169,6 +195,33 @@ app = WalletInterfaceService(
 )
 ```
 
+The storage adapters themselves come from `ipfs_datasets_py.wallet.storage`.
+`local`, `ipfs`, and `s3` can be created directly from `WALLET_STORAGE_CONFIG`.
+`filecoin` is also implemented there, but the wallet interface still needs a
+Filecoin-capable backend object injected at runtime before the `filecoin`
+storage type can be used in production. For containerized deployments, point
+the `ipfs` storage backend at a Kubo HTTP API by setting
+`IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1` and
+`IPFS_HOST=/dns/your-kubo-host/tcp/5001/http`.
+
+Example mirrored production config:
+
+```json
+{
+  "primary": {"type": "local", "root": "/var/lib/211-ai/wallet-blobs"},
+  "mirrors": [
+    {"type": "ipfs", "pin": true},
+    {"type": "s3", "bucket": "211-ai-wallet-backups", "prefix": "wallet/blobs"}
+  ]
+}
+```
+
+Proof backends come from `ipfs_datasets_py.wallet.proofs` for simulated and
+deterministic integration modes, plus `wallet_interface.proof_backends` for the
+HTTP production verifier adapter. If you do not yet have a remote verifier,
+`deterministic-location-region` and `deterministic-location-distance` are the
+implemented non-simulated integration backends available now.
+
 Environment options:
 
 - `WALLET_STORAGE_CONFIG`: JSON string or object config for the core wallet
@@ -177,6 +230,9 @@ Environment options:
 - `WALLET_STORAGE_ROOT`: local filesystem root for `local`.
 - `WALLET_STORAGE_BUCKET` and `WALLET_STORAGE_PREFIX`: S3 target settings.
 - `WALLET_STORAGE_MIRRORS`: JSON list of mirror backend configs.
+- `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI`: opt in to the IPFS HTTP API backend
+  instead of a local `ipfs` CLI.
+- `IPFS_HOST`: multiaddr or URL for the Kubo HTTP API used by `ipfs` mirrors.
 - `WALLET_REPOSITORY_ROOT`: local JSON snapshot directory for wallet metadata.
 - `WALLET_AUTO_LOAD_REPOSITORY`: load all snapshots at service startup
   (default `true` when a repository root is configured).
@@ -228,6 +284,14 @@ Repository API endpoints:
 - `POST /wallets/{wallet_id}/dead-drops/missing-person`
 - `POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`
 - `POST /ops/dead-drops/missing-person/process-due`
+- `GET /wallets/{wallet_id}/notifications/sms`
+- `POST /wallets/{wallet_id}/notifications/sms/queue`
+- `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`
+- `POST /ops/notifications/sms/process-due`
+- `GET /wallets/{wallet_id}/notifications/calls`
+- `POST /wallets/{wallet_id}/notifications/calls/queue`
+- `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`
+- `POST /ops/notifications/calls/process-due`
 
 ## UI Export Wiring
 

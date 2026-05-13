@@ -123,6 +123,9 @@ export interface UploadItem {
   ipfsCid?: string;
   filecoinPieceCid?: string;
   filecoinDealId?: string;
+  filecoinPinRequestId?: string;
+  filecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
+  filecoinPinStatusUrl?: string;
   decentralizedStorageMessage?: string;
 }
 

@@ -488,7 +488,7 @@ test("wallet-backed interaction history feeds the timeline and calendar", async 
   await expect(page.getByText(/2 recorded events/i)).toBeVisible();
   await expect(page.getByText(/Calendar carry-over/i)).toBeVisible();
   await expect(page.locator(".interaction-calendar-preview").filter({ hasText: /Bring paperwork/i })).toBeVisible();
-  await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toBeVisible();
+  await expect(page.locator(".timeline-event").filter({ hasText: /Follow-up due/i })).toHaveCount(2);
   await expect(page.getByText(/Follow-up times recorded here feed the Calendar screen/i)).toBeVisible();
 
   const filters = page.locator(".interaction-filter-panel");
@@ -522,7 +522,7 @@ test("hash navigation updates the active screen without a full reload", async ({
   await page.evaluate(() => {
     window.location.hash = "#/analytics";
   });
-  await expect(page.getByRole("heading", { name: /Share group facts/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Homelessness and service capacity dashboard/i })).toBeVisible();
 });
 
 test("mobile menu opens navigation and routes to contacts", async ({ page }, testInfo) => {
@@ -1299,7 +1299,7 @@ test("wallet page can generate and connect a new wallet", async ({ page }) => {
   await page.getByRole("button", { name: /Generate new wallet/i }).click();
 
   await expect(page.getByText(/New wallet generated and connected/i)).toBeVisible();
-  await expect(page.getByText(/wallet-generated/i)).toBeVisible();
+  await expect(page.getByRole("region", { name: /Wallet connection/i }).getByText(/^wallet-generated$/i)).toBeVisible();
   await expect(calls).toContain("create");
   await expect(calls).toContain("records");
   await expect(calls).toContain("proofs");
@@ -1452,7 +1452,7 @@ test("uploads can repair API-backed document storage", async ({ page }) => {
 });
 
 test("wallet file uploads can use a configured IPFS and Filecoin backend", async ({ page }) => {
-  let storageRequests = 0;
+  let fileStorageRequests = 0;
   await page.addInitScript(() => {
     window.localStorage.setItem(
       "abby-filecoin-storage-config",
@@ -1460,9 +1460,22 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
     );
   });
   await page.route("**/filecoin-upload", async (route) => {
-    storageRequests += 1;
     expect(route.request().method()).toBe("POST");
     expect(route.request().headers()["content-type"]).toContain("multipart/form-data");
+    const body = route.request().postData() || "";
+    if (body.includes("wallet-proof-bundle.json")) {
+      await route.fulfill({
+        json: {
+          ipfsCid: "bafywalletproofbundlecid",
+          message: "Stored wallet proof bundle.",
+          provider: "ipfs-filecoin"
+        }
+      });
+      return;
+    }
+
+    fileStorageRequests += 1;
+    expect(body).toContain("benefits-update.pdf");
     await route.fulfill({
       json: {
         filecoinDealId: "42",
@@ -1486,7 +1499,151 @@ test("wallet file uploads can use a configured IPFS and Filecoin backend", async
   await expect(walletFile.getByText(/IPFS\/Filecoin/i)).toBeVisible();
   await expect(walletFile.getByText(/bafywallet/i)).toBeVisible();
   await expect(walletFile.getByText(/Pinned through Synapse/i)).toBeVisible();
-  expect(storageRequests).toBe(1);
+  expect(fileStorageRequests).toBe(1);
+});
+
+test("wallet file uploads poll Filecoin status through the same-origin bridge", async ({ page }) => {
+  let statusRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/filecoin-upload/status/pin-123", async (route) => {
+    statusRequests += 1;
+    await route.fulfill({
+      json: {
+        info: { synapse_piece_cid: "baga-wallet-piece" },
+        requestid: "pin-123",
+        status: "pinned"
+      }
+    });
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    await route.fulfill({
+      json: {
+        filecoinPinRequestId: "pin-123",
+        filecoinPinStatus: "queued",
+        ipfsCid: "bafywallet",
+        message: "Pinned to IPFS and queued for Filecoin persistence through the wallet upload bridge.",
+        provider: "ipfs-filecoin",
+        requestId: "pin-123",
+        statusUrl: "/filecoin-upload/status/pin-123"
+      }
+    });
+  });
+
+  await openAppRoute(page, "/#/uploads");
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Store new wallet files on IPFS\/Filecoin/i).check();
+  await page.getByLabel(/Choose file to upload/i).setInputFiles({
+    name: "benefits-update.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n")
+  });
+  const walletFile = page.locator(".upload-list-item").filter({ hasText: "benefits-update.pdf" });
+  await expect(walletFile.getByText(/confirmed by Filecoin persistence/i)).toBeVisible();
+  await expect(walletFile.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  expect(statusRequests).toBe(1);
+});
+
+test("wallet uploads let users retry Filecoin persistence after a failed sidecar status", async ({ page }) => {
+  let recordStorageRequests = 0;
+  let statusRequests = 0;
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      "abby-filecoin-storage-config",
+      JSON.stringify({ uploadUrl: "/filecoin-upload" })
+    );
+  });
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records") && url.searchParams.get("data_type") === "document") {
+      await route.fulfill({
+        json: {
+          records: [
+            {
+              record_id: "rec-benefits-letter",
+              data_type: "document",
+              sensitivity: "high",
+              public_descriptor: "Benefits letter",
+              status: "active",
+              created_at: "2026-05-03T18:00:00Z"
+            }
+          ]
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/records/rec-benefits-letter/storage")) {
+      await route.fulfill({ json: { ok: true } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet API call", path } });
+  });
+  await page.route("**/filecoin-upload/status/pin-123", async (route) => {
+    statusRequests += 1;
+    await route.fulfill({
+      json: {
+        requestid: "pin-123",
+        status: statusRequests === 1 ? "failed" : "pinned"
+      }
+    });
+  });
+  await page.route("**/filecoin-upload", async (route) => {
+    expect(route.request().method()).toBe("POST");
+    const contentType = route.request().headers()["content-type"] || "";
+    if (contentType.includes("application/json")) {
+      recordStorageRequests += 1;
+      const payload = route.request().postDataJSON() as { recordId?: string; walletId?: string };
+      expect(payload.recordId).toBe("rec-benefits-letter");
+      expect(payload.walletId).toBe("wallet-demo");
+      await route.fulfill({
+        json: {
+          filecoinPinRequestId: "pin-123",
+          filecoinPinStatus: "queued",
+          ipfsCid: "bafywallet",
+          provider: "ipfs-filecoin",
+          requestId: "pin-123",
+          statusUrl: "/filecoin-upload/status/pin-123"
+        }
+      });
+      return;
+    }
+
+    expect(contentType).toContain("multipart/form-data");
+    await route.fulfill({
+      json: {
+        ipfsCid: "bafywalletproofbundlecid",
+        message: "Stored wallet proof bundle.",
+        provider: "ipfs-filecoin"
+      }
+    });
+  });
+
+  await openAppRoute(page, walletRoute("uploads", "did:key:owner"));
+  const upload = page.locator(".upload-list-item").filter({ hasText: "Benefits letter" });
+  await upload.getByRole("button", { name: /Store on IPFS\/Filecoin/i }).click();
+  await expect(upload.getByText(/IPFS only/i)).toBeVisible();
+  await expect(upload.getByRole("button", { name: /Retry Filecoin/i })).toBeVisible();
+  await upload.getByRole("button", { name: /Retry Filecoin/i }).click();
+  await expect(upload.getByText(/IPFS\/Filecoin/i)).toBeVisible();
+  expect(recordStorageRequests).toBe(2);
+  expect(statusRequests).toBe(2);
 });
 
 test("wallet page renders a scannable proof QR that opens proof center review", async ({ page }) => {

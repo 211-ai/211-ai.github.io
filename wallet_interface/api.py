@@ -3,17 +3,21 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
+import re
 import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
 from typing import Any, Dict, List, Sequence
+from urllib import error as urllib_error
+from urllib import request as urllib_request
 
 from .app_service import WalletInterfaceService
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+    from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
@@ -23,6 +27,7 @@ except ImportError:  # pragma: no cover
     Form = None  # type: ignore[assignment]
     Header = None  # type: ignore[assignment]
     HTTPException = None  # type: ignore[assignment]
+    Request = object  # type: ignore[assignment,misc]
     UploadFile = object  # type: ignore[assignment,misc]
     BaseModel = object  # type: ignore[assignment,misc]
 
@@ -33,11 +38,16 @@ from ._vendor import ensure_ipfs_datasets_py_path
 
 ensure_ipfs_datasets_py_path()
 
+from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
 
 
 PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
 OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
+
+
+class FilecoinPinHandoffError(RuntimeError):
+    """Raised when the optional Filecoin Pin sidecar handoff fails."""
 
 
 def _cors_origins_from_env() -> list[str]:
@@ -489,6 +499,15 @@ class RotateRecordKeyRequest(BaseModel):
     actor_key_hex: str | None = None
 
 
+class FilecoinRecordUploadRequest(BaseModel):
+    actorDid: str
+    actorKeyHex: str | None = None
+    fileName: str | None = None
+    grantId: str | None = None
+    recordId: str
+    walletId: str
+
+
 class RepairStorageRequest(BaseModel):
     actor_did: str
 
@@ -581,6 +600,32 @@ class MissingPersonDeadDropDispatchRequest(BaseModel):
     actor_did: str
 
 
+class SmsNotificationQueueRequest(BaseModel):
+    actor_did: str
+    to_phone: str
+    message: str
+    due_at: str = ""
+    reason: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SmsNotificationDispatchRequest(BaseModel):
+    actor_did: str
+
+
+class PhoneCallNotificationQueueRequest(BaseModel):
+    actor_did: str
+    to_phone: str
+    script: str
+    due_at: str = ""
+    reason: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PhoneCallNotificationDispatchRequest(BaseModel):
+    actor_did: str
+
+
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
 
@@ -602,6 +647,112 @@ def _require_portland_police_missing_email(to_email: str) -> str:
             f"missing-person dead drop recipient must be {PORTLAND_POLICE_MISSING_EMAIL}"
         )
     return PORTLAND_POLICE_MISSING_EMAIL
+
+
+def _normalize_phone_number(phone: str) -> str:
+    raw = str(phone or "").strip()
+    if not raw:
+        raise ValueError("to_phone is required")
+    digits = re.sub(r"\D", "", raw)
+    if len(digits) < 10:
+        raise ValueError("to_phone must include at least 10 digits")
+    return f"+{digits}" if raw.startswith("+") else digits
+
+
+def _send_webhook_notification(
+    *,
+    env_prefix: str,
+    required_key: str,
+    required_value: str,
+    extra_payload: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
+    webhook_url = str(os.getenv(f"{env_prefix}_WEBHOOK_URL") or "").strip()
+    backend = str(os.getenv(f"{env_prefix}_BACKEND") or ("http" if webhook_url else "")).strip().lower()
+    if not backend or not webhook_url:
+        raise RuntimeError(
+            f"{env_prefix}_WEBHOOK_URL environment variable is required for delivery but is not configured"
+        )
+    if backend != "http":
+        raise RuntimeError(f"{env_prefix}_BACKEND must be http when delivery is enabled")
+
+    extra_headers: Dict[str, str] = {}
+    if bearer_token := str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip():
+        extra_headers["authorization"] = f"Bearer {bearer_token}"
+    if header_name := str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip():
+        header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
+        if not header_value:
+            raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
+        extra_headers[header_name] = header_value
+
+    timeout_seconds = float(str(os.getenv(f"{env_prefix}_TIMEOUT_SECONDS") or "15").strip())
+    if timeout_seconds <= 0:
+        raise RuntimeError(f"{env_prefix}_TIMEOUT_SECONDS must be positive")
+
+    payload = {
+        required_key: required_value,
+        **dict(extra_payload or {}),
+    }
+
+    request_headers = {"content-type": "application/json", **extra_headers}
+    body = json.dumps(payload, sort_keys=True).encode("utf-8")
+    req = urllib_request.Request(
+        webhook_url,
+        data=body,
+        headers=request_headers,
+        method="POST",
+    )
+    with urllib_request.urlopen(req, timeout=timeout_seconds) as response:
+        raw = response.read().decode("utf-8")
+        content_type = str(getattr(response, "headers", {}).get("content-type", ""))
+        status = str(getattr(response, "status", getattr(response, "code", 200)))
+
+    response_payload: Dict[str, Any] = {}
+    if raw:
+        if "json" in content_type.lower() or raw.lstrip().startswith("{"):
+            parsed = json.loads(raw)
+            if not isinstance(parsed, dict):
+                raise ValueError("SMS delivery response must be a JSON object")
+            response_payload = parsed
+
+    provider_message_id = str(
+        response_payload.get("message_id")
+        or response_payload.get("call_id")
+        or response_payload.get("id")
+        or ""
+    )
+    result = {
+        "provider": str(response_payload.get("provider") or "http"),
+        "provider_status": str(response_payload.get("status") or status),
+    }
+    if provider_message_id:
+        result["provider_message_id"] = provider_message_id
+    return result
+
+
+def _send_sms_notification(*, to_phone: str, message: str) -> Dict[str, str]:
+    normalized_phone = _normalize_phone_number(to_phone)
+    normalized_message = str(message or "").strip()
+    if not normalized_message:
+        raise ValueError("message is required")
+    return _send_webhook_notification(
+        env_prefix="WALLET_SMS",
+        required_key="to_phone",
+        required_value=normalized_phone,
+        extra_payload={"message": normalized_message},
+    )
+
+
+def _send_phone_call_notification(*, to_phone: str, script: str) -> Dict[str, str]:
+    normalized_phone = _normalize_phone_number(to_phone)
+    normalized_script = str(script or "").strip()
+    if not normalized_script:
+        raise ValueError("script is required")
+    return _send_webhook_notification(
+        env_prefix="WALLET_CALL",
+        required_key="to_phone",
+        required_value=normalized_phone,
+        extra_payload={"script": normalized_script},
+    )
 
 
 def create_app(*, service: WalletInterfaceService | None = None):
@@ -976,6 +1127,306 @@ def create_app(*, service: WalletInterfaceService | None = None):
             "results": results,
         }
 
+    @app.post("/wallets/{wallet_id}/notifications/sms/queue")
+    def queue_sms_notification(wallet_id: str, request: SmsNotificationQueueRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.queue_sms_notification(
+                wallet_id,
+                actor_did=request.actor_did,
+                to_phone=_normalize_phone_number(request.to_phone),
+                message=request.message,
+                due_at=request.due_at,
+                reason=request.reason,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/notifications/sms")
+    def list_sms_notifications(wallet_id: str) -> Dict[str, Any]:
+        try:
+            notifications = app_service.list_sms_notifications(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(notifications),
+                "notifications": [record.to_dict() for record in notifications],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch")
+    def dispatch_sms_notification(
+        wallet_id: str,
+        notification_id: str,
+        request: SmsNotificationDispatchRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_sms_notification_for_dispatch(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            delivery = _send_sms_notification(to_phone=record.to_phone, message=record.message)
+            updated = app_service.mark_sms_notification_sent(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                provider_message_id=str(delivery.get("provider_message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "notification": updated.to_dict(),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_sms_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/notifications/sms/process-due")
+    def process_due_sms_notifications(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due SMS processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="sms processing authorization required")
+        try:
+            due_records = app_service.list_due_sms_notifications()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                delivery = _send_sms_notification(to_phone=record.to_phone, message=record.message)
+                app_service.mark_sms_notification_sent(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    provider_message_id=str(delivery.get("provider_message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "sent",
+                        "provider_message_id": str(delivery.get("provider_message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_sms_notification_failed(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "failed",
+                        "detail": "sms dispatch failed",
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
+
+    @app.post("/wallets/{wallet_id}/notifications/calls/queue")
+    def queue_phone_call_notification(wallet_id: str, request: PhoneCallNotificationQueueRequest) -> Dict[str, Any]:
+        try:
+            record = app_service.queue_phone_call_notification(
+                wallet_id,
+                actor_did=request.actor_did,
+                to_phone=_normalize_phone_number(request.to_phone),
+                script=request.script,
+                due_at=request.due_at,
+                reason=request.reason,
+                metadata=request.metadata,
+            )
+            return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/notifications/calls")
+    def list_phone_call_notifications(wallet_id: str) -> Dict[str, Any]:
+        try:
+            notifications = app_service.list_phone_call_notifications(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(notifications),
+                "notifications": [record.to_dict() for record in notifications],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch")
+    def dispatch_phone_call_notification(
+        wallet_id: str,
+        notification_id: str,
+        request: PhoneCallNotificationDispatchRequest,
+    ) -> Dict[str, Any]:
+        try:
+            record = app_service.get_phone_call_notification_for_dispatch(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        try:
+            delivery = _send_phone_call_notification(to_phone=record.to_phone, script=record.script)
+            updated = app_service.mark_phone_call_notification_sent(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                provider_call_id=str(delivery.get("provider_message_id") or ""),
+                dispatched_reason="manual",
+            )
+            return {
+                "wallet_id": wallet_id,
+                "status": "sent",
+                "notification": updated.to_dict(),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            app_service.mark_phone_call_notification_failed(
+                wallet_id,
+                notification_id,
+                actor_did=request.actor_did,
+                error=str(exc),
+                dispatched_reason="manual",
+            )
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/ops/notifications/calls/process-due")
+    def process_due_phone_call_notifications(
+        authorization: str | None = Header(default=None),
+        x_wallet_ops_shared_secret: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        expected_secret = _ops_health_shared_secret()
+        if not expected_secret:
+            raise HTTPException(
+                status_code=503,
+                detail="WALLET_OPS_HEALTH_SHARED_SECRET environment variable is required for due call processing",
+            )
+        supplied_secret = _extract_bearer_token(authorization) or str(x_wallet_ops_shared_secret or "").strip()
+        if supplied_secret != expected_secret:
+            raise HTTPException(status_code=401, detail="call processing authorization required")
+        try:
+            due_records = app_service.list_due_phone_call_notifications()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        results: List[Dict[str, Any]] = []
+        sent = 0
+        failed = 0
+        for record in due_records:
+            try:
+                delivery = _send_phone_call_notification(to_phone=record.to_phone, script=record.script)
+                app_service.mark_phone_call_notification_sent(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    provider_call_id=str(delivery.get("provider_message_id") or ""),
+                    dispatched_reason="due",
+                )
+                sent += 1
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "sent",
+                        "provider_call_id": str(delivery.get("provider_message_id") or ""),
+                    }
+                )
+            except Exception as exc:
+                failed += 1
+                app_service.mark_phone_call_notification_failed(
+                    record.wallet_id,
+                    record.notification_id,
+                    actor_did=OPS_DEAD_DROP_ACTOR_DID,
+                    error=str(exc),
+                    dispatched_reason="due",
+                )
+                results.append(
+                    {
+                        "wallet_id": record.wallet_id,
+                        "notification_id": record.notification_id,
+                        "status": "failed",
+                        "detail": "phone call dispatch failed",
+                    }
+                )
+        return {
+            "status": "ok",
+            "due_count": len(due_records),
+            "sent_count": sent,
+            "failed_count": failed,
+            "results": results,
+        }
+
     @app.post("/wallets/{wallet_id}/locations/{location_record_id}/coarse-grants")
     def create_coarse_location_grant(
         wallet_id: str,
@@ -1131,6 +1582,69 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 metadata=metadata,
             )
             return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/filecoin-upload")
+    async def upload_to_ipfs_bridge(
+        request: Request,
+        file: UploadFile | None = File(default=None),
+        metadata: str | None = Form(default=None),
+    ) -> Dict[str, Any]:
+        try:
+            content_type = request.headers.get("content-type", "")
+            if "application/json" in content_type:
+                payload = FilecoinRecordUploadRequest(**(await request.json()))
+                plaintext = app_service.export_record_plaintext(
+                    payload.walletId,
+                    payload.recordId,
+                    actor_did=payload.actorDid,
+                    grant_id=payload.grantId,
+                    actor_secret=_key_from_optional_hex(payload.actorKeyHex),
+                )
+                return _publish_bytes_to_ipfs(
+                    plaintext,
+                    file_name=payload.fileName,
+                    source_record_id=payload.recordId,
+                    wallet_id=payload.walletId,
+                )
+
+            if file is None:
+                raise ValueError("multipart uploads require a file field")
+            upload_metadata = _parse_upload_metadata(metadata)
+            data = await file.read()
+            expected_sha256 = str(upload_metadata.get("sha256") or "").strip()
+            if expected_sha256:
+                actual_sha256 = hashlib.sha256(data).hexdigest()
+                if actual_sha256 != expected_sha256:
+                    raise ValueError("uploaded file SHA-256 does not match metadata")
+            return _publish_bytes_to_ipfs(
+                data,
+                file_name=str(upload_metadata.get("fileName") or file.filename or "").strip() or None,
+                mime_type=str(upload_metadata.get("mimeType") or file.content_type or "").strip() or None,
+                source_record_id=str(upload_metadata.get("recordId") or "").strip() or None,
+                wallet_id=str(upload_metadata.get("walletId") or "").strip() or None,
+            )
+        except FilecoinPinHandoffError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/filecoin-upload/status/{request_id}")
+    def get_filecoin_upload_status(request_id: str) -> Dict[str, Any]:
+        try:
+            payload = _fetch_filecoin_pin_status(request_id)
+            if not payload.get("requestId") and not payload.get("requestid"):
+                payload["requestId"] = request_id
+            if isinstance(payload.get("info"), dict) and not isinstance(payload.get("filecoinPinInfo"), dict):
+                payload["filecoinPinInfo"] = payload["info"]
+            status_url = _filecoin_upload_status_url(request_id)
+            if status_url:
+                payload["statusUrl"] = status_url
+            return payload
+        except FilecoinPinHandoffError as exc:
+            status_code = 503 if "not configured" in str(exc).lower() else 502
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -2294,6 +2808,189 @@ def _analysis_result_to_dict(result: Dict[str, Any]) -> Dict[str, Any]:
         "artifact": artifact_data,
         "output": result["output"],
     }
+
+
+def _parse_upload_metadata(metadata: str | None) -> Dict[str, Any]:
+    if not metadata:
+        return {}
+    parsed = json.loads(metadata)
+    if not isinstance(parsed, dict):
+        raise ValueError("upload metadata must decode to an object")
+    return parsed
+
+
+def _publish_bytes_to_ipfs(
+    data: bytes,
+    *,
+    file_name: str | None = None,
+    mime_type: str | None = None,
+    source_record_id: str | None = None,
+    wallet_id: str | None = None,
+) -> Dict[str, Any]:
+    backend = get_ipfs_backend()
+    cid = backend.add_bytes(data, pin=True)
+    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "https://w3s.link/ipfs").rstrip("/")
+    payload: Dict[str, Any] = {
+        "cid": cid,
+        "gatewayUrl": f"{gateway_base_url}/{cid}",
+        "ipfsCid": cid,
+        "message": "Pinned to IPFS through the wallet upload bridge.",
+        "provider": "ipfs-filecoin",
+        "status": "stored",
+    }
+    sidecar_result = _submit_ipfs_cid_to_filecoin_pin(
+        cid,
+        file_name=file_name,
+        mime_type=mime_type,
+        source_record_id=source_record_id,
+        wallet_id=wallet_id,
+    )
+    if sidecar_result is not None:
+        payload["message"] = "Pinned to IPFS and queued for Filecoin persistence through the wallet upload bridge."
+        request_id = str(sidecar_result.get("requestid") or sidecar_result.get("requestId") or "").strip()
+        handoff_status = str(sidecar_result.get("status") or "").strip()
+        if request_id:
+            payload["requestId"] = request_id
+            payload["filecoinPinRequestId"] = request_id
+            payload["statusUrl"] = _filecoin_upload_status_url(request_id)
+        if handoff_status:
+            payload["filecoinPinStatus"] = handoff_status
+        if isinstance(sidecar_result.get("info"), dict):
+            payload["filecoinPinInfo"] = sidecar_result["info"]
+    if file_name:
+        payload["fileName"] = file_name
+    if mime_type:
+        payload["mimeType"] = mime_type
+    if source_record_id:
+        payload["recordId"] = source_record_id
+    if wallet_id:
+        payload["walletId"] = wallet_id
+    return payload
+
+
+def _submit_ipfs_cid_to_filecoin_pin(
+    cid: str,
+    *,
+    file_name: str | None = None,
+    mime_type: str | None = None,
+    source_record_id: str | None = None,
+    wallet_id: str | None = None,
+) -> Dict[str, Any] | None:
+    if not _filecoin_pin_service_url():
+        return None
+
+    origins = [
+        origin.strip()
+        for origin in str(os.getenv("WALLET_FILECOIN_PIN_ORIGINS") or "").split(",")
+        if origin.strip()
+    ]
+    metadata: Dict[str, str] = {"source": "211-ai-wallet"}
+    if wallet_id:
+        metadata["walletId"] = wallet_id
+    if source_record_id:
+        metadata["recordId"] = source_record_id
+    if file_name:
+        metadata["fileName"] = file_name
+    if mime_type:
+        metadata["mimeType"] = mime_type
+
+    payload: Dict[str, Any] = {
+        "cid": cid,
+        "meta": metadata,
+    }
+    if file_name:
+        payload["name"] = file_name
+    if origins:
+        payload["origins"] = origins
+    return _filecoin_pin_request("POST", "/pins", payload=payload)
+
+
+def _fetch_filecoin_pin_status(request_id: str) -> Dict[str, Any]:
+    if not request_id.strip():
+        raise ValueError("request ID is required")
+    return _filecoin_pin_request("GET", f"/pins/{request_id}")
+
+
+def _filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    service_url = _filecoin_pin_service_url()
+    if not service_url:
+        raise FilecoinPinHandoffError("WALLET_FILECOIN_PIN_SERVICE_URL is not configured")
+
+    endpoint = f"{service_url}{path}"
+    body = json.dumps(payload, sort_keys=True).encode("utf-8") if payload is not None else None
+    req = urllib_request.Request(
+        endpoint,
+        data=body,
+        headers=_filecoin_pin_request_headers(include_json_content_type=payload is not None),
+        method=method,
+    )
+    try:
+        with urllib_request.urlopen(req, timeout=_filecoin_pin_timeout_seconds()) as response:
+            raw = response.read().decode("utf-8")
+            content_type = str(getattr(response, "headers", {}).get("content-type", ""))
+    except urllib_error.HTTPError as exc:
+        error_body = exc.read().decode("utf-8", errors="replace")
+        detail = _response_message_from_raw_json(error_body) or f"Filecoin Pin sidecar rejected the request with HTTP {exc.code}"
+        raise FilecoinPinHandoffError(detail) from exc
+    except urllib_error.URLError as exc:
+        raise FilecoinPinHandoffError(f"Unable to reach Filecoin Pin sidecar at {endpoint}: {exc.reason}") from exc
+
+    if not raw:
+        return {}
+    if "json" not in content_type.lower() and not raw.lstrip().startswith("{"):
+        raise FilecoinPinHandoffError("Filecoin Pin sidecar returned a non-JSON response")
+    parsed = json.loads(raw)
+    if not isinstance(parsed, dict):
+        raise FilecoinPinHandoffError("Filecoin Pin sidecar returned a non-object response")
+    return parsed
+
+
+def _filecoin_pin_service_url() -> str:
+    return str(os.getenv("WALLET_FILECOIN_PIN_SERVICE_URL") or "").strip().rstrip("/")
+
+
+def _filecoin_pin_timeout_seconds() -> float:
+    timeout_seconds = float(str(os.getenv("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS") or "30").strip())
+    if timeout_seconds <= 0:
+        raise FilecoinPinHandoffError("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS must be positive")
+    return timeout_seconds
+
+
+def _filecoin_pin_request_headers(*, include_json_content_type: bool) -> Dict[str, str]:
+    request_headers: Dict[str, str] = {}
+    if include_json_content_type:
+        request_headers["content-type"] = "application/json"
+    if bearer_token := str(os.getenv("WALLET_FILECOIN_PIN_BEARER_TOKEN") or "").strip():
+        request_headers["authorization"] = f"Bearer {bearer_token}"
+    if header_name := str(os.getenv("WALLET_FILECOIN_PIN_HTTP_HEADER_NAME") or "").strip():
+        header_value = str(os.getenv("WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE") or "").strip()
+        if not header_value:
+            raise FilecoinPinHandoffError(
+                "WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE is required when WALLET_FILECOIN_PIN_HTTP_HEADER_NAME is set"
+            )
+        request_headers[header_name] = header_value
+    return request_headers
+
+
+def _response_message_from_raw_json(raw: str) -> str:
+    if not raw.strip():
+        return ""
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return raw.strip()
+    if not isinstance(parsed, dict):
+        return raw.strip()
+    return str(parsed.get("error") or parsed.get("message") or "").strip()
+
+
+def _filecoin_pin_status_url(request_id: str) -> str:
+    service_url = _filecoin_pin_service_url()
+    return f"{service_url}/pins/{request_id}" if service_url else ""
+
+
+def _filecoin_upload_status_url(request_id: str) -> str:
+    return f"/filecoin-upload/status/{request_id}"
 
 
 def _key_from_optional_hex(value: str | None) -> bytes | None:

@@ -42,6 +42,11 @@ Before production use:
 - Move `WALLET_STORAGE_CONFIG` and any provider credentials into a real Secret
   or external secret manager. `externalsecret.example.yaml` provides the
   expected key mapping when using External Secrets Operator.
+- When `WALLET_STORAGE_CONFIG` includes an `ipfs` mirror, also set
+  `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1` and `IPFS_HOST` so the API and ops
+  pods can reach a trusted Kubo HTTP API. The checked-in examples use a local
+  primary replica plus a pinned IPFS mirror because raw `filecoin` mirrors
+  still require a runtime backend injection path outside these manifests.
 - Map `WALLET_STORAGE_RETENTION_POLICY_REF`,
   `WALLET_STORAGE_IPFS_PINNING_POLICY_REF`,
   `WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF`,

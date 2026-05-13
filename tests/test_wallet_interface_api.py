@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -48,6 +49,218 @@ def test_wallet_api_cors_allows_configured_browser_origin(monkeypatch) -> None:
 
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == origin
+
+
+def test_filecoin_upload_bridge_accepts_multipart(monkeypatch) -> None:
+    client = _client()
+    added: list[bytes] = []
+
+    class FakeIpfsBackend:
+        def add_bytes(self, data: bytes, *, pin: bool = True) -> str:
+            assert pin is True
+            added.append(data)
+            return "bafy-uploaded-file"
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+
+    response = client.post(
+        "/filecoin-upload",
+        data={"metadata": json.dumps({"sha256": hashlib.sha256(b"proof-bundle").hexdigest(), "walletId": "wallet-demo"})},
+        files={"file": ("proofs.json", b"proof-bundle", "application/json")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-uploaded-file"
+    assert payload["gatewayUrl"] == "https://w3s.link/ipfs/bafy-uploaded-file"
+    assert payload["provider"] == "ipfs-filecoin"
+    assert payload["walletId"] == "wallet-demo"
+    assert added == [b"proof-bundle"]
+
+
+def test_filecoin_upload_bridge_can_publish_existing_wallet_record(monkeypatch) -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    record = client.post(
+        f"/wallets/{wallet['wallet_id']}/documents/text",
+        json={"actor_did": "did:key:owner", "text": "Encrypted-but-exportable proof bundle", "filename": "proof.txt"},
+    ).json()
+
+    added: list[bytes] = []
+
+    class FakeIpfsBackend:
+        def add_bytes(self, data: bytes, *, pin: bool = True) -> str:
+            assert pin is True
+            added.append(data)
+            return "bafy-record-upload"
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+
+    response = client.post(
+        "/filecoin-upload",
+        json={
+            "actorDid": "did:key:owner",
+            "fileName": "proof.txt",
+            "recordId": record["record_id"],
+            "walletId": wallet["wallet_id"],
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-record-upload"
+    assert payload["recordId"] == record["record_id"]
+    assert payload["walletId"] == wallet["wallet_id"]
+    assert added == [b"Encrypted-but-exportable proof bundle"]
+
+
+def test_filecoin_upload_bridge_can_handoff_to_filecoin_pin_sidecar(monkeypatch) -> None:
+    client = _client()
+    added: list[bytes] = []
+    handoff_request: dict[str, object] = {}
+
+    class FakeIpfsBackend:
+        def add_bytes(self, data: bytes, *, pin: bool = True) -> str:
+            assert pin is True
+            added.append(data)
+            return "bafy-uploaded-file"
+
+    class FakeResponse:
+        headers = {"content-type": "application/json"}
+
+        def read(self) -> bytes:
+            return json.dumps({"requestid": "pin-123", "status": "queued", "info": {"provider": "filecoin-pin"}}).encode(
+                "utf-8"
+            )
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+    def fake_urlopen(req, timeout: float):
+        handoff_request["url"] = req.full_url
+        handoff_request["timeout"] = timeout
+        handoff_request["headers"] = {key.lower(): value for key, value in req.header_items()}
+        handoff_request["body"] = json.loads(req.data.decode("utf-8"))
+        return FakeResponse()
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "http://filecoin-pin:3456")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_BEARER_TOKEN", "sidecar-token")
+    monkeypatch.setenv(
+        "WALLET_FILECOIN_PIN_ORIGINS",
+        "/dns/kubo/tcp/4001/p2p/12D3KooWExample,/dns/kubo-2/tcp/4001/p2p/12D3KooWExampleTwo",
+    )
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS", "9")
+
+    response = client.post(
+        "/filecoin-upload",
+        data={"metadata": json.dumps({"walletId": "wallet-demo"})},
+        files={"file": ("proofs.json", b"proof-bundle", "application/json")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-uploaded-file"
+    assert payload["requestId"] == "pin-123"
+    assert payload["filecoinPinRequestId"] == "pin-123"
+    assert payload["filecoinPinStatus"] == "queued"
+    assert payload["statusUrl"] == "/filecoin-upload/status/pin-123"
+    assert "queued for Filecoin persistence" in payload["message"]
+    assert added == [b"proof-bundle"]
+    assert handoff_request["url"] == "http://filecoin-pin:3456/pins"
+    assert handoff_request["timeout"] == 9.0
+    assert handoff_request["headers"] == {
+        "authorization": "Bearer sidecar-token",
+        "content-type": "application/json",
+    }
+    assert handoff_request["body"] == {
+        "cid": "bafy-uploaded-file",
+        "meta": {
+            "fileName": "proofs.json",
+            "mimeType": "application/json",
+            "source": "211-ai-wallet",
+            "walletId": "wallet-demo",
+        },
+        "name": "proofs.json",
+        "origins": [
+            "/dns/kubo/tcp/4001/p2p/12D3KooWExample",
+            "/dns/kubo-2/tcp/4001/p2p/12D3KooWExampleTwo",
+        ],
+    }
+
+
+def test_filecoin_upload_status_proxy_returns_sidecar_status(monkeypatch) -> None:
+    client = _client()
+    observed_request: dict[str, object] = {}
+
+    class FakeResponse:
+        headers = {"content-type": "application/json"}
+
+        def read(self) -> bytes:
+            return json.dumps({"requestid": "pin-123", "status": "pinned", "info": {"pin_duration": "25"}}).encode(
+                "utf-8"
+            )
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+    def fake_urlopen(req, timeout: float):
+        observed_request["url"] = req.full_url
+        observed_request["method"] = req.get_method()
+        observed_request["headers"] = {key.lower(): value for key, value in req.header_items()}
+        observed_request["timeout"] = timeout
+        return FakeResponse()
+
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "http://filecoin-pin:3456")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_BEARER_TOKEN", "sidecar-token")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_TIMEOUT_SECONDS", "7")
+
+    response = client.get("/filecoin-upload/status/pin-123")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload == {
+        "filecoinPinInfo": {"pin_duration": "25"},
+        "info": {"pin_duration": "25"},
+        "requestid": "pin-123",
+        "status": "pinned",
+        "statusUrl": "/filecoin-upload/status/pin-123",
+    }
+    assert observed_request == {
+        "headers": {"authorization": "Bearer sidecar-token"},
+        "method": "GET",
+        "timeout": 7.0,
+        "url": "http://filecoin-pin:3456/pins/pin-123",
+    }
+
+
+def test_filecoin_upload_status_proxy_requires_sidecar_configuration() -> None:
+    client = _client()
+
+    response = client.get("/filecoin-upload/status/pin-123")
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == "WALLET_FILECOIN_PIN_SERVICE_URL is not configured"
 
 
 def test_wallet_api_private_analytics_flow() -> None:
@@ -2019,6 +2232,295 @@ def test_wallet_api_missing_person_dead_drop_config_processes_due_and_persists(t
     assert restored_state.status_code == 200
     assert restored_state.json()["last_message_id"] == state_payload["last_message_id"]
     assert restored_state.json()["enabled"] is True
+
+
+def test_wallet_api_sms_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:
+    captured_requests = []
+
+    class FakeResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self.payload = payload
+            self.headers = {"content-type": "application/json"}
+            self.status = 202
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(self.payload).encode("utf-8")
+
+    def fake_urlopen(request, timeout: float):
+        captured_requests.append(
+            {
+                "url": request.full_url,
+                "headers": dict(request.header_items()),
+                "payload": json.loads(request.data.decode("utf-8")),
+                "timeout": timeout,
+            }
+        )
+        return FakeResponse({"message_id": "sms-123", "provider": "test-webhook", "status": "accepted"})
+
+    monkeypatch.setenv("WALLET_SMS_WEBHOOK_URL", "https://sms.example.org/send")
+    monkeypatch.setenv("WALLET_SMS_BEARER_TOKEN", "sms-secret")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/sms/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "(503) 555-0123",
+            "message": "Bring your ID to the front desk.",
+            "reason": "intake-reminder",
+        },
+    )
+
+    assert queue_response.status_code == 200
+    queued = queue_response.json()
+    assert queued["status"] == "queued"
+    assert queued["to_phone"] == "5035550123"
+
+    dispatch_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/sms/{queued['notification_id']}/dispatch",
+        json={"actor_did": "did:key:owner"},
+    )
+
+    assert dispatch_response.status_code == 200
+    payload = dispatch_response.json()
+    assert payload["status"] == "sent"
+    assert payload["provider"] == "test-webhook"
+    assert payload["provider_message_id"] == "sms-123"
+    assert payload["notification"]["status"] == "sent"
+    assert len(captured_requests) == 1
+    assert captured_requests[0]["url"] == "https://sms.example.org/send"
+    assert captured_requests[0]["headers"]["Authorization"] == "Bearer sms-secret"
+    assert captured_requests[0]["payload"] == {
+        "to_phone": "5035550123",
+        "message": "Bring your ID to the front desk.",
+    }
+
+    list_response = client.get(f"/wallets/{wallet['wallet_id']}/notifications/sms")
+    assert list_response.status_code == 200
+    assert list_response.json()["count"] == 1
+    assert list_response.json()["notifications"][0]["last_provider_message_id"] == "sms-123"
+
+
+def test_wallet_api_sms_notification_processes_due_and_persists(tmp_path, monkeypatch) -> None:
+    class FakeResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self.payload = payload
+            self.headers = {"content-type": "application/json"}
+            self.status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(self.payload).encode("utf-8")
+
+    delivery_ids: list[str] = []
+
+    def fake_urlopen(request, timeout: float):
+        delivery_ids.append(json.loads(request.data.decode("utf-8"))["to_phone"])
+        return FakeResponse({"message_id": f"sms-{len(delivery_ids)}", "status": "accepted"})
+
+    monkeypatch.setenv("WALLET_SMS_WEBHOOK_URL", "https://sms.example.org/send")
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "ops-secret")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/sms/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "+1 (503) 555-0123",
+            "message": "Please reply YES to confirm your safety check-in.",
+            "due_at": "2024-01-01T00:00:00Z",
+            "reason": "safety-check-in",
+        },
+    )
+
+    assert queue_response.status_code == 200
+
+    process_response = client.post(
+        "/ops/notifications/sms/process-due",
+        headers={"x-wallet-ops-shared-secret": "ops-secret"},
+    )
+
+    assert process_response.status_code == 200
+    payload = process_response.json()
+    assert payload["due_count"] == 1
+    assert payload["sent_count"] == 1
+    assert payload["failed_count"] == 0
+    assert delivery_ids == ["+15035550123"]
+
+    state_response = client.get(f"/wallets/{wallet['wallet_id']}/notifications/sms")
+    assert state_response.status_code == 200
+    state_payload = state_response.json()["notifications"][0]
+    assert state_payload["status"] == "sent"
+    assert state_payload["last_provider_message_id"] == "sms-1"
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    restored_client = _client_with_service(restored_service)
+    load_response = restored_client.post("/wallets/snapshots/load-all")
+    assert load_response.status_code == 200
+
+    restored_state = restored_client.get(f"/wallets/{wallet['wallet_id']}/notifications/sms")
+    assert restored_state.status_code == 200
+    restored_payload = restored_state.json()["notifications"][0]
+    assert restored_payload["status"] == "sent"
+    assert restored_payload["last_provider_message_id"] == "sms-1"
+
+
+def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:
+    captured_requests = []
+
+    class FakeResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self.payload = payload
+            self.headers = {"content-type": "application/json"}
+            self.status = 202
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(self.payload).encode("utf-8")
+
+    def fake_urlopen(request, timeout: float):
+        captured_requests.append(
+            {
+                "url": request.full_url,
+                "headers": dict(request.header_items()),
+                "payload": json.loads(request.data.decode("utf-8")),
+                "timeout": timeout,
+            }
+        )
+        return FakeResponse({"call_id": "call-123", "provider": "test-call-webhook", "status": "accepted"})
+
+    monkeypatch.setenv("WALLET_CALL_WEBHOOK_URL", "https://voice.example.org/call")
+    monkeypatch.setenv("WALLET_CALL_BEARER_TOKEN", "call-secret")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/calls/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "(503) 555-0100",
+            "script": "This is Abby calling with an intake reminder.",
+            "reason": "intake-call",
+        },
+    )
+
+    assert queue_response.status_code == 200
+    queued = queue_response.json()
+    assert queued["status"] == "queued"
+    assert queued["to_phone"] == "5035550100"
+
+    dispatch_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/calls/{queued['notification_id']}/dispatch",
+        json={"actor_did": "did:key:owner"},
+    )
+
+    assert dispatch_response.status_code == 200
+    payload = dispatch_response.json()
+    assert payload["status"] == "sent"
+    assert payload["provider"] == "test-call-webhook"
+    assert payload["provider_message_id"] == "call-123"
+    assert payload["notification"]["status"] == "sent"
+    assert len(captured_requests) == 1
+    assert captured_requests[0]["url"] == "https://voice.example.org/call"
+    assert captured_requests[0]["headers"]["Authorization"] == "Bearer call-secret"
+    assert captured_requests[0]["payload"] == {
+        "to_phone": "5035550100",
+        "script": "This is Abby calling with an intake reminder.",
+    }
+
+
+def test_wallet_api_phone_call_notification_processes_due_and_persists(tmp_path, monkeypatch) -> None:
+    class FakeResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self.payload = payload
+            self.headers = {"content-type": "application/json"}
+            self.status = 200
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(self.payload).encode("utf-8")
+
+    delivery_ids: list[str] = []
+
+    def fake_urlopen(request, timeout: float):
+        delivery_ids.append(json.loads(request.data.decode("utf-8"))["to_phone"])
+        return FakeResponse({"call_id": f"call-{len(delivery_ids)}", "status": "accepted"})
+
+    monkeypatch.setenv("WALLET_CALL_WEBHOOK_URL", "https://voice.example.org/call")
+    monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "ops-secret")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/calls/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "+1 (503) 555-0199",
+            "script": "This is Abby calling to remind you about tonight's shelter bed hold.",
+            "due_at": "2024-01-01T00:00:00Z",
+            "reason": "bed-hold-call",
+        },
+    )
+
+    assert queue_response.status_code == 200
+
+    process_response = client.post(
+        "/ops/notifications/calls/process-due",
+        headers={"x-wallet-ops-shared-secret": "ops-secret"},
+    )
+
+    assert process_response.status_code == 200
+    payload = process_response.json()
+    assert payload["due_count"] == 1
+    assert payload["sent_count"] == 1
+    assert payload["failed_count"] == 0
+    assert delivery_ids == ["+15035550199"]
+
+    state_response = client.get(f"/wallets/{wallet['wallet_id']}/notifications/calls")
+    assert state_response.status_code == 200
+    state_payload = state_response.json()["notifications"][0]
+    assert state_payload["status"] == "sent"
+    assert state_payload["last_provider_call_id"] == "call-1"
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    restored_client = _client_with_service(restored_service)
+    load_response = restored_client.post("/wallets/snapshots/load-all")
+    assert load_response.status_code == 200
+
+    restored_state = restored_client.get(f"/wallets/{wallet['wallet_id']}/notifications/calls")
+    assert restored_state.status_code == 200
+    restored_payload = restored_state.json()["notifications"][0]
+    assert restored_payload["status"] == "sent"
+    assert restored_payload["last_provider_call_id"] == "call-1"
 
 
 def test_wallet_api_snapshot_save_list_and_load(tmp_path) -> None:

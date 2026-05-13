@@ -15,9 +15,10 @@ docker compose -f wallet_interface/deploy/docker-compose.wallet.yml up --build
 
 ## Nginx Gateway On Public Domains
 
-The bundled `wallet-ui` container already uses nginx. For `211-ai.com`,
-`abby.network`, and `abetterbridgetoyou.com`, it now acts as the public
-same-origin gateway:
+The bundled `wallet-ui` container already uses nginx. For `211-ai.com`, it now
+acts as the default public same-origin gateway. With the optional
+additional-domain site file, the same host can also front `abby.network` and
+`abetterbridgetoyou.com`:
 
 - `https://211-ai.com/`, `https://abby.network/`, and
   `https://abetterbridgetoyou.com/` serve the React UI.
@@ -42,10 +43,7 @@ container, without rebuilding the UI image.
 
 Recommended DNS / reverse-proxy shape:
 
-1. Point `211-ai.com`, `www.211-ai.com`, `abby.network`,
-  `www.abby.network`, `abetterbridgetoyou.com`, and
-  `www.abetterbridgetoyou.com` at the host running
-  `wallet-ui`.
+1. Point `211-ai.com` and `www.211-ai.com` at the host running `wallet-ui`.
 2. Install `wallet_interface/deploy/nginx.211-ai.com.conf` as the host nginx
   site and terminate TLS there.
 3. Proxy the host nginx site to `127.0.0.1:8080`, which is the compose-bound
@@ -55,11 +53,22 @@ Recommended DNS / reverse-proxy shape:
 5. Set `ABBY_RUNTIME_WALLET_API_BASE_URL=same-origin` in the runtime env
   file used by the `wallet-ui` container.
 
-The provided host nginx site file expects Let's Encrypt certificates at:
+If you also serve `abby.network` or `abetterbridgetoyou.com` from the same
+host, install `wallet_interface/deploy/nginx.additional-public-domains.conf`
+after those domains have valid certificate material. Keeping `211-ai.com` in a
+dedicated site file prevents missing certs for optional domains from blocking
+`nginx -t` and leaving `211-ai.com` on a placeholder config.
+
+The primary `211-ai.com` site file expects Let's Encrypt certificates at:
 
 ```text
 /etc/letsencrypt/live/211-ai.com/fullchain.pem
 /etc/letsencrypt/live/211-ai.com/privkey.pem
+```
+
+The optional additional-domain site file expects:
+
+```text
 /etc/letsencrypt/live/abby.network/fullchain.pem
 /etc/letsencrypt/live/abby.network/privkey.pem
 /etc/letsencrypt/live/abetterbridgetoyou.com/fullchain.pem
@@ -68,7 +77,7 @@ The provided host nginx site file expects Let's Encrypt certificates at:
 
 and proxies all traffic to the local compose gateway on `127.0.0.1:8080`.
 
-Example host setup:
+Example host setup after certificates already exist:
 
 ```bash
 sudo cp wallet_interface/deploy/nginx.211-ai.com.conf /etc/nginx/sites-available/211-ai.com.conf
@@ -77,11 +86,30 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+Optional extra public domains on the same host:
+
+```bash
+sudo cp wallet_interface/deploy/nginx.additional-public-domains.conf /etc/nginx/sites-available/public-domains-extra.conf
+sudo ln -s /etc/nginx/sites-available/public-domains-extra.conf /etc/nginx/sites-enabled/public-domains-extra.conf
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
 Or run the helper directly on the host:
 
 ```bash
-sudo sh wallet_interface/deploy/install_211_ai_nginx.sh
+sudo LETSENCRYPT_EMAIL=ops@211-ai.com sh wallet_interface/deploy/install_211_ai_nginx.sh
 ```
+
+The helper now bootstraps the host in the correct order for a fresh box:
+
+1. installs an HTTP-only site from `wallet_interface/deploy/nginx.211-ai.com.bootstrap.conf`
+2. serves `/.well-known/acme-challenge/` from `/var/www/certbot`
+3. requests the `211-ai.com` and `www.211-ai.com` certificate with certbot
+4. installs the final TLS site from `wallet_interface/deploy/nginx.211-ai.com.conf`
+
+Use `USE_STAGING_CERTBOT=true` on a first dry run if you want to avoid Let's
+Encrypt production rate limits while validating DNS and host reachability.
 
 If you only need the UI to know where to create or look up wallets, the compose
 build already injects `VITE_WALLET_API_BASE_URL=same-origin`.
@@ -208,6 +236,7 @@ export WALLET_OPS_ALERT_HEADER_NAME=x-wallet-alert-key
 export WALLET_OPS_ALERT_HEADER_VALUE=replace-me
 export WALLET_OPS_HEALTH_SECRET_REF=secret-manager://replace-me
 export WALLET_OPS_ALERT_SECRET_REF=secret-manager://replace-me
+export WALLET_STORAGE_CONFIG='{"primary":{"type":"local","root":"/var/lib/211-ai/wallet-blobs"},"mirrors":[{"type":"ipfs","pin":true}]}'
 export WALLET_STORAGE_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 export WALLET_STORAGE_RETENTION_POLICY_REF=docs/WALLET_RETENTION_POLICY.md@2026-05-05
 export WALLET_STORAGE_IPFS_PINNING_POLICY_REF=replace-with-private-ipfs-pinset-policy-id
@@ -215,6 +244,22 @@ export WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF=replace-with-filecoin-deal-policy
 export WALLET_STORAGE_S3_LIFECYCLE_POLICY_REF=replace-with-s3-lifecycle-policy-id
 export WALLET_BACKUP_PURGE_POLICY_REF=replace-with-backup-purge-policy-id
 export WALLET_ALERT_RETENTION_POLICY_REF=replace-with-alert-retention-policy-id
+export IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1
+export IPFS_HOST=/dns/ipfs/tcp/5001/http
+export WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL=https://w3s.link/ipfs
+export WALLET_DEAD_DROP_SMTP_HOST=smtp.example.com
+export WALLET_DEAD_DROP_SMTP_PORT=587
+export WALLET_DEAD_DROP_SMTP_USE_SSL=false
+export WALLET_DEAD_DROP_SMTP_STARTTLS=true
+export WALLET_DEAD_DROP_SMTP_USERNAME=replace-me
+export WALLET_DEAD_DROP_SMTP_PASSWORD=replace-me
+export WALLET_DEAD_DROP_FROM_EMAIL=no-reply@211-ai.org
+export WALLET_SMS_BACKEND=http
+export WALLET_SMS_WEBHOOK_URL=https://sms.example.com/send
+export WALLET_SMS_BEARER_TOKEN=replace-me
+export WALLET_SMS_HTTP_HEADER_NAME=x-wallet-sms-key
+export WALLET_SMS_HTTP_HEADER_VALUE=replace-me
+export WALLET_SMS_TIMEOUT_SECONDS=15
 export WALLET_PROOF_BACKEND=http-location-region
 export WALLET_PROOF_SERVICE_URL=https://verifier.example.com
 export WALLET_PROOF_VERIFIER_ID=verifier-http-v1
@@ -229,11 +274,20 @@ Services:
 
 - `wallet-api`: runs `uvicorn wallet_interface.asgi:app` on port `8000`
   inside the compose network.
+- `filecoin-pin`: optional `filecoin-pin` profile service built from
+  `wallet_interface/deploy/Dockerfile.filecoin-pin`; runs the upstream daemon
+  on the private compose network for CID handoff and status checks.
 - `wallet-ops`: runs `python -m wallet_interface.ops --watch` every 300 seconds
   and appends JSONL reports under `/var/log/211-ai`.
 - `wallet-ui`: serves the built React UI with nginx and proxies the API on the
   local `127.0.0.1:8080` upstream consumed by the host nginx site for
   `211-ai.com`, `abby.network`, and `abetterbridgetoyou.com`.
+- The bundled UI nginx also proxies `/filecoin-upload` to `wallet-api`, so the
+  deployed runtime can default `ABBY_RUNTIME_FILECOIN_UPLOAD_URL` to a
+  same-origin bridge.
+- The bundled UI nginx also proxies `/filecoin-upload/status/<request-id>` to
+  `wallet-api`, so a browser client can poll sidecar-backed upload status
+  without reaching the daemon directly.
 
 Kubernetes reference manifests live in `wallet_interface/deploy/kubernetes/`.
 They cover namespace, config, persistent state, API, UI, ops worker, services,
@@ -249,8 +303,41 @@ Required production environment:
 - `WALLET_REPOSITORY_ROOT`: durable wallet metadata, audit, grant, revocation,
   and analytics ledger snapshots.
 - `WALLET_STORAGE_CONFIG`: encrypted blob storage config. Use replicated
-  storage for production, for example local primary plus S3/IPFS/Filecoin
-  mirrors.
+  storage for production. The immediately deployable shape in this repo is a
+  local primary plus an `ipfs` mirror with `pin: true`; keep raw `filecoin`
+  mirrors out of the live config until your deployment injects a
+  Filecoin-capable runtime backend.
+- `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI=1` and `IPFS_HOST`: enable the
+  containerized API and ops worker to reach a trusted Kubo HTTP API for
+  `{"type":"ipfs"}` storage mirrors without bundling the `ipfs` CLI into the
+  application images.
+- `ABBY_RUNTIME_FILECOIN_UPLOAD_URL`: set to `/filecoin-upload` for the
+  bundled deployment so the UI can publish files and proof bundles through the
+  wallet API on the same origin.
+- `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`: optional public gateway base used in
+  `/filecoin-upload` responses. Defaults to `https://w3s.link/ipfs`.
+- `WALLET_FILECOIN_PIN_SERVICE_URL`: optional private Filecoin Pin daemon base
+  URL. When set, `/filecoin-upload` first publishes bytes to IPFS and then
+  hands the resulting CID to `POST /pins` on that sidecar.
+- `WALLET_FILECOIN_PIN_ORIGINS`: optional comma-separated libp2p multiaddrs
+  passed to the Filecoin Pin sidecar so it can fetch newly published content
+  from your trusted Kubo/libp2p origin.
+- `WALLET_FILECOIN_PIN_BEARER_TOKEN`: optional bearer token for the Filecoin
+  Pin sidecar.
+- `WALLET_FILECOIN_PIN_HTTP_HEADER_NAME` /
+  `WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE`: optional custom header pair for the
+  Filecoin Pin sidecar.
+- `WALLET_FILECOIN_PIN_TIMEOUT_SECONDS`: optional Filecoin Pin sidecar timeout.
+- `FILECOIN_PIN_VERSION`: npm package version pinned into the optional sidecar
+  image build. Defaults to `0.20.1` in the checked-in compose file.
+- `FILECOIN_PIN_ACCESS_TOKEN`: access token enforced by the optional
+  Filecoin Pin sidecar. Set `WALLET_FILECOIN_PIN_BEARER_TOKEN` to the same
+  value when the wallet API should call that sidecar.
+- `FILECOIN_PIN_PRIVATE_KEY` or `FILECOIN_PIN_WALLET_ADDRESS` +
+  `FILECOIN_PIN_SESSION_KEY`: required Filecoin auth for the sidecar itself.
+- `FILECOIN_PIN_NETWORK` or `FILECOIN_PIN_RPC_URL`: choose one for the sidecar
+  runtime. Leave `FILECOIN_PIN_NETWORK` unset when using a custom RPC URL.
+- `FILECOIN_PIN_LOG_LEVEL`: optional sidecar log level.
 - `WALLET_STORAGE_RETENTION_POLICY_REF`,
   `WALLET_STORAGE_IPFS_PINNING_POLICY_REF`,
   `WALLET_STORAGE_FILECOIN_DEAL_POLICY_REF`,
@@ -290,16 +377,92 @@ Required production environment:
 - `WALLET_OPS_ALERT_BEARER_TOKEN`: optional bearer token for the alert webhook.
 - `WALLET_OPS_ALERT_HEADER_NAME` / `WALLET_OPS_ALERT_HEADER_VALUE`: optional
   custom header pair for receivers that do not use bearer auth.
+- `WALLET_SMS_WEBHOOK_URL`: optional SMS delivery bridge URL for
+  `POST /wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch`
+  and `POST /ops/notifications/sms/process-due`.
+- `WALLET_SMS_BACKEND=http`: enables the built-in HTTP SMS bridge. Leave unset
+  when the API should only queue SMS notifications without dispatching them.
+- `WALLET_SMS_BEARER_TOKEN`: optional bearer token for the SMS bridge.
+- `WALLET_SMS_HTTP_HEADER_NAME` / `WALLET_SMS_HTTP_HEADER_VALUE`: optional
+  custom header pair for SMS bridge auth.
+- `WALLET_SMS_TIMEOUT_SECONDS`: optional SMS bridge request timeout.
+- `WALLET_CALL_WEBHOOK_URL`: optional phone-agent bridge URL for
+  `POST /wallets/{wallet_id}/notifications/calls/{notification_id}/dispatch`
+  and `POST /ops/notifications/calls/process-due`.
+- `WALLET_CALL_BACKEND=http`: enables the built-in HTTP call bridge. Leave
+  unset when the API should only queue call notifications without dispatching
+  them.
+- `WALLET_CALL_BEARER_TOKEN`: optional bearer token for the call bridge.
+- `WALLET_CALL_HTTP_HEADER_NAME` / `WALLET_CALL_HTTP_HEADER_VALUE`: optional
+  custom header pair for call-bridge auth.
+- `WALLET_CALL_TIMEOUT_SECONDS`: optional call-bridge request timeout.
 - `WALLET_OPS_HEALTH_SECRET_REF`, `WALLET_OPS_ALERT_SECRET_REF`,
   `WALLET_PROOF_CREDENTIAL_SECRET_REF`, and
   `WALLET_STORAGE_CREDENTIAL_SECRET_REF`: non-secret secret-manager reference
   paths required by the production readiness report and target signoff packet.
+
+Provider implementation boundaries today:
+
+- Email delivery is implemented directly in the wallet API via SMTP for the
+  missing-person dead-drop route.
+- SMS and phone-call delivery are implemented as provider-agnostic HTTP bridge
+  hooks so you can attach Twilio, AWS SNS/Connect, Vonage, or an internal
+  comms worker later without changing the wallet state model.
+- Proof backends come from `ipfs_datasets_py.wallet.proofs` for simulated and
+  deterministic integration modes, plus `wallet_interface.proof_backends` for
+  the external HTTP verifier adapter.
+- The compose deployment now forwards `WALLET_STORAGE_*`,
+  `IPFS_DATASETS_PY_ENABLE_IPFS_HTTPAPI`, `IPFS_HOST`,
+  `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`,
+  `WALLET_DEAD_DROP_SMTP_*`, `WALLET_SMS_*`, and `WALLET_CALL_*` into the API
+  and ops containers, so storage and delivery backends can activate from the
+  env file without rebuilding application code.
+- The wallet API now exposes `POST /filecoin-upload` as a thin IPFS publishing
+  bridge. Multipart requests publish raw file bytes for proof bundles or fresh
+  uploads; JSON requests can publish an existing wallet record by `walletId`
+  and `recordId` when the API has the actor's decryption rights.
+- When `WALLET_FILECOIN_PIN_SERVICE_URL` is configured, the same bridge also
+  submits the resulting CID to a private Filecoin Pin sidecar and returns the
+  sidecar request ID alongside the stable IPFS gateway URL.
+- The wallet API also exposes `GET /filecoin-upload/status/{request_id}` to
+  proxy `GET /pins/{request_id}` from that sidecar. This keeps browser access
+  on the main origin and avoids exposing the daemon directly.
+- Storage backends come from `ipfs_datasets_py.wallet.storage`; `ipfs` and `s3`
+  can be configured directly from `WALLET_STORAGE_CONFIG`, while `filecoin`
+  also needs a runtime backend object supplied by the deployment.
+- Treat Filecoin Pin daemon mode as a private worker behind the wallet API,
+  not as the system of record for upload status. The daemon keeps pin state in
+  process memory, so the wallet API should remain the durable auth boundary.
+
+To enable the sidecar in compose:
+
+```bash
+docker compose \
+  --profile filecoin-pin \
+  --env-file wallet_interface/deploy/env.production.local \
+  -f wallet_interface/deploy/docker-compose.wallet.yml up -d
+```
+
+Recommended sidecar baseline:
+
+- Set `WALLET_FILECOIN_PIN_SERVICE_URL=http://filecoin-pin:3456`.
+- Set `FILECOIN_PIN_ACCESS_TOKEN` and reuse that value as
+  `WALLET_FILECOIN_PIN_BEARER_TOKEN`.
+- Set `FILECOIN_PIN_PRIVATE_KEY` or `FILECOIN_PIN_WALLET_ADDRESS` plus
+  `FILECOIN_PIN_SESSION_KEY`.
+- Set either `FILECOIN_PIN_NETWORK=mainnet|calibration` or
+  `FILECOIN_PIN_RPC_URL=<custom endpoint>`.
+- Keep `WALLET_FILECOIN_PIN_ORIGINS` pointed at trusted libp2p multiaddrs for
+  the Kubo/libp2p origin that can serve freshly published content.
 
 Target IPFS/Filecoin/S3 storage operations:
 
 - Use `wallet_interface/deploy/storage-retention.example.json` as the provider
   mapping template. Store the completed copy in the target evidence system, not
   in git.
+- The checked-in production env example now uses a local primary replica plus a
+  pinned IPFS mirror. That is the deployable baseline for decentralized
+  storage in this repository.
 - Keep live `WALLET_STORAGE_CONFIG` pointed at providers that the API runtime
   can instantiate. Filecoin mirrors require the deployment to inject a
   Filecoin-capable backend into `WalletInterfaceService`; leave Filecoin marked
