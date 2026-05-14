@@ -1,6 +1,5 @@
 import ortWebGpuModuleUrl from "../../node_modules/onnxruntime-web/dist/ort.webgpu.bundle.min.mjs?url";
 import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
-import transformersWebModuleUrl from "../../node_modules/@huggingface/transformers/dist/transformers.web.js?url";
 import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "../lib/audioChatConfig";
 import {
   clampAudioProgress,
@@ -12,6 +11,8 @@ import {
 import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 installWarningSuppression();
+
+const transformersWebModuleUrl = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.2.0/dist/transformers.web.js";
 
 type AudioWorkerRequest = {
   id: string;

@@ -5,17 +5,37 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONPATH=/app:/app/ipfs_datasets_py \
     IPFS_DATASETS_AUTO_INSTALL=false \
     IPFS_AUTO_INSTALL=false \
-    IPFS_DATASETS_PY_MINIMAL_IMPORTS=1
+    IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 \
+    IPFS_DATASETS_PY_INCLUDE_VCS_DEPENDENCIES=0 \
+    IPFS_DATASETS_PY_AUTO_NLTK_DOWNLOAD=0 \
+    IPFS_DATASETS_PY_AUTO_GROTH16_BUILD=0
 
 WORKDIR /app
 
-RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir "fastapi>=0.110" "uvicorn[standard]>=0.29" pydantic "python-multipart>=0.0.9"
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y git \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m pip install --no-cache-dir --upgrade pip \
+    && python -m pip install --no-cache-dir \
+        "fastapi>=0.110" \
+        "uvicorn[standard]>=0.29" \
+        pydantic \
+        "python-multipart>=0.0.9" \
+        duckdb \
+        cryptography \
+        "multiformats>=0.3.0" \
+        "ipfshttpclient>=0.7.0" \
+        requests \
+        urllib3 \
+        boto3 \
+        "jsonschema>=4.0.0" \
+        "cachetools>=5.3.0"
 
 COPY ipfs_datasets_py /app/ipfs_datasets_py
-COPY wallet_interface /app/wallet_interface
+RUN mkdir -p /app/wallet_interface
+COPY wallet_interface/*.py /app/wallet_interface/
 
-RUN python -m pip install --no-cache-dir -e /app/ipfs_datasets_py
+RUN python -m pip install --no-cache-dir --no-deps -e /app/ipfs_datasets_py
 
 EXPOSE 8000
 

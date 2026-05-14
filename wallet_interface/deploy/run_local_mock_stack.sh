@@ -52,6 +52,17 @@ run_smoke() {
   exit 1
 }
 
+run_compose() {
+  if docker compose version >/dev/null 2>&1; then
+    exec docker compose -f "$COMPOSE_FILE" "$@"
+  fi
+  if command -v docker-compose >/dev/null 2>&1; then
+    exec docker-compose -f "$COMPOSE_FILE" "$@"
+  fi
+  echo "docker compose or docker-compose is required" >&2
+  exit 1
+}
+
 command=${1:-up}
 if [ $# -gt 0 ]; then
   shift
@@ -62,19 +73,19 @@ load_env_file "$MOCK_ENV_FILE"
 
 case "$command" in
   up)
-    exec docker-compose -f "$COMPOSE_FILE" up "$@"
+    run_compose up "$@"
     ;;
   down)
-    exec docker-compose -f "$COMPOSE_FILE" down "$@"
+    run_compose down "$@"
     ;;
   config)
-    exec docker-compose -f "$COMPOSE_FILE" config "$@"
+    run_compose config "$@"
     ;;
   logs)
-    exec docker-compose -f "$COMPOSE_FILE" logs "$@"
+    run_compose logs "$@"
     ;;
   ps)
-    exec docker-compose -f "$COMPOSE_FILE" ps "$@"
+    run_compose ps "$@"
     ;;
   smoke)
     run_smoke "$@"

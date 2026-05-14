@@ -1745,8 +1745,11 @@ def create_app(*, service: WalletInterfaceService | None = None):
     def get_filecoin_upload_status(request_id: str) -> Dict[str, Any]:
         try:
             payload = _fetch_filecoin_pin_status(request_id)
-            if not payload.get("requestId") and not payload.get("requestid"):
-                payload["requestId"] = request_id
+            normalized_request_id = str(
+                payload.get("requestId") or payload.get("requestid") or request_id
+            ).strip()
+            if normalized_request_id:
+                payload["requestId"] = normalized_request_id
             if isinstance(payload.get("info"), dict) and not isinstance(payload.get("filecoinPinInfo"), dict):
                 payload["filecoinPinInfo"] = payload["info"]
             status_url = _filecoin_upload_status_url(request_id)

@@ -1,4 +1,4 @@
-import { LogLevel, env, pipeline } from "@huggingface/transformers";
+import { env, pipeline } from "@xenova/transformers";
 import ortWasmAsyncifyMjsUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
 import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
 import { LLM_CONFIG, SUPPORTED_CLIENT_LLM_MODELS, getClientLlmModelInfo } from "../lib/llmConfig";
@@ -8,7 +8,7 @@ import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/wa
 env.allowLocalModels = false;
 env.useBrowserCache = true;
 env.useWasmCache = true;
-env.logLevel = LogLevel.ERROR;
+env.logLevel = "error";
 installWarningSuppression();
 
 type ClientLlmDevice = "wasm" | "webgpu" | "auto";
@@ -423,7 +423,7 @@ function configureTransformersRuntime(): void {
     };
   };
   const onnx = backends.onnx;
-  onnx?.setLogLevel?.(LogLevel.ERROR);
+  onnx?.setLogLevel?.(3);
   if (onnx) {
     onnx.logLevel = "error";
     onnx.logVerbosityLevel = 0;

@@ -321,6 +321,7 @@ def test_filecoin_upload_status_proxy_returns_sidecar_status(monkeypatch) -> Non
     assert payload == {
         "filecoinPinInfo": {"pin_duration": "25"},
         "info": {"pin_duration": "25"},
+        "requestId": "pin-123",
         "requestid": "pin-123",
         "status": "pinned",
         "statusUrl": "/filecoin-upload/status/pin-123",
@@ -359,6 +360,7 @@ def test_filecoin_upload_status_proxy_supports_mock_filecoin_pin_mode(monkeypatc
             "pieceCid": expected_piece_cid,
             "provider": "mock-filecoin-pin",
         },
+        "requestId": request_id,
         "requestid": request_id,
         "status": "pinned",
         "statusUrl": f"/filecoin-upload/status/{request_id}",

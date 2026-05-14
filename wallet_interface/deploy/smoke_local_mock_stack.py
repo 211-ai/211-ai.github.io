@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
+import time
 from typing import Any
 from urllib import error as urllib_error
 from urllib import parse as urllib_parse
@@ -104,14 +106,37 @@ def _log(step: str, detail: str) -> None:
     print(f"[ok] {step}: {detail}")
 
 
+def _wait_for_json_request(
+    method: str,
+    url: str,
+    payload: dict[str, Any] | None = None,
+    *,
+    attempts: int = 12,
+    delay_seconds: float = 1.0,
+) -> dict[str, Any]:
+    last_error: RuntimeError | None = None
+    for attempt in range(attempts):
+        try:
+            return _json_request(method, url, payload)
+        except RuntimeError as exc:
+            last_error = exc
+            if attempt == attempts - 1:
+                break
+            time.sleep(delay_seconds)
+    if last_error is None:
+        raise RuntimeError(f"{method} {url} failed before a request was attempted")
+    raise last_error
+
+
 def run_smoke(base_url: str) -> None:
     base_url = base_url.rstrip("/")
+    configured_mock_voice_reply = str(os.getenv("IPFS_DATASETS_VOICE_MOCK_REPLY_TEXT") or "").strip()
 
-    health = _json_request("GET", f"{base_url}/health")
+    health = _wait_for_json_request("GET", f"{base_url}/health")
     _expect(bool(health), "GET /health returned an empty payload")
     _log("health", json.dumps(health, sort_keys=True))
 
-    messaging_health = _json_request("GET", f"{base_url}/messaging/health")
+    messaging_health = _wait_for_json_request("GET", f"{base_url}/messaging/health")
     _expect(bool(messaging_health), "GET /messaging/health returned an empty payload")
     _log("messaging health", json.dumps(messaging_health, sort_keys=True))
 
@@ -231,7 +256,11 @@ def run_smoke(base_url: str) -> None:
         },
         files={"audio": ("input.wav", b"RIFFmockWAVE", "audio/wav")},
     )
-    _expect("Where can I find shelter tonight?" in str(infer.get("text", "")), "/messaging/voice/infer returned unexpected text")
+    infer_text = str(infer.get("text", ""))
+    if configured_mock_voice_reply:
+        _expect(infer_text == configured_mock_voice_reply, "/messaging/voice/infer returned unexpected configured mock text")
+    else:
+        _expect("Where can I find shelter tonight?" in infer_text, "/messaging/voice/infer returned unexpected text")
     _log("voice infer", json.dumps(infer, sort_keys=True))
 
 

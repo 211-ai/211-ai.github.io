@@ -6,7 +6,7 @@ ARG VITE_WALLET_API_BASE_URL=same-origin
 ENV VITE_WALLET_API_BASE_URL=$VITE_WALLET_API_BASE_URL
 
 COPY wallet_interface/ui/package.json wallet_interface/ui/package-lock.json ./
-RUN npm ci
+RUN npm ci --omit=optional
 
 COPY wallet_interface/ui ./
 RUN npm run build

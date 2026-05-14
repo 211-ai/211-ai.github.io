@@ -1,0 +1,25 @@
+# Restrict Docker build contexts to the code paths used by the wallet stack.
+*
+!.dockerignore
+!ipfs_datasets_py/
+!wallet_interface/
+
+# Drop generated caches and dependency trees inside the included directories.
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.tox/
+**/.hypothesis/
+**/.venv/
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+**/coverage/
+**/playwright-report/
+**/test-results/
+
+# Drop local deployment outputs that are never copied into images.
+wallet_interface/ui/artifacts/
