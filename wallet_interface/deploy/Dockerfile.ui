@@ -17,6 +17,6 @@ COPY wallet_interface/deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY wallet_interface/deploy/runtime-config.template.json /opt/abby/runtime-config.template.json
 COPY wallet_interface/deploy/40-runtime-config.sh /docker-entrypoint.d/40-runtime-config.sh
 COPY --from=build /app/wallet_interface/ui/dist /usr/share/nginx/html
+RUN sed -i 's/application\/javascript                           js;/application\/javascript                           js mjs;/' /etc/nginx/mime.types
 
 EXPOSE 8080
-

@@ -203,6 +203,15 @@ export function AgentAudioChatSurface({
   }, [voiceDetectionEnabled]);
 
   useEffect(() => {
+    const handleUnhandledPlaybackInterruption = (event: PromiseRejectionEvent) => {
+      if (!isInterruptedPlaybackError(event.reason)) return;
+      event.preventDefault();
+    };
+    window.addEventListener("unhandledrejection", handleUnhandledPlaybackInterruption);
+    return () => window.removeEventListener("unhandledrejection", handleUnhandledPlaybackInterruption);
+  }, []);
+
+  useEffect(() => {
     if (open && !openRef.current) {
       resetOpeningGreetingReservation();
       lastSpokenAssistantIdRef.current = getLastAssistantMessage(messages)?.id;
@@ -762,7 +771,8 @@ export function AgentAudioChatSurface({
       audio.onerror = () => {
         void fallbackToBrowserSpeech();
       };
-      await audio.play().catch(() => {
+      await audio.play().catch((error) => {
+        if (isInterruptedPlaybackError(error)) return undefined;
         return fallbackToBrowserSpeech();
       });
       return;
@@ -878,7 +888,8 @@ export function AgentAudioChatSurface({
       onComplete?.();
     };
     if (!primedAudio || audio.paused) {
-      await audio.play().catch(() => {
+      await audio.play().catch((error) => {
+        if (isInterruptedPlaybackError(error)) return;
         clearPrimedOpeningClip(audio);
         detachAudioElement(audio);
         audioRef.current = null;
@@ -920,11 +931,19 @@ export function AgentAudioChatSurface({
   }
 
   function detachAudioElement(audio: HTMLAudioElement) {
-    audio.pause();
+    try {
+      audio.pause();
+    } catch {
+      // Ignore browsers that object when audio is already being torn down.
+    }
     audio.onended = null;
     audio.onerror = null;
     audio.removeAttribute("src");
-    audio.load();
+    try {
+      audio.load();
+    } catch {
+      // Loading an empty source is best-effort cleanup.
+    }
   }
 
   function toggleMuted() {
@@ -1182,9 +1201,17 @@ async function primeOpeningClipPlayback(): Promise<HTMLAudioElement | null> {
     })
     .catch(() => {
       clearPrimedOpeningClip(audio);
-      audio.pause();
+      try {
+        audio.pause();
+      } catch {
+        // Best-effort cleanup for interrupted autoplay priming.
+      }
       audio.removeAttribute("src");
-      audio.load();
+      try {
+        audio.load();
+      } catch {
+        // Best-effort cleanup for interrupted autoplay priming.
+      }
       return null;
     })
     .finally(() => {
@@ -1207,6 +1234,14 @@ function clearPrimedOpeningClip(audio?: HTMLAudioElement | null): void {
   if (!audio || primedOpeningClipAudio === audio) {
     primedOpeningClipAudio = null;
   }
+}
+
+function isInterruptedPlaybackError(error: unknown): boolean {
+  if (!(error instanceof DOMException || error instanceof Error)) return false;
+  return (
+    error.name === "AbortError" &&
+    /play\(\) request was interrupted|interrupted by a call to pause|interrupted by a new load request/i.test(error.message)
+  );
 }
 
 function warmupSpeechRecognition(): void {

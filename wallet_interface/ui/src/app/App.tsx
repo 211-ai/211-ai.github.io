@@ -141,6 +141,7 @@ import {
   listWalletSnapshots,
   loadWalletAccessState,
   loadExportBundleView,
+  loadWalletDetails,
   loadWalletSnapshot,
   listWalletAuditEvents,
   listWalletDocuments,
@@ -684,6 +685,7 @@ export function App() {
   );
   const [walletPortalLoading, setWalletPortalLoading] = useState(false);
   const [walletPortalError, setWalletPortalError] = useState("");
+  const [walletActorResolved, setWalletActorResolved] = useState(false);
   const [recipientVerified, setRecipientVerified] = useState(false);
   const [benefitsOptIn, setBenefitsOptIn] = useState(defaultAppState.benefitsOptIn);
   const [analyticsOptIn, setAnalyticsOptIn] = useState<Record<string, boolean>>(() => defaultAppState.analyticsOptIn);
@@ -700,7 +702,7 @@ export function App() {
   const [walletApiConfig, setWalletApiConfig] = useState<WalletApiConfig | undefined>(() => readWalletApiConfig());
   const lastSyncedDeadDropPayloadRef = useRef("");
   const walletApiBaseUrl = walletApiConfig?.apiBaseUrl ?? readWalletApiBaseUrl();
-  const walletDeadDropReady = Boolean(walletApiConfig?.actorDid);
+  const walletDeadDropReady = Boolean(walletApiConfig?.actorDid && walletActorResolved);
 
   const persistWalletApiConfig = useCallback((nextConfig: WalletApiConfig) => {
     if (typeof window !== "undefined") {
@@ -936,6 +938,39 @@ export function App() {
     uploads,
     walletProofReceipts
   ]);
+
+  useEffect(() => {
+    if (!walletApiConfig) {
+      setWalletActorResolved(false);
+      return;
+    }
+    let cancelled = false;
+    setWalletActorResolved(false);
+    void loadWalletDetails({
+      apiBaseUrl: walletApiConfig.apiBaseUrl,
+      walletId: walletApiConfig.walletId
+    })
+      .then((wallet) => {
+        if (cancelled) return;
+        const ownerDid = wallet.owner_did.trim();
+        if (ownerDid && ownerDid !== walletApiConfig.actorDid) {
+          persistWalletApiConfig({
+            ...walletApiConfig,
+            actorDid: ownerDid
+          });
+          return;
+        }
+        setWalletActorResolved(Boolean(ownerDid || walletApiConfig.actorDid));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setWalletActorResolved(Boolean(walletApiConfig.actorDid));
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [persistWalletApiConfig, walletApiConfig]);
 
   useEffect(() => {
     if (!walletApiConfig) return;
@@ -1527,12 +1562,21 @@ function readWalletApiBaseUrl(): string | undefined {
   if (runtimeBaseUrl) return runtimeBaseUrl;
   const storedBaseUrl = readStoredWalletApiBaseUrl();
   if (storedBaseUrl) return storedBaseUrl;
-  return resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
+  const envBaseUrl = resolveWalletApiBaseUrl(import.meta.env.VITE_WALLET_API_BASE_URL as string | undefined);
+  if (envBaseUrl) return envBaseUrl;
+  return readProductionWalletApiBaseUrl();
 }
 
 function readUrlWalletApiBaseUrl(): string | undefined {
   if (typeof window === "undefined") return undefined;
   return new URL(window.location.href).searchParams.get("walletApiBaseUrl") ?? undefined;
+}
+
+function readProductionWalletApiBaseUrl(): string | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.location.hostname === "211-ai.com" || window.location.hostname === "www.211-ai.com"
+    ? window.location.origin
+    : undefined;
 }
 
 function resolveWalletApiBaseUrl(apiBaseUrl: string | undefined): string | undefined {

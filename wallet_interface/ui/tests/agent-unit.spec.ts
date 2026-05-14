@@ -1326,11 +1326,11 @@ export class AudioModel {
   });
 
   test("deletes stale PWA shell caches instead of keeping old hashed app assets forever", () => {
-    const currentCaches = new Set(["abby-shell-portal-077-v1", "abby-public-service-detail-portal-077-v1"]);
+    const currentCaches = new Set(["abby-shell-portal-079-v1", "abby-public-service-detail-portal-079-v1"]);
 
     expect(shouldDeleteAppCache("abby-shell-portal-076-v1", currentCaches)).toBe(true);
     expect(shouldDeleteAppCache("abby-public-service-detail-portal-076-v1", currentCaches)).toBe(true);
-    expect(shouldDeleteAppCache("abby-shell-portal-077-v1", currentCaches)).toBe(false);
+    expect(shouldDeleteAppCache("abby-shell-portal-079-v1", currentCaches)).toBe(false);
     expect(shouldDeleteAppCache("workbox-precache-v1", currentCaches)).toBe(false);
   });
 
