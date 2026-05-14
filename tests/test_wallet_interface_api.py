@@ -206,6 +206,84 @@ def test_filecoin_upload_bridge_can_handoff_to_filecoin_pin_sidecar(monkeypatch)
     }
 
 
+def test_filecoin_upload_bridge_supports_mock_filecoin_pin_mode(monkeypatch) -> None:
+    client = _client()
+    added: list[bytes] = []
+    expected_request_id = f"mock-pin-{hashlib.sha256(b'bafy-uploaded-file').hexdigest()[:12]}"
+
+    class FakeIpfsBackend:
+        def add_bytes(self, data: bytes, *, pin: bool = True) -> str:
+            assert pin is True
+            added.append(data)
+            return "bafy-uploaded-file"
+
+    def fail_urlopen(*args, **kwargs):
+        raise AssertionError("mock Filecoin Pin mode should not call urllib_request.urlopen")
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fail_urlopen)
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "mock")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_MOCK_STATUS", "pinned")
+
+    response = client.post(
+        "/filecoin-upload",
+        data={"metadata": json.dumps({"walletId": "wallet-demo"})},
+        files={"file": ("proofs.json", b"proof-bundle", "application/json")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-uploaded-file"
+    assert payload["filecoinPinStatus"] == "queued"
+    assert payload["requestId"] == expected_request_id
+    assert payload["filecoinPinRequestId"] == expected_request_id
+    assert payload["statusUrl"] == f"/filecoin-upload/status/{expected_request_id}"
+    assert payload["filecoinPinInfo"] == {
+        "provider": "mock-filecoin-pin",
+        "cid": "bafy-uploaded-file",
+        "mock": True,
+    }
+    assert added == [b"proof-bundle"]
+
+
+def test_filecoin_upload_bridge_supports_mock_ipfs_and_mock_filecoin_without_external_backends(monkeypatch) -> None:
+    client = _client()
+    expected_cid = f"bafybeimock{hashlib.sha256(b'proof-bundle').hexdigest()[:24]}"
+    expected_request_id = f"mock-pin-{hashlib.sha256(expected_cid.encode('utf-8')).hexdigest()[:12]}"
+
+    def fail_get_ipfs_backend():
+        raise AssertionError("mock IPFS upload mode should not resolve a real IPFS backend")
+
+    def fail_urlopen(*args, **kwargs):
+        raise AssertionError("mock Filecoin Pin mode should not call urllib_request.urlopen")
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", fail_get_ipfs_backend)
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fail_urlopen)
+    monkeypatch.setenv("WALLET_IPFS_UPLOAD_BACKEND", "mock")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "mock")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_MOCK_STATUS", "pinned")
+
+    response = client.post(
+        "/filecoin-upload",
+        data={"metadata": json.dumps({"walletId": "wallet-demo"})},
+        files={"file": ("proofs.json", b"proof-bundle", "application/json")},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["ipfsCid"] == expected_cid
+    assert payload["gatewayUrl"] == f"https://w3s.link/ipfs/{expected_cid}"
+    assert payload["filecoinPinStatus"] == "queued"
+    assert payload["requestId"] == expected_request_id
+    assert payload["filecoinPinRequestId"] == expected_request_id
+    assert payload["statusUrl"] == f"/filecoin-upload/status/{expected_request_id}"
+    assert payload["filecoinPinInfo"] == {
+        "provider": "mock-filecoin-pin",
+        "cid": expected_cid,
+        "mock": True,
+    }
+
+
 def test_filecoin_upload_status_proxy_returns_sidecar_status(monkeypatch) -> None:
     client = _client()
     observed_request: dict[str, object] = {}
@@ -252,6 +330,38 @@ def test_filecoin_upload_status_proxy_returns_sidecar_status(monkeypatch) -> Non
         "method": "GET",
         "timeout": 7.0,
         "url": "http://filecoin-pin:3456/pins/pin-123",
+    }
+
+
+def test_filecoin_upload_status_proxy_supports_mock_filecoin_pin_mode(monkeypatch) -> None:
+    client = _client()
+    request_id = f"mock-pin-{hashlib.sha256(b'bafy-uploaded-file').hexdigest()[:12]}"
+    expected_piece_cid = f"baga6ea4seaq{hashlib.sha256(request_id.encode('utf-8')).hexdigest()[:16]}"
+
+    def fail_urlopen(*args, **kwargs):
+        raise AssertionError("mock Filecoin Pin mode should not call urllib_request.urlopen")
+
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fail_urlopen)
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "mock")
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_MOCK_STATUS", "pinned")
+
+    response = client.get(f"/filecoin-upload/status/{request_id}")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "filecoinPinInfo": {
+            "mock": True,
+            "pieceCid": expected_piece_cid,
+            "provider": "mock-filecoin-pin",
+        },
+        "info": {
+            "mock": True,
+            "pieceCid": expected_piece_cid,
+            "provider": "mock-filecoin-pin",
+        },
+        "requestid": request_id,
+        "status": "pinned",
+        "statusUrl": f"/filecoin-upload/status/{request_id}",
     }
 
 

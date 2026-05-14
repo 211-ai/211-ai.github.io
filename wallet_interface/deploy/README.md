@@ -327,7 +327,27 @@ bridge uses built-in mock SMS, email, call, and phone-voice providers. That
 mock env also points the browser voice UI at the same-origin
 `/messaging/voice/infer` and `/messaging/voice/tts` routes, where the bridge
 returns deterministic mock text and the UI speaks it with browser speech
-output.
+output. It also enables the built-in mock Filecoin pin bridge and keeps proofs
+on the deterministic local verifier. The same env also forces
+`WALLET_STORAGE_CONFIG` back to local-only storage and sets
+`WALLET_IPFS_UPLOAD_BACKEND=mock`, so `/filecoin-upload` no longer depends on
+Kubo or any other live IPFS backend during local development.
+
+To start that stack without manually exporting the env files, use the helper:
+
+```bash
+cd wallet_interface/deploy
+sh run_local_mock_stack.sh config
+sh run_local_mock_stack.sh up -d
+sh run_local_mock_stack.sh smoke
+```
+
+The helper loads both `env.production.example` and
+`env.local.mock.example`, then runs `docker-compose` against the reference
+compose file. The `smoke` subcommand hits the bundled same-origin routes on
+`http://127.0.0.1:8080` by default and verifies health, wallet proof creation,
+mock Filecoin upload/status, outbound SMS/email/call routes, and the mock
+browser voice proxy.
 
 Services:
 
@@ -392,9 +412,13 @@ Required production environment:
   wallet API on the same origin.
 - `WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL`: optional public gateway base used in
   `/filecoin-upload` responses. Defaults to `https://w3s.link/ipfs`.
+- `WALLET_IPFS_UPLOAD_BACKEND`: optional upload-bridge backend override. Set
+  `mock` to make `/filecoin-upload` return deterministic IPFS-style CIDs
+  without resolving a real IPFS backend.
 - `WALLET_FILECOIN_PIN_SERVICE_URL`: optional private Filecoin Pin daemon base
   URL. When set, `/filecoin-upload` first publishes bytes to IPFS and then
-  hands the resulting CID to `POST /pins` on that sidecar.
+  hands the resulting CID to `POST /pins` on that sidecar. Set this to `mock`
+  for credential-free local development without running the sidecar.
 - `WALLET_FILECOIN_PIN_ORIGINS`: optional comma-separated libp2p multiaddrs
   passed to the Filecoin Pin sidecar so it can fetch newly published content
   from your trusted Kubo/libp2p origin.
@@ -404,6 +428,9 @@ Required production environment:
   `WALLET_FILECOIN_PIN_HTTP_HEADER_VALUE`: optional custom header pair for the
   Filecoin Pin sidecar.
 - `WALLET_FILECOIN_PIN_TIMEOUT_SECONDS`: optional Filecoin Pin sidecar timeout.
+- `WALLET_FILECOIN_PIN_MOCK_STATUS`: status returned by the built-in mock
+  Filecoin Pin mode. Defaults to `pinned`; keep it at `pinned` unless you are
+  deliberately exercising UI failure states.
 - `FILECOIN_PIN_VERSION`: npm package version pinned into the optional sidecar
   image build. Defaults to `0.20.1` in the checked-in compose file.
 - `FILECOIN_PIN_ACCESS_TOKEN`: access token enforced by the optional
@@ -426,6 +453,8 @@ Required production environment:
 - `WALLET_PROOF_MODE=production`: disables simulated proof acceptance.
 - `WALLET_PROOF_BACKEND`: production verifier backend selection. Supported
   values now include `http-location-region` for an external verifier service.
+  The local mock stack keeps this on `deterministic-location-region` so proof
+  flows stay executable without external verifier credentials.
 - `WALLET_PROOF_SERVICE_URL`: required when
   `WALLET_PROOF_BACKEND=http-location-region`.
 - `WALLET_PROOF_VERIFIER_ID`, `WALLET_PROOF_SYSTEM`,
@@ -647,6 +676,9 @@ Provider implementation boundaries today:
 - When `WALLET_FILECOIN_PIN_SERVICE_URL` is configured, the same bridge also
   submits the resulting CID to a private Filecoin Pin sidecar and returns the
   sidecar request ID alongside the stable IPFS gateway URL.
+- When `WALLET_FILECOIN_PIN_SERVICE_URL=mock`, that same bridge returns a
+  deterministic mock request ID and serves status polling locally from the
+  wallet API without calling any external Filecoin service.
 - The wallet API also exposes `GET /filecoin-upload/status/{request_id}` to
   proxy `GET /pins/{request_id}` from that sidecar. This keeps browser access
   on the main origin and avoids exposing the daemon directly.

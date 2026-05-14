@@ -2938,8 +2938,7 @@ def _publish_bytes_to_ipfs(
     source_record_id: str | None = None,
     wallet_id: str | None = None,
 ) -> Dict[str, Any]:
-    backend = get_ipfs_backend()
-    cid = backend.add_bytes(data, pin=True)
+    cid = _publish_bytes_via_ipfs_backend(data)
     gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "https://w3s.link/ipfs").rstrip("/")
     payload: Dict[str, Any] = {
         "cid": cid,
@@ -2977,6 +2976,19 @@ def _publish_bytes_to_ipfs(
     if wallet_id:
         payload["walletId"] = wallet_id
     return payload
+
+
+def _publish_bytes_via_ipfs_backend(data: bytes) -> str:
+    backend_mode = str(os.getenv("WALLET_IPFS_UPLOAD_BACKEND") or "").strip().lower()
+    if backend_mode == "mock":
+        return _mock_ipfs_cid_for_bytes(data)
+    backend = get_ipfs_backend()
+    return backend.add_bytes(data, pin=True)
+
+
+def _mock_ipfs_cid_for_bytes(data: bytes) -> str:
+    digest = hashlib.sha256(data).hexdigest()
+    return f"bafybeimock{digest[:24]}"
 
 
 def _submit_ipfs_cid_to_filecoin_pin(
@@ -3026,6 +3038,8 @@ def _filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | N
     service_url = _filecoin_pin_service_url()
     if not service_url:
         raise FilecoinPinHandoffError("WALLET_FILECOIN_PIN_SERVICE_URL is not configured")
+    if service_url == "mock":
+        return _mock_filecoin_pin_request(method, path, payload=payload)
 
     endpoint = f"{service_url}{path}"
     body = json.dumps(payload, sort_keys=True).encode("utf-8") if payload is not None else None
@@ -3058,6 +3072,46 @@ def _filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | N
 
 def _filecoin_pin_service_url() -> str:
     return str(os.getenv("WALLET_FILECOIN_PIN_SERVICE_URL") or "").strip().rstrip("/")
+
+
+def _filecoin_pin_mock_status() -> str:
+    return str(os.getenv("WALLET_FILECOIN_PIN_MOCK_STATUS") or "pinned").strip() or "pinned"
+
+
+def _mock_filecoin_pin_request(method: str, path: str, *, payload: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    normalized_method = str(method or "").strip().upper()
+    normalized_path = str(path or "").strip()
+
+    if normalized_method == "POST" and normalized_path == "/pins":
+        cid = str((payload or {}).get("cid") or "").strip()
+        if not cid:
+            raise FilecoinPinHandoffError("mock Filecoin Pin request requires a cid")
+        request_id = f"mock-pin-{hashlib.sha256(cid.encode('utf-8')).hexdigest()[:12]}"
+        return {
+            "requestid": request_id,
+            "status": "queued",
+            "info": {
+                "provider": "mock-filecoin-pin",
+                "cid": cid,
+                "mock": True,
+            },
+        }
+
+    if normalized_method == "GET" and normalized_path.startswith("/pins/"):
+        request_id = normalized_path.rsplit("/", 1)[-1].strip()
+        if not request_id:
+            raise FilecoinPinHandoffError("mock Filecoin Pin status requires a request ID")
+        return {
+            "requestid": request_id,
+            "status": _filecoin_pin_mock_status(),
+            "info": {
+                "provider": "mock-filecoin-pin",
+                "mock": True,
+                "pieceCid": f"baga6ea4seaq{hashlib.sha256(request_id.encode('utf-8')).hexdigest()[:16]}",
+            },
+        }
+
+    raise FilecoinPinHandoffError(f"mock Filecoin Pin does not support {normalized_method} {normalized_path}")
 
 
 def _filecoin_pin_timeout_seconds() -> float:
