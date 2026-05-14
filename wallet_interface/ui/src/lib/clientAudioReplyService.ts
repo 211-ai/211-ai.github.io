@@ -475,6 +475,16 @@ export class ClientAudioReplyService {
       status: "Audio reply ready.",
       modelName: result.modelName,
     });
+    if (!result.audioBlob) {
+      if (result.text && this.hasSpeechSynthesis()) {
+        return this.browserSpeechFallback(
+          result.text,
+          result.modelName,
+          "Voice proxy returned text only; using browser speech output.",
+        );
+      }
+      throw new Error("Voice proxy returned text only, but browser speech output is unavailable.");
+    }
     return {
       kind: "audio",
       audioBlob: result.audioBlob,

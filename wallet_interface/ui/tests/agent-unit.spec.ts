@@ -85,6 +85,7 @@ import { OPENROUTER_API_KEY_STORAGE_KEY } from "../src/lib/openRouterClient";
 import { answer211InfoQuestion, build211InfoFallbackSummary } from "../src/services/graphRagService";
 import { shouldDeleteAppCache } from "../src/pwa/cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "../src/pwa/fetchPolicy";
+import { resolvePublicHttpsUrl } from "../src/lib/publicEndpointPolicy";
 import { createSilentWavBlob, createVoiceProxyFormData } from "../src/lib/voiceProxyPayload";
 
 const NOW = "2026-05-05T12:00:00.000Z";
@@ -768,6 +769,53 @@ export class AudioModel {
     );
   });
 
+  test("falls back to browser speech when the voice proxy returns text without audio", async () => {
+    const workerRequests: string[] = [];
+    const progressEvents: ClientAudioProgress[] = [];
+    const service = new ClientAudioReplyService({
+      createWorker: () =>
+        createAudioWorkerStub((message, activeWorker) => {
+          workerRequests.push(message.type);
+          if (message.type === "warmUp") {
+            emitAudioWorkerMessage(activeWorker, {
+              id: message.id,
+              success: true,
+              data: {
+                modelName: message.data.modelName,
+                provider: "local-liquidai",
+              },
+            });
+          }
+        }) as unknown as Worker,
+      generateRemoteAudio: async () => ({
+        modelName: "mock-remote-voice-proxy",
+        text: "This is a local mock spoken reply.",
+      }),
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const result = await service.generateAudio("Neighborhood Pantry can help with food today.", {
+      onProgress: (progress) => progressEvents.push(progress),
+    });
+
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      provider: "browser-speech",
+      text: "This is a local mock spoken reply.",
+      fallbackForModel: "mock-remote-voice-proxy",
+      fallbackReason: "Voice proxy returned text only; using browser speech output.",
+    });
+    expect(workerRequests).toEqual(["warmUp"]);
+    expect(progressEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ phase: "queued", status: "Sending audio request to voice proxy." }),
+        expect.objectContaining({ phase: "ready", progress: 100, modelName: "mock-remote-voice-proxy" }),
+      ]),
+    );
+  });
+
   test("sends evidence prompts to LiquidAI voice reply generation while preserving fallback speech", async () => {
     let capturedRequest: TestAudioWorkerRequest | undefined;
     const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
@@ -1300,6 +1348,31 @@ export class AudioModel {
         "https://endomorphosis.github.io/211-AI/",
       ),
     ).toBe(true);
+  });
+
+  test("resolves same-origin voice proxy endpoints while rejecting private cross-origin targets", () => {
+    const originalWindow = globalThis.window;
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        location: {
+          origin: "https://211-ai.com",
+        },
+      },
+    });
+
+    try {
+      expect(resolvePublicHttpsUrl("/messaging/voice/infer")).toBe("https://211-ai.com/messaging/voice/infer");
+      expect(resolvePublicHttpsUrl("same-origin/messaging/voice/tts")).toBe(
+        "https://211-ai.com/messaging/voice/tts",
+      );
+      expect(resolvePublicHttpsUrl("https://192.168.1.10/api/voice/infer")).toBe("");
+    } finally {
+      Object.defineProperty(globalThis, "window", {
+        configurable: true,
+        value: originalWindow,
+      });
+    }
   });
 
   test("builds multipart WAV uploads for the remote infer voice proxy route", async () => {

@@ -4,6 +4,11 @@ export function resolvePublicHttpsUrl(value: string | undefined): string {
     return "";
   }
 
+  const sameOriginUrl = resolveSameOriginUrl(candidate);
+  if (sameOriginUrl) {
+    return sameOriginUrl;
+  }
+
   let parsed: URL;
   try {
     parsed = new URL(candidate);
@@ -18,6 +23,38 @@ export function resolvePublicHttpsUrl(value: string | undefined): string {
     return "";
   }
   return parsed.toString();
+}
+
+function resolveSameOriginUrl(candidate: string): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+  const origin = window.location?.origin?.trim();
+  if (!origin) {
+    return "";
+  }
+
+  const relativePath =
+    candidate === "same-origin"
+      ? "/"
+      : candidate.startsWith("same-origin/")
+        ? `/${candidate.slice("same-origin/".length)}`
+        : candidate.startsWith("/")
+          ? candidate
+          : "";
+  if (!relativePath) {
+    return "";
+  }
+
+  try {
+    const resolved = new URL(relativePath, origin);
+    if (resolved.origin !== origin) {
+      return "";
+    }
+    return resolved.toString();
+  } catch {
+    return "";
+  }
 }
 
 function isPrivateOrLocalHostname(hostname: string): boolean {

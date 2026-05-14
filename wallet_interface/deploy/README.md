@@ -323,7 +323,11 @@ export WALLET_PROOF_CREDENTIAL_SECRET_REF=secret-manager://replace-me
 
 For credential-free local development, start from the production env example
 and layer `wallet_interface/deploy/env.local.mock.example` on top so the
-bridge uses built-in mock SMS, email, call, and phone-voice providers.
+bridge uses built-in mock SMS, email, call, and phone-voice providers. That
+mock env also points the browser voice UI at the same-origin
+`/messaging/voice/infer` and `/messaging/voice/tts` routes, where the bridge
+returns deterministic mock text and the UI speaks it with browser speech
+output.
 
 Services:
 
@@ -617,8 +621,10 @@ Provider implementation boundaries today:
   service as a Twilio-compatible voice/SIP gather loop. The bridge stores each
   call session and turn in DuckDB, reuses the website's remote voice-proxy
   HTTP contract for AI replies when configured, supports a built-in mock reply
-  backend for credential-free development, and serves generated audio back
-  through the same-origin `/messaging/voice/media/*` gateway.
+  backend for credential-free development, exposes same-origin mock browser
+  voice-proxy routes at `/messaging/voice/infer` and `/messaging/voice/tts`,
+  and serves generated audio back through the same-origin
+  `/messaging/voice/media/*` gateway.
 - The bundled wallet-ui runtime config now falls back to the shared
   `IPFS_DATASETS_VOICE_PROXY_*` env vars when `ABBY_RUNTIME_VOICE_PROXY_*`
   overrides are unset, so the browser voice UI and inbound phone gateway can

@@ -3,8 +3,8 @@ import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
 import { createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
-  audioBlob: Blob;
-  mimeType: string;
+  audioBlob?: Blob;
+  mimeType?: string;
   modelName: string;
   text?: string;
 }
@@ -50,7 +50,7 @@ export async function generateRemoteAudio(options: {
 
   const payload = await response.json();
   const normalized = normalizeJsonPayload(payload);
-  if (!normalized.audioBlob) {
+  if (!normalized.audioBlob && !normalized.text) {
     throw new Error("Voice proxy returned no audio payload.");
   }
   return normalized;
@@ -125,14 +125,23 @@ function normalizeJsonPayload(payload: unknown): RemoteAudioGenerationResult {
     throw new Error("Voice proxy returned an invalid JSON payload.");
   }
 
+  const generatedText = firstString(payload, ["text", "outputText", "output_text"]);
+  const modelName = firstString(payload, ["model", "modelName", "model_name"]) || AUDIO_CHAT_CONFIG.voiceProxyModel;
   const audioBase64 = firstString(payload, ["audioBase64", "audio_base64", "audio", "wavBase64", "wav_base64"]);
   if (audioBase64) {
     const mimeType = firstString(payload, ["mimeType", "mime_type"]) || "audio/wav";
     return {
       audioBlob: base64ToBlob(audioBase64, mimeType),
       mimeType,
-      modelName: firstString(payload, ["model", "modelName", "model_name"]) || AUDIO_CHAT_CONFIG.voiceProxyModel,
-      text: firstString(payload, ["text", "outputText", "output_text"]),
+      modelName,
+      text: generatedText,
+    };
+  }
+
+  if (generatedText) {
+    return {
+      modelName,
+      text: generatedText,
     };
   }
 
