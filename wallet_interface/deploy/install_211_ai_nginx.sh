@@ -12,6 +12,8 @@ WWW_DOMAIN="${WWW_DOMAIN:-www.211-ai.com}"
 LETSENCRYPT_EMAIL="${LETSENCRYPT_EMAIL:-}"
 USE_STAGING_CERTBOT="${USE_STAGING_CERTBOT:-false}"
 CERT_DIR="/etc/letsencrypt/live/$PRIMARY_DOMAIN"
+CERTBOT_BIN="${CERTBOT_BIN:-}"
+CERTBOT_MODE="${CERTBOT_MODE:-auto}"
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "Run as root so the nginx site can be installed under /etc/nginx." >&2
@@ -28,16 +30,37 @@ reload_nginx() {
 
 ensure_certbot() {
     if command -v certbot >/dev/null 2>&1; then
+        CERTBOT_BIN="$(command -v certbot)"
+        return 0
+    fi
+
+    if [ -x /usr/bin/certbot ]; then
+        CERTBOT_BIN="/usr/bin/certbot"
+        return 0
+    fi
+
+    if [ -x /snap/bin/certbot ]; then
+        CERTBOT_BIN="/snap/bin/certbot"
         return 0
     fi
 
     if command -v apt-get >/dev/null 2>&1; then
         apt-get update
-        DEBIAN_FRONTEND=noninteractive apt-get install -y certbot
-        return 0
+        DEBIAN_FRONTEND=noninteractive apt-get install --reinstall -y certbot
+        if command -v certbot >/dev/null 2>&1; then
+            CERTBOT_BIN="$(command -v certbot)"
+            return 0
+        fi
+        if [ -x /usr/bin/certbot ]; then
+            CERTBOT_BIN="/usr/bin/certbot"
+            return 0
+        fi
+        if [ -L /usr/bin/certbot ] && [ ! -e /usr/bin/certbot ]; then
+            echo "certbot is a broken symlink at /usr/bin/certbot; remove it or reinstall snap certbot." >&2
+        fi
     fi
 
-    echo "certbot is required but was not found, and this host is not apt-based." >&2
+    echo "certbot is required but no executable was found on PATH, /usr/bin, or /snap/bin." >&2
     exit 1
 }
 
@@ -56,15 +79,26 @@ if [ ! -f "$CERT_DIR/fullchain.pem" ] || [ ! -f "$CERT_DIR/privkey.pem" ]; then
         exit 1
     fi
 
-    ensure_certbot
+    if [ "$CERTBOT_MODE" != "docker" ]; then
+        ensure_certbot
+    fi
     install_site "$BOOTSTRAP_CONFIG"
 
     certbot_args="certonly --webroot -w $ACME_ROOT -d $PRIMARY_DOMAIN -d $WWW_DOMAIN --non-interactive --agree-tos --email $LETSENCRYPT_EMAIL"
     if [ "$USE_STAGING_CERTBOT" = "true" ]; then
         certbot_args="$certbot_args --staging"
     fi
-    # shellcheck disable=SC2086
-    certbot $certbot_args
+    if [ "$CERTBOT_MODE" = "docker" ]; then
+        # shellcheck disable=SC2086
+        docker run --rm \
+            -v /etc/letsencrypt:/etc/letsencrypt \
+            -v "$ACME_ROOT":"$ACME_ROOT" \
+            certbot/certbot $certbot_args
+    else
+        ensure_certbot
+        # shellcheck disable=SC2086
+        "$CERTBOT_BIN" $certbot_args
+    fi
 fi
 
 install_site "$SOURCE_CONFIG"

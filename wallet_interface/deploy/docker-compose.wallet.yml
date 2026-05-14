@@ -1,4 +1,15 @@
 services:
+  ipfs:
+    profiles:
+      - local-ipfs
+    image: ipfs/go-ipfs:v0.7.0
+    environment:
+      IPFS_PROFILE: server
+      IPFS_TELEMETRY: "off"
+    restart: unless-stopped
+    volumes:
+      - ipfs_state:/data/ipfs
+
   wallet-api:
     build:
       context: ../..
@@ -166,17 +177,24 @@ services:
       dockerfile: wallet_interface/deploy/Dockerfile.filecoin-pin
       args:
         FILECOIN_PIN_NPM_VERSION: ${FILECOIN_PIN_VERSION:-0.20.1}
+    command:
+      - filecoin-pin
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "3456"
+      - --database
+      - /var/lib/filecoin-pin/pins.db
+      - --car-storage
+      - /var/lib/filecoin-pin/cars
     environment:
-      PORT: "3456"
-      HOST: 0.0.0.0
       ACCESS_TOKEN: ${FILECOIN_PIN_ACCESS_TOKEN:-}
       PRIVATE_KEY: ${FILECOIN_PIN_PRIVATE_KEY:-}
       WALLET_ADDRESS: ${FILECOIN_PIN_WALLET_ADDRESS:-}
       SESSION_KEY: ${FILECOIN_PIN_SESSION_KEY:-}
       NETWORK: ${FILECOIN_PIN_NETWORK:-}
       RPC_URL: ${FILECOIN_PIN_RPC_URL:-}
-      DATABASE_PATH: /var/lib/filecoin-pin/pins.db
-      CAR_STORAGE_PATH: /var/lib/filecoin-pin/cars
       LOG_LEVEL: ${FILECOIN_PIN_LOG_LEVEL:-info}
     restart: unless-stopped
     volumes:
@@ -276,6 +294,7 @@ services:
       - sms-bridge
 
 volumes:
+  ipfs_state:
   wallet_state:
   wallet_logs:
   filecoin_pin_state:

@@ -56,6 +56,35 @@ Recommended DNS / reverse-proxy shape:
 5. Set `ABBY_RUNTIME_WALLET_API_BASE_URL=same-origin` in the runtime env
   file used by the `wallet-ui` container.
 
+If the same host also runs OpenVPN on port 443, split the traffic by protocol:
+nginx owns `tcp/443` for `https://211-ai.com`, and OpenVPN owns `udp/443`.
+That lets both services use the familiar 443 port without a bind conflict.
+OpenVPN cannot also bind `tcp/443` on the same public IP while nginx is using
+`tcp/443`; use `udp/443`, a second public IP, or a TCP multiplexer such as
+`sslh` if the VPN must remain TCP.
+
+For an existing OpenVPN server, keep the current certificate, route, and
+address-pool settings, but make sure the listener has these values:
+
+```conf
+port 443
+proto udp
+```
+
+A minimal reference fragment is included at
+`wallet_interface/deploy/openvpn-443-udp.fragment.conf`. After editing the
+OpenVPN server config, bring the services back in this order:
+
+```bash
+sudo systemctl stop openvpn-server@server 2>/dev/null || sudo systemctl stop openvpn 2>/dev/null || true
+sudo LETSENCRYPT_EMAIL=ops@211-ai.com sh wallet_interface/deploy/install_211_ai_nginx.sh
+sudo systemctl restart openvpn-server@server 2>/dev/null || sudo systemctl restart openvpn
+sudo ss -ltnup | grep -E ':(80|443)\b'
+```
+
+The final listener check should show nginx on `tcp/80` and `tcp/443`, plus
+OpenVPN on `udp/443`.
+
 If you also serve `abby.network` or `abetterbridgetoyou.com` from the same
 host, install `wallet_interface/deploy/nginx.additional-public-domains.conf`
 after those domains have valid certificate material. Keeping `211-ai.com` in a

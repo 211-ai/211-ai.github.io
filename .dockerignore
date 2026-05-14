@@ -23,3 +23,18 @@
 
 # Drop local deployment outputs that are never copied into images.
 wallet_interface/ui/artifacts/
+
+# Drop vendored tooling and backups that are not used by the wallet service images.
+ipfs_datasets_py/.tools/
+ipfs_datasets_py/.codex/
+ipfs_datasets_py/.github/
+ipfs_datasets_py/.vscode/
+ipfs_datasets_py/archive/
+ipfs_datasets_py/artifacts/
+ipfs_datasets_py/benchmarks/
+ipfs_datasets_py/deployments/
+ipfs_datasets_py/docs/
+ipfs_datasets_py/examples/
+ipfs_datasets_py/tests/
+ipfs_datasets_py/tmp/
+ipfs_datasets_py/workspace/

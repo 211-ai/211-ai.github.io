@@ -22,6 +22,7 @@ def test_wallet_deploy_reference_files_exist() -> None:
         DEPLOY_ROOT / "40-runtime-config.sh",
         DEPLOY_ROOT / "nginx.211-ai.com.conf",
         DEPLOY_ROOT / "install_211_ai_nginx.sh",
+        DEPLOY_ROOT / "openvpn-443-udp.fragment.conf",
         DEPLOY_ROOT / "env.production.example",
         DEPLOY_ROOT / "runtime-config.template.json",
         DEPLOY_ROOT / "storage-retention.example.json",
@@ -51,7 +52,11 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     compose = (DEPLOY_ROOT / "docker-compose.wallet.yml").read_text(encoding="utf-8")
     nginx = (DEPLOY_ROOT / "nginx.conf").read_text(encoding="utf-8")
     host_nginx = (DEPLOY_ROOT / "nginx.211-ai.com.conf").read_text(encoding="utf-8")
+    additional_domains_nginx = (DEPLOY_ROOT / "nginx.additional-public-domains.conf").read_text(
+        encoding="utf-8"
+    )
     install_script = (DEPLOY_ROOT / "install_211_ai_nginx.sh").read_text(encoding="utf-8")
+    openvpn_fragment = (DEPLOY_ROOT / "openvpn-443-udp.fragment.conf").read_text(encoding="utf-8")
     dockerfile_api = (DEPLOY_ROOT / "Dockerfile.api").read_text(encoding="utf-8")
     dockerfile_ui = (DEPLOY_ROOT / "Dockerfile.ui").read_text(encoding="utf-8")
     runtime_template = (DEPLOY_ROOT / "runtime-config.template.json").read_text(encoding="utf-8")
@@ -92,6 +97,8 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "--validate-target-signoff-packet" in readme
     assert "storage-retention.example.json" in readme
     assert "211-ai.com" in readme
+    assert "OpenVPN" in readme
+    assert "udp/443" in readme
     assert "abby.network" in readme
     assert "abetterbridgetoyou.com" in readme
     assert "ABBY_RUNTIME_*" in readme
@@ -103,14 +110,19 @@ def test_wallet_compose_references_api_ui_and_ops() -> None:
     assert "proxy_pass http://wallet-api:8000/wallets;" in nginx
     assert "proxy_pass http://wallet-api:8000/ops/;" in nginx
     assert "proxy_pass http://wallet-api:8000/analytics/;" in nginx
-    assert "listen 443 ssl http2;" in host_nginx
+    assert "listen 443 ssl;" in host_nginx
     assert "ssl_certificate /etc/letsencrypt/live/211-ai.com/fullchain.pem;" in host_nginx
-    assert "ssl_certificate /etc/letsencrypt/live/abby.network/fullchain.pem;" in host_nginx
-    assert "ssl_certificate /etc/letsencrypt/live/abetterbridgetoyou.com/fullchain.pem;" in host_nginx
+    assert "ssl_certificate /etc/letsencrypt/live/abby.network/fullchain.pem;" in additional_domains_nginx
+    assert (
+        "ssl_certificate /etc/letsencrypt/live/abetterbridgetoyou.com/fullchain.pem;"
+        in additional_domains_nginx
+    )
     assert "proxy_pass http://127.0.0.1:8080;" in host_nginx
     assert 'TARGET_AVAILABLE="/etc/nginx/sites-available/211-ai.com.conf"' in install_script
     assert "nginx -t" in install_script
     assert "systemctl reload nginx" in install_script
+    assert "port 443" in openvpn_fragment
+    assert "proto udp" in openvpn_fragment
     assert '"walletApi": {' in runtime_template
     assert '${ABBY_RUNTIME_WALLET_API_BASE_URL}' in runtime_template
     assert '${ABBY_RUNTIME_FILECOIN_UPLOAD_URL}' in runtime_template
