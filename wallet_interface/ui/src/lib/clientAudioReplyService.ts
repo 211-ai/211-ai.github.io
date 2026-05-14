@@ -655,7 +655,11 @@ function isMobileAppleBrowser(): boolean {
 }
 
 function formatError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error || "Unknown audio error");
+  const message = error instanceof Error ? error.message : String(error || "Unknown audio error");
+  if (/Failed to fetch dynamically imported module:\s*blob:/i.test(message)) {
+    return "Local audio runtime could not load in this browser session";
+  }
+  return message;
 }
 
 export const clientAudioReplyService = new ClientAudioReplyService();
