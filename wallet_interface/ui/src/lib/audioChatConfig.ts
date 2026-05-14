@@ -1,10 +1,5 @@
 import { readRuntimeVoiceProxyConfig } from "./runtimeConfig";
 
-const DEFAULT_VOICE_PROXY_BASE_URL = "https://animegf.chat:8790/api/voice";
-const DEFAULT_VOICE_PROXY_INFER_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/infer`;
-const DEFAULT_VOICE_PROXY_TTS_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/tts`;
-const DEFAULT_VOICE_PROXY_STT_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/stt`;
-
 type AudioChatConfig = {
   readonly defaultModel: string;
   readonly fallbackVoiceModel: string;
@@ -40,15 +35,23 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
     );
   },
   get voiceProxyEnabled() {
-    const runtimeEnabled = readRuntimeVoiceProxyConfig()?.enabled;
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    const runtimeEnabled = runtimeConfig?.enabled;
     if (runtimeEnabled !== undefined) return runtimeEnabled;
-    return import.meta.env?.VITE_VOICE_PROXY_ENABLED !== "false";
+    const envEnabled = normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_ENABLED as string | undefined);
+    if (envEnabled !== undefined) return envEnabled !== "false";
+    return Boolean(
+      getConfiguredVoiceProxyBaseUrl(runtimeConfig) ||
+        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "infer") ||
+        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "tts") ||
+        getConfiguredVoiceProxyRouteUrl(runtimeConfig, "stt"),
+    );
   },
   get voiceProxyBaseUrl() {
     return (
       readRuntimeVoiceProxyConfig()?.baseUrl ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined) ||
-      DEFAULT_VOICE_PROXY_BASE_URL
+      ""
     );
   },
   get voiceProxyInferUrl() {
@@ -58,7 +61,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "infer") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "infer") ||
-      DEFAULT_VOICE_PROXY_INFER_URL
+      ""
     );
   },
   get voiceProxyTtsUrl() {
@@ -68,7 +71,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "tts") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "tts") ||
-      DEFAULT_VOICE_PROXY_TTS_URL
+      ""
     );
   },
   get voiceProxySttUrl() {
@@ -78,7 +81,7 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "stt") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "stt") ||
-      DEFAULT_VOICE_PROXY_STT_URL
+      ""
     );
   },
   get enableLocalAudio() {
@@ -122,6 +125,26 @@ function joinUrl(baseUrl: string | null | undefined, suffix: string): string | u
   const normalizedBaseUrl = normalizeOptionalString(baseUrl);
   if (!normalizedBaseUrl) return undefined;
   return `${normalizedBaseUrl.replace(/\/$/, "")}/${suffix}`;
+}
+
+function getConfiguredVoiceProxyBaseUrl(runtimeConfig: ReturnType<typeof readRuntimeVoiceProxyConfig>): string | undefined {
+  return (
+    runtimeConfig?.baseUrl ||
+    normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined)
+  );
+}
+
+function getConfiguredVoiceProxyRouteUrl(
+  runtimeConfig: ReturnType<typeof readRuntimeVoiceProxyConfig>,
+  route: "infer" | "tts" | "stt",
+): string | undefined {
+  if (route === "infer") {
+    return runtimeConfig?.inferUrl || normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined);
+  }
+  if (route === "tts") {
+    return runtimeConfig?.ttsUrl || normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined);
+  }
+  return runtimeConfig?.sttUrl || normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined);
 }
 
 export type ClientAudioPipelineTask = "text-to-audio";

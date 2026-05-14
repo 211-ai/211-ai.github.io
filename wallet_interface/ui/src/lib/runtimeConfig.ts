@@ -84,7 +84,7 @@ export function readRuntimeWalletApiConfig(): ResolvedRuntimeWalletApiConfig | u
 }
 
 export function readRuntimeWalletApiBaseUrl(): string | undefined {
-  return readRuntimeWalletApiConfig()?.apiBaseUrl;
+  return resolveWalletApiBaseUrl(readRuntimeConfig().walletApi?.apiBaseUrl);
 }
 
 export function readRuntimeFilecoinStorageConfig(): ResolvedRuntimeFilecoinStorageConfig | undefined {
@@ -106,7 +106,7 @@ function readRuntimeConfig(): AbbyRuntimeConfig {
 }
 
 function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): AbbyRuntimeConfig {
-  const walletApi = normalizeWalletApiConfig(payload?.walletApi);
+  const walletApi = normalizeWalletApiConfig(payload?.walletApi) ?? normalizeWalletApiBaseConfig(payload?.walletApi);
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
   const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   return {
@@ -114,6 +114,15 @@ function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): 
     ...(filecoinStorage ? { filecoinStorage } : {}),
     ...(voiceProxy ? { voiceProxy } : {})
   };
+}
+
+function normalizeWalletApiBaseConfig(
+  config: RuntimeWalletApiConfig | null | undefined
+): RuntimeWalletApiConfig | undefined {
+  if (!config) return undefined;
+  const apiBaseUrl = normalizeOptionalString(config.apiBaseUrl);
+  if (!apiBaseUrl) return undefined;
+  return { apiBaseUrl };
 }
 
 function normalizeWalletApiConfig(

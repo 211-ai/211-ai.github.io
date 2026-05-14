@@ -283,15 +283,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   search_211_services: {
     title: "Search the 211 service index",
     permissionLevel: "public",
-    surfaces: [
-      "home",
-      "social-services",
-      "shelter",
-      "provider-clients",
-      "provider-cases",
-      "provider-operations",
-      "benefits-protection"
-    ],
+    surfaces: [...allRoutes],
     requiresConfirmation: false,
     requiresWalletUnlock: false,
     requiresUserPresence: false,
@@ -300,15 +292,7 @@ const toolPolicies: Record<AgentCommandName, ToolPolicy> = {
   answer_211_question: {
     title: "Answer 211 question",
     permissionLevel: "public",
-    surfaces: [
-      "home",
-      "social-services",
-      "shelter",
-      "provider-clients",
-      "provider-cases",
-      "provider-operations",
-      "benefits-protection"
-    ],
+    surfaces: [...allRoutes],
     requiresConfirmation: false,
     requiresWalletUnlock: false,
     requiresUserPresence: false,
