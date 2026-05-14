@@ -24,9 +24,28 @@ export type ResolvedRuntimeFilecoinStorageConfig = {
   clientToken?: string;
 };
 
+export type RuntimeVoiceProxyConfig = {
+  enabled?: boolean | string;
+  model?: string;
+  baseUrl?: string;
+  inferUrl?: string;
+  ttsUrl?: string;
+  sttUrl?: string;
+};
+
+export type ResolvedRuntimeVoiceProxyConfig = {
+  enabled?: boolean;
+  model?: string;
+  baseUrl?: string;
+  inferUrl?: string;
+  ttsUrl?: string;
+  sttUrl?: string;
+};
+
 export type AbbyRuntimeConfig = {
   walletApi?: RuntimeWalletApiConfig;
   filecoinStorage?: RuntimeFilecoinStorageConfig;
+  voiceProxy?: RuntimeVoiceProxyConfig;
 };
 
 type RuntimeConfigGlobal = typeof globalThis & {
@@ -77,6 +96,10 @@ export function readRuntimeFilecoinStorageConfig(): ResolvedRuntimeFilecoinStora
   };
 }
 
+export function readRuntimeVoiceProxyConfig(): ResolvedRuntimeVoiceProxyConfig | undefined {
+  return normalizeVoiceProxyConfig(readRuntimeConfig().voiceProxy);
+}
+
 function readRuntimeConfig(): AbbyRuntimeConfig {
   const runtimeGlobal = globalThis as RuntimeConfigGlobal;
   return runtimeGlobal.__ABBY_RUNTIME_CONFIG__ ?? {};
@@ -85,9 +108,11 @@ function readRuntimeConfig(): AbbyRuntimeConfig {
 function normalizeRuntimeConfig(payload: AbbyRuntimeConfig | null | undefined): AbbyRuntimeConfig {
   const walletApi = normalizeWalletApiConfig(payload?.walletApi);
   const filecoinStorage = normalizeFilecoinStorageConfig(payload?.filecoinStorage);
+  const voiceProxy = normalizeVoiceProxyConfig(payload?.voiceProxy);
   return {
     ...(walletApi ? { walletApi } : {}),
-    ...(filecoinStorage ? { filecoinStorage } : {})
+    ...(filecoinStorage ? { filecoinStorage } : {}),
+    ...(voiceProxy ? { voiceProxy } : {})
   };
 }
 
@@ -119,9 +144,48 @@ function normalizeFilecoinStorageConfig(
   };
 }
 
+function normalizeVoiceProxyConfig(
+  config: RuntimeVoiceProxyConfig | null | undefined
+): ResolvedRuntimeVoiceProxyConfig | undefined {
+  if (!config) return undefined;
+  const enabled = normalizeOptionalBoolean(config.enabled);
+  const model = normalizeOptionalString(config.model);
+  const baseUrl = normalizeOptionalString(config.baseUrl);
+  const inferUrl = normalizeOptionalString(config.inferUrl);
+  const ttsUrl = normalizeOptionalString(config.ttsUrl);
+  const sttUrl = normalizeOptionalString(config.sttUrl);
+  if (
+    enabled === undefined &&
+    !model &&
+    !baseUrl &&
+    !inferUrl &&
+    !ttsUrl &&
+    !sttUrl
+  ) {
+    return undefined;
+  }
+  return {
+    ...(enabled !== undefined ? { enabled } : {}),
+    ...(model ? { model } : {}),
+    ...(baseUrl ? { baseUrl } : {}),
+    ...(inferUrl ? { inferUrl } : {}),
+    ...(ttsUrl ? { ttsUrl } : {}),
+    ...(sttUrl ? { sttUrl } : {}),
+  };
+}
+
 function normalizeOptionalString(value: string | null | undefined): string | undefined {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
+}
+
+function normalizeOptionalBoolean(value: boolean | string | null | undefined): boolean | undefined {
+  if (typeof value === "boolean") return value;
+  const normalized = normalizeOptionalString(value);
+  if (!normalized) return undefined;
+  if (["1", "true", "yes", "on"].includes(normalized.toLowerCase())) return true;
+  if (["0", "false", "no", "off"].includes(normalized.toLowerCase())) return false;
+  return undefined;
 }
 
 function resolveWalletApiBaseUrl(value: string | null | undefined): string | undefined {

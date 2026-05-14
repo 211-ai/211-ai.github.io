@@ -10,7 +10,7 @@ import re
 import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
-from typing import Any, Dict, List, Sequence
+from typing import Any, Dict, List, Mapping, Sequence
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
@@ -613,6 +613,20 @@ class SmsNotificationDispatchRequest(BaseModel):
     actor_did: str
 
 
+class InboundSmsForwardRequest(BaseModel):
+    wallet_id: str
+    from_phone: str
+    message: str
+    to_phone: str = ""
+    provider: str = "unknown"
+    status: str = "received"
+    message_id: str = ""
+    provider_message_id: str = ""
+    external_reference: str = ""
+    created_at: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class PhoneCallNotificationQueueRequest(BaseModel):
     actor_did: str
     to_phone: str
@@ -657,6 +671,35 @@ def _normalize_phone_number(phone: str) -> str:
     if len(digits) < 10:
         raise ValueError("to_phone must include at least 10 digits")
     return f"+{digits}" if raw.startswith("+") else digits
+
+
+def _sms_inbound_actor_did() -> str:
+    return str(os.getenv("WALLET_SMS_INBOUND_ACTOR_DID") or "did:wallet:sms-bridge").strip()
+
+
+def _require_internal_webhook_auth(
+    *,
+    env_prefix: str,
+    authorization: str | None,
+    headers: Mapping[str, str],
+    error_detail: str,
+) -> None:
+    expected_bearer = str(os.getenv(f"{env_prefix}_BEARER_TOKEN") or "").strip()
+    header_name = str(os.getenv(f"{env_prefix}_HTTP_HEADER_NAME") or "").strip()
+    header_value = str(os.getenv(f"{env_prefix}_HTTP_HEADER_VALUE") or "").strip()
+    if header_name and not header_value:
+        raise RuntimeError(f"{env_prefix}_HTTP_HEADER_VALUE is required when header name is set")
+
+    supplied_bearer = _extract_bearer_token(authorization)
+    if expected_bearer and supplied_bearer == expected_bearer:
+        return
+    if header_name and str(headers.get(header_name) or "").strip() == header_value:
+        return
+    if not expected_bearer and not header_name:
+        raise RuntimeError(
+            f"{env_prefix}_BEARER_TOKEN or {env_prefix}_HTTP_HEADER_NAME must be configured for inbound webhook delivery"
+        )
+    raise HTTPException(status_code=401, detail=error_detail)
 
 
 def _send_webhook_notification(
@@ -715,8 +758,11 @@ def _send_webhook_notification(
             response_payload = parsed
 
     provider_message_id = str(
-        response_payload.get("message_id")
+        response_payload.get("provider_message_id")
+        or response_payload.get("provider_call_id")
+        or response_payload.get("message_id")
         or response_payload.get("call_id")
+        or response_payload.get("email_id")
         or response_payload.get("id")
         or ""
     )
@@ -729,7 +775,14 @@ def _send_webhook_notification(
     return result
 
 
-def _send_sms_notification(*, to_phone: str, message: str) -> Dict[str, str]:
+def _send_sms_notification(
+    *,
+    to_phone: str,
+    message: str,
+    wallet_id: str = "",
+    external_reference: str = "",
+    metadata: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
     normalized_phone = _normalize_phone_number(to_phone)
     normalized_message = str(message or "").strip()
     if not normalized_message:
@@ -738,7 +791,12 @@ def _send_sms_notification(*, to_phone: str, message: str) -> Dict[str, str]:
         env_prefix="WALLET_SMS",
         required_key="to_phone",
         required_value=normalized_phone,
-        extra_payload={"message": normalized_message},
+        extra_payload={
+            "message": normalized_message,
+            "wallet_id": str(wallet_id or "").strip(),
+            "external_reference": str(external_reference or "").strip(),
+            "metadata": dict(metadata or {}),
+        },
     )
 
 
@@ -1155,6 +1213,47 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    @app.get("/wallets/{wallet_id}/messages/sms/inbound")
+    def list_inbound_sms_messages(wallet_id: str) -> Dict[str, Any]:
+        try:
+            messages = app_service.list_inbound_sms_messages(wallet_id)
+            return {
+                "wallet_id": wallet_id,
+                "count": len(messages),
+                "messages": [record.to_dict() for record in messages],
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.post("/messages/sms/inbound")
+    def receive_inbound_sms_message(http_request: Request, payload: InboundSmsForwardRequest) -> Dict[str, Any]:
+        try:
+            _require_internal_webhook_auth(
+                env_prefix="WALLET_SMS_INBOUND",
+                authorization=http_request.headers.get("authorization"),
+                headers=http_request.headers,
+                error_detail="sms inbound authorization required",
+            )
+            record = app_service.record_inbound_sms_message(
+                str(payload.wallet_id or "").strip(),
+                actor_did=_sms_inbound_actor_did(),
+                from_phone=_normalize_phone_number(payload.from_phone),
+                to_phone=_normalize_phone_number(payload.to_phone) if payload.to_phone else "",
+                message=payload.message,
+                provider=payload.provider,
+                status=payload.status,
+                provider_message_id=payload.provider_message_id,
+                bridge_message_id=payload.message_id,
+                external_reference=payload.external_reference,
+                received_at=payload.created_at,
+                metadata=payload.metadata,
+            )
+            return {"status": "ok", "message": record.to_dict()}
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/notifications/sms/{notification_id}/dispatch")
     def dispatch_sms_notification(
         wallet_id: str,
@@ -1170,7 +1269,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
         try:
-            delivery = _send_sms_notification(to_phone=record.to_phone, message=record.message)
+            delivery = _send_sms_notification(
+                to_phone=record.to_phone,
+                message=record.message,
+                wallet_id=record.wallet_id,
+                external_reference=record.notification_id,
+                metadata={**dict(record.metadata), "notification_id": record.notification_id, "reason": record.reason},
+            )
             updated = app_service.mark_sms_notification_sent(
                 wallet_id,
                 notification_id,
@@ -1235,7 +1340,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
         failed = 0
         for record in due_records:
             try:
-                delivery = _send_sms_notification(to_phone=record.to_phone, message=record.message)
+                delivery = _send_sms_notification(
+                    to_phone=record.to_phone,
+                    message=record.message,
+                    wallet_id=record.wallet_id,
+                    external_reference=record.notification_id,
+                    metadata={**dict(record.metadata), "notification_id": record.notification_id, "reason": record.reason},
+                )
                 app_service.mark_sms_notification_sent(
                     record.wallet_id,
                     record.notification_id,
@@ -3010,6 +3121,34 @@ def _send_dead_drop_email(
     bundle: Dict[str, Any],
     bundle_filename: str,
 ) -> Dict[str, Any]:
+    normalized_to_email = str(to_email or "").strip()
+    normalized_subject = str(subject or "").strip()
+    normalized_body = str(body or "")
+    bundle_json = json.dumps(bundle, indent=2, sort_keys=True)
+    sender = str(os.getenv("WALLET_DEAD_DROP_FROM_EMAIL") or "no-reply@211-ai.org").strip()
+
+    webhook_url = str(os.getenv("WALLET_DEAD_DROP_WEBHOOK_URL") or "").strip()
+    backend = str(os.getenv("WALLET_DEAD_DROP_BACKEND") or ("http" if webhook_url else "")).strip().lower()
+    if backend or webhook_url:
+        if backend != "http" or not webhook_url:
+            raise RuntimeError(
+                "WALLET_DEAD_DROP_WEBHOOK_URL environment variable is required for dead-drop delivery when WALLET_DEAD_DROP_BACKEND is enabled"
+            )
+        delivery = _send_webhook_notification(
+            env_prefix="WALLET_DEAD_DROP",
+            required_key="to_email",
+            required_value=normalized_to_email,
+            extra_payload={
+                "subject": normalized_subject,
+                "body": normalized_body,
+                "from_email": sender,
+                "attachment_base64": base64.b64encode(bundle_json.encode("utf-8")).decode("ascii"),
+                "attachment_filename": str(bundle_filename or "abby-missing-person-wallet-dead-drop.json"),
+                "attachment_mime_type": "application/json",
+            },
+        )
+        return {"message_id": str(delivery.get("provider_message_id") or "")}
+
     smtp_host = str(os.getenv("WALLET_DEAD_DROP_SMTP_HOST") or "").strip()
     if not smtp_host:
         raise RuntimeError(
@@ -3030,16 +3169,14 @@ def _send_dead_drop_email(
     }
     smtp_username = str(os.getenv("WALLET_DEAD_DROP_SMTP_USERNAME") or "").strip()
     smtp_password = str(os.getenv("WALLET_DEAD_DROP_SMTP_PASSWORD") or "")
-    sender = str(os.getenv("WALLET_DEAD_DROP_FROM_EMAIL") or "no-reply@211-ai.org").strip()
 
-    bundle_json = json.dumps(bundle, indent=2, sort_keys=True)
     message = EmailMessage()
     message["From"] = sender
-    message["To"] = to_email
-    message["Subject"] = subject
+    message["To"] = normalized_to_email
+    message["Subject"] = normalized_subject
     sender_domain = sender.rsplit("@", 1)[-1].strip() if "@" in sender else ""
     message["Message-Id"] = make_msgid(domain=sender_domain or None)
-    message.set_content(body)
+    message.set_content(normalized_body)
     message.add_attachment(
         bundle_json.encode("utf-8"),
         maintype="application",

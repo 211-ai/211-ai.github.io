@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 from pathlib import Path
@@ -2098,6 +2099,8 @@ def test_wallet_api_missing_person_dead_drop_email_uses_server_smtp(monkeypatch)
             self.__class__.sent_messages.append(message)
             return {}
 
+    monkeypatch.delenv("WALLET_DEAD_DROP_WEBHOOK_URL", raising=False)
+    monkeypatch.delenv("WALLET_DEAD_DROP_BACKEND", raising=False)
     monkeypatch.setenv("WALLET_DEAD_DROP_SMTP_HOST", "smtp.example.org")
     monkeypatch.setenv("WALLET_DEAD_DROP_FROM_EMAIL", "abby@example.org")
     monkeypatch.setattr(wallet_api_module.smtplib, "SMTP", FakeSmtpClient)
@@ -2130,7 +2133,73 @@ def test_wallet_api_missing_person_dead_drop_email_uses_server_smtp(monkeypatch)
     assert attachment.get_filename() == "dead-drop.json"
 
 
+def test_wallet_api_missing_person_dead_drop_email_uses_http_bridge(monkeypatch) -> None:
+    captured_requests = []
+
+    class FakeResponse:
+        def __init__(self, payload: dict[str, object]) -> None:
+            self.payload = payload
+            self.headers = {"content-type": "application/json"}
+            self.status = 202
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(self.payload).encode("utf-8")
+
+    def fake_urlopen(request, timeout: float):
+        captured_requests.append(
+            {
+                "url": request.full_url,
+                "headers": dict(request.header_items()),
+                "payload": json.loads(request.data.decode("utf-8")),
+                "timeout": timeout,
+            }
+        )
+        return FakeResponse({"provider_message_id": "email-123", "provider": "bridge", "status": "accepted"})
+
+    monkeypatch.setenv("WALLET_DEAD_DROP_BACKEND", "http")
+    monkeypatch.setenv("WALLET_DEAD_DROP_WEBHOOK_URL", "https://bridge.example/messages/email/outbound")
+    monkeypatch.setenv("WALLET_DEAD_DROP_FROM_EMAIL", "abby@example.org")
+    monkeypatch.setattr(wallet_api_module.urllib_request, "urlopen", fake_urlopen)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/dead-drops/missing-person",
+        json={
+            "actor_did": "did:key:owner",
+            "to_email": "missing@police.portlandoregon.gov",
+            "subject": "Missing person report dead drop bundle",
+            "body": "Please review attached wallet bundle.",
+            "bundle": {"schemaVersion": "abby-missing-person-dead-drop-v1", "walletContents": []},
+            "bundle_filename": "dead-drop.json",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "sent"
+    assert payload["message_id"] == "email-123"
+    assert len(captured_requests) == 1
+    request_payload = captured_requests[0]["payload"]
+    assert captured_requests[0]["url"] == "https://bridge.example/messages/email/outbound"
+    assert request_payload["to_email"] == "missing@police.portlandoregon.gov"
+    assert request_payload["from_email"] == "abby@example.org"
+    assert request_payload["subject"] == "Missing person report dead drop bundle"
+    assert request_payload["attachment_filename"] == "dead-drop.json"
+    assert request_payload["attachment_mime_type"] == "application/json"
+    decoded_attachment = json.loads(base64.b64decode(request_payload["attachment_base64"]).decode("utf-8"))
+    assert decoded_attachment["schemaVersion"] == "abby-missing-person-dead-drop-v1"
+
+
 def test_wallet_api_missing_person_dead_drop_email_requires_smtp_config(monkeypatch) -> None:
+    monkeypatch.delenv("WALLET_DEAD_DROP_WEBHOOK_URL", raising=False)
+    monkeypatch.delenv("WALLET_DEAD_DROP_BACKEND", raising=False)
     monkeypatch.delenv("WALLET_DEAD_DROP_SMTP_HOST", raising=False)
     client = _client()
     wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
@@ -2176,6 +2245,8 @@ def test_wallet_api_missing_person_dead_drop_config_processes_due_and_persists(t
             self.__class__.sent_messages.append(message)
             return {}
 
+    monkeypatch.delenv("WALLET_DEAD_DROP_WEBHOOK_URL", raising=False)
+    monkeypatch.delenv("WALLET_DEAD_DROP_BACKEND", raising=False)
     monkeypatch.setenv("WALLET_DEAD_DROP_SMTP_HOST", "smtp.example.org")
     monkeypatch.setenv("WALLET_DEAD_DROP_FROM_EMAIL", "abby@example.org")
     monkeypatch.setenv("WALLET_OPS_HEALTH_SHARED_SECRET", "ops-secret")
@@ -2301,6 +2372,12 @@ def test_wallet_api_sms_notification_queue_and_manual_dispatch_uses_http_webhook
     assert captured_requests[0]["payload"] == {
         "to_phone": "5035550123",
         "message": "Bring your ID to the front desk.",
+        "wallet_id": wallet["wallet_id"],
+        "external_reference": queued["notification_id"],
+        "metadata": {
+            "notification_id": queued["notification_id"],
+            "reason": "intake-reminder",
+        },
     }
 
     list_response = client.get(f"/wallets/{wallet['wallet_id']}/notifications/sms")
@@ -2379,6 +2456,65 @@ def test_wallet_api_sms_notification_processes_due_and_persists(tmp_path, monkey
     restored_payload = restored_state.json()["notifications"][0]
     assert restored_payload["status"] == "sent"
     assert restored_payload["last_provider_message_id"] == "sms-1"
+
+
+def test_wallet_api_inbound_sms_bridge_records_message_and_persists(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_SMS_INBOUND_BEARER_TOKEN", "bridge-secret")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/sms/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "+1 (503) 555-0123",
+            "message": "Please reply YES to confirm your safety check-in.",
+            "reason": "safety-check-in",
+        },
+    )
+    assert queue_response.status_code == 200
+    queued = queue_response.json()
+
+    inbound_response = client.post(
+        "/messages/sms/inbound",
+        headers={"authorization": "Bearer bridge-secret"},
+        json={
+            "message_id": "sms-bridge-1",
+            "wallet_id": wallet["wallet_id"],
+            "from_phone": "+15035550123",
+            "to_phone": "+15035550100",
+            "message": "YES",
+            "provider": "twilio",
+            "provider_message_id": "SM-inbound-1",
+            "external_reference": queued["notification_id"],
+            "created_at": "2026-05-13T00:00:00+00:00",
+            "metadata": {"account_sid": "AC123"},
+        },
+    )
+
+    assert inbound_response.status_code == 200
+    inbound_message = inbound_response.json()["message"]
+    assert inbound_message["wallet_id"] == wallet["wallet_id"]
+    assert inbound_message["bridge_message_id"] == "sms-bridge-1"
+    assert inbound_message["provider_message_id"] == "SM-inbound-1"
+    assert inbound_message["related_notification_id"] == queued["notification_id"]
+    assert inbound_message["received_at"] == "2026-05-13T00:00:00+00:00"
+
+    list_response = client.get(f"/wallets/{wallet['wallet_id']}/messages/sms/inbound")
+    assert list_response.status_code == 200
+    assert list_response.json()["count"] == 1
+    assert list_response.json()["messages"][0]["message"] == "YES"
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    restored_client = _client_with_service(restored_service)
+    load_response = restored_client.post("/wallets/snapshots/load-all")
+    assert load_response.status_code == 200
+
+    restored_list = restored_client.get(f"/wallets/{wallet['wallet_id']}/messages/sms/inbound")
+    assert restored_list.status_code == 200
+    assert restored_list.json()["count"] == 1
+    assert restored_list.json()["messages"][0]["related_notification_id"] == queued["notification_id"]
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:

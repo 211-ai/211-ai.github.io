@@ -1,29 +1,128 @@
-export const AUDIO_CHAT_CONFIG = {
-  defaultModel:
-    (import.meta.env?.VITE_CLIENT_AUDIO_MODEL as string | undefined) || "LiquidAI/LFM2.5-Audio-1.5B-ONNX",
-  fallbackVoiceModel: "browser-speech-synthesis",
-  voiceProxyModel: (import.meta.env?.VITE_VOICE_PROXY_MODEL as string | undefined) || "remote-voice-proxy",
-  voiceProxyEnabled: import.meta.env?.VITE_VOICE_PROXY_ENABLED !== "false",
-  voiceProxyBaseUrl:
-    (import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined) || "https://animegf.chat:8790/api/voice",
-  voiceProxyInferUrl:
-    (import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) || "https://animegf.chat:8790/api/voice/infer",
-  voiceProxyTtsUrl:
-    (import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined) || "https://animegf.chat:8790/api/voice/tts",
-  voiceProxySttUrl:
-    (import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) || "https://animegf.chat:8790/api/voice/stt",
-  enableLocalAudio: import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false",
-  enableMobileLocalAudio: import.meta.env?.VITE_ENABLE_MOBILE_LOCAL_AUDIO === "true",
-  enableWebGPU: import.meta.env?.VITE_ENABLE_WEBGPU !== "false",
-  requestTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "12000", 10),
-  warmupTimeoutMs: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "10000", 10),
-  remoteRequestTimeoutMs: Number.parseInt(import.meta.env?.VITE_REMOTE_AUDIO_REQUEST_TIMEOUT || "45000", 10),
-  maxPromptCharacters: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_PROMPT_CHARS || "1200", 10),
-  maxAudioFrames: Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_FRAMES || "160", 10),
-  liquidAudioRunnerBaseUrl:
-    (import.meta.env?.VITE_LIQUID_AUDIO_RUNNER_BASE_URL as string | undefined) ||
-    "https://huggingface.co/spaces/LiquidAI/LFM2.5-Audio-1.5B-transformers-js/raw/main",
-} as const;
+import { readRuntimeVoiceProxyConfig } from "./runtimeConfig";
+
+const DEFAULT_VOICE_PROXY_BASE_URL = "https://animegf.chat:8790/api/voice";
+const DEFAULT_VOICE_PROXY_INFER_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/infer`;
+const DEFAULT_VOICE_PROXY_TTS_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/tts`;
+const DEFAULT_VOICE_PROXY_STT_URL = `${DEFAULT_VOICE_PROXY_BASE_URL}/stt`;
+
+type AudioChatConfig = {
+  readonly defaultModel: string;
+  readonly fallbackVoiceModel: string;
+  readonly voiceProxyModel: string;
+  readonly voiceProxyEnabled: boolean;
+  readonly voiceProxyBaseUrl: string;
+  readonly voiceProxyInferUrl: string;
+  readonly voiceProxyTtsUrl: string;
+  readonly voiceProxySttUrl: string;
+  readonly enableLocalAudio: boolean;
+  readonly enableMobileLocalAudio: boolean;
+  readonly enableWebGPU: boolean;
+  readonly requestTimeoutMs: number;
+  readonly warmupTimeoutMs: number;
+  readonly remoteRequestTimeoutMs: number;
+  readonly maxPromptCharacters: number;
+  readonly maxAudioFrames: number;
+  readonly liquidAudioRunnerBaseUrl: string;
+};
+
+export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
+  get defaultModel() {
+    return (import.meta.env?.VITE_CLIENT_AUDIO_MODEL as string | undefined) || "LiquidAI/LFM2.5-Audio-1.5B-ONNX";
+  },
+  get fallbackVoiceModel() {
+    return "browser-speech-synthesis";
+  },
+  get voiceProxyModel() {
+    return (
+      readRuntimeVoiceProxyConfig()?.model ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_MODEL as string | undefined) ||
+      "remote-voice-proxy"
+    );
+  },
+  get voiceProxyEnabled() {
+    const runtimeEnabled = readRuntimeVoiceProxyConfig()?.enabled;
+    if (runtimeEnabled !== undefined) return runtimeEnabled;
+    return import.meta.env?.VITE_VOICE_PROXY_ENABLED !== "false";
+  },
+  get voiceProxyBaseUrl() {
+    return (
+      readRuntimeVoiceProxyConfig()?.baseUrl ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined) ||
+      DEFAULT_VOICE_PROXY_BASE_URL
+    );
+  },
+  get voiceProxyInferUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.inferUrl ||
+      joinUrl(runtimeConfig?.baseUrl, "infer") ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_INFER_URL as string | undefined) ||
+      joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "infer") ||
+      DEFAULT_VOICE_PROXY_INFER_URL
+    );
+  },
+  get voiceProxyTtsUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.ttsUrl ||
+      joinUrl(runtimeConfig?.baseUrl, "tts") ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_TTS_URL as string | undefined) ||
+      joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "tts") ||
+      DEFAULT_VOICE_PROXY_TTS_URL
+    );
+  },
+  get voiceProxySttUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.sttUrl ||
+      joinUrl(runtimeConfig?.baseUrl, "stt") ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) ||
+      joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "stt") ||
+      DEFAULT_VOICE_PROXY_STT_URL
+    );
+  },
+  get enableLocalAudio() {
+    return import.meta.env?.VITE_ENABLE_LOCAL_AUDIO !== "false";
+  },
+  get enableMobileLocalAudio() {
+    return import.meta.env?.VITE_ENABLE_MOBILE_LOCAL_AUDIO === "true";
+  },
+  get enableWebGPU() {
+    return import.meta.env?.VITE_ENABLE_WEBGPU !== "false";
+  },
+  get requestTimeoutMs() {
+    return Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_REQUEST_TIMEOUT || "12000", 10);
+  },
+  get warmupTimeoutMs() {
+    return Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_WARMUP_TIMEOUT || "10000", 10);
+  },
+  get remoteRequestTimeoutMs() {
+    return Number.parseInt(import.meta.env?.VITE_REMOTE_AUDIO_REQUEST_TIMEOUT || "45000", 10);
+  },
+  get maxPromptCharacters() {
+    return Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_PROMPT_CHARS || "1200", 10);
+  },
+  get maxAudioFrames() {
+    return Number.parseInt(import.meta.env?.VITE_CLIENT_AUDIO_MAX_FRAMES || "160", 10);
+  },
+  get liquidAudioRunnerBaseUrl() {
+    return (
+      (import.meta.env?.VITE_LIQUID_AUDIO_RUNNER_BASE_URL as string | undefined) ||
+      "https://huggingface.co/spaces/LiquidAI/LFM2.5-Audio-1.5B-transformers-js/raw/main"
+    );
+  },
+};
+
+function normalizeOptionalString(value: string | null | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+}
+
+function joinUrl(baseUrl: string | null | undefined, suffix: string): string | undefined {
+  const normalizedBaseUrl = normalizeOptionalString(baseUrl);
+  if (!normalizedBaseUrl) return undefined;
+  return `${normalizedBaseUrl.replace(/\/$/, "")}/${suffix}`;
+}
 
 export type ClientAudioPipelineTask = "text-to-audio";
 export type ClientAudioDevicePreference = "webgpu";

@@ -564,6 +564,64 @@ class SmsNotificationRecord:
 
 
 @dataclass
+class InboundSmsMessageRecord:
+    inbound_message_id: str
+    wallet_id: str
+    from_phone: str = ""
+    to_phone: str = ""
+    message: str = ""
+    provider: str = ""
+    status: str = "received"
+    provider_message_id: str = ""
+    bridge_message_id: str = ""
+    related_notification_id: str = ""
+    external_reference: str = ""
+    received_at: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "inbound_message_id": self.inbound_message_id,
+            "wallet_id": self.wallet_id,
+            "from_phone": self.from_phone,
+            "to_phone": self.to_phone,
+            "message": self.message,
+            "provider": self.provider,
+            "status": self.status,
+            "provider_message_id": self.provider_message_id,
+            "bridge_message_id": self.bridge_message_id,
+            "related_notification_id": self.related_notification_id,
+            "external_reference": self.external_reference,
+            "received_at": self.received_at,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "InboundSmsMessageRecord":
+        return cls(
+            inbound_message_id=str(payload.get("inbound_message_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            from_phone=str(payload.get("from_phone") or ""),
+            to_phone=str(payload.get("to_phone") or ""),
+            message=str(payload.get("message") or ""),
+            provider=str(payload.get("provider") or ""),
+            status=str(payload.get("status") or "received"),
+            provider_message_id=str(payload.get("provider_message_id") or ""),
+            bridge_message_id=str(payload.get("bridge_message_id") or ""),
+            related_notification_id=str(payload.get("related_notification_id") or ""),
+            external_reference=str(payload.get("external_reference") or ""),
+            received_at=str(payload.get("received_at") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
 class PhoneCallNotificationRecord:
     notification_id: str
     wallet_id: str
@@ -686,6 +744,7 @@ class WalletInterfaceService:
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
         self.missing_person_dead_drops: Dict[str, MissingPersonDeadDropRecord] = {}
         self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
+        self.inbound_sms_messages: Dict[str, InboundSmsMessageRecord] = {}
         self.phone_call_notifications: Dict[str, PhoneCallNotificationRecord] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
@@ -1028,6 +1087,13 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
                 )
             ],
+            "inbound_sms_messages": [
+                record.to_dict()
+                for record in sorted(
+                    self.inbound_sms_messages.values(),
+                    key=lambda item: (item.wallet_id, item.received_at or item.created_at, item.inbound_message_id),
+                )
+            ],
             "phone_call_notifications": [
                 record.to_dict()
                 for record in sorted(
@@ -1103,6 +1169,15 @@ class WalletInterfaceService:
             )
             if record.notification_id
         }
+        self.inbound_sms_messages = {
+            record.inbound_message_id: record
+            for record in (
+                InboundSmsMessageRecord.from_dict(item)
+                for item in payload.get("inbound_sms_messages", [])
+                if isinstance(item, Mapping)
+            )
+            if record.inbound_message_id
+        }
         self.phone_call_notifications = {
             record.notification_id: record
             for record in (
@@ -1148,6 +1223,9 @@ class WalletInterfaceService:
 
     def _sms_notification_resource(self, wallet_id: str, notification_id: str) -> str:
         return _portal_resource(wallet_id, "notifications", f"sms/{notification_id}")
+
+    def _inbound_sms_message_resource(self, wallet_id: str, inbound_message_id: str) -> str:
+        return _portal_resource(wallet_id, "notifications", f"sms/inbound/{inbound_message_id}")
 
     def _phone_call_notification_resource(self, wallet_id: str, notification_id: str) -> str:
         return _portal_resource(wallet_id, "notifications", f"calls/{notification_id}")
@@ -1371,6 +1449,103 @@ class WalletInterfaceService:
             [record for record in self.sms_notifications.values() if record.wallet_id == wallet_id],
             key=lambda item: (item.created_at, item.notification_id),
         )
+
+    def list_inbound_sms_messages(self, wallet_id: str) -> List[InboundSmsMessageRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return sorted(
+            [record for record in self.inbound_sms_messages.values() if record.wallet_id == wallet_id],
+            key=lambda item: (item.received_at or item.created_at, item.inbound_message_id),
+        )
+
+    def _related_sms_notification_for_inbound(
+        self,
+        wallet_id: str,
+        *,
+        from_phone: str,
+        external_reference: str = "",
+    ) -> SmsNotificationRecord | None:
+        normalized_reference = str(external_reference or "").strip()
+        if normalized_reference:
+            record = self.sms_notifications.get(normalized_reference)
+            if record is not None and record.wallet_id == wallet_id:
+                return record
+
+        matches = [
+            record
+            for record in self.sms_notifications.values()
+            if record.wallet_id == wallet_id and record.to_phone == str(from_phone or "").strip()
+        ]
+        if not matches:
+            return None
+        return sorted(
+            matches,
+            key=lambda item: (item.sent_at or item.updated_at or item.created_at, item.notification_id),
+            reverse=True,
+        )[0]
+
+    def record_inbound_sms_message(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        from_phone: str,
+        message: str,
+        to_phone: str = "",
+        provider: str = "",
+        status: str = "received",
+        provider_message_id: str = "",
+        bridge_message_id: str = "",
+        external_reference: str = "",
+        received_at: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> InboundSmsMessageRecord:
+        self.wallet_service._wallet(wallet_id)
+        normalized_from_phone = str(from_phone or "").strip()
+        normalized_to_phone = str(to_phone or "").strip()
+        normalized_message = str(message or "")
+        if not normalized_from_phone:
+            raise ValueError("from_phone is required")
+        if not normalized_message.strip():
+            raise ValueError("message is required")
+
+        related_notification = self._related_sms_notification_for_inbound(
+            wallet_id,
+            from_phone=normalized_from_phone,
+            external_reference=external_reference,
+        )
+        now = _portal_now()
+        record = InboundSmsMessageRecord(
+            inbound_message_id=_portal_id("sms-inbound"),
+            wallet_id=wallet_id,
+            from_phone=normalized_from_phone,
+            to_phone=normalized_to_phone,
+            message=normalized_message,
+            provider=str(provider or "unknown"),
+            status=str(status or "received"),
+            provider_message_id=str(provider_message_id or ""),
+            bridge_message_id=str(bridge_message_id or ""),
+            related_notification_id=(related_notification.notification_id if related_notification is not None else ""),
+            external_reference=str(external_reference or ""),
+            received_at=str(received_at or now),
+            metadata=dict(metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.inbound_sms_messages[record.inbound_message_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=str(actor_did or "did:wallet:sms-bridge"),
+            action="notification/sms_inbound",
+            resource=self._inbound_sms_message_resource(wallet_id, record.inbound_message_id),
+            details={
+                "from_phone": record.from_phone,
+                "provider": record.provider,
+                "provider_message_id": record.provider_message_id,
+                "related_notification_id": record.related_notification_id,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return record
 
     def queue_sms_notification(
         self,
