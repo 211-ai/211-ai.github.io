@@ -1,7 +1,16 @@
 import { env, pipeline } from "@xenova/transformers";
+// @ts-expect-error Xenova publishes this runtime export without a matching deep module declaration.
+import { Tensor } from "@xenova/transformers/src/utils/tensor.js";
+import ortWasmAsyncifyMjsUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.mjs?url";
+import ortWasmAsyncifyWasmUrl from "../../node_modules/onnxruntime-web/dist/ort-wasm-simd-threaded.asyncify.wasm?url";
+import { getSafeOnnxWasmThreadCount, installWarningSuppression } from "../lib/warningSuppressionUtils";
 
 env.allowLocalModels = false;
 env.useBrowserCache = true;
+env.useWasmCache = true;
+env.logLevel = "error";
+installWarningSuppression();
+installXenovaOnnxRuntimeCompatibilityShim();
 
 type EmbeddingRequest =
   | {
@@ -91,15 +100,55 @@ function configureTransformersRuntime(): void {
       wasm?: {
         numThreads?: number;
         simd?: boolean;
+        wasmPaths?: {
+          mjs: string;
+          wasm: string;
+        };
       };
     };
   };
   if (backends.onnx?.wasm) {
-    backends.onnx.wasm.numThreads = Math.min(navigator.hardwareConcurrency || 4, 8);
+    backends.onnx.wasm.numThreads = getSafeOnnxWasmThreadCount(8);
     backends.onnx.wasm.simd = true;
+    backends.onnx.wasm.wasmPaths = {
+      mjs: ortWasmAsyncifyMjsUrl,
+      wasm: ortWasmAsyncifyWasmUrl,
+    };
   }
 }
 
 function postResponse(response: EmbeddingResponse): void {
   self.postMessage(response);
+}
+
+function installXenovaOnnxRuntimeCompatibilityShim(): void {
+  const tensorPrototype = Tensor.prototype as {
+    cpuData?: unknown;
+    data?: unknown;
+    location?: string;
+    dataLocation?: string;
+  };
+  const locationDescriptor = Object.getOwnPropertyDescriptor(tensorPrototype, "location");
+  if (!locationDescriptor) {
+    Object.defineProperty(tensorPrototype, "location", {
+      configurable: true,
+      enumerable: false,
+      get() {
+        return this.dataLocation || "cpu";
+      },
+    });
+  }
+  const dataDescriptor = Object.getOwnPropertyDescriptor(tensorPrototype, "data");
+  if (!dataDescriptor) {
+    Object.defineProperty(tensorPrototype, "data", {
+      configurable: true,
+      enumerable: false,
+      get() {
+        return this.cpuData;
+      },
+      set(value) {
+        this.cpuData = value;
+      },
+    });
+  }
 }

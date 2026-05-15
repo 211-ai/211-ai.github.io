@@ -130,6 +130,8 @@ export class ClientAudioReplyService {
   private remoteAudioLastUsedAt: string | undefined;
   private remoteAudioPreflight: "unknown" | "ready" | "failed" = "unknown";
   private remoteAudioPreflightPromise: Promise<boolean> | null = null;
+  private remoteSpeechToTextLastError: string | undefined;
+  private remoteSpeechToTextPreflight: "unknown" | "ready" | "failed" = "unknown";
   private readonly createWorker: () => Worker;
   private readonly generateRemoteAudio: (options: {
     mode: "tts" | "voice-reply";
@@ -174,9 +176,19 @@ export class ClientAudioReplyService {
         options.onProgress?.({
           phase: "fallback",
           progress: 0,
-          status: "Voice proxy unavailable; preparing local audio.",
+          status: this.canTryLocalAudioAfterRemoteVoiceFailure()
+            ? "Voice proxy unavailable; preparing local audio."
+            : "Voice proxy unavailable; using browser speech.",
           modelName,
         });
+        if (!this.canTryLocalAudioAfterRemoteVoiceFailure() && this.hasSpeechSynthesis()) {
+          return {
+            kind: "fallback",
+            modelName: AUDIO_CHAT_CONFIG.fallbackVoiceModel,
+            provider: "browser-speech",
+            fallbackReason: this.getCombinedFallbackReason(modelName, this.remoteAudioLastError, true),
+          };
+        }
       } else {
         options.onProgress?.({
           phase: "ready",
@@ -410,6 +422,8 @@ export class ClientAudioReplyService {
       remoteAudioLastError: this.remoteAudioLastError,
       remoteAudioLastUsedAt: this.remoteAudioLastUsedAt,
       remoteAudioPreflight: this.remoteAudioPreflight,
+      remoteSpeechToTextLastError: this.remoteSpeechToTextLastError,
+      remoteSpeechToTextPreflight: this.remoteSpeechToTextPreflight,
       remoteAudioProxyMode: "multipart-wav",
       localAudioEnabled: AUDIO_CHAT_CONFIG.enableLocalAudio,
       localAudioAvailable: this.canAttemptLocalAudio(AUDIO_CHAT_CONFIG.defaultModel),
@@ -449,6 +463,9 @@ export class ClientAudioReplyService {
     if (!AUDIO_CHAT_CONFIG.enableLocalAudio) {
       return "Local audio generation is disabled by configuration.";
     }
+    if (!this.canTryLocalAudioAfterRemoteVoiceFailure()) {
+      return "Local audio generation waits until Hugging Face Whisper and IndexTTS preflights both fail.";
+    }
     const blockReason = this.getLocalAudioBlockReason();
     if (blockReason) return blockReason;
     if (!this.hasWebGPU()) {
@@ -467,6 +484,11 @@ export class ClientAudioReplyService {
 
   shouldPreferRemoteAudioBeforeLocalText(): boolean {
     return this.canUseRemoteAudio() && this.remoteAudioPreflight !== "failed";
+  }
+
+  markRemoteSpeechToTextPreflight(ready: boolean, error?: unknown): void {
+    this.remoteSpeechToTextPreflight = ready ? "ready" : "failed";
+    this.remoteSpeechToTextLastError = ready ? undefined : formatError(error);
   }
 
   private async generateProxyAudio(options: {
@@ -555,6 +577,10 @@ export class ClientAudioReplyService {
         this.remoteAudioPreflightPromise = null;
       });
     return this.remoteAudioPreflightPromise;
+  }
+
+  private canTryLocalAudioAfterRemoteVoiceFailure(): boolean {
+    return this.remoteAudioPreflight === "failed" && this.remoteSpeechToTextPreflight === "failed";
   }
 
   private startLocalWarmupInBackground(): void {

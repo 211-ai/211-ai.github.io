@@ -449,6 +449,7 @@ export function AgentAudioChatSurface({
       return remoteTranscript || browserTranscript;
     } catch (error) {
       console.warn("[Abby] Remote speech-to-text unavailable; using browser/local speech fallback.", error);
+      clientAudioReplyService.markRemoteSpeechToTextPreflight(false, error);
       return browserTranscript;
     }
   }
@@ -1313,9 +1314,13 @@ function warmupSpeechRecognition(): void {
 async function preflightRemoteSpeechToText(): Promise<boolean> {
   if (!remoteSpeechToTextPreflightPromise) {
     remoteSpeechToTextPreflightPromise = preflightRemoteSpeechToTextProxy()
-      .then(() => true)
+      .then(() => {
+        clientAudioReplyService.markRemoteSpeechToTextPreflight(true);
+        return true;
+      })
       .catch((error) => {
         console.warn("[Abby] Speech-to-text proxy preflight failed; local/browser fallback remains available.", error);
+        clientAudioReplyService.markRemoteSpeechToTextPreflight(false, error);
         remoteSpeechToTextPreflightPromise = null;
         return false;
       });

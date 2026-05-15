@@ -109,15 +109,19 @@ export async function answerServiceNavigationQuestion(
   const graphRagAnswer = await answer211InfoQuestion(input.question, {
     useLocalModel: input.useLocalModel,
     maxTokens: options.maxTokens,
-    useEmbedding: options.useEmbedding,
+    useEmbedding: options.useEmbedding ?? true,
     walletApiConfig: options.walletApiConfig,
   });
   const citations = build211InfoCitations(graphRagAnswer.evidence.results);
   const evidenceBundle = evidenceBundleFromGraphEvidence(input.question, graphRagAnswer.evidence);
   const nextSteps = buildServiceNavigationNextSteps(graphRagAnswer.evidence.results);
+  const answer =
+    graphRagAnswer.evidence.results.length > 0 && isNoRelevant211RecordAnswer(graphRagAnswer.answer)
+      ? build211InfoFallbackSummary(graphRagAnswer.evidence)
+      : graphRagAnswer.answer;
   return {
     question: graphRagAnswer.question,
-    answer: appendNextSteps(graphRagAnswer.answer, nextSteps),
+    answer: appendNextSteps(answer, nextSteps),
     graphRagAnswer,
     evidenceBundle,
     citations,
@@ -125,6 +129,10 @@ export async function answerServiceNavigationQuestion(
     usedLocalModel: graphRagAnswer.usedLocalModel,
     nextSteps,
   };
+}
+
+function isNoRelevant211RecordAnswer(answer: string): boolean {
+  return /could not find (?:a )?relevant record in the local 211 corpus/i.test(answer);
 }
 
 export function evidenceBundleFromGraphEvidence(query: string, evidence: GraphRagEvidence): EvidenceBundle {
