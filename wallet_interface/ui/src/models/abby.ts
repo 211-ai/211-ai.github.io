@@ -110,6 +110,8 @@ export interface UploadItem {
   id: string;
   recordId?: string;
   fileName: string;
+  createdAt?: string;
+  createdAtRaw?: string;
   machineSummary: string;
   category: string;
   sensitivity: "low" | "moderate" | "high" | "restricted";

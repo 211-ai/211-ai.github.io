@@ -22,6 +22,7 @@ import {
   Mic,
   RefreshCw,
   Save,
+  Search,
   Settings as SettingsIcon,
   ShieldCheck,
   Trash2,
@@ -3431,6 +3432,8 @@ function UploadsScreen({
   const [filecoinUploadIds, setFilecoinUploadIds] = useState<string[]>([]);
   const [downloadingUploadIds, setDownloadingUploadIds] = useState<string[]>([]);
   const [deletingUploadIds, setDeletingUploadIds] = useState<string[]>([]);
+  const [walletFileQuery, setWalletFileQuery] = useState("");
+  const [walletFileSort, setWalletFileSort] = useState<WalletFileSortMode>("newest");
   const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(true);
   const uploadsRef = useRef(uploads);
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
@@ -3456,6 +3459,10 @@ function UploadsScreen({
   const walletQrPayloadLabel = filecoinStorageReady
     ? walletProofBundleCid || "Publishing IPFS CID…"
     : "Connect IPFS/Filecoin storage to generate a CID.";
+  const visibleUploads = useMemo(
+    () => sortWalletFiles(filterWalletFiles(uploads, walletFileQuery), walletFileSort),
+    [uploads, walletFileQuery, walletFileSort]
+  );
 
   useEffect(() => {
     uploadsRef.current = uploads;
@@ -3840,10 +3847,13 @@ function UploadsScreen({
         serializeUploadMetadata({ ...upload, ...patch })
       );
       updateUpload(upload.id, {
-        ...patch,
+        ...saved,
+        id: upload.id,
+        recordId: saved.recordId ?? upload.recordId,
         storageOk: saved.storageOk ?? upload.storageOk
       });
-    } catch {
+    } catch (error) {
+      console.warn("Wallet file metadata persistence failed", error);
       // Metadata persistence is best-effort so uploads, pins, and proofs can still complete.
     }
   }
@@ -4146,7 +4156,37 @@ function UploadsScreen({
         </label>
       </Section>
       <div className="list-stack">
-        {uploads.map((upload) => (
+        <div className="wallet-file-controls" aria-label="Wallet file controls">
+          <Field label="Find wallet files">
+            <div className="wallet-file-search-field">
+              <Search aria-hidden="true" size={18} />
+              <input
+                autoComplete="off"
+                onChange={(event) => setWalletFileQuery(event.target.value)}
+                placeholder="Search safe labels, types, names"
+                type="search"
+                value={walletFileQuery}
+              />
+            </div>
+          </Field>
+          <Field label="Sort">
+            <select
+              onChange={(event) => setWalletFileSort(event.target.value as WalletFileSortMode)}
+              value={walletFileSort}
+            >
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="name">Name</option>
+              <option value="type">Type</option>
+              <option value="profile">Profile status</option>
+              <option value="storage">Storage status</option>
+            </select>
+          </Field>
+          <Badge tone={visibleUploads.length === uploads.length ? "neutral" : "info"}>
+            {visibleUploads.length}/{uploads.length} files
+          </Badge>
+        </div>
+        {visibleUploads.map((upload) => (
           <article aria-label={`${upload.fileName} wallet file`} className="list-item upload-list-item wallet-list-item" key={upload.id}>
             <div>
               <h3>{upload.fileName}</h3>
@@ -4334,6 +4374,85 @@ function sharingBadge(upload: UploadItem): string {
   const count = upload.allowedRecipientIds?.length ?? 0;
   if (!upload.shared || count === 0) return "Private";
   return `${count} selected`;
+}
+
+type WalletFileSortMode = "newest" | "oldest" | "name" | "type" | "profile" | "storage";
+
+function filterWalletFiles(uploads: UploadItem[], query: string): UploadItem[] {
+  const tokens = query
+    .trim()
+    .toLocaleLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!tokens.length) return uploads;
+  return uploads.filter((upload) => {
+    const haystack = [
+      upload.fileName,
+      upload.category,
+      upload.machineSummary,
+      upload.decentralizedStorageProvider,
+      upload.decentralizedStorageStatus,
+      upload.decryptedClassification,
+      upload.decryptedMimeType,
+      upload.filecoinPinStatus,
+      upload.privacyProfileClassification,
+      upload.privacyProfileLabels?.join(" "),
+      upload.privacyProfileMimeType,
+      upload.privacyProfileStatus,
+      upload.privacyProfileSummary,
+      upload.status
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase();
+    return tokens.every((token) => haystack.includes(token));
+  });
+}
+
+function sortWalletFiles(uploads: UploadItem[], sortMode: WalletFileSortMode): UploadItem[] {
+  const sorted = [...uploads];
+  sorted.sort((left, right) => {
+    switch (sortMode) {
+      case "oldest":
+        return uploadCreatedTime(left) - uploadCreatedTime(right);
+      case "name":
+        return left.fileName.localeCompare(right.fileName) || uploadCreatedTime(right) - uploadCreatedTime(left);
+      case "type":
+        return uploadTypeLabel(left).localeCompare(uploadTypeLabel(right)) || left.fileName.localeCompare(right.fileName);
+      case "profile":
+        return uploadProfileSortRank(left) - uploadProfileSortRank(right) || left.fileName.localeCompare(right.fileName);
+      case "storage":
+        return uploadStorageSortRank(left) - uploadStorageSortRank(right) || left.fileName.localeCompare(right.fileName);
+      case "newest":
+      default:
+        return uploadCreatedTime(right) - uploadCreatedTime(left);
+    }
+  });
+  return sorted;
+}
+
+function uploadCreatedTime(upload: UploadItem): number {
+  const time = Date.parse(upload.createdAtRaw || upload.createdAt || "");
+  return Number.isFinite(time) ? time : 0;
+}
+
+function uploadTypeLabel(upload: UploadItem): string {
+  return upload.privacyProfileClassification || upload.decryptedClassification || upload.privacyProfileMimeType || upload.decryptedMimeType || upload.category;
+}
+
+function uploadProfileSortRank(upload: UploadItem): number {
+  if (upload.privacyProfileStatus === "profiled") return 0;
+  if (upload.privacyProfileStatus === "profiling") return 1;
+  if (upload.privacyProfileStatus === "failed") return 2;
+  return 3;
+}
+
+function uploadStorageSortRank(upload: UploadItem): number {
+  if (upload.decentralizedStorageStatus === "stored" && upload.storageOk !== false) return 0;
+  if (upload.decentralizedStorageStatus === "uploading") return 1;
+  if (upload.storageOk === false) return 2;
+  if (upload.decentralizedStorageStatus === "failed") return 3;
+  return 4;
 }
 
 function filecoinBadge(upload: UploadItem): string {

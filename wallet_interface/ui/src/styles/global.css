@@ -3068,6 +3068,39 @@ body.playful-pulse .decor-shape {
   align-content: start;
 }
 
+.wallet-file-controls {
+  align-items: end;
+  background: rgba(248, 250, 252, 0.84);
+  border: 1px solid rgba(127, 174, 180, 0.36);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) auto;
+  padding: 12px;
+}
+
+.wallet-file-search-field {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d8dee6;
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 44px;
+  padding: 0 12px;
+}
+
+.wallet-file-search-field input {
+  border: 0;
+  min-height: 42px;
+  padding: 0;
+}
+
+.wallet-file-search-field input:focus {
+  outline: none;
+}
+
 .wallet-list-item {
   align-items: start;
   display: grid;
@@ -5338,6 +5371,10 @@ textarea:focus-visible,
   }
 
   .wallet-storage-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .wallet-file-controls {
     grid-template-columns: 1fr;
   }
 
