@@ -1704,7 +1704,7 @@ test("wallet page renders a scannable proof QR that opens proof center review", 
   const qrImage = page.getByRole("img", { name: /Wallet proof QR code/i });
   await expect(qrImage).toBeVisible();
   await expect(page.getByText(/Scan to open the client proof bundle/i)).toBeVisible();
-  await expect(page.getByText(/IPFS CID QR/i)).toBeVisible();
+  await expect(page.getByText(/IPFS wallet root QR/i)).toBeVisible();
   await expect(page.getByText(/bafywalletproofbundlecid/i)).toBeVisible();
   await expect(page.getByText(/Location is in service region/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /Open proof review/i })).toBeVisible();

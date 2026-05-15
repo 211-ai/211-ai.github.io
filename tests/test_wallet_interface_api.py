@@ -238,6 +238,34 @@ def test_filecoin_upload_bridge_supports_mock_filecoin_pin_mode(monkeypatch) -> 
     assert payload["requestId"] == expected_request_id
     assert payload["filecoinPinRequestId"] == expected_request_id
     assert payload["statusUrl"] == f"/filecoin-upload/status/{expected_request_id}"
+
+
+def test_ipfs_proxy_returns_allowlisted_cid(monkeypatch) -> None:
+    client = _client()
+
+    class FakeIpfsBackend:
+        def cat(self, cid: str) -> bytes:
+            assert cid == "bafybeigdyrztproxyallowedcid1234567890abcd"
+            return json.dumps({"proofs": [{"claim": "Proxy loaded proof"}]}).encode("utf-8")
+
+    monkeypatch.setenv("WALLET_IPFS_PROXY_ALLOWED_CIDS", "bafybeigdyrztproxyallowedcid1234567890abcd")
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+
+    response = client.get("/ipfs-proxy/bafybeigdyrztproxyallowedcid1234567890abcd")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/json")
+    assert response.json() == {"proofs": [{"claim": "Proxy loaded proof"}]}
+
+
+def test_ipfs_proxy_rejects_non_allowlisted_cid(monkeypatch) -> None:
+    client = _client()
+    monkeypatch.setenv("WALLET_IPFS_PROXY_ALLOWED_CIDS", "bafybeigdyrztproxyallowedcid1234567890abcd")
+
+    response = client.get("/ipfs-proxy/bafybeigdyrztnotallowedcid1234567890abcd")
+
+    assert response.status_code == 403
+    assert response.json()["detail"] == "CID is not allowed by WALLET_IPFS_PROXY_ALLOWED_CIDS"
     assert payload["filecoinPinInfo"] == {
         "provider": "mock-filecoin-pin",
         "cid": "bafy-uploaded-file",

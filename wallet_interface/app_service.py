@@ -3629,6 +3629,33 @@ class WalletInterfaceService:
             actor_secret=actor_secret,
         )
 
+    def export_record_encrypted_blobs(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service.records.get(record_id)
+        if record is None or record.wallet_id != wallet_id:
+            raise ValueError("record not found")
+        version = self.wallet_service.versions.get(record.current_version_id)
+        if version is None:
+            raise ValueError("record version not found")
+        payload = self.wallet_service.storage.get(version.encrypted_payload_ref)
+        metadata = (
+            self.wallet_service.storage.get(version.encrypted_metadata_ref)
+            if version.encrypted_metadata_ref is not None
+            else None
+        )
+        return {
+            "record": record.to_dict(),
+            "version": version.to_dict(),
+            "encrypted_payload": payload,
+            "encrypted_metadata": metadata,
+        }
+
     def rotate_record_key(
         self,
         wallet_id: str,

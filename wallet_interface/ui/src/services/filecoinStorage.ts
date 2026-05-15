@@ -29,6 +29,8 @@ export type FilecoinUploadRequestMetadata = {
 export type FilecoinUploadResponse = {
   cid?: string;
   dealId?: string;
+  encryptedMetadataCid?: string | null;
+  encryptedPayloadCid?: string;
   filecoinDealId?: string;
   info?: Record<string, unknown>;
   filecoinPinInfo?: Record<string, unknown>;
@@ -37,13 +39,17 @@ export type FilecoinUploadResponse = {
   filecoinPieceCid?: string;
   gatewayUrl?: string;
   ipfsCid?: string;
+  ipldLinks?: Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }>;
   message?: string;
   pieceCid?: string;
   provider?: UploadItem["decentralizedStorageProvider"] | string;
+  recordId?: string;
   requestId?: string;
+  root?: { "/": string };
   statusUrl?: string;
   status?: string;
   url?: string;
+  versionId?: string;
 };
 
 export type FilecoinStatusPollOptions = {

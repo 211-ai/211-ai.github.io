@@ -1,7 +1,6 @@
 import type { ProofReceiptView } from "../models/abby";
 
 const qrImageAcceptedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-const defaultIpfsGateways = ["https://w3s.link/ipfs/", "https://ipfs.io/ipfs/"];
 const cidPattern = /\b(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})\b/;
 const walletProofBundleParam = "walletProofBundle";
 
@@ -23,20 +22,44 @@ type LinkedProofReference = ProofArtifactLocator & {
   proofType: string;
 };
 
+export type WalletIpldLink = {
+  "/"?: string;
+  cid?: string;
+  mediaType?: string;
+  name: string;
+};
+
+export type WalletEncryptedRecordLink = {
+  cid: string;
+  fileName?: string;
+  links?: WalletIpldLink[];
+  recordId?: string;
+  root?: { "/": string };
+  versionId?: string;
+};
+
 export type WalletProofQrReview = {
   bundleTitle?: string;
+  encryptedRecords: WalletEncryptedRecordLink[];
   proofs: ProofReceiptView[];
   qrValue: string;
   sourceLabel: string;
   sourceUrl?: string;
+  wallet?: {
+    actorDid?: string;
+    id?: string;
+    label?: string;
+  };
 };
 
 export function buildWalletProofBundlePayload({
   actorDid,
+  encryptedRecordLinks = [],
   proofs,
   walletId
 }: {
   actorDid?: string;
+  encryptedRecordLinks?: WalletEncryptedRecordLink[];
   proofs: ProofReceiptView[];
   walletId?: string;
 }): string {
@@ -69,9 +92,22 @@ export function buildWalletProofBundlePayload({
       witnessLabel: proof.witnessLabel
     }));
   return JSON.stringify({
+    "@context": {
+      ipld: "https://ipld.io/",
+      wallet: "https://211-ai.com/ns/wallet#"
+    },
     linkedProofs,
-    title: "Client wallet proof bundle",
+    schemaVersion: "211-ai-wallet-root-ipld-v1",
+    title: "Client encrypted wallet root",
     generatedAt: new Date().toISOString(),
+    encryptedRecords: encryptedRecordLinks.map((record) => ({
+      "/": record.root?.["/"] || record.cid,
+      cid: record.root?.["/"] || record.cid,
+      fileName: record.fileName,
+      links: record.links ?? [],
+      recordId: record.recordId,
+      versionId: record.versionId
+    })),
     proofs: inlineProofs,
     wallet: {
       actorDid,
@@ -117,16 +153,14 @@ export function reviewWalletProofBundlePayload(
   const bundle = unwrapProofPayload(parsedPayload);
   const proofs = normalizeProofs(bundle);
 
-  if (proofs.length === 0) {
-    throw new Error("No proof certificates were found in the QR-linked bundle.");
-  }
-
   return {
     bundleTitle: readBundleTitle(bundle),
+    encryptedRecords: normalizeEncryptedRecords(bundle),
     proofs,
     qrValue,
     sourceLabel,
-    sourceUrl
+    sourceUrl,
+    wallet: readWalletSummary(bundle)
   };
 }
 
@@ -213,6 +247,10 @@ function parseReviewLocator(qrValue: string): ReviewLocator {
   }
 
   if (/^https?:\/\//i.test(qrValue)) {
+    const cidFromGateway = cidFromUrl(qrValue);
+    if (cidFromGateway) {
+      return { kind: "cid", cid: cidFromGateway, sourceLabel: "IPFS/Filecoin proof bundle" };
+    }
     const inlinePayload = readWalletProofBundlePayloadFromUrl(qrValue);
     if (inlinePayload) {
       return {
@@ -243,6 +281,10 @@ function locatorFromObject(payload: unknown): ReviewLocator | undefined {
     record.url
   );
   if (urlValue) {
+    const cidFromGateway = /^https?:\/\//i.test(urlValue) ? cidFromUrl(urlValue) : undefined;
+    if (cidFromGateway) {
+      return { kind: "cid", cid: cidFromGateway, sourceLabel: "IPFS/Filecoin proof bundle" };
+    }
     return /^https?:\/\//i.test(urlValue)
       ? { kind: "url", url: urlValue, sourceLabel: labelForUrl(urlValue) }
       : { kind: "cid", cid: normalizeCid(urlValue), sourceLabel: "IPFS/Filecoin proof bundle" };
@@ -277,7 +319,7 @@ async function resolveReviewLocator(locator: ReviewLocator): Promise<{
   }
 
   let lastError: Error | undefined;
-  for (const gateway of defaultIpfsGateways) {
+  for (const gateway of defaultIpfsGateways()) {
     const url = `${gateway}${locator.cid}`;
     try {
       return {
@@ -356,6 +398,66 @@ function readBundleTitle(payload: unknown): string | undefined {
     record.wallet && typeof record.wallet === "object" ? (record.wallet as Record<string, unknown>) : undefined;
   const compactWallet = record.w && typeof record.w === "object" ? (record.w as Record<string, unknown>) : undefined;
   return firstString(record.title, record.name, record.t, wallet?.title, wallet?.name, wallet?.label, compactWallet?.l);
+}
+
+function readWalletSummary(payload: unknown): WalletProofQrReview["wallet"] {
+  if (!payload || typeof payload !== "object") return undefined;
+  const record = payload as Record<string, unknown>;
+  const wallet =
+    record.wallet && typeof record.wallet === "object" ? (record.wallet as Record<string, unknown>) : undefined;
+  const compactWallet = record.w && typeof record.w === "object" ? (record.w as Record<string, unknown>) : undefined;
+  const id = firstString(wallet?.id, wallet?.walletId, compactWallet?.i, record.walletId);
+  const actorDid = firstString(wallet?.actorDid, wallet?.actor_did, compactWallet?.a, record.actorDid);
+  const label = firstString(wallet?.label, wallet?.name, compactWallet?.l);
+  if (!id && !actorDid && !label) return undefined;
+  return { actorDid, id, label };
+}
+
+function normalizeEncryptedRecords(payload: unknown): WalletEncryptedRecordLink[] {
+  if (!payload || typeof payload !== "object") return [];
+  const record = payload as Record<string, unknown>;
+  const candidates = [record.encryptedRecords, record.encrypted_records, record.records, record.r].find(Array.isArray);
+  if (!candidates) return [];
+  return candidates.map(normalizeEncryptedRecord).filter((item): item is WalletEncryptedRecordLink => Boolean(item));
+}
+
+function normalizeEncryptedRecord(value: unknown): WalletEncryptedRecordLink | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as Record<string, unknown>;
+  const root = normalizeIpldRoot(record.root);
+  const cid = firstString(record.cid, record.ipfsCid, record["/"], root?.["/"]);
+  if (!cid) return undefined;
+  const links = Array.isArray(record.links)
+    ? record.links.map(normalizeIpldLink).filter((link): link is WalletIpldLink => Boolean(link))
+    : [];
+  return {
+    cid,
+    fileName: firstString(record.fileName, record.file_name, record.name),
+    links,
+    recordId: firstString(record.recordId, record.record_id, record.id),
+    root,
+    versionId: firstString(record.versionId, record.version_id)
+  };
+}
+
+function normalizeIpldRoot(value: unknown): { "/": string } | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const cid = firstString((value as Record<string, unknown>)["/"], (value as Record<string, unknown>).cid);
+  return cid ? { "/": cid } : undefined;
+}
+
+function normalizeIpldLink(value: unknown): WalletIpldLink | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const record = value as Record<string, unknown>;
+  const cid = firstString(record["/"], record.cid, record.ipfsCid);
+  const name = firstString(record.name, record.rel, record.type) || (cid ? "linked_cid" : "");
+  if (!cid || !name) return undefined;
+  return {
+    "/": cid,
+    cid,
+    mediaType: firstString(record.mediaType, record.media_type, record.contentType),
+    name
+  };
 }
 
 function normalizeProofs(payload: unknown): ProofReceiptView[] {
@@ -447,13 +549,43 @@ function normalizeCid(value: string): string {
   return value.replace(/^ipfs:\/\//, "").replace(/^\/?ipfs\//, "");
 }
 
+function cidFromUrl(urlValue: string): string | undefined {
+  try {
+    const url = new URL(urlValue, currentBaseUrl());
+    const hostParts = url.hostname.split(".");
+    if (hostParts.length >= 3 && hostParts[1] === "ipfs" && cidPattern.test(hostParts[0])) {
+      return normalizeCid(hostParts[0]);
+    }
+    const pathMatch = url.pathname.match(/^\/ipfs\/([^/?#]+)/i);
+    if (pathMatch?.[1] && cidPattern.test(pathMatch[1])) {
+      return normalizeCid(pathMatch[1]);
+    }
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
 function parseProofArtifactLocator(value: string | undefined): ProofArtifactLocator | undefined {
   if (!value) return undefined;
-  if (/^https?:\/\//i.test(value)) return { url: value };
+  if (/^https?:\/\//i.test(value)) {
+    const cid = cidFromUrl(value);
+    return cid ? { cid } : { url: value };
+  }
   if (/^ipfs:\/\//i.test(value) || /^\/?ipfs\//i.test(value) || cidPattern.test(value)) {
     return { cid: normalizeCid(value) };
   }
   return undefined;
+}
+
+function defaultIpfsGateways(): string[] {
+  return Array.from(
+    new Set([
+      new URL("/ipfs-proxy/", currentBaseUrl()).toString(),
+      "https://w3s.link/ipfs/",
+      "https://ipfs.io/ipfs/"
+    ])
+  );
 }
 
 function labelForUrl(url: string): string {

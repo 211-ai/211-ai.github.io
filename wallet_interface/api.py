@@ -17,7 +17,7 @@ from urllib import request as urllib_request
 from .app_service import WalletInterfaceService
 
 try:  # pragma: no cover - exercised when optional dependency is installed.
-    from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+    from fastapi import FastAPI, File, Form, Header, HTTPException, Request, Response, UploadFile
     from fastapi.middleware.cors import CORSMiddleware
     from pydantic import BaseModel, Field
 except ImportError:  # pragma: no cover
@@ -28,6 +28,7 @@ except ImportError:  # pragma: no cover
     Header = None  # type: ignore[assignment]
     HTTPException = None  # type: ignore[assignment]
     Request = object  # type: ignore[assignment,misc]
+    Response = object  # type: ignore[assignment,misc]
     UploadFile = object  # type: ignore[assignment,misc]
     BaseModel = object  # type: ignore[assignment,misc]
 
@@ -44,6 +45,7 @@ from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_to
 
 PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
 OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
+_IPFS_CID_PATTERN = re.compile(r"^(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})$")
 
 
 class FilecoinPinHandoffError(RuntimeError):
@@ -57,6 +59,44 @@ def _cors_origins_from_env() -> list[str]:
         if origin.strip()
     ]
     return origins
+
+
+def _normalize_ipfs_cid(value: str) -> str:
+    normalized = str(value or "").strip()
+    normalized = normalized.replace("ipfs://", "")
+    normalized = re.sub(r"^/?ipfs/", "", normalized)
+    normalized = normalized.split("/", 1)[0].strip()
+    return normalized
+
+
+def _valid_ipfs_cid(value: str) -> bool:
+    return bool(_IPFS_CID_PATTERN.match(_normalize_ipfs_cid(value)))
+
+
+def _ipfs_proxy_allowed_cids_from_env() -> set[str]:
+    raw = str(os.getenv("WALLET_IPFS_PROXY_ALLOWED_CIDS") or "")
+    return {
+        normalized
+        for part in re.split(r"[\s,]+", raw)
+        if (normalized := _normalize_ipfs_cid(part))
+    }
+
+
+def _ipfs_proxy_allows_cid(cid: str) -> bool:
+    normalized = _normalize_ipfs_cid(cid)
+    allowed = _ipfs_proxy_allowed_cids_from_env()
+    if not allowed:
+        return True
+    return normalized in allowed
+
+
+def _ipfs_proxy_media_type(data: bytes) -> str:
+    try:
+        decoded = data.decode("utf-8")
+        json.loads(decoded)
+        return "application/json"
+    except Exception:
+        return "application/octet-stream"
 
 
 def _wallet_interface_service_from_env() -> WalletInterfaceService:
@@ -1706,18 +1746,14 @@ def create_app(*, service: WalletInterfaceService | None = None):
             content_type = request.headers.get("content-type", "")
             if "application/json" in content_type:
                 payload = FilecoinRecordUploadRequest(**(await request.json()))
-                plaintext = app_service.export_record_plaintext(
+                encrypted_record = app_service.export_record_encrypted_blobs(
                     payload.walletId,
                     payload.recordId,
                     actor_did=payload.actorDid,
-                    grant_id=payload.grantId,
-                    actor_secret=_key_from_optional_hex(payload.actorKeyHex),
                 )
-                return _publish_bytes_to_ipfs(
-                    plaintext,
+                return _publish_encrypted_record_graph_to_ipfs(
+                    encrypted_record,
                     file_name=payload.fileName,
-                    source_record_id=payload.recordId,
-                    wallet_id=payload.walletId,
                 )
 
             if file is None:
@@ -1740,6 +1776,23 @@ def create_app(*, service: WalletInterfaceService | None = None):
             raise HTTPException(status_code=502, detail=str(exc)) from exc
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/ipfs-proxy/{cid}")
+    def proxy_ipfs_cid(cid: str) -> Response:
+        normalized_cid = _normalize_ipfs_cid(cid)
+        if not _valid_ipfs_cid(normalized_cid):
+            raise HTTPException(status_code=400, detail="invalid IPFS CID")
+        if not _ipfs_proxy_allows_cid(normalized_cid):
+            raise HTTPException(status_code=403, detail="CID is not allowed by WALLET_IPFS_PROXY_ALLOWED_CIDS")
+        try:
+            payload = get_ipfs_backend().cat(normalized_cid)
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Unable to fetch CID from IPFS: {exc}") from exc
+        return Response(
+            content=payload,
+            media_type=_ipfs_proxy_media_type(payload),
+            headers={"Cache-Control": "public, max-age=300"},
+        )
 
     @app.get("/filecoin-upload/status/{request_id}")
     def get_filecoin_upload_status(request_id: str) -> Dict[str, Any]:
@@ -2942,7 +2995,7 @@ def _publish_bytes_to_ipfs(
     wallet_id: str | None = None,
 ) -> Dict[str, Any]:
     cid = _publish_bytes_via_ipfs_backend(data)
-    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "https://w3s.link/ipfs").rstrip("/")
+    gateway_base_url = os.environ.get("WALLET_IPFS_PUBLIC_GATEWAY_BASE_URL", "/ipfs-proxy").rstrip("/")
     payload: Dict[str, Any] = {
         "cid": cid,
         "gatewayUrl": f"{gateway_base_url}/{cid}",
@@ -2979,6 +3032,91 @@ def _publish_bytes_to_ipfs(
     if wallet_id:
         payload["walletId"] = wallet_id
     return payload
+
+
+def _publish_encrypted_record_graph_to_ipfs(
+    encrypted_record: Mapping[str, Any],
+    *,
+    file_name: str | None = None,
+) -> Dict[str, Any]:
+    record = dict(encrypted_record["record"])
+    version = dict(encrypted_record["version"])
+    wallet_id = str(record.get("wallet_id") or "")
+    record_id = str(record.get("record_id") or "")
+    version_id = str(version.get("version_id") or record.get("current_version_id") or "")
+    payload_result = _publish_bytes_to_ipfs(
+        encrypted_record["encrypted_payload"],
+        file_name=f"{file_name or record_id}.encrypted-payload.json",
+        mime_type="application/vnd.211-ai.wallet.encrypted-payload+json",
+        source_record_id=record_id,
+        wallet_id=wallet_id,
+    )
+    payload_cid = str(payload_result.get("ipfsCid") or payload_result.get("cid") or "")
+    metadata_result = None
+    metadata_cid = ""
+    if encrypted_record.get("encrypted_metadata") is not None:
+        metadata_result = _publish_bytes_to_ipfs(
+            encrypted_record["encrypted_metadata"],
+            file_name=f"{file_name or record_id}.encrypted-metadata.json",
+            mime_type="application/vnd.211-ai.wallet.encrypted-metadata+json",
+            source_record_id=record_id,
+            wallet_id=wallet_id,
+        )
+        metadata_cid = str(metadata_result.get("ipfsCid") or metadata_result.get("cid") or "")
+    encrypted_payload_ref = dict(version.get("encrypted_payload_ref") or {})
+    encrypted_metadata_ref = dict(version.get("encrypted_metadata_ref") or {}) if version.get("encrypted_metadata_ref") else None
+    graph = {
+        "schemaVersion": "211-ai-wallet-encrypted-record-ipld-v1",
+        "walletId": wallet_id,
+        "recordId": record_id,
+        "versionId": version_id,
+        "dataType": record.get("data_type"),
+        "sensitivity": record.get("sensitivity"),
+        "publicDescriptor": record.get("public_descriptor"),
+        "ciphertextHash": version.get("ciphertext_hash"),
+        "encryptionSuite": version.get("encryption_suite"),
+        "encryptedPayload": {
+            "/": payload_cid,
+            "storageRef": encrypted_payload_ref,
+            "filecoin": payload_result,
+        },
+        "encryptedMetadata": (
+            {
+                "/": metadata_cid,
+                "storageRef": encrypted_metadata_ref,
+                "filecoin": metadata_result,
+            }
+            if metadata_result is not None
+            else None
+        ),
+        "links": [
+            {"name": "encrypted_payload", "/": payload_cid, "mediaType": "application/vnd.211-ai.wallet.encrypted-payload+json"},
+            *(
+                [{"name": "encrypted_metadata", "/": metadata_cid, "mediaType": "application/vnd.211-ai.wallet.encrypted-metadata+json"}]
+                if metadata_result is not None
+                else []
+            ),
+        ],
+    }
+    graph_result = _publish_bytes_to_ipfs(
+        json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+        file_name=f"{file_name or record_id}.ipld-wallet-record.json",
+        mime_type="application/vnd.ipld.dag-json",
+        source_record_id=record_id,
+        wallet_id=wallet_id,
+    )
+    graph_cid = str(graph_result.get("ipfsCid") or graph_result.get("cid") or "")
+    return {
+        **graph_result,
+        "message": "Pinned encrypted wallet record graph to IPFS/Filecoin.",
+        "encryptedPayloadCid": payload_cid,
+        "encryptedMetadataCid": metadata_cid or None,
+        "ipldLinks": graph["links"],
+        "recordId": record_id,
+        "versionId": version_id,
+        "root": {"/": graph_cid},
+        "walletId": wallet_id,
+    }
 
 
 def _publish_bytes_via_ipfs_backend(data: bytes) -> str:
