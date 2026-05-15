@@ -2110,6 +2110,14 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     ipfsGatewayUrl: readMetadataString(metadata, "ipfsGatewayUrl"),
     ipfsRootCid: readMetadataString(metadata, "ipfsRootCid"),
     ipldLinks: readMetadataIpldLinks(metadata, "ipldLinks"),
+    metadataCid: readMetadataString(metadata, "metadataCid"),
+    metadataFilecoinPinRequestId: readMetadataString(metadata, "metadataFilecoinPinRequestId"),
+    metadataFilecoinPinStatus: readMetadataString(metadata, "metadataFilecoinPinStatus") as UploadItem["metadataFilecoinPinStatus"],
+    metadataFilecoinPinStatusUrl: readMetadataString(metadata, "metadataFilecoinPinStatusUrl"),
+    metadataGatewayUrl: readMetadataString(metadata, "metadataGatewayUrl"),
+    metadataIpldCid: readMetadataString(metadata, "metadataIpldCid"),
+    metadataIpldLink: readMetadataIpldLink(metadata, "metadataIpldLink"),
+    metadataStorageMessage: readMetadataString(metadata, "metadataStorageMessage"),
     privacyProfileArtifactIds: readMetadataStringArray(metadata, "privacyProfileArtifactIds"),
     privacyProfileClassification: readMetadataString(metadata, "privacyProfileClassification"),
     privacyProfileLabels: readMetadataStringArray(metadata, "privacyProfileLabels"),
@@ -2117,8 +2125,11 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     privacyProfileMimeType: readMetadataString(metadata, "privacyProfileMimeType"),
     privacyProfileNeedsRefresh: Boolean(metadata.privacyProfileNeedsRefresh),
     privacyProfileProofId: readMetadataString(metadata, "privacyProfileProofId"),
+    privacyProfilePublicInputs: readMetadataRecord(metadata, "privacyProfilePublicInputs"),
+    privacyProfileSearchText: readMetadataString(metadata, "privacyProfileSearchText"),
     privacyProfileStatus: readMetadataString(metadata, "privacyProfileStatus") as UploadItem["privacyProfileStatus"],
-    privacyProfileSummary: readMetadataString(metadata, "privacyProfileSummary")
+    privacyProfileSummary: readMetadataString(metadata, "privacyProfileSummary"),
+    privacyProfileVectorTerms: readMetadataStringArray(metadata, "privacyProfileVectorTerms")
   };
 }
 
@@ -2150,6 +2161,11 @@ function readMetadataStringArray(metadata: Record<string, unknown>, key: string)
   return strings.length ? strings : undefined;
 }
 
+function readMetadataRecord(metadata: Record<string, unknown>, key: string): Record<string, unknown> | undefined {
+  const value = metadata[key];
+  return isPlainRecord(value) ? value : undefined;
+}
+
 function readMetadataIpldLinks(
   metadata: Record<string, unknown>,
   key: string
@@ -2170,6 +2186,15 @@ function readMetadataIpldLinks(
     }];
   });
   return links.length ? links : undefined;
+}
+
+function readMetadataIpldLink(
+  metadata: Record<string, unknown>,
+  key: string
+): { "/"?: string; cid?: string; mediaType?: string; name: string } | undefined {
+  const value = metadata[key];
+  if (!isPlainRecord(value)) return undefined;
+  return readMetadataIpldLinks({ [key]: [value] }, key)?.[0];
 }
 
 async function fetchJson<T>(url: URL, label: string): Promise<T> {

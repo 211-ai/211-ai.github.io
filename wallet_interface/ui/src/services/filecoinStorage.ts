@@ -40,6 +40,10 @@ export type FilecoinUploadResponse = {
   gatewayUrl?: string;
   ipfsCid?: string;
   ipldLinks?: Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }>;
+  metadataCid?: string;
+  metadataGatewayUrl?: string;
+  metadataIpldCid?: string;
+  metadataIpldLink?: { "/"?: string; cid?: string; mediaType?: string; name: string };
   message?: string;
   pieceCid?: string;
   provider?: UploadItem["decentralizedStorageProvider"] | string;
@@ -185,7 +189,11 @@ export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<
     ipfsCid,
     ipfsGatewayUrl: result.gatewayUrl || result.url || (ipfsCid ? `/ipfs-proxy/${ipfsCid}` : undefined),
     ipfsRootCid,
-    ipldLinks: result.ipldLinks
+    ipldLinks: result.ipldLinks,
+    metadataCid: result.metadataCid,
+    metadataGatewayUrl: result.metadataGatewayUrl,
+    metadataIpldCid: result.metadataIpldCid,
+    metadataIpldLink: result.metadataIpldLink
   };
 }
 

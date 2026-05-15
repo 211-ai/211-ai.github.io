@@ -131,6 +131,14 @@ export interface UploadItem {
   ipfsGatewayUrl?: string;
   ipfsRootCid?: string;
   ipldLinks?: Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }>;
+  metadataCid?: string;
+  metadataFilecoinPinRequestId?: string;
+  metadataFilecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
+  metadataFilecoinPinStatusUrl?: string;
+  metadataGatewayUrl?: string;
+  metadataIpldCid?: string;
+  metadataIpldLink?: { "/"?: string; cid?: string; mediaType?: string; name: string };
+  metadataStorageMessage?: string;
   filecoinPieceCid?: string;
   filecoinDealId?: string;
   filecoinPinRequestId?: string;
@@ -145,7 +153,10 @@ export interface UploadItem {
   privacyProfileProofId?: string;
   privacyProfileArtifactIds?: string[];
   privacyProfileMessage?: string;
+  privacyProfilePublicInputs?: Record<string, unknown>;
+  privacyProfileSearchText?: string;
   privacyProfileNeedsRefresh?: boolean;
+  privacyProfileVectorTerms?: string[];
 }
 
 export interface ServiceMatch {

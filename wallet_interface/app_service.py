@@ -94,6 +94,8 @@ def _record_delete_cids(metadata: Mapping[str, Any], versions: Sequence[Any]) ->
     for key in (
         "ipfsCid",
         "ipfsRootCid",
+        "metadataCid",
+        "metadataIpldCid",
         "encryptedPayloadCid",
         "encryptedMetadataCid",
     ):
@@ -3899,6 +3901,7 @@ class WalletInterfaceService:
             else None
         )
         return {
+            "metadata": self.record_to_dict(record).get("metadata", {}),
             "record": record.to_dict(),
             "version": version.to_dict(),
             "encrypted_payload": payload,

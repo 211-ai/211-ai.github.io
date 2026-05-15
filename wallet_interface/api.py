@@ -1862,12 +1862,22 @@ def create_app(*, service: WalletInterfaceService | None = None):
         request: WalletRecordMetadataRequest,
     ) -> Dict[str, Any]:
         try:
-            return app_service.update_record_metadata(
+            record = app_service.update_record_metadata(
                 wallet_id,
                 record_id,
                 actor_did=request.actor_did,
                 metadata=request.metadata,
             )
+            if _should_publish_record_metadata_ipld(request.metadata):
+                metadata_patch = _publish_record_metadata_ipld(record)
+                if metadata_patch:
+                    record = app_service.update_record_metadata(
+                        wallet_id,
+                        record_id,
+                        actor_did=request.actor_did,
+                        metadata=metadata_patch,
+                    )
+            return record
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
@@ -3153,6 +3163,7 @@ def _publish_encrypted_record_graph_to_ipfs(
             if metadata_result is not None
             else None
         ),
+        "walletMetadata": None,
         "links": [
             {"name": "encrypted_payload", "/": payload_cid, "mediaType": "application/vnd.211-ai.wallet.encrypted-payload+json"},
             *(
@@ -3162,6 +3173,19 @@ def _publish_encrypted_record_graph_to_ipfs(
             ),
         ],
     }
+    wallet_metadata_cid = _record_metadata_cid(encrypted_record)
+    if wallet_metadata_cid:
+        graph["walletMetadata"] = {
+            "/": wallet_metadata_cid,
+            "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
+        }
+        graph["links"].append(
+            {
+                "name": "wallet_metadata",
+                "/": wallet_metadata_cid,
+                "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
+            }
+        )
     graph_result = _publish_bytes_to_ipfs(
         json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
         file_name=f"{file_name or record_id}.ipld-wallet-record.json",
@@ -3175,12 +3199,165 @@ def _publish_encrypted_record_graph_to_ipfs(
         "message": "Pinned encrypted wallet record graph to IPFS/Filecoin.",
         "encryptedPayloadCid": payload_cid,
         "encryptedMetadataCid": metadata_cid or None,
+        "metadataCid": wallet_metadata_cid or None,
+        "metadataIpldCid": wallet_metadata_cid or None,
         "ipldLinks": graph["links"],
         "recordId": record_id,
         "versionId": version_id,
         "root": {"/": graph_cid},
         "walletId": wallet_id,
     }
+
+
+def _record_metadata_cid(encrypted_record: Mapping[str, Any]) -> str:
+    metadata = encrypted_record.get("metadata")
+    if isinstance(metadata, Mapping):
+        for key in ("metadataCid", "metadataIpldCid"):
+            value = str(metadata.get(key) or "").strip()
+            if value:
+                return value
+    record = encrypted_record.get("record")
+    if isinstance(record, Mapping):
+        metadata = record.get("metadata")
+        if isinstance(metadata, Mapping):
+            for key in ("metadataCid", "metadataIpldCid"):
+                value = str(metadata.get(key) or "").strip()
+                if value:
+                    return value
+    return ""
+
+
+def _should_publish_record_metadata_ipld(metadata: Mapping[str, Any]) -> bool:
+    generated_keys = {
+        "decryptedClassification",
+        "decryptedLabels",
+        "decryptedMimeType",
+        "privacyProfileArtifactIds",
+        "privacyProfileClassification",
+        "privacyProfileLabels",
+        "privacyProfileMimeType",
+        "privacyProfileProofId",
+        "privacyProfilePublicInputs",
+        "privacyProfileSearchText",
+        "privacyProfileStatus",
+        "privacyProfileSummary",
+        "privacyProfileVectorTerms",
+    }
+    return any(key in metadata for key in generated_keys)
+
+
+def _publish_record_metadata_ipld(record: Mapping[str, Any]) -> Dict[str, Any]:
+    metadata = record.get("metadata")
+    if not isinstance(metadata, Mapping):
+        return {}
+    generated_metadata = _generated_wallet_metadata(metadata)
+    if not generated_metadata:
+        return {}
+    record_id = str(record.get("record_id") or "")
+    wallet_id = str(record.get("wallet_id") or metadata.get("walletId") or "")
+    graph = {
+        "schemaVersion": "211-ai-wallet-record-metadata-ipld-v1",
+        "walletId": wallet_id,
+        "recordId": record_id,
+        "dataType": record.get("data_type"),
+        "sensitivity": record.get("sensitivity"),
+        "metadata": generated_metadata,
+        "privacyPolicy": "proof_backed_metadata_no_plaintext_payload",
+        "links": [
+            *(
+                [
+                    {
+                        "name": "document_privacy_profile_proof",
+                        "proofId": str(generated_metadata["privacyProfileProofId"]),
+                        "mediaType": "application/vnd.211-ai.wallet.proof-receipt+json",
+                    }
+                ]
+                if generated_metadata.get("privacyProfileProofId")
+                else []
+            ),
+            *(
+                [
+                    {
+                        "name": "derived_artifact",
+                        "artifactId": artifact_id,
+                        "mediaType": "application/vnd.211-ai.wallet.derived-artifact+json",
+                    }
+                    for artifact_id in generated_metadata.get("privacyProfileArtifactIds", [])
+                    if isinstance(artifact_id, str) and artifact_id.strip()
+                ]
+            ),
+        ],
+    }
+    result = _publish_bytes_to_ipfs(
+        json.dumps(graph, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+        file_name=f"{record_id or 'wallet-record'}.wallet-metadata.ipld.json",
+        mime_type="application/vnd.211-ai.wallet.record-metadata+json",
+        source_record_id=record_id or None,
+        wallet_id=wallet_id or None,
+    )
+    cid = str(result.get("ipfsCid") or result.get("cid") or "")
+    if not cid:
+        return {}
+    existing_links = metadata.get("ipldLinks") if isinstance(metadata.get("ipldLinks"), list) else []
+    metadata_link = {
+        "name": "wallet_metadata",
+        "/": cid,
+        "mediaType": "application/vnd.211-ai.wallet.record-metadata+json",
+    }
+    links = [
+        link
+        for link in existing_links
+        if not (isinstance(link, Mapping) and str(link.get("name") or "") == "wallet_metadata")
+    ]
+    links.append(metadata_link)
+    patch: Dict[str, Any] = {
+        "metadataCid": cid,
+        "metadataGatewayUrl": result.get("gatewayUrl") or result.get("url"),
+        "metadataIpldCid": cid,
+        "metadataIpldLink": metadata_link,
+        "metadataStorageMessage": result.get("message") or "Pinned wallet metadata IPLD to IPFS/Filecoin.",
+        "ipldLinks": links,
+    }
+    for key in ("filecoinPinRequestId", "filecoinPinStatus", "filecoinPinStatusUrl"):
+        value = result.get(key)
+        if value:
+            patch[f"metadata{key[0].upper()}{key[1:]}"] = value
+    return patch
+
+
+def _generated_wallet_metadata(metadata: Mapping[str, Any]) -> Dict[str, Any]:
+    allowed = {
+        "decryptedClassification",
+        "decryptedLabels",
+        "decryptedMimeType",
+        "fileName",
+        "privacyProfileArtifactIds",
+        "privacyProfileClassification",
+        "privacyProfileLabels",
+        "privacyProfileMimeType",
+        "privacyProfileProofId",
+        "privacyProfilePublicInputs",
+        "privacyProfileSearchText",
+        "privacyProfileStatus",
+        "privacyProfileSummary",
+        "privacyProfileVectorTerms",
+    }
+    generated = {key: metadata[key] for key in sorted(allowed) if key in metadata}
+    return _json_safe_metadata(generated)
+
+
+def _json_safe_metadata(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {
+            str(key): _json_safe_metadata(item)
+            for key, item in value.items()
+            if item is not None
+        }
+    if isinstance(value, list):
+        return [_json_safe_metadata(item) for item in value if item is not None]
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
 
 
 def _publish_bytes_via_ipfs_backend(data: bytes) -> str:

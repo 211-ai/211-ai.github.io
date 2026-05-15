@@ -3433,6 +3433,7 @@ function UploadsScreen({
   const [downloadingUploadIds, setDownloadingUploadIds] = useState<string[]>([]);
   const [deletingUploadIds, setDeletingUploadIds] = useState<string[]>([]);
   const [walletFileQuery, setWalletFileQuery] = useState("");
+  const [walletFileFilter, setWalletFileFilter] = useState<WalletFileFilterMode>("all");
   const [walletFileSort, setWalletFileSort] = useState<WalletFileSortMode>("newest");
   const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(true);
   const uploadsRef = useRef(uploads);
@@ -3460,9 +3461,10 @@ function UploadsScreen({
     ? walletProofBundleCid || "Publishing IPFS CID…"
     : "Connect IPFS/Filecoin storage to generate a CID.";
   const visibleUploads = useMemo(
-    () => sortWalletFiles(filterWalletFiles(uploads, walletFileQuery), walletFileSort),
-    [uploads, walletFileQuery, walletFileSort]
+    () => searchWalletFiles(uploads, walletFileQuery, walletFileSort, walletFileFilter),
+    [uploads, walletFileFilter, walletFileQuery, walletFileSort]
   );
+  const walletFileStats = useMemo(() => buildWalletFileStats(uploads), [uploads]);
 
   useEffect(() => {
     uploadsRef.current = uploads;
@@ -3787,8 +3789,11 @@ function UploadsScreen({
         privacyProfileMimeType: mimeType,
         privacyProfileNeedsRefresh: false,
         privacyProfileProofId: proof.id,
+        privacyProfilePublicInputs: proof.publicInputs,
+        privacyProfileSearchText: buildPrivacySearchText(outputs, proof.publicInputs),
         privacyProfileStatus: "profiled",
-        privacyProfileSummary: summarizeDocumentPrivacyProfile(publicInputs)
+        privacyProfileSummary: summarizeDocumentPrivacyProfile(publicInputs),
+        privacyProfileVectorTerms: buildPrivacyVectorTerms(outputs, proof.publicInputs)
       };
       updateUpload(upload.id, patch);
       await persistUploadMetadata(upload, patch);
@@ -3879,6 +3884,14 @@ function UploadsScreen({
       ipfsRootCid: upload.ipfsRootCid,
       ipldLinks: upload.ipldLinks,
       machineSummary: upload.machineSummary,
+      metadataCid: upload.metadataCid,
+      metadataFilecoinPinRequestId: upload.metadataFilecoinPinRequestId,
+      metadataFilecoinPinStatus: upload.metadataFilecoinPinStatus,
+      metadataFilecoinPinStatusUrl: upload.metadataFilecoinPinStatusUrl,
+      metadataGatewayUrl: upload.metadataGatewayUrl,
+      metadataIpldCid: upload.metadataIpldCid,
+      metadataIpldLink: upload.metadataIpldLink,
+      metadataStorageMessage: upload.metadataStorageMessage,
       privacyProfileArtifactIds: upload.privacyProfileArtifactIds,
       privacyProfileClassification: upload.privacyProfileClassification,
       privacyProfileLabels: upload.privacyProfileLabels,
@@ -3886,8 +3899,11 @@ function UploadsScreen({
       privacyProfileMimeType: upload.privacyProfileMimeType,
       privacyProfileNeedsRefresh: upload.privacyProfileNeedsRefresh,
       privacyProfileProofId: upload.privacyProfileProofId,
+      privacyProfilePublicInputs: upload.privacyProfilePublicInputs,
+      privacyProfileSearchText: upload.privacyProfileSearchText,
       privacyProfileStatus: upload.privacyProfileStatus,
-      privacyProfileSummary: upload.privacyProfileSummary
+      privacyProfileSummary: upload.privacyProfileSummary,
+      privacyProfileVectorTerms: upload.privacyProfileVectorTerms
     });
   }
 
@@ -4025,6 +4041,24 @@ function UploadsScreen({
       </div>
       {walletCreateStatus === "created" ? <StatusBanner tone="success">New wallet generated and connected.</StatusBanner> : null}
       {walletCreateStatus === "failed" ? <StatusBanner tone="warning">{walletCreateError || "Wallet generation failed."}</StatusBanner> : null}
+      <div className="wallet-status-strip" aria-label="Wallet status">
+        <div>
+          <span>Wallet</span>
+          <strong>{apiConfig ? "Connected" : apiBaseUrl ? "Ready" : "Needs API"}</strong>
+        </div>
+        <div>
+          <span>Files</span>
+          <strong>{uploads.length}</strong>
+        </div>
+        <div>
+          <span>Proofs</span>
+          <strong>{walletFileStats.profiled}</strong>
+        </div>
+        <div>
+          <span>IPLD</span>
+          <strong>{walletFileStats.ipldLinked}</strong>
+        </div>
+      </div>
       <Section
         title="Wallet connection"
         actions={
@@ -4113,7 +4147,6 @@ function UploadsScreen({
           </div>
         </div>
       </Section>
-      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
       <Section
         title="Add wallet file"
         actions={
@@ -4155,42 +4188,68 @@ function UploadsScreen({
           />
         </label>
       </Section>
-      <div className="list-stack">
-        <div className="wallet-file-controls" aria-label="Wallet file controls">
-          <Field label="Find wallet files">
-            <div className="wallet-file-search-field">
-              <Search aria-hidden="true" size={18} />
-              <input
-                autoComplete="off"
-                onChange={(event) => setWalletFileQuery(event.target.value)}
-                placeholder="Search safe labels, types, names"
-                type="search"
-                value={walletFileQuery}
-              />
-            </div>
-          </Field>
-          <Field label="Sort">
-            <select
-              onChange={(event) => setWalletFileSort(event.target.value as WalletFileSortMode)}
-              value={walletFileSort}
-            >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-              <option value="name">Name</option>
-              <option value="type">Type</option>
-              <option value="profile">Profile status</option>
-              <option value="storage">Storage status</option>
-            </select>
-          </Field>
+      <Section
+        title="File wallet"
+        actions={
           <Badge tone={visibleUploads.length === uploads.length ? "neutral" : "info"}>
             {visibleUploads.length}/{uploads.length} files
           </Badge>
+        }
+      >
+        <div className="wallet-file-workbench">
+          <div className="wallet-file-controls" aria-label="Wallet file controls">
+            <Field label="Find wallet files">
+              <div className="wallet-file-search-field">
+                <Search aria-hidden="true" size={18} />
+                <input
+                  autoComplete="off"
+                  onChange={(event) => setWalletFileQuery(event.target.value)}
+                  placeholder="Search proof-backed profiles"
+                  type="search"
+                  value={walletFileQuery}
+                />
+              </div>
+            </Field>
+            <Field label="Sort">
+              <select
+                onChange={(event) => setWalletFileSort(event.target.value as WalletFileSortMode)}
+                value={walletFileSort}
+              >
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="name">Name</option>
+                <option value="type">Type</option>
+                <option value="profile">Profile status</option>
+                <option value="storage">Storage status</option>
+              </select>
+            </Field>
+          </div>
+          <div className="wallet-file-filter-row" aria-label="Wallet file filters">
+            {walletFileFilterOptions.map((option) => (
+              <button
+                aria-pressed={walletFileFilter === option.value}
+                className="choice-chip"
+                key={option.value}
+                onClick={() => setWalletFileFilter(option.value)}
+                type="button"
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
+        <div className="list-stack wallet-file-list">
+          {visibleUploads.length === 0 ? (
+            <div className="wallet-empty-state">
+              <strong>No wallet files match this view</strong>
+              <small>Adjust the search or filter to show more records.</small>
+            </div>
+          ) : null}
         {visibleUploads.map((upload) => (
           <article aria-label={`${upload.fileName} wallet file`} className="list-item upload-list-item wallet-list-item" key={upload.id}>
-            <div>
+            <div className="wallet-file-primary">
               <h3>{upload.fileName}</h3>
-              <p>{upload.category}</p>
+              <p>{uploadTypeLabel(upload)}</p>
               <small className="upload-machine-summary">{toShortSummaryTitle(upload.machineSummary)}</small>
               <div className="badge-row">
                 <Badge tone="success">{upload.status}</Badge>
@@ -4217,17 +4276,29 @@ function UploadsScreen({
                 ) : null}
               </div>
               {upload.ipfsCid ? (
-                <small className="wallet-storage-reference">
-                  IPFS CID:{" "}
+                <div className="wallet-evidence-row">
+                  <span>IPFS</span>
                   <a href={ipfsGatewayHref(upload)} rel="noreferrer" target="_blank">
                     <code>{upload.ipfsCid}</code>
                   </a>
-                </small>
+                </div>
               ) : null}
               {upload.ipldLinks?.length ? (
-                <small className="wallet-storage-reference">
-                  IPLD links: {upload.ipldLinks.length} encrypted wallet object{upload.ipldLinks.length === 1 ? "" : "s"} tracked
-                </small>
+                <div className="wallet-evidence-row">
+                  <span>IPLD</span>
+                  <strong>{upload.ipldLinks.length} object{upload.ipldLinks.length === 1 ? "" : "s"}</strong>
+                </div>
+              ) : null}
+              {upload.metadataCid ? (
+                <div className="wallet-evidence-row">
+                  <span>Metadata</span>
+                  <a href={upload.metadataGatewayUrl || ipfsGatewayHref({ ...upload, ipfsCid: upload.metadataCid, ipfsGatewayUrl: undefined })} rel="noreferrer" target="_blank">
+                    <code>{upload.metadataCid}</code>
+                  </a>
+                </div>
+              ) : null}
+              {upload.metadataStorageMessage ? (
+                <small className="wallet-storage-reference">{upload.metadataStorageMessage}</small>
               ) : null}
               {upload.privacyProfileSummary ? (
                 <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
@@ -4263,64 +4334,6 @@ function UploadsScreen({
               {upload.decentralizedStorageMessage ? (
                 <small className="wallet-storage-reference">{upload.decentralizedStorageMessage}</small>
               ) : null}
-            </div>
-            <div className="row-actions list-item-action wallet-file-actions">
-              {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={repairingUploadIds.includes(upload.id)}
-                  onClick={() => repairUploadStorage(upload)}
-                  variant="secondary"
-                >
-                  <Wrench aria-hidden="true" size={18} />
-                  {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
-                </Button>
-              ) : null}
-              {filecoinStorageReady && upload.recordId && shouldShowFilecoinAction(upload) ? (
-                <Button
-                  disabled={filecoinUploadIds.includes(upload.id)}
-                  onClick={() => void storeWalletRecordOnFilecoin(upload)}
-                  variant="secondary"
-                >
-                  <Upload aria-hidden="true" size={18} />
-                  {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
-                </Button>
-              ) : null}
-              {upload.recordId && apiConfig?.actorDid && upload.privacyProfileStatus !== "profiled" ? (
-                <Button
-                  disabled={upload.privacyProfileStatus === "profiling"}
-                  onClick={() => void profileWalletUpload(upload)}
-                  variant="secondary"
-                >
-                  <ShieldCheck aria-hidden="true" size={18} />
-                  {upload.privacyProfileStatus === "profiling" ? "Profiling" : "Generate proof"}
-                </Button>
-              ) : null}
-              {upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={downloadingUploadIds.includes(upload.id)}
-                  onClick={() => void downloadDecryptedUpload(upload)}
-                  variant="secondary"
-                >
-                  <Download aria-hidden="true" size={18} />
-                  {downloadingUploadIds.includes(upload.id) ? "Decrypting" : "Download decrypted"}
-                </Button>
-              ) : null}
-              {upload.recordId && apiConfig?.actorDid ? (
-                <Button
-                  disabled={deletingUploadIds.includes(upload.id)}
-                  onClick={() => void deleteWalletUpload(upload)}
-                  variant="secondary"
-                >
-                  <Trash2 aria-hidden="true" size={18} />
-                  {deletingUploadIds.includes(upload.id) ? "Deleting" : "Delete"}
-                </Button>
-              ) : null}
-              <Button
-                onClick={() => (upload.shared ? makePrivate(upload) : allowSharing(upload))}
-                variant="secondary"
-              >
-                {upload.shared ? "Make private" : "Allow sharing"}
-              </Button>
             </div>
             <div className="wallet-sharing-controls" aria-label={`Sharing controls for ${upload.fileName}`}>
               <div className="wallet-sharing-mode">
@@ -4363,9 +4376,69 @@ function UploadsScreen({
                 </div>
               ) : null}
             </div>
+            <div className="wallet-file-footer-actions" aria-label={`Actions for ${upload.fileName}`}>
+              {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={repairingUploadIds.includes(upload.id)}
+                  onClick={() => repairUploadStorage(upload)}
+                  variant="secondary"
+                >
+                  <Wrench aria-hidden="true" size={18} />
+                  {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
+                </Button>
+              ) : null}
+              {filecoinStorageReady && upload.recordId && shouldShowFilecoinAction(upload) ? (
+                <Button
+                  disabled={filecoinUploadIds.includes(upload.id)}
+                  onClick={() => void storeWalletRecordOnFilecoin(upload)}
+                  variant="secondary"
+                >
+                  <Upload aria-hidden="true" size={18} />
+                  {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
+                </Button>
+              ) : null}
+              {upload.recordId && apiConfig?.actorDid && upload.privacyProfileStatus !== "profiled" ? (
+                <Button
+                  disabled={upload.privacyProfileStatus === "profiling"}
+                  onClick={() => void profileWalletUpload(upload)}
+                  variant="secondary"
+                >
+                  <ShieldCheck aria-hidden="true" size={18} />
+                  {upload.privacyProfileStatus === "profiling" ? "Profiling" : "Generate proof"}
+                </Button>
+              ) : null}
+              {upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={downloadingUploadIds.includes(upload.id)}
+                  onClick={() => void downloadDecryptedUpload(upload)}
+                  variant="secondary"
+                >
+                  <Download aria-hidden="true" size={18} />
+                  {downloadingUploadIds.includes(upload.id) ? "Decrypting" : "Download decrypted"}
+                </Button>
+              ) : null}
+              <Button
+                onClick={() => (upload.shared ? makePrivate(upload) : allowSharing(upload))}
+                variant="secondary"
+              >
+                {upload.shared ? "Make private" : "Allow sharing"}
+              </Button>
+              {upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={deletingUploadIds.includes(upload.id)}
+                  onClick={() => void deleteWalletUpload(upload)}
+                  variant="secondary"
+                >
+                  <Trash2 aria-hidden="true" size={18} />
+                  {deletingUploadIds.includes(upload.id) ? "Deleting" : "Delete"}
+                </Button>
+              ) : null}
+            </div>
           </article>
         ))}
       </div>
+      </Section>
+      <ExportCenterScreen apiConfig={apiConfig} bundles={bundles} setBundles={setBundles} />
     </div>
   );
 }
@@ -4377,58 +4450,140 @@ function sharingBadge(upload: UploadItem): string {
 }
 
 type WalletFileSortMode = "newest" | "oldest" | "name" | "type" | "profile" | "storage";
+type WalletFileFilterMode = "all" | "profiled" | "needs_proof" | "stored" | "shared";
 
-function filterWalletFiles(uploads: UploadItem[], query: string): UploadItem[] {
+const walletFileFilterOptions: Array<{ label: string; value: WalletFileFilterMode }> = [
+  { label: "All", value: "all" },
+  { label: "Profiled", value: "profiled" },
+  { label: "Needs proof", value: "needs_proof" },
+  { label: "Stored", value: "stored" },
+  { label: "Shared", value: "shared" }
+];
+
+function searchWalletFiles(
+  uploads: UploadItem[],
+  query: string,
+  sortMode: WalletFileSortMode,
+  filterMode: WalletFileFilterMode
+): UploadItem[] {
+  const filtered = filterWalletFilesByMode(uploads, filterMode);
   const tokens = query
     .trim()
     .toLocaleLowerCase()
     .split(/\s+/)
     .filter(Boolean);
-  if (!tokens.length) return uploads;
-  return uploads.filter((upload) => {
-    const haystack = [
-      upload.fileName,
-      upload.category,
-      upload.machineSummary,
-      upload.decentralizedStorageProvider,
-      upload.decentralizedStorageStatus,
-      upload.decryptedClassification,
-      upload.decryptedMimeType,
-      upload.filecoinPinStatus,
-      upload.privacyProfileClassification,
-      upload.privacyProfileLabels?.join(" "),
-      upload.privacyProfileMimeType,
-      upload.privacyProfileStatus,
-      upload.privacyProfileSummary,
-      upload.status
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLocaleLowerCase();
-    return tokens.every((token) => haystack.includes(token));
-  });
+  if (!tokens.length) return sortWalletFiles(filtered, sortMode);
+  return filtered
+    .map((upload) => ({ score: walletFileSearchScore(upload, tokens), upload }))
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score || compareWalletFiles(left.upload, right.upload, sortMode))
+    .map((item) => item.upload);
+}
+
+function filterWalletFilesByMode(uploads: UploadItem[], filterMode: WalletFileFilterMode): UploadItem[] {
+  switch (filterMode) {
+    case "profiled":
+      return uploads.filter((upload) => upload.privacyProfileStatus === "profiled");
+    case "needs_proof":
+      return uploads.filter((upload) => upload.recordId && upload.privacyProfileStatus !== "profiled");
+    case "stored":
+      return uploads.filter((upload) => upload.decentralizedStorageStatus === "stored" || Boolean(upload.ipfsCid));
+    case "shared":
+      return uploads.filter((upload) => upload.shared || (upload.allowedRecipientIds?.length ?? 0) > 0);
+    case "all":
+    default:
+      return uploads;
+  }
+}
+
+function buildWalletFileStats(uploads: UploadItem[]) {
+  return {
+    ipldLinked: uploads.filter((upload) => upload.ipldLinks?.length || upload.metadataCid).length,
+    profiled: uploads.filter((upload) => upload.privacyProfileStatus === "profiled").length
+  };
 }
 
 function sortWalletFiles(uploads: UploadItem[], sortMode: WalletFileSortMode): UploadItem[] {
   const sorted = [...uploads];
-  sorted.sort((left, right) => {
-    switch (sortMode) {
-      case "oldest":
-        return uploadCreatedTime(left) - uploadCreatedTime(right);
-      case "name":
-        return left.fileName.localeCompare(right.fileName) || uploadCreatedTime(right) - uploadCreatedTime(left);
-      case "type":
-        return uploadTypeLabel(left).localeCompare(uploadTypeLabel(right)) || left.fileName.localeCompare(right.fileName);
-      case "profile":
-        return uploadProfileSortRank(left) - uploadProfileSortRank(right) || left.fileName.localeCompare(right.fileName);
-      case "storage":
-        return uploadStorageSortRank(left) - uploadStorageSortRank(right) || left.fileName.localeCompare(right.fileName);
-      case "newest":
-      default:
-        return uploadCreatedTime(right) - uploadCreatedTime(left);
-    }
-  });
+  sorted.sort((left, right) => compareWalletFiles(left, right, sortMode));
   return sorted;
+}
+
+function compareWalletFiles(left: UploadItem, right: UploadItem, sortMode: WalletFileSortMode): number {
+  switch (sortMode) {
+    case "oldest":
+      return uploadCreatedTime(left) - uploadCreatedTime(right);
+    case "name":
+      return left.fileName.localeCompare(right.fileName) || uploadCreatedTime(right) - uploadCreatedTime(left);
+    case "type":
+      return uploadTypeLabel(left).localeCompare(uploadTypeLabel(right)) || left.fileName.localeCompare(right.fileName);
+    case "profile":
+      return uploadProfileSortRank(left) - uploadProfileSortRank(right) || left.fileName.localeCompare(right.fileName);
+    case "storage":
+      return uploadStorageSortRank(left) - uploadStorageSortRank(right) || left.fileName.localeCompare(right.fileName);
+    case "newest":
+    default:
+      return uploadCreatedTime(right) - uploadCreatedTime(left);
+  }
+}
+
+function walletFileSearchScore(upload: UploadItem, tokens: string[]): number {
+  const proofIndex = [
+    upload.privacyProfileSearchText,
+    upload.privacyProfileVectorTerms?.join(" "),
+    stringifySearchRecord(upload.privacyProfilePublicInputs)
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase();
+  const visibleIndex = [
+    upload.fileName,
+    upload.category,
+    upload.machineSummary,
+    upload.decentralizedStorageProvider,
+    upload.decentralizedStorageStatus,
+    upload.decryptedClassification,
+    upload.decryptedMimeType,
+    upload.filecoinPinStatus,
+    upload.privacyProfileClassification,
+    upload.privacyProfileLabels?.join(" "),
+    upload.privacyProfileMimeType,
+    upload.privacyProfileStatus,
+    upload.privacyProfileSummary,
+    upload.status
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLocaleLowerCase();
+  let score = 0;
+  for (const token of tokens) {
+    if (proofIndex.includes(token)) {
+      score += 4;
+      continue;
+    }
+    if (visibleIndex.includes(token)) {
+      score += 1;
+    } else {
+      return 0;
+    }
+  }
+  if (upload.privacyProfileProofId) score += 0.5;
+  if (upload.privacyProfileVectorTerms?.length) score += 0.5;
+  return score;
+}
+
+function stringifySearchRecord(record: Record<string, unknown> | undefined): string {
+  if (!record) return "";
+  return Object.entries(record)
+    .flatMap(([key, value]) => [key, ...searchValueParts(value)])
+    .join(" ");
+}
+
+function searchValueParts(value: unknown): string[] {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return [String(value)];
+  if (Array.isArray(value)) return value.flatMap(searchValueParts);
+  if (value && typeof value === "object") return Object.values(value as Record<string, unknown>).flatMap(searchValueParts);
+  return [];
 }
 
 function uploadCreatedTime(upload: UploadItem): number {
@@ -7184,6 +7339,46 @@ function toSafeOrganizerSignal(output: Record<string, unknown>): Record<string, 
     );
   }
   return compactRecord(signal);
+}
+
+function buildPrivacySearchText(outputs: Record<string, unknown>[], publicInputs: Record<string, unknown>): string {
+  return [
+    "zero knowledge proof",
+    "redacted vector profile",
+    ...buildPrivacyVectorTerms(outputs, publicInputs),
+    stringifyPrivacySearchValue(publicInputs)
+  ]
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildPrivacyVectorTerms(outputs: Record<string, unknown>[], publicInputs: Record<string, unknown>): string[] {
+  const terms = new Set<string>();
+  const add = (value: unknown) => {
+    for (const part of privacySearchParts(value)) {
+      const normalized = part.trim().toLocaleLowerCase();
+      if (normalized.length >= 2 && normalized.length <= 80) terms.add(normalized);
+    }
+  };
+  add(publicInputs);
+  for (const output of outputs) {
+    add(toSafeOrganizerSignal(output));
+  }
+  return Array.from(terms).slice(0, 80);
+}
+
+function stringifyPrivacySearchValue(value: unknown): string {
+  return privacySearchParts(value).join(" ");
+}
+
+function privacySearchParts(value: unknown): string[] {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return [String(value)];
+  if (Array.isArray(value)) return value.flatMap(privacySearchParts);
+  if (value && typeof value === "object") {
+    return Object.entries(value as Record<string, unknown>).flatMap(([key, nestedValue]) => [key, ...privacySearchParts(nestedValue)]);
+  }
+  return [];
 }
 
 function normalizeOrganizerProfileJson(text: string, model: string): Record<string, unknown> | undefined {
