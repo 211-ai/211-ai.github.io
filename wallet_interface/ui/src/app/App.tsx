@@ -64,7 +64,9 @@ import {
 } from "../lib/graphrag";
 import {
   getFilecoinStorageConfig,
+  normalizeIpfsGatewayUrl,
   pollFilecoinStorageStatus,
+  sameOriginIpfsGatewayUrl,
   toFilecoinStoragePatch,
   uploadFileToFilecoinStorage,
   uploadProofBundleToFilecoinStorage,
@@ -4310,7 +4312,7 @@ function UploadsScreen({
               {upload.metadataCid ? (
                 <div className="wallet-evidence-row">
                   <span>Metadata</span>
-                  <a href={upload.metadataGatewayUrl || ipfsGatewayHref({ ...upload, ipfsCid: upload.metadataCid, ipfsGatewayUrl: undefined })} rel="noreferrer" target="_blank">
+                  <a href={normalizeIpfsGatewayUrl(upload.metadataGatewayUrl) || ipfsGatewayHref({ ...upload, ipfsCid: upload.metadataCid, ipfsGatewayUrl: undefined })} rel="noreferrer" target="_blank">
                     <code>{upload.metadataCid}</code>
                   </a>
                 </div>
@@ -4673,8 +4675,7 @@ function privacyProfileBadgeTone(upload: UploadItem): "neutral" | "info" | "succ
 }
 
 function ipfsGatewayHref(upload: UploadItem): string {
-  if (upload.ipfsGatewayUrl) return upload.ipfsGatewayUrl;
-  return upload.ipfsCid ? `/ipfs-proxy/${upload.ipfsCid}` : "#";
+  return normalizeIpfsGatewayUrl(upload.ipfsGatewayUrl) || sameOriginIpfsGatewayUrl(upload.ipfsCid) || "#";
 }
 
 function shortStorageId(value: string): string {

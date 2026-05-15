@@ -187,14 +187,33 @@ export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<
     filecoinPinStatus,
     filecoinPinStatusUrl: result.statusUrl,
     ipfsCid,
-    ipfsGatewayUrl: result.gatewayUrl || result.url || (ipfsCid ? `/ipfs-proxy/${ipfsCid}` : undefined),
+    ipfsGatewayUrl: ipfsCid ? sameOriginIpfsGatewayUrl(ipfsCid) : result.gatewayUrl || result.url,
     ipfsRootCid,
     ipldLinks: result.ipldLinks,
     metadataCid: result.metadataCid,
-    metadataGatewayUrl: result.metadataGatewayUrl,
+    metadataGatewayUrl: result.metadataCid ? sameOriginIpfsGatewayUrl(result.metadataCid) : result.metadataGatewayUrl,
     metadataIpldCid: result.metadataIpldCid,
     metadataIpldLink: result.metadataIpldLink
   };
+}
+
+export function sameOriginIpfsGatewayUrl(cid: string | undefined): string | undefined {
+  const normalized = normalizeIpfsCid(cid);
+  return normalized ? `/ipfs-proxy/${normalized}` : undefined;
+}
+
+export function normalizeIpfsGatewayUrl(urlOrCid: string | undefined): string | undefined {
+  const normalized = normalizeIpfsCid(urlOrCid);
+  return normalized ? sameOriginIpfsGatewayUrl(normalized) : urlOrCid;
+}
+
+function normalizeIpfsCid(value: string | undefined): string | undefined {
+  const raw = value?.trim();
+  if (!raw) return undefined;
+  const withoutScheme = raw.replace(/^ipfs:\/\//i, "");
+  const pathMatch = withoutScheme.match(/(?:^|\/)ipfs\/([^/?#]+)/i);
+  const hostMatch = withoutScheme.match(/^([a-z0-9]+)\.ipfs\.(?:dweb\.link|[^/?#]+)/i);
+  return (pathMatch?.[1] || hostMatch?.[1] || withoutScheme.split(/[/?#]/, 1)[0]).trim() || undefined;
 }
 
 export async function pollFilecoinStorageStatus(
