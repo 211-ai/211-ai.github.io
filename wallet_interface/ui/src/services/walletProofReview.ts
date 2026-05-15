@@ -335,7 +335,7 @@ async function resolveReviewLocator(locator: ReviewLocator): Promise<{
 }
 
 async function fetchJson(url: string): Promise<unknown> {
-  const response = await fetch(url);
+  const response = await fetch(preferSameOriginIpfsGatewayUrl(url));
   if (!response.ok) {
     throw new Error(`Unable to load the proof bundle (${response.status}).`);
   }
@@ -582,10 +582,13 @@ function defaultIpfsGateways(): string[] {
   return Array.from(
     new Set([
       new URL("/ipfs-proxy/", currentBaseUrl()).toString(),
-      "https://w3s.link/ipfs/",
-      "https://ipfs.io/ipfs/"
     ])
   );
+}
+
+function preferSameOriginIpfsGatewayUrl(url: string): string {
+  const cid = cidFromUrl(url);
+  return cid ? new URL(`/ipfs-proxy/${cid}`, currentBaseUrl()).toString() : url;
 }
 
 function labelForUrl(url: string): string {

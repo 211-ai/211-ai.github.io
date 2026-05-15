@@ -143,6 +143,34 @@ def _ipfs_proxy_media_type(data: bytes) -> str:
         return "application/octet-stream"
 
 
+def _ipfs_proxy_fallback_gateways() -> list[str]:
+    configured = [
+        gateway.strip().rstrip("/")
+        for gateway in os.getenv("WALLET_IPFS_PROXY_FALLBACK_GATEWAYS", "").split(",")
+        if gateway.strip()
+    ]
+    if configured:
+        return configured
+    return [
+        "https://w3s.link/ipfs",
+        "https://ipfs.io/ipfs",
+        "https://dweb.link/ipfs",
+    ]
+
+
+def _fetch_ipfs_cid_via_gateway(cid: str) -> bytes:
+    last_error: Exception | None = None
+    for gateway in _ipfs_proxy_fallback_gateways():
+        url = f"{gateway.rstrip('/')}/{urllib_parse.quote(cid, safe='')}"
+        try:
+            req = urllib_request.Request(url, headers={"Accept": "application/octet-stream,*/*"})
+            with urllib_request.urlopen(req, timeout=30) as response:
+                return response.read()
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError(f"Unable to fetch CID from fallback gateways: {last_error}") from last_error
+
+
 def _wallet_interface_service_from_env() -> WalletInterfaceService:
     services_jsonl = str(os.environ.get("WALLET_SERVICES_JSONL") or "").strip()
     if services_jsonl:
@@ -2057,8 +2085,14 @@ def create_app(*, service: WalletInterfaceService | None = None):
             raise HTTPException(status_code=403, detail="CID is not allowed by WALLET_IPFS_PROXY_ALLOWED_CIDS")
         try:
             payload = get_ipfs_backend().cat(normalized_cid)
-        except Exception as exc:
-            raise HTTPException(status_code=502, detail=f"Unable to fetch CID from IPFS: {exc}") from exc
+        except Exception as local_exc:
+            try:
+                payload = _fetch_ipfs_cid_via_gateway(normalized_cid)
+            except Exception as fallback_exc:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Unable to fetch CID from local IPFS or fallback gateways: {local_exc}; {fallback_exc}",
+                ) from fallback_exc
         return Response(
             content=payload,
             media_type=_ipfs_proxy_media_type(payload),
