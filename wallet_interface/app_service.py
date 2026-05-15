@@ -25,6 +25,7 @@ from ipfs_datasets_py.wallet import (  # noqa: E402
     create_encrypted_blob_store,
 )
 from ipfs_datasets_py.wallet.audit import append_audit_event  # noqa: E402
+from ipfs_datasets_py.wallet.proofs import create_simulated_proof_receipt  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
     resource_for_export,
     resource_for_location,
@@ -36,6 +37,39 @@ from .proof_backends import HttpLocationRegionProofBackend
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _safe_document_profile_public_inputs(public_inputs: Mapping[str, Any]) -> Dict[str, Any]:
+    allowed_keys = {
+        "artifact_ids",
+        "chunk_count",
+        "edge_count",
+        "graph_type",
+        "mime_family",
+        "mime_type",
+        "node_count",
+        "output_policies",
+        "privacy_policy",
+        "redaction_count",
+        "size_bucket",
+        "summary",
+    }
+    safe: Dict[str, Any] = {}
+    for key in allowed_keys:
+        if key not in public_inputs:
+            continue
+        value = public_inputs[key]
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            safe[key] = value
+        elif isinstance(value, list):
+            safe[key] = [
+                item
+                for item in value[:12]
+                if isinstance(item, (str, int, float, bool)) or item is None
+            ]
+    if "privacy_policy" not in safe:
+        safe["privacy_policy"] = "no_plaintext_public_inputs"
+    return safe
 
 
 def _storage_config_from_env() -> str | Dict[str, Any] | None:
@@ -3712,6 +3746,53 @@ class WalletInterfaceService:
             ],
             key=lambda item: item.created_at,
         )
+
+    def create_document_profile_proof(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        public_inputs: Mapping[str, Any],
+    ):
+        self._require_portal_actor(wallet_id, actor_did)
+        self.wallet_service._wallet(wallet_id)
+        record = self.wallet_service._record(wallet_id, record_id)
+        if record.data_type != "document":
+            raise ValueError("document profile proofs require a document record")
+        safe_public_inputs = _safe_document_profile_public_inputs(public_inputs)
+        proof = create_simulated_proof_receipt(
+            wallet_id=wallet_id,
+            proof_type="document_privacy_profile",
+            statement={
+                "claim": "A wallet document was profiled with redacted GraphRAG, redacted vector metadata, and encrypted derived artifacts.",
+                "record_id": record_id,
+                "privacy_policy": "no_plaintext_public_inputs",
+            },
+            public_inputs={
+                "claim": "Document profile generated without exposing plaintext",
+                "record_id": record_id,
+                **safe_public_inputs,
+            },
+            witness_record_ids=[record_id],
+            circuit_id="document-privacy-profile-v1",
+        )
+        self.wallet_service.proofs[proof.proof_id] = proof
+        append_audit_event(
+            self.wallet_service.audit_events[wallet_id],
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            action="proof/document_privacy_profile",
+            resource=resource_for_record(wallet_id, record_id),
+            decision="allow",
+            details={
+                "proof_id": proof.proof_id,
+                "proof_type": proof.proof_type,
+                "public_input_keys": sorted(proof.public_inputs.keys()),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return proof
 
     def match_services_for_wallet(
         self,

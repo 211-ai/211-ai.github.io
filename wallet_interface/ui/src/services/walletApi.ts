@@ -271,6 +271,7 @@ interface DerivedAnalysisResultApiResponse {
 }
 
 interface DecryptedRecordApiResponse {
+  base64?: string;
   record_id?: string;
   text: string;
   size_bytes: number;
@@ -705,6 +706,27 @@ export async function createLocationDistanceProof(
     target_id: targetId,
     target_lat: targetLat,
     target_lon: targetLon
+  });
+  return toProofReceiptView(proof);
+}
+
+export async function createDocumentPrivacyProfileProof(
+  config: WalletApiConfig,
+  {
+    recordId,
+    publicInputs
+  }: {
+    recordId: string;
+    publicInputs: Record<string, unknown>;
+  }
+): Promise<ProofReceiptView> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/document-profile-proofs`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const proof = await postJson<ProofReceiptApiRecord>(url, "Document privacy profile proof", {
+    actor_did: requiredActorDid(config),
+    public_inputs: publicInputs
   });
   return toProofReceiptView(proof);
 }
@@ -1323,6 +1345,7 @@ export async function decryptRecordWithGrant(
     invocation_token: invocationToken || undefined
   });
   return {
+    base64: decrypted.base64,
     recordId: decrypted.record_id ?? recordId,
     text: decrypted.text,
     sizeBytes: decrypted.size_bytes

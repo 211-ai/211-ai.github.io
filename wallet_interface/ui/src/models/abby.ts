@@ -121,12 +121,19 @@ export interface UploadItem {
   decentralizedStorageStatus?: "not_configured" | "ready" | "uploading" | "stored" | "failed";
   decentralizedStorageProvider?: "ipfs" | "filecoin" | "ipfs-filecoin" | "wallet-api" | "local";
   ipfsCid?: string;
+  ipfsGatewayUrl?: string;
   filecoinPieceCid?: string;
   filecoinDealId?: string;
   filecoinPinRequestId?: string;
   filecoinPinStatus?: "queued" | "pinning" | "pinned" | "failed";
   filecoinPinStatusUrl?: string;
   decentralizedStorageMessage?: string;
+  privacyProfileStatus?: "not_started" | "profiling" | "profiled" | "failed";
+  privacyProfileSummary?: string;
+  privacyProfileMimeType?: string;
+  privacyProfileProofId?: string;
+  privacyProfileArtifactIds?: string[];
+  privacyProfileMessage?: string;
 }
 
 export interface ServiceMatch {
@@ -281,6 +288,7 @@ export interface DerivedAnalysisResultView {
 export interface DecryptedRecordView {
   recordId: string;
   text: string;
+  base64?: string;
   sizeBytes: number;
 }
 

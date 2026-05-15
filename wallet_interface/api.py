@@ -192,6 +192,11 @@ class LocationDistanceProofRequest(BaseModel):
     grant_id: str | None = None
 
 
+class DocumentPrivacyProfileProofRequest(BaseModel):
+    actor_did: str
+    public_inputs: Dict[str, Any] = Field(default_factory=dict)
+
+
 class AddTextDocumentRequest(BaseModel):
     actor_did: str
     text: str
@@ -1691,6 +1696,23 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 target_lon=request.target_lon,
                 max_distance_km=request.max_distance_km,
                 grant_id=request.grant_id,
+            )
+            return proof.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/records/{record_id}/document-profile-proofs")
+    def create_document_profile_proof(
+        wallet_id: str,
+        record_id: str,
+        request: DocumentPrivacyProfileProofRequest,
+    ) -> Dict[str, Any]:
+        try:
+            proof = app_service.create_document_profile_proof(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                public_inputs=request.public_inputs,
             )
             return proof.to_dict()
         except Exception as exc:

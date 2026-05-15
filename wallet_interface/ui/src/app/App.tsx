@@ -8,6 +8,7 @@ import {
   CalendarClock,
   ClipboardCheck,
   ContactRound,
+  Download,
   FileUp,
   HeartHandshake,
   History,
@@ -127,6 +128,7 @@ import {
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  createDocumentPrivacyProfileProof,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createRedactedGraphRAG,
@@ -3423,7 +3425,8 @@ function UploadsScreen({
 }) {
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
   const [filecoinUploadIds, setFilecoinUploadIds] = useState<string[]>([]);
-  const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(false);
+  const [downloadingUploadIds, setDownloadingUploadIds] = useState<string[]>([]);
+  const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(true);
   const uploadsRef = useRef(uploads);
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
   const filecoinStorageReady = Boolean(filecoinStorageConfig);
@@ -3545,6 +3548,7 @@ function UploadsScreen({
         const uploaded = normalizeWalletUpload(await addBinaryDocument(apiConfig, { file, title: machineSummary }), file.name);
         prependUpload(uploaded);
         await refreshWalletAuditEvents();
+        void profileWalletUpload(uploaded, file);
         if (storeNewFilesOnFilecoin) {
           void storeWalletRecordOnFilecoin(uploaded);
         }
@@ -3558,6 +3562,7 @@ function UploadsScreen({
           }), file.name);
           prependUpload(uploaded);
           await refreshWalletAuditEvents();
+          void profileWalletUpload(uploaded, file);
           if (storeNewFilesOnFilecoin) {
             void storeWalletRecordOnFilecoin(uploaded);
           }
@@ -3664,6 +3669,80 @@ function UploadsScreen({
       });
     } finally {
       setFilecoinUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
+  }
+
+  async function profileWalletUpload(upload: UploadItem, file: File) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    updateUpload(upload.id, {
+      privacyProfileMessage: "Creating redacted GraphRAG, vector profile, and privacy proof.",
+      privacyProfileMimeType: file.type || "application/octet-stream",
+      privacyProfileStatus: "profiling"
+    });
+    try {
+      const [redacted, vector, graphrag] = await Promise.allSettled([
+        analyzeRecordRedactedWithGrant(apiConfig, { recordId: upload.recordId, maxChars: 500 }),
+        createRecordVectorProfileWithGrant(apiConfig, { recordId: upload.recordId, chunkSizeWords: 80 }),
+        createRedactedGraphRAG(apiConfig, {
+          recordIds: [upload.recordId],
+          maxBytesPerRecord: 200_000,
+          maxCharsPerRecord: 20_000,
+          useOcr: true
+        })
+      ]);
+      const fulfilled = [redacted, vector, graphrag].filter(
+        (result): result is PromiseFulfilledResult<Awaited<ReturnType<typeof analyzeRecordRedactedWithGrant>>> =>
+          result.status === "fulfilled"
+      );
+      if (!fulfilled.length) {
+        throw new Error("No privacy profile artifacts were created.");
+      }
+      const outputs = fulfilled.map((result) => result.value.output);
+      const artifactIds = fulfilled.map((result) => result.value.artifact.id);
+      const publicInputs = buildDocumentPrivacyProfilePublicInputs({
+        artifactIds,
+        file,
+        outputs
+      });
+      const proof = await createDocumentPrivacyProfileProof(apiConfig, {
+        publicInputs,
+        recordId: upload.recordId
+      });
+      updateUpload(upload.id, {
+        privacyProfileArtifactIds: artifactIds,
+        privacyProfileMessage: "Safe document profile and proof are attached to this wallet record.",
+        privacyProfileProofId: proof.id,
+        privacyProfileStatus: "profiled",
+        privacyProfileSummary: summarizeDocumentPrivacyProfile(publicInputs)
+      });
+      await refreshWalletAuditEvents().catch(() => {});
+    } catch (error) {
+      updateUpload(upload.id, {
+        privacyProfileMessage:
+          error instanceof Error ? error.message : "Privacy-preserving document profile failed.",
+        privacyProfileStatus: "failed"
+      });
+    }
+  }
+
+  async function downloadDecryptedUpload(upload: UploadItem) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    setDownloadingUploadIds((uploadIds) => [...uploadIds, upload.id]);
+    try {
+      const decrypted = await decryptRecordWithGrant(apiConfig, { recordId: upload.recordId });
+      const bytes = decrypted.base64 ? base64ToBytes(decrypted.base64) : new TextEncoder().encode(decrypted.text);
+      const payload = new Uint8Array(bytes).buffer as ArrayBuffer;
+      const blob = new Blob([payload], { type: upload.privacyProfileMimeType || "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = upload.fileName || `${upload.recordId}.bin`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } finally {
+      setDownloadingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
   }
 
@@ -3921,9 +4000,28 @@ function UploadsScreen({
                 ) : null}
                 <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload)}</Badge>
                 <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload)}</Badge>
+                {upload.privacyProfileStatus ? (
+                  <Badge tone={privacyProfileBadgeTone(upload)}>
+                    {privacyProfileBadge(upload)}
+                  </Badge>
+                ) : null}
               </div>
               {upload.ipfsCid ? (
-                <small className="wallet-storage-reference">IPFS CID: <code>{shortStorageId(upload.ipfsCid)}</code></small>
+                <small className="wallet-storage-reference">
+                  IPFS CID:{" "}
+                  <a href={ipfsGatewayHref(upload)} rel="noreferrer" target="_blank">
+                    <code>{upload.ipfsCid}</code>
+                  </a>
+                </small>
+              ) : null}
+              {upload.privacyProfileSummary ? (
+                <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
+              ) : null}
+              {upload.privacyProfileProofId ? (
+                <small className="wallet-storage-reference">Proof: <code>{shortStorageId(upload.privacyProfileProofId)}</code></small>
+              ) : null}
+              {upload.privacyProfileMessage ? (
+                <small className="wallet-storage-reference">{upload.privacyProfileMessage}</small>
               ) : null}
               {upload.decentralizedStorageMessage ? (
                 <small className="wallet-storage-reference">{upload.decentralizedStorageMessage}</small>
@@ -3948,6 +4046,16 @@ function UploadsScreen({
                 >
                   <Upload aria-hidden="true" size={18} />
                   {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
+                </Button>
+              ) : null}
+              {upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={downloadingUploadIds.includes(upload.id)}
+                  onClick={() => void downloadDecryptedUpload(upload)}
+                  variant="secondary"
+                >
+                  <Download aria-hidden="true" size={18} />
+                  {downloadingUploadIds.includes(upload.id) ? "Decrypting" : "Download decrypted"}
                 </Button>
               ) : null}
               <Button
@@ -4041,8 +4149,36 @@ function filecoinActionLabel(upload: UploadItem, inProgress: boolean): string {
   return inProgress ? "Storing" : "Store on IPFS/Filecoin";
 }
 
+function privacyProfileBadge(upload: UploadItem): string {
+  if (upload.privacyProfileStatus === "profiled") return "privacy proof";
+  if (upload.privacyProfileStatus === "profiling") return "profiling";
+  if (upload.privacyProfileStatus === "failed") return "profile failed";
+  return "profile pending";
+}
+
+function privacyProfileBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
+  if (upload.privacyProfileStatus === "profiled") return "success";
+  if (upload.privacyProfileStatus === "profiling") return "info";
+  if (upload.privacyProfileStatus === "failed") return "warning";
+  return "neutral";
+}
+
+function ipfsGatewayHref(upload: UploadItem): string {
+  if (upload.ipfsGatewayUrl) return upload.ipfsGatewayUrl;
+  return upload.ipfsCid ? `/ipfs-proxy/${upload.ipfsCid}` : "#";
+}
+
 function shortStorageId(value: string): string {
   return value.length > 18 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value;
+}
+
+function base64ToBytes(value: string): Uint8Array {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
 }
 
 function SocialServicesScreen({
@@ -6632,6 +6768,83 @@ function summarizeDerivedOutput(output: Record<string, unknown>) {
   return typeof output.output_policy === "string" ? output.output_policy : "Safe derived output created.";
 }
 
+function buildDocumentPrivacyProfilePublicInputs({
+  artifactIds,
+  file,
+  outputs
+}: {
+  artifactIds: string[];
+  file: File;
+  outputs: Record<string, unknown>[];
+}): Record<string, unknown> {
+  const graphOutput = outputs
+    .map((output) => output.graph)
+    .find((graph) => graph && typeof graph === "object" && !Array.isArray(graph)) as Record<string, unknown> | undefined;
+  const profileOutput = outputs
+    .map((output) => output.profile)
+    .find((profile) => profile && typeof profile === "object" && !Array.isArray(profile)) as Record<string, unknown> | undefined;
+  const redactionCount = outputs.reduce((count, output) => {
+    const counts = output.redaction_counts;
+    if (!counts || typeof counts !== "object" || Array.isArray(counts)) return count;
+    return count + Object.values(counts).reduce((sum, value) => sum + (typeof value === "number" ? value : 0), 0);
+  }, 0);
+  const mimeType = normalizePublicMimeType(file.type, file.name);
+  return {
+    artifact_ids: artifactIds,
+    chunk_count: readNumber(profileOutput, "chunk_count"),
+    edge_count: readNumber(graphOutput, "edge_count"),
+    graph_type: readString(graphOutput, "graph_type"),
+    mime_family: mimeType.split("/")[0] || "application",
+    mime_type: mimeType,
+    node_count: readNumber(graphOutput, "node_count"),
+    output_policies: Array.from(new Set(outputs.map((output) => readString(output, "output_policy")).filter(Boolean))),
+    privacy_policy: "no_plaintext_public_inputs",
+    redaction_count: redactionCount,
+    size_bucket: sizeBucket(file.size),
+    summary: "Redacted GraphRAG, vector metadata, and derived descriptors created inside the wallet boundary."
+  };
+}
+
+function summarizeDocumentPrivacyProfile(publicInputs: Record<string, unknown>) {
+  const mimeType = typeof publicInputs.mime_type === "string" ? publicInputs.mime_type : "document";
+  const graphType = typeof publicInputs.graph_type === "string" ? publicInputs.graph_type : "redacted graph";
+  const nodes = typeof publicInputs.node_count === "number" ? `${publicInputs.node_count} nodes` : "safe graph";
+  const chunks = typeof publicInputs.chunk_count === "number" ? `${publicInputs.chunk_count} chunks` : "vector metadata";
+  return `${mimeType} · ${graphType} · ${nodes} · ${chunks}`;
+}
+
+function normalizePublicMimeType(mimeType: string, fileName: string) {
+  const trimmed = mimeType.trim().toLowerCase();
+  if (trimmed) return trimmed;
+  const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
+  if (extension === "pdf") return "application/pdf";
+  if (["jpg", "jpeg"].includes(extension)) return "image/jpeg";
+  if (extension === "png") return "image/png";
+  if (extension === "txt") return "text/plain";
+  if (extension === "json") return "application/json";
+  return "application/octet-stream";
+}
+
+function sizeBucket(sizeBytes: number) {
+  if (sizeBytes < 100_000) return "under_100kb";
+  if (sizeBytes < 1_000_000) return "100kb_to_1mb";
+  if (sizeBytes < 10_000_000) return "1mb_to_10mb";
+  if (sizeBytes < 100_000_000) return "10mb_to_100mb";
+  return "over_100mb";
+}
+
+function readString(record: unknown, key: string) {
+  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
+  const value = (record as Record<string, unknown>)[key];
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function readNumber(record: unknown, key: string) {
+  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
+  const value = (record as Record<string, unknown>)[key];
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
 function BenefitsProtectionScreen({
   optedIn,
   setOptedIn
@@ -7644,8 +7857,8 @@ function ExportCenterScreen({
       {importStatus === "failed" ? <StatusBanner tone="warning">Export import failed.</StatusBanner> : null}
       <Section title="Export or import wallet bundles">
         <p className="page-note">
-          Export bundles carry encrypted records, receipt hashes, and storage reports. Importing a bundle does not reveal
-          plaintext.
+          Export bundles carry encrypted records, receipt hashes, and storage reports. Importing descriptors adds the
+          bundle's encrypted record index and proof metadata for review without revealing plaintext.
         </p>
         <form className="form-grid export-builder" onSubmit={createBundle}>
           <Field label="Recipient DID" required>
@@ -7746,15 +7959,25 @@ function ExportCenterScreen({
                   </Badge>
                 </div>
                 {bundle.schemaError ? <p className="receipt-error">{bundle.schemaError}</p> : null}
-                <div className="row-actions">
-                  <Button
-                    disabled={!apiConfig || !bundle.bundle || bundle.imported || importingBundleId === bundle.bundleId}
-                    onClick={() => importBundle(bundle)}
-                    variant="secondary"
-                  >
-                    <ShieldCheck size={18} /> {importingBundleId === bundle.bundleId ? "Importing" : "Import descriptors"}
-                  </Button>
-                </div>
+                {bundle.imported ? (
+                  <p className="wallet-storage-reference">
+                    Descriptors are already imported for this bundle.
+                  </p>
+                ) : bundle.bundle ? (
+                  <div className="row-actions">
+                    <Button
+                      disabled={!apiConfig || importingBundleId === bundle.bundleId}
+                      onClick={() => importBundle(bundle)}
+                      variant="secondary"
+                    >
+                      <ShieldCheck size={18} /> {importingBundleId === bundle.bundleId ? "Importing" : "Import descriptors"}
+                    </Button>
+                  </div>
+                ) : (
+                  <p className="wallet-storage-reference">
+                    Bundle contents are not available to import from this view.
+                  </p>
+                )}
               </article>
             );
           })}

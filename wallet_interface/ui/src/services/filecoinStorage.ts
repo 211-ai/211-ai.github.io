@@ -179,7 +179,8 @@ export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<
     filecoinPinRequestId: result.filecoinPinRequestId || result.requestId,
     filecoinPinStatus,
     filecoinPinStatusUrl: result.statusUrl,
-    ipfsCid
+    ipfsCid,
+    ipfsGatewayUrl: result.gatewayUrl || result.url || (ipfsCid ? `/ipfs-proxy/${ipfsCid}` : undefined)
   };
 }
 
