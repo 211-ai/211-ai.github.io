@@ -3,6 +3,8 @@ import type { CorpusDocument } from "./types";
 
 let duckDbPromise: Promise<duckdb.AsyncDuckDB> | null = null;
 let duckDbBundlesPromise: Promise<duckdb.DuckDBBundles> | null = null;
+const parquetQueryPromises = new Map<string, Promise<Record<string, unknown>[]>>();
+const MAX_PARQUET_QUERY_CACHE_ENTRIES = 96;
 
 export interface DuckDbParquetQuery {
   clusterIds?: number[];
@@ -25,6 +27,27 @@ export async function queryParquetRows(
   parquetUrl: string,
   query: DuckDbParquetQuery = {},
 ): Promise<Record<string, unknown>[]> {
+  const cacheKey = parquetQueryCacheKey(parquetUrl, query);
+  const cached = parquetQueryPromises.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+  const queryPromise = queryParquetRowsUncached(parquetUrl, query).catch((error) => {
+    parquetQueryPromises.delete(cacheKey);
+    throw error;
+  });
+  rememberParquetQuery(cacheKey, queryPromise);
+  return queryPromise;
+}
+
+export function clearDuckDbParquetQueryCache(): void {
+  parquetQueryPromises.clear();
+}
+
+async function queryParquetRowsUncached(
+  parquetUrl: string,
+  query: DuckDbParquetQuery = {},
+): Promise<Record<string, unknown>[]> {
   const database = await getDuckDb();
   const connection = await database.connect();
   try {
@@ -33,6 +56,32 @@ export async function queryParquetRows(
   } finally {
     await connection.close();
   }
+}
+
+function rememberParquetQuery(cacheKey: string, promise: Promise<Record<string, unknown>[]>): void {
+  if (parquetQueryPromises.size >= MAX_PARQUET_QUERY_CACHE_ENTRIES) {
+    const oldestKey = parquetQueryPromises.keys().next().value;
+    if (oldestKey) {
+      parquetQueryPromises.delete(oldestKey);
+    }
+  }
+  parquetQueryPromises.set(cacheKey, promise);
+}
+
+function parquetQueryCacheKey(parquetUrl: string, query: DuckDbParquetQuery): string {
+  return JSON.stringify({
+    parquetUrl,
+    clusterIds: query.clusterIds || [],
+    includeNullCluster: Boolean(query.includeNullCluster),
+    clusterColumn: query.clusterColumn || "",
+    clusterFilterDocTypes: query.clusterFilterDocTypes || [],
+    docTypes: query.docTypes || [],
+    docIds: query.docIds || [],
+    serviceDocIds: query.serviceDocIds || [],
+    limit: query.limit || 0,
+    orderBy: query.orderBy || [],
+    columns: query.columns || [],
+  });
 }
 
 export async function loadDocumentsFromParquet(

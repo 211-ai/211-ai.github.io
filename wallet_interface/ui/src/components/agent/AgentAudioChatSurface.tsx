@@ -718,22 +718,14 @@ export function AgentAudioChatSurface({
             assistantText: preferredSpeechText,
             fallbackText: preferredSpeechText,
           });
-          const ttsResult = await clientAudioReplyService.generateAudio(preferredSpeechText, {
-            onProgress: (progress) => updateModelProgress(requestId, progress),
-          });
-          if (ttsResult.kind === "audio") {
-            lastCapturedVoiceBlobRef.current = null;
-            await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
-            return;
-          }
         }
       }
 
-      const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
+      const ttsResult = await clientAudioReplyService.generateAudio(preferredSpeechText, {
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       lastCapturedVoiceBlobRef.current = null;
-      await playAudioReplyResult(result, voiceInferenceRequest.fallbackText || fallbackText, requestId);
+      await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
       try {

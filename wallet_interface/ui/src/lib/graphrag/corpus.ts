@@ -18,7 +18,12 @@ import type {
   ServiceLocationRecord,
   ServiceGeoIndex,
 } from "./types";
-import { loadDocumentsFromParquet, queryParquetRows, type DuckDbDocumentQuery } from "./duckdbDocuments";
+import {
+  clearDuckDbParquetQueryCache,
+  loadDocumentsFromParquet,
+  queryParquetRows,
+  type DuckDbDocumentQuery,
+} from "./duckdbDocuments";
 
 const DEFAULT_CORPUS_BASE_URL = resolveDefaultCorpusBaseUrl();
 const configuredCorpusBaseUrl = import.meta.env?.VITE_211_CORPUS_BASE_URL as string | undefined;
@@ -49,6 +54,10 @@ const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
 const documentSlicePromises = new Map<string, Promise<CorpusState>>();
 const bm25GeoShardPromises = new Map<string, Promise<Bm25Payload>>();
 const embeddingGeoShardPromises = new Map<string, Promise<{ index: EmbeddingIndex; vectors: Float32Array }>>();
+const corpusJsonPromises = new Map<string, Promise<unknown>>();
+const corpusArrayBufferPromises = new Map<string, Promise<ArrayBuffer>>();
+const bm25SlicePromises = new Map<string, Promise<Bm25Payload | null>>();
+const embeddingSlicePromises = new Map<string, Promise<{ index: EmbeddingIndex; vectors: Float32Array } | null>>();
 
 export function get211CorpusBaseUrl(): string {
   return corpusBaseUrl;
@@ -395,6 +404,46 @@ export async function load211Bm25Slice(options: {
   clusterIds: number[];
   includeUnclusteredServices?: boolean;
 }): Promise<Bm25Payload | null> {
+  const cacheKey = JSON.stringify({
+    clusterIds: options.clusterIds || [],
+    includeUnclusteredServices: Boolean(options.includeUnclusteredServices),
+  });
+  if (!bm25SlicePromises.has(cacheKey)) {
+    bm25SlicePromises.set(
+      cacheKey,
+      load211Bm25SliceUncached(options).catch((error) => {
+        bm25SlicePromises.delete(cacheKey);
+        throw error;
+      }),
+    );
+  }
+  return bm25SlicePromises.get(cacheKey)!;
+}
+
+export async function load211EmbeddingSlice(options: {
+  clusterIds: number[];
+  includeUnclusteredServices?: boolean;
+}): Promise<{ index: EmbeddingIndex; vectors: Float32Array } | null> {
+  const cacheKey = JSON.stringify({
+    clusterIds: options.clusterIds || [],
+    includeUnclusteredServices: Boolean(options.includeUnclusteredServices),
+  });
+  if (!embeddingSlicePromises.has(cacheKey)) {
+    embeddingSlicePromises.set(
+      cacheKey,
+      load211EmbeddingSliceUncached(options).catch((error) => {
+        embeddingSlicePromises.delete(cacheKey);
+        throw error;
+      }),
+    );
+  }
+  return embeddingSlicePromises.get(cacheKey)!;
+}
+
+async function load211Bm25SliceUncached(options: {
+  clusterIds: number[];
+  includeUnclusteredServices?: boolean;
+}): Promise<Bm25Payload | null> {
   const manifest = await load211ArtifactManifest();
   const parquetArtifact = findArtifactBySuffix(manifest, "generated/bm25-documents.parquet");
   if (!parquetArtifact) {
@@ -410,7 +459,7 @@ export async function load211Bm25Slice(options: {
   return buildBm25PayloadFromRows(rows);
 }
 
-export async function load211EmbeddingSlice(options: {
+async function load211EmbeddingSliceUncached(options: {
   clusterIds: number[];
   includeUnclusteredServices?: boolean;
 }): Promise<{ index: EmbeddingIndex; vectors: Float32Array } | null> {
@@ -430,7 +479,21 @@ export async function load211EmbeddingSlice(options: {
 }
 
 export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
-  const response = await fetch(get211CorpusAssetUrl(relativePath));
+  const url = get211CorpusAssetUrl(relativePath);
+  const cached = corpusJsonPromises.get(url);
+  if (cached) {
+    return cached as Promise<T>;
+  }
+  const promise = fetch211CorpusJsonUncached<T>(url, relativePath).catch((error) => {
+    corpusJsonPromises.delete(url);
+    throw error;
+  });
+  corpusJsonPromises.set(url, promise);
+  return promise;
+}
+
+async function fetch211CorpusJsonUncached<T>(url: string, relativePath: string): Promise<T> {
+  const response = await fetch(url, { cache: "force-cache" });
   if (!response.ok) {
     throw new Error(`Failed to load 211 corpus asset ${relativePath}: ${response.status}`);
   }
@@ -451,7 +514,21 @@ export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
 }
 
 export async function fetch211CorpusArrayBuffer(relativePath: string): Promise<ArrayBuffer> {
-  const response = await fetch(get211CorpusAssetUrl(relativePath));
+  const url = get211CorpusAssetUrl(relativePath);
+  const cached = corpusArrayBufferPromises.get(url);
+  if (cached) {
+    return cached;
+  }
+  const promise = fetch211CorpusArrayBufferUncached(url, relativePath).catch((error) => {
+    corpusArrayBufferPromises.delete(url);
+    throw error;
+  });
+  corpusArrayBufferPromises.set(url, promise);
+  return promise;
+}
+
+async function fetch211CorpusArrayBufferUncached(url: string, relativePath: string): Promise<ArrayBuffer> {
+  const response = await fetch(url, { cache: "force-cache" });
   if (!response.ok) {
     throw new Error(`Failed to load 211 corpus asset ${relativePath}: ${response.status}`);
   }
@@ -483,6 +560,11 @@ function reset211CorpusCaches(): void {
   documentSlicePromises.clear();
   bm25GeoShardPromises.clear();
   embeddingGeoShardPromises.clear();
+  corpusJsonPromises.clear();
+  corpusArrayBufferPromises.clear();
+  bm25SlicePromises.clear();
+  embeddingSlicePromises.clear();
+  clearDuckDbParquetQueryCache();
 }
 
 function stripTrailingSlash(value: string): string {
