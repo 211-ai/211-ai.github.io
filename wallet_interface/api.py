@@ -71,6 +71,40 @@ def _cors_origins_from_env() -> list[str]:
     return origins
 
 
+def _prepare_hf_router_environment(kwargs: Dict[str, Any] | None = None) -> Dict[str, Any]:
+    """Make encrypted HF credentials visible to ipfs_datasets_py router helpers."""
+    token = (
+        resolve_secret(
+            "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+            "HF_API_TOKEN",
+        )
+        or ""
+    ).strip()
+    if token:
+        for key in ("IPFS_DATASETS_PY_HF_API_TOKEN", "HF_TOKEN", "HUGGINGFACEHUB_API_TOKEN"):
+            if not os.getenv(key, "").strip():
+                os.environ[key] = token
+    bill_to = (
+        os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+        or os.getenv("HUGGINGFACE_BILL_TO")
+        or os.getenv("HF_BILL_TO")
+        or "publicus"
+    ).strip()
+    if bill_to:
+        os.environ.setdefault("IPFS_DATASETS_PY_HF_BILL_TO", bill_to)
+        os.environ.setdefault("HUGGINGFACE_BILL_TO", bill_to)
+    router_kwargs = dict(kwargs or {})
+    if bill_to:
+        router_kwargs.setdefault("bill_to", bill_to)
+        router_kwargs.setdefault("organization", bill_to)
+    router_kwargs.setdefault("hf_provider", os.getenv("IPFS_DATASETS_PY_HF_PROVIDER", "auto"))
+    return router_kwargs
+
+
 def _normalize_ipfs_cid(value: str) -> str:
     normalized = str(value or "").strip()
     normalized = normalized.replace("ipfs://", "")
@@ -1791,6 +1825,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 texts.insert(0, request.text)
             if not texts:
                 raise ValueError("text or texts is required")
+            kwargs = _prepare_hf_router_environment(request.kwargs)
             from ipfs_datasets_py import embeddings_router  # noqa: WPS433
 
             embeddings = [
@@ -1798,7 +1833,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                     text,
                     model_name=request.model_name,
                     provider=request.provider,
-                    **dict(request.kwargs or {}),
+                    **kwargs,
                 )
                 for text in texts
             ]
@@ -1825,17 +1860,18 @@ def create_app(*, service: WalletInterfaceService | None = None):
             _require_wallet_router_actor(app_service, wallet_id, request.actor_did)
             wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
             limit = _check_wallet_router_rate_limit(wallet_cid)
-            from ipfs_datasets_py import llm_router  # noqa: WPS433
-
             prompt = request.prompt
             if request.system_prompt:
                 prompt = f"system: {request.system_prompt}\nuser: {request.prompt}"
-            kwargs = dict(request.kwargs or {})
+            kwargs = _prepare_hf_router_environment(request.kwargs)
+            from ipfs_datasets_py import llm_router  # noqa: WPS433
+
             if request.max_new_tokens is not None:
                 kwargs.setdefault("max_new_tokens", request.max_new_tokens)
+            model_name = request.model_name or os.getenv("WALLET_AI_ROUTER_LLM_MODEL", "Qwen/Qwen3.5-2B")
             text = llm_router.generate_text(
                 prompt,
-                model_name=request.model_name,
+                model_name=model_name,
                 provider=request.provider,
                 **kwargs,
             )
@@ -1844,7 +1880,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 "wallet_id": wallet_id,
                 "wallet_cid": wallet_cid,
                 "provider": request.provider,
-                "model_name": request.model_name,
+                "model_name": model_name,
                 "rate_limit": limit,
                 "text": text,
             }
@@ -1862,14 +1898,15 @@ def create_app(*, service: WalletInterfaceService | None = None):
             _require_wallet_router_actor(app_service, wallet_id, request.actor_did)
             wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
             limit = _check_wallet_router_rate_limit(wallet_cid)
+            kwargs = _prepare_hf_router_environment(request.kwargs)
             from ipfs_datasets_py import multimodal_router  # noqa: WPS433
 
-            kwargs = dict(request.kwargs or {})
             if request.max_new_tokens is not None:
                 kwargs.setdefault("max_new_tokens", request.max_new_tokens)
+            model_name = request.model_name or os.getenv("WALLET_AI_ROUTER_MULTIMODAL_MODEL")
             text = multimodal_router.generate_multimodal_text(
                 request.prompt,
-                model_name=request.model_name,
+                model_name=model_name,
                 provider=request.provider,
                 image_urls=request.image_urls,
                 system_prompt=None,
@@ -1883,7 +1920,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 "wallet_id": wallet_id,
                 "wallet_cid": wallet_cid,
                 "provider": request.provider,
-                "model_name": request.model_name,
+                "model_name": model_name,
                 "rate_limit": limit,
                 "text": text,
             }

@@ -27,6 +27,8 @@ RUN apt-get update \
         "ipfshttpclient>=0.7.0" \
         requests \
         urllib3 \
+        "huggingface_hub>=0.34.0,<1.0.0" \
+        "fsspec>=2023.1.0,<=2024.6.1" \
         boto3 \
         "jsonschema>=4.0.0" \
         "cachetools>=5.3.0"
@@ -40,4 +42,3 @@ RUN python -m pip install --no-cache-dir --no-deps -e /app/ipfs_datasets_py
 EXPOSE 8000
 
 CMD ["uvicorn", "wallet_interface.asgi:app", "--host", "0.0.0.0", "--port", "8000"]
-

@@ -461,6 +461,42 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface WalletAiRouterRateLimit {
+  limit?: number;
+  remaining?: number;
+  reset_at?: number;
+}
+
+export interface WalletLlmRouterResponse {
+  router: "llm_router";
+  wallet_id: string;
+  wallet_cid: string;
+  provider?: string | null;
+  model_name?: string | null;
+  rate_limit?: WalletAiRouterRateLimit;
+  text: string;
+}
+
+export interface WalletMultimodalRouterResponse {
+  router: "multimodal_router";
+  wallet_id: string;
+  wallet_cid: string;
+  provider?: string | null;
+  model_name?: string | null;
+  rate_limit?: WalletAiRouterRateLimit;
+  text: string;
+}
+
+export interface WalletEmbeddingsRouterResponse {
+  router: "embeddings_router";
+  wallet_id: string;
+  wallet_cid: string;
+  provider?: string | null;
+  model_name?: string | null;
+  rate_limit?: WalletAiRouterRateLimit;
+  embeddings: number[][];
+}
+
 export async function createWallet({
   apiBaseUrl,
   approvalThreshold,
@@ -477,6 +513,114 @@ export async function createWallet({
     approval_threshold: approvalThreshold,
     controller_dids: controllerDids,
     owner_did: ownerDid
+  });
+}
+
+export async function generateWalletRouterText(
+  config: WalletApiConfig,
+  {
+    prompt,
+    systemPrompt,
+    maxTokens,
+    modelName,
+    provider = "hf_inference_api",
+    walletCid,
+    kwargs
+  }: {
+    prompt: string;
+    systemPrompt?: string;
+    maxTokens?: number;
+    modelName?: string;
+    provider?: string;
+    walletCid?: string;
+    kwargs?: Record<string, unknown>;
+  }
+): Promise<WalletLlmRouterResponse> {
+  const url = new URL(`/wallets/${config.walletId}/ai-router/llm`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletLlmRouterResponse>(url, "Wallet LLM router", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.issuerKeyHex,
+    wallet_cid: walletCid,
+    provider,
+    model_name: modelName,
+    prompt,
+    system_prompt: systemPrompt,
+    max_new_tokens: maxTokens,
+    kwargs: kwargs ?? {}
+  });
+}
+
+export async function generateWalletRouterMultimodalText(
+  config: WalletApiConfig,
+  {
+    prompt,
+    imageUrls,
+    additionalTextBlocks,
+    messages,
+    imageDetail,
+    maxTokens,
+    modelName,
+    provider = "hf_inference_api",
+    walletCid,
+    kwargs
+  }: {
+    prompt: string;
+    imageUrls?: string[];
+    additionalTextBlocks?: string[];
+    messages?: Record<string, unknown>[];
+    imageDetail?: string;
+    maxTokens?: number;
+    modelName?: string;
+    provider?: string;
+    walletCid?: string;
+    kwargs?: Record<string, unknown>;
+  }
+): Promise<WalletMultimodalRouterResponse> {
+  const url = new URL(`/wallets/${config.walletId}/ai-router/multimodal`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletMultimodalRouterResponse>(url, "Wallet multimodal router", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.issuerKeyHex,
+    wallet_cid: walletCid,
+    provider,
+    model_name: modelName,
+    prompt,
+    image_urls: imageUrls ?? [],
+    additional_text_blocks: additionalTextBlocks ?? [],
+    messages: messages ?? [],
+    image_detail: imageDetail ?? "auto",
+    max_new_tokens: maxTokens,
+    kwargs: kwargs ?? {}
+  });
+}
+
+export async function generateWalletRouterEmbeddings(
+  config: WalletApiConfig,
+  {
+    text,
+    texts,
+    modelName,
+    provider = "hf_inference_api",
+    walletCid,
+    kwargs
+  }: {
+    text?: string;
+    texts?: string[];
+    modelName?: string;
+    provider?: string;
+    walletCid?: string;
+    kwargs?: Record<string, unknown>;
+  }
+): Promise<WalletEmbeddingsRouterResponse> {
+  const url = new URL(`/wallets/${config.walletId}/ai-router/embeddings`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletEmbeddingsRouterResponse>(url, "Wallet embeddings router", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.issuerKeyHex,
+    wallet_cid: walletCid,
+    provider,
+    model_name: modelName,
+    text,
+    texts: texts ?? [],
+    kwargs: kwargs ?? {}
   });
 }
 

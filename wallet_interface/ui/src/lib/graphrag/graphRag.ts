@@ -1,6 +1,7 @@
 import { get211RelatedGraph } from "./corpus";
 import { search211Corpus } from "./search";
 import type { GraphEdge, GraphNode, GraphRagEvidence, SearchCoordinates, SearchFilters, SearchResult } from "./types";
+import { generateWalletRouterText, type WalletApiConfig } from "../../services/walletApi";
 
 export interface GraphRagAnswer {
   question: string;
@@ -51,6 +52,7 @@ export async function answerWith211GraphRag(
     queryEmbedding?: Float32Array | number[];
     useLocalModel?: boolean;
     maxTokens?: number;
+    walletApiConfig?: WalletApiConfig;
   } = {},
 ): Promise<GraphRagAnswer> {
   const trimmedQuestion = question.trim();
@@ -71,12 +73,30 @@ export async function answerWith211GraphRag(
     };
   }
 
+  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence);
+  const maxTokens = options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS;
+  if (options.walletApiConfig?.actorDid) {
+    try {
+      const routerAnswer = await generateWalletRouterText(options.walletApiConfig, {
+        prompt,
+        maxTokens,
+      });
+      const answer = clean211GraphRagModelAnswer(routerAnswer.text);
+      const grounded = isGrounded211GraphRagAnswer(answer);
+      return {
+        question: trimmedQuestion,
+        answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211GraphRagFallbackAnswer(evidence.results),
+        evidence,
+        usedLocalModel: false,
+      };
+    } catch (error) {
+      console.warn("211 GraphRAG Hugging Face wallet router unavailable; falling back to LFM/OpenRouter path", error);
+    }
+  }
+
   try {
     const { clientLLMWorkerService } = await import("../clientLLMWorkerService");
-    const rawAnswer = await clientLLMWorkerService.generateText(
-      build211GraphRagPrompt(trimmedQuestion, evidence),
-      options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
-    );
+    const rawAnswer = await clientLLMWorkerService.generateText(prompt, maxTokens);
     const answer = clean211GraphRagModelAnswer(rawAnswer);
     const grounded = isGrounded211GraphRagAnswer(answer);
     return {

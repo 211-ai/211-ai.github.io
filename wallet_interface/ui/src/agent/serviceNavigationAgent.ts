@@ -12,6 +12,7 @@ import {
   search211Info,
   type GraphRagCitation,
 } from "../services/graphRagService";
+import type { WalletApiConfig } from "../services/walletApi";
 
 export interface ServiceNavigationEvidence {
   query: string;
@@ -47,6 +48,7 @@ export interface ServiceNavigationAnswerResponse {
 export interface ServiceNavigationAgentOptions {
   useEmbedding?: boolean;
   maxTokens?: number;
+  walletApiConfig?: WalletApiConfig;
 }
 
 const serviceNavigationPattern =
@@ -63,6 +65,7 @@ export async function buildServiceNavigationEvidence(
 ): Promise<ServiceNavigationEvidence> {
   const evidence = await build211InfoEvidence(query, limit, {
     useEmbedding: options.useEmbedding,
+    walletApiConfig: options.walletApiConfig,
   });
   const citations = build211InfoCitations(evidence.results);
   const evidenceBundle = evidenceBundleFromGraphEvidence(query, evidence);
@@ -84,6 +87,7 @@ export async function searchServiceNavigation(
   const query = [input.query, input.city, input.category].filter(Boolean).join(" ");
   const results = await search211Info(query, input.limit ?? 8, {
     useEmbedding: options.useEmbedding,
+    walletApiConfig: options.walletApiConfig,
   });
   const evidenceBundle = evidenceBundleFromResults(input.query, results);
   const citations = build211InfoCitations(results);
@@ -106,6 +110,7 @@ export async function answerServiceNavigationQuestion(
     useLocalModel: input.useLocalModel,
     maxTokens: options.maxTokens,
     useEmbedding: options.useEmbedding,
+    walletApiConfig: options.walletApiConfig,
   });
   const citations = build211InfoCitations(graphRagAnswer.evidence.results);
   const evidenceBundle = evidenceBundleFromGraphEvidence(input.question, graphRagAnswer.evidence);

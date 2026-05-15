@@ -28,12 +28,14 @@ import type {
   SearchResult,
 } from "../lib/graphrag";
 import type { BackendDetectionStatus } from "../lib/backendDetectionWorkerService";
+import { generateWalletRouterEmbeddings, generateWalletRouterText, type WalletApiConfig } from "./walletApi";
 
 interface GraphRagRetrievalOptions {
   useEmbedding?: boolean;
   filters?: SearchFilters;
   serviceOnly?: boolean;
   fallbackToAllDocs?: boolean;
+  walletApiConfig?: WalletApiConfig;
 }
 
 export interface GraphRagCitation {
@@ -164,7 +166,7 @@ const ADDRESS_PATTERN =
   /\b\d{1,6}\s+[A-Z0-9][A-Z0-9 .'-]{2,80}\s+(?:Avenue|Ave\.?|Boulevard|Blvd\.?|Court|Ct\.?|Drive|Dr\.?|Highway|Hwy\.?|Lane|Ln\.?|Parkway|Pkwy\.?|Place|Pl\.?|Road|Rd\.?|Street|St\.?|Way)\b(?:[, ]+[A-Z][A-Z .'-]{2,50})?(?:[, ]+[A-Z]{2}\b)?(?:[, ]+\d{5}(?:-\d{4})?)?/gi;
 
 export async function search211Info(query: string, limit = 10, options: GraphRagRetrievalOptions = {}) {
-  const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
+  const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding, options.walletApiConfig);
   const initialFilters = preferredServiceFilters(limit, options);
   const [preferredClusterIds, currentCoordinates] = await Promise.all([
     resolvePreferredServiceClusterIds(query, initialFilters),
@@ -216,7 +218,7 @@ export async function search211Info(query: string, limit = 10, options: GraphRag
 }
 
 export async function build211InfoEvidence(query: string, limit = 6, options: GraphRagRetrievalOptions = {}) {
-  const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding);
+  const queryEmbedding = await tryGenerateQueryEmbedding(query, options.useEmbedding, options.walletApiConfig);
   const initialFilters = preferredServiceFilters(limit, options);
   const [preferredClusterIds, currentCoordinates] = await Promise.all([
     resolvePreferredServiceClusterIds(query, initialFilters),
@@ -515,13 +517,14 @@ export async function answer211InfoQuestion(
     filters?: SearchFilters;
     serviceOnly?: boolean;
     fallbackToAllDocs?: boolean;
+    walletApiConfig?: WalletApiConfig;
   } = {},
 ): Promise<GraphRagAnswer> {
   const trimmedQuestion = question.trim();
   if (!trimmedQuestion) {
     throw new Error("Question is required");
   }
-  const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding);
+  const queryEmbedding = await tryGenerateQueryEmbedding(trimmedQuestion, options.useEmbedding, options.walletApiConfig);
 
   const initialFilters = preferredServiceFilters(6, options);
   const preferredClusterIds = await resolvePreferredServiceClusterIds(trimmedQuestion, initialFilters);
@@ -567,12 +570,30 @@ export async function answer211InfoQuestion(
     };
   }
 
+  const prompt = build211GraphRagPrompt(trimmedQuestion, evidence);
+  const maxTokens = options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS;
+  if (options.walletApiConfig?.actorDid) {
+    try {
+      const routerAnswer = await generateWalletRouterText(options.walletApiConfig, {
+        prompt,
+        maxTokens,
+      });
+      const answer = clean211GraphRagModelAnswer(routerAnswer.text);
+      const grounded = isGrounded211GraphRagAnswer(answer);
+      return {
+        question: trimmedQuestion,
+        answer: grounded ? format211GraphRagDisplayedAnswer(answer) : build211InfoFallbackSummary(evidence),
+        evidence,
+        usedLocalModel: false,
+      };
+    } catch (error) {
+      console.warn("211 GraphRAG Hugging Face wallet router unavailable; falling back to LFM/OpenRouter path", error);
+    }
+  }
+
   try {
     const { clientLLMWorkerService } = await import("../lib/clientLLMWorkerService");
-    const rawAnswer = await clientLLMWorkerService.generateText(
-      build211GraphRagPrompt(trimmedQuestion, evidence),
-      options.maxTokens || DEFAULT_GRAPH_RAG_MODEL_MAX_TOKENS,
-    );
+    const rawAnswer = await clientLLMWorkerService.generateText(prompt, maxTokens);
     const answer = clean211GraphRagModelAnswer(rawAnswer);
     const grounded = isGrounded211GraphRagAnswer(answer);
     return {
@@ -677,9 +698,30 @@ async function getLlmStatus(): Promise<GraphRagRuntimeStatus["llm"]> {
   }
 }
 
-async function tryGenerateQueryEmbedding(query: string, enabled = false): Promise<Float32Array | undefined> {
+async function tryGenerateQueryEmbedding(
+  query: string,
+  enabled = false,
+  walletApiConfig?: WalletApiConfig,
+): Promise<Float32Array | undefined> {
   if (!enabled) {
     return undefined;
+  }
+
+  if (walletApiConfig?.actorDid) {
+    try {
+      const manifest = await load211GeneratedManifest();
+      const response = await generateWalletRouterEmbeddings(walletApiConfig, {
+        text: query,
+        modelName: manifest.embeddingModel,
+      });
+      const embedding = response.embeddings?.[0];
+      if (Array.isArray(embedding) && embedding.length === manifest.embeddingDimension) {
+        return Float32Array.from(embedding);
+      }
+      console.warn("211 Hugging Face embeddings router returned an incompatible embedding; using browser embedding fallback");
+    } catch (error) {
+      console.warn("211 Hugging Face embeddings router unavailable; using browser embedding fallback", error);
+    }
   }
 
   try {
