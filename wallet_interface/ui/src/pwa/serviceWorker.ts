@@ -1,7 +1,7 @@
 import { shouldDeleteAppCache } from "./cachePolicy";
 import { shouldHandleServiceWorkerRequest } from "./fetchPolicy";
 
-const CACHE_VERSION = "portal-088-v1";
+const CACHE_VERSION = "portal-089-v1";
 const SHELL_CACHE = `abby-shell-${CACHE_VERSION}`;
 const PUBLIC_SERVICE_CACHE = `abby-public-service-detail-${CACHE_VERSION}`;
 const SHELL_CACHE_PREFIX = "abby-shell-";

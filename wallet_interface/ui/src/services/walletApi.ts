@@ -81,6 +81,18 @@ interface WalletRecordsApiResponse {
   records: WalletRecordApiRecord[];
 }
 
+export interface DeleteWalletRecordResult {
+  artifact_ids: string[];
+  deleted: boolean;
+  ipfs_cids: string[];
+  metadata_deleted: boolean;
+  proof_ids: string[];
+  record_id: string;
+  unpin_results: Array<{ cid: string; ok: boolean; error?: string }>;
+  version_ids: string[];
+  wallet_id: string;
+}
+
 interface SavedServicesApiResponse {
   saved_services: SavedService[];
 }
@@ -1045,6 +1057,18 @@ export async function updateWalletRecordMetadata(
     metadata
   });
   return toUploadItemViewWithStorage(config, record);
+}
+
+export async function deleteWalletRecord(
+  config: WalletApiConfig,
+  recordId: string,
+  { unpinIpfs = true }: { unpinIpfs?: boolean } = {}
+): Promise<DeleteWalletRecordResult> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}`, normalizedBaseUrl(config.apiBaseUrl));
+  return deleteJson<DeleteWalletRecordResult>(url, "Wallet record delete", {
+    actor_did: requiredActorDid(config),
+    unpin_ipfs: unpinIpfs
+  });
 }
 
 export async function verifyRecordStorage(
@@ -2073,6 +2097,8 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     decryptedClassification: readMetadataString(metadata, "decryptedClassification"),
     decryptedLabels: readMetadataStringArray(metadata, "decryptedLabels"),
     decryptedMimeType: readMetadataString(metadata, "decryptedMimeType"),
+    encryptedMetadataCid: readMetadataString(metadata, "encryptedMetadataCid"),
+    encryptedPayloadCid: readMetadataString(metadata, "encryptedPayloadCid"),
     filecoinDealId: readMetadataString(metadata, "filecoinDealId"),
     filecoinPieceCid: readMetadataString(metadata, "filecoinPieceCid"),
     filecoinPinRequestId: readMetadataString(metadata, "filecoinPinRequestId"),
@@ -2080,6 +2106,8 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     filecoinPinStatusUrl: readMetadataString(metadata, "filecoinPinStatusUrl"),
     ipfsCid: readMetadataString(metadata, "ipfsCid"),
     ipfsGatewayUrl: readMetadataString(metadata, "ipfsGatewayUrl"),
+    ipfsRootCid: readMetadataString(metadata, "ipfsRootCid"),
+    ipldLinks: readMetadataIpldLinks(metadata, "ipldLinks"),
     privacyProfileArtifactIds: readMetadataStringArray(metadata, "privacyProfileArtifactIds"),
     privacyProfileClassification: readMetadataString(metadata, "privacyProfileClassification"),
     privacyProfileLabels: readMetadataStringArray(metadata, "privacyProfileLabels"),
@@ -2120,6 +2148,28 @@ function readMetadataStringArray(metadata: Record<string, unknown>, key: string)
   return strings.length ? strings : undefined;
 }
 
+function readMetadataIpldLinks(
+  metadata: Record<string, unknown>,
+  key: string
+): Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }> | undefined {
+  const value = metadata[key];
+  if (!Array.isArray(value)) return undefined;
+  const links = value.flatMap((item) => {
+    if (!isPlainRecord(item)) return [];
+    const name = typeof item.name === "string" && item.name.trim() ? item.name : undefined;
+    const slashCid = typeof item["/"] === "string" && item["/"].trim() ? item["/"] : undefined;
+    const cid = typeof item.cid === "string" && item.cid.trim() ? item.cid : undefined;
+    if (!name || !(slashCid || cid)) return [];
+    return [{
+      "/": slashCid,
+      cid,
+      mediaType: typeof item.mediaType === "string" && item.mediaType.trim() ? item.mediaType : undefined,
+      name
+    }];
+  });
+  return links.length ? links : undefined;
+}
+
 async function fetchJson<T>(url: URL, label: string): Promise<T> {
   const response = await fetch(url);
   if (!response.ok) {
@@ -2157,6 +2207,18 @@ async function patchJson<T>(url: URL, label: string, body: unknown): Promise<T> 
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
     method: "PATCH"
+  });
+  if (!response.ok) {
+    throw new Error(`${label} request failed with status ${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
+async function deleteJson<T>(url: URL, label: string, body: unknown): Promise<T> {
+  const response = await fetch(url, {
+    body: JSON.stringify(body),
+    headers: { "Content-Type": "application/json" },
+    method: "DELETE"
   });
   if (!response.ok) {
     throw new Error(`${label} request failed with status ${response.status}`);

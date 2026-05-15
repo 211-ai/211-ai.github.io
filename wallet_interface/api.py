@@ -350,6 +350,11 @@ class WalletRecordMetadataRequest(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+class DeleteWalletRecordRequest(BaseModel):
+    actor_did: str
+    unpin_ipfs: bool = True
+
+
 class SavedServiceRequest(BaseModel):
     actor_did: str
     service_doc_id: str
@@ -1862,6 +1867,22 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 record_id,
                 actor_did=request.actor_did,
                 metadata=request.metadata,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.delete("/wallets/{wallet_id}/records/{record_id}")
+    def delete_record(
+        wallet_id: str,
+        record_id: str,
+        request: DeleteWalletRecordRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.delete_record(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                unpin_ipfs=request.unpin_ipfs,
             )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc

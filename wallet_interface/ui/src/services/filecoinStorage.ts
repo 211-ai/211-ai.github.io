@@ -166,6 +166,7 @@ export async function uploadProofBundleToFilecoinStorage(
 
 export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<UploadItem> {
   const ipfsCid = result.ipfsCid || result.cid;
+  const ipfsRootCid = result.root?.["/"] || ipfsCid;
   const filecoinPinInfo =
     (isRecord(result.filecoinPinInfo) ? result.filecoinPinInfo : undefined) ||
     (isRecord(result.info) ? result.info : undefined);
@@ -174,13 +175,17 @@ export function toFilecoinStoragePatch(result: FilecoinUploadResponse): Partial<
     decentralizedStorageMessage: buildFilecoinStorageMessage(result, ipfsCid, filecoinPinStatus),
     decentralizedStorageProvider: normalizeStorageProvider(result.provider),
     decentralizedStorageStatus: "stored",
+    encryptedMetadataCid: result.encryptedMetadataCid || undefined,
+    encryptedPayloadCid: result.encryptedPayloadCid,
     filecoinDealId: result.filecoinDealId || result.dealId,
     filecoinPieceCid: result.filecoinPieceCid || result.pieceCid || readInfoString(filecoinPinInfo, "synapse_piece_cid"),
     filecoinPinRequestId: result.filecoinPinRequestId || result.requestId,
     filecoinPinStatus,
     filecoinPinStatusUrl: result.statusUrl,
     ipfsCid,
-    ipfsGatewayUrl: result.gatewayUrl || result.url || (ipfsCid ? `/ipfs-proxy/${ipfsCid}` : undefined)
+    ipfsGatewayUrl: result.gatewayUrl || result.url || (ipfsCid ? `/ipfs-proxy/${ipfsCid}` : undefined),
+    ipfsRootCid,
+    ipldLinks: result.ipldLinks
   };
 }
 

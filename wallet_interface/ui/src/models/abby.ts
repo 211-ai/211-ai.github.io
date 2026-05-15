@@ -123,8 +123,12 @@ export interface UploadItem {
   decryptedClassification?: string;
   decryptedLabels?: string[];
   decryptedMimeType?: string;
+  encryptedMetadataCid?: string;
+  encryptedPayloadCid?: string;
   ipfsCid?: string;
   ipfsGatewayUrl?: string;
+  ipfsRootCid?: string;
+  ipldLinks?: Array<{ "/"?: string; cid?: string; mediaType?: string; name: string }>;
   filecoinPieceCid?: string;
   filecoinDealId?: string;
   filecoinPinRequestId?: string;

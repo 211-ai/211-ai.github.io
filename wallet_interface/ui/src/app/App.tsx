@@ -24,6 +24,7 @@ import {
   Save,
   Settings as SettingsIcon,
   ShieldCheck,
+  Trash2,
   Upload,
   UsersRound,
   Wrench
@@ -135,6 +136,7 @@ import {
   createRedactedGraphRAG,
   createVerifiedExportBundleView,
   createWallet,
+  deleteWalletRecord,
   dispatchMissingPersonDeadDrop,
   delegateGrant,
   decryptRecordWithGrant,
@@ -3428,6 +3430,7 @@ function UploadsScreen({
   const [repairingUploadIds, setRepairingUploadIds] = useState<string[]>([]);
   const [filecoinUploadIds, setFilecoinUploadIds] = useState<string[]>([]);
   const [downloadingUploadIds, setDownloadingUploadIds] = useState<string[]>([]);
+  const [deletingUploadIds, setDeletingUploadIds] = useState<string[]>([]);
   const [storeNewFilesOnFilecoin, setStoreNewFilesOnFilecoin] = useState(true);
   const uploadsRef = useRef(uploads);
   const filecoinStorageConfig = useMemo(() => getFilecoinStorageConfig(), []);
@@ -3853,6 +3856,8 @@ function UploadsScreen({
       decryptedClassification: upload.decryptedClassification,
       decryptedLabels: upload.decryptedLabels,
       decryptedMimeType: upload.decryptedMimeType,
+      encryptedMetadataCid: upload.encryptedMetadataCid,
+      encryptedPayloadCid: upload.encryptedPayloadCid,
       fileName: upload.fileName,
       filecoinDealId: upload.filecoinDealId,
       filecoinPieceCid: upload.filecoinPieceCid,
@@ -3861,6 +3866,8 @@ function UploadsScreen({
       filecoinPinStatusUrl: upload.filecoinPinStatusUrl,
       ipfsCid: upload.ipfsCid,
       ipfsGatewayUrl: upload.ipfsGatewayUrl,
+      ipfsRootCid: upload.ipfsRootCid,
+      ipldLinks: upload.ipldLinks,
       machineSummary: upload.machineSummary,
       privacyProfileArtifactIds: upload.privacyProfileArtifactIds,
       privacyProfileClassification: upload.privacyProfileClassification,
@@ -3897,6 +3904,27 @@ function UploadsScreen({
 
   function updateUpload(uploadId: string, patch: Partial<UploadItem>) {
     replaceUploads(uploadsRef.current.map((item) => (item.id === uploadId ? { ...item, ...patch } : item)));
+  }
+
+  async function deleteWalletUpload(upload: UploadItem) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    const confirmed = window.confirm(
+      `Delete ${upload.fileName} from this wallet? This removes the wallet record, metadata, proofs that depend on it, and tracked IPLD/IPFS links.`
+    );
+    if (!confirmed) return;
+    setDeletingUploadIds((uploadIds) => [...new Set([...uploadIds, upload.id])]);
+    try {
+      await deleteWalletRecord(apiConfig, upload.recordId, { unpinIpfs: true });
+      replaceUploads(uploadsRef.current.filter((item) => item.id !== upload.id));
+      await refreshWalletAuditEvents().catch(() => undefined);
+    } catch (error) {
+      updateUpload(upload.id, {
+        decentralizedStorageMessage:
+          error instanceof Error ? `Delete failed: ${error.message}` : "Delete failed."
+      });
+    } finally {
+      setDeletingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
+    }
   }
 
   async function monitorFilecoinPersistence(uploadId: string, initialResult: Parameters<typeof toFilecoinStoragePatch>[0]) {
@@ -4156,6 +4184,11 @@ function UploadsScreen({
                   </a>
                 </small>
               ) : null}
+              {upload.ipldLinks?.length ? (
+                <small className="wallet-storage-reference">
+                  IPLD links: {upload.ipldLinks.length} encrypted wallet object{upload.ipldLinks.length === 1 ? "" : "s"} tracked
+                </small>
+              ) : null}
               {upload.privacyProfileSummary ? (
                 <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
               ) : null}
@@ -4230,6 +4263,16 @@ function UploadsScreen({
                 >
                   <Download aria-hidden="true" size={18} />
                   {downloadingUploadIds.includes(upload.id) ? "Decrypting" : "Download decrypted"}
+                </Button>
+              ) : null}
+              {upload.recordId && apiConfig?.actorDid ? (
+                <Button
+                  disabled={deletingUploadIds.includes(upload.id)}
+                  onClick={() => void deleteWalletUpload(upload)}
+                  variant="secondary"
+                >
+                  <Trash2 aria-hidden="true" size={18} />
+                  {deletingUploadIds.includes(upload.id) ? "Deleting" : "Delete"}
                 </Button>
               ) : null}
               <Button

@@ -24,6 +24,7 @@ from ipfs_datasets_py.wallet import (  # noqa: E402
     WalletService,
     create_encrypted_blob_store,
 )
+from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
 from ipfs_datasets_py.wallet.audit import append_audit_event  # noqa: E402
 from ipfs_datasets_py.wallet.proofs import create_simulated_proof_receipt  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import (  # noqa: E402
@@ -74,6 +75,40 @@ def _safe_document_profile_public_inputs(public_inputs: Mapping[str, Any]) -> Di
     if "privacy_policy" not in safe:
         safe["privacy_policy"] = "no_plaintext_public_inputs"
     return safe
+
+
+def _record_delete_cids(metadata: Mapping[str, Any], versions: Sequence[Any]) -> List[str]:
+    cids: List[str] = []
+
+    def add(value: Any) -> None:
+        raw = str(value or "").strip()
+        if not raw:
+            return
+        if raw.startswith("ipfs://"):
+            raw = raw.removeprefix("ipfs://").split("/", 1)[0]
+        elif "://" in raw:
+            return
+        if raw and raw not in cids:
+            cids.append(raw)
+
+    for key in (
+        "ipfsCid",
+        "ipfsRootCid",
+        "encryptedPayloadCid",
+        "encryptedMetadataCid",
+    ):
+        add(metadata.get(key))
+    for link in metadata.get("ipldLinks") or []:
+        if isinstance(link, Mapping):
+            add(link.get("/") or link.get("cid"))
+    for version in versions:
+        for storage_ref in (version.encrypted_payload_ref, version.encrypted_metadata_ref):
+            if storage_ref is None:
+                continue
+            add(getattr(storage_ref, "uri", ""))
+            for mirror in getattr(storage_ref, "mirrors", []) or []:
+                add(getattr(mirror, "uri", ""))
+    return cids
 
 
 def _storage_config_from_env() -> str | Dict[str, Any] | None:
@@ -2162,6 +2197,100 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return self.record_to_dict(record)
+
+    def delete_record(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        unpin_ipfs: bool = True,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service._record(wallet_id, record_id)
+        metadata_key = f"{wallet_id}:{record_id}"
+        metadata_record = self.wallet_record_metadata.get(metadata_key)
+        metadata = dict(metadata_record.metadata) if metadata_record else {}
+        versions = [
+            version
+            for version in self.wallet_service.versions.values()
+            if version.record_id == record_id
+        ]
+        proof_ids = {
+            proof_id
+            for proof_id, proof in self.wallet_service.proofs.items()
+            if proof.wallet_id == wallet_id and record_id in proof.witness_record_ids
+        }
+        artifact_ids = {
+            artifact_id
+            for artifact_id, artifact in self.wallet_service.derived_artifacts.items()
+            if artifact.wallet_id == wallet_id and record_id in artifact.source_record_ids
+        }
+        cids = _record_delete_cids(metadata, versions)
+        unpin_results = self._unpin_cids(cids) if unpin_ipfs else []
+        metadata_deleted = metadata_key in self.wallet_record_metadata
+
+        self.wallet_service.records.pop(record.record_id, None)
+        for version in versions:
+            self.wallet_service.versions.pop(version.version_id, None)
+        for proof_id in proof_ids:
+            self.wallet_service.proofs.pop(proof_id, None)
+        for artifact_id in artifact_ids:
+            self.wallet_service.derived_artifacts.pop(artifact_id, None)
+        self.wallet_record_metadata.pop(metadata_key, None)
+
+        resource = resource_for_record(wallet_id, record_id)
+        for grant in self.wallet_service.grants.values():
+            if grant.status == "active" and resource in grant.resources:
+                grant.status = "revoked"
+        for receipt in self.wallet_service.grant_receipts.values():
+            if receipt.status == "active" and resource in receipt.resources:
+                receipt.status = "revoked"
+        for request in self.wallet_service.access_requests.values():
+            if request.status in {"pending", "approved"} and resource in request.resources:
+                request.status = "revoked"
+
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="record/delete",
+            resource=resource,
+            details={
+                "artifact_ids": sorted(artifact_ids),
+                "ipfs_cids": cids,
+                "proof_ids": sorted(proof_ids),
+                "unpin_attempted": unpin_ipfs,
+                "version_ids": [version.version_id for version in versions],
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "artifact_ids": sorted(artifact_ids),
+            "deleted": True,
+            "ipfs_cids": cids,
+            "metadata_deleted": metadata_deleted,
+            "proof_ids": sorted(proof_ids),
+            "record_id": record_id,
+            "unpin_results": unpin_results,
+            "version_ids": [version.version_id for version in versions],
+            "wallet_id": wallet_id,
+        }
+
+    def _unpin_cids(self, cids: Sequence[str]) -> List[Dict[str, Any]]:
+        if not cids:
+            return []
+        try:
+            backend = get_ipfs_backend()
+        except Exception as exc:
+            return [{"cid": cid, "ok": False, "error": str(exc)} for cid in cids]
+        results: List[Dict[str, Any]] = []
+        for cid in cids:
+            try:
+                backend.unpin(cid)
+                results.append({"cid": cid, "ok": True})
+            except Exception as exc:
+                results.append({"cid": cid, "ok": False, "error": str(exc)})
+        return results
 
     def save_service_for_wallet(
         self,
