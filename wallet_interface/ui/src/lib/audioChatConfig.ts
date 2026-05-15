@@ -9,6 +9,10 @@ type AudioChatConfig = {
   readonly voiceProxyInferUrl: string;
   readonly voiceProxyTtsUrl: string;
   readonly voiceProxySttUrl: string;
+  readonly voiceProxyFallbackModel: string;
+  readonly voiceProxyFallbackInferUrl: string;
+  readonly voiceProxyFallbackTtsUrl: string;
+  readonly voiceProxyFallbackSttUrl: string;
   readonly enableLocalAudio: boolean;
   readonly enableMobileLocalAudio: boolean;
   readonly enableWebGPU: boolean;
@@ -81,6 +85,37 @@ export const AUDIO_CHAT_CONFIG: AudioChatConfig = {
       joinUrl(runtimeConfig?.baseUrl, "stt") ||
       normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_STT_URL as string | undefined) ||
       joinUrl(normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_BASE_URL as string | undefined), "stt") ||
+      ""
+    );
+  },
+  get voiceProxyFallbackModel() {
+    return (
+      readRuntimeVoiceProxyConfig()?.fallbackModel ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_FALLBACK_MODEL as string | undefined) ||
+      "LiquidAI/LFM2.5-Audio-1.5B-proxy"
+    );
+  },
+  get voiceProxyFallbackInferUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.fallbackInferUrl ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_FALLBACK_INFER_URL as string | undefined) ||
+      ""
+    );
+  },
+  get voiceProxyFallbackTtsUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.fallbackTtsUrl ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_FALLBACK_TTS_URL as string | undefined) ||
+      ""
+    );
+  },
+  get voiceProxyFallbackSttUrl() {
+    const runtimeConfig = readRuntimeVoiceProxyConfig();
+    return (
+      runtimeConfig?.fallbackSttUrl ||
+      normalizeOptionalString(import.meta.env?.VITE_VOICE_PROXY_FALLBACK_STT_URL as string | undefined) ||
       ""
     );
   },

@@ -2,6 +2,7 @@ import { AUDIO_CHAT_CONFIG, getClientAudioModelInfo } from "./audioChatConfig";
 import {
   generateRemoteAudio,
   isRemoteVoiceProxyConfigured,
+  preflightRemoteAudioProxy,
   type RemoteAudioGenerationResult,
 } from "./remoteAudioClient";
 import { parseVoiceGraphRagPrompt } from "./voiceGraphRagPrompt";
@@ -101,6 +102,7 @@ interface ClientAudioReplyServiceOptions {
     localModelName?: string;
     audioBlob?: Blob;
   }) => Promise<RemoteAudioGenerationResult>;
+  preflightRemoteAudioProxy?: (mode?: "tts" | "voice-reply") => Promise<RemoteAudioGenerationResult>;
   getLocalAudioBlockReason?: () => string | undefined;
   hasWebGPU?: () => boolean;
   hasSpeechSynthesis?: () => boolean;
@@ -126,6 +128,8 @@ export class ClientAudioReplyService {
   private localAudioUnavailableAt = 0;
   private remoteAudioLastError: string | undefined;
   private remoteAudioLastUsedAt: string | undefined;
+  private remoteAudioPreflight: "unknown" | "ready" | "failed" = "unknown";
+  private remoteAudioPreflightPromise: Promise<boolean> | null = null;
   private readonly createWorker: () => Worker;
   private readonly generateRemoteAudio: (options: {
     mode: "tts" | "voice-reply";
@@ -136,15 +140,19 @@ export class ClientAudioReplyService {
     localModelName?: string;
     audioBlob?: Blob;
   }) => Promise<RemoteAudioGenerationResult>;
+  private readonly preflightRemoteAudioProxy: (mode?: "tts" | "voice-reply") => Promise<RemoteAudioGenerationResult>;
   private readonly getLocalAudioBlockReason: () => string | undefined;
   private readonly hasWebGPU: () => boolean;
   private readonly hasSpeechSynthesis: () => boolean;
   private readonly now: () => number;
   private readonly voiceProxyEnabled: boolean;
+  private readonly hasInjectedRemoteAudio: boolean;
 
   constructor(options: ClientAudioReplyServiceOptions = {}) {
+    this.hasInjectedRemoteAudio = Boolean(options.generateRemoteAudio);
     this.createWorker = options.createWorker ?? defaultCreateWorker;
     this.generateRemoteAudio = options.generateRemoteAudio ?? generateRemoteAudio;
+    this.preflightRemoteAudioProxy = options.preflightRemoteAudioProxy ?? preflightRemoteAudioProxy;
     this.getLocalAudioBlockReason = options.getLocalAudioBlockReason ?? defaultGetLocalAudioBlockReason;
     this.hasWebGPU = options.hasWebGPU ?? defaultHasWebGPU;
     this.hasSpeechSynthesis = options.hasSpeechSynthesis ?? defaultHasSpeechSynthesis;
@@ -155,18 +163,33 @@ export class ClientAudioReplyService {
   async warmUp(options: ClientAudioProgressOptions = {}): Promise<ClientAudioWarmupResult> {
     const modelName = AUDIO_CHAT_CONFIG.defaultModel;
     if (this.canUseRemoteAudio()) {
-      this.startLocalWarmupInBackground();
       options.onProgress?.({
-        phase: "ready",
-        progress: 100,
-        status: "Voice proxy ready.",
+        phase: "queued",
+        progress: 0,
+        status: "Checking voice proxy before local audio.",
         modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
       });
-      return {
-        kind: "remote-ready",
-        modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
-        provider: "remote-voice-proxy",
-      };
+      const proxyReady = await this.ensureRemoteAudioPreflight("tts");
+      if (!proxyReady) {
+        options.onProgress?.({
+          phase: "fallback",
+          progress: 0,
+          status: "Voice proxy unavailable; preparing local audio.",
+          modelName,
+        });
+      } else {
+        options.onProgress?.({
+          phase: "ready",
+          progress: 100,
+          status: "Voice proxy ready.",
+          modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
+        });
+        return {
+          kind: "remote-ready",
+          modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
+          provider: "remote-voice-proxy",
+        };
+      }
     }
     if (this.localAudioReady && this.canAttemptLocalAudio(modelName)) {
       options.onProgress?.({
@@ -238,7 +261,6 @@ export class ClientAudioReplyService {
 
     const modelName = AUDIO_CHAT_CONFIG.defaultModel;
     if (this.canUseRemoteAudio()) {
-      this.startLocalWarmupInBackground();
       try {
         return await this.generateProxyAudio({
           mode: "tts",
@@ -315,7 +337,6 @@ export class ClientAudioReplyService {
 
     const modelName = AUDIO_CHAT_CONFIG.defaultModel;
     if (this.canUseRemoteAudio()) {
-      this.startLocalWarmupInBackground();
       try {
         return await this.generateProxyAudio({
           mode: "voice-reply",
@@ -385,8 +406,10 @@ export class ClientAudioReplyService {
       remoteAudioEnabled: this.voiceProxyEnabled,
       remoteAudioConfigured: this.canUseRemoteAudio(),
       remoteAudioEndpoint: AUDIO_CHAT_CONFIG.voiceProxyInferUrl,
+      remoteAudioFallbackEndpoint: AUDIO_CHAT_CONFIG.voiceProxyFallbackInferUrl,
       remoteAudioLastError: this.remoteAudioLastError,
       remoteAudioLastUsedAt: this.remoteAudioLastUsedAt,
+      remoteAudioPreflight: this.remoteAudioPreflight,
       remoteAudioProxyMode: "multipart-wav",
       localAudioEnabled: AUDIO_CHAT_CONFIG.enableLocalAudio,
       localAudioAvailable: this.canAttemptLocalAudio(AUDIO_CHAT_CONFIG.defaultModel),
@@ -439,7 +462,11 @@ export class ClientAudioReplyService {
   }
 
   private canUseRemoteAudio(): boolean {
-    return this.voiceProxyEnabled && isRemoteVoiceProxyConfigured();
+    return this.voiceProxyEnabled && (this.hasInjectedRemoteAudio || isRemoteVoiceProxyConfigured());
+  }
+
+  shouldPreferRemoteAudioBeforeLocalText(): boolean {
+    return this.canUseRemoteAudio() && this.remoteAudioPreflight !== "failed";
   }
 
   private async generateProxyAudio(options: {
@@ -455,6 +482,18 @@ export class ClientAudioReplyService {
     options.onProgress?.({
       phase: "queued",
       progress: 0,
+      status:
+        this.remoteAudioPreflight === "ready"
+          ? "Sending audio request to voice proxy."
+          : "Checking voice proxy before local audio.",
+      modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
+    });
+    if (!(await this.ensureRemoteAudioPreflight(options.mode))) {
+      throw new Error(this.remoteAudioLastError || "Voice proxy preflight failed.");
+    }
+    options.onProgress?.({
+      phase: "queued",
+      progress: 15,
       status: "Sending audio request to voice proxy.",
       modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
     });
@@ -469,6 +508,7 @@ export class ClientAudioReplyService {
     });
     this.remoteAudioLastError = undefined;
     this.remoteAudioLastUsedAt = new Date().toISOString();
+    this.remoteAudioPreflight = "ready";
     options.onProgress?.({
       phase: "ready",
       progress: 100,
@@ -493,6 +533,28 @@ export class ClientAudioReplyService {
       provider: "remote-voice-proxy",
       text: result.text,
     };
+  }
+
+  private async ensureRemoteAudioPreflight(mode: "tts" | "voice-reply"): Promise<boolean> {
+    if (!this.canUseRemoteAudio()) return false;
+    if (this.remoteAudioPreflight === "ready") return true;
+    if (this.remoteAudioPreflightPromise) return this.remoteAudioPreflightPromise;
+    this.remoteAudioPreflightPromise = this.preflightRemoteAudioProxy(mode)
+      .then((result) => {
+        this.remoteAudioLastError = undefined;
+        this.remoteAudioLastUsedAt = new Date().toISOString();
+        this.remoteAudioPreflight = "ready";
+        return Boolean(result.audioBlob || result.text);
+      })
+      .catch((error) => {
+        this.remoteAudioLastError = formatError(error);
+        this.remoteAudioPreflight = "failed";
+        return false;
+      })
+      .finally(() => {
+        this.remoteAudioPreflightPromise = null;
+      });
+    return this.remoteAudioPreflightPromise;
   }
 
   private startLocalWarmupInBackground(): void {

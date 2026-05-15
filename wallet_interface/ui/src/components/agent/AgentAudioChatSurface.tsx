@@ -21,8 +21,8 @@ type BrowserAudioWorklet = { addModule: (moduleUrl: string) => Promise<void> };
 type BrowserAudioWorkletNode = AudioWorkletNode;
 
 const AUDIO_SURFACE_DESKTOP_QUERY = "(min-width: 760px)";
-const AUDIO_OPENING_GREETING = "Hi, this is Abby voice. You can start speaking when you are ready.";
-const AUDIO_OPENING_CLIP_PATH = "assets/audio/intro.wav";
+const AUDIO_OPENING_GREETING = "Welcome to Abby voice. You can start speaking when you are ready.";
+const AUDIO_OPENING_CLIP_PATH = "assets/audio/intro.wav?v=20260515-abby-intro";
 const VAD_MIN_RMS = 0.025;
 const VAD_NOISE_MULTIPLIER = 3.2;
 const VAD_VOICE_BAND_RATIO = 0.38;
@@ -671,7 +671,7 @@ export function AgentAudioChatSurface({
     pendingVoiceTranscriptRef.current = "";
     try {
       let preferredSpeechText = voiceInferenceRequest.fallbackText || fallbackText || message.content;
-      if (message.status !== "failed") {
+      if (message.status !== "failed" && !clientAudioReplyService.shouldPreferRemoteAudioBeforeLocalText()) {
         const generatedReply = await clientLLMWorkerService.tryGenerateText(
           {
             prompt: voiceInferenceRequest.prompt,

@@ -4,14 +4,22 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import io
 import json
+import math
+import mimetypes
 import os
 import re
 import smtplib
+import struct
+import time
+import uuid
+import wave
 from email.message import EmailMessage
 from email.utils import make_msgid
 from typing import Any, Dict, List, Mapping, Sequence
 from urllib import error as urllib_error
+from urllib import parse as urllib_parse
 from urllib import request as urllib_request
 
 from .app_service import WalletInterfaceService
@@ -40,12 +48,14 @@ from ._vendor import ensure_ipfs_datasets_py_path
 ensure_ipfs_datasets_py_path()
 
 from ipfs_datasets_py.ipfs_backend_router import get_ipfs_backend  # noqa: E402
+from ipfs_datasets_py.utils.secrets import resolve_secret  # noqa: E402
 from ipfs_datasets_py.wallet.ucan import invocation_from_token, invocation_to_token  # noqa: E402
 
 
 PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov"
 OPS_DEAD_DROP_ACTOR_DID = "did:wallet:ops"
 _IPFS_CID_PATTERN = re.compile(r"^(?:bafy[a-z0-9]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})$")
+_AI_ROUTER_RATE_LIMITS: Dict[str, Dict[str, Any]] = {}
 
 
 class FilecoinPinHandoffError(RuntimeError):
@@ -537,6 +547,45 @@ class RedactedGraphRAGRequest(BaseModel):
     grant_id: str | None = None
     invocation_token: str | None = None
     record_ids: List[str] = Field(default_factory=list)
+    max_chars_per_record: int = 20_000
+    max_bytes_per_record: int = 200_000
+    use_ocr: bool = True
+
+
+class WalletRouterBaseRequest(BaseModel):
+    actor_did: str
+    actor_key_hex: str | None = None
+    wallet_cid: str | None = None
+    provider: str | None = "hf_inference_api"
+    model_name: str | None = None
+    kwargs: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WalletEmbeddingsRouterRequest(WalletRouterBaseRequest):
+    text: str | None = None
+    texts: List[str] = Field(default_factory=list)
+
+
+class WalletLlmRouterRequest(WalletRouterBaseRequest):
+    prompt: str
+    system_prompt: str | None = None
+    max_new_tokens: int | None = 350
+
+
+class WalletMultimodalRouterRequest(WalletRouterBaseRequest):
+    prompt: str
+    image_urls: List[str] = Field(default_factory=list)
+    additional_text_blocks: List[str] = Field(default_factory=list)
+    messages: List[Dict[str, Any]] = Field(default_factory=list)
+    image_detail: str | None = "auto"
+    max_new_tokens: int | None = 350
+
+
+class WalletRecordMetadataGenerationRequest(WalletRouterBaseRequest):
+    grant_id: str | None = None
+    invocation_token: str | None = None
+    file_name: str | None = None
+    mime_type: str | None = None
     max_chars_per_record: int = 20_000
     max_bytes_per_record: int = 200_000
     use_ocr: bool = True
@@ -1728,6 +1777,159 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/ai-router/embeddings")
+    def proxy_wallet_embeddings_router(
+        wallet_id: str,
+        request: WalletEmbeddingsRouterRequest,
+    ) -> Dict[str, Any]:
+        try:
+            _require_wallet_router_actor(app_service, wallet_id, request.actor_did)
+            wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
+            limit = _check_wallet_router_rate_limit(wallet_cid, cost=max(1, len(request.texts) or 1))
+            texts = list(request.texts or [])
+            if request.text:
+                texts.insert(0, request.text)
+            if not texts:
+                raise ValueError("text or texts is required")
+            from ipfs_datasets_py import embeddings_router  # noqa: WPS433
+
+            embeddings = [
+                embeddings_router.embed_text(
+                    text,
+                    model_name=request.model_name,
+                    provider=request.provider,
+                    **dict(request.kwargs or {}),
+                )
+                for text in texts
+            ]
+            return {
+                "router": "embeddings_router",
+                "wallet_id": wallet_id,
+                "wallet_cid": wallet_cid,
+                "provider": request.provider,
+                "model_name": request.model_name,
+                "rate_limit": limit,
+                "embeddings": embeddings,
+            }
+        except ValueError as exc:
+            raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/ai-router/llm")
+    def proxy_wallet_llm_router(
+        wallet_id: str,
+        request: WalletLlmRouterRequest,
+    ) -> Dict[str, Any]:
+        try:
+            _require_wallet_router_actor(app_service, wallet_id, request.actor_did)
+            wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
+            limit = _check_wallet_router_rate_limit(wallet_cid)
+            from ipfs_datasets_py import llm_router  # noqa: WPS433
+
+            prompt = request.prompt
+            if request.system_prompt:
+                prompt = f"system: {request.system_prompt}\nuser: {request.prompt}"
+            kwargs = dict(request.kwargs or {})
+            if request.max_new_tokens is not None:
+                kwargs.setdefault("max_new_tokens", request.max_new_tokens)
+            text = llm_router.generate_text(
+                prompt,
+                model_name=request.model_name,
+                provider=request.provider,
+                **kwargs,
+            )
+            return {
+                "router": "llm_router",
+                "wallet_id": wallet_id,
+                "wallet_cid": wallet_cid,
+                "provider": request.provider,
+                "model_name": request.model_name,
+                "rate_limit": limit,
+                "text": text,
+            }
+        except ValueError as exc:
+            raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/ai-router/multimodal")
+    def proxy_wallet_multimodal_router(
+        wallet_id: str,
+        request: WalletMultimodalRouterRequest,
+    ) -> Dict[str, Any]:
+        try:
+            _require_wallet_router_actor(app_service, wallet_id, request.actor_did)
+            wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
+            limit = _check_wallet_router_rate_limit(wallet_cid)
+            from ipfs_datasets_py import multimodal_router  # noqa: WPS433
+
+            kwargs = dict(request.kwargs or {})
+            if request.max_new_tokens is not None:
+                kwargs.setdefault("max_new_tokens", request.max_new_tokens)
+            text = multimodal_router.generate_multimodal_text(
+                request.prompt,
+                model_name=request.model_name,
+                provider=request.provider,
+                image_urls=request.image_urls,
+                system_prompt=None,
+                additional_text_blocks=request.additional_text_blocks,
+                messages=request.messages or None,
+                image_detail=request.image_detail,
+                **kwargs,
+            )
+            return {
+                "router": "multimodal_router",
+                "wallet_id": wallet_id,
+                "wallet_cid": wallet_cid,
+                "provider": request.provider,
+                "model_name": request.model_name,
+                "rate_limit": limit,
+                "text": text,
+            }
+        except ValueError as exc:
+            raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/voice/indextts/tts")
+    def indextts_voice_tts(
+        text: str = Form(default=""),
+        voice_description: str | None = Form(default=None),
+    ) -> Dict[str, Any]:
+        try:
+            audio = _run_indextts_gradio_tts(
+                text=text,
+                voice_description=voice_description,
+            )
+            return audio
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/voice/indextts/infer")
+    async def indextts_voice_infer(
+        audio: UploadFile | None = File(default=None),
+        text: str = Form(default=""),
+        fallback_text: str | None = Form(default=None),
+        voice_description: str | None = Form(default=None),
+    ) -> Dict[str, Any]:
+        try:
+            reference_audio = await audio.read() if audio is not None else None
+            reference_name = getattr(audio, "filename", None) if audio is not None else None
+            reference_type = getattr(audio, "content_type", None) if audio is not None else None
+            reply_text = (text or fallback_text or "").strip()
+            audio_payload = _run_indextts_gradio_tts(
+                text=reply_text,
+                voice_description=voice_description,
+                reference_audio=reference_audio,
+                reference_audio_name=reference_name,
+                reference_audio_mime_type=reference_type,
+            )
+            audio_payload["text"] = reply_text
+            return audio_payload
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/documents/text")
     def add_text_document(wallet_id: str, request: AddTextDocumentRequest) -> Dict[str, Any]:
         try:
@@ -2788,6 +2990,219 @@ def create_app(*, service: WalletInterfaceService | None = None):
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    @app.post("/wallets/{wallet_id}/records/{record_id}/metadata/generate")
+    def generate_wallet_record_metadata(
+        wallet_id: str,
+        record_id: str,
+        request: WalletRecordMetadataGenerationRequest,
+    ) -> Dict[str, Any]:
+        try:
+            wallet_cid = _wallet_router_subject(wallet_id, request.wallet_cid)
+            limit = _check_wallet_router_rate_limit(wallet_cid, cost=4)
+            actor_secret = _key_from_optional_hex(request.actor_key_hex)
+            invocation = invocation_from_token(request.invocation_token) if request.invocation_token else None
+            metadata_status = app_service.update_record_metadata(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                metadata={
+                    "privacyProfileMessage": "Creating redacted GraphRAG, vector metadata, and wallet router labels.",
+                    "privacyProfileStatus": "profiling",
+                    **({"privacyProfileMimeType": request.mime_type} if request.mime_type else {}),
+                },
+            )
+
+            derived_results: List[Dict[str, Any]] = []
+            result_errors: List[str] = []
+            for create_result in (
+                lambda: app_service.analyze_record_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars=500,
+                )
+                if invocation
+                else app_service.analyze_record_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=500,
+                ),
+                lambda: app_service.create_document_vector_profile_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    chunk_size_words=80,
+                )
+                if invocation
+                else app_service.create_document_vector_profile(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    chunk_size_words=80,
+                ),
+                lambda: app_service.create_redacted_graphrag_with_invocation(
+                    wallet_id,
+                    [record_id],
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars_per_record=request.max_chars_per_record,
+                    max_bytes_per_record=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.create_redacted_graphrag(
+                    wallet_id,
+                    [record_id],
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars_per_record=request.max_chars_per_record,
+                    max_bytes_per_record=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                ),
+                lambda: app_service.extract_record_text_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_chars=12_000,
+                    max_bytes=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.extract_record_text_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_chars=12_000,
+                    max_bytes=request.max_bytes_per_record,
+                    use_ocr=request.use_ocr,
+                ),
+                lambda: app_service.analyze_record_form_redacted_with_invocation(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    invocation=invocation,
+                    actor_secret=actor_secret,
+                    max_fields=100,
+                    use_ocr=request.use_ocr,
+                )
+                if invocation
+                else app_service.analyze_record_form_redacted(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    grant_id=request.grant_id,
+                    actor_secret=actor_secret,
+                    max_fields=100,
+                    use_ocr=request.use_ocr,
+                ),
+            ):
+                try:
+                    derived_results.append(create_result())
+                except Exception as exc:
+                    result_errors.append(str(exc))
+
+            outputs = [_derived_output(result) for result in derived_results if _derived_output(result)]
+            if not outputs:
+                outputs.append(
+                    _fallback_document_profile_output(
+                        file_name=request.file_name or record_id,
+                        mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                    )
+                )
+            organizer_profile = _generate_wallet_organizer_profile(
+                wallet_id=wallet_id,
+                wallet_cid=wallet_cid,
+                file_name=request.file_name or _record_metadata_value(metadata_status, "fileName") or record_id,
+                mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                outputs=outputs,
+                provider=request.provider,
+                model_name=request.model_name,
+                kwargs=request.kwargs,
+            )
+            if organizer_profile:
+                outputs.append(
+                    {
+                        "openrouter_organizer_profile": organizer_profile,
+                        "output_policy": "redacted_wallet_router_organizer",
+                    }
+                )
+            artifact_ids = [_derived_artifact_id(result) for result in derived_results]
+            artifact_ids = [artifact_id for artifact_id in artifact_ids if artifact_id]
+            public_inputs = _build_document_profile_public_inputs(
+                artifact_ids=artifact_ids,
+                file_name=request.file_name or _record_metadata_value(metadata_status, "fileName") or record_id,
+                mime_type=request.mime_type or _record_metadata_value(metadata_status, "privacyProfileMimeType") or "application/octet-stream",
+                outputs=outputs,
+            )
+            proof = app_service.create_document_profile_proof(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                public_inputs=public_inputs,
+            )
+            metadata_patch = {
+                "privacyProfileArtifactIds": artifact_ids,
+                "privacyProfileClassification": _classify_document_profile(public_inputs),
+                "privacyProfileLabels": _read_string_list(public_inputs.get("organizer_labels")) or _default_labels_for_mime_type(str(public_inputs.get("mime_type") or "")),
+                "privacyProfileMessage": "Safe document profile and proof are attached to this wallet record.",
+                "privacyProfileMimeType": public_inputs.get("mime_type"),
+                "privacyProfileNeedsRefresh": False,
+                "privacyProfileProofId": proof.proof_id,
+                "privacyProfilePublicInputs": public_inputs,
+                "privacyProfileSearchText": _build_privacy_search_text(outputs, public_inputs),
+                "privacyProfileStatus": "profiled",
+                "privacyProfileSummary": _summarize_document_profile(public_inputs),
+                "privacyProfileVectorTerms": _build_privacy_vector_terms(outputs, public_inputs),
+                "walletRouterRateLimit": limit,
+            }
+            if result_errors:
+                metadata_patch["privacyProfileWarnings"] = result_errors[:5]
+            record = app_service.update_record_metadata(
+                wallet_id,
+                record_id,
+                actor_did=request.actor_did,
+                metadata=metadata_patch,
+            )
+            metadata_ipld_patch = _publish_record_metadata_ipld(record)
+            if metadata_ipld_patch:
+                record = app_service.update_record_metadata(
+                    wallet_id,
+                    record_id,
+                    actor_did=request.actor_did,
+                    metadata=metadata_ipld_patch,
+                )
+            return {
+                "record": record,
+                "metadata": record.get("metadata", {}),
+                "proof": proof.to_dict(),
+                "router": {
+                    "wallet_id": wallet_id,
+                    "wallet_cid": wallet_cid,
+                    "provider": request.provider,
+                    "model_name": request.model_name,
+                    "rate_limit": limit,
+                },
+            }
+        except ValueError as exc:
+            raise HTTPException(status_code=429 if "rate limit" in str(exc).lower() else 400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
     @app.post("/wallets/{wallet_id}/records/{record_id}/rotate-key")
     def rotate_record_key(
         wallet_id: str,
@@ -3049,6 +3464,718 @@ def _analysis_result_to_dict(result: Dict[str, Any]) -> Dict[str, Any]:
         "artifact": artifact_data,
         "output": result["output"],
     }
+
+
+def _wallet_router_subject(wallet_id: str, wallet_cid: str | None) -> str:
+    normalized_cid = _normalize_ipfs_cid(str(wallet_cid or ""))
+    if normalized_cid and _valid_ipfs_cid(normalized_cid):
+        return normalized_cid
+    if str(wallet_cid or "").strip():
+        return re.sub(r"[^a-zA-Z0-9:._-]+", "-", str(wallet_cid).strip())[:160]
+    return re.sub(r"[^a-zA-Z0-9:._-]+", "-", str(wallet_id or "unknown-wallet").strip())[:160]
+
+
+def _require_wallet_router_actor(
+    app_service: WalletInterfaceService,
+    wallet_id: str,
+    actor_did: str,
+) -> None:
+    wallet = app_service.get_wallet(wallet_id)
+    actor = str(actor_did or "").strip()
+    principals = {
+        str(wallet.owner_did),
+        *[str(item) for item in getattr(wallet, "controller_dids", [])],
+        *[str(item) for item in getattr(wallet, "device_dids", [])],
+    }
+    if not actor:
+        raise ValueError("actor_did is required")
+    if actor not in principals:
+        raise ValueError("actor_did is not authorized for this wallet")
+
+
+def _wallet_router_rate_limit_per_minute() -> int:
+    try:
+        return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_MINUTE", "30")))
+    except Exception:
+        return 30
+
+
+def _wallet_router_rate_limit_per_day() -> int:
+    try:
+        return max(1, int(os.getenv("WALLET_AI_ROUTER_RATE_LIMIT_PER_DAY", "500")))
+    except Exception:
+        return 500
+
+
+def _check_wallet_router_rate_limit(wallet_subject: str, *, cost: int = 1) -> Dict[str, Any]:
+    subject = wallet_subject or "unknown-wallet"
+    now = time.time()
+    minute_window = int(now // 60)
+    day_window = int(now // 86400)
+    state = _AI_ROUTER_RATE_LIMITS.setdefault(
+        subject,
+        {"minute_window": minute_window, "minute_count": 0, "day_window": day_window, "day_count": 0},
+    )
+    if state.get("minute_window") != minute_window:
+        state["minute_window"] = minute_window
+        state["minute_count"] = 0
+    if state.get("day_window") != day_window:
+        state["day_window"] = day_window
+        state["day_count"] = 0
+    per_minute = _wallet_router_rate_limit_per_minute()
+    per_day = _wallet_router_rate_limit_per_day()
+    next_minute = int(state.get("minute_count") or 0) + max(1, int(cost or 1))
+    next_day = int(state.get("day_count") or 0) + max(1, int(cost or 1))
+    if next_minute > per_minute:
+        raise ValueError(f"wallet router rate limit exceeded for {subject}: {per_minute} requests per minute")
+    if next_day > per_day:
+        raise ValueError(f"wallet router rate limit exceeded for {subject}: {per_day} requests per day")
+    state["minute_count"] = next_minute
+    state["day_count"] = next_day
+    return {
+        "subject": subject,
+        "cost": max(1, int(cost or 1)),
+        "minuteLimit": per_minute,
+        "minuteRemaining": max(0, per_minute - next_minute),
+        "dayLimit": per_day,
+        "dayRemaining": max(0, per_day - next_day),
+    }
+
+
+def _derived_output(result: Mapping[str, Any]) -> Dict[str, Any]:
+    output = result.get("output")
+    return dict(output) if isinstance(output, Mapping) else {}
+
+
+def _derived_artifact_id(result: Mapping[str, Any]) -> str:
+    artifact = result.get("artifact")
+    if hasattr(artifact, "artifact_id"):
+        return str(getattr(artifact, "artifact_id") or "")
+    if hasattr(artifact, "id"):
+        return str(getattr(artifact, "id") or "")
+    if isinstance(artifact, Mapping):
+        return str(artifact.get("artifact_id") or artifact.get("id") or "")
+    return ""
+
+
+def _record_metadata_value(record: Mapping[str, Any], key: str) -> str:
+    metadata = record.get("metadata")
+    if isinstance(metadata, Mapping):
+        value = metadata.get(key)
+        if isinstance(value, str):
+            return value
+    return ""
+
+
+def _safe_short_text(value: Any, *, limit: int = 240) -> str:
+    text = str(value or "")
+    text = re.sub(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", "[email]", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b", "[phone]", text)
+    text = re.sub(r"\b\d{4,}\b", "[number]", text)
+    return text.strip()[:limit]
+
+
+def _safe_organizer_signal(output: Mapping[str, Any]) -> Dict[str, Any]:
+    signal: Dict[str, Any] = {
+        "output_policy": _safe_short_text(output.get("output_policy")),
+        "summary": _safe_short_text(output.get("summary")),
+        "text": _safe_short_text(output.get("text")),
+    }
+    profile = output.get("profile")
+    if isinstance(profile, Mapping):
+        signal["profile"] = {
+            key: profile.get(key)
+            for key in ("profile_type", "chunk_count")
+            if profile.get(key) is not None
+        }
+    graph = output.get("graph")
+    if isinstance(graph, Mapping):
+        signal["graph"] = {
+            key: graph.get(key)
+            for key in ("graph_type", "node_count", "edge_count")
+            if graph.get(key) is not None
+        }
+    return {key: value for key, value in signal.items() if value not in ("", None, {})}
+
+
+def _redacted_file_name(file_name: str) -> str:
+    _, dot, extension = str(file_name or "").rpartition(".")
+    return f"document.{extension.lower()}" if dot and extension else "document"
+
+
+def _generate_wallet_organizer_profile(
+    *,
+    wallet_id: str,
+    wallet_cid: str,
+    file_name: str,
+    mime_type: str,
+    outputs: Sequence[Mapping[str, Any]],
+    provider: str | None,
+    model_name: str | None,
+    kwargs: Mapping[str, Any] | None,
+) -> Dict[str, Any] | None:
+    safe_signals = [_safe_organizer_signal(output) for output in outputs]
+    safe_signals = [signal for signal in safe_signals if signal]
+    if not safe_signals:
+        return None
+    try:
+        _check_wallet_router_rate_limit(wallet_cid or wallet_id)
+        from ipfs_datasets_py import llm_router  # noqa: WPS433
+
+        prompt = "\n".join(
+            [
+                "Create privacy-preserving organizer metadata from redacted wallet document signals.",
+                "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
+                "Use generic non-identifying language only.",
+                json.dumps(
+                    {
+                        "fileName": _redacted_file_name(file_name),
+                        "mimeType": mime_type,
+                        "redactedSignals": safe_signals[:8],
+                    },
+                    sort_keys=True,
+                ),
+            ]
+        )
+        text = llm_router.generate_text(
+            prompt,
+            model_name=model_name,
+            provider=provider or "hf_inference_api",
+            **dict(kwargs or {}),
+        )
+        parsed = _parse_first_json_object(text)
+        if not parsed:
+            return None
+        return {
+            "summary": _safe_short_text(parsed.get("summary")),
+            "labels": _read_string_list(parsed.get("labels"), limit=8),
+            "browseHints": _read_string_list(parsed.get("browseHints"), limit=8),
+            "riskSignals": _read_string_list(parsed.get("riskSignals"), limit=8),
+            "model": model_name or provider or "wallet-router",
+        }
+    except Exception:
+        return None
+
+
+def _parse_first_json_object(text: str) -> Dict[str, Any] | None:
+    trimmed = str(text or "").strip()
+    start = trimmed.find("{")
+    end = trimmed.rfind("}")
+    if start < 0 or end <= start:
+        return None
+    try:
+        parsed = json.loads(trimmed[start : end + 1])
+    except Exception:
+        return None
+    return dict(parsed) if isinstance(parsed, Mapping) else None
+
+
+def _read_string_list(value: Any, *, limit: int = 12) -> List[str]:
+    if not isinstance(value, list):
+        return []
+    return [_safe_short_text(item, limit=80) for item in value if _safe_short_text(item, limit=80)][:limit]
+
+
+def _read_number(record: Mapping[str, Any] | None, key: str) -> int | float | None:
+    if not isinstance(record, Mapping):
+        return None
+    value = record.get(key)
+    return value if isinstance(value, (int, float)) else None
+
+
+def _read_string(record: Mapping[str, Any] | None, key: str) -> str:
+    if not isinstance(record, Mapping):
+        return ""
+    value = record.get(key)
+    return str(value).strip() if isinstance(value, str) else ""
+
+
+def _default_labels_for_mime_type(mime_type: str) -> List[str]:
+    normalized = str(mime_type or "").lower()
+    if normalized == "application/pdf":
+        return ["pdf", "document"]
+    if normalized.startswith("image/"):
+        return ["image", "visual file"]
+    if normalized.startswith("text/"):
+        return ["text", "document"]
+    if "json" in normalized:
+        return ["json", "structured data"]
+    if "spreadsheet" in normalized or "excel" in normalized or "csv" in normalized:
+        return ["spreadsheet", "tabular data"]
+    if "wordprocessing" in normalized or "msword" in normalized:
+        return ["word document", "document"]
+    if normalized.startswith("audio/"):
+        return ["audio"]
+    if normalized.startswith("video/"):
+        return ["video"]
+    return ["wallet file"]
+
+
+def _display_mime_type(mime_type: str) -> str:
+    normalized = str(mime_type or "").strip().lower()
+    if not normalized:
+        return "Unknown file"
+    if normalized == "application/pdf":
+        return "PDF document"
+    if normalized.startswith("image/"):
+        return f"{normalized.split('/', 1)[1].upper()} image"
+    if normalized.startswith("text/"):
+        return "Text document"
+    if "json" in normalized:
+        return "JSON data"
+    if "spreadsheet" in normalized or "excel" in normalized or "csv" in normalized:
+        return "Spreadsheet"
+    if "wordprocessing" in normalized or "msword" in normalized:
+        return "Word document"
+    if normalized.startswith("audio/"):
+        return "Audio file"
+    if normalized.startswith("video/"):
+        return "Video file"
+    if normalized == "application/octet-stream":
+        return "Encrypted/binary file"
+    return normalized
+
+
+def _fallback_document_profile_output(*, file_name: str, mime_type: str) -> Dict[str, Any]:
+    return {
+        "output_policy": "local_metadata_only",
+        "profile": {"chunk_count": 0, "profile_type": "metadata fallback"},
+        "summary": f"{_display_mime_type(mime_type)} wallet file queued for redacted profiling.",
+        "upload_state": {"fileName": _redacted_file_name(file_name), "mimeType": mime_type},
+    }
+
+
+def _build_document_profile_public_inputs(
+    *,
+    artifact_ids: Sequence[str],
+    file_name: str,
+    mime_type: str,
+    outputs: Sequence[Mapping[str, Any]],
+) -> Dict[str, Any]:
+    graphs = [output.get("graph") for output in outputs]
+    graph = next((item for item in graphs if isinstance(item, Mapping)), {})
+    profiles = [output.get("profile") for output in outputs]
+    profile = next((item for item in profiles if isinstance(item, Mapping)), {})
+    organizer_profiles = [output.get("openrouter_organizer_profile") for output in outputs]
+    organizer = next((item for item in organizer_profiles if isinstance(item, Mapping)), {})
+    redaction_count = 0
+    for output in outputs:
+        counts = output.get("redaction_counts")
+        if isinstance(counts, Mapping):
+            redaction_count += sum(value for value in counts.values() if isinstance(value, (int, float)))
+    public_mime_type = mime_type or "application/octet-stream"
+    labels = _read_string_list(organizer.get("labels")) or _default_labels_for_mime_type(public_mime_type)
+    return {
+        "artifact_ids": list(artifact_ids),
+        "chunk_count": _read_number(profile, "chunk_count"),
+        "edge_count": _read_number(graph, "edge_count"),
+        "file_name_profile": _redacted_file_name(file_name),
+        "graph_type": _read_string(graph, "graph_type"),
+        "mime_family": public_mime_type.split("/", 1)[0] or "application",
+        "mime_type": public_mime_type,
+        "node_count": _read_number(graph, "node_count"),
+        "openrouter_model": _read_string(organizer, "model"),
+        "organizer_labels": labels,
+        "organizer_summary": _read_string(organizer, "summary") or _display_mime_type(public_mime_type),
+        "output_policies": sorted({str(output.get("output_policy")) for output in outputs if output.get("output_policy")}),
+        "privacy_policy": "no_plaintext_public_inputs",
+        "profile_methods": sorted({str(output.get("output_policy")) for output in outputs if output.get("output_policy")}),
+        "redaction_count": redaction_count,
+        "size_bucket": "server-side",
+        "summary": "Redacted GraphRAG, vector metadata, and derived descriptors created inside the wallet boundary.",
+    }
+
+
+def _classify_document_profile(public_inputs: Mapping[str, Any]) -> str:
+    summary = _read_string(public_inputs, "organizer_summary")
+    if summary:
+        return summary
+    labels = _read_string_list(public_inputs.get("organizer_labels"), limit=3)
+    if labels:
+        return ", ".join(labels[:3])
+    return _display_mime_type(str(public_inputs.get("mime_type") or ""))
+
+
+def _summarize_document_profile(public_inputs: Mapping[str, Any]) -> str:
+    mime_type = str(public_inputs.get("mime_type") or "document")
+    graph_type = str(public_inputs.get("graph_type") or "redacted graph")
+    nodes = public_inputs.get("node_count")
+    chunks = public_inputs.get("chunk_count")
+    nodes_text = f"{nodes} nodes" if isinstance(nodes, (int, float)) else "safe graph"
+    chunks_text = f"{chunks} chunks" if isinstance(chunks, (int, float)) else "vector metadata"
+    return f"{mime_type} · {graph_type} · {nodes_text} · {chunks_text}"
+
+
+def _build_privacy_search_text(outputs: Sequence[Mapping[str, Any]], public_inputs: Mapping[str, Any]) -> str:
+    parts: List[str] = [
+        _classify_document_profile(public_inputs),
+        _summarize_document_profile(public_inputs),
+        " ".join(_read_string_list(public_inputs.get("organizer_labels"), limit=12)),
+        " ".join(str(policy) for policy in public_inputs.get("output_policies", []) if isinstance(policy, str)),
+    ]
+    for output in outputs:
+        parts.append(_safe_short_text(output.get("summary")))
+        parts.append(_safe_short_text(output.get("text")))
+    return " ".join(part for part in parts if part).strip()
+
+
+def _build_privacy_vector_terms(outputs: Sequence[Mapping[str, Any]], public_inputs: Mapping[str, Any]) -> List[str]:
+    terms: List[str] = []
+    terms.extend(_read_string_list(public_inputs.get("organizer_labels"), limit=12))
+    for key in ("mime_type", "mime_family", "graph_type", "organizer_summary"):
+        value = public_inputs.get(key)
+        if isinstance(value, str) and value.strip():
+            terms.append(value.strip())
+    for output in outputs:
+        policy = output.get("output_policy")
+        if isinstance(policy, str) and policy.strip():
+            terms.append(policy.strip())
+    normalized: List[str] = []
+    seen = set()
+    for term in terms:
+        safe = _safe_short_text(term, limit=80).lower()
+        if safe and safe not in seen:
+            normalized.append(safe)
+            seen.add(safe)
+    return normalized[:24]
+
+
+def _indextts_space_base_url() -> str:
+    return os.getenv("WALLET_INDEXTTS_SPACE_URL", "https://indexteam-indextts-2-demo.hf.space").strip().rstrip("/")
+
+
+def _indextts_api_name() -> str:
+    return os.getenv("WALLET_INDEXTTS_API_NAME", "gen_single").strip()
+
+
+def _indextts_timeout_seconds() -> float:
+    try:
+        return max(5.0, float(os.getenv("WALLET_INDEXTTS_TIMEOUT_SECONDS", "180")))
+    except Exception:
+        return 180.0
+
+
+def _indextts_headers(*, accept: str = "application/json") -> Dict[str, str]:
+    headers = {"Accept": accept}
+    token = (
+        resolve_secret(
+            "WALLET_INDEXTTS_HF_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+        )
+        or ""
+    ).strip()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    bill_to = (
+        os.getenv("WALLET_INDEXTTS_HF_BILL_TO")
+        or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+        or "publicus"
+    ).strip()
+    if bill_to:
+        headers["X-HF-Bill-To"] = bill_to
+    return headers
+
+
+def _http_json(method: str, url: str, payload: Mapping[str, Any] | None = None) -> Dict[str, Any]:
+    data = None
+    headers = _indextts_headers()
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    request = urllib_request.Request(url, data=data, headers=headers, method=method)
+    with urllib_request.urlopen(request, timeout=_indextts_timeout_seconds()) as response:
+        raw = response.read()
+    parsed = json.loads(raw.decode("utf-8"))
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{url} did not return a JSON object")
+    return parsed
+
+
+def _http_bytes(url: str) -> tuple[bytes, str]:
+    request = urllib_request.Request(url, headers=_indextts_headers(accept="audio/*, application/octet-stream"))
+    with urllib_request.urlopen(request, timeout=_indextts_timeout_seconds()) as response:
+        return response.read(), response.headers.get("Content-Type") or "audio/wav"
+
+
+def _indextts_config() -> Dict[str, Any]:
+    return _http_json("GET", f"{_indextts_space_base_url()}/config")
+
+
+def _indextts_fn_index(config: Mapping[str, Any]) -> int:
+    raw = os.getenv("WALLET_INDEXTTS_FN_INDEX", "").strip()
+    if raw:
+        return int(raw)
+    api_name = _indextts_api_name()
+    dependencies = config.get("dependencies")
+    if not isinstance(dependencies, list):
+        raise ValueError("IndexTTS Gradio config does not include dependencies")
+    candidates: List[Mapping[str, Any]] = [dep for dep in dependencies if isinstance(dep, Mapping)]
+    if api_name:
+        normalized = api_name if api_name.startswith("/") else f"/{api_name}"
+        for dep in candidates:
+            if str(dep.get("api_name") or "") in {api_name, normalized, normalized.lstrip("/")}:
+                return int(dep.get("id"))
+        raise ValueError(f"IndexTTS api_name {api_name!r} was not found in Gradio config")
+    for dep in candidates:
+        name = str(dep.get("api_name") or "").lower()
+        if any(marker in name for marker in ("tts", "synth", "generate", "infer", "predict")):
+            return int(dep.get("id"))
+    for dep in candidates:
+        if dep.get("api_name"):
+            return int(dep.get("id"))
+    raise ValueError("could not discover an IndexTTS Gradio fn_index")
+
+
+def _run_indextts_gradio_tts(
+    *,
+    text: str,
+    voice_description: str | None = None,
+    reference_audio: bytes | None = None,
+    reference_audio_name: str | None = None,
+    reference_audio_mime_type: str | None = None,
+) -> Dict[str, Any]:
+    prompt = str(text or "").strip()
+    if not prompt:
+        raise ValueError("text is required")
+    config = _indextts_config()
+    uploaded_reference = _indextts_upload_reference_audio(reference_audio, reference_audio_name, reference_audio_mime_type)
+    data = _indextts_request_data(
+        text=prompt,
+        voice_description=voice_description,
+        reference_audio=uploaded_reference,
+    )
+    session_hash = uuid.uuid4().hex
+    join_payload = {
+        "data": data,
+        "fn_index": _indextts_fn_index(config),
+        "session_hash": session_hash,
+    }
+    _http_json("POST", f"{_indextts_space_base_url()}/gradio_api/queue/join", join_payload)
+    result = _indextts_wait_for_result(session_hash)
+    audio_ref = _find_gradio_audio_reference(result)
+    if not audio_ref:
+        raise ValueError("IndexTTS completed without an audio file in the Gradio output")
+    audio_bytes, mime_type = _fetch_gradio_file(audio_ref)
+    return {
+        "audioBase64": base64.b64encode(audio_bytes).decode("ascii"),
+        "mimeType": mime_type or "audio/wav",
+        "model": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
+        "provider": "huggingface-zero-gpu-gradio",
+        "billTo": os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus",
+        "text": prompt,
+    }
+
+
+def _indextts_upload_reference_audio(
+    audio: bytes | None,
+    file_name: str | None,
+    mime_type: str | None = None,
+) -> Dict[str, Any] | None:
+    if audio:
+        guessed_type = mime_type or mimetypes.guess_type(file_name or "")[0] or "audio/wav"
+        return _gradio_upload_file(audio, file_name or "reference.wav", guessed_type)
+    path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_PATH", "").strip()
+    if path and os.path.exists(path):
+        with open(path, "rb") as handle:
+            data = handle.read()
+        mime_type = mimetypes.guess_type(path)[0] or "audio/wav"
+        return _gradio_upload_file(data, os.path.basename(path), mime_type)
+    remote_path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH", "").strip()
+    if remote_path:
+        return {"path": remote_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(remote_path) or "reference.wav"}
+    return _gradio_upload_file(_default_indextts_reference_wav(), "abby-reference.wav", "audio/wav")
+
+
+def _default_indextts_reference_wav() -> bytes:
+    sample_rate = 24_000
+    duration_seconds = 1.5
+    frames = int(sample_rate * duration_seconds)
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(sample_rate)
+        for index in range(frames):
+            envelope = min(1.0, index / 2_400, (frames - index) / 2_400)
+            value = int(10_000 * envelope * math.sin(2.0 * math.pi * 220.0 * index / sample_rate))
+            wav.writeframesraw(struct.pack("<h", value))
+    return buffer.getvalue()
+
+
+def _gradio_upload_file(data: bytes, file_name: str, mime_type: str) -> Dict[str, Any]:
+    boundary = f"----211AiIndexTts{uuid.uuid4().hex}"
+    safe_name = os.path.basename(file_name or "reference.wav")
+    body = b"".join(
+        [
+            f"--{boundary}\r\n".encode("utf-8"),
+            f'Content-Disposition: form-data; name="files"; filename="{safe_name}"\r\n'.encode("utf-8"),
+            f"Content-Type: {mime_type or 'application/octet-stream'}\r\n\r\n".encode("utf-8"),
+            data,
+            f"\r\n--{boundary}--\r\n".encode("utf-8"),
+        ]
+    )
+    headers = _indextts_headers()
+    headers["Content-Type"] = f"multipart/form-data; boundary={boundary}"
+    request = urllib_request.Request(
+        f"{_indextts_space_base_url()}/gradio_api/upload",
+        data=body,
+        headers=headers,
+        method="POST",
+    )
+    with urllib_request.urlopen(request, timeout=_indextts_timeout_seconds()) as response:
+        parsed = json.loads(response.read().decode("utf-8"))
+    upload_path = _first_upload_path(parsed)
+    if not upload_path:
+        raise ValueError("IndexTTS upload did not return a Gradio file path")
+    return {"path": upload_path, "meta": {"_type": "gradio.FileData"}, "orig_name": safe_name}
+
+
+def _first_upload_path(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        for item in value:
+            found = _first_upload_path(item)
+            if found:
+                return found
+    if isinstance(value, Mapping):
+        for key in ("path", "name"):
+            item = value.get(key)
+            if isinstance(item, str) and item.strip():
+                return item.strip()
+        for item in value.values():
+            found = _first_upload_path(item)
+            if found:
+                return found
+    return ""
+
+
+def _indextts_request_data(
+    *,
+    text: str,
+    voice_description: str | None,
+    reference_audio: Mapping[str, Any] | None,
+) -> List[Any]:
+    raw_template = os.getenv("WALLET_INDEXTTS_DATA_TEMPLATE", "").strip()
+    if raw_template:
+        rendered = (
+            raw_template.replace("{text}", text)
+            .replace("{voice_description}", voice_description or "")
+            .replace("{reference_audio}", json.dumps(reference_audio) if reference_audio else "null")
+        )
+        parsed = json.loads(rendered)
+        if not isinstance(parsed, list):
+            raise ValueError("WALLET_INDEXTTS_DATA_TEMPLATE must render to a JSON array")
+        return parsed
+    # IndexTeam/IndexTTS-2-Demo /gen_single Gradio input order.
+    return [
+        "Same as the voice reference",
+        reference_audio,
+        text,
+        None,
+        0.8,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        voice_description or "",
+        False,
+        120,
+        True,
+        0.8,
+        30,
+        0.8,
+        0.0,
+        3,
+        10.0,
+        1500,
+    ]
+
+
+def _indextts_wait_for_result(session_hash: str) -> Dict[str, Any]:
+    deadline = time.time() + _indextts_timeout_seconds()
+    url = f"{_indextts_space_base_url()}/gradio_api/queue/data?session_hash={urllib_parse.quote(session_hash)}"
+    while time.time() < deadline:
+        request = urllib_request.Request(url, headers=_indextts_headers())
+        with urllib_request.urlopen(request, timeout=min(30.0, _indextts_timeout_seconds())) as response:
+            for raw_line in response:
+                line = raw_line.decode("utf-8", errors="replace").strip()
+                if not line.startswith("data:"):
+                    continue
+                payload_text = line.removeprefix("data:").strip()
+                if not payload_text:
+                    continue
+                event = json.loads(payload_text)
+                if not isinstance(event, dict):
+                    continue
+                message = str(event.get("msg") or "")
+                if message == "process_completed":
+                    if event.get("success") is False:
+                        output = event.get("output")
+                        if isinstance(output, Mapping):
+                            detail = output.get("error") or output.get("title") or output
+                        else:
+                            detail = output or event
+                        raise ValueError(f"IndexTTS Gradio queue failed: {detail}")
+                    output = event.get("output")
+                    if isinstance(output, Mapping):
+                        return dict(output)
+                    return event
+                if message in {"process_starts", "estimation", "heartbeat", "send_data"}:
+                    continue
+                if message in {"process_failed", "queue_full"}:
+                    raise ValueError(f"IndexTTS Gradio queue failed: {event}")
+        time.sleep(0.5)
+    raise TimeoutError("IndexTTS Gradio queue timed out")
+
+
+def _find_gradio_audio_reference(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        if str(value.get("mime_type") or value.get("mimeType") or "").startswith("audio/"):
+            return value
+        if any(key in value for key in ("path", "url", "name")) and not value.get("is_stream"):
+            pathish = str(value.get("path") or value.get("url") or value.get("name") or "")
+            if pathish and (pathish.endswith((".wav", ".mp3", ".flac", ".ogg")) or "/file=" in pathish or "/gradio_api/file=" in pathish):
+                return value
+        for item in value.values():
+            found = _find_gradio_audio_reference(item)
+            if found:
+                return found
+    if isinstance(value, list):
+        for item in value:
+            found = _find_gradio_audio_reference(item)
+            if found:
+                return found
+    if isinstance(value, str) and (value.endswith((".wav", ".mp3", ".flac", ".ogg")) or "/file=" in value or "/gradio_api/file=" in value):
+        return value
+    return None
+
+
+def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
+    if isinstance(reference, Mapping):
+        url = str(reference.get("url") or "").strip()
+        path = str(reference.get("path") or reference.get("name") or "").strip()
+        mime_type = str(reference.get("mime_type") or reference.get("mimeType") or "").strip()
+    else:
+        url = ""
+        path = str(reference or "").strip()
+        mime_type = ""
+    if not url:
+        if path.startswith("http://") or path.startswith("https://"):
+            url = path
+        else:
+            encoded_path = urllib_parse.quote(path, safe="/:=._-")
+            url = f"{_indextts_space_base_url()}/gradio_api/file={encoded_path}"
+    data, detected_type = _http_bytes(url)
+    return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
 
 
 def _parse_upload_metadata(metadata: str | None) -> Dict[str, Any]:

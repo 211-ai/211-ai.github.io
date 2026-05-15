@@ -31,6 +31,10 @@ export type RuntimeVoiceProxyConfig = {
   inferUrl?: string;
   ttsUrl?: string;
   sttUrl?: string;
+  fallbackInferUrl?: string;
+  fallbackTtsUrl?: string;
+  fallbackSttUrl?: string;
+  fallbackModel?: string;
 };
 
 export type ResolvedRuntimeVoiceProxyConfig = {
@@ -40,6 +44,10 @@ export type ResolvedRuntimeVoiceProxyConfig = {
   inferUrl?: string;
   ttsUrl?: string;
   sttUrl?: string;
+  fallbackInferUrl?: string;
+  fallbackTtsUrl?: string;
+  fallbackSttUrl?: string;
+  fallbackModel?: string;
 };
 
 export type AbbyRuntimeConfig = {
@@ -163,13 +171,21 @@ function normalizeVoiceProxyConfig(
   const inferUrl = normalizeOptionalString(config.inferUrl);
   const ttsUrl = normalizeOptionalString(config.ttsUrl);
   const sttUrl = normalizeOptionalString(config.sttUrl);
+  const fallbackInferUrl = normalizeOptionalString(config.fallbackInferUrl);
+  const fallbackTtsUrl = normalizeOptionalString(config.fallbackTtsUrl);
+  const fallbackSttUrl = normalizeOptionalString(config.fallbackSttUrl);
+  const fallbackModel = normalizeOptionalString(config.fallbackModel);
   if (
     enabled === undefined &&
     !model &&
     !baseUrl &&
     !inferUrl &&
     !ttsUrl &&
-    !sttUrl
+    !sttUrl &&
+    !fallbackInferUrl &&
+    !fallbackTtsUrl &&
+    !fallbackSttUrl &&
+    !fallbackModel
   ) {
     return undefined;
   }
@@ -180,6 +196,10 @@ function normalizeVoiceProxyConfig(
     ...(inferUrl ? { inferUrl } : {}),
     ...(ttsUrl ? { ttsUrl } : {}),
     ...(sttUrl ? { sttUrl } : {}),
+    ...(fallbackInferUrl ? { fallbackInferUrl } : {}),
+    ...(fallbackTtsUrl ? { fallbackTtsUrl } : {}),
+    ...(fallbackSttUrl ? { fallbackSttUrl } : {}),
+    ...(fallbackModel ? { fallbackModel } : {}),
   };
 }
 

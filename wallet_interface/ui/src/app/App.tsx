@@ -142,6 +142,7 @@ import {
   delegateGrant,
   decryptRecordWithGrant,
   extractRecordTextRedactedWithGrant,
+  generateWalletRecordMetadata,
   importExportBundleView,
   issueRecordAnalysisInvocation,
   issueRecordDecryptInvocation,
@@ -3734,6 +3735,23 @@ function UploadsScreen({
       privacyProfileStatus: "profiling"
     });
     try {
+      try {
+        const serverProfile = await generateWalletRecordMetadata(apiConfig, upload.recordId, {
+          fileName: upload.fileName,
+          mimeType,
+          walletCid: upload.ipfsRootCid || upload.ipfsCid || upload.metadataIpldCid || upload.recordId
+        });
+        updateUpload(upload.id, {
+          ...serverProfile,
+          id: upload.id,
+          recordId: serverProfile.recordId ?? upload.recordId,
+          storageOk: serverProfile.storageOk ?? upload.storageOk
+        });
+        await refreshWalletAuditEvents().catch(() => {});
+        return;
+      } catch (serverError) {
+        console.warn("Wallet router metadata generation failed; falling back to browser orchestration", serverError);
+      }
       const [redacted, vector, graphrag, extracted, form] = await Promise.allSettled([
         analyzeRecordRedactedWithGrant(apiConfig, { recordId: upload.recordId, maxChars: 500 }),
         createRecordVectorProfileWithGrant(apiConfig, { recordId: upload.recordId, chunkSizeWords: 80 }),

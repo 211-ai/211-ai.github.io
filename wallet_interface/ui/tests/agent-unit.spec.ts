@@ -713,7 +713,7 @@ export class AudioModel {
     );
   });
 
-  test("uses the voice proxy TTS route before local audio generation and warms local audio in the background", async () => {
+  test("preflights and uses the voice proxy TTS route without warming local audio in the background", async () => {
     const workerRequests: string[] = [];
     const audioBlob = new Blob(["RIFF....WAVE"], { type: "audio/wav" });
     const progressEvents: ClientAudioProgress[] = [];
@@ -745,6 +745,11 @@ export class AudioModel {
           text: "Remote spoken answer.",
         };
       },
+      preflightRemoteAudioProxy: async () => ({
+        audioBlob,
+        mimeType: "audio/wav",
+        modelName: "remote-voice-proxy",
+      }),
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
       voiceProxyEnabled: true,
@@ -760,9 +765,10 @@ export class AudioModel {
       provider: "remote-voice-proxy",
       text: "Remote spoken answer.",
     });
-    expect(workerRequests).toEqual(["warmUp"]);
+    expect(workerRequests).toEqual([]);
     expect(progressEvents).toEqual(
       expect.arrayContaining([
+        expect.objectContaining({ phase: "queued", status: "Checking voice proxy before local audio." }),
         expect.objectContaining({ phase: "queued", status: "Sending audio request to voice proxy." }),
         expect.objectContaining({ phase: "ready", progress: 100 }),
       ]),
@@ -791,6 +797,10 @@ export class AudioModel {
         modelName: "mock-remote-voice-proxy",
         text: "This is a local mock spoken reply.",
       }),
+      preflightRemoteAudioProxy: async () => ({
+        modelName: "mock-remote-voice-proxy",
+        text: "preflight ok",
+      }),
       hasWebGPU: () => true,
       hasSpeechSynthesis: () => true,
       voiceProxyEnabled: true,
@@ -807,7 +817,7 @@ export class AudioModel {
       fallbackForModel: "mock-remote-voice-proxy",
       fallbackReason: "Voice proxy returned text only; using browser speech output.",
     });
-    expect(workerRequests).toEqual(["warmUp"]);
+    expect(workerRequests).toEqual([]);
     expect(progressEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ phase: "queued", status: "Sending audio request to voice proxy." }),
@@ -889,6 +899,37 @@ export class AudioModel {
       provider: "browser-speech",
     });
     expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Hidden evidence context");
+    expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Evidence bundle for reasoning");
+  });
+
+  test("uses browser speech as the final fallback after proxy preflight and local audio fail", async () => {
+    const service = new ClientAudioReplyService({
+      createWorker: () => {
+        throw new Error("Local audio worker failed to start.");
+      },
+      generateRemoteAudio: async () => {
+        throw new Error("Remote generation should not run after failed preflight.");
+      },
+      preflightRemoteAudioProxy: async () => {
+        throw new Error("IndexTTS preflight failed; legacy proxy preflight failed.");
+      },
+      hasWebGPU: () => true,
+      hasSpeechSynthesis: () => true,
+      voiceProxyEnabled: true,
+    });
+
+    const result = await service.generateVoiceReply({
+      prompt: "User voice query: food help\nEvidence bundle for reasoning:\n[1] Hidden evidence context.",
+      fallbackText: "Neighborhood Pantry can help with food today.",
+    });
+
+    expect(result).toMatchObject({
+      kind: "browser-speech",
+      provider: "browser-speech",
+      text: "Neighborhood Pantry can help with food today.",
+    });
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("IndexTTS preflight failed");
+    expect(result.kind === "browser-speech" ? result.fallbackReason : "").toContain("Local audio worker failed to start");
     expect(result.kind === "browser-speech" ? result.text : "").not.toContain("Evidence bundle for reasoning");
   });
 

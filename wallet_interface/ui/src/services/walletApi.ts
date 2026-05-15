@@ -1059,6 +1059,34 @@ export async function updateWalletRecordMetadata(
   return toUploadItemViewWithStorage(config, record);
 }
 
+export async function generateWalletRecordMetadata(
+  config: WalletApiConfig,
+  recordId: string,
+  {
+    fileName,
+    mimeType,
+    walletCid
+  }: {
+    fileName?: string;
+    mimeType?: string;
+    walletCid?: string;
+  } = {}
+): Promise<UploadItem> {
+  const url = new URL(
+    `/wallets/${config.walletId}/records/${recordId}/metadata/generate`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const result = await postJson<{ record: WalletRecordApiRecord }>(url, "Wallet record metadata generation", {
+    actor_did: requiredActorDid(config),
+    actor_key_hex: config.audienceKeyHex || config.issuerKeyHex,
+    file_name: fileName || undefined,
+    mime_type: mimeType || undefined,
+    provider: "hf_inference_api",
+    wallet_cid: walletCid || undefined
+  });
+  return toUploadItemViewWithStorage(config, result.record);
+}
+
 export async function deleteWalletRecord(
   config: WalletApiConfig,
   recordId: string,
