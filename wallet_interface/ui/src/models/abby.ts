@@ -120,6 +120,9 @@ export interface UploadItem {
   allowedRecipientIds?: string[];
   decentralizedStorageStatus?: "not_configured" | "ready" | "uploading" | "stored" | "failed";
   decentralizedStorageProvider?: "ipfs" | "filecoin" | "ipfs-filecoin" | "wallet-api" | "local";
+  decryptedClassification?: string;
+  decryptedLabels?: string[];
+  decryptedMimeType?: string;
   ipfsCid?: string;
   ipfsGatewayUrl?: string;
   filecoinPieceCid?: string;

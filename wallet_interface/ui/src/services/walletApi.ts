@@ -2070,6 +2070,9 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     decentralizedStorageProvider:
       readMetadataString(metadata, "decentralizedStorageProvider") as UploadItem["decentralizedStorageProvider"] || "wallet-api",
     decentralizedStorageMessage: readMetadataString(metadata, "decentralizedStorageMessage"),
+    decryptedClassification: readMetadataString(metadata, "decryptedClassification"),
+    decryptedLabels: readMetadataStringArray(metadata, "decryptedLabels"),
+    decryptedMimeType: readMetadataString(metadata, "decryptedMimeType"),
     filecoinDealId: readMetadataString(metadata, "filecoinDealId"),
     filecoinPieceCid: readMetadataString(metadata, "filecoinPieceCid"),
     filecoinPinRequestId: readMetadataString(metadata, "filecoinPinRequestId"),

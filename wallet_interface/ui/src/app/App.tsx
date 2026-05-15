@@ -3800,8 +3800,21 @@ function UploadsScreen({
     try {
       const decrypted = await decryptRecordWithGrant(apiConfig, { recordId: upload.recordId });
       const bytes = decrypted.base64 ? base64ToBytes(decrypted.base64) : new TextEncoder().encode(decrypted.text);
+      const decryptedMimeType = detectDecryptedMimeType(bytes, upload.fileName, decrypted.text);
+      const decryptedClassification = displayMimeType(decryptedMimeType);
+      const decryptedLabels = defaultLabelsForMimeType(decryptedMimeType);
+      updateUpload(upload.id, {
+        decryptedClassification,
+        decryptedLabels,
+        decryptedMimeType
+      });
+      void persistUploadMetadata(upload, {
+        decryptedClassification,
+        decryptedLabels,
+        decryptedMimeType
+      });
       const payload = new Uint8Array(bytes).buffer as ArrayBuffer;
-      const blob = new Blob([payload], { type: upload.privacyProfileMimeType || "application/octet-stream" });
+      const blob = new Blob([payload], { type: decryptedMimeType });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -3837,6 +3850,9 @@ function UploadsScreen({
       decentralizedStorageMessage: upload.decentralizedStorageMessage,
       decentralizedStorageProvider: upload.decentralizedStorageProvider,
       decentralizedStorageStatus: upload.decentralizedStorageStatus,
+      decryptedClassification: upload.decryptedClassification,
+      decryptedLabels: upload.decryptedLabels,
+      decryptedMimeType: upload.decryptedMimeType,
       fileName: upload.fileName,
       filecoinDealId: upload.filecoinDealId,
       filecoinPieceCid: upload.filecoinPieceCid,
@@ -4117,6 +4133,9 @@ function UploadsScreen({
                 ) : null}
                 <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload)}</Badge>
                 <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload)}</Badge>
+                {upload.decryptedMimeType ? (
+                  <Badge tone="success">{displayMimeType(upload.decryptedMimeType)}</Badge>
+                ) : null}
                 {upload.privacyProfileMimeType ? (
                   <Badge tone="info">{displayMimeType(upload.privacyProfileMimeType)}</Badge>
                 ) : null}
@@ -4140,9 +4159,20 @@ function UploadsScreen({
               {upload.privacyProfileSummary ? (
                 <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
               ) : null}
+              {upload.decryptedClassification || upload.decryptedMimeType ? (
+                <small className="wallet-storage-reference">
+                  Decrypted download: {upload.decryptedClassification || displayMimeType(upload.decryptedMimeType || "")}
+                  {upload.decryptedMimeType ? ` (${upload.decryptedMimeType})` : ""}
+                </small>
+              ) : null}
+              {upload.decryptedLabels?.length ? (
+                <small className="wallet-storage-reference">
+                  Decrypted contents: {upload.decryptedLabels.slice(0, 6).join(", ")}
+                </small>
+              ) : null}
               {upload.privacyProfileClassification || upload.privacyProfileMimeType ? (
                 <small className="wallet-storage-reference">
-                  Download type: {upload.privacyProfileClassification || displayMimeType(upload.privacyProfileMimeType || "")}
+                  Profiled type: {upload.privacyProfileClassification || displayMimeType(upload.privacyProfileMimeType || "")}
                   {upload.privacyProfileMimeType ? ` (${upload.privacyProfileMimeType})` : ""}
                 </small>
               ) : null}
@@ -7140,6 +7170,67 @@ function displayMimeType(mimeType: string) {
   if (normalized.startsWith("video/")) return "Video file";
   if (normalized === "application/octet-stream") return "Encrypted/binary file";
   return normalized;
+}
+
+function detectDecryptedMimeType(bytes: Uint8Array, fileName: string, text: string) {
+  const signature = Array.from(bytes.slice(0, 16));
+  if (startsWithBytes(signature, [0x25, 0x50, 0x44, 0x46])) return "application/pdf";
+  if (startsWithBytes(signature, [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) return "image/png";
+  if (startsWithBytes(signature, [0xff, 0xd8, 0xff])) return "image/jpeg";
+  if (startsWithBytes(signature, [0x47, 0x49, 0x46, 0x38])) return "image/gif";
+  if (startsWithBytes(signature, [0x50, 0x4b, 0x03, 0x04])) return officeOrZipMimeType(fileName);
+  const trimmed = text.trim();
+  if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+    try {
+      JSON.parse(trimmed);
+      return "application/json";
+    } catch {
+      // Fall back to extension/text detection below.
+    }
+  }
+  const extensionMimeType = mimeTypeFromFileName(fileName);
+  if (extensionMimeType) return extensionMimeType;
+  return looksLikeText(bytes) ? "text/plain" : "application/octet-stream";
+}
+
+function startsWithBytes(bytes: number[], prefix: number[]) {
+  return prefix.every((value, index) => bytes[index] === value);
+}
+
+function officeOrZipMimeType(fileName: string) {
+  const extensionMimeType = mimeTypeFromFileName(fileName);
+  return extensionMimeType || "application/zip";
+}
+
+function mimeTypeFromFileName(fileName: string) {
+  const extension = fileName.split(".").pop()?.toLowerCase() ?? "";
+  if (extension === "pdf") return "application/pdf";
+  if (["jpg", "jpeg"].includes(extension)) return "image/jpeg";
+  if (extension === "png") return "image/png";
+  if (extension === "gif") return "image/gif";
+  if (extension === "txt") return "text/plain";
+  if (extension === "json") return "application/json";
+  if (extension === "csv") return "text/csv";
+  if (extension === "doc") return "application/msword";
+  if (extension === "docx") return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  if (extension === "xls") return "application/vnd.ms-excel";
+  if (extension === "xlsx") return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  if (extension === "ppt") return "application/vnd.ms-powerpoint";
+  if (extension === "pptx") return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+  if (extension === "zip") return "application/zip";
+  return "";
+}
+
+function looksLikeText(bytes: Uint8Array) {
+  const sample = bytes.slice(0, Math.min(bytes.length, 512));
+  if (!sample.length) return true;
+  let printable = 0;
+  for (const byte of sample) {
+    if (byte === 9 || byte === 10 || byte === 13 || (byte >= 32 && byte < 127) || byte >= 194) {
+      printable += 1;
+    }
+  }
+  return printable / sample.length > 0.85;
 }
 
 function defaultLabelsForMimeType(mimeType: string) {
