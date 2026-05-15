@@ -129,11 +129,14 @@ export interface UploadItem {
   filecoinPinStatusUrl?: string;
   decentralizedStorageMessage?: string;
   privacyProfileStatus?: "not_started" | "profiling" | "profiled" | "failed";
+  privacyProfileClassification?: string;
+  privacyProfileLabels?: string[];
   privacyProfileSummary?: string;
   privacyProfileMimeType?: string;
   privacyProfileProofId?: string;
   privacyProfileArtifactIds?: string[];
   privacyProfileMessage?: string;
+  privacyProfileNeedsRefresh?: boolean;
 }
 
 export interface ServiceMatch {

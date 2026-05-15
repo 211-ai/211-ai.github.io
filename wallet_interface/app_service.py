@@ -48,8 +48,12 @@ def _safe_document_profile_public_inputs(public_inputs: Mapping[str, Any]) -> Di
         "mime_family",
         "mime_type",
         "node_count",
+        "openrouter_model",
+        "organizer_labels",
+        "organizer_summary",
         "output_policies",
         "privacy_policy",
+        "profile_methods",
         "redaction_count",
         "size_bucket",
         "summary",
@@ -248,6 +252,34 @@ def _service_plan_share_fields(scopes: Sequence[str]) -> List[str]:
     for scope in scopes:
         fields.extend(SERVICE_PLAN_SHARE_SCOPE_FIELDS[scope])
     return _unique_strings(fields)
+
+
+@dataclass
+class WalletRecordMetadataRecord:
+    wallet_id: str
+    record_id: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "wallet_id": self.wallet_id,
+            "record_id": self.record_id,
+            "metadata": dict(self.metadata),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "WalletRecordMetadataRecord":
+        return cls(
+            wallet_id=str(payload.get("wallet_id") or ""),
+            record_id=str(payload.get("record_id") or ""),
+            metadata=dict(payload.get("metadata") or {}),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
 
 
 @dataclass
@@ -773,6 +805,7 @@ class WalletInterfaceService:
         self.wallet_service = wallet_service
         resolved_repository_root = repository_root if repository_root is not None else _repository_root_from_env()
         self.repository = LocalWalletRepository(resolved_repository_root) if resolved_repository_root else None
+        self.wallet_record_metadata: Dict[str, WalletRecordMetadataRecord] = {}
         self.saved_services: Dict[str, SavedServiceRecord] = {}
         self.service_plans: Dict[str, ServicePlanRecord] = {}
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
@@ -1095,6 +1128,13 @@ class WalletInterfaceService:
     def _portal_state_payload(self) -> Dict[str, Any]:
         return {
             "snapshot_type": PORTAL_STATE_TYPE,
+            "wallet_record_metadata": [
+                record.to_dict()
+                for record in sorted(
+                    self.wallet_record_metadata.values(),
+                    key=lambda item: (item.wallet_id, item.record_id),
+                )
+            ],
             "saved_services": [
                 record.to_dict()
                 for record in sorted(self.saved_services.values(), key=lambda item: (item.wallet_id, item.saved_service_id))
@@ -1158,6 +1198,15 @@ class WalletInterfaceService:
         payload = json.loads(path.read_text(encoding="utf-8"))
         if str(payload.get("snapshot_type") or "") != PORTAL_STATE_TYPE:
             raise ValueError("Unsupported portal state snapshot type")
+        self.wallet_record_metadata = {
+            f"{record.wallet_id}:{record.record_id}": record
+            for record in (
+                WalletRecordMetadataRecord.from_dict(item)
+                for item in payload.get("wallet_record_metadata", [])
+                if isinstance(item, Mapping)
+            )
+            if record.wallet_id and record.record_id
+        }
         self.saved_services = {
             record.saved_service_id: record
             for record in (
@@ -2076,6 +2125,43 @@ class WalletInterfaceService:
         if data_type is not None:
             records = [record for record in records if record.data_type == data_type]
         return sorted(records, key=lambda item: item.created_at)
+
+    def record_to_dict(self, record) -> Dict[str, Any]:
+        payload = record.to_dict()
+        metadata_record = self.wallet_record_metadata.get(f"{record.wallet_id}:{record.record_id}")
+        payload["metadata"] = dict(metadata_record.metadata) if metadata_record else {}
+        return payload
+
+    def update_record_metadata(
+        self,
+        wallet_id: str,
+        record_id: str,
+        *,
+        actor_did: str,
+        metadata: Mapping[str, Any],
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        record = self.wallet_service._record(wallet_id, record_id)
+        now = _portal_now()
+        key = f"{wallet_id}:{record_id}"
+        existing = self.wallet_record_metadata.get(key)
+        next_record = WalletRecordMetadataRecord(
+            wallet_id=wallet_id,
+            record_id=record_id,
+            metadata={**(existing.metadata if existing else {}), **dict(metadata or {})},
+            created_at=existing.created_at if existing else now,
+            updated_at=now,
+        )
+        self.wallet_record_metadata[key] = next_record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="record/metadata_update",
+            resource=resource_for_record(wallet_id, record_id),
+            details={"metadata_keys": sorted(next_record.metadata.keys())},
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self.record_to_dict(record)
 
     def save_service_for_wallet(
         self,

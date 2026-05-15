@@ -20,10 +20,10 @@ export const LLM_CONFIG = {
     "https://openrouter.ai/api/v1/chat/completions",
   openRouterInstructModel:
     (import.meta.env?.VITE_OPENROUTER_INSTRUCT_MODEL as string | undefined) ||
-    "liquid/lfm-2.5-1.2b-instruct:free",
+    "openrouter/free",
   openRouterThinkingModel:
     (import.meta.env?.VITE_OPENROUTER_THINKING_MODEL as string | undefined) ||
-    "liquid/lfm-2.5-1.2b-thinking:free",
+    "openrouter/free",
   openRouterFallbackDelayMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_FALLBACK_DELAY || "5000", 10),
   openRouterRequestTimeoutMs: Number.parseInt(import.meta.env?.VITE_OPENROUTER_REQUEST_TIMEOUT || "45000", 10),
   openRouterAllowPrivateContext: import.meta.env?.VITE_OPENROUTER_ALLOW_PRIVATE_CONTEXT === "true",

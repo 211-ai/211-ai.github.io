@@ -74,6 +74,7 @@ interface WalletRecordApiRecord {
   public_descriptor: string;
   status: string;
   created_at: string;
+  metadata?: Record<string, unknown>;
 }
 
 interface WalletRecordsApiResponse {
@@ -1031,6 +1032,19 @@ export async function addBinaryDocument(
     throw new Error(`Document upload request failed with status ${response.status}`);
   }
   return toUploadItemViewWithStorage(config, (await response.json()) as WalletRecordApiRecord);
+}
+
+export async function updateWalletRecordMetadata(
+  config: WalletApiConfig,
+  recordId: string,
+  metadata: Record<string, unknown>
+): Promise<UploadItem> {
+  const url = new URL(`/wallets/${config.walletId}/records/${recordId}/metadata`, normalizedBaseUrl(config.apiBaseUrl));
+  const record = await patchJson<WalletRecordApiRecord>(url, "Wallet record metadata", {
+    actor_did: requiredActorDid(config),
+    metadata
+  });
+  return toUploadItemViewWithStorage(config, record);
 }
 
 export async function verifyRecordStorage(
@@ -2036,19 +2050,42 @@ function toWalletAnalyticsConsentView(consent: AnalyticsConsentApiRecord): Walle
 }
 
 function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
+  const metadata = isPlainRecord(record.metadata) ? record.metadata : {};
   return {
     id: record.record_id,
     recordId: record.record_id,
-    fileName: labelFromResource(record.record_id),
-    machineSummary: `${record.data_type} record stored ${formatTimestamp(record.created_at)}`,
+    fileName: readMetadataString(metadata, "fileName") || readMetadataString(metadata, "filename") || labelFromResource(record.record_id),
+    machineSummary:
+      readMetadataString(metadata, "machineSummary") ||
+      readMetadataString(metadata, "title") ||
+      `${record.data_type} record stored ${formatTimestamp(record.created_at)}`,
     category: record.public_descriptor || record.data_type,
     sensitivity: record.sensitivity,
     status: record.status === "active" ? "stored" : "failed",
     shared: false,
     sharingMode: "private",
     allowedRecipientIds: [],
-    decentralizedStorageStatus: "ready",
-    decentralizedStorageProvider: "wallet-api"
+    decentralizedStorageStatus:
+      readMetadataString(metadata, "decentralizedStorageStatus") as UploadItem["decentralizedStorageStatus"] || "ready",
+    decentralizedStorageProvider:
+      readMetadataString(metadata, "decentralizedStorageProvider") as UploadItem["decentralizedStorageProvider"] || "wallet-api",
+    decentralizedStorageMessage: readMetadataString(metadata, "decentralizedStorageMessage"),
+    filecoinDealId: readMetadataString(metadata, "filecoinDealId"),
+    filecoinPieceCid: readMetadataString(metadata, "filecoinPieceCid"),
+    filecoinPinRequestId: readMetadataString(metadata, "filecoinPinRequestId"),
+    filecoinPinStatus: readMetadataString(metadata, "filecoinPinStatus") as UploadItem["filecoinPinStatus"],
+    filecoinPinStatusUrl: readMetadataString(metadata, "filecoinPinStatusUrl"),
+    ipfsCid: readMetadataString(metadata, "ipfsCid"),
+    ipfsGatewayUrl: readMetadataString(metadata, "ipfsGatewayUrl"),
+    privacyProfileArtifactIds: readMetadataStringArray(metadata, "privacyProfileArtifactIds"),
+    privacyProfileClassification: readMetadataString(metadata, "privacyProfileClassification"),
+    privacyProfileLabels: readMetadataStringArray(metadata, "privacyProfileLabels"),
+    privacyProfileMessage: readMetadataString(metadata, "privacyProfileMessage"),
+    privacyProfileMimeType: readMetadataString(metadata, "privacyProfileMimeType"),
+    privacyProfileNeedsRefresh: Boolean(metadata.privacyProfileNeedsRefresh),
+    privacyProfileProofId: readMetadataString(metadata, "privacyProfileProofId"),
+    privacyProfileStatus: readMetadataString(metadata, "privacyProfileStatus") as UploadItem["privacyProfileStatus"],
+    privacyProfileSummary: readMetadataString(metadata, "privacyProfileSummary")
   };
 }
 
@@ -2062,6 +2099,22 @@ async function toUploadItemViewWithStorage(
   } catch {
     return { ...item, storageOk: false };
   }
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function readMetadataString(metadata: Record<string, unknown>, key: string): string | undefined {
+  const value = metadata[key];
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function readMetadataStringArray(metadata: Record<string, unknown>, key: string): string[] | undefined {
+  const value = metadata[key];
+  if (!Array.isArray(value)) return undefined;
+  const strings = value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  return strings.length ? strings : undefined;
 }
 
 async function fetchJson<T>(url: URL, label: string): Promise<T> {

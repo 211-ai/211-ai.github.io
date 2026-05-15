@@ -47,6 +47,7 @@ import {
   ServicePlanScreen,
   setLocationServicePlanHash
 } from "./ServicePlanScreen";
+import { generateOpenRouterText } from "../lib/openRouterClient";
 import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
@@ -159,6 +160,7 @@ import {
   saveMissingPersonDeadDrop,
   saveWalletSnapshot,
   sendMissingPersonDeadDropEmail,
+  updateWalletRecordMetadata,
   verifyWalletSnapshot,
   WalletSnapshotVerification,
   WalletApiConfig
@@ -3457,6 +3459,15 @@ function UploadsScreen({
   }, [uploads]);
 
   useEffect(() => {
+    if (!apiConfig?.actorDid) return;
+    uploads
+      .filter((upload) => upload.recordId && (!upload.privacyProfileStatus || upload.privacyProfileNeedsRefresh))
+      .forEach((upload) => {
+        void profileWalletUpload(upload);
+      });
+  }, [apiConfig?.actorDid, uploads]);
+
+  useEffect(() => {
     let cancelled = false;
     if (!filecoinStorageConfig || !apiConfig?.walletId || !apiConfig.actorDid) {
       setWalletProofBundleCid("");
@@ -3548,6 +3559,13 @@ function UploadsScreen({
         const uploaded = normalizeWalletUpload(await addBinaryDocument(apiConfig, { file, title: machineSummary }), file.name);
         prependUpload(uploaded);
         await refreshWalletAuditEvents();
+        void persistUploadMetadata(uploaded, {
+          fileName: file.name,
+          machineSummary,
+          privacyProfileMimeType: file.type || "application/octet-stream",
+          privacyProfileNeedsRefresh: true,
+          privacyProfileStatus: "not_started"
+        });
         void profileWalletUpload(uploaded, file);
         if (storeNewFilesOnFilecoin) {
           void storeWalletRecordOnFilecoin(uploaded);
@@ -3562,6 +3580,13 @@ function UploadsScreen({
           }), file.name);
           prependUpload(uploaded);
           await refreshWalletAuditEvents();
+          void persistUploadMetadata(uploaded, {
+            fileName: file.name,
+            machineSummary,
+            privacyProfileMimeType: file.type || "application/octet-stream",
+            privacyProfileNeedsRefresh: true,
+            privacyProfileStatus: "not_started"
+          });
           void profileWalletUpload(uploaded, file);
           if (storeNewFilesOnFilecoin) {
             void storeWalletRecordOnFilecoin(uploaded);
@@ -3630,7 +3655,9 @@ function UploadsScreen({
         upload,
         walletConfig: apiConfig
       });
-      updateUpload(upload.id, toFilecoinStoragePatch(result));
+      const patch = toFilecoinStoragePatch(result);
+      updateUpload(upload.id, patch);
+      void persistUploadMetadata(upload, patch);
       void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
@@ -3660,7 +3687,13 @@ function UploadsScreen({
         clientConfig: filecoinStorageConfig,
         walletConfig: apiConfig
       });
-      updateUpload(upload.id, toFilecoinStoragePatch(result));
+      const patch = toFilecoinStoragePatch(result);
+      const nextUpload = { ...upload, ...patch };
+      updateUpload(upload.id, patch);
+      void persistUploadMetadata(upload, patch);
+      if (!nextUpload.privacyProfileStatus || nextUpload.privacyProfileNeedsRefresh) {
+        void profileWalletUpload(nextUpload);
+      }
       void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
@@ -3672,15 +3705,24 @@ function UploadsScreen({
     }
   }
 
-  async function profileWalletUpload(upload: UploadItem, file: File) {
+  async function profileWalletUpload(upload: UploadItem, file?: File) {
     if (!apiConfig?.actorDid || !upload.recordId) return;
+    const mimeType = normalizePublicMimeType(
+      file?.type || upload.privacyProfileMimeType || "",
+      file?.name || upload.fileName || upload.recordId
+    );
     updateUpload(upload.id, {
       privacyProfileMessage: "Creating redacted GraphRAG, vector profile, and privacy proof.",
-      privacyProfileMimeType: file.type || "application/octet-stream",
+      privacyProfileMimeType: mimeType,
+      privacyProfileStatus: "profiling"
+    });
+    void persistUploadMetadata(upload, {
+      privacyProfileMessage: "Creating redacted GraphRAG, vector profile, and privacy proof.",
+      privacyProfileMimeType: mimeType,
       privacyProfileStatus: "profiling"
     });
     try {
-      const [redacted, vector, graphrag] = await Promise.allSettled([
+      const [redacted, vector, graphrag, extracted, form] = await Promise.allSettled([
         analyzeRecordRedactedWithGrant(apiConfig, { recordId: upload.recordId, maxChars: 500 }),
         createRecordVectorProfileWithGrant(apiConfig, { recordId: upload.recordId, chunkSizeWords: 80 }),
         createRedactedGraphRAG(apiConfig, {
@@ -3688,40 +3730,67 @@ function UploadsScreen({
           maxBytesPerRecord: 200_000,
           maxCharsPerRecord: 20_000,
           useOcr: true
+        }),
+        extractRecordTextRedactedWithGrant(apiConfig, {
+          recordId: upload.recordId,
+          maxBytes: 200_000,
+          maxChars: 12_000,
+          useOcr: true
+        }),
+        analyzeRecordFormRedactedWithGrant(apiConfig, {
+          recordId: upload.recordId,
+          maxFields: 100,
+          useOcr: true
         })
       ]);
-      const fulfilled = [redacted, vector, graphrag].filter(
+      const fulfilled = [redacted, vector, graphrag, extracted, form].filter(
         (result): result is PromiseFulfilledResult<Awaited<ReturnType<typeof analyzeRecordRedactedWithGrant>>> =>
           result.status === "fulfilled"
       );
-      if (!fulfilled.length) {
-        throw new Error("No privacy profile artifacts were created.");
-      }
       const outputs = fulfilled.map((result) => result.value.output);
+      const organizerProfile = await buildOpenRouterOrganizerProfile({
+        fileName: upload.fileName,
+        mimeType,
+        outputs
+      });
+      if (organizerProfile) {
+        outputs.push({ openrouter_organizer_profile: organizerProfile, output_policy: "redacted_remote_organizer" });
+      }
+      if (!outputs.length) outputs.push(buildFallbackDocumentProfileOutput(upload, mimeType));
       const artifactIds = fulfilled.map((result) => result.value.artifact.id);
       const publicInputs = buildDocumentPrivacyProfilePublicInputs({
         artifactIds,
         file,
+        fileName: upload.fileName,
+        mimeType,
         outputs
       });
       const proof = await createDocumentPrivacyProfileProof(apiConfig, {
         publicInputs,
         recordId: upload.recordId
       });
-      updateUpload(upload.id, {
+      const patch: Partial<UploadItem> = {
         privacyProfileArtifactIds: artifactIds,
+        privacyProfileClassification: classifyDocumentProfile(publicInputs),
+        privacyProfileLabels: readStringArray(publicInputs, "organizer_labels") || defaultLabelsForMimeType(mimeType),
         privacyProfileMessage: "Safe document profile and proof are attached to this wallet record.",
+        privacyProfileMimeType: mimeType,
+        privacyProfileNeedsRefresh: false,
         privacyProfileProofId: proof.id,
         privacyProfileStatus: "profiled",
         privacyProfileSummary: summarizeDocumentPrivacyProfile(publicInputs)
-      });
+      };
+      updateUpload(upload.id, patch);
+      await persistUploadMetadata(upload, patch);
       await refreshWalletAuditEvents().catch(() => {});
     } catch (error) {
-      updateUpload(upload.id, {
+      const patch: Partial<UploadItem> = {
         privacyProfileMessage:
           error instanceof Error ? error.message : "Privacy-preserving document profile failed.",
         privacyProfileStatus: "failed"
-      });
+      };
+      updateUpload(upload.id, patch);
+      void persistUploadMetadata(upload, patch);
     }
   }
 
@@ -3744,6 +3813,49 @@ function UploadsScreen({
     } finally {
       setDownloadingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
     }
+  }
+
+  async function persistUploadMetadata(upload: UploadItem, patch: Partial<UploadItem> = {}) {
+    if (!apiConfig?.actorDid || !upload.recordId) return;
+    try {
+      const saved = await updateWalletRecordMetadata(
+        apiConfig,
+        upload.recordId,
+        serializeUploadMetadata({ ...upload, ...patch })
+      );
+      updateUpload(upload.id, {
+        ...patch,
+        storageOk: saved.storageOk ?? upload.storageOk
+      });
+    } catch {
+      // Metadata persistence is best-effort so uploads, pins, and proofs can still complete.
+    }
+  }
+
+  function serializeUploadMetadata(upload: UploadItem): Record<string, unknown> {
+    return compactRecord({
+      decentralizedStorageMessage: upload.decentralizedStorageMessage,
+      decentralizedStorageProvider: upload.decentralizedStorageProvider,
+      decentralizedStorageStatus: upload.decentralizedStorageStatus,
+      fileName: upload.fileName,
+      filecoinDealId: upload.filecoinDealId,
+      filecoinPieceCid: upload.filecoinPieceCid,
+      filecoinPinRequestId: upload.filecoinPinRequestId,
+      filecoinPinStatus: upload.filecoinPinStatus,
+      filecoinPinStatusUrl: upload.filecoinPinStatusUrl,
+      ipfsCid: upload.ipfsCid,
+      ipfsGatewayUrl: upload.ipfsGatewayUrl,
+      machineSummary: upload.machineSummary,
+      privacyProfileArtifactIds: upload.privacyProfileArtifactIds,
+      privacyProfileClassification: upload.privacyProfileClassification,
+      privacyProfileLabels: upload.privacyProfileLabels,
+      privacyProfileMessage: upload.privacyProfileMessage,
+      privacyProfileMimeType: upload.privacyProfileMimeType,
+      privacyProfileNeedsRefresh: upload.privacyProfileNeedsRefresh,
+      privacyProfileProofId: upload.privacyProfileProofId,
+      privacyProfileStatus: upload.privacyProfileStatus,
+      privacyProfileSummary: upload.privacyProfileSummary
+    });
   }
 
   function normalizeWalletUpload(upload: UploadItem, fileName: string): UploadItem {
@@ -3778,7 +3890,12 @@ function UploadsScreen({
       await pollFilecoinStorageStatus(initialResult, {
         clientConfig: filecoinStorageConfig,
         onUpdate: (nextResult) => {
-          updateUpload(uploadId, toFilecoinStoragePatch(nextResult));
+          const patch = toFilecoinStoragePatch(nextResult);
+          const upload = uploadsRef.current.find((item) => item.id === uploadId);
+          updateUpload(uploadId, patch);
+          if (upload) {
+            void persistUploadMetadata(upload, patch);
+          }
         }
       });
     } catch (error) {
@@ -4000,6 +4117,12 @@ function UploadsScreen({
                 ) : null}
                 <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload)}</Badge>
                 <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload)}</Badge>
+                {upload.privacyProfileMimeType ? (
+                  <Badge tone="info">{displayMimeType(upload.privacyProfileMimeType)}</Badge>
+                ) : null}
+                {upload.privacyProfileClassification ? (
+                  <Badge tone="info">{upload.privacyProfileClassification}</Badge>
+                ) : null}
                 {upload.privacyProfileStatus ? (
                   <Badge tone={privacyProfileBadgeTone(upload)}>
                     {privacyProfileBadge(upload)}
@@ -4016,6 +4139,17 @@ function UploadsScreen({
               ) : null}
               {upload.privacyProfileSummary ? (
                 <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
+              ) : null}
+              {upload.privacyProfileClassification || upload.privacyProfileMimeType ? (
+                <small className="wallet-storage-reference">
+                  Download type: {upload.privacyProfileClassification || displayMimeType(upload.privacyProfileMimeType || "")}
+                  {upload.privacyProfileMimeType ? ` (${upload.privacyProfileMimeType})` : ""}
+                </small>
+              ) : null}
+              {upload.privacyProfileLabels?.length ? (
+                <small className="wallet-storage-reference">
+                  Contents: {upload.privacyProfileLabels.slice(0, 6).join(", ")}
+                </small>
               ) : null}
               {upload.privacyProfileProofId ? (
                 <small className="wallet-storage-reference">Proof: <code>{shortStorageId(upload.privacyProfileProofId)}</code></small>
@@ -4046,6 +4180,16 @@ function UploadsScreen({
                 >
                   <Upload aria-hidden="true" size={18} />
                   {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
+                </Button>
+              ) : null}
+              {upload.recordId && apiConfig?.actorDid && upload.privacyProfileStatus !== "profiled" ? (
+                <Button
+                  disabled={upload.privacyProfileStatus === "profiling"}
+                  onClick={() => void profileWalletUpload(upload)}
+                  variant="secondary"
+                >
+                  <ShieldCheck aria-hidden="true" size={18} />
+                  {upload.privacyProfileStatus === "profiling" ? "Profiling" : "Generate proof"}
                 </Button>
               ) : null}
               {upload.recordId && apiConfig?.actorDid ? (
@@ -6737,6 +6881,12 @@ function analysisLines(result: {
 }
 
 function summarizeDerivedOutput(output: Record<string, unknown>) {
+  const organizerProfile = output.openrouter_organizer_profile;
+  if (organizerProfile && typeof organizerProfile === "object" && !Array.isArray(organizerProfile)) {
+    const record = organizerProfile as Record<string, unknown>;
+    const summary = typeof record.summary === "string" ? record.summary.trim() : "";
+    if (summary) return summary;
+  }
   if (typeof output.summary === "string" && output.summary.trim()) return output.summary;
   if (typeof output.text === "string" && output.text.trim()) return output.text;
   const profile = output.profile;
@@ -6768,13 +6918,161 @@ function summarizeDerivedOutput(output: Record<string, unknown>) {
   return typeof output.output_policy === "string" ? output.output_policy : "Safe derived output created.";
 }
 
+async function buildOpenRouterOrganizerProfile({
+  fileName,
+  mimeType,
+  outputs
+}: {
+  fileName: string;
+  mimeType: string;
+  outputs: Record<string, unknown>[];
+}): Promise<Record<string, unknown> | undefined> {
+  const safeSignals = outputs.map(toSafeOrganizerSignal).filter((signal) => Object.keys(signal).length > 0);
+  try {
+    const result = await generateOpenRouterText({
+      fallbackReason: "wallet_document_privacy_profile",
+      localModelName: "openrouter/free",
+      maxTokens: 350,
+      prompt: {
+        prompt: "Create privacy-preserving organizer metadata from redacted wallet document signals.",
+        systemPrompt: [
+          "You create privacy-preserving document organizer metadata for a wallet app.",
+          "Use only redacted derived signals. Do not infer names, addresses, account numbers, medical facts, legal facts, or other private content.",
+          "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
+          "summary must be a short generic description. labels, browseHints, and riskSignals must be arrays of generic non-identifying strings."
+        ].join("\n"),
+        userPrompt: JSON.stringify({
+          fileName: redactFileNameForRemoteProfile(fileName),
+          mimeType,
+          redactedSignals: safeSignals.slice(0, 8)
+        })
+      }
+    });
+    return normalizeOrganizerProfileJson(result.text, result.model);
+  } catch {
+    return undefined;
+  }
+}
+
+function toSafeOrganizerSignal(output: Record<string, unknown>): Record<string, unknown> {
+  const signal: Record<string, unknown> = {
+    output_policy: readString(output, "output_policy"),
+    summary: safeShortText(readString(output, "summary")),
+    text: safeShortText(readString(output, "text"))
+  };
+  const profile = output.profile;
+  if (profile && typeof profile === "object" && !Array.isArray(profile)) {
+    signal.profile = compactRecord({
+      profile_type: readString(profile, "profile_type"),
+      chunk_count: readNumber(profile, "chunk_count")
+    });
+  }
+  const graph = output.graph;
+  if (graph && typeof graph === "object" && !Array.isArray(graph)) {
+    signal.graph = compactRecord({
+      graph_type: readString(graph, "graph_type"),
+      node_count: readNumber(graph, "node_count"),
+      edge_count: readNumber(graph, "edge_count")
+    });
+  }
+  const fields = output.fields;
+  if (Array.isArray(fields)) {
+    signal.field_count = fields.length;
+    signal.field_labels = fields
+      .map((field) => (field && typeof field === "object" && !Array.isArray(field) ? readString(field, "label") : undefined))
+      .filter(Boolean)
+      .slice(0, 8);
+  }
+  const redactionCounts = output.redaction_counts;
+  if (redactionCounts && typeof redactionCounts === "object" && !Array.isArray(redactionCounts)) {
+    signal.redaction_counts = Object.fromEntries(
+      Object.entries(redactionCounts)
+        .filter(([, value]) => typeof value === "number")
+        .slice(0, 8)
+    );
+  }
+  return compactRecord(signal);
+}
+
+function normalizeOrganizerProfileJson(text: string, model: string): Record<string, unknown> | undefined {
+  const parsed = parseFirstJsonObject(text);
+  if (!parsed) return undefined;
+  const summary = safeShortText(typeof parsed.summary === "string" ? parsed.summary : "");
+  const labels = readSafeStringList(parsed.labels, 6);
+  const browseHints = readSafeStringList(parsed.browseHints, 6);
+  const riskSignals = readSafeStringList(parsed.riskSignals, 6);
+  if (!summary && !labels.length && !browseHints.length && !riskSignals.length) return undefined;
+  return compactRecord({
+    browseHints,
+    labels,
+    model,
+    riskSignals,
+    summary
+  });
+}
+
+function parseFirstJsonObject(text: string): Record<string, unknown> | undefined {
+  const trimmed = text.trim();
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start < 0 || end <= start) return undefined;
+  try {
+    const parsed = JSON.parse(trimmed.slice(start, end + 1));
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readSafeStringList(value: unknown, limit: number): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => safeShortText(typeof item === "string" ? item : ""))
+    .filter(Boolean)
+    .slice(0, limit);
+}
+
+function safeShortText(value: string | undefined): string {
+  return (value || "")
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
+    .replace(/\b(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b/g, "[phone]")
+    .replace(/\b\d{4,}\b/g, "[number]")
+    .trim()
+    .slice(0, 240);
+}
+
+function redactFileNameForRemoteProfile(fileName: string): string {
+  const extension = fileName.split(".").pop()?.toLowerCase();
+  return extension && extension !== fileName.toLowerCase() ? `document.${extension}` : "document";
+}
+
+function buildFallbackDocumentProfileOutput(upload: UploadItem, mimeType: string): Record<string, unknown> {
+  return {
+    output_policy: "local_metadata_only",
+    profile: {
+      chunk_count: 0,
+      profile_type: "metadata fallback"
+    },
+    summary: `${mimeType} wallet file queued for redacted profiling.`,
+    upload_state: compactRecord({
+      decentralizedStorageStatus: upload.decentralizedStorageStatus,
+      hasIpfsCid: Boolean(upload.ipfsCid),
+      mimeType
+    })
+  };
+}
+
 function buildDocumentPrivacyProfilePublicInputs({
   artifactIds,
   file,
+  fileName,
+  mimeType,
   outputs
 }: {
   artifactIds: string[];
-  file: File;
+  file?: File;
+  fileName: string;
+  mimeType: string;
   outputs: Record<string, unknown>[];
 }): Record<string, unknown> {
   const graphOutput = outputs
@@ -6783,24 +7081,31 @@ function buildDocumentPrivacyProfilePublicInputs({
   const profileOutput = outputs
     .map((output) => output.profile)
     .find((profile) => profile && typeof profile === "object" && !Array.isArray(profile)) as Record<string, unknown> | undefined;
+  const organizerProfile = outputs
+    .map((output) => output.openrouter_organizer_profile)
+    .find((profile) => profile && typeof profile === "object" && !Array.isArray(profile)) as Record<string, unknown> | undefined;
   const redactionCount = outputs.reduce((count, output) => {
     const counts = output.redaction_counts;
     if (!counts || typeof counts !== "object" || Array.isArray(counts)) return count;
     return count + Object.values(counts).reduce((sum, value) => sum + (typeof value === "number" ? value : 0), 0);
   }, 0);
-  const mimeType = normalizePublicMimeType(file.type, file.name);
+  const publicMimeType = normalizePublicMimeType(mimeType, file?.name || fileName);
   return {
     artifact_ids: artifactIds,
     chunk_count: readNumber(profileOutput, "chunk_count"),
     edge_count: readNumber(graphOutput, "edge_count"),
-    graph_type: readString(graphOutput, "graph_type"),
-    mime_family: mimeType.split("/")[0] || "application",
-    mime_type: mimeType,
-    node_count: readNumber(graphOutput, "node_count"),
+      graph_type: readString(graphOutput, "graph_type"),
+      mime_family: publicMimeType.split("/")[0] || "application",
+      mime_type: publicMimeType,
+      node_count: readNumber(graphOutput, "node_count"),
+      openrouter_model: readString(organizerProfile, "model"),
+      organizer_labels: readStringArray(organizerProfile, "labels") || defaultLabelsForMimeType(publicMimeType),
+      organizer_summary: readString(organizerProfile, "summary") || displayMimeType(publicMimeType),
     output_policies: Array.from(new Set(outputs.map((output) => readString(output, "output_policy")).filter(Boolean))),
     privacy_policy: "no_plaintext_public_inputs",
+    profile_methods: Array.from(new Set(outputs.map((output) => readString(output, "output_policy")).filter(Boolean))),
     redaction_count: redactionCount,
-    size_bucket: sizeBucket(file.size),
+    size_bucket: typeof file?.size === "number" ? sizeBucket(file.size) : "unknown",
     summary: "Redacted GraphRAG, vector metadata, and derived descriptors created inside the wallet boundary."
   };
 }
@@ -6811,6 +7116,35 @@ function summarizeDocumentPrivacyProfile(publicInputs: Record<string, unknown>) 
   const nodes = typeof publicInputs.node_count === "number" ? `${publicInputs.node_count} nodes` : "safe graph";
   const chunks = typeof publicInputs.chunk_count === "number" ? `${publicInputs.chunk_count} chunks` : "vector metadata";
   return `${mimeType} · ${graphType} · ${nodes} · ${chunks}`;
+}
+
+function classifyDocumentProfile(publicInputs: Record<string, unknown>) {
+  const organizerSummary = readString(publicInputs, "organizer_summary");
+  if (organizerSummary) return organizerSummary;
+  const labels = readStringArray(publicInputs, "organizer_labels");
+  if (labels?.length) return labels.slice(0, 3).join(", ");
+  return displayMimeType(readString(publicInputs, "mime_type") || "");
+}
+
+function displayMimeType(mimeType: string) {
+  const normalized = mimeType.trim().toLowerCase();
+  if (!normalized) return "Unknown file";
+  if (normalized === "application/pdf") return "PDF document";
+  if (normalized.startsWith("image/")) return `${normalized.split("/")[1]?.toUpperCase() || "Image"} image`;
+  if (normalized.startsWith("text/")) return "Text document";
+  if (normalized.includes("json")) return "JSON data";
+  if (normalized.includes("spreadsheet") || normalized.includes("excel") || normalized.includes("csv")) return "Spreadsheet";
+  if (normalized.includes("wordprocessing") || normalized.includes("msword")) return "Word document";
+  if (normalized.includes("presentation") || normalized.includes("powerpoint")) return "Presentation";
+  if (normalized.startsWith("audio/")) return "Audio file";
+  if (normalized.startsWith("video/")) return "Video file";
+  if (normalized === "application/octet-stream") return "Encrypted/binary file";
+  return normalized;
+}
+
+function defaultLabelsForMimeType(mimeType: string) {
+  const label = displayMimeType(mimeType);
+  return label === "Unknown file" ? [] : [label];
 }
 
 function normalizePublicMimeType(mimeType: string, fileName: string) {
@@ -6839,10 +7173,29 @@ function readString(record: unknown, key: string) {
   return typeof value === "string" && value.trim() ? value : undefined;
 }
 
+function readStringArray(record: unknown, key: string) {
+  if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
+  const value = (record as Record<string, unknown>)[key];
+  if (!Array.isArray(value)) return undefined;
+  const strings = value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  return strings.length ? strings.slice(0, 12) : undefined;
+}
+
 function readNumber(record: unknown, key: string) {
   if (!record || typeof record !== "object" || Array.isArray(record)) return undefined;
   const value = (record as Record<string, unknown>)[key];
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function compactRecord(record: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(record).filter(([, value]) => {
+      if (value === undefined || value === null) return false;
+      if (typeof value === "string") return value.trim().length > 0;
+      if (Array.isArray(value)) return value.length > 0;
+      return true;
+    })
+  );
 }
 
 function BenefitsProtectionScreen({
