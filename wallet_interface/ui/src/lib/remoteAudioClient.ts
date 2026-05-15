@@ -91,13 +91,31 @@ export async function generateRemoteAudio(options: {
   for (const endpoint of endpoints) {
     let response: Response;
     try {
+      console.info("[Abby] Calling voice proxy.", {
+        mode: options.mode,
+        role: endpoint.role,
+        url: endpoint.url,
+        modelName: endpoint.modelName,
+      });
       response = await fetchWithTimeout(endpoint.url, buildRequestInit(options));
     } catch (error) {
+      console.warn("[Abby] Voice proxy request failed before response.", {
+        mode: options.mode,
+        role: endpoint.role,
+        url: endpoint.url,
+        error,
+      });
       errors.push(formatRemoteAudioNetworkError(endpoint.url, error));
       continue;
     }
 
     if (!response.ok) {
+      console.warn("[Abby] Voice proxy returned an error response.", {
+        mode: options.mode,
+        role: endpoint.role,
+        url: endpoint.url,
+        status: response.status,
+      });
       errors.push(`Voice proxy request to ${endpoint.url} failed with ${response.status}: ${await response.text()}`);
       continue;
     }

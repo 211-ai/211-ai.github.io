@@ -191,6 +191,7 @@ export function AgentAudioChatSurface({
   const vadLastTriggerAtRef = useRef(0);
   const voiceDetectionEnabledRef = useRef(voiceDetectionEnabled);
   const audioOutputReadyRef = useRef(false);
+  const speakingAssistantIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     mutedRef.current = muted;
@@ -230,6 +231,7 @@ export function AgentAudioChatSurface({
       audioProgressRequestIdRef.current += 1;
       voiceDetectionEnabledRef.current = false;
       audioOutputReadyRef.current = false;
+      speakingAssistantIdRef.current = null;
       cancelListening();
       stopPlayback();
       pendingVoiceTranscriptRef.current = "";
@@ -301,8 +303,14 @@ export function AgentAudioChatSurface({
     if (!open || muted || responding || !isAudioSurfaceActive(surface)) return;
     const assistantMessage = getLastAssistantMessage(messages);
     if (!assistantMessage || assistantMessage.id === lastSpokenAssistantIdRef.current) return;
-    lastSpokenAssistantIdRef.current = assistantMessage.id;
-    void speakAssistantMessage(assistantMessage);
+    if (assistantMessage.id === speakingAssistantIdRef.current) return;
+    speakingAssistantIdRef.current = assistantMessage.id;
+    void speakAssistantMessage(assistantMessage).finally(() => {
+      if (speakingAssistantIdRef.current === assistantMessage.id) {
+        lastSpokenAssistantIdRef.current = assistantMessage.id;
+        speakingAssistantIdRef.current = null;
+      }
+    });
   }, [evidenceBundles, messages, muted, open, responding, surface]);
 
   useEffect(() => {
@@ -721,13 +729,18 @@ export function AgentAudioChatSurface({
         }
       }
 
-      const ttsResult = await clientAudioReplyService.generateAudio(preferredSpeechText, {
+      console.info("[Abby] Requesting IndexTTS audio for completed assistant response.", {
+        endpoint: "voiceProxy.tts",
+        assistantMessageId: message.id,
+      });
+      const ttsResult = await clientAudioReplyService.generateRemoteTextAudio(preferredSpeechText, {
         onProgress: (progress) => updateModelProgress(requestId, progress),
       });
       lastCapturedVoiceBlobRef.current = null;
       await playAudioReplyResult(ttsResult, preferredSpeechText, requestId);
     } catch (error) {
       const audioErrorMessage = error instanceof Error ? error.message : "Audio reply failed.";
+      console.warn("[Abby] IndexTTS proxy failed for completed assistant response; trying voice fallback.", error);
       try {
         const result = await clientAudioReplyService.generateVoiceReply(voiceInferenceRequest, {
           onProgress: (progress) => updateModelProgress(requestId, progress),

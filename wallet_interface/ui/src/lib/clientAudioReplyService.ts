@@ -147,7 +147,7 @@ export class ClientAudioReplyService {
   private readonly hasWebGPU: () => boolean;
   private readonly hasSpeechSynthesis: () => boolean;
   private readonly now: () => number;
-  private readonly voiceProxyEnabled: boolean;
+  private readonly voiceProxyEnabledOverride: boolean | undefined;
   private readonly hasInjectedRemoteAudio: boolean;
 
   constructor(options: ClientAudioReplyServiceOptions = {}) {
@@ -159,7 +159,7 @@ export class ClientAudioReplyService {
     this.hasWebGPU = options.hasWebGPU ?? defaultHasWebGPU;
     this.hasSpeechSynthesis = options.hasSpeechSynthesis ?? defaultHasSpeechSynthesis;
     this.now = options.now ?? Date.now;
-    this.voiceProxyEnabled = options.voiceProxyEnabled ?? AUDIO_CHAT_CONFIG.voiceProxyEnabled;
+    this.voiceProxyEnabledOverride = options.voiceProxyEnabled;
   }
 
   async warmUp(options: ClientAudioProgressOptions = {}): Promise<ClientAudioWarmupResult> {
@@ -331,6 +331,29 @@ export class ClientAudioReplyService {
     throw new Error(this.getCombinedFallbackReason(modelName, this.remoteAudioLastError, false));
   }
 
+  async generateRemoteTextAudio(text: string, options: ClientAudioProgressOptions = {}): Promise<ClientAudioReplyResult> {
+    const normalizedText = text.trim().slice(0, AUDIO_CHAT_CONFIG.maxPromptCharacters);
+    if (!normalizedText) {
+      throw new Error("Audio reply text is empty.");
+    }
+    if (!this.canUseRemoteAudio()) {
+      throw new Error("Voice proxy is unavailable.");
+    }
+    try {
+      return await this.generateProxyAudio({
+        mode: "tts",
+        text: normalizedText,
+        localModelName: AUDIO_CHAT_CONFIG.defaultModel,
+        onProgress: options.onProgress,
+        requireAudioBlob: true,
+        skipPreflight: true,
+      });
+    } catch (error) {
+      this.remoteAudioLastError = formatError(error);
+      throw error;
+    }
+  }
+
   async generateVoiceReply(
     input: ClientVoiceReplyRequest,
     options: ClientAudioProgressOptions = {},
@@ -415,7 +438,7 @@ export class ClientAudioReplyService {
     return {
       defaultModel: AUDIO_CHAT_CONFIG.defaultModel,
       defaultModelInfo: getClientAudioModelInfo(AUDIO_CHAT_CONFIG.defaultModel),
-      remoteAudioEnabled: this.voiceProxyEnabled,
+      remoteAudioEnabled: this.isVoiceProxyEnabled(),
       remoteAudioConfigured: this.canUseRemoteAudio(),
       remoteAudioEndpoint: AUDIO_CHAT_CONFIG.voiceProxyInferUrl,
       remoteAudioFallbackEndpoint: AUDIO_CHAT_CONFIG.voiceProxyFallbackInferUrl,
@@ -479,7 +502,11 @@ export class ClientAudioReplyService {
   }
 
   private canUseRemoteAudio(): boolean {
-    return this.voiceProxyEnabled && (this.hasInjectedRemoteAudio || isRemoteVoiceProxyConfigured());
+    return this.isVoiceProxyEnabled() && (this.hasInjectedRemoteAudio || isRemoteVoiceProxyConfigured());
+  }
+
+  private isVoiceProxyEnabled(): boolean {
+    return this.voiceProxyEnabledOverride ?? AUDIO_CHAT_CONFIG.voiceProxyEnabled;
   }
 
   shouldPreferRemoteAudioBeforeLocalText(): boolean {
@@ -500,17 +527,19 @@ export class ClientAudioReplyService {
     audioBlob?: Blob;
     localModelName: string;
     onProgress?: (progress: ClientAudioProgress) => void;
+    requireAudioBlob?: boolean;
+    skipPreflight?: boolean;
   }): Promise<ClientAudioReplyResult> {
     options.onProgress?.({
       phase: "queued",
       progress: 0,
       status:
-        this.remoteAudioPreflight === "ready"
+        options.skipPreflight || this.remoteAudioPreflight === "ready"
           ? "Sending audio request to voice proxy."
           : "Checking voice proxy before local audio.",
       modelName: AUDIO_CHAT_CONFIG.voiceProxyModel,
     });
-    if (!(await this.ensureRemoteAudioPreflight(options.mode))) {
+    if (!options.skipPreflight && !(await this.ensureRemoteAudioPreflight(options.mode))) {
       throw new Error(this.remoteAudioLastError || "Voice proxy preflight failed.");
     }
     options.onProgress?.({
@@ -538,6 +567,9 @@ export class ClientAudioReplyService {
       modelName: result.modelName,
     });
     if (!result.audioBlob) {
+      if (options.requireAudioBlob) {
+        throw new Error("Voice proxy returned text only instead of audio.");
+      }
       if (result.text && this.hasSpeechSynthesis()) {
         return this.browserSpeechFallback(
           result.text,
