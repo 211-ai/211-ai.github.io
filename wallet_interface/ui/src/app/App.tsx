@@ -50,6 +50,7 @@ import {
   setLocationServicePlanHash
 } from "./ServicePlanScreen";
 import { generateOpenRouterText } from "../lib/openRouterClient";
+import { generateHuggingFaceWalletRouterText } from "../lib/huggingFaceWalletRouterClient";
 import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
@@ -7294,25 +7295,36 @@ async function buildOpenRouterOrganizerProfile({
   outputs: Record<string, unknown>[];
 }): Promise<Record<string, unknown> | undefined> {
   const safeSignals = outputs.map(toSafeOrganizerSignal).filter((signal) => Object.keys(signal).length > 0);
+  const prompt = {
+    prompt: "Create privacy-preserving organizer metadata from redacted wallet document signals.",
+    systemPrompt: [
+      "You create privacy-preserving document organizer metadata for a wallet app.",
+      "Use only redacted derived signals. Do not infer names, addresses, account numbers, medical facts, legal facts, or other private content.",
+      "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
+      "summary must be a short generic description. labels, browseHints, and riskSignals must be arrays of generic non-identifying strings."
+    ].join("\n"),
+    userPrompt: JSON.stringify({
+      fileName: redactFileNameForRemoteProfile(fileName),
+      mimeType,
+      redactedSignals: safeSignals.slice(0, 8)
+    })
+  };
+  try {
+    const result = await generateHuggingFaceWalletRouterText({
+      fallbackReason: "wallet_document_privacy_profile",
+      maxTokens: 350,
+      prompt
+    });
+    return normalizeOrganizerProfileJson(result.text, result.model);
+  } catch {
+    // OpenRouter is a secondary fallback after the wallet-scoped Hugging Face router.
+  }
   try {
     const result = await generateOpenRouterText({
       fallbackReason: "wallet_document_privacy_profile",
       localModelName: "openrouter/free",
       maxTokens: 350,
-      prompt: {
-        prompt: "Create privacy-preserving organizer metadata from redacted wallet document signals.",
-        systemPrompt: [
-          "You create privacy-preserving document organizer metadata for a wallet app.",
-          "Use only redacted derived signals. Do not infer names, addresses, account numbers, medical facts, legal facts, or other private content.",
-          "Return only one JSON object with keys: summary, labels, browseHints, riskSignals.",
-          "summary must be a short generic description. labels, browseHints, and riskSignals must be arrays of generic non-identifying strings."
-        ].join("\n"),
-        userPrompt: JSON.stringify({
-          fileName: redactFileNameForRemoteProfile(fileName),
-          mimeType,
-          redactedSignals: safeSignals.slice(0, 8)
-        })
-      }
+      prompt
     });
     return normalizeOrganizerProfileJson(result.text, result.model);
   } catch {

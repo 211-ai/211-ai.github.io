@@ -4060,6 +4060,8 @@ def _run_indextts_gradio_tts(
     if not audio_ref:
         raise ValueError("IndexTTS completed without an audio file in the Gradio output")
     audio_bytes, mime_type = _fetch_gradio_file(audio_ref)
+    if audio_bytes.startswith(b"RIFF") and b"WAVE" in audio_bytes[:16]:
+        mime_type = "audio/wav"
     return {
         "audioBase64": base64.b64encode(audio_bytes).decode("ascii"),
         "mimeType": mime_type or "audio/wav",

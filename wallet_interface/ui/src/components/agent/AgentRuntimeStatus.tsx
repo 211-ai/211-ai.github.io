@@ -26,7 +26,7 @@ interface ClientLlmRuntimeStatus {
   isInitializing: boolean;
   currentModel: string;
   currentDevice: ClientLlmDevice;
-  lastGenerationProvider?: "local" | "openrouter";
+  lastGenerationProvider?: "local" | "openrouter" | "huggingface";
   lastGenerationModel?: string;
   capabilities: ClientLlmRuntimeCapabilities;
   openRouter?: {
@@ -36,6 +36,14 @@ interface ClientLlmRuntimeStatus {
     endpoint: string;
     model: string;
     fallbackDelayMs: number;
+    lastError?: string;
+    lastUsedAt?: string;
+  };
+  huggingFaceRouter?: {
+    enabled: boolean;
+    configured: boolean;
+    endpoint: string;
+    model: string;
     lastError?: string;
     lastUsedAt?: string;
   };

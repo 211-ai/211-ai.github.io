@@ -1,9 +1,12 @@
 import {
-  isPromptEligibleForRemoteLlm,
   resolveClientLlmPromptText,
   type ClientLlmPromptInput,
 } from "./clientLlmPrompting";
 import { LLM_CONFIG, getClientLlmModelInfo } from "./llmConfig";
+import {
+  generateHuggingFaceWalletRouterText,
+  getHuggingFaceWalletRouterStatus,
+} from "./huggingFaceWalletRouterClient";
 import {
   clearOpenRouterApiKey,
   generateOpenRouterText,
@@ -14,7 +17,7 @@ import {
 
 const WORKER_RESTART_REQUIRED_PREFIX = "ABBY_LLM_WORKER_RESTART_REQUIRED:";
 const ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS = import.meta.env?.VITE_ALLOW_LOCAL_LLM_FALLBACK === "true";
-type ClientLlmProvider = "local" | "openrouter";
+type ClientLlmProvider = "local" | "openrouter" | "huggingface";
 
 interface PendingRequest<T> {
   resolve: (value: T) => void;
@@ -73,6 +76,8 @@ class ClientLLMWorkerService {
   private openRouterFallbackDelayMs = LLM_CONFIG.openRouterFallbackDelayMs;
   private openRouterLastError: string | undefined;
   private openRouterLastUsedAt: string | undefined;
+  private huggingFaceRouterLastError: string | undefined;
+  private huggingFaceRouterLastUsedAt: string | undefined;
   private lastGenerationModel = LLM_CONFIG.defaultModel;
   private lastGenerationProvider: ClientLlmProvider = "local";
   private generationCounter = 0;
@@ -165,6 +170,15 @@ class ClientLLMWorkerService {
   async generateText(prompt: ClientLlmPromptInput, maxTokens = 180, didRestart = false): Promise<string> {
     const generationId = ++this.generationCounter;
     const promptText = resolveClientLlmPromptText(prompt);
+    if (this.isHuggingFaceWalletRouterUsable(prompt)) {
+      try {
+        return await this.generateTextWithHuggingFaceWalletRouter(prompt, maxTokens, "proxy_first", generationId);
+      } catch (error) {
+        this.recordHuggingFaceRouterError(error);
+        console.warn(`Hugging Face wallet router unavailable; checking secondary text paths. ${formatError(error)}`, error);
+      }
+    }
+
     if (LLM_CONFIG.preferOpenRouter && this.isOpenRouterFallbackUsable(prompt)) {
       try {
         return await this.generateTextWithOpenRouter(prompt, maxTokens, "proxy_first", generationId);
@@ -175,10 +189,6 @@ class ClientLLMWorkerService {
         }
         console.warn(`OpenRouter proxy unavailable; using local LLM path. ${formatError(error)}`, error);
       }
-    }
-
-    if (LLM_CONFIG.preferOpenRouter && !this.shouldAllowLocalFallback()) {
-      throw new Error(this.getNoUsableTextProviderReason(prompt));
     }
 
     const remoteFallbackReason = this.getImmediateOpenRouterFallbackReason(prompt);
@@ -311,6 +321,7 @@ class ClientLLMWorkerService {
       lastGenerationProvider: this.lastGenerationProvider,
       lastGenerationModel: this.lastGenerationModel,
       capabilities: this.capabilities,
+      huggingFaceRouter: this.getHuggingFaceRouterStatus(),
       openRouter: this.getOpenRouterStatus(),
     };
   }
@@ -474,18 +485,11 @@ class ClientLLMWorkerService {
   }
 
   private shouldAllowLocalFallback(): boolean {
-    return !LLM_CONFIG.preferOpenRouter || ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS;
+    return true;
   }
 
   private shouldWarmLocalInBackground(): boolean {
     return LLM_CONFIG.preferOpenRouter && ALLOW_LOCAL_FALLBACK_WHEN_OPENROUTER_FAILS;
-  }
-
-  private getNoUsableTextProviderReason(prompt: ClientLlmPromptInput): string {
-    if (this.isOpenRouterFallbackUsable(prompt)) {
-      return this.openRouterLastError || "OpenRouter text generation failed.";
-    }
-    return "OpenRouter text generation is required, but the proxy is unavailable or the prompt is not eligible for remote inference.";
   }
 
   private getImmediateOpenRouterFallbackReason(prompt: ClientLlmPromptInput): string | undefined {
@@ -511,7 +515,19 @@ class ClientLLMWorkerService {
 
   private isOpenRouterFallbackUsable(prompt: ClientLlmPromptInput): boolean {
     const status = this.getOpenRouterStatus();
-    return status.enabled && status.configured && isPromptEligibleForRemoteLlm(prompt);
+    return status.enabled && status.configured;
+  }
+
+  private isHuggingFaceWalletRouterUsable(prompt: ClientLlmPromptInput): boolean {
+    const status = this.getHuggingFaceRouterStatus();
+    return status.enabled && status.configured;
+  }
+
+  private getHuggingFaceRouterStatus() {
+    return getHuggingFaceWalletRouterStatus({
+      lastError: this.huggingFaceRouterLastError,
+      lastUsedAt: this.huggingFaceRouterLastUsedAt,
+    });
   }
 
   private async raceLocalWithOpenRouterFallback(
@@ -566,8 +582,29 @@ class ClientLLMWorkerService {
     return result.text;
   }
 
+  private async generateTextWithHuggingFaceWalletRouter(
+    prompt: ClientLlmPromptInput,
+    maxTokens: number,
+    fallbackReason: string,
+    generationId: number,
+  ): Promise<string> {
+    const result = await generateHuggingFaceWalletRouterText({
+      prompt,
+      maxTokens,
+      fallbackReason,
+    });
+    this.huggingFaceRouterLastError = undefined;
+    this.huggingFaceRouterLastUsedAt = new Date().toISOString();
+    this.markGeneration("huggingface", result.model, generationId);
+    return result.text;
+  }
+
   private recordOpenRouterError(error: unknown): void {
     this.openRouterLastError = formatError(error);
+  }
+
+  private recordHuggingFaceRouterError(error: unknown): void {
+    this.huggingFaceRouterLastError = formatError(error);
   }
 
   private markGeneration(provider: ClientLlmProvider, modelName: string, generationId: number): void {
