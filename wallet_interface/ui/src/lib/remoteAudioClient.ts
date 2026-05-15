@@ -1,6 +1,6 @@
 import { AUDIO_CHAT_CONFIG } from "./audioChatConfig";
 import { resolvePublicHttpsUrl } from "./publicEndpointPolicy";
-import { createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
+import { createSilentWavBlob, createVoiceProxyFormData, createVoiceProxyTtsBody } from "./voiceProxyPayload";
 
 export interface RemoteAudioGenerationResult {
   audioBlob?: Blob;
@@ -8,6 +8,13 @@ export interface RemoteAudioGenerationResult {
   modelName: string;
   text?: string;
   endpointRole?: "primary" | "fallback";
+}
+
+export interface RemoteSpeechToTextResult {
+  endpointRole?: "primary" | "fallback";
+  modelName: string;
+  provider?: string;
+  text: string;
 }
 
 export function isRemoteVoiceProxyConfigured(): boolean {
@@ -20,6 +27,50 @@ export async function preflightRemoteAudioProxy(mode: "tts" | "voice-reply" = "t
     text: "Voice proxy preflight.",
     fallbackText: "Voice proxy preflight.",
   });
+}
+
+export async function preflightRemoteSpeechToTextProxy(): Promise<RemoteSpeechToTextResult> {
+  return transcribeRemoteSpeech({ audioBlob: createSilentWavBlob() });
+}
+
+export async function transcribeRemoteSpeech(options: {
+  audioBlob: Blob;
+  language?: string;
+}): Promise<RemoteSpeechToTextResult> {
+  const endpoints = getRemoteVoiceProxyEndpoints("stt");
+  if (!AUDIO_CHAT_CONFIG.voiceProxyEnabled || endpoints.length === 0) {
+    throw new Error("Speech-to-text proxy is unavailable.");
+  }
+
+  const errors: string[] = [];
+  for (const endpoint of endpoints) {
+    let response: Response;
+    try {
+      response = await fetchWithTimeout(endpoint.url, {
+        method: "POST",
+        headers: buildHeaders("stt"),
+        body: createSpeechToTextFormData(options),
+      });
+    } catch (error) {
+      errors.push(formatRemoteAudioNetworkError(endpoint.url, error));
+      continue;
+    }
+
+    if (!response.ok) {
+      errors.push(`Speech-to-text proxy request to ${endpoint.url} failed with ${response.status}: ${await response.text()}`);
+      continue;
+    }
+
+    try {
+      const payload = await response.json();
+      const normalized = normalizeSpeechToTextJsonPayload(payload, endpoint);
+      if (normalized.text || options.audioBlob.size > 0) return normalized;
+    } catch (error) {
+      errors.push(`Speech-to-text proxy response from ${endpoint.url} could not be used: ${formatError(error)}`);
+    }
+  }
+
+  throw new Error(errors.join(" "));
 }
 
 export async function generateRemoteAudio(options: {
@@ -71,7 +122,7 @@ type RemoteVoiceProxyEndpoint = {
   modelName: string;
 };
 
-function getRemoteVoiceProxyEndpoints(mode: "tts" | "voice-reply"): RemoteVoiceProxyEndpoint[] {
+function getRemoteVoiceProxyEndpoints(mode: "tts" | "voice-reply" | "stt"): RemoteVoiceProxyEndpoint[] {
   const candidates =
     mode === "tts"
       ? [
@@ -82,10 +133,19 @@ function getRemoteVoiceProxyEndpoints(mode: "tts" | "voice-reply"): RemoteVoiceP
             modelName: AUDIO_CHAT_CONFIG.voiceProxyFallbackModel,
           },
         ]
-      : [
+      : mode === "voice-reply"
+        ? [
           { url: AUDIO_CHAT_CONFIG.voiceProxyInferUrl, role: "primary" as const, modelName: AUDIO_CHAT_CONFIG.voiceProxyModel },
           {
             url: AUDIO_CHAT_CONFIG.voiceProxyFallbackInferUrl,
+            role: "fallback" as const,
+            modelName: AUDIO_CHAT_CONFIG.voiceProxyFallbackModel,
+          },
+        ]
+        : [
+          { url: AUDIO_CHAT_CONFIG.voiceProxySttUrl, role: "primary" as const, modelName: AUDIO_CHAT_CONFIG.voiceProxyModel },
+          {
+            url: AUDIO_CHAT_CONFIG.voiceProxyFallbackSttUrl,
             role: "fallback" as const,
             modelName: AUDIO_CHAT_CONFIG.voiceProxyFallbackModel,
           },
@@ -101,7 +161,7 @@ function getRemoteVoiceProxyEndpoints(mode: "tts" | "voice-reply"): RemoteVoiceP
   return endpoints;
 }
 
-function buildHeaders(mode: "tts" | "voice-reply"): HeadersInit {
+function buildHeaders(mode: "tts" | "voice-reply" | "stt"): HeadersInit {
   const headers: Record<string, string> = {
     Accept: "audio/wav, audio/*, application/json",
   };
@@ -114,6 +174,15 @@ function buildHeaders(mode: "tts" | "voice-reply"): HeadersInit {
     headers["X-Client-Origin"] = origin;
   }
   return headers;
+}
+
+function createSpeechToTextFormData(options: { audioBlob: Blob; language?: string }): FormData {
+  const formData = new FormData();
+  formData.append("audio", options.audioBlob, "speech.wav");
+  if (options.language?.trim()) {
+    formData.append("language", options.language.trim());
+  }
+  return formData;
 }
 
 function buildRequestInit(options: {
@@ -205,6 +274,18 @@ function normalizeJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoi
   }
 
   throw new Error("Voice proxy JSON response did not include base64 audio.");
+}
+
+function normalizeSpeechToTextJsonPayload(payload: unknown, endpoint: RemoteVoiceProxyEndpoint): RemoteSpeechToTextResult {
+  if (!isRecord(payload)) {
+    throw new Error("Speech-to-text proxy returned an invalid JSON payload.");
+  }
+  return {
+    endpointRole: endpoint.role,
+    modelName: firstString(payload, ["model", "modelName", "model_name"]) || endpoint.modelName,
+    provider: firstString(payload, ["provider"]),
+    text: firstString(payload, ["text", "transcript", "transcription", "outputText", "output_text"]) || "",
+  };
 }
 
 function firstString(payload: Record<string, unknown>, keys: string[]): string | undefined {

@@ -1205,6 +1205,12 @@ def create_app(*, service: WalletInterfaceService | None = None):
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except urllib_error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace").strip() or str(exc)
+            raise HTTPException(status_code=502, detail=detail) from exc
+        except urllib_error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace").strip() or str(exc)
+            raise HTTPException(status_code=502, detail=detail) from exc
         except Exception as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -1992,6 +1998,29 @@ def create_app(*, service: WalletInterfaceService | None = None):
             )
             audio_payload["text"] = reply_text
             return audio_payload
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    @app.post("/voice/hf-whisper/stt")
+    async def hf_whisper_voice_stt(
+        audio: UploadFile | None = File(default=None),
+        model_name: str | None = Form(default=None),
+        language: str | None = Form(default=None),
+    ) -> Dict[str, Any]:
+        try:
+            audio_bytes = await audio.read() if audio is not None else _silent_wav_bytes()
+            audio_name = getattr(audio, "filename", None) if audio is not None else "preflight.wav"
+            audio_type = getattr(audio, "content_type", None) if audio is not None else "audio/wav"
+            return _run_hf_whisper_stt(
+                audio_bytes,
+                audio_name=audio_name,
+                audio_type=audio_type,
+                language=language,
+                model_name=model_name,
+            )
+        except urllib_error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace").strip() or str(exc)
+            raise HTTPException(status_code=502, detail=detail) from exc
         except Exception as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
 
@@ -4247,6 +4276,88 @@ def _fetch_gradio_file(reference: Any) -> tuple[bytes, str]:
             url = f"{_indextts_space_base_url()}/gradio_api/file={encoded_path}"
     data, detected_type = _http_bytes(url)
     return data, mime_type or detected_type or mimetypes.guess_type(path)[0] or "audio/wav"
+
+
+def _hf_whisper_model_name(model_name: str | None = None) -> str:
+    return (model_name or os.getenv("WALLET_HF_WHISPER_MODEL_NAME") or "openai/whisper-large-v3-turbo").strip()
+
+
+def _run_hf_whisper_stt(
+    audio: bytes,
+    *,
+    audio_name: str | None = None,
+    audio_type: str | None = None,
+    language: str | None = None,
+    model_name: str | None = None,
+) -> Dict[str, Any]:
+    if not audio:
+        raise ValueError("audio is required")
+    token = (
+        resolve_secret(
+            "WALLET_HF_WHISPER_TOKEN",
+            "IPFS_DATASETS_PY_HF_API_TOKEN",
+            "HF_TOKEN",
+            "HUGGINGFACEHUB_API_TOKEN",
+            "HUGGINGFACE_API_TOKEN",
+            "HUGGINGFACE_HUB_TOKEN",
+        )
+        or ""
+    ).strip()
+    if not token:
+        raise ValueError("Hugging Face token is required for Whisper STT")
+    selected_model = _hf_whisper_model_name(model_name)
+    base_url = (
+        os.getenv("WALLET_HF_WHISPER_BASE_URL", "https://router.huggingface.co/hf-inference/models")
+        .strip()
+        .rstrip("/")
+    )
+    content_type = (audio_type or mimetypes.guess_type(audio_name or "")[0] or "audio/wav").strip()
+    if content_type in {"application/octet-stream", "binary/octet-stream"}:
+        content_type = mimetypes.guess_type(audio_name or "")[0] or "audio/wav"
+    headers = {
+        "Accept": "application/json",
+        "Authorization": f"Bearer {token}",
+        "Content-Type": content_type,
+    }
+    bill_to = (
+        os.getenv("WALLET_HF_WHISPER_BILL_TO")
+        or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO")
+        or "publicus"
+    ).strip()
+    if bill_to:
+        headers["X-HF-Bill-To"] = bill_to
+    if language:
+        headers["X-Wallet-STT-Language"] = language
+    url = f"{base_url}/{urllib_parse.quote(selected_model, safe='/')}"
+    request = urllib_request.Request(url, data=audio, headers=headers, method="POST")
+    with urllib_request.urlopen(request, timeout=_hf_whisper_timeout_seconds()) as response:
+        raw = response.read()
+    result = json.loads(raw.decode("utf-8"))
+    text = str(result.get("text") or result.get("transcription") or "").strip()
+    return {
+        "model": selected_model,
+        "modelName": selected_model,
+        "provider": "huggingface-whisper",
+        "text": text,
+    }
+
+
+def _hf_whisper_timeout_seconds() -> float:
+    try:
+        return max(5.0, float(os.getenv("WALLET_HF_WHISPER_TIMEOUT_SECONDS", "45")))
+    except Exception:
+        return 45.0
+
+
+def _silent_wav_bytes(duration_ms: int = 240, sample_rate: int = 16_000) -> bytes:
+    sample_count = max(1, int(sample_rate * duration_ms / 1000))
+    buffer = io.BytesIO()
+    with wave.open(buffer, "wb") as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(sample_rate)
+        wav.writeframes(b"\x00\x00" * sample_count)
+    return buffer.getvalue()
 
 
 def _parse_upload_metadata(metadata: str | None) -> Dict[str, Any]:

@@ -11,6 +11,7 @@ import {
   selectEvidenceBundlesForMessage,
 } from "../../lib/voiceGraphRagPrompt";
 import { createWavBlobFromFloat32Chunks } from "../../lib/voiceProxyPayload";
+import { preflightRemoteSpeechToTextProxy, transcribeRemoteSpeech } from "../../lib/remoteAudioClient";
 import { Button } from "../ui";
 
 type AudioSessionState = "ready" | "monitoring" | "listening" | "thinking" | "speaking" | "unavailable";
@@ -56,6 +57,7 @@ let openingGreetingReservedForCurrentOpen = false;
 let primedOpeningClipAudio: HTMLAudioElement | null = null;
 let primedOpeningClipPromise: Promise<HTMLAudioElement | null> | null = null;
 let lastSpeechRecognitionWarmupAt = 0;
+let remoteSpeechToTextPreflightPromise: Promise<boolean> | null = null;
 
 interface BrowserSpeechRecognition extends EventTarget {
   continuous: boolean;
@@ -380,19 +382,9 @@ export function AgentAudioChatSurface({
     };
     recognition.onend = () => {
       recognitionRef.current = null;
-      finalizeVoiceCapture(Boolean(finalTranscriptRef.current.trim()));
+      finalizeVoiceCapture(true);
       stopMicrophoneMeter();
-      const transcript = finalTranscriptRef.current.trim();
-      setInterimTranscript("");
-      if (transcript) {
-        pendingVoiceTranscriptRef.current = transcript;
-        onSend(transcript);
-        setSessionState("thinking");
-        setStatusDetail("");
-      } else {
-        setSessionState("ready");
-        restartVoiceActivityDetectionSoon();
-      }
+      void handleSpeechRecognitionEnd(finalTranscriptRef.current.trim());
     };
     recognitionRef.current = recognition;
     setSessionState("listening");
@@ -424,6 +416,40 @@ export function AgentAudioChatSurface({
       recognitionRef.current = null;
       stopMicrophoneMeter();
       setSessionState("ready");
+    }
+  }
+
+  async function handleSpeechRecognitionEnd(browserTranscript: string) {
+    setInterimTranscript("");
+    const capturedAudio = lastCapturedVoiceBlobRef.current;
+    const transcript = await resolveSpeechToTextTranscript(capturedAudio, browserTranscript);
+    if (transcript) {
+      pendingVoiceTranscriptRef.current = transcript;
+      onSend(transcript);
+      setSessionState("thinking");
+      setStatusDetail("");
+    } else {
+      setSessionState("ready");
+      restartVoiceActivityDetectionSoon();
+    }
+  }
+
+  async function resolveSpeechToTextTranscript(audioBlob: Blob | null, browserTranscript: string): Promise<string> {
+    if (!audioBlob) return browserTranscript;
+    try {
+      setStatusDetail("Checking speech-to-text proxy.");
+      const ready = await preflightRemoteSpeechToText();
+      if (!ready) return browserTranscript;
+      setStatusDetail("Transcribing speech.");
+      const result = await transcribeRemoteSpeech({
+        audioBlob,
+        language: navigator.language || "en-US",
+      });
+      const remoteTranscript = result.text.trim();
+      return remoteTranscript || browserTranscript;
+    } catch (error) {
+      console.warn("[Abby] Remote speech-to-text unavailable; using browser/local speech fallback.", error);
+      return browserTranscript;
     }
   }
 
@@ -1282,6 +1308,19 @@ function warmupSpeechRecognition(): void {
   } catch {
     lastSpeechRecognitionWarmupAt = 0;
   }
+}
+
+async function preflightRemoteSpeechToText(): Promise<boolean> {
+  if (!remoteSpeechToTextPreflightPromise) {
+    remoteSpeechToTextPreflightPromise = preflightRemoteSpeechToTextProxy()
+      .then(() => true)
+      .catch((error) => {
+        console.warn("[Abby] Speech-to-text proxy preflight failed; local/browser fallback remains available.", error);
+        remoteSpeechToTextPreflightPromise = null;
+        return false;
+      });
+  }
+  return remoteSpeechToTextPreflightPromise;
 }
 
 function formatAudioTranscriptMessage(message: AgentMessage): string {
