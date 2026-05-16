@@ -13,6 +13,8 @@ import type {
   GraphNeighborhoodIndex,
   GraphNeighborhoodShard,
   GraphNode,
+  ParquetShardArtifact,
+  ParquetShardManifest,
   RetrievalGeoShardManifest,
   ServiceLocationIndex,
   ServiceLocationRecord,
@@ -20,6 +22,7 @@ import type {
 } from "./types";
 import {
   clearDuckDbParquetQueryCache,
+  coerceCorpusDocumentFromRow,
   loadDocumentsFromParquet,
   queryParquetRows,
   type DuckDbDocumentQuery,
@@ -49,6 +52,7 @@ let serviceLocationIndexPromise: Promise<ServiceLocationIndex> | null = null;
 let documentGeoClusterPromise: Promise<DocumentGeoClusterManifest> | null = null;
 let retrievalGeoShardManifestPromise: Promise<RetrievalGeoShardManifest> | null = null;
 let graphGeoClusterManifestPromise: Promise<GraphGeoClusterManifest> | null = null;
+let parquetShardManifestPromise: Promise<ParquetShardManifest | null> | null = null;
 const serviceLocationSlicePromises = new Map<string, Promise<ServiceLocationRecord[]>>();
 const graphShardPromises = new Map<string, Promise<GraphNeighborhoodShard>>();
 const documentSlicePromises = new Map<string, Promise<CorpusState>>();
@@ -115,6 +119,10 @@ export async function load211Documents(): Promise<CorpusState> {
 }
 
 export async function load211DocumentsSlice(query: DuckDbDocumentQuery = {}): Promise<CorpusState> {
+  const shardedDocuments = await load211DocumentsFromParquetShards(query);
+  if (shardedDocuments) {
+    return shardedDocuments;
+  }
   const manifest = await load211ArtifactManifest();
   const parquetArtifact = manifest.artifacts.find(
     (artifact) => artifact.role === "documents" && artifact.path.endsWith(".parquet"),
@@ -391,6 +399,10 @@ export async function load211ServiceLocationsSlice(options: {
   serviceDocIds?: string[];
   limit?: number;
 } = {}): Promise<ServiceLocationRecord[]> {
+  const shardedLocations = await load211ServiceLocationsFromParquetShards(options);
+  if (shardedLocations) {
+    return shardedLocations;
+  }
   const manifest = await load211ArtifactManifest();
   const parquetArtifact = findArtifactBySuffix(manifest, "generated/service-locations.parquet");
   if (!parquetArtifact) {
@@ -443,6 +455,13 @@ export async function load211GraphGeoClusters(): Promise<GraphGeoClusterManifest
     graphGeoClusterManifestPromise = fetch211CorpusJson<GraphGeoClusterManifest>("generated/graph-geo-clusters.json");
   }
   return graphGeoClusterManifestPromise;
+}
+
+export async function load211ParquetShards(): Promise<ParquetShardManifest | null> {
+  if (!parquetShardManifestPromise) {
+    parquetShardManifestPromise = fetch211CorpusJson<ParquetShardManifest>("generated/parquet-shards.json").catch(() => null);
+  }
+  return parquetShardManifestPromise;
 }
 
 export async function load211Bm25Slice(options: {
@@ -523,6 +542,138 @@ async function load211EmbeddingSliceUncached(options: {
   return buildEmbeddingBundleFromRows(rows, parquetArtifact.path);
 }
 
+async function load211DocumentsFromParquetShards(query: DuckDbDocumentQuery): Promise<CorpusState | null> {
+  const artifact = await resolveParquetShardArtifact("documents");
+  if (!artifact) {
+    return null;
+  }
+  const shardPaths = resolveParquetShardPaths(artifact, {
+    docIds: query.docIds,
+    documentReferences: query.documentReferences,
+    clusterIds: query.clusterIds,
+    includeNullCluster: query.includeUnclusteredServices,
+  });
+  if (!shardPaths.length) {
+    return null;
+  }
+  const rows = await queryParquetShardRows(shardPaths, {
+    ...query,
+    includeNullCluster: query.includeUnclusteredServices,
+    clusterColumn: "geo_cluster_id",
+    clusterFilterDocTypes: query.clusterIds?.length || query.includeUnclusteredServices ? ["service"] : undefined,
+    orderBy: query.clusterIds?.length
+      ? [
+          "doc_type ASC",
+          "city ASC",
+          "state ASC",
+          "doc_id ASC",
+        ]
+      : ["doc_type ASC", "city ASC", "state ASC", "doc_id ASC"],
+  });
+  return buildCorpusState(rows.map((row) => coerceCorpusDocumentFromRow(row)));
+}
+
+async function load211ServiceLocationsFromParquetShards(options: {
+  clusterIds?: number[];
+  includeUnclusteredLocations?: boolean;
+  serviceDocIds?: string[];
+  limit?: number;
+}): Promise<ServiceLocationRecord[] | null> {
+  const artifact = await resolveParquetShardArtifact("serviceLocations");
+  if (!artifact) {
+    return null;
+  }
+  const shardPaths = resolveParquetShardPaths(artifact, {
+    serviceDocIds: options.serviceDocIds,
+    clusterIds: options.clusterIds,
+    includeNullCluster: options.includeUnclusteredLocations,
+  });
+  if (!shardPaths.length) {
+    return null;
+  }
+  const rows = await queryParquetShardRows(shardPaths, {
+    clusterIds: options.clusterIds,
+    includeNullCluster: Boolean(options.includeUnclusteredLocations),
+    serviceDocIds: options.serviceDocIds,
+    clusterColumn: "geo_cluster_id",
+    orderBy: options.clusterIds?.length
+      ? ["coalesce(geo_cluster_id, 999999) ASC", "service_doc_id ASC", "location_id ASC"]
+      : ["service_doc_id ASC", "location_id ASC"],
+    limit: options.limit,
+  });
+  return rows.map((row) => buildServiceLocationRecord(row));
+}
+
+async function resolveParquetShardArtifact(name: string): Promise<ParquetShardArtifact | null> {
+  const manifest = await load211ParquetShards();
+  return manifest?.artifacts?.[name] || null;
+}
+
+function resolveParquetShardPaths(
+  artifact: ParquetShardArtifact,
+  query: {
+    docIds?: string[];
+    documentReferences?: string[];
+    serviceDocIds?: string[];
+    clusterIds?: number[];
+    includeNullCluster?: boolean;
+  },
+): string[] {
+  const shardIds = new Set<string>();
+  addShardIdsFromIndex(shardIds, artifact.docIdToShardIds, query.docIds);
+  addShardIdsFromIndex(shardIds, artifact.docIdToShardIds, query.documentReferences);
+  addShardIdsFromIndex(shardIds, artifact.serviceDocIdToShardIds, query.serviceDocIds);
+  addShardIdsFromIndex(shardIds, artifact.contentCidToShardIds, query.documentReferences);
+  addShardIdsFromIndex(shardIds, artifact.pageCidToShardIds, query.documentReferences);
+  if (query.clusterIds?.length) {
+    addShardIdsFromIndex(
+      shardIds,
+      artifact.clusterIdToShardIds,
+      query.clusterIds.map((clusterId) => String(Math.trunc(clusterId))),
+    );
+  }
+  if (query.includeNullCluster) {
+    for (const shard of artifact.shards) {
+      if (!shard.clusterIds?.length) {
+        shardIds.add(shard.shardId);
+      }
+    }
+  }
+  if (shardIds.size === 0) {
+    return [];
+  }
+  const shardById = new Map(artifact.shards.map((shard) => [shard.shardId, shard]));
+  return [...shardIds]
+    .map((shardId) => shardById.get(shardId)?.path || "")
+    .filter(Boolean);
+}
+
+function addShardIdsFromIndex(
+  target: Set<string>,
+  index: Record<string, string[]> | undefined,
+  values: string[] | undefined,
+): void {
+  if (!index || !values?.length) {
+    return;
+  }
+  for (const value of values) {
+    for (const shardId of index[value] || []) {
+      target.add(shardId);
+    }
+  }
+}
+
+async function queryParquetShardRows(
+  shardPaths: string[],
+  query: DuckDbDocumentQuery,
+): Promise<Record<string, unknown>[]> {
+  const rows = (
+    await Promise.all(shardPaths.map((path) => queryParquetRows(get211CorpusAssetUrl(path), query)))
+  ).flat();
+  const limit = query.limit || 0;
+  return limit > 0 ? rows.slice(0, limit) : rows;
+}
+
 export async function fetch211CorpusJson<T>(relativePath: string): Promise<T> {
   const url = get211CorpusAssetUrl(relativePath);
   const cached = corpusJsonPromises.get(url);
@@ -600,6 +751,7 @@ function reset211CorpusCaches(): void {
   documentGeoClusterPromise = null;
   retrievalGeoShardManifestPromise = null;
   graphGeoClusterManifestPromise = null;
+  parquetShardManifestPromise = null;
   serviceLocationSlicePromises.clear();
   graphShardPromises.clear();
   documentSlicePromises.clear();

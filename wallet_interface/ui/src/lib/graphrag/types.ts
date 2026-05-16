@@ -63,6 +63,38 @@ export interface GeneratedCorpusManifest {
   files: CorpusArtifact[];
 }
 
+export interface ParquetShardRecord {
+  shardId: string;
+  path: string;
+  bytes: number;
+  cid: string;
+  sourcePath: string;
+  sourceRowGroupIndex: number;
+  sourceRowOffset: number;
+  rowCount: number;
+  clusterIds?: number[];
+}
+
+export interface ParquetShardArtifact {
+  sourcePath: string;
+  shardCount: number;
+  shards: ParquetShardRecord[];
+  docIdToShardIds?: Record<string, string[]>;
+  contentCidToShardIds?: Record<string, string[]>;
+  pageCidToShardIds?: Record<string, string[]>;
+  clusterIdToShardIds?: Record<string, string[]>;
+  serviceDocIdToShardIds?: Record<string, string[]>;
+  communityIdToShardIds?: Record<string, string[]>;
+}
+
+export interface ParquetShardManifest {
+  schemaVersion: number;
+  maxRowsPerShard: number;
+  basePath: string;
+  shardCount: number;
+  artifacts: Record<string, ParquetShardArtifact>;
+}
+
 export interface ServiceGeoPoint {
   lat?: number | null;
   lon?: number | null;

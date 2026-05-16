@@ -105,7 +105,7 @@ export async function loadDocumentsFromParquet(
         ]
       : ["doc_type ASC", "city ASC", "state ASC", "doc_id ASC"],
   });
-  return rows.map((row) => coerceCorpusDocument(row));
+  return rows.map((row) => coerceCorpusDocumentFromRow(row));
 }
 
 async function getDuckDb(): Promise<duckdb.AsyncDuckDB> {
@@ -145,7 +145,7 @@ async function loadDuckDbBundles(): Promise<duckdb.DuckDBBundles> {
   return duckDbBundlesPromise;
 }
 
-function coerceCorpusDocument(value: unknown): CorpusDocument {
+export function coerceCorpusDocumentFromRow(value: unknown): CorpusDocument {
   const row = toRecord(value);
   return {
     doc_id: stringValue(row.doc_id),

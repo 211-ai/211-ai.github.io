@@ -2423,6 +2423,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--geo-cluster-target-size", type=int, default=DEFAULT_GEO_CLUSTER_TARGET_SIZE)
     parser.add_argument("--geo-cluster-count", type=int, default=0)
     parser.add_argument("--non-service-row-group-size", type=int, default=DEFAULT_NON_SERVICE_ROW_GROUP_SIZE)
+    parser.add_argument("--parquet-shard-max-rows", type=int, default=400)
+    parser.add_argument("--skip-parquet-shards", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -2444,6 +2446,15 @@ def main(argv: list[str] | None = None) -> None:
         geo_cluster_count=args.geo_cluster_count,
         non_service_row_group_size=args.non_service_row_group_size,
     )
+    if not args.skip_parquet_shards:
+        repo_root = Path(__file__).resolve().parent.parent
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
+        from scripts.shard_browser_corpus_parquets import shard_browser_corpus_parquets
+
+        shard_result = shard_browser_corpus_parquets(args.output_dir, max_rows=args.parquet_shard_max_rows)
+        result["parquet_shard_count"] = int(shard_result["shardCount"])
+        result["parquet_shards_manifest"] = str(shard_result["path"])
     print(json.dumps(result, indent=2))
 
 
