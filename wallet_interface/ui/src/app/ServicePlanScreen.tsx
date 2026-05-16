@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CalendarClock, ExternalLink, Plus, Save, Trash2 } from "lucide-react";
 import { Badge, Button, Field, Section, StatusBanner } from "../components/ui";
 import { ServicePlanSharingPanel } from "../components/services/ServicePlanSharingPanel";
-import { load211Documents, type CorpusDocument } from "../lib/graphrag";
+import { load211DocumentsByReference, type CorpusDocument } from "../lib/graphrag";
 import type { DisclosureRecipientDraft, SavedService, ServicePlan, WalletGrantReceipt } from "../models/abby";
 import {
   addTextDocument,
@@ -147,7 +147,7 @@ export function ServicePlanScreen({
     let canceled = false;
     setLoadState("loading");
     setLoadError("");
-    load211Documents()
+    load211DocumentsByReference(docId, { limit: 4 })
       .then((documentsState) => {
         if (canceled) return;
         const match =

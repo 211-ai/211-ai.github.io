@@ -2,7 +2,6 @@ import {
   load211Bm25,
   load211Bm25GeoShard,
   load211Bm25Slice,
-  load211Documents,
   load211DocumentsSlice,
   load211Embeddings,
   load211EmbeddingGeoShard,
@@ -31,6 +30,7 @@ import type {
   SearchFilters,
   SearchMode,
   SearchResult,
+  RetrievalGeoShardRecord,
 } from "./types";
 
 const STOP_WORDS = new Set([
@@ -98,54 +98,53 @@ export async function search211Corpus(
     mode,
     queryEmbedding: options.queryEmbedding,
     preferredClusterIds,
+    currentCoordinates: options.currentCoordinates,
   });
   if (serviceClusterResults.length >= limit) {
     return serviceClusterResults.slice(0, limit);
   }
 
-  const [keywordScores, vectorScores, geoScores] = await Promise.all([
-    mode !== "vector" ? keywordSearch211(trimmedQuery, candidateLimit) : Promise.resolve(new Map<string, number>()),
-    mode !== "keyword" && options.queryEmbedding
-      ? vectorSearch211(options.queryEmbedding, candidateLimit)
-      : Promise.resolve(new Map<string, number>()),
-    load211ServiceGeoIndex()
-      .then((index) => lookupGeoScores(trimmedQuery, index))
-      .catch(() => new Map<string, number>()),
-  ]);
-
-  const normalizedKeyword = normalizeScores(keywordScores);
-  const normalizedVector = normalizeScores(vectorScores);
-  const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys(), ...geoScores.keys()]);
-
-  const fullState = await load211Documents();
-  if (candidates.size === 0) {
-    for (const document of fullState.documents) {
-      if (
-        document.title.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
-        getServiceSearchMetadataText(document).toLowerCase().includes(trimmedQuery.toLowerCase())
-      ) {
-        candidates.add(document.doc_id);
-      }
-    }
+  const sparseServiceResults = await searchSparseServiceClusters(trimmedQuery, {
+    filters: options.filters,
+    limit,
+    candidateLimit,
+    mode,
+    queryEmbedding: options.queryEmbedding,
+    currentCoordinates: options.currentCoordinates,
+    preferredClusterIds,
+  });
+  if (sparseServiceResults.length >= limit) {
+    return mergeSearchResults(serviceClusterResults, sparseServiceResults, limit);
   }
 
-  const fullResults = rankSearchResults(
-    fullState.documents,
-    fullState.documentById,
-    candidates,
-    trimmedQuery,
-    options.filters,
+  const allServiceShardResults = await searchAllServiceGeoShards(trimmedQuery, {
+    filters: options.filters,
+    limit,
+    candidateLimit,
     mode,
-    normalizedKeyword,
-    normalizedVector,
-    geoScores,
-    options.currentCoordinates,
+    queryEmbedding: options.queryEmbedding,
+    currentCoordinates: options.currentCoordinates,
+  });
+  if (allServiceShardResults.length >= limit) {
+    return mergeSearchResults([...serviceClusterResults, ...sparseServiceResults], allServiceShardResults, limit);
+  }
+  if (isServiceOnlySearch(options.filters)) {
+    return mergeSearchResults([...serviceClusterResults, ...sparseServiceResults], allServiceShardResults, limit);
+  }
+
+  const sparseGraphResults = await searchSparseGraphDocuments(trimmedQuery, {
+    filters: options.filters,
+    limit,
+    candidateLimit,
+    mode,
+    preferredClusterIds,
+    currentCoordinates: options.currentCoordinates,
+  });
+  return mergeSearchResults(
+    [...serviceClusterResults, ...sparseServiceResults, ...allServiceShardResults],
+    sparseGraphResults,
     limit,
   );
-  if (serviceClusterResults.length === 0) {
-    return fullResults;
-  }
-  return mergeSearchResults(serviceClusterResults, fullResults, limit);
 }
 
 export async function keywordSearch211(query: string, limit = 200): Promise<Map<string, number>> {
@@ -269,29 +268,33 @@ async function keywordSearch211GeoShards(
   if (terms.length === 0) {
     return new Map();
   }
-  const parquetPayload = await load211Bm25Slice({ clusterIds, includeUnclusteredServices }).catch(() => null);
-  if (parquetPayload) {
-    const ranked: RankedScore[] = [];
-    for (const document of parquetPayload.documents) {
-      const score = scoreBm25Document(document, terms, parquetPayload.k1, parquetPayload.b, parquetPayload.avgdl);
-      if (score > 0) {
-        ranked.push({ docId: document.doc_id, score });
-      }
-    }
-    ranked.sort((left, right) => right.score - left.score);
-    return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
-  }
   const shardRecords = await resolveRetrievalGeoShardRecords(clusterIds, includeUnclusteredServices);
-  if (!shardRecords.length) {
+  if (shardRecords.length) {
+    try {
+      const ranked: RankedScore[] = [];
+      for (const payload of await Promise.all(shardRecords.map((record) => load211Bm25GeoShard(record.bm25Path)))) {
+        for (const document of payload.documents) {
+          const score = scoreBm25Document(document, terms, payload.k1, payload.b, payload.avgdl);
+          if (score > 0) {
+            ranked.push({ docId: document.doc_id, score });
+          }
+        }
+      }
+      ranked.sort((left, right) => right.score - left.score);
+      return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+    } catch (error) {
+      console.warn("211 BM25 geo shard load failed; falling back to parquet slice.", error);
+    }
+  }
+  const parquetPayload = await load211Bm25Slice({ clusterIds, includeUnclusteredServices }).catch(() => null);
+  if (!parquetPayload) {
     return new Map();
   }
   const ranked: RankedScore[] = [];
-  for (const payload of await Promise.all(shardRecords.map((record) => load211Bm25GeoShard(record.bm25Path)))) {
-    for (const document of payload.documents) {
-      const score = scoreBm25Document(document, terms, payload.k1, payload.b, payload.avgdl);
-      if (score > 0) {
-        ranked.push({ docId: document.doc_id, score });
-      }
+  for (const document of parquetPayload.documents) {
+    const score = scoreBm25Document(document, terms, parquetPayload.k1, parquetPayload.b, parquetPayload.avgdl);
+    if (score > 0) {
+      ranked.push({ docId: document.doc_id, score });
     }
   }
   ranked.sort((left, right) => right.score - left.score);
@@ -304,14 +307,116 @@ async function vectorSearch211GeoShards(
   includeUnclusteredServices: boolean,
   limit = 200,
 ): Promise<Map<string, number>> {
-  const parquetEmbeddings = await load211EmbeddingSlice({ clusterIds, includeUnclusteredServices }).catch(() => null);
-  if (parquetEmbeddings) {
-    return vectorSearchFromBundle(parquetEmbeddings.index, parquetEmbeddings.vectors, queryEmbedding, limit);
-  }
   const shardRecords = await resolveRetrievalGeoShardRecords(clusterIds, includeUnclusteredServices);
-  if (!shardRecords.length) {
+  const queryVector = queryEmbedding instanceof Float32Array ? queryEmbedding : new Float32Array(queryEmbedding);
+  const queryNorm = vectorNorm(queryVector);
+  if (queryNorm === 0) {
     return new Map();
   }
+
+  if (shardRecords.length) {
+    try {
+      const ranked: RankedScore[] = [];
+      const shardEmbeddings = await Promise.all(
+        shardRecords.map((record) => load211EmbeddingGeoShard(record.embeddingIndexPath, record.embeddingBinaryPath)),
+      );
+      for (const { index, vectors } of shardEmbeddings) {
+        if (queryVector.length !== index.dimension) {
+          throw new Error(`Query embedding dimension ${queryVector.length} did not match ${index.dimension}`);
+        }
+        const shardScores = rankEmbeddingBundle(index, vectors, queryVector, queryNorm);
+        ranked.push(...shardScores);
+      }
+      ranked.sort((left, right) => right.score - left.score);
+      return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+    } catch (error) {
+      console.warn("211 embedding geo shard load failed; falling back to parquet slice.", error);
+    }
+  }
+  const parquetEmbeddings = await load211EmbeddingSlice({ clusterIds, includeUnclusteredServices }).catch(() => null);
+  if (!parquetEmbeddings) {
+    return new Map();
+  }
+  return vectorSearchFromBundle(parquetEmbeddings.index, parquetEmbeddings.vectors, queryVector, limit);
+}
+
+async function searchAllServiceGeoShards(
+  query: string,
+  options: {
+    filters?: SearchFilters;
+    limit: number;
+    candidateLimit: number;
+    mode: SearchMode;
+    queryEmbedding?: Float32Array | number[];
+    currentCoordinates?: SearchCoordinates;
+  },
+): Promise<SearchResult[]> {
+  if (!isServiceOnlySearch(options.filters)) {
+    return [];
+  }
+  const [keywordScores, vectorScores, geoScores] = await Promise.all([
+    options.mode !== "vector"
+      ? keywordSearch211AllServiceGeoShards(query, options.candidateLimit)
+      : Promise.resolve(new Map<string, number>()),
+    options.mode !== "keyword" && options.queryEmbedding
+      ? vectorSearch211AllServiceGeoShards(options.queryEmbedding, options.candidateLimit)
+      : Promise.resolve(new Map<string, number>()),
+    load211ServiceGeoIndex()
+      .then((index) => lookupGeoScores(query, index))
+      .catch(() => new Map<string, number>()),
+  ]);
+  const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys(), ...geoScores.keys()]);
+  if (candidates.size === 0) {
+    return [];
+  }
+  const normalizedKeyword = normalizeScores(keywordScores);
+  const normalizedVector = normalizeScores(vectorScores);
+  const candidateDocIds = [...candidates].slice(0, options.candidateLimit);
+  const state = await load211DocumentsSlice({
+    docIds: candidateDocIds,
+    docTypes: ["service"],
+    limit: candidateDocIds.length,
+  });
+  return rankSearchResults(
+    state.documents,
+    state.documentById,
+    candidates,
+    query,
+    options.filters,
+    options.mode,
+    normalizedKeyword,
+    normalizedVector,
+    geoScores,
+    options.currentCoordinates,
+    options.limit,
+  );
+}
+
+async function keywordSearch211AllServiceGeoShards(query: string, limit = 200): Promise<Map<string, number>> {
+  const terms = tokenizeSearchText(query);
+  if (terms.length === 0) {
+    return new Map();
+  }
+  const shardRecords = await resolveAllRetrievalGeoShardRecords();
+  const ranked: RankedScore[] = [];
+  const shardPayloads = await mapInBatches(shardRecords, 6, (record) => load211Bm25GeoShard(record.bm25Path));
+  for (const payload of shardPayloads) {
+    for (const document of payload.documents) {
+      const score = scoreBm25Document(document, terms, payload.k1, payload.b, payload.avgdl);
+      if (score > 0) {
+        ranked.push({ docId: document.doc_id, score });
+      }
+    }
+  }
+  ranked.sort((left, right) => right.score - left.score);
+  return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
+}
+
+async function vectorSearch211AllServiceGeoShards(
+  queryEmbedding: Float32Array | number[],
+  limit = 200,
+): Promise<Map<string, number>> {
+  const shardRecords = await resolveAllRetrievalGeoShardRecords();
   const queryVector = queryEmbedding instanceof Float32Array ? queryEmbedding : new Float32Array(queryEmbedding);
   const queryNorm = vectorNorm(queryVector);
   if (queryNorm === 0) {
@@ -319,15 +424,14 @@ async function vectorSearch211GeoShards(
   }
 
   const ranked: RankedScore[] = [];
-  const shardEmbeddings = await Promise.all(
-    shardRecords.map((record) => load211EmbeddingGeoShard(record.embeddingIndexPath, record.embeddingBinaryPath)),
+  const shardEmbeddings = await mapInBatches(shardRecords, 4, (record) =>
+    load211EmbeddingGeoShard(record.embeddingIndexPath, record.embeddingBinaryPath),
   );
   for (const { index, vectors } of shardEmbeddings) {
     if (queryVector.length !== index.dimension) {
       throw new Error(`Query embedding dimension ${queryVector.length} did not match ${index.dimension}`);
     }
-    const shardScores = rankEmbeddingBundle(index, vectors, queryVector, queryNorm);
-    ranked.push(...shardScores);
+    ranked.push(...rankEmbeddingBundle(index, vectors, queryVector, queryNorm));
   }
   ranked.sort((left, right) => right.score - left.score);
   return new Map(ranked.slice(0, limit).map((row) => [row.docId, row.score]));
@@ -388,12 +492,7 @@ async function searchPreferredServiceClusters(
   const clusterPlans = buildClusterLoadPlans(options.preferredClusterIds);
   let bestResults: SearchResult[] = [];
   for (const plan of clusterPlans) {
-    const [state, keywordScores, vectorScores] = await Promise.all([
-      load211DocumentsSlice({
-        clusterIds: plan.clusterIds,
-        includeUnclusteredServices: plan.includeUnclusteredServices,
-        docTypes: ["service"],
-      }),
+    const [keywordScores, vectorScores] = await Promise.all([
       options.mode !== "vector"
         ? keywordSearch211GeoShards(query, plan.clusterIds, plan.includeUnclusteredServices, options.candidateLimit)
         : Promise.resolve(new Map<string, number>()),
@@ -409,6 +508,13 @@ async function searchPreferredServiceClusters(
     const normalizedKeyword = normalizeScores(keywordScores);
     const normalizedVector = normalizeScores(vectorScores);
     const candidates = new Set([...keywordScores.keys(), ...vectorScores.keys()]);
+    if (candidates.size === 0) {
+      continue;
+    }
+    const state = await load211DocumentsSlice({
+      docIds: [...candidates].slice(0, options.candidateLimit),
+      docTypes: ["service"],
+    });
     const results = rankSearchResults(
       state.documents,
       state.documentById,
@@ -432,6 +538,89 @@ async function searchPreferredServiceClusters(
   return bestResults;
 }
 
+async function searchSparseServiceClusters(
+  query: string,
+  options: {
+    filters?: SearchFilters;
+    limit: number;
+    candidateLimit: number;
+    mode: SearchMode;
+    queryEmbedding?: Float32Array | number[];
+    preferredClusterIds: number[];
+    currentCoordinates?: SearchCoordinates;
+  },
+): Promise<SearchResult[]> {
+  if (options.preferredClusterIds.length || !isServiceOnlySearch(options.filters)) {
+    return [];
+  }
+  const geoClusterResults = await search211GraphGeoClusters(query, { limit: 8 }).catch(() => []);
+  const clusterIds = dedupeIntegerList(geoClusterResults.map((result) => result.cluster.clusterId));
+  if (!clusterIds.length) {
+    return [];
+  }
+  return searchPreferredServiceClusters(query, {
+    filters: options.filters,
+    limit: options.limit,
+    candidateLimit: options.candidateLimit,
+    mode: options.mode,
+    queryEmbedding: options.queryEmbedding,
+    preferredClusterIds: clusterIds,
+    currentCoordinates: options.currentCoordinates,
+  });
+}
+
+async function searchSparseGraphDocuments(
+  query: string,
+  options: {
+    filters?: SearchFilters;
+    limit: number;
+    candidateLimit: number;
+    mode: SearchMode;
+    preferredClusterIds: number[];
+    currentCoordinates?: SearchCoordinates;
+  },
+): Promise<SearchResult[]> {
+  const communityResults = await search211GraphCommunities(query, {
+    limit: 12,
+    preferredClusterIds: options.preferredClusterIds,
+  }).catch(() => []);
+  const candidates = new Set<string>();
+  for (const result of communityResults) {
+    for (const docId of result.matchedDocIds) {
+      candidates.add(docId);
+      if (candidates.size >= options.candidateLimit) {
+        break;
+      }
+    }
+    if (candidates.size >= options.candidateLimit) {
+      break;
+    }
+  }
+  if (candidates.size === 0) {
+    return [];
+  }
+
+  const candidateDocIds = [...candidates];
+  const state = await load211DocumentsSlice({
+    docIds: candidateDocIds,
+    docTypes: options.filters?.docTypes,
+    limit: candidateDocIds.length,
+  });
+  return rankSearchResults(
+    state.documents,
+    state.documentById,
+    candidates,
+    query,
+    options.filters,
+    options.mode,
+    new Map(),
+    new Map(),
+    new Map(),
+    options.currentCoordinates,
+    options.limit,
+  );
+}
+
 async function resolveRetrievalGeoShardRecords(clusterIds: number[], includeUnclusteredServices: boolean) {
   const manifest = await load211RetrievalGeoShards();
   const shardIds = new Set<string>();
@@ -448,6 +637,23 @@ async function resolveRetrievalGeoShardRecords(clusterIds: number[], includeUncl
     }
   }
   return manifest.shards.filter((record) => shardIds.has(record.shardId));
+}
+
+async function resolveAllRetrievalGeoShardRecords(): Promise<RetrievalGeoShardRecord[]> {
+  const manifest = await load211RetrievalGeoShards();
+  return manifest.shards;
+}
+
+async function mapInBatches<T, R>(
+  items: T[],
+  batchSize: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let index = 0; index < items.length; index += batchSize) {
+    results.push(...(await Promise.all(items.slice(index, index + batchSize).map(mapper))));
+  }
+  return results;
 }
 
 function buildClusterLoadPlans(preferredClusterIds: number[]) {

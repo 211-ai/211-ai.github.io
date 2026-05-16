@@ -13,6 +13,7 @@ export interface DuckDbParquetQuery {
   clusterFilterDocTypes?: string[];
   docTypes?: string[];
   docIds?: string[];
+  documentReferences?: string[];
   serviceDocIds?: string[];
   limit?: number;
   orderBy?: string[];
@@ -77,6 +78,7 @@ function parquetQueryCacheKey(parquetUrl: string, query: DuckDbParquetQuery): st
     clusterFilterDocTypes: query.clusterFilterDocTypes || [],
     docTypes: query.docTypes || [],
     docIds: query.docIds || [],
+    documentReferences: query.documentReferences || [],
     serviceDocIds: query.serviceDocIds || [],
     limit: query.limit || 0,
     orderBy: query.orderBy || [],
@@ -278,6 +280,12 @@ function buildReadParquetQuery(parquetUrl: string, query: DuckDbParquetQuery): s
   }
   if (query.docIds?.length) {
     whereClauses.push(`doc_id IN (${query.docIds.map(sqlStringLiteral).join(", ")})`);
+  }
+  if (query.documentReferences?.length) {
+    const references = query.documentReferences.map(sqlStringLiteral).join(", ");
+    whereClauses.push(
+      `(doc_id IN (${references}) OR source_content_cid IN (${references}) OR source_page_cid IN (${references}))`,
+    );
   }
   if (query.serviceDocIds?.length) {
     whereClauses.push(`service_doc_id IN (${query.serviceDocIds.map(sqlStringLiteral).join(", ")})`);

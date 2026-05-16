@@ -4068,6 +4068,9 @@ def _run_indextts_gradio_tts(
         "model": os.getenv("WALLET_INDEXTTS_MODEL_NAME", "IndexTeam/IndexTTS-2-Demo"),
         "provider": "huggingface-zero-gpu-gradio",
         "billTo": os.getenv("WALLET_INDEXTTS_HF_BILL_TO") or os.getenv("IPFS_DATASETS_PY_HF_BILL_TO") or "publicus",
+        "referenceAudio": str(uploaded_reference.get("orig_name") or uploaded_reference.get("path") or "")
+        if isinstance(uploaded_reference, Mapping)
+        else "",
         "text": prompt,
     }
 

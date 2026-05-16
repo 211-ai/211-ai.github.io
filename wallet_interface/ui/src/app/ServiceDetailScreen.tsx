@@ -13,7 +13,7 @@ import {
   getServicePhones,
   getServiceTravelInfoText,
   load211ArtifactManifest,
-  load211Documents,
+  load211DocumentsByReference,
   load211GeneratedManifest,
   load211ServiceLocationsSlice,
   type CorpusDocument,
@@ -49,7 +49,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
     async function loadServiceDetail() {
       setState({ status: "loading", document: null, metadata: null, locations: [], error: "" });
       try {
-        const documentsState = await load211Documents();
+        const documentsState = await load211DocumentsByReference(docId, { limit: 4 });
         const [artifactManifestResult, generatedManifestResult] = await Promise.allSettled([
           load211ArtifactManifest(),
           load211GeneratedManifest(),

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, ExternalLink, RefreshCw } from "lucide-react";
-import { getServiceLocationLabel, load211Documents, type CorpusDocument } from "../../lib/graphrag";
+import { getServiceLocationLabel, load211DocumentsByReference, type CorpusDocument } from "../../lib/graphrag";
 import type { SavedService, ServicePlan } from "../../models/abby";
 import { Badge, Button, Section, StatusBanner } from "../ui";
 import { ServiceQuickActions } from "./ServiceQuickActions";
@@ -31,10 +31,22 @@ export function SavedServicesPanel({
       .filter((plan) => !serviceByDoc.has(plan.service_doc_id))
       .map((plan) => ({ service: undefined, plan }))
   ];
+  const serviceDocIds = useMemo(
+    () =>
+      [...new Set(rows.map(({ plan, service }) => service?.service_doc_id || plan?.service_doc_id || "").filter(Boolean))],
+    [rows]
+  );
+  const serviceDocIdKey = serviceDocIds.join("\u0000");
 
   useEffect(() => {
     let canceled = false;
-    load211Documents()
+    if (!serviceDocIds.length) {
+      setDocumentById(new Map());
+      return () => {
+        canceled = true;
+      };
+    }
+    load211DocumentsByReference(serviceDocIds, { docTypes: ["service"], limit: serviceDocIds.length })
       .then((state) => {
         if (!canceled) {
           setDocumentById(state.documentById);
@@ -44,7 +56,7 @@ export function SavedServicesPanel({
     return () => {
       canceled = true;
     };
-  }, []);
+  }, [serviceDocIdKey]);
 
   return (
     <Section

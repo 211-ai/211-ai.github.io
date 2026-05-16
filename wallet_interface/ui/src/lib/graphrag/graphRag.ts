@@ -37,7 +37,12 @@ export async function build211GraphRagEvidence(
     preferredClusterIds: options.preferredClusterIds,
     currentCoordinates: options.currentCoordinates,
   });
-  const related = await get211RelatedGraph(results.map((result) => result.docId));
+  const related = await get211RelatedGraph(results.map((result) => result.docId), {
+    maxDocIds: 3,
+    maxShards: 2,
+    maxNodes: 80,
+    maxEdges: 120,
+  });
   return {
     query,
     results,

@@ -127,6 +127,7 @@ export async function load211DocumentsSlice(query: DuckDbDocumentQuery = {}): Pr
     includeUnclusteredServices: Boolean(query.includeUnclusteredServices),
     docTypes: query.docTypes || [],
     docIds: query.docIds || [],
+    documentReferences: query.documentReferences || [],
     limit: query.limit || 0,
   });
   if (!documentSlicePromises.has(cacheKey)) {
@@ -136,6 +137,23 @@ export async function load211DocumentsSlice(query: DuckDbDocumentQuery = {}): Pr
     );
   }
   return documentSlicePromises.get(cacheKey)!;
+}
+
+export async function load211DocumentsByReference(
+  references: string | string[],
+  options: { docTypes?: string[]; limit?: number } = {},
+): Promise<CorpusState> {
+  const documentReferences = (Array.isArray(references) ? references : [references])
+    .map((reference) => reference.trim())
+    .filter(Boolean);
+  if (!documentReferences.length) {
+    return buildCorpusState([]);
+  }
+  return load211DocumentsSlice({
+    documentReferences,
+    docTypes: options.docTypes,
+    limit: options.limit || Math.max(documentReferences.length, 1),
+  });
 }
 
 export async function load211DocumentIndex(): Promise<CorpusDocumentIndex> {
@@ -242,14 +260,35 @@ export async function load211GraphNeighborhoodShard(path: string): Promise<Graph
 
 export async function get211RelatedGraph(
   docIds: string[],
+  options: {
+    maxDocIds?: number;
+    maxShards?: number;
+    maxNodes?: number;
+    maxEdges?: number;
+  } = {},
 ): Promise<{ nodes: GraphNode[]; edges: GraphEdge[] }> {
   const graphIndex = await load211GraphNeighborhoodIndex();
+  const maxDocIds = options.maxDocIds ?? 4;
+  const maxShards = options.maxShards ?? 2;
+  const maxNodes = options.maxNodes ?? 80;
+  const maxEdges = options.maxEdges ?? 120;
   const shardPaths = new Set<string>();
-  for (const docId of docIds) {
+  const selectedDocIds: string[] = [];
+  for (const docId of dedupeCorpusStringList(docIds)) {
+    if (selectedDocIds.length >= maxDocIds) {
+      break;
+    }
     const shardPath = graphIndex.docIdToShard[docId];
-    if (shardPath) {
+    if (!shardPath) {
+      continue;
+    }
+    if (!shardPaths.has(shardPath) && shardPaths.size >= maxShards) {
+      continue;
+    }
+    if (!shardPaths.has(shardPath)) {
       shardPaths.add(shardPath);
     }
+    selectedDocIds.push(docId);
   }
 
   const nodeById = new Map<string, GraphNode>();
@@ -257,18 +296,24 @@ export async function get211RelatedGraph(
   const shards = await Promise.all([...shardPaths].map((path) => load211GraphNeighborhoodShard(path)));
 
   for (const shard of shards) {
-    for (const docId of docIds) {
+    for (const docId of selectedDocIds) {
       const neighborhood = shard.neighborhoods[docId];
       if (!neighborhood) {
         continue;
       }
       for (const nodeId of neighborhood.node_ids) {
+        if (nodeById.size >= maxNodes) {
+          break;
+        }
         const node = shard.nodes[nodeId];
         if (node) {
           nodeById.set(nodeId, node);
         }
       }
       for (const edgeId of neighborhood.edge_ids) {
+        if (edgeById.size >= maxEdges) {
+          break;
+        }
         const edge = shard.edges[edgeId];
         if (edge) {
           edgeById.set(edgeId, edge);
@@ -807,6 +852,10 @@ function numberOrNull(value: unknown): number | null {
   }
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
+}
+
+function dedupeCorpusStringList(values: string[]): string[] {
+  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function resolveDefaultCorpusBaseUrl(): string {

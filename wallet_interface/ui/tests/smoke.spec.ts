@@ -934,7 +934,7 @@ test("proof center reviews proof certificates from a wallet QR screenshot", asyn
     });
   });
 
-  await page.route("https://w3s.link/ipfs/bafyproofbundlecid", async (route) => {
+  await page.route("**/ipfs-proxy/bafyproofbundlecid", async (route) => {
     await route.fulfill({
       json: {
         title: "Homeless services proof bundle",
@@ -1077,7 +1077,7 @@ test("wallet screen shows export and proof sharing tools", async ({ page }) => {
   await expect(legalAidExport.getByText(/Bundle hash/i)).toBeVisible();
   await expect(legalAidExport.getByText(/storage verified/i)).toBeVisible();
   await expect(legalAidExport.getByText(/import verified/i)).toBeVisible();
-  await expect(legalAidExport.getByRole("button", { name: /Import descriptors/i })).toBeDisabled();
+  await expect(legalAidExport.getByText(/Descriptors are already imported for this bundle/i)).toBeVisible();
   const benefitsExport = page.getByRole("article", { name: /Benefits help clinic/i });
   await expect(benefitsExport.getByText(/storage missing/i)).toBeVisible();
 });
@@ -1662,7 +1662,7 @@ test("wallet page renders a scannable proof QR that opens proof center review", 
       }
     });
   });
-  await page.route("https://w3s.link/ipfs/bafywalletproofbundlecid", async (route) => {
+  await page.route("**/ipfs-proxy/bafywalletproofbundlecid", async (route) => {
     await route.fulfill({
       json: {
         title: "Client wallet proof bundle",

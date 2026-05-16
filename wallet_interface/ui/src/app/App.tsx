@@ -3485,51 +3485,57 @@ function UploadsScreen({
 
   useEffect(() => {
     let cancelled = false;
-    if (!filecoinStorageConfig || !apiConfig?.walletId || !apiConfig.actorDid) {
+    if (!filecoinStorageConfig) {
       setWalletProofBundleCid("");
-      setWalletQrCodeUrl("");
       setWalletPublishedProofReviewUrl("");
-      setWalletQrStatus("failed");
+      if (walletProofReviewUrl.length <= 2500) {
+        setWalletQrStatus("loading");
+        void QRCode.toDataURL(walletProofReviewUrl, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 220
+        })
+          .then((qrCodeUrl) => {
+            if (!cancelled) {
+              setWalletQrCodeUrl(qrCodeUrl);
+              setWalletQrStatus("ready");
+            }
+          })
+          .catch(() => {
+            if (!cancelled) {
+              setWalletQrCodeUrl("");
+              setWalletQrStatus("failed");
+            }
+          });
+      } else {
+        setWalletQrCodeUrl("");
+        setWalletQrStatus("failed");
+      }
       return () => {
         cancelled = true;
       };
     }
 
     setWalletQrStatus("loading");
-    const walletRecordUploads = uploads.filter((upload) => upload.recordId);
-    void Promise.all(
-      walletRecordUploads.map(async (upload): Promise<WalletEncryptedRecordLink | undefined> => {
-        if (upload.ipfsCid) {
-          return {
-            cid: upload.ipfsCid,
-            fileName: upload.fileName,
-            links: [{ "/": upload.ipfsCid, name: "encrypted_record" }],
-            recordId: upload.recordId
-          };
-        }
-        const result = await uploadWalletRecordToFilecoinStorage(upload, {
-          clientConfig: filecoinStorageConfig,
-          walletConfig: apiConfig
-        });
-        const cid = result.root?.["/"] || result.ipfsCid || result.cid;
-        if (!cid) return undefined;
-        return {
-          cid,
-          fileName: upload.fileName,
-          links: result.ipldLinks,
-          recordId: result.recordId || upload.recordId,
-          root: result.root,
-          versionId: result.versionId
-        };
-      })
-    )
+    const walletRecordLinks: WalletEncryptedRecordLink[] = uploads
+      .filter((upload) => upload.recordId && upload.ipfsCid)
+      .map((upload) => ({
+        cid: upload.ipfsCid!,
+        fileName: upload.fileName,
+        links: upload.ipldLinks?.length
+          ? upload.ipldLinks
+          : [{ "/": upload.ipfsCid!, cid: upload.ipfsCid!, name: "encrypted_record" }],
+        recordId: upload.recordId,
+        root: upload.ipfsRootCid ? { "/": upload.ipfsRootCid } : { "/": upload.ipfsCid! }
+      }));
+    void Promise.resolve(walletRecordLinks)
       .then((recordLinks) =>
         uploadProofBundleToFilecoinStorage(
           buildWalletProofBundlePayload({
-            actorDid: apiConfig.actorDid,
+            actorDid: apiConfig?.actorDid,
             encryptedRecordLinks: recordLinks.filter((link): link is WalletEncryptedRecordLink => Boolean(link)),
             proofs: walletQrProofs,
-            walletId: apiConfig.walletId
+            walletId: apiConfig?.walletId
           }),
           {
             clientConfig: filecoinStorageConfig,
@@ -3565,7 +3571,7 @@ function UploadsScreen({
     return () => {
       cancelled = true;
     };
-  }, [apiConfig, filecoinStorageConfig, uploads, walletQrProofs]);
+  }, [apiConfig, filecoinStorageConfig, uploads, walletProofReviewUrl, walletQrProofs]);
 
   async function addUpload(file: File | null) {
     if (!file) return;
@@ -8359,10 +8365,14 @@ function ProofCenterScreen({
           </div>
           <Badge tone={apiConfig || reviewedQrProofs ? "success" : "warning"}>{activeModeLabel}</Badge>
         </div>
-        <div className="capability-preview" role="group" aria-label="Active wallet proof bundle summary">
+        <div
+          className="capability-preview"
+          role="group"
+          aria-label={reviewedQrProofs ? "QR proof bundle summary" : "Active wallet proof bundle summary"}
+        >
           <div className="scope-header">
             <div>
-              <h4>{activeWalletId || "Wallet not connected"}</h4>
+              <h4>{reviewedQrProofs?.bundleTitle || activeWalletId || "Wallet not connected"}</h4>
               <p>{activeSourceLabel}</p>
             </div>
             <Badge tone={activeVisibleProofs.length > 0 ? "success" : "warning"}>{activeVisibleProofs.length} claims</Badge>
@@ -8406,7 +8416,7 @@ function ProofCenterScreen({
           </label>
           <label className="upload-dropzone">
             <Camera aria-hidden="true" size={28} />
-            <span>Use camera</span>
+            <span>Take a picture with your camera</span>
             <small>Capture a wallet QR to temporarily inspect that wallet here.</small>
             <span className="upload-picker">
               <Camera aria-hidden="true" size={18} /> Open camera

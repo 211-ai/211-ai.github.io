@@ -2252,7 +2252,11 @@ function toUploadItemView(record: WalletRecordApiRecord): UploadItem {
     recordId: record.record_id,
     createdAt: formatTimestamp(record.created_at),
     createdAtRaw: record.created_at,
-    fileName: readMetadataString(metadata, "fileName") || readMetadataString(metadata, "filename") || labelFromResource(record.record_id),
+    fileName:
+      readMetadataString(metadata, "fileName") ||
+      readMetadataString(metadata, "filename") ||
+      record.public_descriptor ||
+      labelFromResource(record.record_id),
     machineSummary:
       readMetadataString(metadata, "machineSummary") ||
       readMetadataString(metadata, "title") ||

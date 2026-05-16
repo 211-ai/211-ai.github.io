@@ -47,7 +47,7 @@ services:
       WALLET_INDEXTTS_HF_TOKEN: ${WALLET_INDEXTTS_HF_TOKEN:-}
       WALLET_INDEXTTS_HF_BILL_TO: ${WALLET_INDEXTTS_HF_BILL_TO:-publicus}
       WALLET_INDEXTTS_MODEL_NAME: ${WALLET_INDEXTTS_MODEL_NAME:-IndexTeam/IndexTTS-2-Demo}
-      WALLET_INDEXTTS_REFERENCE_AUDIO_PATH: ${WALLET_INDEXTTS_REFERENCE_AUDIO_PATH:-}
+      WALLET_INDEXTTS_REFERENCE_AUDIO_PATH: ${WALLET_INDEXTTS_REFERENCE_AUDIO_PATH:-/opt/abby/voice/abby-reference.wav}
       WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH: ${WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH:-}
       WALLET_INDEXTTS_TIMEOUT_SECONDS: ${WALLET_INDEXTTS_TIMEOUT_SECONDS:-180}
       WALLET_HF_WHISPER_MODEL_NAME: ${WALLET_HF_WHISPER_MODEL_NAME:-openai/whisper-large-v3-turbo}
@@ -122,6 +122,7 @@ services:
     volumes:
       - wallet_state:/var/lib/211-ai
       - ${IPFS_DATASETS_SECRETS_DIR:-/home/barberb/.ipfs_datasets}:/root/.ipfs_datasets:ro
+      - ../../tmp_assets/abby-reference.wav:/opt/abby/voice/abby-reference.wav:ro
     depends_on:
       - sms-bridge
 
