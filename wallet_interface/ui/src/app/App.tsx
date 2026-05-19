@@ -77,6 +77,7 @@ import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../lib/
 import {
   buildWalletProofBundlePayload,
   buildWalletProofReviewUrl,
+  readQrValue,
   readWalletProofBundlePayloadFromUrl,
   reviewWalletProofBundleReference,
   reviewWalletProofQrScreenshot,
@@ -160,6 +161,8 @@ import {
   listWalletSavedServices,
   listWalletServiceInteractions,
   listWalletServicePlans,
+  loadLatestWalletRecoveryBundle,
+  loadWalletRecoveryBundleById,
   rejectAccessRequest,
   repairRecordStorage,
   revokeAccessRequest,
@@ -167,8 +170,10 @@ import {
   saveMissingPersonDeadDrop,
   saveWalletSnapshot,
   sendMissingPersonDeadDropEmail,
+  storeWalletRecoveryBundle,
   updateWalletRecordMetadata,
   verifyWalletSnapshot,
+  WalletMagicUcan,
   WalletSnapshotVerification,
   WalletApiConfig
 } from "../services/walletApi";
@@ -204,7 +209,9 @@ const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf
 const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
-const MAGIC_LOGIN_SMS_ENDPOINT = "/messaging/auth/magic-link/sms";
+const MAGIC_LOGIN_UCAN_KEY = "abby.magicLoginUcan.v1";
+const WALLET_RECOVERY_BUNDLE_CACHE_PREFIX = "abby.walletRecoveryBundle.v1.";
+const WALLET_DEVICE_RECOVERY_KEY_PREFIX = "abby.walletDeviceRecoveryKey.v1.";
 const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
 const DEFAULT_LOCAL_PRECINCT = "Local police precinct";
 const LOCAL_PRECINCT_OPTIONS = [DEFAULT_LOCAL_PRECINCT];
@@ -230,6 +237,7 @@ type LoginAuthResult = {
   portal: LoginPortal;
   contact: string;
   walletConfig?: WalletApiConfig;
+  ucan?: WalletMagicUcan;
 };
 
 type ServerMagicLoginResponse = {
@@ -243,6 +251,7 @@ type ServerMagicLoginResponse = {
     apiBaseUrl?: string;
     walletId?: string;
   };
+  ucan?: WalletMagicUcan;
 };
 
 const routeIcons: Record<RouteId, typeof Home> = {
@@ -584,22 +593,6 @@ function isValidLoginContact(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) || normalized.replace(/\D/g, "").length >= 10;
 }
 
-function isTelephoneLoginContact(value: string): boolean {
-  const normalized = normalizeLoginContact(value);
-  return !normalized.includes("@") && normalized.replace(/\D/g, "").length >= 10;
-}
-
-function resolveMagicLoginSmsEndpoint(): string {
-  const configured = (import.meta.env.VITE_MAGIC_LOGIN_SMS_ENDPOINT as string | undefined)?.trim();
-  if (configured) return configured;
-  if (typeof window !== "undefined") {
-    if (window.location.hostname === "211-ai.github.io") {
-      return `https://211-ai.com${MAGIC_LOGIN_SMS_ENDPOINT}`;
-    }
-  }
-  return MAGIC_LOGIN_SMS_ENDPOINT;
-}
-
 function resolveMagicLoginApiBaseUrl(): string {
   const configured = (import.meta.env.VITE_MAGIC_LOGIN_API_BASE_URL as string | undefined)?.trim();
   if (configured) return configured;
@@ -640,8 +633,8 @@ async function requestServerMagicLogin({
       wallet_id: walletConfig?.walletId ?? ""
     })
   });
-  const payload = (await response.json().catch(() => ({}))) as ServerMagicLoginResponse & { detail?: unknown };
-  if (!response.ok) {
+  const payload = (await response.json().catch(() => ({}))) as ServerMagicLoginResponse & { detail?: unknown; status?: string };
+  if (!response.ok || payload.status !== "sent") {
     throw new Error(typeof payload.detail === "string" ? payload.detail : `Magic link request failed (${response.status}).`);
   }
   return payload;
@@ -662,6 +655,7 @@ async function verifyServerMagicLogin(token: string): Promise<LoginAuthResult> {
   return {
     contact: payload.contact,
     portal: payload.portal,
+    ucan: payload.ucan,
     walletConfig: normalizeServerWalletConfig(payload.wallet_config)
   };
 }
@@ -669,40 +663,6 @@ async function verifyServerMagicLogin(token: string): Promise<LoginAuthResult> {
 function shouldAllowLocalMagicLoginFallback(): boolean {
   if (typeof window === "undefined") return false;
   return ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
-}
-
-async function sendMagicLoginSms({
-  magicLink,
-  oneTimePad,
-  portal,
-  toPhone
-}: {
-  magicLink: string;
-  oneTimePad: string;
-  portal: LoginPortal;
-  toPhone: string;
-}): Promise<void> {
-  const response = await fetch(resolveMagicLoginSmsEndpoint(), {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      expires_in_minutes: Math.ceil(MAGIC_LOGIN_TTL_MS / 60000),
-      magic_link: magicLink,
-      one_time_pad: oneTimePad,
-      portal,
-      to_phone: toPhone
-    })
-  });
-  if (!response.ok) {
-    let detail = "";
-    try {
-      const payload = (await response.json()) as { detail?: unknown };
-      detail = typeof payload.detail === "string" ? payload.detail : "";
-    } catch {
-      detail = "";
-    }
-    throw new Error(detail || `Text message delivery failed (${response.status}).`);
-  }
 }
 
 function randomBase64Url(byteLength: number): string {
@@ -719,6 +679,308 @@ function randomHex(byteLength: number): string {
   const bytes = new Uint8Array(byteLength);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function bytesToBase64Url(bytes: Uint8Array): string {
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function base64UrlToBytes(value: string): Uint8Array {
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
+  const binary = atob(padded);
+  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+}
+
+function bytesToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+}
+
+async function deriveRecoveryPassphraseKey(passphrase: string, salt: Uint8Array, iterations: number): Promise<CryptoKey> {
+  const baseKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(passphrase), "PBKDF2", false, [
+    "deriveKey"
+  ]);
+  return crypto.subtle.deriveKey(
+    {
+      hash: "SHA-256",
+      iterations,
+      name: "PBKDF2",
+      salt: bytesToArrayBuffer(salt)
+    },
+    baseKey,
+    { length: 256, name: "AES-GCM" },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
+async function sha256Base64Url(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return bytesToBase64Url(new Uint8Array(digest));
+}
+
+function walletDeviceRecoveryStorageKey(walletId: string): string {
+  return `${WALLET_DEVICE_RECOVERY_KEY_PREFIX}${walletId}`;
+}
+
+function readWalletDeviceRecoveryRawKey(walletId: string): Uint8Array | undefined {
+  if (typeof window === "undefined") return undefined;
+  const stored = window.localStorage.getItem(walletDeviceRecoveryStorageKey(walletId));
+  return stored ? base64UrlToBytes(stored) : undefined;
+}
+
+function storeWalletDeviceRecoveryRawKey(walletId: string, raw: Uint8Array): void {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(walletDeviceRecoveryStorageKey(walletId), bytesToBase64Url(raw));
+}
+
+async function getOrCreateWalletDeviceRecoveryRawKey(walletId: string): Promise<Uint8Array> {
+  const stored = readWalletDeviceRecoveryRawKey(walletId);
+  if (stored) return stored;
+  const raw = new Uint8Array(32);
+  crypto.getRandomValues(raw);
+  storeWalletDeviceRecoveryRawKey(walletId, raw);
+  return raw;
+}
+
+async function getOrCreateWalletDeviceRecoveryKey(walletId: string): Promise<CryptoKey> {
+  const raw = await getOrCreateWalletDeviceRecoveryRawKey(walletId);
+  return crypto.subtle.importKey("raw", bytesToArrayBuffer(raw), "AES-GCM", false, ["encrypt", "decrypt"]);
+}
+
+async function buildEncryptedRecoveryBundle({
+  actorDid,
+  contact,
+  key,
+  kdf,
+  walletContentKey,
+  walletId,
+  wrappedKey
+}: {
+  actorDid: string;
+  contact: string;
+  key: CryptoKey;
+  kdf?: Record<string, unknown>;
+  walletContentKey: Uint8Array;
+  walletId: string;
+  wrappedKey: string;
+}): Promise<{
+  encryptedBundle: Record<string, unknown>;
+  publicMetadata: Record<string, unknown>;
+}> {
+  const iv = new Uint8Array(12);
+  crypto.getRandomValues(iv);
+  const plaintext = new TextEncoder().encode(
+    JSON.stringify({
+      schema: "211-ai-wallet-recovery-secret-v1",
+      walletId,
+      actorDid,
+      walletContentKey: bytesToBase64Url(walletContentKey),
+      createdAt: new Date().toISOString(),
+      note: "Client-side recovery material. The service provider never receives this plaintext."
+    })
+  );
+  const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: bytesToArrayBuffer(iv) }, key, plaintext);
+  const contactHash = await sha256Base64Url(contact.trim().toLowerCase());
+  return {
+    encryptedBundle: {
+      schema: "211-ai-wallet-recovery-bundle-v1",
+      ciphertext: bytesToBase64Url(new Uint8Array(ciphertext)),
+      iv: bytesToBase64Url(iv),
+      algorithm: "AES-GCM",
+      wrappedKey,
+      kdf: kdf ?? {},
+      plaintextKeySentToServer: false
+    },
+    publicMetadata: {
+      contactHash,
+      recoveryMethods: [wrappedKey],
+      serverCanDecrypt: false,
+      containsPlaintextWalletKey: false
+    }
+  };
+}
+
+async function buildPassphraseWrappedRecoveryBundle({
+  actorDid,
+  contact,
+  passphrase,
+  walletId
+}: {
+  actorDid: string;
+  contact: string;
+  passphrase: string;
+  walletId: string;
+}): Promise<{
+  encryptedBundle: Record<string, unknown>;
+  kdf: Record<string, unknown>;
+  publicMetadata: Record<string, unknown>;
+}> {
+  const salt = new Uint8Array(16);
+  crypto.getRandomValues(salt);
+  const iterations = 310000;
+  const key = await deriveRecoveryPassphraseKey(passphrase, salt, iterations);
+  const walletContentKey = await getOrCreateWalletDeviceRecoveryRawKey(walletId);
+  const kdf = {
+    name: "PBKDF2",
+    hash: "SHA-256",
+    iterations,
+    salt: bytesToBase64Url(salt)
+  };
+  const bundle = await buildEncryptedRecoveryBundle({
+    actorDid,
+    contact,
+    key,
+    kdf,
+    walletContentKey,
+    walletId,
+    wrappedKey: "passphrase-pbkdf2-aes-gcm"
+  });
+  return { ...bundle, kdf };
+}
+
+async function decryptPassphraseRecoveryBundle(
+  bundle: Record<string, unknown>,
+  passphrase: string
+): Promise<{ actorDid?: string; walletContentKey: Uint8Array; walletId?: string }> {
+  const kdf = (bundle.kdf && typeof bundle.kdf === "object" ? bundle.kdf : {}) as Record<string, unknown>;
+  const salt = typeof kdf.salt === "string" ? base64UrlToBytes(kdf.salt) : undefined;
+  const iterations = typeof kdf.iterations === "number" ? kdf.iterations : 310000;
+  const ciphertext = typeof bundle.ciphertext === "string" ? base64UrlToBytes(bundle.ciphertext) : undefined;
+  const iv = typeof bundle.iv === "string" ? base64UrlToBytes(bundle.iv) : undefined;
+  if (!salt || !ciphertext || !iv) {
+    throw new Error("The recovery bundle is missing passphrase recovery metadata.");
+  }
+  const key = await deriveRecoveryPassphraseKey(passphrase, salt, iterations);
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: bytesToArrayBuffer(iv) },
+    key,
+    bytesToArrayBuffer(ciphertext)
+  );
+  const payload = JSON.parse(new TextDecoder().decode(decrypted)) as {
+    actorDid?: string;
+    walletContentKey?: string;
+    walletId?: string;
+  };
+  if (!payload.walletContentKey) {
+    throw new Error("The recovery bundle did not contain a wallet key.");
+  }
+  return {
+    actorDid: payload.actorDid,
+    walletContentKey: base64UrlToBytes(payload.walletContentKey),
+    walletId: payload.walletId
+  };
+}
+
+function readCachedRecoveryBundle(walletId: string): Record<string, unknown> | undefined {
+  if (typeof window === "undefined") return undefined;
+  const raw = window.localStorage.getItem(`${WALLET_RECOVERY_BUNDLE_CACHE_PREFIX}${walletId}`);
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as { bundle?: { encrypted_bundle?: Record<string, unknown> } };
+    return parsed.bundle?.encrypted_bundle;
+  } catch {
+    return undefined;
+  }
+}
+
+function readMagicLoginUcan(): WalletMagicUcan | undefined {
+  if (typeof window === "undefined") return undefined;
+  const raw = window.localStorage.getItem(MAGIC_LOGIN_UCAN_KEY);
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as WalletMagicUcan;
+    return parsed?.token ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+type WalletRecoveryQrPayload = {
+  apiBaseUrl?: string;
+  bundleId: string;
+  passphrase?: string;
+  schema: "211-ai-wallet-recovery-qr-v1";
+  serverCanDecrypt: false;
+  containsRecoverySecret?: true;
+  walletId: string;
+  wrappingMethod?: string;
+};
+
+function buildWalletRecoveryQrPayload(
+  config: WalletApiConfig,
+  bundleId: string,
+  wrappingMethod?: string,
+  passphrase?: string
+): WalletRecoveryQrPayload {
+  return {
+    apiBaseUrl: config.apiBaseUrl,
+    bundleId,
+    containsRecoverySecret: passphrase ? true : undefined,
+    passphrase: passphrase || undefined,
+    schema: "211-ai-wallet-recovery-qr-v1",
+    serverCanDecrypt: false,
+    walletId: config.walletId,
+    wrappingMethod
+  };
+}
+
+function parseWalletRecoveryQrPayload(value: string): WalletRecoveryQrPayload {
+  const parsed = JSON.parse(value) as Partial<WalletRecoveryQrPayload>;
+  if (
+    parsed.schema !== "211-ai-wallet-recovery-qr-v1" ||
+    !parsed.walletId ||
+    !parsed.bundleId ||
+    parsed.serverCanDecrypt !== false
+  ) {
+    throw new Error("That QR is not a supported Abby wallet recovery QR.");
+  }
+  return parsed as WalletRecoveryQrPayload;
+}
+
+async function buildClientWrappedRecoveryBundle({
+  actorDid,
+  contact,
+  walletId
+}: {
+  actorDid: string;
+  contact: string;
+  walletId: string;
+}): Promise<{
+  encryptedBundle: Record<string, unknown>;
+  publicMetadata: Record<string, unknown>;
+}> {
+  const walletContentKey = await getOrCreateWalletDeviceRecoveryRawKey(walletId);
+  const deviceKey = await getOrCreateWalletDeviceRecoveryKey(walletId);
+  return buildEncryptedRecoveryBundle({
+    actorDid,
+    contact,
+    key: deviceKey,
+    walletContentKey,
+    walletId,
+    wrappedKey: "device-local-aes-gcm-key"
+  });
+}
+
+async function cacheEncryptedRecoveryBundleFromMagicLogin(walletConfig: WalletApiConfig, ucan: WalletMagicUcan): Promise<void> {
+  if (!ucan.token || typeof window === "undefined") return;
+  const response = await loadLatestWalletRecoveryBundle(walletConfig, ucan.token);
+  window.localStorage.setItem(
+    `${WALLET_RECOVERY_BUNDLE_CACHE_PREFIX}${walletConfig.walletId}`,
+    JSON.stringify({
+      cachedAt: new Date().toISOString(),
+      bundle: response.bundle,
+      privacy: response.privacy,
+      ucan: {
+        audience: ucan.audience,
+        expires_at: ucan.expires_at,
+        profile: ucan.profile
+      }
+    })
+  );
 }
 
 function randomOneTimePad(length = 6): string {
@@ -1298,6 +1560,7 @@ export function App() {
     setMobileNavOpen(false);
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(APP_SESSION_KEY);
+      window.localStorage.removeItem(MAGIC_LOGIN_UCAN_KEY);
       window.location.hash = "#/";
     }
   }
@@ -1315,9 +1578,19 @@ export function App() {
           handleSignIn("abby");
           openAgentChatMode("audio");
         }}
-        onAuthenticated={({ contact, portal, walletConfig }) => {
+        onAuthenticated={({ contact, portal, ucan, walletConfig }) => {
           if (walletConfig) {
             persistWalletApiConfig(walletConfig);
+          }
+          if (ucan && typeof window !== "undefined") {
+            window.localStorage.setItem(MAGIC_LOGIN_UCAN_KEY, JSON.stringify(ucan));
+          }
+          if (walletConfig && ucan) {
+            void cacheEncryptedRecoveryBundleFromMagicLogin(walletConfig, ucan).catch((error) => {
+              if (import.meta.env.DEV) {
+                console.warn("Encrypted recovery bundle was not available for this magic-link login", error);
+              }
+            });
           }
           handleSignIn(`${portal}:${contact}`);
           navigate(portal === "provider" ? "shelter" : "home");
@@ -1928,26 +2201,7 @@ function LoginScreen({
       const magicLink = magicUrl.toString();
       setChallenge({ ...payload, oneTimePad, magicLink });
       setOneTimePadEntry("");
-      if (isTelephoneLoginContact(contact)) {
-        try {
-          await sendMagicLoginSms({
-            magicLink,
-            oneTimePad,
-            portal,
-            toPhone: normalizedContact
-          });
-          setLoginMessage("We texted your one-time Abby login link and code.");
-        } catch (error) {
-          setLoginSmsWarning(
-            error instanceof Error
-              ? `We could not send the text message yet: ${error.message}`
-              : "We could not send the text message yet."
-          );
-          setLoginMessage("One-time access is ready on this screen.");
-        }
-      } else {
-        setLoginMessage("One-time access is ready.");
-      }
+      setLoginMessage("One-time access is ready on this screen.");
     } finally {
       setPending(false);
     }
@@ -2055,7 +2309,7 @@ function LoginScreen({
           />
         </Field>
         <Button disabled={!canRequestChallenge || pending} loading={pending} loadingLabel="Preparing access" type="submit">
-          <KeyRound aria-hidden="true" size={18} /> Send code or magic link
+          <KeyRound aria-hidden="true" size={18} /> Send sign-in link
         </Button>
         {loginError ? <StatusBanner tone="danger">{loginError}</StatusBanner> : null}
         {loginSmsWarning ? <StatusBanner tone="warning">{loginSmsWarning}</StatusBanner> : null}
@@ -2087,8 +2341,7 @@ function LoginScreen({
               </a>
             </div>
             <p className="login-proof-note">
-              Login proof: SHA-256(timestamp + contact + one-time salt). Production should sign this proof with a
-              server-held key before sending the code or link.
+              Local development fallback only. Production links are signed by the server before delivery.
             </p>
           </div>
         ) : null}
@@ -3669,6 +3922,11 @@ function UploadsScreen({
   const [walletPublishedProofReviewUrl, setWalletPublishedProofReviewUrl] = useState("");
   const [walletCreateStatus, setWalletCreateStatus] = useState<"idle" | "creating" | "created" | "failed">("idle");
   const [walletCreateError, setWalletCreateError] = useState("");
+  const [recoveryPassphrase, setRecoveryPassphrase] = useState("");
+  const [recoveryStatus, setRecoveryStatus] = useState<"idle" | "saving" | "unlocking" | "ready" | "failed">("idle");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
+  const [recoveryQrCodeUrl, setRecoveryQrCodeUrl] = useState("");
+  const [recoveryQrPayloadLabel, setRecoveryQrPayloadLabel] = useState("");
   const walletQrProofs = useMemo(() => visibleProofCenterProofs(proofs), [proofs]);
   const walletProofBundlePayload = useMemo(
     () => buildWalletProofBundlePayload({ actorDid: apiConfig?.actorDid, proofs: walletQrProofs, walletId: apiConfig?.walletId }),
@@ -4256,6 +4514,10 @@ function UploadsScreen({
     });
   }
 
+  function walletLoginContact() {
+    return signedInUser.includes(":") ? signedInUser.split(":").slice(1).join(":") : signedInUser;
+  }
+
   async function generateWallet() {
     if (!apiBaseUrl) return;
     setWalletCreateStatus("creating");
@@ -4265,17 +4527,168 @@ function UploadsScreen({
 
     try {
       const wallet = await createWallet({ apiBaseUrl, ownerDid });
-      setApiConfig({
+      const nextConfig = {
         apiBaseUrl,
         walletId: wallet.wallet_id,
         actorDid: wallet.owner_did,
         issuerKeyHex,
         audienceKeyHex: undefined
-      });
+      };
+      setApiConfig(nextConfig);
+      try {
+        const recoveryBundle = await buildClientWrappedRecoveryBundle({
+          actorDid: wallet.owner_did,
+          contact: walletLoginContact(),
+          walletId: wallet.wallet_id
+        });
+        await storeWalletRecoveryBundle(nextConfig, {
+          encryptedBundle: recoveryBundle.encryptedBundle,
+          publicMetadata: recoveryBundle.publicMetadata,
+          recoveryHint: "This wallet recovery bundle is encrypted to this browser's local recovery key.",
+          wrappingMethod: "device-local-key"
+        });
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn("Client-side wallet recovery bundle could not be stored", error);
+        }
+      }
       setWalletCreateStatus("created");
     } catch (error) {
       setWalletCreateStatus("failed");
       setWalletCreateError(error instanceof Error ? error.message : "Wallet generation failed.");
+    }
+  }
+
+  async function savePassphraseRecoveryBundle() {
+    if (!apiConfig?.actorDid || !recoveryPassphrase.trim()) return;
+    setRecoveryStatus("saving");
+    setRecoveryMessage("");
+    try {
+      const bundle = await buildPassphraseWrappedRecoveryBundle({
+        actorDid: apiConfig.actorDid,
+        contact: walletLoginContact(),
+        passphrase: recoveryPassphrase,
+        walletId: apiConfig.walletId
+      });
+      const response = await storeWalletRecoveryBundle(apiConfig, {
+        encryptedBundle: bundle.encryptedBundle,
+        kdf: bundle.kdf,
+        publicMetadata: {
+          ...bundle.publicMetadata,
+          recoveryMethods: ["passphrase-pbkdf2-aes-gcm"]
+        },
+        recoveryHint: "Passphrase recovery bundle. The passphrase and wallet key are never sent to 211 AI.",
+        wrappingMethod: "passphrase"
+      });
+      const recoveryQrPayload = buildWalletRecoveryQrPayload(
+        apiConfig,
+        response.bundle.bundle_id,
+        "passphrase",
+        recoveryPassphrase
+      );
+      const recoveryQrText = JSON.stringify(recoveryQrPayload);
+      setRecoveryQrPayloadLabel(response.bundle.bundle_id);
+      setRecoveryQrCodeUrl(
+        await QRCode.toDataURL(recoveryQrText, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 220
+        })
+      );
+      setRecoveryStatus("ready");
+      setRecoveryMessage("Passphrase recovery and recovery QR are ready for this wallet.");
+    } catch (error) {
+      setRecoveryStatus("failed");
+      setRecoveryMessage(error instanceof Error ? error.message : "Passphrase recovery setup failed.");
+    }
+  }
+
+  async function importRecoveryQr(file: File | null) {
+    if (!file) return;
+    const ucan = readMagicLoginUcan();
+    if (!ucan?.token) {
+      setRecoveryStatus("failed");
+      setRecoveryMessage("Open a magic link first so this browser has a recovery UCAN.");
+      return;
+    }
+    setRecoveryStatus("unlocking");
+    setRecoveryMessage("");
+    try {
+      const qrValue = await readQrValue(file);
+      const payload = parseWalletRecoveryQrPayload(qrValue);
+      const config = {
+        ...(apiConfig ?? {
+          apiBaseUrl: payload.apiBaseUrl || resolveMagicLoginApiBaseUrl(),
+          walletId: payload.walletId
+        }),
+        apiBaseUrl: payload.apiBaseUrl || apiConfig?.apiBaseUrl || resolveMagicLoginApiBaseUrl(),
+        walletId: payload.walletId
+      };
+      const response = await loadWalletRecoveryBundleById(config, payload.bundleId, ucan.token);
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(
+          `${WALLET_RECOVERY_BUNDLE_CACHE_PREFIX}${payload.walletId}`,
+          JSON.stringify({
+            cachedAt: new Date().toISOString(),
+            bundle: response.bundle,
+            privacy: response.privacy,
+            source: "magic-link-plus-qr",
+            ucan: {
+              audience: ucan.audience,
+              expires_at: ucan.expires_at,
+              profile: ucan.profile
+            }
+          })
+        );
+      }
+      if (!apiConfig) {
+        setApiConfig(config);
+      }
+      setRecoveryQrPayloadLabel(payload.bundleId);
+      if (payload.passphrase) {
+        const recovered = await decryptPassphraseRecoveryBundle(response.bundle.encrypted_bundle, payload.passphrase);
+        if (recovered.walletId && recovered.walletId !== config.walletId) {
+          throw new Error("The recovery bundle belongs to a different wallet.");
+        }
+        storeWalletDeviceRecoveryRawKey(config.walletId, recovered.walletContentKey);
+        if (recovered.actorDid && recovered.actorDid !== config.actorDid) {
+          setApiConfig({ ...config, actorDid: recovered.actorDid });
+        }
+        setRecoveryPassphrase("");
+        setRecoveryStatus("ready");
+        setRecoveryMessage("Recovery QR unlocked the wallet locally. Keep that QR private; it contains the recovery passphrase.");
+        return;
+      }
+      setRecoveryStatus("ready");
+      setRecoveryMessage("Recovery QR imported. Enter the passphrase, then unlock cached recovery.");
+    } catch (error) {
+      setRecoveryStatus("failed");
+      setRecoveryMessage(error instanceof Error ? error.message : "Recovery QR import failed.");
+    }
+  }
+
+  async function unlockCachedPassphraseRecoveryBundle() {
+    if (!apiConfig || !recoveryPassphrase.trim()) return;
+    setRecoveryStatus("unlocking");
+    setRecoveryMessage("");
+    try {
+      const bundle = readCachedRecoveryBundle(apiConfig.walletId);
+      if (!bundle) {
+        throw new Error("No encrypted recovery bundle is cached yet. Open a magic link for this wallet first.");
+      }
+      const recovered = await decryptPassphraseRecoveryBundle(bundle, recoveryPassphrase);
+      if (recovered.walletId && recovered.walletId !== apiConfig.walletId) {
+        throw new Error("The recovery bundle belongs to a different wallet.");
+      }
+      storeWalletDeviceRecoveryRawKey(apiConfig.walletId, recovered.walletContentKey);
+      if (recovered.actorDid && recovered.actorDid !== apiConfig.actorDid) {
+        setApiConfig({ ...apiConfig, actorDid: recovered.actorDid });
+      }
+      setRecoveryStatus("ready");
+      setRecoveryMessage("Wallet recovery key restored locally. The server did not receive the passphrase or wallet key.");
+    } catch (error) {
+      setRecoveryStatus("failed");
+      setRecoveryMessage(error instanceof Error ? error.message : "Wallet recovery failed.");
     }
   }
 
@@ -4335,6 +4748,101 @@ function UploadsScreen({
           >
             <Archive size={18} /> {walletCreateStatus === "creating" ? "Generating" : "Generate new wallet"}
           </Button>
+        </div>
+        <div className="wallet-recovery-panel">
+          <div>
+            <strong>Passwordless recovery</strong>
+            <small>
+              Magic links can authorize fetching encrypted recovery material. A passphrase can unlock it locally on a new
+              device without sharing the wallet key with 211 AI.
+            </small>
+          </div>
+          <Field label="Recovery passphrase">
+            <input
+              autoComplete="new-password"
+              disabled={!apiConfig}
+              onChange={(event) => {
+                setRecoveryPassphrase(event.target.value);
+                setRecoveryMessage("");
+                setRecoveryStatus("idle");
+              }}
+              placeholder="Choose or enter your recovery passphrase"
+              type="password"
+              value={recoveryPassphrase}
+            />
+          </Field>
+          <div className="row-actions">
+            <Button
+              disabled={!apiConfig?.actorDid || recoveryPassphrase.trim().length < 8 || recoveryStatus === "saving"}
+              loading={recoveryStatus === "saving"}
+              loadingLabel="Saving recovery"
+              onClick={() => void savePassphraseRecoveryBundle()}
+              type="button"
+              variant="secondary"
+            >
+              <LockKeyhole size={18} /> Save passphrase recovery
+            </Button>
+            <Button
+              disabled={!apiConfig || recoveryPassphrase.trim().length < 8 || recoveryStatus === "unlocking"}
+              loading={recoveryStatus === "unlocking"}
+              loadingLabel="Unlocking"
+              onClick={() => void unlockCachedPassphraseRecoveryBundle()}
+              type="button"
+              variant="secondary"
+            >
+              <KeyRound size={18} /> Unlock cached recovery
+            </Button>
+          </div>
+          <div className="wallet-recovery-qr-grid">
+            {recoveryQrCodeUrl ? (
+              <img
+                alt="Wallet recovery QR code"
+                className="wallet-proof-qr-image"
+                height={180}
+                src={recoveryQrCodeUrl}
+                width={180}
+              />
+            ) : (
+              <div className="wallet-proof-qr-placeholder">Save passphrase recovery to generate a recovery QR.</div>
+            )}
+            <div className="wallet-recovery-qr-actions">
+              <strong>Magic link + QR recovery</strong>
+              <small>
+                The QR contains the recovery passphrase and identifies the encrypted bundle. The magic link authorizes
+                fetching it; the QR or a typed passphrase unlocks it locally.
+              </small>
+              <div className="disclosure-package">
+                <div className="disclosure-row">
+                  <strong>Recovery bundle</strong>
+                  <span>{recoveryQrPayloadLabel || "No recovery QR generated yet"}</span>
+                </div>
+                <div className="disclosure-row">
+                  <strong>Server access</strong>
+                  <span>Encrypted bundle only; no passphrase or plaintext wallet key</span>
+                </div>
+                <div className="disclosure-row">
+                  <strong>QR access</strong>
+                  <span>Contains recovery passphrase; store it like a wallet backup</span>
+                </div>
+              </div>
+              <label className="button button-secondary">
+                <Camera aria-hidden="true" size={18} /> Import recovery QR
+                <input
+                  accept={PROOF_QR_IMAGE_ACCEPT_ATTR}
+                  aria-label="Import recovery QR picture"
+                  className="sr-only"
+                  onChange={(event) => {
+                    void importRecoveryQr(event.target.files?.[0] ?? null);
+                    event.currentTarget.value = "";
+                  }}
+                  type="file"
+                />
+              </label>
+            </div>
+          </div>
+          {recoveryMessage ? (
+            <StatusBanner tone={recoveryStatus === "failed" ? "warning" : "success"}>{recoveryMessage}</StatusBanner>
+          ) : null}
         </div>
       </Section>
       <Section

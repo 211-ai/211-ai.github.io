@@ -239,7 +239,7 @@ async function signInIfNeeded(page: Page, username = "abby"): Promise<void> {
   }
   await page.getByRole("button", { name: /^Client$/i }).click();
   await contactField.fill(`${username.replace(/[^a-z0-9]+/gi, ".").replace(/^\.+|\.+$/g, "") || "abby"}@example.org`);
-  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
   const oneTimePad = (await page.locator('code[aria-label="Generated one-time pad code"]').innerText()).trim();
   await page.getByRole("textbox", { name: /One-time pad number/i }).fill(oneTimePad);
   await page.getByRole("button", { name: /Verify code/i }).click();

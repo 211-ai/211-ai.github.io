@@ -33,7 +33,7 @@ async function signInIfNeeded(page: Page) {
 
   await page.getByRole("button", { name: /^Client$/i }).click();
   await contact.fill("abby@example.org");
-  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
   const oneTimePad = (await page.locator('code[aria-label="Generated one-time pad code"]').innerText()).trim();
   await page.getByRole("textbox", { name: /One-time pad number/i }).fill(oneTimePad);
   await page.getByRole("button", { name: /Verify code/i }).click();
@@ -71,13 +71,13 @@ test("login page appears before the home screen", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
 });
 
-test("telephone login sends a magic link text message", async ({ page }) => {
-  const smsRequests: unknown[] = [];
-  await page.route("**/messaging/auth/magic-link/sms", async (route: Route) => {
-    smsRequests.push(route.request().postDataJSON());
+test("telephone login requests a server-signed magic link text message", async ({ page }) => {
+  const magicLinkRequests: unknown[] = [];
+  await page.route("**/auth/magic-link/request", async (route: Route) => {
+    magicLinkRequests.push(route.request().postDataJSON());
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ status: "ok", provider_status: "queued", provider_message_id: "mock-login-sms" })
+      body: JSON.stringify({ status: "sent", channel: "sms", provider_status: "queued", provider_message_id: "mock-login-sms" })
     });
   });
 
@@ -85,16 +85,14 @@ test("telephone login sends a magic link text message", async ({ page }) => {
   await expectLoginForm(page);
   await page.getByRole("button", { name: /^Client$/i }).click();
   await page.getByLabel(/Email address or telephone/i).fill("(503) 555-0199");
-  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
 
-  await expect(page.getByText(/We texted your one-time Abby login link and code/i)).toBeVisible();
-  expect(smsRequests).toHaveLength(1);
-  expect(smsRequests[0]).toMatchObject({
-    to_phone: "5035550199",
+  await expect(page.getByText(/We texted your Abby sign-in link/i)).toBeVisible();
+  expect(magicLinkRequests).toHaveLength(1);
+  expect(magicLinkRequests[0]).toMatchObject({
+    contact: "5035550199",
     portal: "client"
   });
-  expect((smsRequests[0] as { magic_link?: string }).magic_link).toContain("abbyLogin=");
-  expect((smsRequests[0] as { one_time_pad?: string }).one_time_pad).toMatch(/^\d{6}$/);
 });
 
 test("desktop sidebar keeps legal links at the bottom", async ({ page }) => {

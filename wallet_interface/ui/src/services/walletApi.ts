@@ -461,6 +461,46 @@ export interface WalletApiConfig {
   audienceKeyHex?: string;
 }
 
+export interface WalletMagicUcan {
+  profile: string;
+  issuer?: string;
+  audience?: string;
+  token: string;
+  capabilities: Array<{ can: string; with: string }>;
+  expires_at: number;
+  caveats?: Record<string, unknown>;
+}
+
+export interface WalletRecoveryBundle {
+  bundle_id: string;
+  wallet_id: string;
+  actor_did: string;
+  encrypted_bundle: Record<string, unknown>;
+  wrapping_method: string;
+  kdf: Record<string, unknown>;
+  recovery_hint: string;
+  public_metadata: Record<string, unknown>;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WalletRecoveryBundleResponse {
+  bundle: WalletRecoveryBundle;
+  privacy: {
+    server_can_decrypt: boolean;
+    plaintext_wallet_key_received?: boolean;
+    plaintext_wallet_key_returned?: boolean;
+    authorization_model?: string;
+  };
+  ucan?: {
+    profile: string;
+    audience: string;
+    capabilities: unknown[];
+    expires_at: number;
+  };
+}
+
 export interface WalletAiRouterRateLimit {
   limit?: number;
   remaining?: number;
@@ -1774,6 +1814,65 @@ export async function setWalletRecoveryPolicy(
     contact_dids: contactDids,
     threshold
   });
+}
+
+export async function storeWalletRecoveryBundle(
+  config: WalletApiConfig,
+  {
+    encryptedBundle,
+    kdf,
+    publicMetadata,
+    recoveryHint,
+    wrappingMethod
+  }: {
+    encryptedBundle: Record<string, unknown>;
+    kdf?: Record<string, unknown>;
+    publicMetadata?: Record<string, unknown>;
+    recoveryHint?: string;
+    wrappingMethod: string;
+  }
+): Promise<WalletRecoveryBundleResponse> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-bundles`, normalizedBaseUrl(config.apiBaseUrl));
+  return postJson<WalletRecoveryBundleResponse>(url, "Wallet recovery bundle", {
+    actor_did: requiredActorDid(config),
+    encrypted_bundle: encryptedBundle,
+    kdf: kdf ?? {},
+    public_metadata: publicMetadata ?? {},
+    recovery_hint: recoveryHint ?? "",
+    wrapping_method: wrappingMethod
+  });
+}
+
+export async function loadLatestWalletRecoveryBundle(
+  config: WalletApiConfig,
+  magicUcanToken: string
+): Promise<WalletRecoveryBundleResponse> {
+  const url = new URL(`/wallets/${config.walletId}/recovery-bundles/latest`, normalizedBaseUrl(config.apiBaseUrl));
+  const response = await fetch(url, {
+    headers: { authorization: `Bearer ${magicUcanToken}` }
+  });
+  if (!response.ok) {
+    throw new Error(`Wallet recovery bundle request failed with status ${response.status}`);
+  }
+  return (await response.json()) as WalletRecoveryBundleResponse;
+}
+
+export async function loadWalletRecoveryBundleById(
+  config: WalletApiConfig,
+  bundleId: string,
+  magicUcanToken: string
+): Promise<WalletRecoveryBundleResponse> {
+  const url = new URL(
+    `/wallets/${config.walletId}/recovery-bundles/${encodeURIComponent(bundleId)}`,
+    normalizedBaseUrl(config.apiBaseUrl)
+  );
+  const response = await fetch(url, {
+    headers: { authorization: `Bearer ${magicUcanToken}` }
+  });
+  if (!response.ok) {
+    throw new Error(`Wallet recovery bundle request failed with status ${response.status}`);
+  }
+  return (await response.json()) as WalletRecoveryBundleResponse;
 }
 
 export async function recoverWalletController(

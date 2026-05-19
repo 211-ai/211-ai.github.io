@@ -36,6 +36,7 @@ RUN apt-get update \
 COPY ipfs_datasets_py /app/ipfs_datasets_py
 RUN mkdir -p /app/wallet_interface
 COPY wallet_interface/*.py /app/wallet_interface/
+COPY wallet_interface/hmis /app/wallet_interface/hmis
 
 RUN python -m pip install --no-cache-dir --no-deps -e /app/ipfs_datasets_py
 

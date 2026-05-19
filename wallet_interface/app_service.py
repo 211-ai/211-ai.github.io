@@ -960,6 +960,52 @@ class PhoneCallNotificationRecord:
 
 
 @dataclass
+class WalletRecoveryBundleRecord:
+    bundle_id: str
+    wallet_id: str
+    actor_did: str = ""
+    encrypted_bundle: Dict[str, Any] = field(default_factory=dict)
+    wrapping_method: str = "passphrase"
+    kdf: Dict[str, Any] = field(default_factory=dict)
+    recovery_hint: str = ""
+    public_metadata: Dict[str, Any] = field(default_factory=dict)
+    status: str = "active"
+    created_at: str = ""
+    updated_at: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "bundle_id": self.bundle_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "encrypted_bundle": dict(self.encrypted_bundle),
+            "wrapping_method": self.wrapping_method,
+            "kdf": dict(self.kdf),
+            "recovery_hint": self.recovery_hint,
+            "public_metadata": dict(self.public_metadata),
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "WalletRecoveryBundleRecord":
+        return cls(
+            bundle_id=str(payload.get("bundle_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            encrypted_bundle=dict(payload.get("encrypted_bundle") or {}),
+            wrapping_method=str(payload.get("wrapping_method") or "passphrase"),
+            kdf=dict(payload.get("kdf") or {}),
+            recovery_hint=str(payload.get("recovery_hint") or ""),
+            public_metadata=dict(payload.get("public_metadata") or {}),
+            status=str(payload.get("status") or "active"),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+        )
+
+
+@dataclass
 class ServicePlanShareGrantResult:
     grant: Any
     receipt: Any | None
@@ -1030,6 +1076,7 @@ class WalletInterfaceService:
         self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
         self.inbound_sms_messages: Dict[str, InboundSmsMessageRecord] = {}
         self.phone_call_notifications: Dict[str, PhoneCallNotificationRecord] = {}
+        self.wallet_recovery_bundles: Dict[str, WalletRecoveryBundleRecord] = {}
         self.phone_identity_links: Dict[str, List[str]] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
@@ -1301,6 +1348,160 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return draft
+
+    def update_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str | None = None,
+        destination_program_ref: str | None = None,
+        service_plan_id: str | None = None,
+        service_doc_id: str | None = None,
+        provider_name: str | None = None,
+        program_name: str | None = None,
+        summary: str | None = None,
+        eligibility_notes: str | None = None,
+        contact_notes: str | None = None,
+        source_content_cid: str | None = None,
+        source_page_cid: str | None = None,
+        metadata: Mapping[str, Any] | None = None,
+    ) -> HmisReferralDraftRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+
+        updated_local_subject_ref = draft.local_subject_ref if local_subject_ref is None else str(local_subject_ref).strip()
+        updated_destination_program_ref = (
+            draft.destination_program_ref if destination_program_ref is None else str(destination_program_ref).strip()
+        )
+        updated_service_plan_id = draft.service_plan_id if service_plan_id is None else str(service_plan_id).strip()
+        updated_service_doc_id = draft.service_doc_id if service_doc_id is None else str(service_doc_id).strip()
+        updated_provider_name = draft.provider_name if provider_name is None else str(provider_name).strip()
+        updated_program_name = draft.program_name if program_name is None else str(program_name).strip()
+        updated_summary = draft.summary if summary is None else str(summary).strip()
+        updated_eligibility_notes = draft.eligibility_notes if eligibility_notes is None else str(eligibility_notes).strip()
+        updated_contact_notes = draft.contact_notes if contact_notes is None else str(contact_notes).strip()
+        updated_source_content_cid = draft.source_content_cid if source_content_cid is None else str(source_content_cid).strip()
+        updated_source_page_cid = draft.source_page_cid if source_page_cid is None else str(source_page_cid).strip()
+
+        result = self.hmis_service.execute(
+            action_type="create_referral_draft",
+            payload={
+                "local_ref": wallet_id,
+                "local_subject_ref": updated_local_subject_ref,
+                "destination_program_ref": updated_destination_program_ref,
+                "service_plan_id": updated_service_plan_id,
+                "service_doc_id": updated_service_doc_id,
+                "provider_name": updated_provider_name,
+                "program_name": updated_program_name,
+                "summary": updated_summary,
+                "eligibility_notes": updated_eligibility_notes,
+                "contact_notes": updated_contact_notes,
+            },
+            actor_id=actor_did,
+        )
+        if not result.adapter_result.ok:
+            raise ValueError(result.adapter_result.summary)
+
+        draft.actor_did = actor_did
+        draft.local_subject_ref = updated_local_subject_ref
+        draft.destination_program_ref = updated_destination_program_ref
+        draft.service_plan_id = updated_service_plan_id
+        draft.service_doc_id = updated_service_doc_id
+        draft.provider_name = updated_provider_name
+        draft.program_name = updated_program_name
+        draft.summary = updated_summary
+        draft.eligibility_notes = updated_eligibility_notes
+        draft.contact_notes = updated_contact_notes
+        draft.source_content_cid = updated_source_content_cid
+        draft.source_page_cid = updated_source_page_cid
+        draft.status = "draft"
+        draft.updated_at = _portal_now()
+        draft.packet = dict(result.adapter_result.normalized_payload.get("draft_packet") or {})
+        draft.metadata = {
+            **dict(draft.metadata),
+            **dict(metadata or {}),
+            "adapter_name": result.adapter_result.adapter_name,
+            "adapter_summary": result.adapter_result.summary,
+            "warnings": list(result.adapter_result.warnings),
+        }
+        draft.metadata.pop("validation_errors", None)
+        draft.metadata.pop("validation_warnings", None)
+        draft.metadata.pop("last_validated_by", None)
+        draft.metadata.pop("last_validated_at", None)
+
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/update_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return draft
+
+    def validate_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+
+        errors: List[str] = []
+        warnings: List[str] = []
+        if not draft.local_subject_ref:
+            errors.append("local_subject_ref is required")
+        if not draft.destination_program_ref:
+            errors.append("destination_program_ref is required")
+        if not draft.summary:
+            warnings.append("summary is empty")
+        if not draft.provider_name and not draft.program_name:
+            warnings.append("provider_name or program_name should be supplied for manual review")
+        if not draft.service_plan_id and not draft.service_doc_id:
+            warnings.append("service_plan_id or service_doc_id should be supplied for traceability")
+
+        draft.status = "validated" if not errors else "needs_revision"
+        draft.updated_at = _portal_now()
+        draft.metadata = {
+            **dict(draft.metadata),
+            "validation_errors": list(errors),
+            "validation_warnings": list(warnings),
+            "last_validated_by": actor_did,
+            "last_validated_at": draft.updated_at,
+        }
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/validate_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "status": draft.status,
+                "error_count": len(errors),
+                "warning_count": len(warnings),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "referral_draft": draft.to_dict(),
+            "validation": {
+                "ok": not errors,
+                "errors": errors,
+                "warnings": warnings,
+            },
+        }
 
     def save_wallet_snapshot(self, wallet_id: str) -> Path:
         if self.repository is None:
@@ -1624,6 +1825,13 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
                 )
             ],
+            "wallet_recovery_bundles": [
+                record.to_dict()
+                for record in sorted(
+                    self.wallet_recovery_bundles.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.bundle_id),
+                )
+            ],
             "phone_identity_links": {
                 cid: sorted(wallet_ids)
                 for cid, wallet_ids in sorted(self.phone_identity_links.items())
@@ -1732,6 +1940,15 @@ class WalletInterfaceService:
                 if isinstance(item, Mapping)
             )
             if record.notification_id
+        }
+        self.wallet_recovery_bundles = {
+            record.bundle_id: record
+            for record in (
+                WalletRecoveryBundleRecord.from_dict(item)
+                for item in payload.get("wallet_recovery_bundles", [])
+                if isinstance(item, Mapping)
+            )
+            if record.bundle_id and record.wallet_id
         }
         raw_phone_identity_links = payload.get("phone_identity_links")
         self.phone_identity_links = (
@@ -2572,6 +2789,75 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return wallet
+
+    def store_recovery_bundle(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        encrypted_bundle: Mapping[str, Any],
+        wrapping_method: str,
+        kdf: Mapping[str, Any] | None = None,
+        recovery_hint: str = "",
+        public_metadata: Mapping[str, Any] | None = None,
+    ) -> WalletRecoveryBundleRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        if not isinstance(encrypted_bundle, Mapping) or not encrypted_bundle:
+            raise ValueError("encrypted_bundle is required")
+        method = str(wrapping_method or "").strip() or "passphrase"
+        now = _portal_now()
+        record = WalletRecoveryBundleRecord(
+            bundle_id=_portal_id("recovery-bundle"),
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            encrypted_bundle=dict(encrypted_bundle),
+            wrapping_method=method,
+            kdf=dict(kdf or {}),
+            recovery_hint=str(recovery_hint or "").strip(),
+            public_metadata=dict(public_metadata or {}),
+            created_at=now,
+            updated_at=now,
+        )
+        self.wallet_recovery_bundles[record.bundle_id] = record
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="wallet/recovery_bundle/store",
+            resource=_portal_resource(wallet_id, "recovery-bundles", record.bundle_id),
+            details={
+                "bundle_id": record.bundle_id,
+                "wrapping_method": record.wrapping_method,
+                "server_can_decrypt": False,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        self._save_portal_state()
+        return record
+
+    def list_recovery_bundles(self, wallet_id: str) -> List[WalletRecoveryBundleRecord]:
+        self.wallet_service._wallet(wallet_id)
+        return [
+            record
+            for record in sorted(
+                self.wallet_recovery_bundles.values(),
+                key=lambda item: (item.created_at, item.bundle_id),
+                reverse=True,
+            )
+            if record.wallet_id == wallet_id and record.status == "active"
+        ]
+
+    def latest_recovery_bundle(self, wallet_id: str) -> WalletRecoveryBundleRecord:
+        bundles = self.list_recovery_bundles(wallet_id)
+        if not bundles:
+            raise ValueError("No recovery bundle is available for this wallet")
+        return bundles[0]
+
+    def get_recovery_bundle(self, wallet_id: str, bundle_id: str) -> WalletRecoveryBundleRecord:
+        self.wallet_service._wallet(wallet_id)
+        record = self.wallet_recovery_bundles.get(str(bundle_id or "").strip())
+        if record is None or record.wallet_id != wallet_id or record.status != "active":
+            raise ValueError("Recovery bundle not found")
+        return record
 
     def recover_controller(
         self,

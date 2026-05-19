@@ -598,6 +598,26 @@ class HmisReferralDraftRequest(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+class HmisReferralDraftUpdateRequest(BaseModel):
+    actor_did: str
+    local_subject_ref: str | None = None
+    destination_program_ref: str | None = None
+    service_plan_id: str | None = None
+    service_doc_id: str | None = None
+    provider_name: str | None = None
+    program_name: str | None = None
+    summary: str | None = None
+    eligibility_notes: str | None = None
+    contact_notes: str | None = None
+    source_content_cid: str | None = None
+    source_page_cid: str | None = None
+    metadata: Dict[str, Any] | None = None
+
+
+class HmisReferralDraftValidationRequest(BaseModel):
+    actor_did: str
+
+
 class RedactedAnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -856,6 +876,15 @@ class MagicLoginVerifyRequest(BaseModel):
     token: str
 
 
+class WalletRecoveryBundleRequest(BaseModel):
+    actor_did: str
+    encrypted_bundle: Dict[str, Any]
+    wrapping_method: str = "passphrase"
+    kdf: Dict[str, Any] = Field(default_factory=dict)
+    recovery_hint: str = ""
+    public_metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
 
@@ -1055,6 +1084,8 @@ def _send_auth_email_notification(
 
 _MAGIC_LOGIN_CONTEXT = "abby-login-token-v1"
 _MAGIC_LOGIN_PARAM = "abbyLogin"
+_MAGIC_UCAN_CONTEXT = "abby-magic-ucan-v1"
+_MAGIC_UCAN_ISSUER = "did:web:211-ai.com"
 
 
 def _magic_login_secret() -> str:
@@ -1181,6 +1212,131 @@ def _wallet_config_from_magic_payload(payload: Mapping[str, Any]) -> Dict[str, s
     return wallet_config
 
 
+def _magic_contact_subject_did(contact: str) -> str:
+    digest = hashlib.sha256(str(contact or "").strip().lower().encode("utf-8")).hexdigest()[:32]
+    return f"did:abby:contact:{digest}"
+
+
+def _magic_ucan_capabilities(wallet_id: str) -> List[Dict[str, str]]:
+    wallet = str(wallet_id or "").strip()
+    capabilities = [{"with": "wallet://*", "can": "wallet/login"}]
+    if wallet:
+        resource = f"wallet://{wallet}"
+        capabilities.extend(
+            [
+                {"with": resource, "can": "wallet/recovery/start"},
+                {"with": f"{resource}/recovery-bundles/*", "can": "wallet/recovery/read_encrypted"},
+                {"with": f"{resource}/records/*", "can": "wallet/encrypted/read"},
+            ]
+        )
+    return capabilities
+
+
+def _sign_magic_ucan(payload: Dict[str, Any]) -> str:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    payload_encoded = _base64url_encode_bytes(payload_json)
+    signature = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
+    return f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}.{signature}"
+
+
+def _verify_magic_ucan(token: str) -> Dict[str, Any]:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    parts = str(token or "").strip().split(".")
+    if len(parts) != 3 or parts[0] != _MAGIC_UCAN_CONTEXT:
+        raise ValueError("UCAN token is malformed")
+    _, payload_encoded, signature = parts
+    expected = _hmac_base64url(secret, f"{_MAGIC_UCAN_CONTEXT}.{payload_encoded}")
+    if not hmac.compare_digest(signature, expected):
+        raise ValueError("UCAN signature is invalid")
+    try:
+        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
+    except Exception as exc:
+        raise ValueError("UCAN payload is malformed") from exc
+    if not isinstance(payload, dict) or payload.get("profile") != _MAGIC_UCAN_CONTEXT:
+        raise ValueError("UCAN payload is malformed")
+    expires_at = int(payload.get("expiresAt") or 0)
+    if not expires_at or expires_at <= int(time.time() * 1000):
+        raise ValueError("UCAN token is expired")
+    return payload
+
+
+def _issue_magic_ucan(payload: Mapping[str, Any]) -> Dict[str, Any]:
+    contact = str(payload.get("contact") or "").strip()
+    wallet_id = str(payload.get("walletId") or "").strip()
+    issued_at = int(time.time() * 1000)
+    expires_at = min(int(payload.get("expiresAt") or issued_at), issued_at + 15 * 60 * 1000)
+    ucan_payload = {
+        "profile": _MAGIC_UCAN_CONTEXT,
+        "iss": _MAGIC_UCAN_ISSUER,
+        "aud": _magic_contact_subject_did(contact),
+        "walletId": wallet_id,
+        "contactHash": hashlib.sha256(contact.lower().encode("utf-8")).hexdigest(),
+        "capabilities": _magic_ucan_capabilities(wallet_id),
+        "issuedAt": issued_at,
+        "expiresAt": expires_at,
+        "nonce": secrets.token_urlsafe(18),
+        "caveats": {
+            "no_plaintext_key_access": True,
+            "server_can_decrypt": False,
+            "purpose": "passwordless_wallet_login_and_recovery",
+        },
+    }
+    token = _sign_magic_ucan(ucan_payload)
+    return {
+        "profile": _MAGIC_UCAN_CONTEXT,
+        "issuer": ucan_payload["iss"],
+        "audience": ucan_payload["aud"],
+        "token": token,
+        "capabilities": ucan_payload["capabilities"],
+        "expires_at": expires_at,
+        "caveats": ucan_payload["caveats"],
+    }
+
+
+def _capability_resource_matches(pattern: str, resource: str) -> bool:
+    if pattern == "*" or pattern == resource:
+        return True
+    if pattern.endswith("/*") and resource.startswith(pattern[:-1]):
+        return True
+    return False
+
+
+def _require_magic_ucan(
+    *,
+    authorization: str | None,
+    wallet_id: str,
+    ability: str,
+    resource: str,
+) -> Dict[str, Any]:
+    token = _extract_bearer_token(authorization)
+    if not token:
+        raise HTTPException(status_code=401, detail="recovery UCAN authorization required")
+    try:
+        payload = _verify_magic_ucan(token)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+    if str(payload.get("walletId") or "") != str(wallet_id):
+        raise HTTPException(status_code=403, detail="UCAN wallet scope does not match")
+    capabilities = payload.get("capabilities")
+    if not isinstance(capabilities, list):
+        raise HTTPException(status_code=403, detail="UCAN has no capabilities")
+    for capability in capabilities:
+        if not isinstance(capability, Mapping):
+            continue
+        if str(capability.get("can") or "") != ability:
+            continue
+        if _capability_resource_matches(str(capability.get("with") or ""), resource):
+            return payload
+    raise HTTPException(status_code=403, detail="UCAN does not allow this recovery action")
+
+
 def _send_phone_call_notification(*, to_phone: str, script: str) -> Dict[str, str]:
     normalized_phone = _normalize_phone_number(to_phone)
     normalized_script = str(script or "").strip()
@@ -1280,6 +1436,7 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 "contact": str(payload["contact"]),
                 "expires_at": int(payload["expiresAt"]),
                 "wallet_config": _wallet_config_from_magic_payload(payload),
+                "ucan": _issue_magic_ucan(payload),
             }
         except RuntimeError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -1405,6 +1562,90 @@ def create_app(*, service: WalletInterfaceService | None = None):
             return wallet.to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/recovery-bundles")
+    def store_wallet_recovery_bundle(wallet_id: str, request: WalletRecoveryBundleRequest) -> Dict[str, Any]:
+        try:
+            bundle = app_service.store_recovery_bundle(
+                wallet_id,
+                actor_did=request.actor_did,
+                encrypted_bundle=request.encrypted_bundle,
+                wrapping_method=request.wrapping_method,
+                kdf=request.kdf,
+                recovery_hint=request.recovery_hint,
+                public_metadata=request.public_metadata,
+            )
+            return {
+                "bundle": bundle.to_dict(),
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_received": False,
+                    "authorization_model": "wallet actor creates encrypted recovery material; magic-login UCAN can only read encrypted bundles",
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/recovery-bundles/latest")
+    def get_latest_wallet_recovery_bundle(
+        wallet_id: str,
+        authorization: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        resource = f"wallet://{wallet_id}/recovery-bundles/latest"
+        ucan = _require_magic_ucan(
+            authorization=authorization,
+            wallet_id=wallet_id,
+            ability="wallet/recovery/read_encrypted",
+            resource=resource,
+        )
+        try:
+            bundle = app_service.latest_recovery_bundle(wallet_id)
+            return {
+                "bundle": bundle.to_dict(),
+                "ucan": {
+                    "profile": str(ucan.get("profile") or ""),
+                    "audience": str(ucan.get("aud") or ""),
+                    "capabilities": ucan.get("capabilities") or [],
+                    "expires_at": int(ucan.get("expiresAt") or 0),
+                },
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_returned": False,
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/recovery-bundles/{bundle_id}")
+    def get_wallet_recovery_bundle(
+        wallet_id: str,
+        bundle_id: str,
+        authorization: str | None = Header(default=None),
+    ) -> Dict[str, Any]:
+        resource = f"wallet://{wallet_id}/recovery-bundles/{bundle_id}"
+        ucan = _require_magic_ucan(
+            authorization=authorization,
+            wallet_id=wallet_id,
+            ability="wallet/recovery/read_encrypted",
+            resource=resource,
+        )
+        try:
+            bundle = app_service.get_recovery_bundle(wallet_id, bundle_id)
+            return {
+                "bundle": bundle.to_dict(),
+                "ucan": {
+                    "profile": str(ucan.get("profile") or ""),
+                    "audience": str(ucan.get("aud") or ""),
+                    "capabilities": ucan.get("capabilities") or [],
+                    "expires_at": int(ucan.get("expiresAt") or 0),
+                },
+                "privacy": {
+                    "server_can_decrypt": False,
+                    "plaintext_wallet_key_returned": False,
+                },
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.post("/wallets/{wallet_id}/controllers/recover")
     def recover_wallet_controller(wallet_id: str, request: WalletControllerRecoveryRequest) -> Dict[str, Any]:
@@ -2801,6 +3042,48 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 source_page_cid=request.source_page_cid,
                 metadata=request.metadata,
             ).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.patch("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}")
+    def update_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftUpdateRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.update_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+                local_subject_ref=request.local_subject_ref,
+                destination_program_ref=request.destination_program_ref,
+                service_plan_id=request.service_plan_id,
+                service_doc_id=request.service_doc_id,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                summary=request.summary,
+                eligibility_notes=request.eligibility_notes,
+                contact_notes=request.contact_notes,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                metadata=request.metadata,
+            ).to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}/validate")
+    def validate_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftValidationRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.validate_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+            )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

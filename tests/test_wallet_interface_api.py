@@ -54,6 +54,143 @@ def test_wallet_api_cors_allows_configured_browser_origin(monkeypatch) -> None:
     assert response.headers["access-control-allow-origin"] == origin
 
 
+def test_magic_login_request_sends_signed_sms_and_verify_connects_wallet(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
+    deliveries: list[dict[str, object]] = []
+
+    def fake_sms_delivery(**kwargs):
+        deliveries.append(kwargs)
+        return {"provider": "mock", "provider_status": "queued", "provider_message_id": "SM-login"}
+
+    monkeypatch.setattr(wallet_api_module, "_send_sms_notification", fake_sms_delivery)
+    client = _client()
+
+    response = client.post(
+        "/auth/magic-link/request",
+        json={
+            "contact": "(503) 555-0199",
+            "portal": "client",
+            "wallet_id": "wallet-abc",
+            "wallet_api_base_url": "https://211-ai.com",
+            "actor_did": "did:key:abby-test",
+            "base_url": "https://211-ai.com/",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["channel"] == "sms"
+    assert deliveries
+    message = str(deliveries[0]["message"])
+    assert "211 AI / Abby login" in message
+    token = message.split("abbyLogin=", 1)[1].split("#", 1)[0]
+
+    verify_response = client.post("/auth/magic-link/verify", json={"token": token})
+    assert verify_response.status_code == 200, verify_response.text
+    body = verify_response.json()
+    assert body["valid"] is True
+    assert body["contact"] == "5035550199"
+    assert body["wallet_config"] == {
+        "apiBaseUrl": "https://211-ai.com",
+        "walletId": "wallet-abc",
+        "actorDid": "did:key:abby-test",
+    }
+    assert body["ucan"]["profile"] == "abby-magic-ucan-v1"
+    assert body["ucan"]["token"].startswith("abby-magic-ucan-v1.")
+    assert {"with": "wallet://wallet-abc", "can": "wallet/recovery/start"} in body["ucan"]["capabilities"]
+
+
+def test_magic_ucan_reads_encrypted_recovery_bundle_without_plaintext_key(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
+    deliveries: list[dict[str, object]] = []
+
+    def fake_sms_delivery(**kwargs):
+        deliveries.append(kwargs)
+        return {"provider": "mock", "provider_status": "queued"}
+
+    monkeypatch.setattr(wallet_api_module, "_send_sms_notification", fake_sms_delivery)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    wallet_id = wallet["wallet_id"]
+
+    store_response = client.post(
+        f"/wallets/{wallet_id}/recovery-bundles",
+        json={
+            "actor_did": "did:key:owner",
+            "encrypted_bundle": {
+                "schema": "211-ai-wallet-recovery-bundle-v1",
+                "ciphertext": "encrypted-only",
+                "plaintextKeySentToServer": False,
+            },
+            "wrapping_method": "device-local-key",
+            "public_metadata": {"serverCanDecrypt": False},
+        },
+    )
+    assert store_response.status_code == 200, store_response.text
+    assert store_response.json()["privacy"]["server_can_decrypt"] is False
+
+    request_response = client.post(
+        "/auth/magic-link/request",
+        json={
+            "contact": "(503) 555-0199",
+            "portal": "client",
+            "wallet_id": wallet_id,
+            "wallet_api_base_url": "https://211-ai.com",
+            "actor_did": "did:key:owner",
+            "base_url": "https://211-ai.com/",
+        },
+    )
+    assert request_response.status_code == 200, request_response.text
+    token = str(deliveries[0]["message"]).split("abbyLogin=", 1)[1].split("#", 1)[0]
+    verify_response = client.post("/auth/magic-link/verify", json={"token": token})
+    assert verify_response.status_code == 200, verify_response.text
+    ucan_token = verify_response.json()["ucan"]["token"]
+
+    bundle_response = client.get(
+        f"/wallets/{wallet_id}/recovery-bundles/latest",
+        headers={"authorization": f"Bearer {ucan_token}"},
+    )
+    assert bundle_response.status_code == 200, bundle_response.text
+    payload = bundle_response.json()
+    assert payload["privacy"]["server_can_decrypt"] is False
+    assert payload["privacy"]["plaintext_wallet_key_returned"] is False
+    assert payload["bundle"]["encrypted_bundle"]["ciphertext"] == "encrypted-only"
+    assert "walletContentKey" not in json.dumps(payload)
+
+    bundle_id = payload["bundle"]["bundle_id"]
+    qr_scoped_response = client.get(
+        f"/wallets/{wallet_id}/recovery-bundles/{bundle_id}",
+        headers={"authorization": f"Bearer {ucan_token}"},
+    )
+    assert qr_scoped_response.status_code == 200, qr_scoped_response.text
+    assert qr_scoped_response.json()["bundle"]["bundle_id"] == bundle_id
+
+
+def test_magic_login_request_sends_signed_email(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
+    deliveries: list[dict[str, object]] = []
+
+    def fake_email_delivery(**kwargs):
+        deliveries.append(kwargs)
+        return {"provider": "mock-email", "provider_status": "queued", "provider_message_id": "email-login"}
+
+    monkeypatch.setattr(wallet_api_module, "_send_auth_email_notification", fake_email_delivery)
+    client = _client()
+
+    response = client.post(
+        "/auth/magic-link/request",
+        json={
+            "contact": "Abby.User@example.org",
+            "portal": "provider",
+            "base_url": "https://211-ai.com/",
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["channel"] == "email"
+    assert deliveries[0]["to_email"] == "abby.user@example.org"
+    assert "abbyLogin=" in str(deliveries[0]["body"])
+
+
 def test_filecoin_upload_bridge_accepts_multipart(monkeypatch) -> None:
     client = _client()
     added: list[bytes] = []
@@ -364,6 +501,52 @@ def test_hmis_referral_draft_create_and_list_persists_manual_review_packet() -> 
     assert audit_response.status_code == 200
     actions = [event["action"] for event in audit_response.json()["audit_events"]]
     assert "hmis/create_referral_draft" in actions
+
+
+def test_hmis_referral_draft_validate_marks_validated_and_returns_warnings() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    create_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts",
+        json={
+            "actor_did": "did:key:owner",
+            "local_subject_ref": "wallet:user-1",
+            "destination_program_ref": "rosehaven-day-center",
+            "summary": "Client needs same-day shelter intake.",
+        },
+    )
+    assert create_response.status_code == 200
+    draft_id = create_response.json()["referral_draft_id"]
+
+    validate_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}/validate",
+        json={"actor_did": "did:key:owner"},
+    )
+
+    assert validate_response.status_code == 200
+    payload = validate_response.json()
+    assert payload["validation"]["ok"] is True
+    assert "provider_name or program_name should be supplied for manual review" in payload["validation"]["warnings"]
+    assert payload["referral_draft"]["status"] == "validated"
+    assert payload["referral_draft"]["metadata"]["last_validated_by"] == "did:key:owner"
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/validate_referral_draft" in actions
     payload = response.json()
     assert payload["ipfsCid"] == "bafy-uploaded-file"
     assert payload["requestId"] == "pin-123"
@@ -643,6 +826,68 @@ def test_wallet_api_private_analytics_flow() -> None:
     assert result["count"] is None
     assert result["noisy_count"] is not None
     assert result["privacy_budget_spent"] == 0.25
+
+
+def test_hmis_referral_draft_update_resets_status_and_rebuilds_packet() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    create_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts",
+        json={
+            "actor_did": "did:key:owner",
+            "local_subject_ref": "wallet:user-1",
+            "destination_program_ref": "rosehaven-day-center",
+            "summary": "Initial summary.",
+        },
+    )
+    assert create_response.status_code == 200
+    draft_id = create_response.json()["referral_draft_id"]
+
+    validate_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}/validate",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert validate_response.status_code == 200
+    assert validate_response.json()["referral_draft"]["status"] == "validated"
+
+    update_response = client.patch(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}",
+        json={
+            "actor_did": "did:key:owner",
+            "provider_name": "Rose Haven",
+            "program_name": "Day Center",
+            "contact_notes": "Bring ID and arrive before 5 PM.",
+            "metadata": {"edited_in_ui": True},
+        },
+    )
+
+    assert update_response.status_code == 200
+    payload = update_response.json()
+    assert payload["status"] == "draft"
+    assert payload["provider_name"] == "Rose Haven"
+    assert payload["program_name"] == "Day Center"
+    assert payload["packet"]["provider_name"] == "Rose Haven"
+    assert payload["packet"]["contact_notes"] == "Bring ID and arrive before 5 PM."
+    assert payload["metadata"]["edited_in_ui"] is True
+    assert "last_validated_by" not in payload["metadata"]
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/update_referral_draft" in actions
 
 
 def test_wallet_api_multi_dimensional_analytics_suppresses_sparse_cells() -> None:

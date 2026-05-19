@@ -181,7 +181,7 @@ export async function reviewWalletProofQrScreenshot(file: File): Promise<WalletP
   return reviewWalletProofBundleReference(qrValue);
 }
 
-async function readQrValue(file: File): Promise<string> {
+export async function readQrValue(file: File): Promise<string> {
   const detectorValue = await readQrValueWithBarcodeDetector(file).catch(() => "");
   if (detectorValue) return detectorValue;
 

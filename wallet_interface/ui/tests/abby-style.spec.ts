@@ -77,7 +77,7 @@ test("login and inner route chrome use production ABBY assets", async ({ page },
 
   await page.screenshot({ fullPage: true, path: testInfo.outputPath("abby-login-style.png") });
   await page.getByLabel(/Email address or telephone/i).fill("style-reviewer@example.org");
-  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
   await expect(page.locator('code[aria-label="Generated one-time pad code"]')).toBeVisible();
   await expect(page.getByRole("link", { name: /Open magic link/i })).toBeVisible();
 
