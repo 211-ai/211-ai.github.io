@@ -71,6 +71,58 @@ test("login page appears before the home screen", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });
 });
 
+test("telephone login sends a magic link text message", async ({ page }) => {
+  const smsRequests: unknown[] = [];
+  await page.route("**/messaging/auth/magic-link/sms", async (route: Route) => {
+    smsRequests.push(route.request().postDataJSON());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ status: "ok", provider_status: "queued", provider_message_id: "mock-login-sms" })
+    });
+  });
+
+  await page.goto("/");
+  await expectLoginForm(page);
+  await page.getByRole("button", { name: /^Client$/i }).click();
+  await page.getByLabel(/Email address or telephone/i).fill("(503) 555-0199");
+  await page.getByRole("button", { name: /Send code or magic link/i }).click();
+
+  await expect(page.getByText(/We texted your one-time Abby login link and code/i)).toBeVisible();
+  expect(smsRequests).toHaveLength(1);
+  expect(smsRequests[0]).toMatchObject({
+    to_phone: "5035550199",
+    portal: "client"
+  });
+  expect((smsRequests[0] as { magic_link?: string }).magic_link).toContain("abbyLogin=");
+  expect((smsRequests[0] as { one_time_pad?: string }).one_time_pad).toMatch(/^\d{6}$/);
+});
+
+test("desktop sidebar keeps legal links at the bottom", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openAppRoute(page, "/");
+
+  const boxes = await page.evaluate(() => {
+    const sidebar = document.querySelector(".sidebar")?.getBoundingClientRect();
+    const nav = document.querySelector(".nav-sections")?.getBoundingClientRect();
+    const footer = document.querySelector(".sidebar-footer")?.getBoundingClientRect();
+    if (!sidebar || !nav || !footer) return null;
+    return {
+      footerBottom: footer.bottom,
+      footerTop: footer.top,
+      navBottom: nav.bottom,
+      navOverflowY: window.getComputedStyle(document.querySelector(".nav-sections")!).overflowY,
+      sidebarBottom: sidebar.bottom
+    };
+  });
+
+  expect(boxes).not.toBeNull();
+  expect(boxes!.footerTop).toBeGreaterThanOrEqual(boxes!.navBottom - 1);
+  expect(boxes!.sidebarBottom - boxes!.footerBottom).toBeLessThanOrEqual(28);
+  expect(boxes!.navOverflowY).not.toBe("auto");
+  await expect(page.getByRole("link", { name: /Terms and Conditions/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Privacy Policy/i })).toBeVisible();
+});
+
 test("mobile home exposes the safety plan heading and quick check-in action", async ({ page }) => {
   await openAppRoute(page, "/");
   await expect(page.getByRole("heading", { name: /Welcome to your safety plan!/i })).toBeVisible({ timeout: 10000 });

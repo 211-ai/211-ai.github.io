@@ -678,6 +678,8 @@ body.playful-pulse .decor-shape {
   gap: 8px;
   margin-top: 18px;
   padding-top: 14px;
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-footer-link {
@@ -5431,8 +5433,8 @@ textarea:focus-visible,
 @media (min-width: 760px) {
   .sidebar {
     align-self: start;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     height: 100dvh;
     min-height: 0;
     overflow-x: hidden;
@@ -5442,14 +5444,21 @@ textarea:focus-visible,
   }
 
   .brand-logo,
-  .nav-sections {
+  .nav-sections,
+  .sidebar-footer {
     position: relative;
     z-index: 1;
   }
 
   .nav-sections {
     align-content: start;
-    padding-bottom: 228px;
+    flex: 0 0 auto;
+    min-height: 0;
+    padding-bottom: 18px;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
   }
 
   .sidebar::before {

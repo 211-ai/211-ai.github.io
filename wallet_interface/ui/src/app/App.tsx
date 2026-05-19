@@ -204,6 +204,7 @@ const ID_DOCUMENT_ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".pdf
 const MAGIC_LOGIN_PARAM = "abbyLogin";
 const MAGIC_LOGIN_TTL_MS = 10 * 60 * 1000;
 const MAGIC_LOGIN_DEMO_SIGNING_CONTEXT = "abby-static-demo-login-v1";
+const MAGIC_LOGIN_SMS_ENDPOINT = "/messaging/auth/magic-link/sms";
 const PORTLAND_POLICE_MISSING_EMAIL = "missing@police.portlandoregon.gov";
 const DEFAULT_LOCAL_PRECINCT = "Local police precinct";
 const LOCAL_PRECINCT_OPTIONS = [DEFAULT_LOCAL_PRECINCT];
@@ -562,6 +563,56 @@ function normalizeLoginContact(value: string): string {
 function isValidLoginContact(value: string): boolean {
   const normalized = normalizeLoginContact(value);
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized) || normalized.replace(/\D/g, "").length >= 10;
+}
+
+function isTelephoneLoginContact(value: string): boolean {
+  const normalized = normalizeLoginContact(value);
+  return !normalized.includes("@") && normalized.replace(/\D/g, "").length >= 10;
+}
+
+function resolveMagicLoginSmsEndpoint(): string {
+  const configured = (import.meta.env.VITE_MAGIC_LOGIN_SMS_ENDPOINT as string | undefined)?.trim();
+  if (configured) return configured;
+  if (typeof window !== "undefined") {
+    if (window.location.hostname === "211-ai.github.io") {
+      return `https://211-ai.com${MAGIC_LOGIN_SMS_ENDPOINT}`;
+    }
+  }
+  return MAGIC_LOGIN_SMS_ENDPOINT;
+}
+
+async function sendMagicLoginSms({
+  magicLink,
+  oneTimePad,
+  portal,
+  toPhone
+}: {
+  magicLink: string;
+  oneTimePad: string;
+  portal: LoginPortal;
+  toPhone: string;
+}): Promise<void> {
+  const response = await fetch(resolveMagicLoginSmsEndpoint(), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      expires_in_minutes: Math.ceil(MAGIC_LOGIN_TTL_MS / 60000),
+      magic_link: magicLink,
+      one_time_pad: oneTimePad,
+      portal,
+      to_phone: toPhone
+    })
+  });
+  if (!response.ok) {
+    let detail = "";
+    try {
+      const payload = (await response.json()) as { detail?: unknown };
+      detail = typeof payload.detail === "string" ? payload.detail : "";
+    } catch {
+      detail = "";
+    }
+    throw new Error(detail || `Text message delivery failed (${response.status}).`);
+  }
 }
 
 function randomBase64Url(byteLength: number): string {
@@ -1715,6 +1766,7 @@ function LoginScreen({
   const [oneTimePadEntry, setOneTimePadEntry] = useState("");
   const [loginMessage, setLoginMessage] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [loginSmsWarning, setLoginSmsWarning] = useState("");
   const [pending, setPending] = useState(false);
   const canRequestChallenge = isValidLoginContact(contact);
 
@@ -1729,6 +1781,7 @@ function LoginScreen({
     setChallenge(null);
     setOneTimePadEntry("");
     setLoginError("");
+    setLoginSmsWarning("");
     setLoginMessage("");
   }
 
@@ -1740,6 +1793,7 @@ function LoginScreen({
     }
     setPending(true);
     setLoginError("");
+    setLoginSmsWarning("");
     setLoginMessage("");
     try {
       const issuedAt = Date.now();
@@ -1759,9 +1813,29 @@ function LoginScreen({
       magicUrl.search = "";
       magicUrl.hash = "#/";
       magicUrl.searchParams.set(MAGIC_LOGIN_PARAM, encodeMagicLoginPayload(payload));
-      setChallenge({ ...payload, oneTimePad, magicLink: magicUrl.toString() });
+      const magicLink = magicUrl.toString();
+      setChallenge({ ...payload, oneTimePad, magicLink });
       setOneTimePadEntry("");
-      setLoginMessage("One-time access is ready.");
+      if (isTelephoneLoginContact(contact)) {
+        try {
+          await sendMagicLoginSms({
+            magicLink,
+            oneTimePad,
+            portal,
+            toPhone: normalizedContact
+          });
+          setLoginMessage("We texted your one-time Abby login link and code.");
+        } catch (error) {
+          setLoginSmsWarning(
+            error instanceof Error
+              ? `We could not send the text message yet: ${error.message}`
+              : "We could not send the text message yet."
+          );
+          setLoginMessage("One-time access is ready on this screen.");
+        }
+      } else {
+        setLoginMessage("One-time access is ready.");
+      }
     } finally {
       setPending(false);
     }
@@ -1852,6 +1926,7 @@ function LoginScreen({
               setChallenge(null);
               setOneTimePadEntry("");
               setLoginError("");
+              setLoginSmsWarning("");
               setLoginMessage("");
             }}
           />
@@ -1860,6 +1935,7 @@ function LoginScreen({
           <KeyRound aria-hidden="true" size={18} /> Send code or magic link
         </Button>
         {loginError ? <StatusBanner tone="danger">{loginError}</StatusBanner> : null}
+        {loginSmsWarning ? <StatusBanner tone="warning">{loginSmsWarning}</StatusBanner> : null}
         {loginMessage ? <StatusBanner tone="success">{loginMessage}</StatusBanner> : null}
         {challenge ? (
           <div className="login-challenge-panel">
