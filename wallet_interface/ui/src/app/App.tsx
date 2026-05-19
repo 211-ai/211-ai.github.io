@@ -600,6 +600,77 @@ function resolveMagicLoginSmsEndpoint(): string {
   return MAGIC_LOGIN_SMS_ENDPOINT;
 }
 
+function resolveMagicLoginApiBaseUrl(): string {
+  const configured = (import.meta.env.VITE_MAGIC_LOGIN_API_BASE_URL as string | undefined)?.trim();
+  if (configured) return configured;
+  if (typeof window !== "undefined" && window.location.hostname === "211-ai.github.io") {
+    return "https://211-ai.com";
+  }
+  return readWalletApiBaseUrl() ?? (typeof window !== "undefined" ? window.location.origin : "");
+}
+
+function normalizeServerWalletConfig(value: ServerMagicLoginResponse["wallet_config"]): WalletApiConfig | undefined {
+  if (!value?.apiBaseUrl || !value.walletId) return undefined;
+  return {
+    actorDid: value.actorDid,
+    apiBaseUrl: value.apiBaseUrl,
+    walletId: value.walletId
+  };
+}
+
+async function requestServerMagicLogin({
+  contact,
+  portal
+}: {
+  contact: string;
+  portal: LoginPortal;
+}): Promise<ServerMagicLoginResponse> {
+  const apiBaseUrl = resolveMagicLoginApiBaseUrl();
+  if (!apiBaseUrl) throw new Error("Wallet API is unavailable.");
+  const walletConfig = readWalletApiConfig();
+  const response = await fetch(new URL("/auth/magic-link/request", apiBaseUrl), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      actor_did: walletConfig?.actorDid ?? "",
+      base_url: typeof window !== "undefined" ? window.location.origin + window.location.pathname : "",
+      contact,
+      portal,
+      wallet_api_base_url: walletConfig?.apiBaseUrl ?? readWalletApiBaseUrl() ?? "",
+      wallet_id: walletConfig?.walletId ?? ""
+    })
+  });
+  const payload = (await response.json().catch(() => ({}))) as ServerMagicLoginResponse & { detail?: unknown };
+  if (!response.ok) {
+    throw new Error(typeof payload.detail === "string" ? payload.detail : `Magic link request failed (${response.status}).`);
+  }
+  return payload;
+}
+
+async function verifyServerMagicLogin(token: string): Promise<LoginAuthResult> {
+  const apiBaseUrl = resolveMagicLoginApiBaseUrl();
+  if (!apiBaseUrl) throw new Error("Wallet API is unavailable.");
+  const response = await fetch(new URL("/auth/magic-link/verify", apiBaseUrl), {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token })
+  });
+  const payload = (await response.json().catch(() => ({}))) as ServerMagicLoginResponse & { detail?: unknown };
+  if (!response.ok || !payload.valid || !payload.portal || !payload.contact) {
+    throw new Error(typeof payload.detail === "string" ? payload.detail : "The magic link could not be verified.");
+  }
+  return {
+    contact: payload.contact,
+    portal: payload.portal,
+    walletConfig: normalizeServerWalletConfig(payload.wallet_config)
+  };
+}
+
+function shouldAllowLocalMagicLoginFallback(): boolean {
+  if (typeof window === "undefined") return false;
+  return ["localhost", "127.0.0.1", "0.0.0.0"].includes(window.location.hostname);
+}
+
 async function sendMagicLoginSms({
   magicLink,
   oneTimePad,
@@ -1244,7 +1315,10 @@ export function App() {
           handleSignIn("abby");
           openAgentChatMode("audio");
         }}
-        onAuthenticated={(portal, contact) => {
+        onAuthenticated={({ contact, portal, walletConfig }) => {
+          if (walletConfig) {
+            persistWalletApiConfig(walletConfig);
+          }
           handleSignIn(`${portal}:${contact}`);
           navigate(portal === "provider" ? "shelter" : "home");
         }}
@@ -1776,7 +1850,7 @@ function LoginScreen({
   onAuthenticated,
   onOpenAssistant
 }: {
-  onAuthenticated: (portal: LoginPortal, contact: string) => void;
+  onAuthenticated: (result: LoginAuthResult) => void;
   onOpenAssistant: () => void;
 }) {
   const [portal, setPortal] = useState<LoginPortal>("client");
@@ -1815,9 +1889,28 @@ function LoginScreen({
     setLoginSmsWarning("");
     setLoginMessage("");
     try {
+      const normalizedContact = normalizeLoginContact(contact);
+      try {
+        const response = await requestServerMagicLogin({ contact: normalizedContact, portal });
+        setChallenge(null);
+        setOneTimePadEntry("");
+        setLoginMessage(
+          response.channel === "email"
+            ? "We emailed your Abby sign-in link."
+            : "We texted your Abby sign-in link."
+        );
+        return;
+      } catch (error) {
+        if (!shouldAllowLocalMagicLoginFallback()) {
+          setLoginError(error instanceof Error ? error.message : "Magic link delivery failed.");
+          return;
+        }
+        setLoginSmsWarning(
+          "Using local demo login because the passwordless login API is not available in this development session."
+        );
+      }
       const issuedAt = Date.now();
       const expiresAt = issuedAt + MAGIC_LOGIN_TTL_MS;
-      const normalizedContact = normalizeLoginContact(contact);
       const oneTimePad = randomOneTimePad();
       const basePayload = {
         portal,
@@ -1881,10 +1974,21 @@ function LoginScreen({
       setLoginError("The login proof could not be verified.");
       return;
     }
-    completeLogin(challenge.portal, challenge.contact);
+    completeLogin({ contact: challenge.contact, portal: challenge.portal });
   }
 
   async function verifyMagicLinkToken(token: string) {
+    try {
+      const result = await verifyServerMagicLogin(token);
+      window.history.replaceState({}, "", `${window.location.pathname}${window.location.hash || "#/"}`);
+      completeLogin(result);
+      return;
+    } catch (error) {
+      if (!shouldAllowLocalMagicLoginFallback()) {
+        setLoginError(error instanceof Error ? error.message : "The magic link could not be verified.");
+        return;
+      }
+    }
     const payload = decodeMagicLoginPayload(token);
     if (!payload) {
       setLoginError("The magic link is not valid.");
@@ -1900,11 +2004,11 @@ function LoginScreen({
       return;
     }
     window.history.replaceState({}, "", `${window.location.pathname}${window.location.hash || "#/"}`);
-    completeLogin(payload.portal, payload.contact);
+    completeLogin({ contact: payload.contact, portal: payload.portal });
   }
 
-  function completeLogin(nextPortal: LoginPortal, normalizedContact: string) {
-    onAuthenticated(nextPortal, normalizedContact);
+  function completeLogin(result: LoginAuthResult) {
+    onAuthenticated(result);
   }
 
   return (
