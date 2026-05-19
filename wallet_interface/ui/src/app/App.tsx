@@ -226,6 +226,25 @@ type LoginChallenge = MagicLoginPayload & {
   magicLink: string;
 };
 
+type LoginAuthResult = {
+  portal: LoginPortal;
+  contact: string;
+  walletConfig?: WalletApiConfig;
+};
+
+type ServerMagicLoginResponse = {
+  channel?: string;
+  contact?: string;
+  expires_at?: number;
+  portal?: LoginPortal;
+  valid?: boolean;
+  wallet_config?: {
+    actorDid?: string;
+    apiBaseUrl?: string;
+    walletId?: string;
+  };
+};
+
 const routeIcons: Record<RouteId, typeof Home> = {
   home: Home,
   register: ClipboardCheck,

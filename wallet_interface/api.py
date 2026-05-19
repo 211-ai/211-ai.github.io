@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import hmac
 import io
 import json
 import math
@@ -16,6 +17,7 @@ import threading
 import time
 import uuid
 import wave
+import secrets
 from email.message import EmailMessage
 from email.utils import make_msgid
 from typing import Any, Dict, List, Mapping, Sequence
@@ -841,6 +843,19 @@ class PhoneCallNotificationDispatchRequest(BaseModel):
     actor_did: str
 
 
+class MagicLoginRequest(BaseModel):
+    contact: str
+    portal: str = "client"
+    wallet_id: str = ""
+    wallet_api_base_url: str = ""
+    actor_did: str = ""
+    base_url: str = ""
+
+
+class MagicLoginVerifyRequest(BaseModel):
+    token: str
+
+
 def _ops_health_shared_secret() -> str:
     return str(os.getenv("WALLET_OPS_HEALTH_SHARED_SECRET") or "").strip()
 
@@ -872,6 +887,20 @@ def _normalize_phone_number(phone: str) -> str:
     if len(digits) < 10:
         raise ValueError("to_phone must include at least 10 digits")
     return f"+{digits}" if raw.startswith("+") else digits
+
+
+def _normalize_login_contact(value: str) -> str:
+    normalized = str(value or "").strip()
+    if "@" in normalized:
+        normalized = normalized.lower()
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized):
+            raise ValueError("contact must be a valid email address or telephone number")
+        return normalized
+    return _normalize_phone_number(normalized)
+
+
+def _is_email_contact(value: str) -> bool:
+    return "@" in str(value or "")
 
 
 def _sms_inbound_actor_did() -> str:
@@ -1001,6 +1030,157 @@ def _send_sms_notification(
     )
 
 
+def _send_auth_email_notification(
+    *,
+    to_email: str,
+    subject: str,
+    body: str,
+    metadata: Dict[str, Any] | None = None,
+) -> Dict[str, str]:
+    normalized_to_email = str(to_email or "").strip().lower()
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", normalized_to_email):
+        raise ValueError("to_email must be a valid email address")
+    return _send_webhook_notification(
+        env_prefix="WALLET_AUTH_EMAIL",
+        required_key="to_email",
+        required_value=normalized_to_email,
+        extra_payload={
+            "subject": str(subject or "").strip(),
+            "body": str(body or ""),
+            "from_email": str(os.getenv("WALLET_AUTH_EMAIL_FROM_EMAIL") or "no-reply@211-ai.com").strip(),
+            "metadata": dict(metadata or {}),
+        },
+    )
+
+
+_MAGIC_LOGIN_CONTEXT = "abby-login-token-v1"
+_MAGIC_LOGIN_PARAM = "abbyLogin"
+
+
+def _magic_login_secret() -> str:
+    return resolve_secret("WALLET_MAGIC_LOGIN_SECRET", "MAGIC_LOGIN_SECRET").strip()
+
+
+def _base64url_encode_bytes(value: bytes) -> str:
+    return base64.urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+
+def _base64url_decode_to_bytes(value: str) -> bytes:
+    padded = str(value or "").strip()
+    padded += "=" * (-len(padded) % 4)
+    return base64.urlsafe_b64decode(padded.encode("ascii"))
+
+
+def _hmac_base64url(secret: str, value: str) -> str:
+    return _base64url_encode_bytes(hmac.new(secret.encode("utf-8"), value.encode("utf-8"), hashlib.sha256).digest())
+
+
+def _sign_magic_login_token(payload: Dict[str, Any]) -> str:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    payload_json = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    payload_encoded = _base64url_encode_bytes(payload_json)
+    signature = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
+    return f"{payload_encoded}.{signature}"
+
+
+def _verify_magic_login_token(token: str) -> Dict[str, Any]:
+    secret = _magic_login_secret()
+    if not secret:
+        raise RuntimeError("WALLET_MAGIC_LOGIN_SECRET is required for passwordless login")
+    parts = str(token or "").strip().split(".")
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        raise ValueError("magic link token is malformed")
+    payload_encoded, signature = parts
+    expected = _hmac_base64url(secret, f"{_MAGIC_LOGIN_CONTEXT}.{payload_encoded}")
+    if not hmac.compare_digest(signature, expected):
+        raise ValueError("magic link signature is invalid")
+    try:
+        payload = json.loads(_base64url_decode_to_bytes(payload_encoded).decode("utf-8"))
+    except Exception as exc:
+        raise ValueError("magic link payload is malformed") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("magic link payload is malformed")
+    if payload.get("v") != 1 or payload.get("portal") not in {"client", "provider"}:
+        raise ValueError("magic link payload is malformed")
+    contact = str(payload.get("contact") or "").strip()
+    nonce = str(payload.get("nonce") or "").strip()
+    issued_at = int(payload.get("issuedAt") or 0)
+    expires_at = int(payload.get("expiresAt") or 0)
+    now_ms = int(time.time() * 1000)
+    if not contact or not nonce or not issued_at or not expires_at:
+        raise ValueError("magic link payload is malformed")
+    if issued_at > now_ms + 5 * 60 * 1000:
+        raise ValueError("magic link was issued in the future")
+    if expires_at <= now_ms:
+        raise ValueError("magic link is expired")
+    return payload
+
+
+def _allowed_magic_login_hosts() -> set[str]:
+    raw = str(os.getenv("WALLET_MAGIC_LOGIN_ALLOWED_HOSTS") or "").strip()
+    values = raw.split(",") if raw else ["211-ai.com", "www.211-ai.com", "211-ai.github.io", "localhost", "127.0.0.1"]
+    return {value.strip().lower() for value in values if value.strip()}
+
+
+def _magic_login_base_url(requested: str) -> str:
+    fallback = str(os.getenv("WALLET_MAGIC_LOGIN_BASE_URL") or "https://211-ai.com/").strip()
+    value = str(requested or fallback).strip()
+    parsed = urllib_parse.urlparse(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("base_url must be an absolute http(s) URL")
+    if str(parsed.hostname or "").lower() not in _allowed_magic_login_hosts():
+        raise ValueError("base_url host is not allowed")
+    return value
+
+
+def _build_magic_login_link(*, token: str, base_url: str) -> str:
+    parsed = urllib_parse.urlparse(base_url)
+    query = dict(urllib_parse.parse_qsl(parsed.query, keep_blank_values=True))
+    query[_MAGIC_LOGIN_PARAM] = token
+    return urllib_parse.urlunparse(
+        parsed._replace(
+            query=urllib_parse.urlencode(query),
+            fragment=parsed.fragment or "/",
+        )
+    )
+
+
+def _magic_login_payload_from_request(request: MagicLoginRequest) -> Dict[str, Any]:
+    portal = str(request.portal or "client").strip().lower()
+    if portal not in {"client", "provider"}:
+        raise ValueError("portal must be client or provider")
+    issued_at = int(time.time() * 1000)
+    ttl_seconds = int(str(os.getenv("WALLET_MAGIC_LOGIN_TTL_SECONDS") or "600").strip() or "600")
+    ttl_seconds = max(60, min(ttl_seconds, 3600))
+    return {
+        "v": 1,
+        "portal": portal,
+        "contact": _normalize_login_contact(request.contact),
+        "issuedAt": issued_at,
+        "expiresAt": issued_at + ttl_seconds * 1000,
+        "nonce": secrets.token_urlsafe(18),
+        "walletId": str(request.wallet_id or "").strip(),
+        "walletApiBaseUrl": str(request.wallet_api_base_url or "").strip(),
+        "actorDid": str(request.actor_did or "").strip(),
+    }
+
+
+def _wallet_config_from_magic_payload(payload: Mapping[str, Any]) -> Dict[str, str]:
+    wallet_id = str(payload.get("walletId") or "").strip()
+    api_base_url = str(payload.get("walletApiBaseUrl") or "").strip()
+    actor_did = str(payload.get("actorDid") or "").strip()
+    wallet_config: Dict[str, str] = {}
+    if wallet_id:
+        wallet_config["walletId"] = wallet_id
+    if api_base_url:
+        wallet_config["apiBaseUrl"] = api_base_url
+    if actor_did:
+        wallet_config["actorDid"] = actor_did
+    return wallet_config
+
+
 def _send_phone_call_notification(*, to_phone: str, script: str) -> Dict[str, str]:
     normalized_phone = _normalize_phone_number(to_phone)
     normalized_script = str(script or "").strip()
@@ -1038,6 +1218,73 @@ def create_app(*, service: WalletInterfaceService | None = None):
     @app.get("/health")
     def health() -> Dict[str, str]:
         return {"status": "ok"}
+
+    @app.post("/auth/magic-link/request")
+    def request_magic_login_link(request: MagicLoginRequest) -> Dict[str, Any]:
+        try:
+            payload = _magic_login_payload_from_request(request)
+            token = _sign_magic_login_token(payload)
+            magic_link = _build_magic_login_link(token=token, base_url=_magic_login_base_url(request.base_url))
+            expires_in_minutes = max(1, math.ceil((int(payload["expiresAt"]) - int(time.time() * 1000)) / 60000))
+            metadata = {
+                "message_type": "magic_login",
+                "portal": payload["portal"],
+                "wallet_id": str(payload.get("walletId") or ""),
+                "nonce": str(payload.get("nonce") or ""),
+            }
+            if _is_email_contact(payload["contact"]):
+                delivery = _send_auth_email_notification(
+                    to_email=payload["contact"],
+                    subject="Your 211 AI / Abby sign-in link",
+                    body=(
+                        "Use this link to sign in to 211 AI / Abby:\n\n"
+                        f"{magic_link}\n\n"
+                        f"This link expires in {expires_in_minutes} minutes. "
+                        "If you did not request it, you can ignore this email."
+                    ),
+                    metadata=metadata,
+                )
+                channel = "email"
+            else:
+                delivery = _send_sms_notification(
+                    to_phone=payload["contact"],
+                    message=(
+                        f"211 AI / Abby login: open {magic_link} "
+                        f"This link expires in {expires_in_minutes} minutes. "
+                        "Reply HELP for help or STOP to opt out."
+                    ),
+                    wallet_id=str(payload.get("walletId") or ""),
+                    external_reference=str(payload.get("nonce") or ""),
+                    metadata=metadata,
+                )
+                channel = "sms"
+            return {
+                "status": "sent",
+                "channel": channel,
+                "expires_at": int(payload["expiresAt"]),
+                "wallet_config": _wallet_config_from_magic_payload(payload),
+                **delivery,
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/auth/magic-link/verify")
+    def verify_magic_login_link(request: MagicLoginVerifyRequest) -> Dict[str, Any]:
+        try:
+            payload = _verify_magic_login_token(request.token)
+            return {
+                "valid": True,
+                "portal": str(payload["portal"]),
+                "contact": str(payload["contact"]),
+                "expires_at": int(payload["expiresAt"]),
+                "wallet_config": _wallet_config_from_magic_payload(payload),
+            }
+        except RuntimeError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     @app.get("/ops/health")
     def ops_health(
