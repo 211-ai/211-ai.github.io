@@ -618,6 +618,10 @@ class HmisReferralDraftValidationRequest(BaseModel):
     actor_did: str
 
 
+class HmisReferralDraftSubmitRequest(BaseModel):
+    actor_did: str
+
+
 class RedactedAnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -3080,6 +3084,21 @@ def create_app(*, service: WalletInterfaceService | None = None):
     ) -> Dict[str, Any]:
         try:
             return app_service.validate_hmis_referral_draft(
+                wallet_id,
+                referral_draft_id,
+                actor_did=request.actor_did,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts/{referral_draft_id}/submit")
+    def submit_hmis_referral_draft(
+        wallet_id: str,
+        referral_draft_id: str,
+        request: HmisReferralDraftSubmitRequest,
+    ) -> Dict[str, Any]:
+        try:
+            return app_service.submit_hmis_referral_draft(
                 wallet_id,
                 referral_draft_id,
                 actor_did=request.actor_did,

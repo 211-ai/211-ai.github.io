@@ -671,7 +671,6 @@ body.playful-pulse .decor-shape {
 }
 
 .sidebar-footer {
-  align-self: end;
   align-items: flex-start;
   border-top: 1px solid rgba(127, 174, 180, 0.35);
   display: flex;
@@ -4835,6 +4834,56 @@ body {
   background: rgba(220, 232, 226, 0.64);
 }
 
+.topbar-locale-control {
+  align-items: center;
+  display: flex;
+}
+
+.topbar-locale-control select {
+  background: rgba(250, 251, 248, 0.86);
+  border: 1px solid rgba(87, 118, 132, 0.45);
+  border-radius: 999px;
+  color: var(--abby-navy);
+  font: inherit;
+  min-height: 40px;
+  padding: 0 12px;
+}
+
+.agent-message-translation {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.agent-translate-button {
+  min-height: 34px;
+  padding: 6px 12px;
+}
+
+.agent-translation-bubble {
+  background: rgba(220, 232, 226, 0.58);
+  border: 1px solid rgba(87, 118, 132, 0.24);
+  border-radius: 16px;
+  color: var(--abby-navy);
+  max-width: 100%;
+  padding: 10px 12px;
+}
+
+.agent-translation-bubble small,
+.agent-translation-error {
+  color: rgba(7, 49, 74, 0.7);
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.agent-translation-bubble p {
+  margin: 6px 0 0;
+}
+
 .mobile-nav-panel {
   max-height: calc(100dvh - 76px);
   overflow-y: auto;
@@ -5212,6 +5261,11 @@ textarea:focus-visible,
   .topbar .button-quiet:hover,
   .topbar .button-quiet[aria-expanded="true"] {
     background: rgba(220, 232, 226, 0.78);
+  }
+
+  .topbar-locale-control select {
+    min-height: 44px;
+    padding: 0 10px;
   }
 
   .login-page {

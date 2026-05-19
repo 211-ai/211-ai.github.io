@@ -7,6 +7,7 @@ import type {
   AgentToolResult,
   EvidenceBundle
 } from "../../agent/types";
+import type { SupportedLocale } from "../../lib/localization";
 import { Button } from "../ui";
 import type { AgentChatMode } from "./AgentChatDrawer";
 import { AgentAudioChatSurface } from "./AgentAudioChatSurface";
@@ -22,6 +23,16 @@ export function AgentChatBottomSheet({
   messages,
   open,
   responding = false,
+  autoTranslateAssistant = false,
+  composerLabel = "Message Abby assistant",
+  composerPlaceholder = "Ask about this screen, routes, or public 211 services",
+  assistantLabel = "Abby assistant",
+  voiceLabel = "Abby voice",
+  currentTaskLabel = "Read-only chat",
+  currentTaskDetail = "Ask questions while continuing to use the app.",
+  respondingLabel = "Abby is checking public app context.",
+  siteLocale = "en",
+  translationLocale = "en",
   toolCalls = [],
   toolResults = [],
   onCancelConfirmation,
@@ -39,6 +50,16 @@ export function AgentChatBottomSheet({
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
+  autoTranslateAssistant?: boolean;
+  composerLabel?: string;
+  composerPlaceholder?: string;
+  assistantLabel?: string;
+  voiceLabel?: string;
+  currentTaskLabel?: string;
+  currentTaskDetail?: string;
+  respondingLabel?: string;
+  siteLocale?: SupportedLocale;
+  translationLocale?: string;
   toolCalls?: AgentToolCall[];
   toolResults?: AgentToolResult[];
   onCancelConfirmation?: (confirmationId: string) => void;
@@ -107,7 +128,7 @@ export function AgentChatBottomSheet({
                 {mode === "audio" ? <Mic size={20} /> : <Bot size={20} />}
               </span>
               <div>
-                <strong>{mode === "audio" ? "Abby voice" : "Abby assistant"}</strong>
+                <strong>{mode === "audio" ? voiceLabel : assistantLabel}</strong>
                 <small>{activeRouteLabel}</small>
               </div>
             </div>
@@ -136,11 +157,12 @@ export function AgentChatBottomSheet({
             ) : (
               <>
                 <div className="agent-current-task" role="status">
-                  <small>Read-only chat</small>
-                  <span>Ask questions while continuing to use the app.</span>
+                  <small>{currentTaskLabel}</small>
+                  <span>{currentTaskDetail}</span>
                 </div>
                 <AgentRuntimeStatus open={open} showModelSelector={expanded} />
                 <AgentMessageList
+                  autoTranslateAssistant={autoTranslateAssistant}
                   confirmations={confirmations}
                   evidenceBundles={evidenceBundles}
                   messages={messages}
@@ -148,17 +170,19 @@ export function AgentChatBottomSheet({
                   onConfirm={onConfirmConfirmation}
                   onOpenServiceDetail={onOpenServiceDetail}
                   responding={responding}
+                  siteLocale={siteLocale}
                   toolCalls={toolCalls}
                   toolResults={toolResults}
+                  translationLocale={translationLocale}
                 />
 
                 {responding ? (
                   <div className="agent-typing" role="status">
-                    Abby is checking public app context.
+                    {respondingLabel}
                   </div>
                 ) : null}
 
-                <AgentComposer disabled={responding} onSend={onSend} />
+                <AgentComposer disabled={responding} label={composerLabel} onSend={onSend} placeholder={composerPlaceholder} />
               </>
             )}
           </div>

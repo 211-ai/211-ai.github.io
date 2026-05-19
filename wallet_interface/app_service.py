@@ -1503,6 +1503,51 @@ class WalletInterfaceService:
             },
         }
 
+    def submit_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        referral_draft_id: str,
+        *,
+        actor_did: str,
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        draft = self.hmis_referral_drafts.get(referral_draft_id)
+        if draft is None or draft.wallet_id != wallet_id:
+            raise ValueError("HMIS referral draft not found")
+        if draft.status != "validated":
+            raise ValueError("HMIS referral draft must be validated before submission")
+
+        draft.status = "queued_manual_review"
+        draft.updated_at = _portal_now()
+        draft.metadata = {
+            **dict(draft.metadata),
+            "submitted_by": actor_did,
+            "submitted_at": draft.updated_at,
+            "submission_mode": "manual_review_queue",
+        }
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/submit_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+                "submission_mode": "manual_review_queue",
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return {
+            "referral_draft": draft.to_dict(),
+            "submission": {
+                "ok": True,
+                "mode": "manual_review_queue",
+                "status": draft.status,
+            },
+        }
+
     def save_wallet_snapshot(self, wallet_id: str) -> Path:
         if self.repository is None:
             raise ValueError("Wallet repository is not configured")

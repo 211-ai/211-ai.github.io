@@ -1,5 +1,6 @@
 import { ExternalLink, MapPinned, Phone } from "lucide-react";
 import type { CorpusDocument } from "../../lib/graphrag";
+import { t, type SupportedLocale } from "../../lib/localization";
 import {
   getPrimaryAddress,
   getPrimaryIntakeText,
@@ -13,10 +14,12 @@ export function ServiceQuickActions({
   document,
   className = "row-actions",
   includeApply = true,
+  siteLocale,
 }: {
   document: CorpusDocument;
   className?: string;
   includeApply?: boolean;
+  siteLocale: SupportedLocale;
 }) {
   const primaryPhone = getPrimaryPhone(document);
   const primaryAddress = getPrimaryAddress(document);
@@ -51,19 +54,19 @@ export function ServiceQuickActions({
       {callAction.href ? (
         <a className="button button-secondary" href={callAction.href}>
           <Phone aria-hidden="true" size={18} />
-          Call
+          {t(siteLocale, "action.call")}
         </a>
       ) : null}
       {mapAction.href ? (
         <a className="button button-secondary" href={mapAction.href} rel={mapAction.rel} target={mapAction.target}>
           <MapPinned aria-hidden="true" size={18} />
-          Directions
+          {t(siteLocale, "action.directions")}
         </a>
       ) : null}
       {includeApply && primaryWebsite ? (
         <a className="button button-secondary" href={primaryWebsite} rel="noreferrer" target="_blank">
           <ExternalLink aria-hidden="true" size={18} />
-          {intakeText ? "Apply info" : "Website"}
+          {intakeText ? t(siteLocale, "action.applyInfo") : t(siteLocale, "action.website")}
         </a>
       ) : null}
     </div>

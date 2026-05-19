@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Bell, CalendarClock, Clock, Download, ExternalLink, MapPin } from "lucide-react";
 import { Badge, Button, Section, StatusBanner } from "../components/ui";
+import { t, tFormat, type SupportedLocale } from "../lib/localization";
 import type { CheckInPolicyDraft, ServiceInteractionEvent, ServicePlan } from "../models/abby";
 import { downloadCalendarAction } from "../services/serviceActionService";
 
@@ -27,37 +28,29 @@ type CalendarStats = {
   checkIns: number;
 };
 
-const dateFormatter = new Intl.DateTimeFormat(undefined, {
-  month: "short",
-  day: "numeric",
-  year: "numeric"
-});
-
-const timeFormatter = new Intl.DateTimeFormat(undefined, {
-  hour: "numeric",
-  minute: "2-digit"
-});
-
 export function CalendarScreen({
   interactions,
   onOpenPlan,
   onOpenService,
   policy,
+  siteLocale,
   servicePlans
 }: {
   interactions: ServiceInteractionEvent[];
   onOpenPlan: (docId: string) => void;
   onOpenService: (docId: string) => void;
   policy: CheckInPolicyDraft;
+  siteLocale: SupportedLocale;
   servicePlans: ServicePlan[];
 }) {
   const events = useMemo(
-    () => buildCalendarEvents({ interactions, policy, servicePlans }),
+    () => buildCalendarEvents({ interactions, policy, servicePlans, siteLocale }),
     [
       interactions,
       policy.intervalDays,
       policy.lastCheckInAt,
       policy.reminderChannels,
+      siteLocale,
       servicePlans
     ]
   );
@@ -77,40 +70,40 @@ export function CalendarScreen({
   return (
     <div className="screen calendar-screen">
       <div className="page-title">
-        <p className="eyebrow">Client portal</p>
-        <h1>Calendar</h1>
+        <p className="eyebrow">{t(siteLocale, "calendar.eyebrow")}</p>
+        <h1>{t(siteLocale, "calendar.title")}</h1>
       </div>
-      <p className="page-note">
-        Upcoming appointments, service follow-ups, and check-ins are collected here so the client can see where they
-        need to be and when.
-      </p>
+      <p className="page-note">{t(siteLocale, "calendar.note")}</p>
 
-      <section className="calendar-summary-grid" aria-label="Calendar summary">
+      <section className="calendar-summary-grid" aria-label={t(siteLocale, "calendar.summaryAria")}>
         <div className="calendar-summary-panel">
-          <span>Next item</span>
-          <strong>{nextEvent ? formatRelativeDay(nextEvent.startsAt, now) : "No upcoming items"}</strong>
-          <small>{nextEvent ? `${nextEvent.title} at ${timeFormatter.format(nextEvent.startsAt)}` : "Add an appointment from a service plan."}</small>
+          <span>{t(siteLocale, "calendar.nextItem")}</span>
+          <strong>{nextEvent ? formatRelativeDay(nextEvent.startsAt, now, siteLocale) : t(siteLocale, "calendar.noUpcomingItems")}</strong>
+          <small>{nextEvent ? `${nextEvent.title} ${formatTime(nextEvent.startsAt, siteLocale)}` : t(siteLocale, "calendar.nextItemHint")}</small>
         </div>
         <div className="calendar-summary-panel">
-          <span>Appointments</span>
+          <span>{t(siteLocale, "calendar.appointments")}</span>
           <strong>{stats.appointments}</strong>
-          <small>Scheduled from saved service plans.</small>
+          <small>{t(siteLocale, "calendar.appointmentsHelp")}</small>
         </div>
         <div className="calendar-summary-panel">
-          <span>Follow-ups</span>
+          <span>{t(siteLocale, "calendar.followUps")}</span>
           <strong>{stats.followUps}</strong>
-          <small>Next actions from service interactions.</small>
+          <small>{t(siteLocale, "calendar.followUpsHelp")}</small>
         </div>
       </section>
 
       {nextEvent ? (
         <StatusBanner tone="info">
-          Next up: {nextEvent.title} on {formatDateTime(nextEvent.startsAt)}.
-          {nextEvent.location ? ` Travel target: ${nextEvent.location}.` : ""}
+          {tFormat(siteLocale, "calendar.nextUp", {
+            title: nextEvent.title,
+            time: formatDateTime(nextEvent.startsAt, siteLocale),
+            travel: nextEvent.location ? tFormat(siteLocale, "calendar.travelTarget", { location: nextEvent.location }) : ""
+          })}
         </StatusBanner>
       ) : null}
 
-      <Section title="Upcoming schedule">
+      <Section title={t(siteLocale, "calendar.upcomingSchedule")}>
         {upcomingEvents.length > 0 ? (
           <div className="calendar-list">
             {upcomingEvents.map((event) => (
@@ -120,19 +113,20 @@ export function CalendarScreen({
                 now={now}
                 onOpenPlan={onOpenPlan}
                 onOpenService={onOpenService}
+                siteLocale={siteLocale}
               />
             ))}
           </div>
         ) : (
           <div className="empty-state">
-            <h3>No upcoming appointments</h3>
-            <p>Add appointment times from a saved service plan to start building the schedule.</p>
+            <h3>{t(siteLocale, "calendar.noUpcomingTitle")}</h3>
+            <p>{t(siteLocale, "calendar.noUpcomingBody")}</p>
           </div>
         )}
       </Section>
 
       {pastEvents.length > 0 ? (
-        <Section title="Past items">
+        <Section title={t(siteLocale, "calendar.pastItems")}>
           <div className="calendar-list">
             {pastEvents.map((event) => (
               <CalendarEventRow
@@ -141,6 +135,7 @@ export function CalendarScreen({
                 now={now}
                 onOpenPlan={onOpenPlan}
                 onOpenService={onOpenService}
+                siteLocale={siteLocale}
               />
             ))}
           </div>
@@ -154,12 +149,14 @@ function CalendarEventRow({
   event,
   now,
   onOpenPlan,
-  onOpenService
+  onOpenService,
+  siteLocale
 }: {
   event: CalendarEvent;
   now: Date;
   onOpenPlan: (docId: string) => void;
   onOpenService: (docId: string) => void;
+  siteLocale: SupportedLocale;
 }) {
   const isPast = event.startsAt.getTime() < now.getTime();
 
@@ -169,7 +166,7 @@ function CalendarEventRow({
       startsAt: event.startsAt,
       durationMinutes: event.durationMinutes,
       location: event.location,
-      notes: buildCalendarNotes(event),
+      notes: buildCalendarNotes(event, siteLocale),
       alarms: event.reminderAt ? [buildAlarm(event)] : undefined,
       context: {
         providerName: event.provider,
@@ -181,44 +178,44 @@ function CalendarEventRow({
 
   return (
     <article className={`calendar-event-item ${isPast ? "calendar-event-past" : ""}`}>
-      <div className="calendar-date-block" aria-label={formatDateTime(event.startsAt)}>
-        <strong>{formatRelativeDay(event.startsAt, now)}</strong>
-        <span>{timeFormatter.format(event.startsAt)}</span>
+      <div className="calendar-date-block" aria-label={formatDateTime(event.startsAt, siteLocale)}>
+        <strong>{formatRelativeDay(event.startsAt, now, siteLocale)}</strong>
+        <span>{formatTime(event.startsAt, siteLocale)}</span>
       </div>
       <div className="calendar-event-body">
         <div className="badge-row">
           <Badge tone={event.kind === "appointment" ? "success" : event.kind === "follow-up" ? "warning" : "info"}>
-            {eventKindLabel(event.kind)}
+            {eventKindLabel(event.kind, siteLocale)}
           </Badge>
           {event.status ? <Badge>{event.status}</Badge> : null}
-          {isPast ? <Badge>past</Badge> : null}
+          {isPast ? <Badge>{t(siteLocale, "calendar.past")}</Badge> : null}
         </div>
         <h3>{event.title}</h3>
         <p>{event.detail}</p>
         <dl className="calendar-event-meta">
           <div>
             <Clock aria-hidden="true" size={16} />
-            <dt>When</dt>
-            <dd>{formatDateTime(event.startsAt)}</dd>
+            <dt>{t(siteLocale, "calendar.when")}</dt>
+            <dd>{formatDateTime(event.startsAt, siteLocale)}</dd>
           </div>
           {event.location ? (
             <div>
               <MapPin aria-hidden="true" size={16} />
-              <dt>Travel</dt>
+              <dt>{t(siteLocale, "calendar.travel")}</dt>
               <dd>{event.location}</dd>
             </div>
           ) : null}
           {event.reminderAt ? (
             <div>
               <Bell aria-hidden="true" size={16} />
-              <dt>Reminder</dt>
-              <dd>{formatDateTime(event.reminderAt)}</dd>
+              <dt>{t(siteLocale, "calendar.reminder")}</dt>
+              <dd>{formatDateTime(event.reminderAt, siteLocale)}</dd>
             </div>
           ) : null}
           {event.provider ? (
             <div>
               <CalendarClock aria-hidden="true" size={16} />
-              <dt>Provider</dt>
+              <dt>{t(siteLocale, "calendar.provider")}</dt>
               <dd>{event.provider}</dd>
             </div>
           ) : null}
@@ -227,17 +224,17 @@ function CalendarEventRow({
       <div className="row-actions calendar-event-actions">
         <Button onClick={addToCalendar} variant="secondary">
           <Download aria-hidden="true" size={18} />
-          Add to calendar
+          {t(siteLocale, "calendar.addToCalendar")}
         </Button>
         {event.planId && event.serviceDocId ? (
           <Button onClick={() => onOpenPlan(event.serviceDocId ?? "")} variant="secondary">
             <ExternalLink aria-hidden="true" size={18} />
-            Open plan
+            {t(siteLocale, "calendar.openPlan")}
           </Button>
         ) : event.serviceDocId ? (
           <Button onClick={() => onOpenService(event.serviceDocId ?? "")} variant="secondary">
             <ExternalLink aria-hidden="true" size={18} />
-            Open service
+            {t(siteLocale, "calendar.openService")}
           </Button>
         ) : null}
       </div>
@@ -248,17 +245,19 @@ function CalendarEventRow({
 function buildCalendarEvents({
   interactions,
   policy,
+  siteLocale,
   servicePlans
 }: {
   interactions: ServiceInteractionEvent[];
   policy: CheckInPolicyDraft;
+  siteLocale: SupportedLocale;
   servicePlans: ServicePlan[];
 }): CalendarEvent[] {
   const planEvents = servicePlans.flatMap((plan): CalendarEvent[] => {
     const appointmentAt = parseDate(plan.appointment_at);
     if (!appointmentAt) return [];
 
-    const title = firstPresent(plan.service_title, plan.provider_name, "Service appointment");
+    const title = firstPresent(plan.service_title, plan.provider_name, t(siteLocale, "calendar.defaultAppointmentTitle"));
     return [
       {
         id: `plan:${plan.plan_id}`,
@@ -266,7 +265,7 @@ function buildCalendarEvents({
         title,
         provider: plan.provider_name,
         startsAt: appointmentAt,
-        detail: firstPresent(plan.goal, "Scheduled service appointment."),
+        detail: firstPresent(plan.goal, t(siteLocale, "calendar.defaultAppointmentDetail")),
         reminderAt: parseDate(plan.reminder_at) ?? undefined,
         location: trimToUndefined(plan.travel_target),
         serviceDocId: trimToUndefined(plan.service_doc_id),
@@ -281,7 +280,7 @@ function buildCalendarEvents({
     const followUpAt = parseDate(interaction.next_follow_up_at);
     if (!followUpAt) return [];
 
-    const title = firstPresent(interaction.next_action, interaction.program_name, interaction.provider_name, "Service follow-up");
+    const title = firstPresent(interaction.next_action, interaction.program_name, interaction.provider_name, t(siteLocale, "calendar.defaultFollowUpTitle"));
     const provider = firstPresent(interaction.provider_name, interaction.counterparty_name);
     return [
       {
@@ -290,7 +289,7 @@ function buildCalendarEvents({
         title,
         provider,
         startsAt: followUpAt,
-        detail: firstPresent(interaction.outcome, interaction.program_name, "Follow up with this service provider."),
+        detail: firstPresent(interaction.outcome, interaction.program_name, t(siteLocale, "calendar.defaultFollowUpDetail")),
         serviceDocId: trimToUndefined(interaction.service_doc_id),
         status: trimToUndefined(interaction.status),
         durationMinutes: 30
@@ -298,27 +297,31 @@ function buildCalendarEvents({
     ];
   });
 
-  const checkInEvent = buildCheckInEvent(policy);
+  const checkInEvent = buildCheckInEvent(policy, siteLocale);
   return [...planEvents, ...followUpEvents, ...(checkInEvent ? [checkInEvent] : [])].sort(
     (left, right) => left.startsAt.getTime() - right.startsAt.getTime()
   );
 }
 
-function buildCheckInEvent(policy: CheckInPolicyDraft): CalendarEvent | null {
+function buildCheckInEvent(policy: CheckInPolicyDraft, locale: SupportedLocale): CalendarEvent | null {
   const lastCheckInAt = parseDate(policy.lastCheckInAt);
   if (!lastCheckInAt || !Number.isFinite(policy.intervalDays) || policy.intervalDays <= 0) return null;
 
   const startsAt = new Date(lastCheckInAt);
   startsAt.setDate(startsAt.getDate() + policy.intervalDays);
-  const channels = policy.reminderChannels.length > 0 ? policy.reminderChannels.join(", ") : "web";
+  const channels = (policy.reminderChannels.length > 0 ? policy.reminderChannels : ["web"]).map((channel) => {
+    if (channel === "sms") return t(locale, "channel.sms");
+    if (channel === "email") return t(locale, "channel.email");
+    return t(locale, "channel.web");
+  }).join(", ");
 
   return {
     id: `check-in:${policy.lastCheckInAt}:${policy.intervalDays}`,
     kind: "check-in",
-    title: "Check in with Abby",
-    provider: "Abby",
+    title: t(locale, "calendar.checkInTitle"),
+    provider: t(locale, "calendar.abby"),
     startsAt,
-    detail: `Reminder channels: ${channels}.`,
+    detail: tFormat(locale, "calendar.reminderChannels", { channels }),
     durationMinutes: 15
   };
 }
@@ -332,12 +335,12 @@ function buildAlarm(event: CalendarEvent) {
   return { description: event.title, triggerMinutesBefore: minutes };
 }
 
-function buildCalendarNotes(event: CalendarEvent): string {
+function buildCalendarNotes(event: CalendarEvent, locale: SupportedLocale): string {
   return [
     event.detail,
-    event.provider ? `Provider: ${event.provider}` : "",
-    event.location ? `Travel target: ${event.location}` : "",
-    event.reminderAt ? `Reminder: ${formatDateTime(event.reminderAt)}` : ""
+    event.provider ? tFormat(locale, "calendar.notes.provider", { value: event.provider }) : "",
+    event.location ? tFormat(locale, "calendar.notes.travel", { value: event.location }) : "",
+    event.reminderAt ? tFormat(locale, "calendar.notes.reminder", { value: formatDateTime(event.reminderAt, locale) }) : ""
   ]
     .filter(Boolean)
     .join("\n");
@@ -358,25 +361,46 @@ function trimToUndefined(value: string): string | undefined {
   return trimmed || undefined;
 }
 
-function eventKindLabel(kind: CalendarEventKind): string {
-  if (kind === "appointment") return "appointment";
-  if (kind === "follow-up") return "follow-up";
-  return "check-in";
+function eventKindLabel(kind: CalendarEventKind, locale: SupportedLocale): string {
+  if (kind === "appointment") return t(locale, "calendar.kind.appointment");
+  if (kind === "follow-up") return t(locale, "calendar.kind.followUp");
+  return t(locale, "calendar.kind.checkIn");
 }
 
-function formatRelativeDay(date: Date, now: Date): string {
+function formatRelativeDay(date: Date, now: Date, locale: SupportedLocale): string {
   const today = startOfDay(now);
   const target = startOfDay(date);
   const days = Math.round((target.getTime() - today.getTime()) / 86400000);
 
-  if (days === 0) return "Today";
-  if (days === 1) return "Tomorrow";
-  if (days === -1) return "Yesterday";
-  return dateFormatter.format(date);
+  if (days === 0) return t(locale, "calendar.today");
+  if (days === 1) return t(locale, "calendar.tomorrow");
+  if (days === -1) return t(locale, "calendar.yesterday");
+  return formatDate(date, locale);
 }
 
-function formatDateTime(date: Date): string {
-  return `${dateFormatter.format(date)} at ${timeFormatter.format(date)}`;
+function formatDateTime(date: Date, locale: SupportedLocale): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function formatDate(date: Date, locale: SupportedLocale): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  }).format(date);
+}
+
+function formatTime(date: Date, locale: SupportedLocale): string {
+  return new Intl.DateTimeFormat(locale, {
+    hour: "numeric",
+    minute: "2-digit"
+  }).format(date);
 }
 
 function startOfDay(date: Date): Date {

@@ -6,6 +6,7 @@ import type {
   AgentToolResult,
   EvidenceBundle
 } from "../../agent/types";
+import type { SupportedLocale } from "../../lib/localization";
 import { Button } from "../ui";
 import { AgentComposer } from "./AgentComposer";
 import { AgentAudioChatSurface } from "./AgentAudioChatSurface";
@@ -23,6 +24,16 @@ export function AgentChatDrawer({
   messages,
   open,
   responding = false,
+  autoTranslateAssistant = false,
+  composerLabel = "Message Abby assistant",
+  composerPlaceholder = "Ask about this screen, routes, or public 211 services",
+  assistantLabel = "Abby assistant",
+  voiceLabel = "Abby voice",
+  currentTaskLabel = "App-aware chat",
+  currentTaskDetail = "Ask questions, move between screens, and review before wallet changes.",
+  respondingLabel = "Abby is working through the request.",
+  siteLocale = "en",
+  translationLocale = "en",
   toolCalls = [],
   toolResults = [],
   onCancelConfirmation,
@@ -40,6 +51,16 @@ export function AgentChatDrawer({
   messages: AgentMessage[];
   open: boolean;
   responding?: boolean;
+  autoTranslateAssistant?: boolean;
+  composerLabel?: string;
+  composerPlaceholder?: string;
+  assistantLabel?: string;
+  voiceLabel?: string;
+  currentTaskLabel?: string;
+  currentTaskDetail?: string;
+  respondingLabel?: string;
+  siteLocale?: SupportedLocale;
+  translationLocale?: string;
   toolCalls?: AgentToolCall[];
   toolResults?: AgentToolResult[];
   onCancelConfirmation?: (confirmationId: string) => void;
@@ -58,6 +79,14 @@ export function AgentChatDrawer({
         evidenceBundles={evidenceBundles}
         mode={mode}
         messages={messages}
+        autoTranslateAssistant={autoTranslateAssistant}
+        composerLabel={composerLabel}
+        composerPlaceholder={composerPlaceholder}
+        assistantLabel={assistantLabel}
+        voiceLabel={voiceLabel}
+        currentTaskLabel={currentTaskLabel}
+        currentTaskDetail={currentTaskDetail}
+        respondingLabel={respondingLabel}
         onCancelConfirmation={onCancelConfirmation}
         onClose={onClose}
         onConfirmConfirmation={onConfirmConfirmation}
@@ -67,8 +96,10 @@ export function AgentChatDrawer({
         onSend={onSend}
         open={open}
         responding={responding}
+        siteLocale={siteLocale}
         toolCalls={toolCalls}
         toolResults={toolResults}
+        translationLocale={translationLocale}
       />
       <div className="agent-chat-shell">
         {!open ? (
@@ -104,7 +135,7 @@ export function AgentChatDrawer({
                   <Bot size={20} />
                 </span>
                 <div>
-                  <strong>Abby assistant</strong>
+                  <strong>{assistantLabel}</strong>
                   <small>{activeRouteLabel}</small>
                 </div>
               </div>
@@ -114,12 +145,13 @@ export function AgentChatDrawer({
             </header>
 
             <div className="agent-current-task" role="status">
-              <small>App-aware chat</small>
-              <span>Ask questions, move between screens, and review before wallet changes.</span>
+              <small>{currentTaskLabel}</small>
+              <span>{currentTaskDetail}</span>
             </div>
             <AgentRuntimeStatus open={open} />
 
             <AgentMessageList
+              autoTranslateAssistant={autoTranslateAssistant}
               confirmations={confirmations}
               evidenceBundles={evidenceBundles}
               messages={messages}
@@ -127,17 +159,19 @@ export function AgentChatDrawer({
               onConfirm={onConfirmConfirmation}
               onOpenServiceDetail={onOpenServiceDetail}
               responding={responding}
+              siteLocale={siteLocale}
               toolCalls={toolCalls}
               toolResults={toolResults}
+              translationLocale={translationLocale}
             />
 
             {responding ? (
               <div className="agent-typing" role="status">
-                Abby is working through the request.
+                {respondingLabel}
               </div>
             ) : null}
 
-            <AgentComposer disabled={responding} onSend={onSend} />
+            <AgentComposer disabled={responding} label={composerLabel} onSend={onSend} placeholder={composerPlaceholder} />
           </aside>
         ) : null}
 
@@ -149,7 +183,7 @@ export function AgentChatDrawer({
                   <Mic size={20} />
                 </span>
                 <div>
-                  <strong>Abby voice</strong>
+                  <strong>{voiceLabel}</strong>
                   <small>{activeRouteLabel}</small>
                 </div>
               </div>

@@ -103,6 +103,39 @@ export async function generateOpenRouterText(options: {
   };
 }
 
+export async function generateOpenRouterTranslation(options: {
+  text: string;
+  targetLocale: string;
+  sourceLocale?: string;
+}): Promise<OpenRouterGenerationResult> {
+  const text = options.text.trim();
+  if (!text) {
+    throw new Error("Translation text cannot be empty.");
+  }
+
+  return generateOpenRouterText({
+    prompt: {
+      prompt: "Translate assistant text for the end user.",
+      systemPrompt: [
+        "You translate Abby assistant replies for the user.",
+        "Preserve meaning, tone, line breaks, phone numbers, URLs, dates, and service names.",
+        "Do not add commentary, prefaces, apologies, or explanations.",
+        "If the text is already in the target language, return it unchanged.",
+        "Return only the translated text.",
+      ].join("\n"),
+      userPrompt: [
+        `Target locale: ${options.targetLocale}`,
+        `Source locale: ${options.sourceLocale || "auto"}`,
+        "Text:",
+        text,
+      ].join("\n"),
+    },
+    maxTokens: Math.max(192, Math.ceil(text.length * 1.6)),
+    localModelName: LLM_CONFIG.defaultModel,
+    fallbackReason: `translation:${options.targetLocale}`,
+  });
+}
+
 function selectOpenRouterModel(localModelName: string): string {
   return /thinking/i.test(localModelName)
     ? LLM_CONFIG.openRouterThinkingModel

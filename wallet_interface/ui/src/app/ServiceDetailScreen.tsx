@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { ServiceProvenancePanel } from "../components/services/ServiceProvenancePanel";
 import { Badge, Button, Section, StatusBanner } from "../components/ui";
+import { t, tFormat, type SupportedLocale } from "../lib/localization";
 import {
   getPrimaryEligibilityText,
   getPrimaryIntakeText,
@@ -34,7 +35,7 @@ type ServiceDetailState =
   | { status: "not-found"; document: null; metadata: ServiceDetailMetadata | null; locations: ServiceLocationRecord[]; error: "" }
   | { status: "error"; document: null; metadata: null; locations: ServiceLocationRecord[]; error: string };
 
-export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: () => void }) {
+export function ServiceDetailScreen({ docId, onBack, siteLocale }: { docId: string; onBack: () => void; siteLocale: SupportedLocale }) {
   const [state, setState] = useState<ServiceDetailState>({
     status: "loading",
     document: null,
@@ -94,7 +95,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           document: null,
           metadata: null,
           locations: [],
-          error: error instanceof Error ? error.message : "Service detail unavailable",
+          error: error instanceof Error ? error.message : t(siteLocale, "services.detail.unavailable"),
         });
       }
     }
@@ -104,16 +105,16 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
     return () => {
       canceled = true;
     };
-  }, [docId]);
+  }, [docId, siteLocale]);
 
   if (state.status === "loading") {
     return (
       <div className="screen">
         <Button onClick={onBack} variant="quiet">
           <ArrowLeft aria-hidden="true" size={18} />
-          Services
+          {t(siteLocale, "services.detail.back")}
         </Button>
-        <StatusBanner tone="info">Loading service detail from the local 211 corpus.</StatusBanner>
+        <StatusBanner tone="info">{t(siteLocale, "services.detail.loading")}</StatusBanner>
       </div>
     );
   }
@@ -123,9 +124,9 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
       <div className="screen">
         <Button onClick={onBack} variant="quiet">
           <ArrowLeft aria-hidden="true" size={18} />
-          Services
+          {t(siteLocale, "services.detail.back")}
         </Button>
-        <StatusBanner tone="warning">Service detail could not load: {state.error}</StatusBanner>
+        <StatusBanner tone="warning">{tFormat(siteLocale, "services.detail.loadError", { error: state.error })}</StatusBanner>
       </div>
     );
   }
@@ -135,13 +136,13 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
       <div className="screen">
         <Button onClick={onBack} variant="quiet">
           <ArrowLeft aria-hidden="true" size={18} />
-          Services
+          {t(siteLocale, "services.detail.back")}
         </Button>
-        <StatusBanner tone="warning">No 211 service record was found for {docId}.</StatusBanner>
-        <Section title="Requested source">
+        <StatusBanner tone="warning">{tFormat(siteLocale, "services.detail.notFound", { docId })}</StatusBanner>
+        <Section title={t(siteLocale, "services.detail.requestedSource")}>
           <div className="list-item">
             <div>
-              <h3>Document ID or CID</h3>
+              <h3>{t(siteLocale, "services.detail.documentIdOrCid")}</h3>
               <p>{docId}</p>
             </div>
           </div>
@@ -153,8 +154,8 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
   const document = state.document;
   const metadata = state.metadata;
   const title = document.program_name || document.provider_name || document.title || document.doc_id;
-  const provider = document.provider_name || "Provider not listed";
-  const program = document.program_name || document.title || "Program not listed";
+  const provider = document.provider_name || t(siteLocale, "services.providerNotListed");
+  const program = document.program_name || document.title || t(siteLocale, "services.programNotListed");
   const location = getServiceLocationLabel(document);
   const phones = getServicePhones(document);
   const addresses = getServiceAddresses(document);
@@ -176,24 +177,24 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
       <div className="page-title">
         <Button onClick={onBack} variant="quiet">
           <ArrowLeft aria-hidden="true" size={18} />
-          Services
+          {t(siteLocale, "services.detail.back")}
         </Button>
-        <p className="eyebrow">Service detail</p>
+        <p className="eyebrow">{t(siteLocale, "services.detail.eyebrow")}</p>
         <h1>{title}</h1>
       </div>
 
-      <Section title="Provider and program">
+      <Section title={t(siteLocale, "services.detail.providerProgram")}>
         <div className="list-stack">
           <article className="list-item">
             <div>
-              <h3>Provider</h3>
+              <h3>{t(siteLocale, "services.detail.provider")}</h3>
               <p>{provider}</p>
             </div>
             <Badge>{document.doc_type}</Badge>
           </article>
           <article className="list-item">
             <div>
-              <h3>Program</h3>
+              <h3>{t(siteLocale, "services.detail.program")}</h3>
               <p>{program}</p>
             </div>
             {location ? <Badge tone="success">{location}</Badge> : null}
@@ -201,16 +202,16 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
         </div>
       </Section>
 
-      <Section title="Actions">
-        <ServiceQuickActions document={document} />
+      <Section title={t(siteLocale, "services.detail.actions")}>
+        <ServiceQuickActions document={document} siteLocale={siteLocale} />
       </Section>
 
-      <Section title="Contact and location">
+      <Section title={t(siteLocale, "services.detail.contactLocation")}>
         <div className="list-stack">
           {phones.length ? (
             <article className="list-item">
               <div>
-                <h3>Phone</h3>
+                <h3>{t(siteLocale, "services.detail.phone")}</h3>
                 <p>{phones.map((item) => item.value).filter(Boolean).join(" · ")}</p>
               </div>
             </article>
@@ -218,7 +219,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {addresses.length ? (
             <article className="list-item">
               <div>
-                <h3>{detailedLocations.length ? "Embedded address summary" : "Address"}</h3>
+                <h3>{detailedLocations.length ? t(siteLocale, "services.detail.embeddedAddressSummary") : t(siteLocale, "services.detail.address")}</h3>
                 <p>{addresses.map((item) => item.address || item.maps_query).filter(Boolean).join(" · ")}</p>
               </div>
               {location ? <Badge tone="success">{location}</Badge> : null}
@@ -230,16 +231,16 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
             return (
               <article className="list-item" key={item.location_id || `${item.service_doc_id}:${item.address}`}>
                 <div>
-                  <h3>{item.label || "Service location"}</h3>
-                  <p>{addressText || "Location available without a formatted address."}</p>
-                  {item.geo_precision ? <p className="supporting-copy">Geo precision: {item.geo_precision}</p> : null}
+                  <h3>{item.label || t(siteLocale, "services.detail.serviceLocation")}</h3>
+                  <p>{addressText || t(siteLocale, "services.detail.locationWithoutAddress")}</p>
+                  {item.geo_precision ? <p className="supporting-copy">{tFormat(siteLocale, "services.detail.geoPrecision", { value: item.geo_precision })}</p> : null}
                 </div>
                 {mapHref ? (
                   <a className="button button-secondary" href={mapHref} rel="noreferrer" target="_blank">
-                    Open map
+                    {t(siteLocale, "services.detail.openMap")}
                   </a>
                 ) : item.geo_cluster_id != null ? (
-                  <Badge tone="success">Cluster {item.geo_cluster_id}</Badge>
+                  <Badge tone="success">{tFormat(siteLocale, "services.detail.cluster", { value: String(item.geo_cluster_id) })}</Badge>
                 ) : null}
               </article>
             );
@@ -247,7 +248,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {areaServedText ? (
             <article className="list-item">
               <div>
-                <h3>Area served</h3>
+                <h3>{t(siteLocale, "services.detail.areaServed")}</h3>
                 <p>{areaServedText}</p>
               </div>
             </article>
@@ -255,7 +256,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {travelInfoText ? (
             <article className="list-item">
               <div>
-                <h3>Travel notes</h3>
+                <h3>{t(siteLocale, "services.detail.travelNotes")}</h3>
                 <p>{travelInfoText}</p>
               </div>
             </article>
@@ -263,12 +264,12 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
         </div>
       </Section>
 
-      <Section title="How to apply">
+      <Section title={t(siteLocale, "services.detail.howToApply")}>
         <div className="list-stack">
           {intakeText ? (
             <article className="list-item">
               <div>
-                <h3>Intake steps</h3>
+                <h3>{t(siteLocale, "services.detail.intakeSteps")}</h3>
                 <p>{intakeText}</p>
               </div>
             </article>
@@ -276,7 +277,7 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {eligibilityText ? (
             <article className="list-item">
               <div>
-                <h3>Eligibility</h3>
+                <h3>{t(siteLocale, "services.detail.eligibility")}</h3>
                 <p>{eligibilityText}</p>
               </div>
             </article>
@@ -284,21 +285,21 @@ export function ServiceDetailScreen({ docId, onBack }: { docId: string; onBack: 
           {requiredDocumentsText ? (
             <article className="list-item">
               <div>
-                <h3>Required documents</h3>
+                <h3>{t(siteLocale, "services.detail.requiredDocuments")}</h3>
                 <p>{requiredDocumentsText}</p>
               </div>
             </article>
           ) : null}
           {!intakeText && !eligibilityText && !requiredDocumentsText ? (
-            <StatusBanner tone="info">This service record does not yet expose structured intake details in the browser corpus.</StatusBanner>
+            <StatusBanner tone="info">{t(siteLocale, "services.detail.noStructuredIntake")}</StatusBanner>
           ) : null}
         </div>
       </Section>
 
-      <Section title="Summary">
+      <Section title={t(siteLocale, "services.detail.summary")}>
         <div className="review-panel">
           <p className="supporting-copy" style={{ overflowWrap: "anywhere" }}>
-            {toReadableSummary(document, detailedLocations)}
+            {toReadableSummary(document, detailedLocations, siteLocale)}
           </p>
         </div>
       </Section>
@@ -316,9 +317,9 @@ const SUMMARY_NOISE_PATTERNS = [
   /Main phone/gi,
 ];
 
-function toReadableSummary(document: CorpusDocument, detailedLocations: ServiceLocationRecord[]): string {
+function toReadableSummary(document: CorpusDocument, detailedLocations: ServiceLocationRecord[], locale: SupportedLocale): string {
   const cleanText = sanitizeSummaryText(document.text);
-  if (!cleanText) return "No source summary is available for this 211 record.";
+  if (!cleanText) return t(locale, "services.detail.noSourceSummary");
 
   const exclusionValues = buildSummaryExclusionValues(document, detailedLocations);
   const summarySegments = cleanText
@@ -328,7 +329,7 @@ function toReadableSummary(document: CorpusDocument, detailedLocations: ServiceL
     .filter((segment) => !isDuplicateStructuredSummarySegment(segment, exclusionValues));
 
   const summary = summarySegments.join(" ").replace(/\s+/g, " ").trim();
-  if (!summary) return "No non-duplicative source summary is available for this 211 record.";
+  if (!summary) return t(locale, "services.detail.noNonDuplicativeSummary");
   return summary.length > 700 ? `${summary.slice(0, 700).trim()}...` : summary;
 }
 

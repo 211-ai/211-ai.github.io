@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, ExternalLink, RefreshCw } from "lucide-react";
 import { getServiceLocationLabel, load211DocumentsByReference, type CorpusDocument } from "../../lib/graphrag";
+import { t, tFormat, type SupportedLocale } from "../../lib/localization";
 import type { SavedService, ServicePlan } from "../../models/abby";
 import { Badge, Button, Section, StatusBanner } from "../ui";
 import { ServiceQuickActions } from "./ServiceQuickActions";
@@ -12,6 +13,7 @@ export function SavedServicesPanel({
   onOpenPlan,
   onRefresh,
   savedServices,
+  siteLocale,
   servicePlans
 }: {
   error?: string;
@@ -20,6 +22,7 @@ export function SavedServicesPanel({
   onOpenPlan: (docId: string) => void;
   onRefresh?: () => void;
   savedServices: SavedService[];
+  siteLocale: SupportedLocale;
   servicePlans: ServicePlan[];
 }) {
   const [documentById, setDocumentById] = useState<Map<string, CorpusDocument>>(new Map());
@@ -63,9 +66,9 @@ export function SavedServicesPanel({
       actions={
         onRefresh ? (
           <Button
-            ariaLabel="Refresh saved services"
+            ariaLabel={t(siteLocale, "services.saved.refresh")}
             loading={loading}
-            loadingLabel="Refreshing"
+            loadingLabel={t(siteLocale, "services.saved.refreshing")}
             onClick={onRefresh}
             variant="quiet"
           >
@@ -73,13 +76,13 @@ export function SavedServicesPanel({
           </Button>
         ) : null
       }
-      title="Saved services"
+      title={t(siteLocale, "services.saved.title")}
     >
-      {error ? <StatusBanner tone="warning">Saved services could not refresh: {error}</StatusBanner> : null}
+      {error ? <StatusBanner tone="warning">{tFormat(siteLocale, "services.saved.error", { error })}</StatusBanner> : null}
       {!rows.length ? (
-        <StatusBanner tone="info">Save a service from search results to keep it in your private service list.</StatusBanner>
+        <StatusBanner tone="info">{t(siteLocale, "services.saved.empty")}</StatusBanner>
       ) : (
-        <div className="list-stack" aria-label="Saved services">
+        <div className="list-stack" aria-label={t(siteLocale, "services.saved.aria")}>
           {rows.map(({ plan, service }) => {
             const serviceDocId = service?.service_doc_id || plan?.service_doc_id || "";
             const serviceDocument = serviceDocId ? documentById.get(serviceDocId) : undefined;
@@ -92,7 +95,7 @@ export function SavedServicesPanel({
               plan?.service_title ||
               serviceDocId;
             const provider =
-              service?.provider_name || plan?.provider_name || serviceDocument?.provider_name || "Provider not listed";
+              service?.provider_name || plan?.provider_name || serviceDocument?.provider_name || t(siteLocale, "services.saved.providerNotListed");
             const location = serviceDocument ? getServiceLocationLabel(serviceDocument) : "";
             return (
               <article className="list-item" key={service?.saved_service_id || plan?.plan_id || serviceDocId}>
@@ -103,33 +106,33 @@ export function SavedServicesPanel({
                   <div className="badge-row">
                     {service ? (
                       <Badge tone={service.priority === "high" ? "warning" : "neutral"}>
-                        {service.priority || "normal"}
+                        {service.priority || t(siteLocale, "services.saved.priority.normal")}
                       </Badge>
                     ) : null}
                     <Badge tone={service?.status === "saved" || !service ? "success" : "neutral"}>
-                      {service?.status || "planned"}
+                      {service?.status || t(siteLocale, "services.saved.status.planned")}
                     </Badge>
-                    {plan ? <Badge tone="info">plan {plan.status || "active"}</Badge> : null}
+                    {plan ? <Badge tone="info">{tFormat(siteLocale, "services.saved.planStatus", { status: plan.status || "active" })}</Badge> : null}
                     {service?.private_notes_record_id || plan?.private_notes_record_id ? (
-                      <Badge tone="success">encrypted notes</Badge>
+                      <Badge tone="success">{t(siteLocale, "services.saved.encryptedNotes")}</Badge>
                     ) : null}
                     {location ? <Badge>{location}</Badge> : null}
                   </div>
                 </div>
                 <div className="row-actions list-item-action">
-                  {serviceDocument ? <ServiceQuickActions document={serviceDocument} /> : null}
+                  {serviceDocument ? <ServiceQuickActions document={serviceDocument} siteLocale={siteLocale} /> : null}
                   {service?.source_url ? (
                     <a className="button button-secondary" href={service.source_url} rel="noreferrer" target="_blank">
                       <ExternalLink aria-hidden="true" size={18} />
-                      Source
+                      {t(siteLocale, "services.saved.source")}
                     </a>
                   ) : null}
                   <Button onClick={() => onOpenDetail(serviceDocId)} variant="secondary">
-                    Open detail
+                    {t(siteLocale, "services.openDetail")}
                   </Button>
                   <Button onClick={() => onOpenPlan(serviceDocId)} variant={plan ? "secondary" : "primary"}>
                     <CalendarClock aria-hidden="true" size={18} />
-                    {plan ? "Edit plan" : "Create plan"}
+                    {plan ? t(siteLocale, "services.saved.editPlan") : t(siteLocale, "services.saved.createPlan")}
                   </Button>
                 </div>
               </article>

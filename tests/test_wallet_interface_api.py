@@ -965,6 +965,97 @@ def test_wallet_api_private_analytics_flow() -> None:
     assert result["privacy_budget_spent"] == 0.25
 
 
+def test_hmis_referral_draft_submit_moves_validated_draft_to_manual_review_queue() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    create_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts",
+        json={
+            "actor_did": "did:key:owner",
+            "local_subject_ref": "wallet:user-1",
+            "destination_program_ref": "rosehaven-day-center",
+            "provider_name": "Rose Haven",
+            "summary": "Client needs same-day shelter intake.",
+        },
+    )
+    assert create_response.status_code == 200
+    draft_id = create_response.json()["referral_draft_id"]
+
+    validate_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}/validate",
+        json={"actor_did": "did:key:owner"},
+    )
+    assert validate_response.status_code == 200
+    assert validate_response.json()["referral_draft"]["status"] == "validated"
+
+    submit_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}/submit",
+        json={"actor_did": "did:key:owner"},
+    )
+
+    assert submit_response.status_code == 200
+    payload = submit_response.json()
+    assert payload["submission"]["ok"] is True
+    assert payload["submission"]["mode"] == "manual_review_queue"
+    assert payload["referral_draft"]["status"] == "queued_manual_review"
+    assert payload["referral_draft"]["metadata"]["submitted_by"] == "did:key:owner"
+    assert payload["referral_draft"]["metadata"]["submission_mode"] == "manual_review_queue"
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/submit_referral_draft" in actions
+
+
+def test_hmis_referral_draft_submit_requires_validated_status() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    create_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts",
+        json={
+            "actor_did": "did:key:owner",
+            "local_subject_ref": "wallet:user-1",
+            "destination_program_ref": "rosehaven-day-center",
+        },
+    )
+    assert create_response.status_code == 200
+    draft_id = create_response.json()["referral_draft_id"]
+
+    submit_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts/{draft_id}/submit",
+        json={"actor_did": "did:key:owner"},
+    )
+
+    assert submit_response.status_code == 400
+    assert submit_response.json()["detail"] == "HMIS referral draft must be validated before submission"
+
+
 def test_hmis_referral_draft_update_resets_status_and_rebuilds_packet() -> None:
     service = WalletInterfaceService(
         services=[

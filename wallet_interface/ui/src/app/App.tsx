@@ -200,6 +200,25 @@ import {
   ShelterUserAccount,
   writePersistedAppState
 } from "./appState";
+import {
+  detectBrowserLocale,
+  getLocaleOptionLabel,
+  normalizeSiteLocale,
+  readAssistantAutoTranslatePreference,
+  readAssistantTranslationLocalePreference,
+  readSiteLocalePreference,
+  SUPPORTED_LOCALES,
+  syncDocumentLocale,
+  t,
+  tFormat,
+  TRANSLATION_LOCALE_OPTIONS,
+  translateRouteLabel,
+  translateServiceNeed,
+  type SupportedLocale,
+  writeAssistantAutoTranslatePreference,
+  writeAssistantTranslationLocalePreference,
+  writeSiteLocalePreference,
+} from "../lib/localization";
 
 const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
@@ -382,16 +401,128 @@ function getIdentityDocumentFileDetail(file: File): string {
   return `${file.name} (${fileType})`;
 }
 
-function formatRecipientType(type: DisclosureRecipientType): string {
+function formatRecipientType(type: DisclosureRecipientType, locale: SupportedLocale): string {
   const labels: Record<DisclosureRecipientType, string> = {
-    benefits_agency: "Benefits agency",
-    emergency_contact: "Emergency contact",
-    government_liaison: "Government help",
-    police_precinct: "Police precinct",
-    shelter_staff: "Shelter staff",
-    social_worker: "Social worker"
+    benefits_agency: t(locale, "contacts.recipientType.benefits_agency"),
+    emergency_contact: t(locale, "contacts.recipientType.emergency_contact"),
+    government_liaison: t(locale, "contacts.recipientType.government_liaison"),
+    police_precinct: t(locale, "contacts.recipientType.police_precinct"),
+    shelter_staff: t(locale, "contacts.recipientType.shelter_staff"),
+    social_worker: t(locale, "contacts.recipientType.social_worker")
   };
   return labels[type];
+}
+
+function localizedPrecinctName(name: string, locale: SupportedLocale): string {
+  return name === DEFAULT_LOCAL_PRECINCT ? t(locale, "contacts.defaultPrecinct") : name;
+}
+
+function localizedRelationshipName(name: string, locale: SupportedLocale): string {
+  if (name === "Shelter") return t(locale, "contacts.shelterGroup");
+  return name === LOCAL_PRECINCT_RELATIONSHIP ? t(locale, "contacts.localPrecinctRelationship") : name;
+}
+
+function formatContactRequestStatus(status: string, locale: SupportedLocale): string {
+  if (status === "approved") return t(locale, "contacts.status.approved");
+  if (status === "denied") return t(locale, "contacts.status.denied");
+  if (status === "canceled") return t(locale, "contacts.status.canceled");
+  return t(locale, "contacts.status.pending");
+}
+
+function disclosureScopeLabelKey(scope: DisclosureDataScope) {
+  switch (scope) {
+    case "identity_minimum":
+      return "sharing.scope.identity_minimum.label" as const;
+    case "profile":
+      return "sharing.scope.profile.label" as const;
+    case "photo":
+      return "sharing.scope.photo.label" as const;
+    case "current_location":
+      return "sharing.scope.current_location.label" as const;
+    case "uploaded_documents":
+      return "sharing.scope.uploaded_documents.label" as const;
+    case "missed_check_in":
+      return "sharing.scope.missed_check_in.label" as const;
+    case "found_permanent_housing":
+      return "sharing.scope.found_permanent_housing.label" as const;
+    case "medical_notes":
+      return "sharing.scope.medical_notes.label" as const;
+    case "shelter_history":
+      return "sharing.scope.shelter_history.label" as const;
+    case "benefits_information":
+      return "sharing.scope.benefits_information.label" as const;
+    case "custom":
+      return "sharing.scope.custom.label" as const;
+  }
+}
+
+function disclosureScopeDetailKey(scope: DisclosureDataScope) {
+  switch (scope) {
+    case "identity_minimum":
+      return "sharing.scope.identity_minimum.detail" as const;
+    case "profile":
+      return "sharing.scope.profile.detail" as const;
+    case "photo":
+      return "sharing.scope.photo.detail" as const;
+    case "current_location":
+      return "sharing.scope.current_location.detail" as const;
+    case "uploaded_documents":
+      return "sharing.scope.uploaded_documents.detail" as const;
+    case "missed_check_in":
+      return "sharing.scope.missed_check_in.detail" as const;
+    case "found_permanent_housing":
+      return "sharing.scope.found_permanent_housing.detail" as const;
+    case "medical_notes":
+      return "sharing.scope.medical_notes.detail" as const;
+    case "shelter_history":
+      return "sharing.scope.shelter_history.detail" as const;
+    case "benefits_information":
+      return "sharing.scope.benefits_information.detail" as const;
+    case "custom":
+      return "sharing.scope.custom.detail" as const;
+  }
+}
+
+function formatLocalizedCapability(ability: string, locale: SupportedLocale): string {
+  const labels: Record<string, string> = {
+    "analytics/contribute": t(locale, "sharing.capability.shareGroupFacts"),
+    "analytics/query": t(locale, "sharing.capability.askGroupQuestions"),
+    "derived/read": t(locale, "sharing.capability.readSafeFacts"),
+    "export/create": t(locale, "sharing.capability.makeFullExport"),
+    "grant/create": t(locale, "sharing.capability.shareAgain"),
+    "location/read_coarse": t(locale, "sharing.capability.readGeneralLocation"),
+    "location/read_precise": t(locale, "sharing.capability.readExactLocation"),
+    "metadata/read": t(locale, "sharing.capability.readBasicInfo"),
+    "proof/verify": t(locale, "sharing.capability.checkProof"),
+    "record/analyze": t(locale, "sharing.capability.makeSafeSummary"),
+    "record/decrypt": t(locale, "sharing.capability.openFileContents")
+  };
+  return labels[ability] ?? plainCapabilityLabel(ability);
+}
+
+function formatLocalizedCapabilitySummary(abilities: string[], locale: SupportedLocale): string {
+  return abilities.map((ability) => formatLocalizedCapability(ability, locale)).join(", ");
+}
+
+function formatLocalizedNonGrantedCapabilities(abilities: string[], locale: SupportedLocale): string {
+  return plainNonGrantedCapabilities(abilities)
+    .map((ability) => {
+      const labels: Record<string, string> = {
+        "share group facts": t(locale, "sharing.capability.shareGroupFacts"),
+        "ask group questions": t(locale, "sharing.capability.askGroupQuestions"),
+        "read safe facts": t(locale, "sharing.capability.readSafeFacts"),
+        "make a full wallet export": t(locale, "sharing.capability.makeFullExport"),
+        "share again with someone else": t(locale, "sharing.capability.shareAgain"),
+        "read general location": t(locale, "sharing.capability.readGeneralLocation"),
+        "read exact location": t(locale, "sharing.capability.readExactLocation"),
+        "read basic info": t(locale, "sharing.capability.readBasicInfo"),
+        "check proof": t(locale, "sharing.capability.checkProof"),
+        "make a safe summary": t(locale, "sharing.capability.makeSafeSummary"),
+        "open file contents": t(locale, "sharing.capability.openFileContents")
+      };
+      return labels[ability] ?? ability;
+    })
+    .join(", ");
 }
 
 function formatAnalyticsField(field: string): string {
@@ -1061,6 +1192,7 @@ function summarizeWalletProofClaims(proofs: ProofReceiptView[]) {
 export function App() {
   const persistedState = useMemo(() => readPersistedAppState(), []);
   const defaultAppState = useMemo(() => createDefaultAppState(persistedState), [persistedState]);
+  const browserLocale = useMemo(() => detectBrowserLocale(), []);
   const [signedInUser, setSignedInUser] = useState(readSignedInUser);
   const activeRouteRef = useRef<RouteId>(getInitialRouteFromHash());
   const [activeRoute, setActiveRoute] = useState<RouteId>(activeRouteRef.current);
@@ -1099,6 +1231,13 @@ export function App() {
   const [serviceInteractions, setServiceInteractions] = useState<ServiceInteractionEvent[]>(
     () => defaultAppState.serviceInteractions
   );
+  const [siteLocale, setSiteLocale] = useState<SupportedLocale>(() => readSiteLocalePreference() ?? normalizeSiteLocale(browserLocale));
+  const [assistantTranslationLocale, setAssistantTranslationLocale] = useState<string>(
+    () => readAssistantTranslationLocalePreference() ?? browserLocale
+  );
+  const [assistantAutoTranslate, setAssistantAutoTranslate] = useState<boolean>(
+    () => readAssistantAutoTranslatePreference() ?? !/^en\b/i.test(browserLocale)
+  );
   const [walletPortalLoading, setWalletPortalLoading] = useState(false);
   const [walletPortalError, setWalletPortalError] = useState("");
   const [walletActorResolved, setWalletActorResolved] = useState(false);
@@ -1119,6 +1258,18 @@ export function App() {
   const lastSyncedDeadDropPayloadRef = useRef("");
   const walletApiBaseUrl = walletApiConfig?.apiBaseUrl ?? readWalletApiBaseUrl();
   const walletDeadDropReady = Boolean(walletApiConfig?.actorDid && walletActorResolved);
+  const localizedClientNavigationRoutes = useMemo(
+    () => clientNavigationRoutes.map((route) => ({ ...route, label: translateRouteLabel(siteLocale, route.id, route.label) })),
+    [siteLocale]
+  );
+  const localizedProviderNavigationRoutes = useMemo(
+    () => providerNavigationRoutes.map((route) => ({ ...route, label: translateRouteLabel(siteLocale, route.id, route.label) })),
+    [siteLocale]
+  );
+  const localizedSecondaryNavigationRoutes = useMemo(
+    () => secondaryNavigationRoutes.map((route) => ({ ...route, label: translateRouteLabel(siteLocale, route.id, route.label) })),
+    [siteLocale]
+  );
 
   const persistWalletApiConfig = useCallback((nextConfig: WalletApiConfig) => {
     if (typeof window !== "undefined") {
@@ -1356,6 +1507,19 @@ export function App() {
   ]);
 
   useEffect(() => {
+    syncDocumentLocale(siteLocale);
+    writeSiteLocalePreference(siteLocale);
+  }, [siteLocale]);
+
+  useEffect(() => {
+    writeAssistantTranslationLocalePreference(assistantTranslationLocale);
+  }, [assistantTranslationLocale]);
+
+  useEffect(() => {
+    writeAssistantAutoTranslatePreference(assistantAutoTranslate);
+  }, [assistantAutoTranslate]);
+
+  useEffect(() => {
     if (!walletApiConfig) {
       setWalletActorResolved(false);
       return;
@@ -1569,12 +1733,13 @@ export function App() {
   const nextCheckIn = useMemo(() => {
     const next = new Date(policy.lastCheckInAt);
     next.setDate(next.getDate() + policy.intervalDays);
-    return next.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
-  }, [policy.intervalDays, policy.lastCheckInAt]);
+    return next.toLocaleDateString(siteLocale, { month: "short", day: "numeric", year: "numeric" });
+  }, [policy.intervalDays, policy.lastCheckInAt, siteLocale]);
 
   if (!signedInUser) {
     return (
       <LoginScreen
+        siteLocale={siteLocale}
         onOpenAssistant={() => {
           handleSignIn("abby");
           openAgentChatMode("audio");
@@ -1601,7 +1766,7 @@ export function App() {
   }
 
   const portalMode = providerRouteIds.has(activeRoute) ? "provider" : "client";
-  const portalLabel = portalMode === "provider" ? "Provider workspace" : "Client portal";
+  const portalLabel = portalMode === "provider" ? t(siteLocale, "portal.provider") : t(siteLocale, "portal.client");
   const showClientNavigation = !providerRouteIds.has(activeRoute);
   const showProviderNavigation = signedInUser.startsWith("provider:") || providerRouteIds.has(activeRoute);
 
@@ -1613,8 +1778,8 @@ export function App() {
           {showClientNavigation ? (
             <NavigationGroup
               activeRoute={activeRoute}
-              label="Client portal"
-              routes={clientNavigationRoutes}
+              label={t(siteLocale, "nav.clientPortal")}
+              routes={localizedClientNavigationRoutes}
               onNavigate={navigate}
             />
           ) : null}
@@ -1622,16 +1787,16 @@ export function App() {
             <NavigationGroup
               activeRoute={activeRoute}
               className="nav-group-provider"
-              label="Provider portal"
-              routes={providerNavigationRoutes}
+              label={t(siteLocale, "nav.providerPortal")}
+              routes={localizedProviderNavigationRoutes}
               onNavigate={navigate}
             />
           ) : null}
           <NavigationGroup
             activeRoute={activeRoute}
             className="nav-group-support"
-            label="Analytics tools"
-            routes={secondaryNavigationRoutes}
+            label={t(siteLocale, "nav.analyticsTools")}
+            routes={localizedSecondaryNavigationRoutes}
             onNavigate={navigate}
           />
         </nav>
@@ -1650,7 +1815,7 @@ export function App() {
           <Button
             ariaControls="mobile-navigation"
             ariaExpanded={mobileNavOpen}
-            ariaLabel={mobileNavOpen ? "Close menu" : "Open menu"}
+            ariaLabel={mobileNavOpen ? t(siteLocale, "topbar.closeMenu") : t(siteLocale, "topbar.openMenu")}
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
             variant="quiet"
           >
@@ -1658,13 +1823,27 @@ export function App() {
           </Button>
           <div>
             <strong>Abby</strong>
-            <small>{portalMode === "client" ? `Next check-in: ${nextCheckIn}` : portalLabel}</small>
+            <small>{portalMode === "client" ? `${t(siteLocale, "topbar.nextCheckIn")}: ${nextCheckIn}` : portalLabel}</small>
           </div>
           <div className="topbar-actions">
+            <label className="topbar-locale-control">
+              <span className="sr-only">{t(siteLocale, "settings.siteLanguage")}</span>
+              <select value={siteLocale} onChange={(event) => setSiteLocale(normalizeSiteLocale(event.target.value))}>
+                {SUPPORTED_LOCALES.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
             <Button
               ariaControls="agent-chat-bottom-sheet"
               ariaExpanded={agentChatOpen && agentChatMode === "text"}
-              ariaLabel={agentChatOpen && agentChatMode === "text" ? "Close text chat" : "Open text chat"}
+              ariaLabel={
+                agentChatOpen && agentChatMode === "text"
+                  ? t(siteLocale, "topbar.closeTextChat")
+                  : t(siteLocale, "topbar.openTextChat")
+              }
               onClick={() => toggleAgentChatMode("text")}
               variant="quiet"
             >
@@ -1673,13 +1852,17 @@ export function App() {
             <Button
               ariaControls="agent-chat-bottom-sheet"
               ariaExpanded={agentChatOpen && agentChatMode === "audio"}
-              ariaLabel={agentChatOpen && agentChatMode === "audio" ? "Close voice chat" : "Open voice chat"}
+              ariaLabel={
+                agentChatOpen && agentChatMode === "audio"
+                  ? t(siteLocale, "topbar.closeVoiceChat")
+                  : t(siteLocale, "topbar.openVoiceChat")
+              }
               onClick={() => toggleAgentChatMode("audio")}
               variant="quiet"
             >
               <Mic size={20} />
             </Button>
-            <Button ariaLabel="Sign out" onClick={handleSignOut} variant="quiet">
+            <Button ariaLabel={t(siteLocale, "topbar.signOut")} onClick={handleSignOut} variant="quiet">
               <LogOut size={20} />
             </Button>
           </div>
@@ -1690,8 +1873,8 @@ export function App() {
             {showClientNavigation ? (
               <NavigationGroup
                 activeRoute={activeRoute}
-                label="Client portal"
-                routes={clientNavigationRoutes}
+                label={t(siteLocale, "nav.clientPortal")}
+                routes={localizedClientNavigationRoutes}
                 onNavigate={navigate}
               />
             ) : null}
@@ -1699,16 +1882,16 @@ export function App() {
               <NavigationGroup
                 activeRoute={activeRoute}
                 className="nav-group-provider"
-                label="Provider portal"
-                routes={providerNavigationRoutes}
+                label={t(siteLocale, "nav.providerPortal")}
+                routes={localizedProviderNavigationRoutes}
                 onNavigate={navigate}
               />
             ) : null}
             <NavigationGroup
               activeRoute={activeRoute}
               className="nav-group-support"
-              label="Analytics tools"
-              routes={secondaryNavigationRoutes}
+              label={t(siteLocale, "nav.analyticsTools")}
+              routes={localizedSecondaryNavigationRoutes}
               onNavigate={navigate}
             />
           </nav>
@@ -1722,6 +1905,7 @@ export function App() {
             policy={policy}
             profile={profile}
             recipients={recipients}
+            siteLocale={siteLocale}
             serviceInteractions={serviceInteractions}
             servicePlans={servicePlans}
             showReviewActions={signedInUser.toLowerCase().includes("reviewer")}
@@ -1733,32 +1917,40 @@ export function App() {
         {activeRoute === "register" ? (
           <RegistrationScreen
             profile={profile}
+            siteLocale={siteLocale}
             setProfile={setProfile}
           />
         ) : null}
         {activeRoute === "settings" ? (
           <SettingsScreen
             apiConfig={walletApiConfig}
+            assistantAutoTranslate={assistantAutoTranslate}
+            assistantTranslationLocale={assistantTranslationLocale}
             analyticsOptIn={analyticsOptIn}
             benefitsOptIn={benefitsOptIn}
+            browserLocale={browserLocale}
             missingPersonDeadDropEnabled={missingPersonDeadDropEnabled}
             navigate={navigate}
             nextCheckIn={nextCheckIn}
             onSnapshotLoaded={refreshWalletAfterSnapshotLoad}
             policy={policy}
             profile={profile}
+            setAssistantAutoTranslate={setAssistantAutoTranslate}
+            setAssistantTranslationLocale={setAssistantTranslationLocale}
             setAnalyticsOptIn={setAnalyticsOptIn}
             setBenefitsOptIn={setBenefitsOptIn}
             setMissingPersonDeadDropEnabled={setMissingPersonDeadDropEnabled}
             setPolicy={setPolicy}
             setProfile={setProfile}
+            setSiteLocale={setSiteLocale}
             sendMissingPersonDeadDrop={sendMissingPersonDeadDrop}
+            siteLocale={siteLocale}
             walletDeadDropReady={walletDeadDropReady}
             walletConnected={Boolean(walletApiConfig)}
           />
         ) : null}
         {activeRoute === "check-in" ? (
-          <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} />
+          <CheckInScreen nextCheckIn={nextCheckIn} policy={policy} profile={profile} setPolicy={setPolicy} siteLocale={siteLocale} />
         ) : null}
         {activeRoute === "calendar" ? (
           <CalendarScreen
@@ -1773,6 +1965,7 @@ export function App() {
             }}
             onOpenService={openServiceDetailFromServices}
             policy={policy}
+            siteLocale={siteLocale}
             servicePlans={servicePlans}
           />
         ) : null}
@@ -1781,6 +1974,7 @@ export function App() {
             profile={profile}
             providerMessages={shelterProviderMessages}
             setProviderMessages={setShelterProviderMessages}
+            siteLocale={siteLocale}
             signedInUser={signedInUser}
           />
         ) : null}
@@ -1789,6 +1983,7 @@ export function App() {
             contactRequests={shelterContactRequests}
             profile={profile}
             recipients={recipients}
+            siteLocale={siteLocale}
             setContactRequests={setShelterContactRequests}
             setRecipients={setRecipients}
           />
@@ -1803,6 +1998,7 @@ export function App() {
             recipients={recipients}
             setApiConfig={persistWalletApiConfig}
             setBundles={setExportBundleViews}
+            siteLocale={siteLocale}
             signedInUser={signedInUser}
             uploads={uploads}
             setUploads={setUploads}
@@ -1825,7 +2021,7 @@ export function App() {
           />
         ) : null}
         {serviceDetailDocId && !servicePlanDocId ? (
-          <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} />
+          <ServiceDetailScreen docId={serviceDetailDocId} onBack={() => navigate("social-services")} siteLocale={siteLocale} />
         ) : null}
         {activeRoute === "social-services" && !serviceDetailDocId && !servicePlanDocId ? (
           <SocialServicesScreen
@@ -1843,6 +2039,7 @@ export function App() {
             savedServices={savedServices}
             servicePlans={servicePlans}
             setSavedServices={setSavedServices}
+            siteLocale={siteLocale}
             walletPortalError={walletPortalError}
             walletPortalLoading={walletPortalLoading}
           />
@@ -1884,6 +2081,7 @@ export function App() {
             shelterCaseRecords={shelterCaseRecords}
             providerMessages={shelterProviderMessages}
             recipients={recipients}
+            siteLocale={siteLocale}
             setContactRequests={setShelterContactRequests}
             setShelterCaseRecords={setShelterCaseRecords}
             setProofReceipts={setWalletProofReceipts}
@@ -1927,8 +2125,14 @@ export function App() {
         ) : null}
       </main>
       <AgentChatDrawer
-        activeRouteLabel={getRouteLabel(activeRoute)}
+        activeRouteLabel={translateRouteLabel(siteLocale, activeRoute, getRouteLabel(activeRoute))}
+        assistantLabel={t(siteLocale, "chat.assistant")}
+        autoTranslateAssistant={assistantAutoTranslate}
+        composerLabel={t(siteLocale, "composer.label")}
+        composerPlaceholder={t(siteLocale, "composer.placeholder")}
         confirmations={agentChat.pendingConfirmations}
+        currentTaskDetail={t(siteLocale, "chat.appAwareDetail")}
+        currentTaskLabel={t(siteLocale, "chat.appAware")}
         evidenceBundles={agentChat.snapshot.session.evidenceBundles}
         mode={agentChatMode}
         messages={agentChat.messages}
@@ -1957,8 +2161,12 @@ export function App() {
         }}
         open={agentChatOpen}
         responding={agentChat.responding}
+        respondingLabel={t(siteLocale, "chat.responding")}
+        siteLocale={siteLocale}
         toolCalls={agentChat.snapshot.session.toolCalls}
         toolResults={agentChat.snapshot.session.toolResults}
+        translationLocale={assistantTranslationLocale}
+        voiceLabel={t(siteLocale, "chat.voice")}
       />
     </div>
   );
@@ -2122,10 +2330,12 @@ function NavButton({
 
 function LoginScreen({
   onAuthenticated,
-  onOpenAssistant
+  onOpenAssistant,
+  siteLocale
 }: {
   onAuthenticated: (result: LoginAuthResult) => void;
   onOpenAssistant: () => void;
+  siteLocale: SupportedLocale;
 }) {
   const [portal, setPortal] = useState<LoginPortal>("client");
   const [contact, setContact] = useState("");
@@ -2155,7 +2365,7 @@ function LoginScreen({
   async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canRequestChallenge) {
-      setLoginError("Enter a valid email address or telephone number.");
+      setLoginError(t(siteLocale, "login.invalidContact"));
       return;
     }
     setPending(true);
@@ -2170,18 +2380,16 @@ function LoginScreen({
         setOneTimePadEntry("");
         setLoginMessage(
           response.channel === "email"
-            ? "We emailed your Abby sign-in link."
-            : "We texted your Abby sign-in link."
+            ? t(siteLocale, "login.emailSent")
+            : t(siteLocale, "login.textSent")
         );
         return;
       } catch (error) {
         if (!shouldAllowLocalMagicLoginFallback()) {
-          setLoginError(error instanceof Error ? error.message : "Magic link delivery failed.");
+          setLoginError(error instanceof Error ? error.message : t(siteLocale, "login.magicLinkFailed"));
           return;
         }
-        setLoginSmsWarning(
-          "Using local demo login because the passwordless login API is not available in this development session."
-        );
+        setLoginSmsWarning(t(siteLocale, "login.localFallbackWarning"));
       }
       const issuedAt = Date.now();
       const expiresAt = issuedAt + MAGIC_LOGIN_TTL_MS;
@@ -2202,7 +2410,7 @@ function LoginScreen({
       const magicLink = magicUrl.toString();
       setChallenge({ ...payload, oneTimePad, magicLink });
       setOneTimePadEntry("");
-      setLoginMessage("One-time access is ready on this screen.");
+      setLoginMessage(t(siteLocale, "login.localReady"));
     } finally {
       setPending(false);
     }
@@ -2211,11 +2419,11 @@ function LoginScreen({
   async function verifyOneTimePad() {
     if (!challenge) return;
     if (Date.now() > challenge.expiresAt) {
-      setLoginError("That one-time code expired. Request a new code.");
+      setLoginError(t(siteLocale, "login.codeExpired"));
       return;
     }
     if (oneTimePadEntry.trim() !== challenge.oneTimePad) {
-      setLoginError("The one-time code does not match.");
+      setLoginError(t(siteLocale, "login.codeMismatch"));
       return;
     }
     const digest = await createMagicLoginDigest({
@@ -2226,7 +2434,7 @@ function LoginScreen({
       salt: challenge.salt
     });
     if (digest !== challenge.digest) {
-      setLoginError("The login proof could not be verified.");
+      setLoginError(t(siteLocale, "login.codeVerifyFailed"));
       return;
     }
     completeLogin({ contact: challenge.contact, portal: challenge.portal });
@@ -2246,16 +2454,16 @@ function LoginScreen({
     }
     const payload = decodeMagicLoginPayload(token);
     if (!payload) {
-      setLoginError("The magic link is not valid.");
+      setLoginError(t(siteLocale, "login.magicInvalid"));
       return;
     }
     if (Date.now() > payload.expiresAt) {
-      setLoginError("That magic link expired. Request a new link.");
+      setLoginError(t(siteLocale, "login.magicExpired"));
       return;
     }
     const digest = await createMagicLoginDigest(payload);
     if (digest !== payload.digest) {
-      setLoginError("The magic link proof could not be verified.");
+      setLoginError(t(siteLocale, "login.magicVerifyFailed"));
       return;
     }
     window.history.replaceState({}, "", `${window.location.pathname}${window.location.hash || "#/"}`);
@@ -2271,9 +2479,9 @@ function LoginScreen({
       <form className="login-panel" onSubmit={submitLogin}>
         <div className="login-brand">
           <img alt="Abby logo" className="login-logo" src="/assets/abby-logo.png" />
-          <h1 className="sr-only">Sign in to Abby</h1>
+          <h1 className="sr-only">{t(siteLocale, "login.signIn")}</h1>
         </div>
-        <div className="login-portal-actions" aria-label="Choose portal" role="group">
+        <div className="login-portal-actions" aria-label={t(siteLocale, "login.choosePortal")} role="group">
           <button
             aria-pressed={portal === "client"}
             className="login-portal-option"
@@ -2281,7 +2489,7 @@ function LoginScreen({
             type="button"
           >
             <Home aria-hidden="true" size={20} />
-            <span>Client</span>
+            <span>{t(siteLocale, "login.client")}</span>
           </button>
           <button
             aria-pressed={portal === "provider"}
@@ -2290,14 +2498,14 @@ function LoginScreen({
             type="button"
           >
             <UsersRound aria-hidden="true" size={20} />
-            <span>Service provider</span>
+            <span>{t(siteLocale, "login.provider")}</span>
           </button>
         </div>
-        <Field label="Email address or telephone" required>
+        <Field label={t(siteLocale, "login.contactLabel")} required>
           <input
             autoComplete="username"
             inputMode="email"
-            placeholder="name@example.org or (503) 555-0100"
+            placeholder={t(siteLocale, "login.contactPlaceholder")}
             value={contact}
             onChange={(event) => {
               setContact(event.target.value);
@@ -2309,8 +2517,8 @@ function LoginScreen({
             }}
           />
         </Field>
-        <Button disabled={!canRequestChallenge || pending} loading={pending} loadingLabel="Preparing access" type="submit">
-          <KeyRound aria-hidden="true" size={18} /> Send sign-in link
+        <Button disabled={!canRequestChallenge || pending} loading={pending} loadingLabel={t(siteLocale, "login.prepareAccess")} type="submit">
+          <KeyRound aria-hidden="true" size={18} /> {t(siteLocale, "login.sendLink")}
         </Button>
         {loginError ? <StatusBanner tone="danger">{loginError}</StatusBanner> : null}
         {loginSmsWarning ? <StatusBanner tone="warning">{loginSmsWarning}</StatusBanner> : null}
@@ -2318,10 +2526,10 @@ function LoginScreen({
         {challenge ? (
           <div className="login-challenge-panel">
             <div className="login-code-display">
-              <small>Demo one-time pad number</small>
+              <small>{t(siteLocale, "login.demoPad")}</small>
               <code aria-label="Generated one-time pad code">{challenge.oneTimePad}</code>
             </div>
-            <Field label="One-time pad number" required>
+            <Field label={t(siteLocale, "login.codeLabel")} required>
               <input
                 autoComplete="one-time-code"
                 inputMode="numeric"
@@ -2335,19 +2543,19 @@ function LoginScreen({
             </Field>
             <div className="login-challenge-actions">
               <Button disabled={oneTimePadEntry.length !== 6} onClick={verifyOneTimePad} type="button">
-                Verify code
+                {t(siteLocale, "login.verifyCode")}
               </Button>
               <a className="button button-secondary" href={challenge.magicLink}>
-                Open magic link
+                {t(siteLocale, "login.openMagicLink")}
               </a>
             </div>
             <p className="login-proof-note">
-              Local development fallback only. Production links are signed by the server before delivery.
+              {t(siteLocale, "login.localDevNote")}
             </p>
           </div>
         ) : null}
         <Button onClick={onOpenAssistant} type="button" variant="secondary">
-          <MessageSquare aria-hidden="true" size={18} /> Open assistant
+          <MessageSquare aria-hidden="true" size={18} /> {t(siteLocale, "login.openAssistant")}
         </Button>
       </form>
     </main>
@@ -2362,6 +2570,7 @@ function HomeScreen({
   profile,
   providerMessages,
   recipients,
+  siteLocale,
   serviceInteractions,
   servicePlans,
   showReviewActions,
@@ -2375,6 +2584,7 @@ function HomeScreen({
   profile: RegistrationProfileDraft;
   providerMessages: ShelterProviderMessage[];
   recipients: DisclosureRecipientDraft[];
+  siteLocale: SupportedLocale;
   serviceInteractions: ServiceInteractionEvent[];
   servicePlans: ServicePlan[];
   showReviewActions: boolean;
@@ -2387,6 +2597,7 @@ function HomeScreen({
     () => Array.from(new Set(profile.serviceNeeds.map((value) => value.trim()).filter(Boolean))).slice(0, 3),
     [profile.serviceNeeds]
   );
+  const selectedNeedLabels = useMemo(() => selectedNeeds.map((need) => translateServiceNeed(siteLocale, need)), [selectedNeeds, siteLocale]);
   const inboxMessages = useMemo(
     () =>
       providerMessages
@@ -2480,27 +2691,27 @@ function HomeScreen({
   return (
     <div className="screen home-screen">
       <div className="page-title home-hero">
-        <p className="eyebrow">Today</p>
-        <h1>Welcome to your safety plan!</h1>
+        <p className="eyebrow">{t(siteLocale, "home.today")}</p>
+        <h1>{t(siteLocale, "home.welcome")}</h1>
       </div>
-      <Section title="Quick actions">
+      <Section title={t(siteLocale, "home.quickActions")}>
         <div className="quick-actions">
           <button className="checkin-panel" onClick={() => navigate("check-in")} type="button">
             <div className="checkin-panel-icon">
               <CalendarCheck size={24} aria-hidden="true" />
             </div>
             <div className="checkin-panel-text">
-              <span className="checkin-panel-label">Next check-in</span>
+              <span className="checkin-panel-label">{t(siteLocale, "home.nextCheckIn")}</span>
               <span className="checkin-panel-value">{nextCheckIn}</span>
             </div>
-            <span className="checkin-panel-cta">Check in now</span>
+            <span className="checkin-panel-cta">{t(siteLocale, "home.checkInNow")}</span>
           </button>
         </div>
       </Section>
-      <Section title="Closest help for your needs">
+      <Section title={t(siteLocale, "home.closestHelp")}>
         {selectedNeeds.length ? (
           homeSuggestionsLoading ? (
-            <StatusBanner tone="info">Finding nearby help for {selectedNeeds.join(", ")}.</StatusBanner>
+            <StatusBanner tone="info">{t(siteLocale, "home.findingNearby")} {selectedNeedLabels.join(", ")}.</StatusBanner>
           ) : homeSuggestions.length ? (
             <div className="list-stack" aria-label="Nearby services for selected needs">
               {homeSuggestions.map(({ need, result, locationLabel }) => {
@@ -2514,13 +2725,13 @@ function HomeScreen({
                       <p>{provider}</p>
                       <small className="upload-machine-summary">{result.snippet}</small>
                       <div className="badge-row">
-                        <Badge>{need}</Badge>
+                        <Badge>{translateServiceNeed(siteLocale, need)}</Badge>
                         {locationLabel ? <Badge>{locationLabel}</Badge> : null}
                       </div>
                     </div>
                     <div className="row-actions list-item-action">
                       <Button onClick={() => onOpenService(result.docId)} variant="secondary">
-                        Open service
+                        {t(siteLocale, "action.openService")}
                       </Button>
                     </div>
                   </article>
@@ -2528,21 +2739,21 @@ function HomeScreen({
               })}
             </div>
           ) : (
-            <StatusBanner tone="info">No nearby matches are ready yet. Open Services to run a broader search.</StatusBanner>
+            <StatusBanner tone="info">{t(siteLocale, "home.noNearbyMatches")}</StatusBanner>
           )
         ) : (
           <div className="empty-state">
-            <h3>No help categories selected yet</h3>
-            <p>Add the kinds of help you want in registration or settings so Abby can pin nearby services here.</p>
+            <h3>{t(siteLocale, "home.noCategories")}</h3>
+            <p>{t(siteLocale, "home.addHelpSettings")}</p>
             <div className="row-actions">
-              <Button onClick={() => navigate("settings")} variant="secondary">Update settings</Button>
+              <Button onClick={() => navigate("settings")} variant="secondary">{t(siteLocale, "home.updateSettings")}</Button>
             </div>
           </div>
         )}
       </Section>
-      <Section title="New messages">
+      <Section title={t(siteLocale, "home.newMessages")}>
         {featuredMessages.length ? (
-          <div className="list-stack" aria-label="New service staff messages">
+          <div className="list-stack" aria-label={t(siteLocale, "home.newMessagesAria")}>
             {featuredMessages.map((message) => (
               <article className="list-item" key={message.id}>
                 <div>
@@ -2551,27 +2762,27 @@ function HomeScreen({
                   <div className="badge-row">
                     <Badge>{message.shelter}</Badge>
                     <Badge tone={message.clientReadAt ? "neutral" : "warning"}>
-                      {message.clientReadAt ? "Read" : "Unread"}
+                      {message.clientReadAt ? t(siteLocale, "home.read") : t(siteLocale, "home.unread")}
                     </Badge>
                     <Badge>{formatShelterDate(message.createdAt)}</Badge>
                   </div>
-                  <small>From {message.staffName}</small>
+                  <small>{t(siteLocale, "home.from")} {message.staffName}</small>
                 </div>
                 <div className="row-actions list-item-action">
                   <Button onClick={() => navigate("messages")} variant="secondary">
-                    Open messages
+                    {t(siteLocale, "home.openMessages")}
                   </Button>
                 </div>
               </article>
             ))}
           </div>
         ) : (
-          <StatusBanner tone="info">No new provider messages are waiting for you.</StatusBanner>
+          <StatusBanner tone="info">{t(siteLocale, "home.noMessages")}</StatusBanner>
         )}
       </Section>
-      <Section title="Urgent calendar items">
+      <Section title={t(siteLocale, "home.urgentItems")}>
         {urgentCalendarItems.length ? (
-          <div className="list-stack" aria-label="Urgent calendar items">
+          <div className="list-stack" aria-label={t(siteLocale, "home.urgentItemsAria")}>
             {urgentCalendarItems.map((item) => {
               const serviceDocId = item.serviceDocId;
               return (
@@ -2588,11 +2799,11 @@ function HomeScreen({
                   </div>
                   <div className="row-actions list-item-action">
                     <Button onClick={() => navigate("calendar")} variant="secondary">
-                      Open calendar
+                      {t(siteLocale, "home.openCalendar")}
                     </Button>
                     {serviceDocId ? (
                       <Button onClick={() => onOpenService(serviceDocId)} variant="secondary">
-                        Open service
+                        {t(siteLocale, "action.openService")}
                       </Button>
                     ) : null}
                   </div>
@@ -2601,44 +2812,44 @@ function HomeScreen({
             })}
           </div>
         ) : (
-          <StatusBanner tone="info">No urgent calendar items are scheduled right now.</StatusBanner>
+          <StatusBanner tone="info">{t(siteLocale, "home.noUrgentItems")}</StatusBanner>
         )}
       </Section>
       {showReviewActions ? (
-        <div className="home-actions" aria-label="Safety plan setup">
+        <div className="home-actions" aria-label={t(siteLocale, "home.safetyPlanSetup")}>
           <ActionCard
-            detail={`${recipients.length} people or services set up`}
+            detail={`${recipients.length} ${t(siteLocale, "home.contactsDetail")}`}
             icon={<ContactRound aria-hidden="true" size={28} />}
             onClick={() => navigate("contacts")}
-            title="Contacts"
+            title={t(siteLocale, "home.contacts")}
           />
           <ActionCard
-            detail="Review what helpers can see"
+            detail={t(siteLocale, "home.sharingDetail")}
             icon={<ShieldCheck aria-hidden="true" size={28} />}
             onClick={() => navigate("contacts")}
-            title="Sharing"
+            title={t(siteLocale, "home.sharing")}
           />
         </div>
       ) : null}
       <div className="home-footer">
         <div className="home-footer-stat">
-          <small>Saved files</small>
-          <span>{uploads.length} file{uploads.length !== 1 ? "s" : ""}</span>
+          <small>{t(siteLocale, "home.savedFiles")}</small>
+          <span>{uploads.length} {uploads.length !== 1 ? t(siteLocale, "home.filePlural") : t(siteLocale, "home.fileSingular")}</span>
         </div>
         <div className="home-footer-divider" />
         <div className="home-footer-stat">
-          <small>Contact sharing</small>
-          <span>Ready to review</span>
+          <small>{t(siteLocale, "home.contactSharing")}</small>
+          <span>{t(siteLocale, "home.reviewReady")}</span>
         </div>
         <div className="home-footer-divider" />
         <div className="home-footer-stat">
-          <small>Legal</small>
+          <small>{t(siteLocale, "home.legal")}</small>
           <div className="home-footer-links">
             <a className="home-footer-link" href="/terms.html">
-              Terms
+              {t(siteLocale, "home.terms")}
             </a>
             <a className="home-footer-link" href="/privacy.html">
-              Privacy
+              {t(siteLocale, "home.privacy")}
             </a>
           </div>
         </div>
@@ -2646,10 +2857,10 @@ function HomeScreen({
       <section className="support-card" aria-labelledby="support-card-title">
         <span className="support-card-badge" aria-hidden="true" />
         <div className="support-card-content">
-          <h2 id="support-card-title">Need help today?</h2>
-          <p>Find shelter, services, and support through your local 211 network.</p>
+          <h2 id="support-card-title">{t(siteLocale, "home.needHelpToday")}</h2>
+          <p>{t(siteLocale, "home.supportDescription")}</p>
           <Button onClick={() => navigate("social-services")}>
-            <HeartHandshake aria-hidden="true" size={18} /> Find help near you
+            <HeartHandshake aria-hidden="true" size={18} /> {t(siteLocale, "home.findHelp")}
           </Button>
         </div>
       </section>
@@ -2668,20 +2879,23 @@ function StatusPanel({ label, value, tone, onClick }: { label: string; value: st
 
 function RegistrationScreen({
   profile,
+  siteLocale,
   setProfile
 }: {
   profile: RegistrationProfileDraft;
+  siteLocale: SupportedLocale;
   setProfile: (profile: RegistrationProfileDraft) => void;
 }) {
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Registration</p>
-        <h1>Create your Abby profile</h1>
+        <p className="eyebrow">{t(siteLocale, "registration.eyebrow")}</p>
+        <h1>{t(siteLocale, "registration.title")}</h1>
       </div>
-      <p className="page-note">To start, add your name, birth date, photo or ID.</p>
-      <ProfileInformationForm profile={profile} setProfile={setProfile} />
+      <p className="page-note">{t(siteLocale, "registration.note")}</p>
+      <ProfileInformationForm profile={profile} setProfile={setProfile} siteLocale={siteLocale} />
       <GovernmentHelpSection
+        siteLocale={siteLocale}
         requested={profile.servicePartnerHelpRequested}
         requestedAt={profile.servicePartnerHelpRequestedAt}
         onToggle={() => togglePartnerHelpRequest(profile, setProfile)}
@@ -2692,9 +2906,11 @@ function RegistrationScreen({
 
 function ProfileInformationForm({
   profile,
+  siteLocale,
   setProfile
 }: {
   profile: RegistrationProfileDraft;
+  siteLocale: SupportedLocale;
   setProfile: (profile: RegistrationProfileDraft) => void;
 }) {
   const update = (patch: Partial<RegistrationProfileDraft>) => setProfile({ ...profile, ...patch });
@@ -2714,7 +2930,7 @@ function ProfileInformationForm({
     if (!isAcceptedIdentityDocument(file)) {
       update({ photoAssetId: "" });
       setPhotoFileDetail("");
-      setPhotoUploadError("We can't use this file. Use JPG, PNG, WebP, or PDF.");
+      setPhotoUploadError(t(siteLocale, "profile.badFile"));
       return;
     }
 
@@ -2733,20 +2949,20 @@ function ProfileInformationForm({
 
   return (
     <form className="form-grid" onSubmit={(event) => event.preventDefault()}>
-      <Field help="This helps us know it is you in an emergency." label="Legal or full name" required>
+      <Field help={t(siteLocale, "profile.legalNameHelp")} label={t(siteLocale, "profile.legalName")} required>
         <input value={profile.legalName} onChange={(event) => update({ legalName: event.target.value })} />
       </Field>
-      <Field help="Shown in the app when provided." label="Preferred name">
+      <Field help={t(siteLocale, "profile.preferredNameHelp")} label={t(siteLocale, "profile.preferredName")}>
         <input value={profile.preferredName} onChange={(event) => update({ preferredName: event.target.value })} />
       </Field>
-      <Field help="Optional. You can use any words you want." label="Pronouns">
+      <Field help={t(siteLocale, "profile.pronounsHelp")} label={t(siteLocale, "profile.pronouns")}>
         <input
-          placeholder="call me she/her, he/him, they/them"
+          placeholder={t(siteLocale, "profile.pronounsPlaceholder")}
           value={profile.pronouns}
           onChange={(event) => update({ pronouns: event.target.value })}
         />
       </Field>
-      <Field help="This helps tell people with the same name apart." label="Birth date" required>
+      <Field help={t(siteLocale, "profile.birthDateHelp")} label={t(siteLocale, "profile.birthDate")} required>
         <input
           type="date"
           value={profile.dateOfBirth}
@@ -2755,8 +2971,8 @@ function ProfileInformationForm({
       </Field>
       <Field
         error={photoUploadError}
-        help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
-        label="Photo or photo ID"
+        help={t(siteLocale, "profile.photoIdHelp")}
+        label={t(siteLocale, "profile.photoId")}
         required
       >
         <input
@@ -2766,28 +2982,28 @@ function ProfileInformationForm({
         />
         {photoFileDetail ? (
           <small className="registration-file-detail" aria-live="polite">
-            Selected file: {photoFileDetail}
+            {t(siteLocale, "profile.selectedFile")}: {photoFileDetail}
           </small>
         ) : null}
       </Field>
       <hr className="form-divider full-span" />
-      <Field help="Used for text reminders." label="Phone">
+      <Field help={t(siteLocale, "profile.phoneHelp")} label={t(siteLocale, "profile.phone")}>
         <input value={profile.phone} onChange={(event) => update({ phone: event.target.value })} />
       </Field>
-      <Field help="Used for email reminders." label="Email">
+      <Field help={t(siteLocale, "profile.emailHelp")} label={t(siteLocale, "profile.email")}>
         <input type="email" value={profile.email} onChange={(event) => update({ email: event.target.value })} />
       </Field>
-      <Field help="Can be a neighborhood, shelter, or general area." label="Current safe location">
+      <Field help={t(siteLocale, "profile.locationHelp")} label={t(siteLocale, "profile.location")}>
         <input value={profile.currentLocation} onChange={(event) => update({ currentLocation: event.target.value })} />
       </Field>
-      <Field help="Optional; useful for assisted setup." label="Preferred shelter">
+      <Field help={t(siteLocale, "profile.shelterHelp")} label={t(siteLocale, "profile.shelter")}>
         <input
           value={profile.shelterAffiliation}
           onChange={(event) => update({ shelterAffiliation: event.target.value })}
         />
       </Field>
       <div className="full-span">
-        <span className="field-label">Service needs</span>
+        <span className="field-label">{t(siteLocale, "profile.serviceNeeds")}</span>
         <div className="chip-grid">
           {serviceNeeds.map((need) => (
             <button
@@ -2797,7 +3013,7 @@ function ProfileInformationForm({
               onClick={() => toggleNeed(need)}
               type="button"
             >
-              {need}
+              {translateServiceNeed(siteLocale, need)}
             </button>
           ))}
         </div>
@@ -2820,78 +3036,94 @@ function togglePartnerHelpRequest(
 function GovernmentHelpSection({
   onToggle,
   requested,
+  siteLocale,
   requestedAt
 }: {
   onToggle: () => void;
   requested: boolean;
+  siteLocale: SupportedLocale;
   requestedAt: string;
 }) {
   return (
-    <Section title="Government help">
+    <Section title={t(siteLocale, "government.title")}>
       <div className={`liaison-panel partner-help-panel${requested ? " partner-help-panel-active" : ""}`}>
         <MessageSquare aria-hidden="true" size={28} />
         <div>
-          <h3>Get help with benefits, ID, housing, or forms.</h3>
+          <h3>{t(siteLocale, "government.heading")}</h3>
           <p>
             {requested
-              ? "This account is flagged for service partners to follow up."
-              : "Only the details you choose to share will be included in the request."}
+              ? t(siteLocale, "government.requestedText")
+              : t(siteLocale, "government.unrequestedText")}
           </p>
           {requested ? (
             <div className="badge-row" aria-label="Government help request status">
-              <Badge tone="warning">Help requested</Badge>
-              {requestedAt ? <Badge>{formatRequestTimestamp(requestedAt)}</Badge> : null}
+              <Badge tone="warning">{t(siteLocale, "government.requestedBadge")}</Badge>
+              {requestedAt ? <Badge>{formatRequestTimestamp(requestedAt, siteLocale)}</Badge> : null}
             </div>
           ) : null}
         </div>
         <Button ariaPressed={requested} onClick={onToggle} variant={requested ? "secondary" : "primary"}>
-          {requested ? "Clear request" : "Start request"}
+          {requested ? t(siteLocale, "government.clearRequest") : t(siteLocale, "government.startRequest")}
         </Button>
       </div>
     </Section>
   );
 }
 
-function formatRequestTimestamp(value: string): string {
+function formatRequestTimestamp(value: string, locale: SupportedLocale): string {
   const timestamp = new Date(value);
-  if (Number.isNaN(timestamp.getTime())) return "Requested";
-  return `Requested ${timestamp.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+  if (Number.isNaN(timestamp.getTime())) return t(locale, "government.requestedOn");
+  return `${t(locale, "government.requestedOn")} ${timestamp.toLocaleDateString(locale, { month: "short", day: "numeric" })}`;
 }
 
 function SettingsScreen({
   apiConfig,
+  assistantAutoTranslate,
+  assistantTranslationLocale,
   analyticsOptIn,
   benefitsOptIn,
+  browserLocale,
   missingPersonDeadDropEnabled,
   navigate,
   nextCheckIn,
   onSnapshotLoaded,
   policy,
   profile,
+  setAssistantAutoTranslate,
+  setAssistantTranslationLocale,
   setAnalyticsOptIn,
   setBenefitsOptIn,
   setMissingPersonDeadDropEnabled,
   setPolicy,
   setProfile,
+  setSiteLocale,
   sendMissingPersonDeadDrop,
+  siteLocale,
   walletDeadDropReady,
   walletConnected
 }: {
   apiConfig?: WalletApiConfig;
+  assistantAutoTranslate: boolean;
+  assistantTranslationLocale: string;
   analyticsOptIn: Record<string, boolean>;
   benefitsOptIn: boolean;
+  browserLocale: string;
   missingPersonDeadDropEnabled: boolean;
   navigate: (route: RouteId) => void;
   nextCheckIn: string;
   onSnapshotLoaded: () => Promise<void> | void;
   policy: typeof defaultCheckInPolicy;
   profile: RegistrationProfileDraft;
+  setAssistantAutoTranslate: (enabled: boolean) => void;
+  setAssistantTranslationLocale: (value: string) => void;
   setAnalyticsOptIn: (value: Record<string, boolean>) => void;
   setBenefitsOptIn: (optedIn: boolean) => void;
   setMissingPersonDeadDropEnabled: (enabled: boolean) => void;
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   setProfile: (profile: RegistrationProfileDraft) => void;
+  setSiteLocale: (locale: SupportedLocale) => void;
   sendMissingPersonDeadDrop: () => Promise<boolean>;
+  siteLocale: SupportedLocale;
   walletDeadDropReady: boolean;
   walletConnected: boolean;
 }) {
@@ -2925,29 +3157,30 @@ function SettingsScreen({
   return (
     <div className="screen settings-screen">
       <div className="page-title">
-        <p className="eyebrow">Client portal</p>
-        <h1>Settings</h1>
+        <p className="eyebrow">{t(siteLocale, "portal.client")}</p>
+        <h1>{t(siteLocale, "settings.title")}</h1>
       </div>
-      <p className="page-note">Update your profile, check-in preferences, privacy choices, and account safety options.</p>
+      <p className="page-note">{t(siteLocale, "settings.note")}</p>
       <div className="privacy-metrics settings-summary">
-        <StatusPanel label="Profile" value={profileComplete ? "Ready" : "Needs review"} tone={profileComplete ? "teal" : "gold"} />
-        <StatusPanel label="Check-ins" value={`${policy.intervalDays} days`} tone="teal" />
-        <StatusPanel label="Group facts" value={`${selectedAnalyticsStudyCount}/${analyticsStudies.length} on`} tone="gold" />
-        <StatusPanel label="Wallet" value={walletConnected ? "Connected" : "Local demo"} tone={walletConnected ? "teal" : "gold"} />
+        <StatusPanel label={t(siteLocale, "settings.profileStatus")} value={profileComplete ? t(siteLocale, "settings.ready") : t(siteLocale, "settings.needsReview")} tone={profileComplete ? "teal" : "gold"} />
+        <StatusPanel label={t(siteLocale, "settings.checkIns")} value={`${policy.intervalDays} ${t(siteLocale, "settings.days")}`} tone="teal" />
+        <StatusPanel label={t(siteLocale, "settings.groupFacts")} value={`${selectedAnalyticsStudyCount}/${analyticsStudies.length} ${t(siteLocale, "settings.enabledShort")}`} tone="gold" />
+        <StatusPanel label={t(siteLocale, "settings.wallet")} value={walletConnected ? t(siteLocale, "settings.connected") : t(siteLocale, "settings.localDemo")} tone={walletConnected ? "teal" : "gold"} />
       </div>
 
-      <Section title="Personal information">
-        <ProfileInformationForm profile={profile} setProfile={setProfile} />
+      <Section title={t(siteLocale, "settings.personalInformation")}>
+        <ProfileInformationForm profile={profile} setProfile={setProfile} siteLocale={siteLocale} />
       </Section>
       <GovernmentHelpSection
+        siteLocale={siteLocale}
         requested={profile.servicePartnerHelpRequested}
         requestedAt={profile.servicePartnerHelpRequestedAt}
         onToggle={() => togglePartnerHelpRequest(profile, setProfile)}
       />
 
-      <Section title="Reminder preferences">
+      <Section title={t(siteLocale, "settings.reminderPreferences")}>
         <div className="form-grid">
-          <Field help="Choose 1 to 30 days." label="Days between check-ins" required>
+          <Field help={t(siteLocale, "settings.daysBetweenHelp")} label={t(siteLocale, "settings.daysBetween")} required>
             <input
               max={30}
               min={1}
@@ -2958,7 +3191,7 @@ function SettingsScreen({
               }
             />
           </Field>
-          <Field help="Extra time after a missed check-in before Abby starts the next help step." label="Extra hours after a missed check-in">
+          <Field help={t(siteLocale, "settings.extraHoursHelp")} label={t(siteLocale, "settings.extraHours")}>
             <input
               min={0}
               type="number"
@@ -2967,7 +3200,7 @@ function SettingsScreen({
             />
           </Field>
         </div>
-        <div className="channel-controls" role="group" aria-label="Allowed reminder and check-in methods">
+        <div className="channel-controls" role="group" aria-label={t(siteLocale, "settings.allowedMethods")}>
           {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => (
             <button
               aria-pressed={policy.reminderChannels.includes(channel)}
@@ -2976,8 +3209,8 @@ function SettingsScreen({
               onClick={() => toggleReminderChannel(channel)}
               type="button"
             >
-              <span>{formatCheckInChannel(channel)} allowed</span>
-              <small>{policy.reminderChannels.includes(channel) ? "On" : "Off"}</small>
+              <span>{formatCheckInChannel(channel, siteLocale)} {t(siteLocale, "settings.allowedSuffix")}</span>
+              <small>{policy.reminderChannels.includes(channel) ? t(siteLocale, "settings.on") : t(siteLocale, "settings.off")}</small>
             </button>
           ))}
         </div>
@@ -2988,19 +3221,19 @@ function SettingsScreen({
             type="checkbox"
           />
           <span>
-            <strong>Start the next help step after a missed check-in.</strong>
-            <small>Next scheduled check-in: {nextCheckIn}</small>
+            <strong>{t(siteLocale, "settings.startNextStep")}</strong>
+            <small>{t(siteLocale, "settings.nextScheduledCheckIn")}: {nextCheckIn}</small>
           </span>
         </label>
       </Section>
 
-      <Section title="Privacy choices">
+      <Section title={t(siteLocale, "settings.privacyChoices")}>
         <div className="settings-option-list">
           <label className="scope-option settings-toggle">
             <input checked={benefitsOptIn} onChange={(event) => setBenefitsOptIn(event.target.checked)} type="checkbox" />
             <span>
-              <strong>Allow Abby to prepare benefits notices.</strong>
-              <small>Agencies only receive the minimum details needed for a notice request.</small>
+              <strong>{t(siteLocale, "settings.benefitsNotices")}</strong>
+              <small>{t(siteLocale, "settings.benefitsNoticesHelp")}</small>
             </span>
           </label>
           {analyticsStudies.map((study) => {
@@ -3023,11 +3256,11 @@ function SettingsScreen({
               type="checkbox"
             />
             <span>
-              <strong>Enable missing-person dead drop for Portland Police.</strong>
+              <strong>{t(siteLocale, "settings.deadDrop")}</strong>
               <small>
                 {walletDeadDropReady
-                  ? `When enabled, Abby saves the dead-drop bundle on the connected wallet server and routes it to ${PORTLAND_POLICE_MISSING_EMAIL} from the server after a missed check-in passes your schedule and grace period.`
-                  : "A true dead drop needs a connected wallet API and authorized wallet actor so Abby can hold the bundle on the server and send it without your device."}
+                  ? tFormat(siteLocale, "settings.deadDropEnabledHelp", { email: PORTLAND_POLICE_MISSING_EMAIL })
+                  : t(siteLocale, "settings.deadDropDisabledHelp")}
               </small>
             </span>
           </label>
@@ -3035,36 +3268,74 @@ function SettingsScreen({
             <Button
               ariaLabel={
                 missingPersonDeadDropEnabled
-                  ? "Prepare and email dead drop"
-                  : "Prepare and email dead drop (disabled)"
+                  ? t(siteLocale, "settings.deadDropPrepare")
+                  : t(siteLocale, "settings.deadDropPrepareDisabled")
               }
               disabled={!missingPersonDeadDropEnabled || !walletDeadDropReady}
               onClick={handleSendMissingPersonDeadDrop}
               variant="secondary"
             >
-              <Bell size={18} /> Prepare and email dead drop now
+              <Bell size={18} /> {t(siteLocale, "settings.deadDropPrepare")}
             </Button>
           </div>
           {deadDropStatus === "sent" ? (
             <StatusBanner tone="success">
-              Dead-drop bundle routed to Portland Police from the connected Abby server.
+              {t(siteLocale, "settings.deadDropPrepared")}
             </StatusBanner>
           ) : null}
           {deadDropStatus === "failed" ? (
-            <StatusBanner tone="warning">Could not prepare the dead-drop bundle. Please try again.</StatusBanner>
+            <StatusBanner tone="warning">{t(siteLocale, "settings.deadDropPrepareFailed")}</StatusBanner>
           ) : null}
         </div>
       </Section>
 
+      <Section title={t(siteLocale, "settings.languageTitle")}>
+        <p className="page-note">{t(siteLocale, "settings.languageHelp")}</p>
+        <div className="form-grid">
+          <Field label={t(siteLocale, "settings.browserLanguage")} help={t(siteLocale, "settings.browserLanguageHelp")}>
+            <input readOnly type="text" value={getLocaleOptionLabel(browserLocale)} />
+          </Field>
+          <Field label={t(siteLocale, "settings.siteLanguage")}>
+            <select value={siteLocale} onChange={(event) => setSiteLocale(normalizeSiteLocale(event.target.value))}>
+              {SUPPORTED_LOCALES.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Field label={t(siteLocale, "settings.assistantLanguage")}>
+            <select value={assistantTranslationLocale} onChange={(event) => setAssistantTranslationLocale(event.target.value)}>
+              {TRANSLATION_LOCALE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+        <label className="scope-option settings-toggle">
+          <input
+            checked={assistantAutoTranslate}
+            onChange={(event) => setAssistantAutoTranslate(event.target.checked)}
+            type="checkbox"
+          />
+          <span>
+            <strong>{t(siteLocale, "settings.autoTranslate")}</strong>
+            <small>{t(siteLocale, "settings.autoTranslateHelp")}</small>
+          </span>
+        </label>
+      </Section>
+
       <AccountSafetySection apiConfig={apiConfig} onSnapshotLoaded={onSnapshotLoaded} />
 
-      <Section title="Less-used tools">
+      <Section title={t(siteLocale, "settings.lessUsedTools")}>
         <div className="tool-grid">
           <button className="tool-tile" onClick={() => navigate("proof-center")} type="button">
-            <ShieldCheck size={24} /> Proof settings
+            <ShieldCheck size={24} /> {t(siteLocale, "settings.proofSettings")}
           </button>
           <button className="tool-tile" onClick={() => navigate("audit")} type="button">
-            <ClipboardCheck size={24} /> Consent history
+            <ClipboardCheck size={24} /> {t(siteLocale, "settings.consentHistory")}
           </button>
         </div>
       </Section>
@@ -3072,34 +3343,36 @@ function SettingsScreen({
   );
 }
 
-function formatCheckInChannel(channel: CheckInChannel): string {
-  if (channel === "sms") return "Texting";
-  if (channel === "email") return "Email";
-  return "Web";
+function formatCheckInChannel(channel: CheckInChannel, locale: SupportedLocale): string {
+  if (channel === "sms") return t(locale, "channel.sms");
+  if (channel === "email") return t(locale, "channel.email");
+  return t(locale, "channel.web");
 }
 
 function CheckInScreen({
   policy,
   profile,
   setPolicy,
-  nextCheckIn
+  nextCheckIn,
+  siteLocale
 }: {
   policy: typeof defaultCheckInPolicy;
   profile: RegistrationProfileDraft;
   setPolicy: (policy: typeof defaultCheckInPolicy) => void;
   nextCheckIn: string;
+  siteLocale: SupportedLocale;
 }) {
   const [checkInMessage, setCheckInMessage] = useState<{ tone: "success" | "warning"; text: string } | null>(null);
   const update = (patch: Partial<typeof defaultCheckInPolicy>) => setPolicy({ ...policy, ...patch });
   const channelLabels: Record<CheckInChannel, string> = {
-    sms: "Texting allowed",
-    email: "Email allowed",
-    web: "Web allowed"
+    sms: tFormat(siteLocale, "checkin.channelAllowed", { channel: formatCheckInChannel("sms", siteLocale) }),
+    email: tFormat(siteLocale, "checkin.channelAllowed", { channel: formatCheckInChannel("email", siteLocale) }),
+    web: tFormat(siteLocale, "checkin.channelAllowed", { channel: formatCheckInChannel("web", siteLocale) })
   };
   const checkInMethodLabels: Record<CheckInChannel, string> = {
-    sms: "text",
-    email: "email",
-    web: "web"
+    sms: t(siteLocale, "checkin.methodText"),
+    email: t(siteLocale, "checkin.methodEmail"),
+    web: t(siteLocale, "checkin.methodWeb")
   };
   const channelIsAllowed = (channel: CheckInChannel) => policy.reminderChannels.includes(channel);
   const toggleChannel = (channel: CheckInChannel) => {
@@ -3117,8 +3390,8 @@ function CheckInScreen({
         tone: "warning",
         text:
           channel === "web"
-            ? "Web check-in is off. Choose an allowed check-in method."
-            : `${channel === "sms" ? "Texting" : "Email"} is off. Choose an allowed check-in method.`
+            ? t(siteLocale, "checkin.webOff")
+            : tFormat(siteLocale, "checkin.channelOff", { channel: formatCheckInChannel(channel, siteLocale) })
       });
       return;
     }
@@ -3126,7 +3399,7 @@ function CheckInScreen({
     if (channel === "sms" && !profile.phone.trim()) {
       setCheckInMessage({
         tone: "warning",
-        text: "Add a phone number to your account, or use another allowed check-in method."
+        text: t(siteLocale, "checkin.addPhone")
       });
       return;
     }
@@ -3134,7 +3407,7 @@ function CheckInScreen({
     if (channel === "email" && !profile.email.trim()) {
       setCheckInMessage({
         tone: "warning",
-        text: "Add an email to your account, or use another allowed check-in method."
+        text: t(siteLocale, "checkin.addEmail")
       });
       return;
     }
@@ -3142,20 +3415,20 @@ function CheckInScreen({
     update({ lastCheckInAt: new Date().toISOString() });
     setCheckInMessage({
       tone: "success",
-      text: `Checked in by ${channel === "sms" ? "text" : channel}.`
+      text: tFormat(siteLocale, "checkin.success", { method: checkInMethodLabels[channel] })
     });
   }
 
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Check-in</p>
-        <h1>Set your schedule</h1>
+        <p className="eyebrow">{t(siteLocale, "checkin.eyebrow")}</p>
+        <h1>{t(siteLocale, "checkin.title")}</h1>
       </div>
-      <StatusBanner tone="warning">You can wait up to 30 days between check-ins. After that, Abby starts the next help step.</StatusBanner>
-      <Section title="Reminder schedule">
+      <StatusBanner tone="warning">{t(siteLocale, "checkin.warning")}</StatusBanner>
+      <Section title={t(siteLocale, "checkin.schedule")}>
         <div className="form-grid">
-          <Field help="Choose 1 to 30 days." label="Days between check-ins" required>
+          <Field help={t(siteLocale, "settings.daysBetweenHelp")} label={t(siteLocale, "settings.daysBetween")} required>
             <input
               max={30}
               min={1}
@@ -3166,7 +3439,7 @@ function CheckInScreen({
               }
             />
           </Field>
-          <Field help="Extra time after a missed check-in before Abby starts the next help step." label="Extra hours after a missed check-in">
+          <Field help={t(siteLocale, "settings.extraHoursHelp")} label={t(siteLocale, "settings.extraHours")}>
             <input
               min={0}
               type="number"
@@ -3175,8 +3448,8 @@ function CheckInScreen({
             />
           </Field>
         </div>
-        <p className="supporting-copy">You can check in by text, email, or web when that method is allowed.</p>
-        <div className="channel-controls" role="group" aria-label="Allowed check-in methods">
+        <p className="supporting-copy">{t(siteLocale, "checkin.methodsHelp")}</p>
+        <div className="channel-controls" role="group" aria-label={t(siteLocale, "checkin.allowedMethods")}>
           {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => (
             <button
               aria-pressed={policy.reminderChannels.includes(channel)}
@@ -3186,27 +3459,27 @@ function CheckInScreen({
               type="button"
             >
               <span>{channelLabels[channel]}</span>
-              <small>{channelIsAllowed(channel) ? "On" : "Off"}</small>
+              <small>{channelIsAllowed(channel) ? t(siteLocale, "settings.on") : t(siteLocale, "settings.off")}</small>
             </button>
           ))}
         </div>
         {!policy.reminderChannels.length ? (
-          <StatusBanner tone="warning">No check-in method is on. Turn on text, email, or web to check in.</StatusBanner>
+          <StatusBanner tone="warning">{t(siteLocale, "checkin.noneEnabled")}</StatusBanner>
         ) : null}
         <div className="schedule-preview">
           <CalendarCheck aria-hidden="true" size={28} />
           <div>
-            <small>Next check-in</small>
+            <small>{t(siteLocale, "home.nextCheckIn")}</small>
             <strong>{nextCheckIn}</strong>
           </div>
         </div>
         {checkInMessage ? <StatusBanner tone={checkInMessage.tone}>{checkInMessage.text}</StatusBanner> : null}
-        <div className="method-checkin-grid" role="group" aria-label="Check in now">
+        <div className="method-checkin-grid" role="group" aria-label={t(siteLocale, "checkin.checkInNow")}>
           {(["sms", "email", "web"] as CheckInChannel[]).map((channel) => {
             const allowed = channelIsAllowed(channel);
             return (
               <Button key={channel} onClick={() => checkInBy(channel)} variant={allowed ? "primary" : "secondary"}>
-                <Bell size={18} /> Check in by {checkInMethodLabels[channel]}{allowed ? "" : " (off)"}
+                <Bell size={18} /> {tFormat(siteLocale, "checkin.byMethod", { method: checkInMethodLabels[channel] })}{allowed ? "" : ` ${t(siteLocale, "checkin.offSuffix")}`}
               </Button>
             );
           })}
@@ -3224,12 +3497,14 @@ function SharingScopeChecklist({
   label,
   scopes,
   onToggle,
-  help
+  help,
+  siteLocale
 }: {
   label: string;
   scopes: DisclosureDataScope[];
   onToggle: (scope: DisclosureDataScope) => void;
   help?: string;
+  siteLocale: SupportedLocale;
 }) {
   return (
     <fieldset className="scope-fieldset">
@@ -3240,8 +3515,8 @@ function SharingScopeChecklist({
           <label className="scope-option" key={scope.id}>
             <input checked={scopes.includes(scope.id)} onChange={() => onToggle(scope.id)} type="checkbox" />
             <span>
-              <strong>{scope.label}</strong>
-              <small>{scope.detail}</small>
+              <strong>{t(siteLocale, disclosureScopeLabelKey(scope.id))}</strong>
+              <small>{t(siteLocale, disclosureScopeDetailKey(scope.id))}</small>
             </span>
           </label>
         ))}
@@ -3250,34 +3525,34 @@ function SharingScopeChecklist({
   );
 }
 
-function getDisclosureScopeLabels(scopes: DisclosureDataScope[]): string {
-  return scopes.map((scope) => disclosureScopes.find((item) => item.id === scope)?.label ?? scope).join(", ");
+function getDisclosureScopeLabels(scopes: DisclosureDataScope[], locale: SupportedLocale): string {
+  return scopes.map((scope) => t(locale, disclosureScopeLabelKey(scope))).join(", ");
 }
 
-function SharingCapabilityPreview({ recipientName, scopes }: { recipientName: string; scopes: DisclosureDataScope[] }) {
+function SharingCapabilityPreview({ recipientName, scopes, siteLocale }: { recipientName: string; scopes: DisclosureDataScope[]; siteLocale: SupportedLocale }) {
   const abilities = abilitiesForDisclosureScopes(scopes);
 
   return (
-    <div className="capability-preview" role="group" aria-label={`${recipientName} sharing capability preview`}>
+    <div className="capability-preview" role="group" aria-label={tFormat(siteLocale, "contacts.editSharingFor", { name: recipientName })}>
       <div className="scope-header">
         <div>
-          <h4>What this allows</h4>
-          <p>{scopes.length} selected items</p>
+          <h4>{t(siteLocale, "sharing.whatAllows")}</h4>
+          <p>{tFormat(siteLocale, "sharing.selectedItems", { count: String(scopes.length) })}</p>
         </div>
-        <Badge tone={scopes.length > 0 ? "success" : "warning"}>{scopes.length > 0 ? "limited share" : "no access"}</Badge>
+        <Badge tone={scopes.length > 0 ? "success" : "warning"}>{scopes.length > 0 ? t(siteLocale, "sharing.limitedShare") : t(siteLocale, "sharing.noAccess")}</Badge>
       </div>
       <div className="disclosure-package">
         <div className="disclosure-row">
-          <strong>Can do</strong>
-          <span>{plainCapabilitySummary(abilities) || "No access selected"}</span>
+          <strong>{t(siteLocale, "sharing.canDo")}</strong>
+          <span>{formatLocalizedCapabilitySummary(abilities, siteLocale) || t(siteLocale, "sharing.noAccessSelected")}</span>
         </div>
         <div className="disclosure-row">
-          <strong>Items</strong>
-          <span>{getDisclosureScopeLabels(scopes) || "No items selected"}</span>
+          <strong>{t(siteLocale, "sharing.items")}</strong>
+          <span>{getDisclosureScopeLabels(scopes, siteLocale) || t(siteLocale, "sharing.noItemsSelected")}</span>
         </div>
         <div className="disclosure-row">
-          <strong>Not allowed</strong>
-          <span>{plainNonGrantedCapabilities(abilities).join(", ")}</span>
+          <strong>{t(siteLocale, "sharing.notAllowed")}</strong>
+          <span>{formatLocalizedNonGrantedCapabilities(abilities, siteLocale)}</span>
         </div>
       </div>
     </div>
@@ -3288,11 +3563,13 @@ function ClientMessagesScreen({
   profile,
   providerMessages,
   setProviderMessages,
+  siteLocale,
   signedInUser
 }: {
   profile: RegistrationProfileDraft;
   providerMessages: ShelterProviderMessage[];
   setProviderMessages: (messages: ShelterProviderMessage[]) => void;
+  siteLocale: SupportedLocale;
   signedInUser: string;
 }) {
   const [messageFilter, setMessageFilter] = useState<"inbox" | "unread" | "archived" | "all">("inbox");
@@ -3331,25 +3608,25 @@ function ClientMessagesScreen({
   return (
     <div className="screen client-messages-screen">
       <div className="page-title">
-        <p className="eyebrow">Client portal</p>
-        <h1>Messages</h1>
+        <p className="eyebrow">{t(siteLocale, "portal.client")}</p>
+        <h1>{t(siteLocale, "messages.title")}</h1>
       </div>
-      <p className="page-note">See notifications, appointment notes, and follow-ups from service provider staff.</p>
-      <Section title="Message summary">
+      <p className="page-note">{t(siteLocale, "messages.note")}</p>
+      <Section title={t(siteLocale, "messages.summary")}>
         <div className="dashboard-grid">
-          <StatusPanel label="Inbox" value={String(inboxMessages.length)} tone="teal" />
-          <StatusPanel label="Unread" value={String(unreadMessages.length)} tone="gold" />
-          <StatusPanel label="Archived" value={String(archivedMessages.length)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "messages.inbox")} value={String(inboxMessages.length)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "messages.unread")} value={String(unreadMessages.length)} tone="gold" />
+          <StatusPanel label={t(siteLocale, "messages.archived")} value={String(archivedMessages.length)} tone="teal" />
         </div>
       </Section>
-      <Section title="Service staff messages">
+      <Section title={t(siteLocale, "messages.staffMessages")}>
         <div className="message-toolbar">
-          <Field label="View">
+          <Field label={t(siteLocale, "messages.view")}>
             <select value={messageFilter} onChange={(event) => setMessageFilter(event.target.value as typeof messageFilter)}>
-              <option value="inbox">Inbox</option>
-              <option value="unread">Unread</option>
-              <option value="archived">Archived</option>
-              <option value="all">All messages</option>
+              <option value="inbox">{t(siteLocale, "messages.inbox")}</option>
+              <option value="unread">{t(siteLocale, "messages.unread")}</option>
+              <option value="archived">{t(siteLocale, "messages.archived")}</option>
+              <option value="all">{t(siteLocale, "messages.all")}</option>
             </select>
           </Field>
         </div>
@@ -3363,34 +3640,40 @@ function ClientMessagesScreen({
                   <div className="badge-row">
                     <Badge>{message.shelter}</Badge>
                     <Badge>{message.staffName}</Badge>
-                    <Badge>{message.channel.replace("_", " ")}</Badge>
+                    <Badge>{formatProviderMessageChannel(message.channel, siteLocale)}</Badge>
                     <Badge tone={message.clientReadAt ? "neutral" : "warning"}>
-                      {message.clientReadAt ? "Read" : "Unread"}
+                      {message.clientReadAt ? t(siteLocale, "messages.read") : t(siteLocale, "messages.unread")}
                     </Badge>
                     <Badge>{formatShelterDate(message.createdAt)}</Badge>
                   </div>
-                  <small>Sent to {message.clientContact}</small>
+                  <small>{tFormat(siteLocale, "messages.sentTo", { contact: message.clientContact })}</small>
                 </div>
                 <div className="row-actions">
                   <Button onClick={() => markMessageRead(message)} variant="secondary">
-                    {message.clientReadAt ? "Mark unread" : "Mark read"}
+                    {message.clientReadAt ? t(siteLocale, "messages.markUnread") : t(siteLocale, "messages.markRead")}
                   </Button>
                   <Button onClick={() => toggleMessageArchive(message)} variant="secondary">
-                    {message.clientArchivedAt ? "Restore" : "Archive"}
+                    {message.clientArchivedAt ? t(siteLocale, "messages.restore") : t(siteLocale, "messages.archive")}
                   </Button>
                 </div>
               </article>
             ))
           ) : (
             <div className="empty-state">
-              <h3>No messages in this view</h3>
-              <p>Messages sent by service staff will appear here when they match your Abby contact information.</p>
+              <h3>{t(siteLocale, "messages.emptyTitle")}</h3>
+              <p>{t(siteLocale, "messages.emptyBody")}</p>
             </div>
           )}
         </div>
       </Section>
     </div>
   );
+}
+
+function formatProviderMessageChannel(channel: ShelterProviderMessage["channel"], locale: SupportedLocale): string {
+  if (channel === "sms") return t(locale, "channel.sms");
+  if (channel === "email") return t(locale, "channel.email");
+  return t(locale, "messages.inApp");
 }
 
 function messageMatchesClient(
@@ -3424,12 +3707,14 @@ function ContactsScreen({
   contactRequests,
   profile,
   recipients,
+  siteLocale,
   setContactRequests,
   setRecipients
 }: {
   contactRequests: ShelterContactRequest[];
   profile: RegistrationProfileDraft;
   recipients: DisclosureRecipientDraft[];
+  siteLocale: SupportedLocale;
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setRecipients: (recipients: DisclosureRecipientDraft[]) => void;
 }) {
@@ -3611,13 +3896,11 @@ function ContactsScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Emergency contacts</p>
-        <h1>People who can help</h1>
+        <p className="eyebrow">{t(siteLocale, "contacts.eyebrow")}</p>
+        <h1>{t(siteLocale, "contacts.title")}</h1>
       </div>
-      <p className="page-note">
-        Sharing choices live with each saved contact. Open a contact below to change what they can see.
-      </p>
-      <Section title="Add contact">
+      <p className="page-note">{t(siteLocale, "contacts.note")}</p>
+      <Section title={t(siteLocale, "contacts.addContact")}>
         <div className="contact-type-toggle">
           <label className={`contact-type-option${contactCategory === "person" ? " contact-type-option--active" : ""}`}>
             <input
@@ -3627,7 +3910,7 @@ function ContactsScreen({
               type="radio"
               value="person"
             />
-            Person
+            {t(siteLocale, "contacts.person")}
           </label>
           <label className={`contact-type-option${contactCategory === "shelter" ? " contact-type-option--active" : ""}`}>
             <input
@@ -3637,47 +3920,48 @@ function ContactsScreen({
               type="radio"
               value="shelter"
             />
-            Shelter or group
+            {t(siteLocale, "contacts.shelterGroup")}
           </label>
         </div>
         {contactCategory === "person" ? (
           <form className="form-grid" onSubmit={addRecipient}>
-            <Field label="First name" required>
+            <Field label={t(siteLocale, "contacts.firstName")} required>
               <input value={draft.firstName} onChange={(event) => setDraft({ ...draft, firstName: event.target.value })} />
             </Field>
-            <Field label="Last name">
+            <Field label={t(siteLocale, "contacts.lastName")}>
               <input value={draft.lastName} onChange={(event) => setDraft({ ...draft, lastName: event.target.value })} />
             </Field>
-            <Field label="Relationship or role">
+            <Field label={t(siteLocale, "contacts.relationshipRole")}>
               <input value={draft.relationship} onChange={(event) => setDraft({ ...draft, relationship: event.target.value })} />
             </Field>
-            <Field label="Phone">
+            <Field label={t(siteLocale, "contacts.phone")}>
               <input value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
             </Field>
-            <Field label="Email">
+            <Field label={t(siteLocale, "contacts.email")}>
               <input type="email" value={draft.email} onChange={(event) => setDraft({ ...draft, email: event.target.value })} />
             </Field>
-            <Field label="Type">
+            <Field label={t(siteLocale, "contacts.type")}>
               <select
                 value={draft.type}
                 onChange={(event) => setDraft({ ...draft, type: event.target.value as DisclosureRecipientType })}
               >
-                <option value="emergency_contact">Emergency contact</option>
-                <option value="social_worker">Social worker</option>
-                <option value="police_precinct">Police precinct</option>
-                <option value="government_liaison">Government help</option>
-                <option value="benefits_agency">Benefits agency</option>
+                <option value="emergency_contact">{t(siteLocale, "contacts.recipientType.emergency_contact")}</option>
+                <option value="social_worker">{t(siteLocale, "contacts.recipientType.social_worker")}</option>
+                <option value="police_precinct">{t(siteLocale, "contacts.recipientType.police_precinct")}</option>
+                <option value="government_liaison">{t(siteLocale, "contacts.recipientType.government_liaison")}</option>
+                <option value="benefits_agency">{t(siteLocale, "contacts.recipientType.benefits_agency")}</option>
               </select>
             </Field>
             <SharingScopeChecklist
-              help="These start on. Turn off anything this person should not see."
-              label="Sharing choices for this person"
+              help={t(siteLocale, "contacts.scopeHelp")}
+              label={t(siteLocale, "contacts.scopeForPerson")}
               onToggle={(scope) => setDraftScopes(toggleScopeSelection(draftScopes, scope))}
               scopes={draftScopes}
+              siteLocale={siteLocale}
             />
             <div className="full-span centered-action">
               <Button type="submit">
-                <UsersRound aria-hidden="true" size={18} /> Add person
+                <UsersRound aria-hidden="true" size={18} /> {t(siteLocale, "contacts.addPerson")}
               </Button>
             </div>
           </form>
@@ -3685,8 +3969,8 @@ function ContactsScreen({
           <>
             <p className="section-note">
               {providerType === "shelter"
-                ? "A shelter is added only after the other side says yes. It starts with Minimum identity only."
-                : "A local precinct is saved right away. It starts with Minimum identity only."}
+                ? t(siteLocale, "contacts.providerNoteShelter")
+                : t(siteLocale, "contacts.providerNotePrecinct")}
             </p>
             <form
               className="form-grid"
@@ -3699,16 +3983,16 @@ function ContactsScreen({
                 addPrecinctRecipient(requestedPrecinct);
               }}
             >
-              <Field label="Provider type">
+              <Field label={t(siteLocale, "contacts.providerType")}>
                 <select
                   value={providerType}
                   onChange={(event) => setProviderType(event.target.value as "shelter" | "police_precinct")}
                 >
-                  <option value="shelter">Shelter or group</option>
-                  <option value="police_precinct">Local police precinct</option>
+                  <option value="shelter">{t(siteLocale, "contacts.shelterGroup")}</option>
+                  <option value="police_precinct">{t(siteLocale, "contacts.defaultPrecinct")}</option>
                 </select>
               </Field>
-              <Field label={providerType === "shelter" ? "Shelter name" : "Local precinct"}>
+              <Field label={providerType === "shelter" ? t(siteLocale, "contacts.shelterName") : t(siteLocale, "contacts.localPrecinct")}>
                 <select
                   value={providerType === "shelter" ? requestedShelter : requestedPrecinct}
                   onChange={(event) =>
@@ -3719,7 +4003,7 @@ function ContactsScreen({
                 >
                   {(providerType === "shelter" ? shelterOptions : LOCAL_PRECINCT_OPTIONS).map((providerName) => (
                     <option key={providerName} value={providerName}>
-                      {providerName}
+                      {providerType === "shelter" ? providerName : localizedPrecinctName(providerName, siteLocale)}
                     </option>
                   ))}
                 </select>
@@ -3731,14 +4015,14 @@ function ContactsScreen({
                   variant="secondary"
                 >
                   <MessageSquare aria-hidden="true" size={18} />{" "}
-                  {providerType === "shelter" ? "Ask to add shelter" : "Add local precinct"}
+                  {providerType === "shelter" ? t(siteLocale, "contacts.askAddShelter") : t(siteLocale, "contacts.addLocalPrecinct")}
                 </Button>
               </div>
               {(providerType === "shelter" ? hasPendingRequestedShelter : hasSavedRequestedPrecinct) ? (
                 <small className="full-span pin-request-note">
                   {providerType === "shelter"
-                    ? "A request is already waiting for this shelter and person."
-                    : "This local precinct is already saved."}
+                    ? t(siteLocale, "contacts.pendingShelterRequest")
+                    : t(siteLocale, "contacts.savedPrecinctExists")}
                 </small>
               ) : null}
             </form>
@@ -3747,15 +4031,15 @@ function ContactsScreen({
                 <article className="list-item access-request-item" key={request.id}>
                   <div>
                     <h3>{request.shelterName}</h3>
-                    <p>{request.staffName || "Shelter staff"} asked to be added to your contacts.</p>
-                    <Badge>{request.status}</Badge>
+                    <p>{tFormat(siteLocale, "contacts.staffAsked", { staff: request.staffName || t(siteLocale, "contacts.defaultStaffName") })}</p>
+                    <Badge>{formatContactRequestStatus(request.status, siteLocale)}</Badge>
                   </div>
                   <div className="row-actions">
                     <Button onClick={() => decideShelterNudge(request.id, "approved")} variant="secondary">
-                      Approve
+                      {t(siteLocale, "contacts.approve")}
                     </Button>
                     <Button onClick={() => decideShelterNudge(request.id, "denied")} variant="danger">
-                      Deny
+                      {t(siteLocale, "contacts.deny")}
                     </Button>
                   </div>
                 </article>
@@ -3764,15 +4048,15 @@ function ContactsScreen({
                 <article className="list-item" key={`status-${request.id}`}>
                   <div>
                     <h3>{request.shelterName}</h3>
-                    <p>{request.direction === "user_to_shelter" ? "You asked this shelter." : "Shelter asked you."}</p>
+                    <p>{request.direction === "user_to_shelter" ? t(siteLocale, "contacts.youAskedShelter") : t(siteLocale, "contacts.shelterAskedYou")}</p>
                   </div>
                   <div className="row-actions">
                     <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
-                      {request.status}
+                      {formatContactRequestStatus(request.status, siteLocale)}
                     </Badge>
                     {request.direction === "user_to_shelter" && request.status === "pending" ? (
                       <Button onClick={() => cancelShelterRequest(request.id)} variant="secondary">
-                        Cancel
+                        {t(siteLocale, "contacts.cancel")}
                       </Button>
                     ) : null}
                   </div>
@@ -3782,9 +4066,9 @@ function ContactsScreen({
           </>
         )}
       </Section>
-      <Section title="Saved contacts">
+      <Section title={t(siteLocale, "contacts.savedContacts")}>
         {recipients.length === 0 ? (
-          <p className="empty-state">No saved contacts yet. Add a shelter, group, or person above.</p>
+          <p className="empty-state">{t(siteLocale, "contacts.emptySavedContacts")}</p>
         ) : (
           <>
             <div className="list-stack">
@@ -3797,7 +4081,7 @@ function ContactsScreen({
                       <button
                         aria-controls={`recipient-edit-${recipient.id}`}
                         aria-expanded={isEditing}
-                        aria-label={`Edit sharing for ${recipient.displayName}`}
+                        aria-label={tFormat(siteLocale, "contacts.editSharingFor", { name: recipient.displayName })}
                         className="recipient-open-button"
                         id={`recipient-open-${recipient.id}`}
                         onClick={() => openRecipientEditor(recipient)}
@@ -3806,15 +4090,15 @@ function ContactsScreen({
                         <span className="recipient-summary">
                           <span className="recipient-name">{recipient.displayName}</span>
                           <span className="recipient-details">
-                            <span>{recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type)}</span>
+                            <span>{localizedRelationshipName(recipient.relationship || recipient.agencyName || formatRecipientType(recipient.type, siteLocale), siteLocale)}</span>
                             {recipient.email ? <span>{recipient.email}</span> : null}
                             {recipient.phone ? <span>{recipient.phone}</span> : null}
                           </span>
                           <span className="badge-row" aria-label={`${recipient.displayName} status`}>
                             <Badge tone={recipient.verified ? "success" : "warning"}>
-                              {recipient.verified ? "Verified" : "Needs a check"}
+                              {recipient.verified ? t(siteLocale, "contacts.verified") : t(siteLocale, "contacts.needsCheck")}
                             </Badge>
-                            <Badge>{recipient.allowedScopes.length} items</Badge>
+                            <Badge>{recipient.allowedScopes.length} {t(siteLocale, "contacts.items")}</Badge>
                           </span>
                         </span>
                       </button>
@@ -3826,15 +4110,15 @@ function ContactsScreen({
                           onClick={() => openRecipientEditor(recipient)}
                           variant="secondary"
                         >
-                          Edit sharing
+                          {t(siteLocale, "contacts.editSharing")}
                         </Button>
                         <Button
-                          ariaLabel={`Remove ${recipient.displayName}`}
+                          ariaLabel={`${t(siteLocale, "contacts.remove")} ${recipient.displayName}`}
                           className="compact-list-action"
                           onClick={() => removeRecipient(recipient.id)}
                           variant="quiet"
                         >
-                          Remove
+                          {t(siteLocale, "contacts.remove")}
                         </Button>
                       </div>
                     </div>
@@ -3853,22 +4137,23 @@ function ContactsScreen({
                 <div className="scope-header">
                   <div>
                     <h3 id={`recipient-edit-heading-${editingRecipient.id}`}>
-                      Edit sharing for {editingRecipient.displayName}
+                      {tFormat(siteLocale, "contacts.editSharingFor", { name: editingRecipient.displayName })}
                     </h3>
-                    <p>Save only what this contact should see.</p>
+                    <p>{t(siteLocale, "contacts.saveOnlyWhatContactShouldSee")}</p>
                   </div>
-                  <Badge>{editingScopes.length} selected</Badge>
+                  <Badge>{editingScopes.length} {t(siteLocale, "contacts.selected")}</Badge>
                 </div>
                 <SharingScopeChecklist
-                  label={`Sharing choices for ${editingRecipient.displayName}`}
+                  label={tFormat(siteLocale, "contacts.scopeForName", { name: editingRecipient.displayName })}
                   onToggle={(scope) => setEditingScopes(toggleScopeSelection(editingScopes, scope))}
                   scopes={editingScopes}
+                  siteLocale={siteLocale}
                 />
-                <SharingCapabilityPreview recipientName={editingRecipient.displayName} scopes={editingScopes} />
+                <SharingCapabilityPreview recipientName={editingRecipient.displayName} scopes={editingScopes} siteLocale={siteLocale} />
                 <div className="row-actions">
-                  <Button onClick={() => saveRecipientScopes(editingRecipient.id)}>Save sharing</Button>
+                  <Button onClick={() => saveRecipientScopes(editingRecipient.id)}>{t(siteLocale, "contacts.saveSharing")}</Button>
                   <Button onClick={() => closeRecipientEditor(editingRecipient.id)} variant="secondary">
-                    Cancel
+                    {t(siteLocale, "contacts.cancel")}
                   </Button>
                 </div>
               </div>
@@ -3889,6 +4174,7 @@ function UploadsScreen({
   recipients,
   setApiConfig,
   setBundles,
+  siteLocale,
   signedInUser,
   uploads,
   setUploads
@@ -3901,6 +4187,7 @@ function UploadsScreen({
   recipients: DisclosureRecipientDraft[];
   setApiConfig: (config: WalletApiConfig) => void;
   setBundles: (bundles: ExportBundleView[]) => void;
+  siteLocale: SupportedLocale;
   signedInUser: string;
   uploads: UploadItem[];
   setUploads: (uploads: UploadItem[]) => void;
@@ -3940,8 +4227,9 @@ function UploadsScreen({
   );
   const walletProofReviewHref = walletPublishedProofReviewUrl || walletProofReviewUrl;
   const walletQrPayloadLabel = filecoinStorageReady
-    ? walletProofBundleCid || "Publishing IPFS CID…"
-    : "Connect IPFS/Filecoin storage to generate a CID.";
+    ? walletProofBundleCid || t(siteLocale, "wallet.publishingCid")
+    : t(siteLocale, "wallet.connectStorageCid");
+  const walletFileFilterOptions = getWalletFileFilterOptions(siteLocale);
   const visibleUploads = useMemo(
     () => searchWalletFiles(uploads, walletFileQuery, walletFileSort, walletFileFilter),
     [uploads, walletFileFilter, walletFileQuery, walletFileSort]
@@ -4135,7 +4423,7 @@ function UploadsScreen({
   async function storeFileUploadOnFilecoin(upload: UploadItem, file: File) {
     if (!filecoinStorageConfig) {
       updateUpload(upload.id, {
-        decentralizedStorageMessage: "Connect a backend Filecoin storage endpoint before uploading.",
+        decentralizedStorageMessage: t(siteLocale, "wallet.storageConnectBeforeUpload"),
         decentralizedStorageStatus: "not_configured"
       });
       return;
@@ -4145,7 +4433,7 @@ function UploadsScreen({
       filecoinPinRequestId: undefined,
       filecoinPinStatus: undefined,
       filecoinPinStatusUrl: undefined,
-      decentralizedStorageMessage: "Uploading through the configured backend.",
+      decentralizedStorageMessage: t(siteLocale, "wallet.storageUploading"),
       decentralizedStorageStatus: "uploading"
     });
     try {
@@ -4161,7 +4449,7 @@ function UploadsScreen({
       void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
-        decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
+        decentralizedStorageMessage: error instanceof Error ? error.message : t(siteLocale, "wallet.storageUploadFailed"),
         decentralizedStorageStatus: "failed"
       });
     } finally {
@@ -4178,8 +4466,8 @@ function UploadsScreen({
       filecoinPinStatusUrl: undefined,
       decentralizedStorageMessage:
         upload.filecoinPinStatus === "failed"
-          ? "Retrying Filecoin persistence for this wallet record."
-          : "Sending wallet record to the storage backend.",
+          ? t(siteLocale, "wallet.storageRetryRecord")
+          : t(siteLocale, "wallet.storageSendRecord"),
       decentralizedStorageStatus: "uploading"
     });
     try {
@@ -4197,7 +4485,7 @@ function UploadsScreen({
       void monitorFilecoinPersistence(upload.id, result);
     } catch (error) {
       updateUpload(upload.id, {
-        decentralizedStorageMessage: error instanceof Error ? error.message : "IPFS/Filecoin upload failed.",
+        decentralizedStorageMessage: error instanceof Error ? error.message : t(siteLocale, "wallet.storageUploadFailed"),
         decentralizedStorageStatus: "failed"
       });
     } finally {
@@ -4212,12 +4500,12 @@ function UploadsScreen({
       file?.name || upload.fileName || upload.recordId
     );
     updateUpload(upload.id, {
-      privacyProfileMessage: "Creating redacted GraphRAG, vector profile, and privacy proof.",
+      privacyProfileMessage: t(siteLocale, "wallet.profileCreating"),
       privacyProfileMimeType: mimeType,
       privacyProfileStatus: "profiling"
     });
     void persistUploadMetadata(upload, {
-      privacyProfileMessage: "Creating redacted GraphRAG, vector profile, and privacy proof.",
+      privacyProfileMessage: t(siteLocale, "wallet.profileCreating"),
       privacyProfileMimeType: mimeType,
       privacyProfileStatus: "profiling"
     });
@@ -4290,7 +4578,7 @@ function UploadsScreen({
         privacyProfileArtifactIds: artifactIds,
         privacyProfileClassification: classifyDocumentProfile(publicInputs),
         privacyProfileLabels: readStringArray(publicInputs, "organizer_labels") || defaultLabelsForMimeType(mimeType),
-        privacyProfileMessage: "Safe document profile and proof are attached to this wallet record.",
+        privacyProfileMessage: t(siteLocale, "wallet.profileReady"),
         privacyProfileMimeType: mimeType,
         privacyProfileNeedsRefresh: false,
         privacyProfileProofId: proof.id,
@@ -4306,7 +4594,7 @@ function UploadsScreen({
     } catch (error) {
       const patch: Partial<UploadItem> = {
         privacyProfileMessage:
-          error instanceof Error ? error.message : "Privacy-preserving document profile failed.",
+          error instanceof Error ? error.message : t(siteLocale, "wallet.profileError"),
         privacyProfileStatus: "failed"
       };
       updateUpload(upload.id, patch);
@@ -4440,7 +4728,7 @@ function UploadsScreen({
   async function deleteWalletUpload(upload: UploadItem) {
     if (!apiConfig?.actorDid || !upload.recordId) return;
     const confirmed = window.confirm(
-      `Delete ${upload.fileName} from this wallet? This removes the wallet record, metadata, proofs that depend on it, and tracked IPLD/IPFS links.`
+      tFormat(siteLocale, "wallet.deleteConfirm", { name: upload.fileName })
     );
     if (!confirmed) return;
     setDeletingUploadIds((uploadIds) => [...new Set([...uploadIds, upload.id])]);
@@ -4451,7 +4739,9 @@ function UploadsScreen({
     } catch (error) {
       updateUpload(upload.id, {
         decentralizedStorageMessage:
-          error instanceof Error ? `Delete failed: ${error.message}` : "Delete failed."
+          error instanceof Error
+            ? tFormat(siteLocale, "wallet.deleteFailedDetail", { error: error.message })
+            : t(siteLocale, "wallet.deleteFailed")
       });
     } finally {
       setDeletingUploadIds((uploadIds) => uploadIds.filter((id) => id !== upload.id));
@@ -4477,8 +4767,8 @@ function UploadsScreen({
       updateUpload(uploadId, {
         decentralizedStorageMessage:
           error instanceof Error
-            ? `Stored on IPFS, but Filecoin status polling failed: ${error.message}`
-            : "Stored on IPFS, but Filecoin status polling failed."
+            ? tFormat(siteLocale, "wallet.pollFailedDetail", { error: error.message })
+            : t(siteLocale, "wallet.pollFailed")
       });
     }
   }
@@ -4556,7 +4846,7 @@ function UploadsScreen({
       setWalletCreateStatus("created");
     } catch (error) {
       setWalletCreateStatus("failed");
-      setWalletCreateError(error instanceof Error ? error.message : "Wallet generation failed.");
+      setWalletCreateError(error instanceof Error ? error.message : t(siteLocale, "wallet.generationFailed"));
     }
   }
 
@@ -4615,14 +4905,14 @@ function UploadsScreen({
         });
         const backupCid = backup.ipfsCid || backup.cid || backup.root?.["/"];
         backupMessage = backupCid
-          ? ` Encrypted recovery backup queued on IPFS/Filecoin (${backupCid}).`
-          : " Encrypted recovery backup queued on IPFS/Filecoin.";
+          ? tFormat(siteLocale, "wallet.recoveryBackupQueuedWithCid", { cid: backupCid })
+          : t(siteLocale, "wallet.recoveryBackupQueued");
       }
       setRecoveryStatus("ready");
-      setRecoveryMessage(`Passphrase recovery and recovery QR are ready for this wallet.${backupMessage}`);
+      setRecoveryMessage(tFormat(siteLocale, "wallet.recoveryReady", { backup: backupMessage }));
     } catch (error) {
       setRecoveryStatus("failed");
-      setRecoveryMessage(error instanceof Error ? error.message : "Passphrase recovery setup failed.");
+      setRecoveryMessage(error instanceof Error ? error.message : t(siteLocale, "wallet.recoverySetupFailed"));
     }
   }
 
@@ -4631,7 +4921,7 @@ function UploadsScreen({
     const ucan = readMagicLoginUcan();
     if (!ucan?.token) {
       setRecoveryStatus("failed");
-      setRecoveryMessage("Open a magic link first so this browser has a recovery UCAN.");
+      setRecoveryMessage(t(siteLocale, "wallet.recoveryNeedMagicLink"));
       return;
     }
     setRecoveryStatus("unlocking");
@@ -4671,7 +4961,7 @@ function UploadsScreen({
       if (payload.passphrase) {
         const recovered = await decryptPassphraseRecoveryBundle(response.bundle.encrypted_bundle, payload.passphrase);
         if (recovered.walletId && recovered.walletId !== config.walletId) {
-          throw new Error("The recovery bundle belongs to a different wallet.");
+          throw new Error(t(siteLocale, "wallet.recoveryWrongWallet"));
         }
         storeWalletDeviceRecoveryRawKey(config.walletId, recovered.walletContentKey);
         if (recovered.actorDid && recovered.actorDid !== config.actorDid) {
@@ -4679,14 +4969,14 @@ function UploadsScreen({
         }
         setRecoveryPassphrase("");
         setRecoveryStatus("ready");
-        setRecoveryMessage("Recovery QR unlocked the wallet locally. Keep that QR private; it contains the recovery passphrase.");
+        setRecoveryMessage(t(siteLocale, "wallet.recoveryUnlockedLocal"));
         return;
       }
       setRecoveryStatus("ready");
-      setRecoveryMessage("Recovery QR imported. Enter the passphrase, then unlock cached recovery.");
+      setRecoveryMessage(t(siteLocale, "wallet.recoveryImported"));
     } catch (error) {
       setRecoveryStatus("failed");
-      setRecoveryMessage(error instanceof Error ? error.message : "Recovery QR import failed.");
+      setRecoveryMessage(error instanceof Error ? error.message : t(siteLocale, "wallet.recoveryImportFailed"));
     }
   }
 
@@ -4697,90 +4987,97 @@ function UploadsScreen({
     try {
       const bundle = readCachedRecoveryBundle(apiConfig.walletId);
       if (!bundle) {
-        throw new Error("No encrypted recovery bundle is cached yet. Open a magic link for this wallet first.");
+        throw new Error(t(siteLocale, "wallet.recoveryNoCachedBundle"));
       }
       const recovered = await decryptPassphraseRecoveryBundle(bundle, recoveryPassphrase);
       if (recovered.walletId && recovered.walletId !== apiConfig.walletId) {
-        throw new Error("The recovery bundle belongs to a different wallet.");
+        throw new Error(t(siteLocale, "wallet.recoveryWrongWallet"));
       }
       storeWalletDeviceRecoveryRawKey(apiConfig.walletId, recovered.walletContentKey);
       if (recovered.actorDid && recovered.actorDid !== apiConfig.actorDid) {
         setApiConfig({ ...apiConfig, actorDid: recovered.actorDid });
       }
       setRecoveryStatus("ready");
-      setRecoveryMessage("Wallet recovery key restored locally. The server did not receive the passphrase or wallet key.");
+      setRecoveryMessage(t(siteLocale, "wallet.recoveryRestored"));
     } catch (error) {
       setRecoveryStatus("failed");
-      setRecoveryMessage(error instanceof Error ? error.message : "Wallet recovery failed.");
+      setRecoveryMessage(error instanceof Error ? error.message : t(siteLocale, "wallet.recoveryFailed"));
     }
   }
 
   return (
     <div className="screen wallet-screen">
       <div className="page-title">
-        <p className="eyebrow">Wallet</p>
-        <h1>Wallet</h1>
+        <p className="eyebrow">{t(siteLocale, "wallet.eyebrow")}</p>
+        <h1>{t(siteLocale, "wallet.title")}</h1>
       </div>
-      {walletCreateStatus === "created" ? <StatusBanner tone="success">New wallet generated and connected.</StatusBanner> : null}
-      {walletCreateStatus === "failed" ? <StatusBanner tone="warning">{walletCreateError || "Wallet generation failed."}</StatusBanner> : null}
-      <div className="wallet-status-strip" aria-label="Wallet status">
+      {walletCreateStatus === "created" ? <StatusBanner tone="success">{t(siteLocale, "wallet.generatedConnected")}</StatusBanner> : null}
+      {walletCreateStatus === "failed" ? <StatusBanner tone="warning">{walletCreateError || t(siteLocale, "wallet.generationFailed")}</StatusBanner> : null}
+      <div className="wallet-status-strip" aria-label={t(siteLocale, "wallet.statusAria")}>
         <div>
-          <span>Wallet</span>
-          <strong>{apiConfig ? "Connected" : apiBaseUrl ? "Ready" : "Needs API"}</strong>
+          <span>{t(siteLocale, "wallet.status.wallet")}</span>
+          <strong>
+            {apiConfig
+              ? t(siteLocale, "wallet.status.connected")
+              : apiBaseUrl
+                ? t(siteLocale, "wallet.status.ready")
+                : t(siteLocale, "wallet.status.needsApi")}
+          </strong>
         </div>
         <div>
-          <span>Files</span>
+          <span>{t(siteLocale, "wallet.status.files")}</span>
           <strong>{uploads.length}</strong>
         </div>
         <div>
-          <span>Proofs</span>
+          <span>{t(siteLocale, "wallet.status.proofs")}</span>
           <strong>{walletFileStats.profiled}</strong>
         </div>
         <div>
-          <span>IPLD</span>
+          <span>{t(siteLocale, "wallet.status.ipld")}</span>
           <strong>{walletFileStats.ipldLinked}</strong>
         </div>
       </div>
       <Section
-        title="Wallet connection"
+        title={t(siteLocale, "wallet.connectionTitle")}
         actions={
           <Badge tone={apiConfig ? "success" : apiBaseUrl ? "warning" : "neutral"}>
-            {apiConfig ? "connected" : apiBaseUrl ? "ready to create" : "API required"}
+            {apiConfig
+              ? t(siteLocale, "wallet.connection.connected")
+              : apiBaseUrl
+                ? t(siteLocale, "wallet.connection.readyToCreate")
+                : t(siteLocale, "wallet.connection.apiRequired")}
           </Badge>
         }
       >
         <div className="disclosure-package">
           <div className="disclosure-row">
-            <strong>Wallet</strong>
-            <span>{apiConfig?.walletId ?? "Not connected"}</span>
+            <strong>{t(siteLocale, "wallet.connection.wallet")}</strong>
+            <span>{apiConfig?.walletId ?? t(siteLocale, "wallet.connection.notConnected")}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Owner DID</strong>
-            <span>{apiConfig?.actorDid ?? "Will be generated when creating a new wallet"}</span>
+            <strong>{t(siteLocale, "wallet.connection.ownerDid")}</strong>
+            <span>{apiConfig?.actorDid ?? t(siteLocale, "wallet.connection.ownerDidPending")}</span>
           </div>
           <div className="disclosure-row">
-            <strong>Backend</strong>
-            <span>{apiBaseUrl ?? "Add walletApiBaseUrl or VITE_WALLET_API_BASE_URL to create a live wallet"}</span>
+            <strong>{t(siteLocale, "wallet.connection.backend")}</strong>
+            <span>{apiBaseUrl ?? t(siteLocale, "wallet.connection.backendHelp")}</span>
           </div>
         </div>
         <div className="row-actions">
           <Button
-            ariaLabel={walletCreateStatus === "creating" ? "Generating a new wallet" : "Generate new wallet"}
+            ariaLabel={walletCreateStatus === "creating" ? t(siteLocale, "wallet.connection.generating") : t(siteLocale, "wallet.connection.generate")}
             disabled={!apiBaseUrl || walletCreateStatus === "creating"}
             onClick={() => void generateWallet()}
           >
-            <Archive size={18} /> {walletCreateStatus === "creating" ? "Generating" : "Generate new wallet"}
+            <Archive size={18} /> {walletCreateStatus === "creating" ? t(siteLocale, "wallet.connection.generating") : t(siteLocale, "wallet.connection.generate")}
           </Button>
         </div>
         <div className="wallet-recovery-panel">
           <div>
-            <strong>Passwordless recovery</strong>
-            <small>
-              Magic links can authorize fetching encrypted recovery material. A passphrase can unlock it locally on a new
-              device without sharing the wallet key with 211 AI.
-            </small>
+            <strong>{t(siteLocale, "wallet.recoveryTitle")}</strong>
+            <small>{t(siteLocale, "wallet.recoveryHelp")}</small>
           </div>
-          <Field label="Recovery passphrase">
+          <Field label={t(siteLocale, "wallet.recoveryPassphrase")}>
             <input
               autoComplete="new-password"
               disabled={!apiConfig}
@@ -4789,7 +5086,7 @@ function UploadsScreen({
                 setRecoveryMessage("");
                 setRecoveryStatus("idle");
               }}
-              placeholder="Choose or enter your recovery passphrase"
+              placeholder={t(siteLocale, "wallet.recoveryPassphrasePlaceholder")}
               type="password"
               value={recoveryPassphrase}
             />
@@ -4798,61 +5095,58 @@ function UploadsScreen({
             <Button
               disabled={!apiConfig?.actorDid || recoveryPassphrase.trim().length < 8 || recoveryStatus === "saving"}
               loading={recoveryStatus === "saving"}
-              loadingLabel="Saving recovery"
+              loadingLabel={t(siteLocale, "wallet.recoverySaving")}
               onClick={() => void savePassphraseRecoveryBundle()}
               type="button"
               variant="secondary"
             >
-              <LockKeyhole size={18} /> Save passphrase recovery
+              <LockKeyhole size={18} /> {t(siteLocale, "wallet.recoverySave")}
             </Button>
             <Button
               disabled={!apiConfig || recoveryPassphrase.trim().length < 8 || recoveryStatus === "unlocking"}
               loading={recoveryStatus === "unlocking"}
-              loadingLabel="Unlocking"
+              loadingLabel={t(siteLocale, "wallet.recoveryUnlocking")}
               onClick={() => void unlockCachedPassphraseRecoveryBundle()}
               type="button"
               variant="secondary"
             >
-              <KeyRound size={18} /> Unlock cached recovery
+              <KeyRound size={18} /> {t(siteLocale, "wallet.recoveryUnlock")}
             </Button>
           </div>
           <div className="wallet-recovery-qr-grid">
             {recoveryQrCodeUrl ? (
               <img
-                alt="Wallet recovery QR code"
+                alt={t(siteLocale, "wallet.recoveryQrAlt")}
                 className="wallet-proof-qr-image"
                 height={180}
                 src={recoveryQrCodeUrl}
                 width={180}
               />
             ) : (
-              <div className="wallet-proof-qr-placeholder">Save passphrase recovery to generate a recovery QR.</div>
+              <div className="wallet-proof-qr-placeholder">{t(siteLocale, "wallet.recoveryQrPlaceholder")}</div>
             )}
             <div className="wallet-recovery-qr-actions">
-              <strong>Magic link + QR recovery</strong>
-              <small>
-                The QR contains the recovery passphrase and identifies the encrypted bundle. The magic link authorizes
-                fetching it; the QR or a typed passphrase unlocks it locally.
-              </small>
+              <strong>{t(siteLocale, "wallet.recoveryMagicQrTitle")}</strong>
+              <small>{t(siteLocale, "wallet.recoveryMagicQrHelp")}</small>
               <div className="disclosure-package">
                 <div className="disclosure-row">
-                  <strong>Recovery bundle</strong>
-                  <span>{recoveryQrPayloadLabel || "No recovery QR generated yet"}</span>
+                  <strong>{t(siteLocale, "wallet.recoveryBundle")}</strong>
+                  <span>{recoveryQrPayloadLabel || t(siteLocale, "wallet.recoveryBundleMissing")}</span>
                 </div>
                 <div className="disclosure-row">
-                  <strong>Server access</strong>
-                  <span>Encrypted bundle only; no passphrase or plaintext wallet key</span>
+                  <strong>{t(siteLocale, "wallet.serverAccess")}</strong>
+                  <span>{t(siteLocale, "wallet.serverAccessDetail")}</span>
                 </div>
                 <div className="disclosure-row">
-                  <strong>QR access</strong>
-                  <span>Contains recovery passphrase; store it like a wallet backup</span>
+                  <strong>{t(siteLocale, "wallet.qrAccess")}</strong>
+                  <span>{t(siteLocale, "wallet.qrAccessDetail")}</span>
                 </div>
               </div>
               <label className="button button-secondary">
-                <Camera aria-hidden="true" size={18} /> Import recovery QR
+                <Camera aria-hidden="true" size={18} /> {t(siteLocale, "wallet.importRecoveryQr")}
                 <input
                   accept={PROOF_QR_IMAGE_ACCEPT_ATTR}
-                  aria-label="Import recovery QR picture"
+                  aria-label={t(siteLocale, "wallet.importRecoveryQrPicture")}
                   className="sr-only"
                   onChange={(event) => {
                     void importRecoveryQr(event.target.files?.[0] ?? null);
@@ -4869,13 +5163,17 @@ function UploadsScreen({
         </div>
       </Section>
       <Section
-        title="Share wallet proof QR"
-        actions={<Badge tone={walletQrProofs.length > 0 ? "success" : "warning"}>{walletQrProofs.length} proof claims</Badge>}
+        title={t(siteLocale, "wallet.shareProofQrTitle")}
+        actions={
+          <Badge tone={walletQrProofs.length > 0 ? "success" : "warning"}>
+            {tFormat(siteLocale, "wallet.proofClaims", { count: String(walletQrProofs.length) })}
+          </Badge>
+        }
       >
         <div className="wallet-proof-qr-panel">
           {walletQrCodeUrl ? (
             <img
-              alt="Wallet proof QR code"
+              alt={t(siteLocale, "wallet.shareProofQrTitle")}
               className="wallet-proof-qr-image"
               height={220}
               src={walletQrCodeUrl}
@@ -4884,61 +5182,58 @@ function UploadsScreen({
           ) : (
             <div aria-live="polite" className="wallet-proof-qr-placeholder">
               {walletQrStatus === "loading"
-                ? "Publishing the wallet proof bundle to IPFS/Filecoin…"
+                ? t(siteLocale, "wallet.proofPublishing")
                 : filecoinStorageReady
-                  ? "Wallet proof QR is unavailable right now."
-                  : "Connect IPFS/Filecoin storage to generate a CID-backed wallet proof QR."}
+                  ? t(siteLocale, "wallet.proofUnavailable")
+                  : t(siteLocale, "wallet.proofConnectStorage")}
             </div>
           )}
           <div className="wallet-proof-qr-details">
-            <strong>Scan to open the client proof bundle</strong>
-            <small>
-              Services staff can scan this QR or upload a screenshot in Proof Center to review public proof claims without
-              exposing the underlying files.
-            </small>
+            <strong>{t(siteLocale, "wallet.scanProofTitle")}</strong>
+            <small>{t(siteLocale, "wallet.scanProofHelp")}</small>
             <div className="badge-row">
-              <Badge tone="info">IPFS wallet root QR</Badge>
-              <Badge>{apiConfig?.walletId ?? "localWallet"}</Badge>
-              {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>offline wallet preview</Badge>}
+              <Badge tone="info">{t(siteLocale, "wallet.ipfsWalletRootQr")}</Badge>
+              <Badge>{apiConfig?.walletId ?? t(siteLocale, "wallet.localWallet")}</Badge>
+              {apiConfig?.actorDid ? <Badge>{apiConfig.actorDid}</Badge> : <Badge>{t(siteLocale, "wallet.offlineWalletPreview")}</Badge>}
             </div>
             <div className="disclosure-package">
               <div className="disclosure-row">
-                <strong>QR payload</strong>
+                <strong>{t(siteLocale, "wallet.qrPayload")}</strong>
                 <span>{walletQrPayloadLabel}</span>
               </div>
               <div className="disclosure-row">
-                <strong>Includes</strong>
+                <strong>{t(siteLocale, "wallet.includes")}</strong>
                 <span>
                   {uploads.filter((upload) => upload.recordId).length} encrypted wallet records;{" "}
                   {summarizeWalletProofClaims(walletQrProofs)}
                 </span>
               </div>
               <div className="disclosure-row">
-                <strong>Opens</strong>
-                <span>Proof Center review from an IPFS CID-backed proof bundle</span>
+                <strong>{t(siteLocale, "wallet.opens")}</strong>
+                <span>{t(siteLocale, "wallet.opensDetail")}</span>
               </div>
             </div>
             <a className="button button-secondary" href={walletProofReviewHref}>
-              Open proof review
+              {t(siteLocale, "wallet.openProofReview")}
             </a>
           </div>
         </div>
       </Section>
       <Section
-        title="Add wallet file"
+        title={t(siteLocale, "wallet.addFileTitle")}
         actions={
           <Badge tone={filecoinStorageReady ? "success" : "warning"}>
-            {filecoinStorageReady ? "IPFS/Filecoin ready" : "Backend required"}
+            {filecoinStorageReady ? t(siteLocale, "wallet.storageReady") : t(siteLocale, "wallet.backendRequired")}
           </Badge>
         }
       >
         <div className="wallet-storage-panel">
           <div>
-            <strong>Storage destination</strong>
+            <strong>{t(siteLocale, "wallet.storageDestination")}</strong>
             <small>
               {filecoinStorageReady
-                ? "New files can be sent to a backend that pins to IPFS/Filecoin."
-                : "Set VITE_FILECOIN_STORAGE_UPLOAD_URL or local runtime config for IPFS/Filecoin storage."}
+                ? t(siteLocale, "wallet.storageReadyHelp")
+                : t(siteLocale, "wallet.storageMissingHelp")}
             </small>
           </div>
           <label className="wallet-filecoin-toggle">
@@ -4948,60 +5243,60 @@ function UploadsScreen({
               onChange={(event) => setStoreNewFilesOnFilecoin(event.target.checked)}
               type="checkbox"
             />
-            <span>Store new wallet files on IPFS/Filecoin</span>
+            <span>{t(siteLocale, "wallet.storeNewFiles")}</span>
           </label>
         </div>
         <label className="upload-dropzone">
           <Upload aria-hidden="true" size={28} />
-          <span>Choose a wallet file or photo</span>
-          <small>Wallet files stay private until sharing is allowed.</small>
+          <span>{t(siteLocale, "wallet.chooseFile")}</span>
+          <small>{t(siteLocale, "wallet.filesPrivateUntilShared")}</small>
           <span className="upload-picker">
-            <FileUp aria-hidden="true" size={18} /> Select file
+            <FileUp aria-hidden="true" size={18} /> {t(siteLocale, "wallet.selectFile")}
           </span>
           <input
             type="file"
             onChange={(event) => addUpload(event.target.files?.[0] ?? null)}
-            aria-label="Choose file to upload"
+            aria-label={t(siteLocale, "wallet.chooseFileAria")}
           />
         </label>
       </Section>
       <Section
-        title="File wallet"
+        title={t(siteLocale, "wallet.fileWalletTitle")}
         actions={
           <Badge tone={visibleUploads.length === uploads.length ? "neutral" : "info"}>
-            {visibleUploads.length}/{uploads.length} files
+            {tFormat(siteLocale, "wallet.fileCount", { total: String(uploads.length), visible: String(visibleUploads.length) })}
           </Badge>
         }
       >
         <div className="wallet-file-workbench">
-          <div className="wallet-file-controls" aria-label="Wallet file controls">
-            <Field label="Find wallet files">
+          <div className="wallet-file-controls" aria-label={t(siteLocale, "wallet.fileControlsAria")}>
+            <Field label={t(siteLocale, "wallet.findFiles")}>
               <div className="wallet-file-search-field">
                 <Search aria-hidden="true" size={18} />
                 <input
                   autoComplete="off"
                   onChange={(event) => setWalletFileQuery(event.target.value)}
-                  placeholder="Search proof-backed profiles"
+                  placeholder={t(siteLocale, "wallet.searchPlaceholder")}
                   type="search"
                   value={walletFileQuery}
                 />
               </div>
             </Field>
-            <Field label="Sort">
+            <Field label={t(siteLocale, "wallet.sort")}>
               <select
                 onChange={(event) => setWalletFileSort(event.target.value as WalletFileSortMode)}
                 value={walletFileSort}
               >
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="name">Name</option>
-                <option value="type">Type</option>
-                <option value="profile">Profile status</option>
-                <option value="storage">Storage status</option>
+                <option value="newest">{t(siteLocale, "wallet.sortNewest")}</option>
+                <option value="oldest">{t(siteLocale, "wallet.sortOldest")}</option>
+                <option value="name">{t(siteLocale, "wallet.sortName")}</option>
+                <option value="type">{t(siteLocale, "wallet.sortType")}</option>
+                <option value="profile">{t(siteLocale, "wallet.sortProfile")}</option>
+                <option value="storage">{t(siteLocale, "wallet.sortStorage")}</option>
               </select>
             </Field>
           </div>
-          <div className="wallet-file-filter-row" aria-label="Wallet file filters">
+          <div className="wallet-file-filter-row" aria-label={t(siteLocale, "wallet.filtersAria")}>
             {walletFileFilterOptions.map((option) => (
               <button
                 aria-pressed={walletFileFilter === option.value}
@@ -5018,12 +5313,16 @@ function UploadsScreen({
         <div className="list-stack wallet-file-list">
           {visibleUploads.length === 0 ? (
             <div className="wallet-empty-state">
-              <strong>No wallet files match this view</strong>
-              <small>Adjust the search or filter to show more records.</small>
+              <strong>{t(siteLocale, "wallet.emptyTitle")}</strong>
+              <small>{t(siteLocale, "wallet.emptyBody")}</small>
             </div>
           ) : null}
         {visibleUploads.map((upload) => (
-          <article aria-label={`${upload.fileName} wallet file`} className="list-item upload-list-item wallet-list-item" key={upload.id}>
+          <article
+            aria-label={tFormat(siteLocale, "wallet.fileAria", { name: upload.fileName })}
+            className="list-item upload-list-item wallet-list-item"
+            key={upload.id}
+          >
             <div className="wallet-file-primary">
               <h3>{upload.fileName}</h3>
               <p>{uploadTypeLabel(upload)}</p>
@@ -5032,11 +5331,11 @@ function UploadsScreen({
                 <Badge tone="success">{upload.status}</Badge>
                 {upload.storageOk !== undefined ? (
                   <Badge tone={upload.storageOk ? "success" : "warning"}>
-                    {upload.storageOk ? "saved" : "save needs fix"}
+                    {upload.storageOk ? t(siteLocale, "wallet.saved") : t(siteLocale, "wallet.saveNeedsFix")}
                   </Badge>
                 ) : null}
-                <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload)}</Badge>
-                <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload)}</Badge>
+                <Badge tone={upload.shared ? "success" : "neutral"}>{sharingBadge(upload, siteLocale)}</Badge>
+                <Badge tone={filecoinBadgeTone(upload)}>{filecoinBadge(upload, siteLocale)}</Badge>
                 {upload.decryptedMimeType ? (
                   <Badge tone="success">{displayMimeType(upload.decryptedMimeType)}</Badge>
                 ) : null}
@@ -5048,7 +5347,7 @@ function UploadsScreen({
                 ) : null}
                 {upload.privacyProfileStatus ? (
                   <Badge tone={privacyProfileBadgeTone(upload)}>
-                    {privacyProfileBadge(upload)}
+                    {privacyProfileBadge(upload, siteLocale)}
                   </Badge>
                 ) : null}
               </div>
@@ -5063,12 +5362,14 @@ function UploadsScreen({
               {upload.ipldLinks?.length ? (
                 <div className="wallet-evidence-row">
                   <span>IPLD</span>
-                  <strong>{upload.ipldLinks.length} object{upload.ipldLinks.length === 1 ? "" : "s"}</strong>
+                  <strong>
+                    {upload.ipldLinks.length} {upload.ipldLinks.length === 1 ? t(siteLocale, "wallet.objectSingular") : t(siteLocale, "wallet.objectPlural")}
+                  </strong>
                 </div>
               ) : null}
               {upload.metadataCid ? (
                 <div className="wallet-evidence-row">
-                  <span>Metadata</span>
+                  <span>{t(siteLocale, "wallet.metadata")}</span>
                   <a href={normalizeIpfsGatewayUrl(upload.metadataGatewayUrl) || ipfsGatewayHref({ ...upload, ipfsCid: upload.metadataCid, ipfsGatewayUrl: undefined })} rel="noreferrer" target="_blank">
                     <code>{upload.metadataCid}</code>
                   </a>
@@ -5078,32 +5379,34 @@ function UploadsScreen({
                 <small className="wallet-storage-reference">{upload.metadataStorageMessage}</small>
               ) : null}
               {upload.privacyProfileSummary ? (
-                <small className="wallet-storage-reference">Private profile: {upload.privacyProfileSummary}</small>
+                <small className="wallet-storage-reference">{tFormat(siteLocale, "wallet.privateProfile", { value: upload.privacyProfileSummary })}</small>
               ) : null}
               {upload.decryptedClassification || upload.decryptedMimeType ? (
                 <small className="wallet-storage-reference">
-                  Decrypted download: {upload.decryptedClassification || displayMimeType(upload.decryptedMimeType || "")}
-                  {upload.decryptedMimeType ? ` (${upload.decryptedMimeType})` : ""}
+                  {tFormat(siteLocale, "wallet.decryptedDownload", {
+                    value: `${upload.decryptedClassification || displayMimeType(upload.decryptedMimeType || "")}${upload.decryptedMimeType ? ` (${upload.decryptedMimeType})` : ""}`
+                  })}
                 </small>
               ) : null}
               {upload.decryptedLabels?.length ? (
                 <small className="wallet-storage-reference">
-                  Decrypted contents: {upload.decryptedLabels.slice(0, 6).join(", ")}
+                  {tFormat(siteLocale, "wallet.decryptedContents", { value: upload.decryptedLabels.slice(0, 6).join(", ") })}
                 </small>
               ) : null}
               {upload.privacyProfileClassification || upload.privacyProfileMimeType ? (
                 <small className="wallet-storage-reference">
-                  Profiled type: {upload.privacyProfileClassification || displayMimeType(upload.privacyProfileMimeType || "")}
-                  {upload.privacyProfileMimeType ? ` (${upload.privacyProfileMimeType})` : ""}
+                  {tFormat(siteLocale, "wallet.profiledType", {
+                    value: `${upload.privacyProfileClassification || displayMimeType(upload.privacyProfileMimeType || "")}${upload.privacyProfileMimeType ? ` (${upload.privacyProfileMimeType})` : ""}`
+                  })}
                 </small>
               ) : null}
               {upload.privacyProfileLabels?.length ? (
                 <small className="wallet-storage-reference">
-                  Contents: {upload.privacyProfileLabels.slice(0, 6).join(", ")}
+                  {tFormat(siteLocale, "wallet.contents", { value: upload.privacyProfileLabels.slice(0, 6).join(", ") })}
                 </small>
               ) : null}
               {upload.privacyProfileProofId ? (
-                <small className="wallet-storage-reference">Proof: <code>{shortStorageId(upload.privacyProfileProofId)}</code></small>
+                <small className="wallet-storage-reference">{tFormat(siteLocale, "wallet.proof", { value: shortStorageId(upload.privacyProfileProofId) })}</small>
               ) : null}
               {upload.privacyProfileMessage ? (
                 <small className="wallet-storage-reference">{upload.privacyProfileMessage}</small>
@@ -5112,7 +5415,7 @@ function UploadsScreen({
                 <small className="wallet-storage-reference">{upload.decentralizedStorageMessage}</small>
               ) : null}
             </div>
-            <div className="wallet-sharing-controls" aria-label={`Sharing controls for ${upload.fileName}`}>
+            <div className="wallet-sharing-controls" aria-label={tFormat(siteLocale, "wallet.sharingControlsFor", { name: upload.fileName })}>
               <div className="wallet-sharing-mode">
                 <button
                   aria-pressed={(upload.sharingMode ?? "private") === "private"}
@@ -5120,7 +5423,7 @@ function UploadsScreen({
                   onClick={() => makePrivate(upload)}
                   type="button"
                 >
-                  Private
+                  {t(siteLocale, "wallet.private")}
                 </button>
                 <button
                   aria-pressed={(upload.sharingMode ?? "private") === "selected_contacts"}
@@ -5128,7 +5431,7 @@ function UploadsScreen({
                   onClick={() => allowSharing(upload)}
                   type="button"
                 >
-                  Selected contacts
+                  {t(siteLocale, "wallet.selectedContacts")}
                 </button>
               </div>
               {(upload.sharingMode ?? "private") === "selected_contacts" ? (
@@ -5143,17 +5446,19 @@ function UploadsScreen({
                         />
                         <span>
                           {recipient.displayName}
-                          <small>{recipient.verified ? "verified" : "not verified"} · {recipient.relationship || recipient.agencyName || "contact"}</small>
+                          <small>
+                            {recipient.verified ? t(siteLocale, "wallet.contactVerified") : t(siteLocale, "wallet.contactNotVerified")} · {recipient.relationship || recipient.agencyName || t(siteLocale, "wallet.contactFallback")}
+                          </small>
                         </span>
                       </label>
                     ))
                   ) : (
-                    <small className="upload-machine-summary">Add contacts before allowing wallet-file sharing.</small>
+                    <small className="upload-machine-summary">{t(siteLocale, "wallet.addContactsBeforeSharing")}</small>
                   )}
                 </div>
               ) : null}
             </div>
-            <div className="wallet-file-footer-actions" aria-label={`Actions for ${upload.fileName}`}>
+            <div className="wallet-file-footer-actions" aria-label={tFormat(siteLocale, "wallet.actionsFor", { name: upload.fileName })}>
               {upload.storageOk === false && upload.recordId && apiConfig?.actorDid ? (
                 <Button
                   disabled={repairingUploadIds.includes(upload.id)}
@@ -5161,7 +5466,7 @@ function UploadsScreen({
                   variant="secondary"
                 >
                   <Wrench aria-hidden="true" size={18} />
-                  {repairingUploadIds.includes(upload.id) ? "Fixing" : "Fix save"}
+                  {repairingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.fixing") : t(siteLocale, "wallet.fixSave")}
                 </Button>
               ) : null}
               {filecoinStorageReady && upload.recordId && shouldShowFilecoinAction(upload) ? (
@@ -5171,7 +5476,7 @@ function UploadsScreen({
                   variant="secondary"
                 >
                   <Upload aria-hidden="true" size={18} />
-                  {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id))}
+                  {filecoinActionLabel(upload, filecoinUploadIds.includes(upload.id), siteLocale)}
                 </Button>
               ) : null}
               {upload.recordId && apiConfig?.actorDid && upload.privacyProfileStatus !== "profiled" ? (
@@ -5181,7 +5486,7 @@ function UploadsScreen({
                   variant="secondary"
                 >
                   <ShieldCheck aria-hidden="true" size={18} />
-                  {upload.privacyProfileStatus === "profiling" ? "Profiling" : "Generate proof"}
+                  {upload.privacyProfileStatus === "profiling" ? t(siteLocale, "wallet.profiling") : t(siteLocale, "wallet.generateProof")}
                 </Button>
               ) : null}
               {upload.recordId && apiConfig?.actorDid ? (
@@ -5191,14 +5496,14 @@ function UploadsScreen({
                   variant="secondary"
                 >
                   <Download aria-hidden="true" size={18} />
-                  {downloadingUploadIds.includes(upload.id) ? "Decrypting" : "Download decrypted"}
+                  {downloadingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.decrypting") : t(siteLocale, "wallet.downloadDecrypted")}
                 </Button>
               ) : null}
               <Button
                 onClick={() => (upload.shared ? makePrivate(upload) : allowSharing(upload))}
                 variant="secondary"
               >
-                {upload.shared ? "Make private" : "Allow sharing"}
+                {upload.shared ? t(siteLocale, "wallet.makePrivate") : t(siteLocale, "wallet.allowSharing")}
               </Button>
               {upload.recordId && apiConfig?.actorDid ? (
                 <Button
@@ -5207,7 +5512,7 @@ function UploadsScreen({
                   variant="secondary"
                 >
                   <Trash2 aria-hidden="true" size={18} />
-                  {deletingUploadIds.includes(upload.id) ? "Deleting" : "Delete"}
+                  {deletingUploadIds.includes(upload.id) ? t(siteLocale, "wallet.deleting") : t(siteLocale, "wallet.delete")}
                 </Button>
               ) : null}
             </div>
@@ -5220,22 +5525,24 @@ function UploadsScreen({
   );
 }
 
-function sharingBadge(upload: UploadItem): string {
+function sharingBadge(upload: UploadItem, locale: SupportedLocale): string {
   const count = upload.allowedRecipientIds?.length ?? 0;
-  if (!upload.shared || count === 0) return "Private";
-  return `${count} selected`;
+  if (!upload.shared || count === 0) return t(locale, "wallet.private");
+  return tFormat(locale, "wallet.selectedCount", { count: String(count) });
 }
 
 type WalletFileSortMode = "newest" | "oldest" | "name" | "type" | "profile" | "storage";
 type WalletFileFilterMode = "all" | "profiled" | "needs_proof" | "stored" | "shared";
 
-const walletFileFilterOptions: Array<{ label: string; value: WalletFileFilterMode }> = [
-  { label: "All", value: "all" },
-  { label: "Profiled", value: "profiled" },
-  { label: "Needs proof", value: "needs_proof" },
-  { label: "Stored", value: "stored" },
-  { label: "Shared", value: "shared" }
-];
+function getWalletFileFilterOptions(locale: SupportedLocale): Array<{ label: string; value: WalletFileFilterMode }> {
+  return [
+    { label: t(locale, "wallet.filter.all"), value: "all" },
+    { label: t(locale, "wallet.filter.profiled"), value: "profiled" },
+    { label: t(locale, "wallet.filter.needsProof"), value: "needs_proof" },
+    { label: t(locale, "wallet.filter.stored"), value: "stored" },
+    { label: t(locale, "wallet.filter.shared"), value: "shared" }
+  ];
+}
 
 function searchWalletFiles(
   uploads: UploadItem[],
@@ -5387,14 +5694,14 @@ function uploadStorageSortRank(upload: UploadItem): number {
   return 4;
 }
 
-function filecoinBadge(upload: UploadItem): string {
-  if (upload.filecoinPinStatus === "queued") return "Filecoin queued";
-  if (upload.filecoinPinStatus === "pinning") return "Filecoin pinning";
-  if (upload.filecoinPinStatus === "failed") return "IPFS only";
-  if (upload.decentralizedStorageStatus === "stored") return "IPFS/Filecoin";
-  if (upload.decentralizedStorageStatus === "uploading") return "storing";
-  if (upload.decentralizedStorageStatus === "failed") return "storage failed";
-  return "wallet storage";
+function filecoinBadge(upload: UploadItem, locale: SupportedLocale): string {
+  if (upload.filecoinPinStatus === "queued") return t(locale, "wallet.filecoinQueued");
+  if (upload.filecoinPinStatus === "pinning") return t(locale, "wallet.filecoinPinning");
+  if (upload.filecoinPinStatus === "failed") return t(locale, "wallet.ipfsOnly");
+  if (upload.decentralizedStorageStatus === "stored") return t(locale, "wallet.ipfsFilecoin");
+  if (upload.decentralizedStorageStatus === "uploading") return t(locale, "wallet.storing");
+  if (upload.decentralizedStorageStatus === "failed") return t(locale, "wallet.storageFailed");
+  return t(locale, "wallet.walletStorage");
 }
 
 function filecoinBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
@@ -5410,18 +5717,18 @@ function shouldShowFilecoinAction(upload: UploadItem): boolean {
   return upload.decentralizedStorageStatus !== "stored" || upload.filecoinPinStatus === "failed";
 }
 
-function filecoinActionLabel(upload: UploadItem, inProgress: boolean): string {
+function filecoinActionLabel(upload: UploadItem, inProgress: boolean, locale: SupportedLocale): string {
   if (upload.filecoinPinStatus === "failed") {
-    return inProgress ? "Retrying" : "Retry Filecoin";
+    return inProgress ? t(locale, "wallet.retrying") : t(locale, "wallet.retryFilecoin");
   }
-  return inProgress ? "Storing" : "Store on IPFS/Filecoin";
+  return inProgress ? t(locale, "wallet.storing") : t(locale, "wallet.storeOnFilecoin");
 }
 
-function privacyProfileBadge(upload: UploadItem): string {
-  if (upload.privacyProfileStatus === "profiled") return "privacy proof";
-  if (upload.privacyProfileStatus === "profiling") return "profiling";
-  if (upload.privacyProfileStatus === "failed") return "profile failed";
-  return "profile pending";
+function privacyProfileBadge(upload: UploadItem, locale: SupportedLocale): string {
+  if (upload.privacyProfileStatus === "profiled") return t(locale, "wallet.privacyProof");
+  if (upload.privacyProfileStatus === "profiling") return t(locale, "wallet.profiling");
+  if (upload.privacyProfileStatus === "failed") return t(locale, "wallet.profileFailed");
+  return t(locale, "wallet.profilePending");
 }
 
 function privacyProfileBadgeTone(upload: UploadItem): "neutral" | "info" | "success" | "warning" | "danger" {
@@ -5456,6 +5763,7 @@ function SocialServicesScreen({
   savedServices,
   servicePlans,
   setSavedServices,
+  siteLocale,
   walletPortalError,
   walletPortalLoading
 }: {
@@ -5466,11 +5774,25 @@ function SocialServicesScreen({
   savedServices: SavedService[];
   servicePlans: ServicePlan[];
   setSavedServices: (services: SavedService[]) => void;
+  siteLocale: SupportedLocale;
   walletPortalError: string;
   walletPortalLoading: boolean;
 }) {
-  const categories = ["Shelter", "Food", "Health", "Legal", "Benefits", "Transportation", "Employment", "Crisis"];
-  const suggestedPrompts = ["food pantry near Portland", "emergency shelter", "utility bill help"];
+  const categories = [
+    { label: t(siteLocale, "services.category.shelter"), query: "Shelter" },
+    { label: t(siteLocale, "services.category.food"), query: "Food" },
+    { label: t(siteLocale, "services.category.health"), query: "Health" },
+    { label: t(siteLocale, "services.category.legal"), query: "Legal" },
+    { label: t(siteLocale, "services.category.benefits"), query: "Benefits" },
+    { label: t(siteLocale, "services.category.transportation"), query: "Transportation" },
+    { label: t(siteLocale, "services.category.employment"), query: "Employment" },
+    { label: t(siteLocale, "services.category.crisis"), query: "Crisis" },
+  ];
+  const suggestedPrompts = [
+    { label: t(siteLocale, "services.prompt.foodPantry"), query: "food pantry near Portland" },
+    { label: t(siteLocale, "services.prompt.emergencyShelter"), query: "emergency shelter" },
+    { label: t(siteLocale, "services.prompt.utilityHelp"), query: "utility bill help" },
+  ];
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [resultLocationLabels, setResultLocationLabels] = useState<Record<string, string>>({});
@@ -5558,52 +5880,54 @@ function SocialServicesScreen({
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Social services</p>
-        <h1>Find support</h1>
+        <p className="eyebrow">{t(siteLocale, "services.eyebrow")}</p>
+        <h1>{t(siteLocale, "services.title")}</h1>
         {catalogCounts.serviceCount > 0 ? (
           <p className="supporting-copy">
-            Indexed 211 service network: {formatCount(catalogCounts.serviceCount)} services,{" "}
-            {formatCount(catalogCounts.phoneCount)} with direct phone handoff,{" "}
-            {formatCount(catalogCounts.addressCount)} with directions, and{" "}
-            {formatCount(catalogCounts.intakeCount)} with structured intake steps.
+            {tFormat(siteLocale, "services.indexedSummary", {
+              serviceCount: formatCount(catalogCounts.serviceCount),
+              phoneCount: formatCount(catalogCounts.phoneCount),
+              addressCount: formatCount(catalogCounts.addressCount),
+              intakeCount: formatCount(catalogCounts.intakeCount),
+            })}
           </p>
         ) : null}
       </div>
-      <Section title={catalogCounts.serviceCount > 0 ? `Search ${formatCount(catalogCounts.serviceCount)} indexed services` : "Search the 211 service index"}>
+      <Section title={catalogCounts.serviceCount > 0 ? tFormat(siteLocale, "services.searchIndexedTitle", { count: formatCount(catalogCounts.serviceCount) }) : t(siteLocale, "services.searchIndexTitle")}>
         <form className="form-grid" onSubmit={handleSearchSubmit}>
-          <Field label="Search by need, provider, or place">
+          <Field label={t(siteLocale, "services.searchLabel")}>
             <input
-              placeholder="food pantry near Beaverton"
+              placeholder={t(siteLocale, "services.searchPlaceholder")}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
           </Field>
           <div className="row-actions">
-            <Button disabled={!query.trim()} loading={searchStatus === "loading"} loadingLabel="Searching" type="submit">
-              Search
+            <Button disabled={!query.trim()} loading={searchStatus === "loading"} loadingLabel={t(siteLocale, "services.searching")} type="submit">
+              {t(siteLocale, "services.searchButton")}
             </Button>
           </div>
         </form>
-        <div className="chip-grid" aria-label="Suggested searches">
+        <div className="chip-grid" aria-label={t(siteLocale, "services.suggestedSearches")}>
           {suggestedPrompts.map((prompt) => (
-            <button className="choice-chip" key={prompt} onClick={() => void runSearch(prompt)} type="button">
-              {prompt}
+            <button className="choice-chip" key={prompt.query} onClick={() => void runSearch(prompt.query)} type="button">
+              {prompt.label}
             </button>
           ))}
         </div>
         {searchStatus === "error" ? (
-          <StatusBanner tone="warning">211 service search is unavailable: {searchError}</StatusBanner>
+          <StatusBanner tone="warning">{tFormat(siteLocale, "services.searchUnavailable", { error: searchError })}</StatusBanner>
         ) : null}
         {saveError ? <StatusBanner tone="warning">{saveError}</StatusBanner> : null}
         {searchStatus === "complete" && results.length === 0 ? (
-          <StatusBanner tone="info">No local 211 records matched. Try a broader need or contact 211 directly.</StatusBanner>
+          <StatusBanner tone="info">{t(siteLocale, "services.noMatches")}</StatusBanner>
         ) : null}
         {results.length ? (
-          <div className="list-stack" aria-label="211 service search results">
+          <div className="list-stack" aria-label={t(siteLocale, "services.resultsAria")}>
             {results.map((result) => {
               const document = result.document;
-              const provider = document.provider_name || "Provider not listed";
-              const program = document.program_name || document.title || "Program not listed";
+              const provider = document.provider_name || t(siteLocale, "services.providerNotListed");
+              const program = document.program_name || document.title || t(siteLocale, "services.programNotListed");
               const location = resultLocationLabels[result.docId] || getServiceLocationLabel(document);
               const intake = getPrimaryIntakeText(document);
               return (
@@ -5612,7 +5936,7 @@ function SocialServicesScreen({
                     <h3>{program}</h3>
                     <p>{provider}</p>
                     <small className="upload-machine-summary">{result.snippet}</small>
-                    {intake ? <small className="upload-machine-summary">Apply: {intake}</small> : null}
+                    {intake ? <small className="upload-machine-summary">{t(siteLocale, "services.applyPrefix")}: {intake}</small> : null}
                     <div className="badge-row">
                       <Badge>{document.doc_type}</Badge>
                       {location ? (
@@ -5623,23 +5947,23 @@ function SocialServicesScreen({
                     </div>
                   </div>
                   <div className="row-actions list-item-action">
-                    <ServiceQuickActions document={document} />
+                    <ServiceQuickActions document={document} siteLocale={siteLocale} />
                     <Button
                       disabled={savedServices.some((service) => service.service_doc_id === result.docId)}
                       loading={savingDocIds.includes(result.docId)}
-                      loadingLabel="Saving"
+                      loadingLabel={t(siteLocale, "services.saving")}
                       onClick={() => void saveResult(result)}
                       variant="secondary"
                     >
                       <Save aria-hidden="true" size={18} />
-                      {savedServices.some((service) => service.service_doc_id === result.docId) ? "Saved" : "Save"}
+                      {savedServices.some((service) => service.service_doc_id === result.docId) ? t(siteLocale, "services.saved") : t(siteLocale, "services.save")}
                     </Button>
                     <Button onClick={() => onOpenPlan(result.docId)} variant="secondary">
                       <CalendarClock aria-hidden="true" size={18} />
-                      Plan
+                      {t(siteLocale, "services.plan")}
                     </Button>
                     <Button onClick={() => onOpenDetail(result.docId)} variant="secondary">
-                      Open detail
+                      {t(siteLocale, "services.openDetail")}
                     </Button>
                   </div>
                 </article>
@@ -5655,17 +5979,18 @@ function SocialServicesScreen({
         onOpenPlan={onOpenPlan}
         onRefresh={refreshWalletPortalState ? () => void refreshWalletPortalState() : undefined}
         savedServices={savedServices}
+        siteLocale={siteLocale}
         servicePlans={servicePlans}
       />
       <div className="category-grid">
         {categories.map((category) => (
-          <button className="category-tile" key={category} onClick={() => void runSearch(category)} type="button">
+          <button className="category-tile" key={category.query} onClick={() => void runSearch(category.query)} type="button">
             <HeartHandshake aria-hidden="true" size={22} />
-            <span>{category}</span>
+            <span>{category.label}</span>
           </button>
         ))}
       </div>
-      <Section title="Matched services">
+      <Section title={t(siteLocale, "services.matchedServices")}>
         <div className="list-stack">
           {serviceMatches.map((service) => (
             <article className="list-item" key={service.id}>
@@ -5925,6 +6250,7 @@ function ShelterScreen({
   shelterCaseRecords,
   providerMessages,
   recipients,
+  siteLocale,
   setContactRequests,
   setShelterCaseRecords,
   setProofReceipts,
@@ -5945,6 +6271,7 @@ function ShelterScreen({
   shelterCaseRecords: ShelterCaseRecord[];
   providerMessages: ShelterProviderMessage[];
   recipients: DisclosureRecipientDraft[];
+  siteLocale: SupportedLocale;
   setContactRequests: (requests: ShelterContactRequest[]) => void;
   setShelterCaseRecords: (records: ShelterCaseRecord[]) => void;
   setProofReceipts: (proofs: ProofReceiptView[]) => void;
@@ -5976,8 +6303,8 @@ function ShelterScreen({
     proofType: "service_attendance",
     criterionId: "" as ShelterEligibilityCriterion | "",
     caseId: "",
-    verifier: "Provider portal verifier",
-    claim: "Client received services from this organization without exposing private documents."
+    verifier: t(siteLocale, "providerPortal.proofs.defaultVerifier"),
+    claim: t(siteLocale, "providerPortal.proofs.defaultClaim")
   });
   const [caseStatusFilter, setCaseStatusFilter] = useState<ShelterCaseStatus | "all">("all");
 
@@ -6093,35 +6420,67 @@ function ShelterScreen({
       };
     })
     .sort((left, right) => right.proofCount - left.proofCount || left.staff.displayName.localeCompare(right.staff.displayName));
-  const providerRecentActivity = [
+  const providerRecentActivity: Array<{
+    createdAt: string;
+    detail: string;
+    id: string;
+    title: string;
+    tone: "neutral" | "success" | "warning";
+  }> = [
     ...usersForOperatorShelter.map((account) => ({
       id: `client-${account.id}`,
-      title: `${account.preferredName || account.legalName} added to service caseload`,
-      detail: `${account.serviceNeeds.length ? account.serviceNeeds.join(", ") : "No needs selected"} · ${
-        shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"
-      }`,
-      tone: account.foundPermanentHousing ? "success" : "warning",
+      title: tFormat(siteLocale, "providerPortal.analytics.activityClientAdded", {
+        name: account.preferredName || account.legalName
+      }),
+      detail: tFormat(siteLocale, "providerPortal.analytics.activityClientDetail", {
+        needs: account.serviceNeeds.length
+          ? account.serviceNeeds.map((need) => translateServiceNeed(siteLocale, need)).join(", ")
+          : t(siteLocale, "providerPortal.analytics.noNeedsSelected"),
+        staff: shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? t(siteLocale, "providerPortal.clients.staffFallback")
+      }),
+      tone: account.foundPermanentHousing ? ("success" as const) : ("warning" as const),
       createdAt: account.createdAt
     })),
     ...providerMessagesForShelter.map((message) => ({
       id: `message-${message.id}`,
-      title: `Message sent to ${message.clientName}`,
-      detail: `${message.subject} · ${message.staffName}`,
-      tone: "neutral",
+      title: tFormat(siteLocale, "providerPortal.analytics.activityMessageSent", { name: message.clientName }),
+      detail: tFormat(siteLocale, "providerPortal.analytics.activityMessageDetail", {
+        staff: message.staffName,
+        subject: message.subject
+      }),
+      tone: "neutral" as const,
       createdAt: message.createdAt
     })),
     ...providerProofsForShelter.map((proof) => ({
       id: `proof-${proof.id}`,
-      title: `ZK certificate processed for ${providerProofClientLabel(proof, usersForOperatorShelter)}`,
-      detail: `${proof.publicInputs.certificate_type || proof.proofType.replace("provider_", "")} · ${proof.verifier}`,
-      tone: "success",
+      title: tFormat(siteLocale, "providerPortal.analytics.activityProofProcessed", {
+        name: providerProofClientLabel(proof, usersForOperatorShelter)
+      }),
+      detail: tFormat(siteLocale, "providerPortal.analytics.activityProofDetail", {
+        certificate: proof.publicInputs.certificate_type || proof.proofType.replace("provider_", ""),
+        verifier: proof.verifier
+      }),
+      tone: "success" as const,
       createdAt: proof.createdAt
     })),
     ...requestsForOperatorShelter.map((request) => ({
       id: `request-${request.id}`,
-      title: `Contact request ${request.status}`,
-      detail: `${request.userName} · ${request.direction === "user_to_shelter" ? "client initiated" : "provider initiated"}`,
-      tone: request.status === "pending" ? "warning" : request.status === "approved" ? "success" : "neutral",
+      title: tFormat(siteLocale, "providerPortal.analytics.activityContactRequest", {
+        status: formatContactRequestStatus(request.status, siteLocale)
+      }),
+      detail: tFormat(siteLocale, "providerPortal.analytics.activityContactRequestDetail", {
+        direction:
+          request.direction === "user_to_shelter"
+            ? t(siteLocale, "providerPortal.analytics.clientInitiated")
+            : t(siteLocale, "providerPortal.analytics.providerInitiated"),
+        name: request.userName
+      }),
+      tone:
+        request.status === "pending"
+          ? ("warning" as const)
+          : request.status === "approved"
+            ? ("success" as const)
+            : ("neutral" as const),
       createdAt: request.decidedAt ?? request.createdAt
     }))
   ].sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()).slice(0, 8);
@@ -6377,8 +6736,8 @@ function ShelterScreen({
       proofType: "service_attendance",
       criterionId: "",
       caseId: "",
-      verifier: `${operatorShelter} certificate verifier`,
-      claim: "Client attended or received a service without exposing private documents."
+      verifier: tFormat(siteLocale, "providerPortal.proofs.certificateVerifier", { shelter: operatorShelter }),
+      claim: t(siteLocale, "providerPortal.proofs.certificateClaim")
     });
     navigate("provider-proofs");
   }
@@ -6388,14 +6747,13 @@ function ShelterScreen({
     criterionId: ShelterEligibilityCriterion,
     caseRecord?: ShelterCaseRecord
   ) {
-    const criterion = providerEligibilityCriteria.find((item) => item.id === criterionId);
     setProofDraft({
       clientId: client.id,
-      proofType: criterion?.certificateType ?? "eligibility",
+      proofType: providerEligibilityCriteria.find((item) => item.id === criterionId)?.certificateType ?? "eligibility",
       criterionId,
       caseId: caseRecord?.id ?? "",
-      verifier: `${operatorShelter} eligibility verifier`,
-      claim: criterion?.claim ?? "Client meets the selected eligibility criteria without exposing private documents."
+      verifier: tFormat(siteLocale, "providerPortal.proofs.eligibilityVerifier", { shelter: operatorShelter }),
+      claim: providerEligibilityClaim(criterionId, siteLocale)
     });
     navigate("provider-proofs");
   }
@@ -6406,7 +6764,7 @@ function ShelterScreen({
       ...proofDraft,
       criterionId,
       proofType: criterion?.certificateType ?? proofDraft.proofType,
-      claim: criterion?.claim ?? proofDraft.claim
+      claim: criterionId ? providerEligibilityClaim(criterionId, siteLocale) : proofDraft.claim
     });
   }
 
@@ -6479,25 +6837,25 @@ function ShelterScreen({
   }
 
   const providerViewTitle: Record<ProviderPortalView, string> = {
-    overview: "Provider overview",
-    clients: "Clients served",
-    cases: "Case management",
-    messages: "Client messages",
-    analytics: "Staff analytics",
-    proofs: "Zero-knowledge certificates",
-    operations: "Staff operations"
+    overview: t(siteLocale, "providerPortal.view.overview"),
+    clients: t(siteLocale, "providerPortal.view.clients"),
+    cases: t(siteLocale, "providerPortal.view.cases"),
+    messages: t(siteLocale, "providerPortal.view.messages"),
+    analytics: t(siteLocale, "providerPortal.view.analytics"),
+    proofs: t(siteLocale, "providerPortal.view.proofs"),
+    operations: t(siteLocale, "providerPortal.view.operations")
   };
 
   return (
     <div className="screen">
       <div className="page-title">
-        <p className="eyebrow">Provider portal</p>
+        <p className="eyebrow">{t(siteLocale, "providerPortal.eyebrow")}</p>
         <h1>{providerViewTitle[view]}</h1>
       </div>
-      <p className="page-note">Provider workflows keep user sharing choices separate from staff access.</p>
-      <Section title="Provider workspace">
+      <p className="page-note">{t(siteLocale, "providerPortal.note")}</p>
+      <Section title={t(siteLocale, "providerPortal.workspace")}>
         <div className="provider-workspace-controls">
-          <Field label="Service organization" required>
+          <Field label={t(siteLocale, "providerPortal.organization")} required>
             <select
               value={operatorShelter}
               onChange={(event) => {
@@ -6512,9 +6870,9 @@ function ShelterScreen({
               ))}
             </select>
           </Field>
-          <Field help="Select a verified staff identity for writes and audit attribution." label="Staff identity">
+          <Field help={t(siteLocale, "providerPortal.staffIdentityHelp")} label={t(siteLocale, "providerPortal.staffIdentity")}>
             <select value={operatorStaffId} onChange={(event) => setOperatorStaffId(event.target.value)}>
-              <option value="">Use default verified staff</option>
+              <option value="">{t(siteLocale, "providerPortal.defaultVerifiedStaff")}</option>
               {verifiedStaffForOperatorShelter.map((staff) => (
                 <option key={staff.id} value={staff.id}>
                   {staff.displayName}
@@ -6522,117 +6880,119 @@ function ShelterScreen({
               ))}
             </select>
           </Field>
-          <div className="provider-route-actions" aria-label="Provider route shortcuts">
+          <div className="provider-route-actions" aria-label={t(siteLocale, "providerPortal.routeShortcuts")}>
             <Button onClick={() => navigate("provider-clients")} variant="secondary">
               <ContactRound aria-hidden="true" size={18} />
-              Clients
+              {t(siteLocale, "providerPortal.shortcut.clients")}
             </Button>
             <Button onClick={() => navigate("provider-cases")} variant="secondary">
               <ClipboardCheck aria-hidden="true" size={18} />
-              Cases
+              {t(siteLocale, "providerPortal.shortcut.cases")}
             </Button>
             <Button onClick={() => navigate("provider-messages")} variant="secondary">
               <MessageSquare aria-hidden="true" size={18} />
-              Messages
+              {t(siteLocale, "providerPortal.shortcut.messages")}
             </Button>
             <Button onClick={() => navigate("provider-proofs")} variant="secondary">
               <ShieldCheck aria-hidden="true" size={18} />
-              Proofs
+              {t(siteLocale, "providerPortal.shortcut.proofs")}
             </Button>
           </div>
         </div>
       </Section>
       {view === "overview" ? (
         <>
-      <Section title="Staff tools">
+      <Section title={t(siteLocale, "providerPortal.staffTools")}>
         <div className="tool-grid">
           <button className="tool-tile" onClick={() => navigate("provider-operations")} type="button">
-            <ClipboardCheck size={24} /> Assist registration
+            <ClipboardCheck size={24} /> {t(siteLocale, "providerPortal.tool.assistRegistration")}
           </button>
           <button className="tool-tile" onClick={() => navigate("provider-operations")} type="button">
-            <UsersRound size={24} /> Verify contact
+            <UsersRound size={24} /> {t(siteLocale, "providerPortal.tool.verifyContact")}
           </button>
           <button className="tool-tile" onClick={() => navigate("provider-cases")} type="button">
-            <ClipboardCheck size={24} /> Manage cases
+            <ClipboardCheck size={24} /> {t(siteLocale, "providerPortal.tool.manageCases")}
           </button>
           <button className="tool-tile" onClick={() => navigate("provider-analytics")} type="button">
-            <ShieldCheck size={24} /> Review staff audit
+            <ShieldCheck size={24} /> {t(siteLocale, "providerPortal.tool.reviewAudit")}
           </button>
         </div>
       </Section>
       {profile.servicePartnerHelpRequested ? (
-        <Section title="Partner help requests">
+        <Section title={t(siteLocale, "providerPortal.partnerHelp")}>
           <article className="list-item partner-help-request">
             <div>
               <h3>{partnerHelpDisplayName}</h3>
-              <p>Government help requested for benefits, ID, housing, or forms.</p>
+              <p>{t(siteLocale, "providerPortal.partnerHelpDescription")}</p>
               <div className="badge-row">
-                <Badge tone="warning">Needs partner help</Badge>
-                <Badge>{formatRequestTimestamp(profile.servicePartnerHelpRequestedAt)}</Badge>
+                <Badge tone="warning">{t(siteLocale, "providerPortal.needsPartnerHelp")}</Badge>
+                <Badge>{formatRequestTimestamp(profile.servicePartnerHelpRequestedAt, siteLocale)}</Badge>
                 <Badge>{partnerHelpNeeds}</Badge>
               </div>
-              <small>{partnerHelpContact || "No contact method added yet"}</small>
+              <small>{partnerHelpContact || t(siteLocale, "providerPortal.noContactMethod")}</small>
             </div>
           </article>
         </Section>
       ) : null}
-      <Section title="Provider overview">
+      <Section title={t(siteLocale, "providerPortal.overview")}>
         <div className="dashboard-grid">
-          <StatusPanel label="Clients served" value={String(usersForOperatorShelter.length)} tone="teal" />
-          <StatusPanel label="Open cases" value={String(openCaseCount)} tone="teal" />
-          <StatusPanel label="Active support" value={String(activeClientCount)} tone="gold" />
-          <StatusPanel label="Urgent cases" value={String(urgentCaseCount)} tone="red" />
-          <StatusPanel label="Messages sent" value={String(providerMessagesForShelter.length)} tone="teal" />
-          <StatusPanel label="ZK certificates" value={String(providerProofsForShelter.length)} tone="gold" />
-          <StatusPanel label="Verified staff" value={String(verifiedStaffCount)} tone="teal" />
-          <StatusPanel label="Pending requests" value={String(pendingContactRequestCount)} tone="red" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.clientsServed")} value={String(usersForOperatorShelter.length)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.openCases")} value={String(openCaseCount)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.activeSupport")} value={String(activeClientCount)} tone="gold" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.urgentCases")} value={String(urgentCaseCount)} tone="red" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.messagesSent")} value={String(providerMessagesForShelter.length)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.zkCertificates")} value={String(providerProofsForShelter.length)} tone="gold" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.verifiedStaff")} value={String(verifiedStaffCount)} tone="teal" />
+          <StatusPanel label={t(siteLocale, "providerPortal.overview.pendingRequests")} value={String(pendingContactRequestCount)} tone="red" />
         </div>
         <p className="section-note">
-          Provider analytics use the selected shelter workspace and show operational counts without exposing wallet files.
+          {t(siteLocale, "providerPortal.overviewNote")}
         </p>
       </Section>
         </>
       ) : null}
       {view === "clients" ? (
-      <Section title="Clients served">
+      <Section title={t(siteLocale, "providerPortal.view.clients")}>
         <div className="list-stack provider-client-list">
           {usersForOperatorShelter.length ? (
             usersForOperatorShelter.map((account) => (
               <article className="list-item provider-client-item" key={`served-${account.id}`}>
                 <div>
                   <h3>{account.preferredName || account.legalName}</h3>
-                  <p>{account.serviceNeeds.length ? account.serviceNeeds.join(", ") : "No service needs selected"}</p>
+                  <p>{account.serviceNeeds.length ? account.serviceNeeds.join(", ") : t(siteLocale, "providerPortal.clients.noServiceNeeds")}</p>
                   <small>
-                    Served by {shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"}
+                    {tFormat(siteLocale, "providerPortal.clients.servedBy", {
+                      name: shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? t(siteLocale, "providerPortal.clients.staffFallback")
+                    })}
                     {" · "}
                     {formatShelterDate(account.createdAt)}
                   </small>
                   <div className="badge-row">
                     <Badge>{contactLabelForShelterUser(account)}</Badge>
                     <Badge tone={account.foundPermanentHousing ? "success" : "warning"}>
-                      {account.foundPermanentHousing ? "Housing found" : "Still needs support"}
+                      {account.foundPermanentHousing ? t(siteLocale, "providerPortal.clients.housingFound") : t(siteLocale, "providerPortal.clients.needsSupport")}
                     </Badge>
                     <Badge tone={account.localPrecinctNotified ? "success" : "neutral"}>
-                      {account.localPrecinctNotified ? "Emergency contact set" : "No precinct contact"}
+                      {account.localPrecinctNotified ? t(siteLocale, "providerPortal.clients.emergencyContactSet") : t(siteLocale, "providerPortal.clients.noPrecinctContact")}
                     </Badge>
                   </div>
                 </div>
                 <div className="row-actions">
                   <Button disabled={!activeProviderOperator} onClick={() => prepareProviderMessage(account)} variant="secondary">
                     <MessageSquare aria-hidden="true" size={18} />
-                    Message
+                    {t(siteLocale, "providerPortal.clients.message")}
                   </Button>
                   <Button disabled={!activeProviderOperator} onClick={() => prepareProviderProof(account)} variant="secondary">
                     <ShieldCheck aria-hidden="true" size={18} />
-                    ZK certificate
+                    {t(siteLocale, "providerPortal.clients.zkCertificate")}
                   </Button>
                 </div>
               </article>
             ))
           ) : (
             <div className="empty-state">
-              <h3>No served clients yet</h3>
-              <p>Create a user account in the verified staff workspace to start tracking service delivery.</p>
+              <h3>{t(siteLocale, "providerPortal.clients.emptyTitle")}</h3>
+              <p>{t(siteLocale, "providerPortal.clients.emptyBody")}</p>
             </div>
           )}
         </div>
@@ -6640,22 +7000,22 @@ function ShelterScreen({
       ) : null}
       {view === "cases" ? (
         <>
-          <Section title="Case management">
+          <Section title={t(siteLocale, "providerPortal.cases.title")}>
             <div className="dashboard-grid">
-              <StatusPanel label="Open cases" value={String(openCaseCount)} tone="teal" />
-              <StatusPanel label="Urgent cases" value={String(urgentCaseCount)} tone="red" />
-              <StatusPanel label="Waiting on client" value={String(waitingCaseCount)} tone="gold" />
-              <StatusPanel label="Eligibility proofs" value={String(eligibilityProofCount)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.cases.openCases")} value={String(openCaseCount)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.cases.urgentCases")} value={String(urgentCaseCount)} tone="red" />
+              <StatusPanel label={t(siteLocale, "providerPortal.cases.waitingOnClient")} value={String(waitingCaseCount)} tone="gold" />
+              <StatusPanel label={t(siteLocale, "providerPortal.cases.eligibilityProofs")} value={String(eligibilityProofCount)} tone="teal" />
             </div>
             <div className="message-toolbar">
-              <Field label="Case status">
+              <Field label={t(siteLocale, "providerPortal.cases.caseStatus")}>
                 <select value={caseStatusFilter} onChange={(event) => setCaseStatusFilter(event.target.value as typeof caseStatusFilter)}>
-                  <option value="all">All cases</option>
-                  <option value="intake">Intake</option>
-                  <option value="active">Active</option>
-                  <option value="waiting_on_client">Waiting on client</option>
-                  <option value="eligible">Eligible</option>
-                  <option value="closed">Closed</option>
+                  <option value="all">{t(siteLocale, "providerPortal.cases.allCases")}</option>
+                  <option value="intake">{t(siteLocale, "providerPortal.cases.intake")}</option>
+                  <option value="active">{t(siteLocale, "providerPortal.cases.active")}</option>
+                  <option value="waiting_on_client">{t(siteLocale, "providerPortal.cases.waitingOnClient")}</option>
+                  <option value="eligible">{t(siteLocale, "providerPortal.cases.eligible")}</option>
+                  <option value="closed">{t(siteLocale, "providerPortal.cases.closed")}</option>
                 </select>
               </Field>
             </div>
@@ -6674,56 +7034,62 @@ function ShelterScreen({
                         <p>{record.goal}</p>
                         <div className="badge-row">
                           <Badge tone={record.priority === "urgent" ? "warning" : "neutral"}>
-                            {providerCasePriorityLabel(record.priority)}
+                            {providerCasePriorityLabel(record.priority, siteLocale)}
                           </Badge>
-                          <Badge>{providerCaseStatusLabel(record.status)}</Badge>
-                          <Badge>Due {formatShelterDate(record.dueDate)}</Badge>
-                          <Badge>{caseManager?.displayName ?? "Unassigned"}</Badge>
-                          <Badge>{clientProofs.length} proof{clientProofs.length === 1 ? "" : "s"}</Badge>
+                          <Badge>{providerCaseStatusLabel(record.status, siteLocale)}</Badge>
+                          <Badge>{tFormat(siteLocale, "providerPortal.cases.due", { date: formatShelterDate(record.dueDate) })}</Badge>
+                          <Badge>{caseManager?.displayName ?? t(siteLocale, "providerPortal.cases.unassigned")}</Badge>
+                          <Badge>
+                            {clientProofs.length} {t(siteLocale, clientProofs.length === 1 ? "providerPortal.cases.proofSingular" : "providerPortal.cases.proofPlural")}
+                          </Badge>
                         </div>
-                        <small>{record.services.length ? record.services.join(", ") : "No services selected"}</small>
+                        <small>
+                          {record.services.length
+                            ? record.services.map((service) => translateServiceNeed(siteLocale, service)).join(", ")
+                            : t(siteLocale, "providerPortal.cases.noServices")}
+                        </small>
                       </div>
                       <div className="provider-case-controls">
-                        <Field label="Status">
+                        <Field label={t(siteLocale, "providerPortal.cases.statusField")}>
                           <select
                             value={record.status}
                             onChange={(event) =>
                               updateCaseRecord(record.id, { status: event.target.value as ShelterCaseStatus })
                             }
                           >
-                            <option value="intake">Intake</option>
-                            <option value="active">Active</option>
-                            <option value="waiting_on_client">Waiting on client</option>
-                            <option value="eligible">Eligible</option>
-                            <option value="closed">Closed</option>
+                            <option value="intake">{t(siteLocale, "providerPortal.cases.intake")}</option>
+                            <option value="active">{t(siteLocale, "providerPortal.cases.active")}</option>
+                            <option value="waiting_on_client">{t(siteLocale, "providerPortal.cases.waitingOnClient")}</option>
+                            <option value="eligible">{t(siteLocale, "providerPortal.cases.eligible")}</option>
+                            <option value="closed">{t(siteLocale, "providerPortal.cases.closed")}</option>
                           </select>
                         </Field>
-                        <Field label="Priority">
+                        <Field label={t(siteLocale, "providerPortal.cases.priorityField")}>
                           <select
                             value={record.priority}
                             onChange={(event) =>
                               updateCaseRecord(record.id, { priority: event.target.value as ShelterCasePriority })
                             }
                           >
-                            <option value="urgent">Urgent</option>
-                            <option value="standard">Standard</option>
-                            <option value="monitor">Monitor</option>
+                            <option value="urgent">{t(siteLocale, "providerPortal.cases.urgent")}</option>
+                            <option value="standard">{t(siteLocale, "providerPortal.cases.standard")}</option>
+                            <option value="monitor">{t(siteLocale, "providerPortal.cases.monitor")}</option>
                           </select>
                         </Field>
-                        <Field label="Due date">
+                        <Field label={t(siteLocale, "providerPortal.cases.dueDate")}>
                           <input
                             type="date"
                             value={record.dueDate}
                             onChange={(event) => updateCaseRecord(record.id, { dueDate: event.target.value })}
                           />
                         </Field>
-                        <Field label="Next step">
+                        <Field label={t(siteLocale, "providerPortal.cases.nextStep")}>
                           <input
                             value={record.nextStep}
                             onChange={(event) => updateCaseRecord(record.id, { nextStep: event.target.value })}
                           />
                         </Field>
-                        <Field label="Case notes">
+                        <Field label={t(siteLocale, "providerPortal.cases.notes")}>
                           <textarea
                             rows={3}
                             value={record.notes}
@@ -6739,14 +7105,16 @@ function ShelterScreen({
                           return (
                             <div className="provider-case-criterion" key={`${record.id}-${criterionId}`}>
                               <Badge tone={proven ? "success" : "warning"}>
-                                {providerEligibilityLabel(criterionId)} {proven ? "proved" : "needed"}
+                                {providerEligibilityLabel(criterionId, siteLocale)} {t(siteLocale, proven ? "providerPortal.cases.proved" : "providerPortal.cases.needed")}
                               </Badge>
                               <Button
                                 disabled={!activeProviderOperator}
                                 onClick={() => prepareEligibilityProof(client, criterionId, record)}
                                 variant="secondary"
                               >
-                                {criterionId === "us_citizen" ? "Prove US citizen" : "Prepare proof"}
+                                {criterionId === "us_citizen"
+                                  ? t(siteLocale, "providerPortal.cases.proveUsCitizen")
+                                  : t(siteLocale, "providerPortal.cases.prepareProof")}
                               </Button>
                             </div>
                           );
@@ -6755,7 +7123,7 @@ function ShelterScreen({
                       <div className="row-actions">
                         <Button disabled={!activeProviderOperator} onClick={() => prepareCaseMessage(record, client)} variant="secondary">
                           <MessageSquare aria-hidden="true" size={18} />
-                          Message client
+                          {t(siteLocale, "providerPortal.cases.messageClient")}
                         </Button>
                         <Button
                           disabled={!activeProviderOperator}
@@ -6763,7 +7131,7 @@ function ShelterScreen({
                           variant="secondary"
                         >
                           <ShieldCheck aria-hidden="true" size={18} />
-                          Eligibility proof
+                          {t(siteLocale, "providerPortal.cases.eligibilityProof")}
                         </Button>
                       </div>
                     </article>
@@ -6771,8 +7139,8 @@ function ShelterScreen({
                 })
               ) : (
                 <div className="empty-state">
-                  <h3>No cases in this view</h3>
-                  <p>Create a client account or change the status filter to see additional cases.</p>
+                  <h3>{t(siteLocale, "providerPortal.cases.emptyTitle")}</h3>
+                  <p>{t(siteLocale, "providerPortal.cases.emptyBody")}</p>
                 </div>
               )}
             </div>
@@ -6780,19 +7148,21 @@ function ShelterScreen({
         </>
       ) : null}
       {view === "messages" ? (
-      <Section title="Client notifications and messages">
+      <Section title={t(siteLocale, "providerPortal.messages.title")}>
         {!activeProviderOperator ? (
-          <StatusBanner tone="info">Add or verify staff before sending client messages.</StatusBanner>
+          <StatusBanner tone="info">{t(siteLocale, "providerPortal.messages.needStaff")}</StatusBanner>
         ) : !selectedOperator ? (
-          <StatusBanner tone="info">Using {activeProviderOperator.displayName} as the default message sender for this shelter.</StatusBanner>
+          <StatusBanner tone="info">
+            {tFormat(siteLocale, "providerPortal.messages.defaultSender", { name: activeProviderOperator.displayName })}
+          </StatusBanner>
         ) : null}
         <form className="form-grid provider-message-form" id="provider-message-composer" onSubmit={sendProviderMessage}>
-          <Field label="Client" required>
+          <Field label={t(siteLocale, "providerPortal.messages.client")} required>
             <select
               value={messageDraft.clientId}
               onChange={(event) => setMessageDraft({ ...messageDraft, clientId: event.target.value })}
             >
-              <option value="">Select client</option>
+              <option value="">{t(siteLocale, "providerPortal.messages.selectClient")}</option>
               {usersForOperatorShelter.map((account) => (
                 <option key={`message-${account.id}`} value={account.id}>
                   {account.preferredName || account.legalName}
@@ -6800,25 +7170,25 @@ function ShelterScreen({
               ))}
             </select>
           </Field>
-          <Field label="Channel" required>
+          <Field label={t(siteLocale, "providerPortal.messages.channel")} required>
             <select
               value={messageDraft.channel}
               onChange={(event) =>
                 setMessageDraft({ ...messageDraft, channel: event.target.value as ShelterProviderMessage["channel"] })
               }
             >
-              <option value="sms">Text message</option>
-              <option value="email">Email</option>
-              <option value="in_app">In-app Abby note</option>
+              <option value="sms">{t(siteLocale, "channel.sms")}</option>
+              <option value="email">{t(siteLocale, "channel.email")}</option>
+              <option value="in_app">{t(siteLocale, "messages.inApp")}</option>
             </select>
           </Field>
-          <Field label="Subject">
+          <Field label={t(siteLocale, "providerPortal.messages.subject")}>
             <input
               value={messageDraft.subject}
               onChange={(event) => setMessageDraft({ ...messageDraft, subject: event.target.value })}
             />
           </Field>
-          <Field label="Message" required>
+          <Field label={t(siteLocale, "providerPortal.messages.body")} required>
             <textarea
               rows={4}
               value={messageDraft.body}
@@ -6831,7 +7201,7 @@ function ShelterScreen({
               type="submit"
             >
               <MessageSquare aria-hidden="true" size={18} />
-              Send message
+              {t(siteLocale, "providerPortal.messages.send")}
             </Button>
           </div>
         </form>
@@ -6844,107 +7214,129 @@ function ShelterScreen({
                   <p>{message.body}</p>
                   <div className="badge-row">
                     <Badge>{message.clientName}</Badge>
-                    <Badge>{message.channel.replace("_", " ")}</Badge>
+                    <Badge>{formatProviderMessageChannel(message.channel, siteLocale)}</Badge>
                     <Badge tone="success">{message.status}</Badge>
                     <Badge>{formatShelterDate(message.createdAt)}</Badge>
                   </div>
                   <small>
-                    Sent by {message.staffName} to {message.clientContact}
+                    {tFormat(siteLocale, "providerPortal.messages.sentByTo", {
+                      contact: message.clientContact,
+                      staff: message.staffName
+                    })}
                   </small>
                 </div>
               </article>
             ))
           ) : (
-            <small>No provider messages sent for this shelter yet.</small>
+            <small>{t(siteLocale, "providerPortal.messages.empty")}</small>
           )}
         </div>
       </Section>
       ) : null}
       {view === "analytics" ? (
         <>
-          <Section title="Operational insights">
+          <Section title={t(siteLocale, "providerPortal.analytics.title")}>
             <div className="dashboard-grid">
-              <StatusPanel label="Housing rate" value={formatProviderPercent(housedClientCount, usersForOperatorShelter.length)} tone="teal" />
-              <StatusPanel label="Message reach" value={formatProviderPercent(clientsWithMessagesCount, usersForOperatorShelter.length)} tone="gold" />
-              <StatusPanel label="Proof coverage" value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="teal" />
-              <StatusPanel label="Missing contact" value={String(clientsMissingEmergencyContactCount)} tone="red" />
-              <StatusPanel label="Health checks" value={String(failedHealthCheckCount)} tone="gold" />
-              <StatusPanel label="Staff inactive" value={String(unverifiedStaffCount)} tone="red" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.housingRate")} value={formatProviderPercent(housedClientCount, usersForOperatorShelter.length)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.messageReach")} value={formatProviderPercent(clientsWithMessagesCount, usersForOperatorShelter.length)} tone="gold" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.proofCoverage")} value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.missingContact")} value={String(clientsMissingEmergencyContactCount)} tone="red" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.healthChecks")} value={String(failedHealthCheckCount)} tone="gold" />
+              <StatusPanel label={t(siteLocale, "providerPortal.analytics.staffInactive")} value={String(unverifiedStaffCount)} tone="red" />
             </div>
             <div className="provider-insight-grid">
               <article className="provider-insight-card">
-                <h3>Client support signals</h3>
+                <h3>{t(siteLocale, "providerPortal.analytics.clientSupportSignals")}</h3>
                 <p>
-                  {activeClientCount} active client{activeClientCount === 1 ? "" : "s"} still need support.{" "}
-                  {topServiceNeed ? `${topServiceNeed.need} is the most common need.` : "No service needs have been selected yet."}
+                  {tFormat(siteLocale, "providerPortal.analytics.activeClientsNeedSupport", {
+                    count: String(activeClientCount),
+                    label: activeClientCount === 1 ? t(siteLocale, "providerPortal.analytics.clientSingular") : t(siteLocale, "providerPortal.analytics.clientPlural")
+                  })}{" "}
+                  {topServiceNeed
+                    ? tFormat(siteLocale, "providerPortal.analytics.topNeed", {
+                        need: translateServiceNeed(siteLocale, topServiceNeed.need)
+                      })
+                    : t(siteLocale, "providerPortal.analytics.noNeedsSelected")}
                 </p>
-                <div className="provider-staff-metrics" aria-label="Client support metrics">
-                  <span><strong>{clientsWithoutMessagesCount}</strong> no messages</span>
-                  <span><strong>{clientsWithoutProofsCount}</strong> no proofs</span>
-                  <span><strong>{pendingContactRequestCount}</strong> pending requests</span>
+                <div className="provider-staff-metrics" aria-label={t(siteLocale, "providerPortal.analytics.clientSupportMetrics")}>
+                  <span><strong>{clientsWithoutMessagesCount}</strong> {t(siteLocale, "providerPortal.analytics.noMessages")}</span>
+                  <span><strong>{clientsWithoutProofsCount}</strong> {t(siteLocale, "providerPortal.analytics.noProofs")}</span>
+                  <span><strong>{pendingContactRequestCount}</strong> {t(siteLocale, "providerPortal.analytics.pendingRequests")}</span>
                 </div>
               </article>
               <article className="provider-insight-card">
-                <h3>Staff operating picture</h3>
+                <h3>{t(siteLocale, "providerPortal.analytics.staffPicture")}</h3>
                 <p>
-                  {verifiedStaffCount} verified staff member{verifiedStaffCount === 1 ? "" : "s"} can act for {operatorShelter}.{" "}
-                  {unverifiedStaffCount ? `${unverifiedStaffCount} staff account${unverifiedStaffCount === 1 ? "" : "s"} need administrator review.` : "All listed staff are verified."}
+                  {tFormat(siteLocale, "providerPortal.analytics.staffCanAct", {
+                    count: String(verifiedStaffCount),
+                    label: verifiedStaffCount === 1 ? t(siteLocale, "providerPortal.analytics.staffMemberSingular") : t(siteLocale, "providerPortal.analytics.staffMemberPlural"),
+                    shelter: operatorShelter
+                  })}{" "}
+                  {unverifiedStaffCount
+                    ? tFormat(siteLocale, "providerPortal.analytics.staffNeedReview", {
+                        count: String(unverifiedStaffCount),
+                        label: unverifiedStaffCount === 1 ? t(siteLocale, "providerPortal.analytics.staffAccountSingular") : t(siteLocale, "providerPortal.analytics.staffAccountPlural")
+                      })
+                    : t(siteLocale, "providerPortal.analytics.allStaffVerified")}
                 </p>
-                <div className="provider-staff-metrics" aria-label="Staff activity metrics">
-                  <span><strong>{providerMessagesForShelter.length}</strong> messages</span>
-                  <span><strong>{providerProofsForShelter.length}</strong> ZK proofs</span>
-                  <span><strong>{providerRecentActivity.length}</strong> timeline events</span>
+                <div className="provider-staff-metrics" aria-label={t(siteLocale, "providerPortal.analytics.staffActivityMetrics")}>
+                  <span><strong>{providerMessagesForShelter.length}</strong> {t(siteLocale, "providerPortal.analytics.messages")}</span>
+                  <span><strong>{providerProofsForShelter.length}</strong> {t(siteLocale, "providerPortal.analytics.zkProofs")}</span>
+                  <span><strong>{providerRecentActivity.length}</strong> {t(siteLocale, "providerPortal.analytics.timelineEvents")}</span>
                 </div>
               </article>
             </div>
           </Section>
-          <Section title="Client need distribution">
+          <Section title={t(siteLocale, "providerPortal.analytics.needDistribution")}>
             <div className="provider-insight-grid">
               {providerServiceNeedCounts.length ? (
                 providerServiceNeedCounts.map((item) => (
                   <article className="provider-need-card" key={item.need}>
-                    <strong>{item.need}</strong>
-                    <span>{item.count} client{item.count === 1 ? "" : "s"}</span>
-                    <div className="provider-meter" aria-label={`${item.need} clients`}>
+                    <strong>{translateServiceNeed(siteLocale, item.need)}</strong>
+                    <span>{tFormat(siteLocale, "providerPortal.analytics.clientsCount", {
+                      count: String(item.count),
+                      label: item.count === 1 ? t(siteLocale, "providerPortal.analytics.clientSingular") : t(siteLocale, "providerPortal.analytics.clientPlural")
+                    })}</span>
+                    <div className="provider-meter" aria-label={tFormat(siteLocale, "providerPortal.analytics.clientsMeter", { need: translateServiceNeed(siteLocale, item.need) })}>
                       <span style={{ width: formatProviderPercent(item.count, usersForOperatorShelter.length) }} />
                     </div>
                   </article>
                 ))
               ) : (
-                <small>No service need data available for this provider yet.</small>
+                <small>{t(siteLocale, "providerPortal.analytics.noNeedData")}</small>
               )}
             </div>
           </Section>
-          <Section title="Staff analytics">
+          <Section title={t(siteLocale, "providerPortal.analytics.staffAnalytics")}>
             <div className="list-stack provider-staff-analytics">
               {staffAnalytics.length ? (
                 staffAnalytics.map((item) => (
                   <article className="list-item provider-staff-row" key={`analytics-${item.staff.id}`}>
                     <div>
                       <h3>{item.staff.displayName}</h3>
-                      <p>{item.staff.email || "No email provided"}</p>
-                      <div className="provider-staff-metrics" aria-label={`${item.staff.displayName} staff analytics`}>
-                        <span><strong>{item.servedCount}</strong> served</span>
-                        <span><strong>{item.activeCount}</strong> active</span>
-                        <span><strong>{item.housedCount}</strong> housed</span>
-                        <span><strong>{item.messageCount}</strong> messages</span>
-                        <span><strong>{item.proofCount}</strong> proofs</span>
-                        <span><strong>{item.proofCoverage}</strong> proof coverage</span>
-                        <span><strong>{item.clientsNeedingProofCount}</strong> need proofs</span>
+                      <p>{item.staff.email || t(siteLocale, "providerPortal.analytics.noEmail")}</p>
+                      <div className="provider-staff-metrics" aria-label={tFormat(siteLocale, "providerPortal.analytics.staffAnalyticsAria", { name: item.staff.displayName })}>
+                        <span><strong>{item.servedCount}</strong> {t(siteLocale, "providerPortal.analytics.served")}</span>
+                        <span><strong>{item.activeCount}</strong> {t(siteLocale, "providerPortal.analytics.active")}</span>
+                        <span><strong>{item.housedCount}</strong> {t(siteLocale, "providerPortal.analytics.housed")}</span>
+                        <span><strong>{item.messageCount}</strong> {t(siteLocale, "providerPortal.analytics.messages")}</span>
+                        <span><strong>{item.proofCount}</strong> {t(siteLocale, "providerPortal.analytics.proofs")}</span>
+                        <span><strong>{item.proofCoverage}</strong> {t(siteLocale, "providerPortal.analytics.proofCoverage")}</span>
+                        <span><strong>{item.clientsNeedingProofCount}</strong> {t(siteLocale, "providerPortal.analytics.needProofs")}</span>
                       </div>
-                      <small>Last activity: {formatProviderActivityDate(item.lastActivityAt)}</small>
+                      <small>{tFormat(siteLocale, "providerPortal.analytics.lastActivity", { value: formatProviderActivityDate(item.lastActivityAt, siteLocale) })}</small>
                     </div>
                     <Badge tone={item.staff.verified ? "success" : "warning"}>
-                      {item.staff.verified ? "Verified" : "Verification off"}
+                      {item.staff.verified ? t(siteLocale, "contacts.verified") : t(siteLocale, "providerPortal.analytics.verificationOff")}
                     </Badge>
                   </article>
                 ))
               ) : (
-                <small>No staff analytics available for this provider yet.</small>
+                <small>{t(siteLocale, "providerPortal.analytics.noStaffAnalytics")}</small>
               )}
             </div>
           </Section>
-          <Section title="Recent provider activity">
+          <Section title={t(siteLocale, "providerPortal.analytics.recentActivity")}>
             <div className="list-stack provider-activity-list">
               {providerRecentActivity.length ? (
                 providerRecentActivity.map((activity) => (
@@ -6952,13 +7344,13 @@ function ShelterScreen({
                     <div>
                       <h3>{activity.title}</h3>
                       <p>{activity.detail}</p>
-                      <small>{formatProviderActivityDate(activity.createdAt)}</small>
+                      <small>{formatProviderActivityDate(activity.createdAt, siteLocale)}</small>
                     </div>
-                    <Badge tone={activity.tone}>{activity.tone}</Badge>
+                    <Badge tone={activity.tone}>{providerActivityToneLabel(activity.tone, siteLocale)}</Badge>
                   </article>
                 ))
               ) : (
-                <small>No provider activity has been recorded yet.</small>
+                <small>{t(siteLocale, "providerPortal.analytics.noProviderActivity")}</small>
               )}
             </div>
           </Section>
@@ -6966,34 +7358,34 @@ function ShelterScreen({
       ) : null}
       {view === "proofs" ? (
         <>
-          <Section title="Zero-knowledge proof certificates">
+          <Section title={t(siteLocale, "providerPortal.proofs.title")}>
             <p className="section-note">
-              Process certificates as public proof receipts. The public inputs use commitments and service metadata instead of raw client documents.
+              {t(siteLocale, "providerPortal.proofs.note")}
             </p>
             <div className="dashboard-grid">
-              <StatusPanel label="Verified proofs" value={String(providerProofsForShelter.length)} tone="teal" />
-              <StatusPanel label="Client coverage" value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="gold" />
-              <StatusPanel label="Need certificates" value={String(clientsWithoutProofsCount)} tone="red" />
-              <StatusPanel label="Certificate types" value={String(providerProofTypeRows.length)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.proofs.verifiedProofs")} value={String(providerProofsForShelter.length)} tone="teal" />
+              <StatusPanel label={t(siteLocale, "providerPortal.proofs.clientCoverage")} value={formatProviderPercent(clientsWithProofsCount, usersForOperatorShelter.length)} tone="gold" />
+              <StatusPanel label={t(siteLocale, "providerPortal.proofs.needCertificates")} value={String(clientsWithoutProofsCount)} tone="red" />
+              <StatusPanel label={t(siteLocale, "providerPortal.proofs.certificateTypes")} value={String(providerProofTypeRows.length)} tone="teal" />
             </div>
             <div className="provider-insight-grid">
               <article className="provider-insight-card">
-                <h3>Certificate mix</h3>
-                <div className="provider-staff-metrics" aria-label="Provider proof type counts">
+                <h3>{t(siteLocale, "providerPortal.proofs.certificateMix")}</h3>
+                <div className="provider-staff-metrics" aria-label={t(siteLocale, "providerPortal.proofs.proofTypeCounts")}>
                   {providerProofTypeRows.length ? (
                     providerProofTypeRows.map(([proofType, count]) => (
                       <span key={proofType}>
-                        <strong>{count}</strong> {proofType.replace("_", " ")}
+                        <strong>{count}</strong> {providerProofTypeLabel(proofType, siteLocale)}
                       </span>
                     ))
                   ) : (
-                    <span><strong>0</strong> certificates</span>
+                    <span><strong>0</strong> {t(siteLocale, "providerPortal.proofs.certificates")}</span>
                   )}
                 </div>
               </article>
               <article className="provider-insight-card">
-                <h3>Issuer activity</h3>
-                <div className="provider-staff-metrics" aria-label="Proof issuer counts">
+                <h3>{t(siteLocale, "providerPortal.proofs.issuerActivity")}</h3>
+                <div className="provider-staff-metrics" aria-label={t(siteLocale, "providerPortal.proofs.issuerCounts")}>
                   {providerProofStaffRows.length ? (
                     providerProofStaffRows.map((item) => (
                       <span key={`proof-staff-${item.staff.id}`}>
@@ -7001,18 +7393,18 @@ function ShelterScreen({
                       </span>
                     ))
                   ) : (
-                    <span><strong>0</strong> issuers</span>
+                    <span><strong>0</strong> {t(siteLocale, "providerPortal.proofs.issuers")}</span>
                   )}
                 </div>
               </article>
             </div>
             <form className="form-grid provider-proof-form" onSubmit={processProviderProofCertificate}>
-              <Field label="Client" required>
+              <Field label={t(siteLocale, "providerPortal.proofs.client")} required>
                 <select
                   value={proofDraft.clientId}
                   onChange={(event) => setProofDraft({ ...proofDraft, clientId: event.target.value })}
                 >
-                  <option value="">Select client</option>
+                  <option value="">{t(siteLocale, "providerPortal.proofs.selectClient")}</option>
                   {usersForOperatorShelter.map((account) => (
                     <option key={`proof-${account.id}`} value={account.id}>
                       {account.preferredName || account.legalName}
@@ -7020,41 +7412,41 @@ function ShelterScreen({
                   ))}
                 </select>
               </Field>
-              <Field label="Certificate type" required>
+              <Field label={t(siteLocale, "providerPortal.proofs.certificateType")} required>
                 <select
                   value={proofDraft.proofType}
                   onChange={(event) => setProofDraft({ ...proofDraft, proofType: event.target.value })}
                 >
-                  <option value="service_attendance">Service attendance</option>
-                  <option value="document_reviewed">Document reviewed</option>
-                  <option value="benefits_referral">Benefits referral</option>
-                  <option value="housing_step">Housing step completed</option>
-                  <option value="us_citizenship">US citizenship</option>
-                  <option value="service_area_residency">Service-area residency</option>
-                  <option value="income_eligibility">Income eligibility</option>
-                  <option value="identity_verified">Identity verified</option>
+                  <option value="service_attendance">{providerProofTypeLabel("service_attendance", siteLocale)}</option>
+                  <option value="document_reviewed">{providerProofTypeLabel("document_reviewed", siteLocale)}</option>
+                  <option value="benefits_referral">{providerProofTypeLabel("benefits_referral", siteLocale)}</option>
+                  <option value="housing_step">{providerProofTypeLabel("housing_step", siteLocale)}</option>
+                  <option value="us_citizenship">{providerProofTypeLabel("us_citizenship", siteLocale)}</option>
+                  <option value="service_area_residency">{providerProofTypeLabel("service_area_residency", siteLocale)}</option>
+                  <option value="income_eligibility">{providerProofTypeLabel("income_eligibility", siteLocale)}</option>
+                  <option value="identity_verified">{providerProofTypeLabel("identity_verified", siteLocale)}</option>
                 </select>
               </Field>
-              <Field help="Optional; adds public eligibility inputs without exposing source documents." label="Eligibility criterion">
+              <Field help={t(siteLocale, "providerPortal.proofs.eligibilityHelp")} label={t(siteLocale, "providerPortal.proofs.eligibilityCriterion")}>
                 <select
                   value={proofDraft.criterionId}
                   onChange={(event) => selectProofCriterion(event.target.value as ShelterEligibilityCriterion | "")}
                 >
-                  <option value="">No eligibility criterion</option>
+                  <option value="">{t(siteLocale, "providerPortal.proofs.noEligibilityCriterion")}</option>
                   {providerEligibilityCriteria.map((criterion) => (
                     <option key={criterion.id} value={criterion.id}>
-                      {criterion.label}
+                      {providerEligibilityLabel(criterion.id, siteLocale)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="Verifier" required>
+              <Field label={t(siteLocale, "providerPortal.proofs.verifier")} required>
                 <input
                   value={proofDraft.verifier}
                   onChange={(event) => setProofDraft({ ...proofDraft, verifier: event.target.value })}
                 />
               </Field>
-              <Field label="Public claim" required>
+              <Field label={t(siteLocale, "providerPortal.proofs.publicClaim")} required>
                 <textarea
                   rows={3}
                   value={proofDraft.claim}
@@ -7067,38 +7459,40 @@ function ShelterScreen({
                   type="submit"
                 >
                   <ShieldCheck aria-hidden="true" size={18} />
-                  Process certificate
+                  {t(siteLocale, "providerPortal.proofs.processCertificate")}
                 </Button>
               </div>
             </form>
           </Section>
-          <Section title="Certificate queue">
+          <Section title={t(siteLocale, "providerPortal.proofs.queue")}>
             <div className="list-stack provider-proof-queue">
               {clientAnalytics.length ? (
                 clientAnalytics.map((item) => (
                   <article className="list-item provider-proof-item" key={`proof-queue-${item.client.id}`}>
                     <div>
                       <h3>{item.client.preferredName || item.client.legalName}</h3>
-                      <p>{item.client.serviceNeeds.length ? item.client.serviceNeeds.join(", ") : "No service needs selected"}</p>
+                      <p>{item.client.serviceNeeds.length ? item.client.serviceNeeds.map((need) => translateServiceNeed(siteLocale, need)).join(", ") : t(siteLocale, "providerPortal.clients.noServiceNeeds")}</p>
                       <div className="badge-row">
                         <Badge tone={item.proofCount ? "success" : "warning"}>
-                          {item.proofCount ? `${item.proofCount} proof${item.proofCount === 1 ? "" : "s"}` : "Needs certificate"}
+                          {item.proofCount
+                            ? `${item.proofCount} ${t(siteLocale, item.proofCount === 1 ? "providerPortal.cases.proofSingular" : "providerPortal.cases.proofPlural")}`
+                            : t(siteLocale, "providerPortal.proofs.needsCertificate")}
                         </Badge>
-                        <Badge>{item.messageCount} message{item.messageCount === 1 ? "" : "s"}</Badge>
-                        {item.latestProofAt ? <Badge>{formatProviderActivityDate(item.latestProofAt)}</Badge> : null}
+                        <Badge>{item.messageCount} {t(siteLocale, "providerPortal.analytics.messages")}</Badge>
+                        {item.latestProofAt ? <Badge>{formatProviderActivityDate(item.latestProofAt, siteLocale)}</Badge> : null}
                       </div>
                     </div>
                     <Button disabled={!activeProviderOperator} onClick={() => prepareProviderProof(item.client)} variant="secondary">
-                      Prepare certificate
+                      {t(siteLocale, "providerPortal.proofs.prepareCertificate")}
                     </Button>
                   </article>
                 ))
               ) : (
-                <small>No clients are available for certificate processing yet.</small>
+                <small>{t(siteLocale, "providerPortal.proofs.noClients")}</small>
               )}
             </div>
           </Section>
-          <Section title="Verifier transparency log">
+          <Section title={t(siteLocale, "providerPortal.proofs.transparencyLog")}>
             <div className="list-stack">
               {providerProofsForShelter.length ? (
                 providerProofsForShelter.slice(0, 8).map((proof) => (
@@ -7107,23 +7501,23 @@ function ShelterScreen({
                       <h3>{proof.claim}</h3>
                       <p>{proof.verifier}</p>
                       <div className="badge-row">
-                        <Badge tone="success">{proof.verificationStatus}</Badge>
+                        <Badge tone="success">{providerProofVerificationStatusLabel(proof.verificationStatus, siteLocale)}</Badge>
                         <Badge>{providerProofClientLabel(proof, usersForOperatorShelter)}</Badge>
-                        <Badge>{proof.publicInputs.certificate_type}</Badge>
+                        <Badge>{providerProofTypeLabel(proof.publicInputs.certificate_type, siteLocale)}</Badge>
                         {proof.publicInputs.eligibility_criterion ? (
-                          <Badge>{providerEligibilityLabel(proof.publicInputs.eligibility_criterion as ShelterEligibilityCriterion)}</Badge>
+                          <Badge>{providerEligibilityLabel(proof.publicInputs.eligibility_criterion as ShelterEligibilityCriterion, siteLocale)}</Badge>
                         ) : null}
-                        <Badge>{formatProviderActivityDate(proof.createdAt)}</Badge>
+                        <Badge>{formatProviderActivityDate(proof.createdAt, siteLocale)}</Badge>
                       </div>
                       <small>
-                        Client commitment <code>{proof.publicInputs.client_commitment}</code> · Artifact{" "}
-                        <code>{proof.proofArtifactRef}</code> · Circuit <code>{proof.circuitId}</code>
+                        {t(siteLocale, "providerPortal.proofs.clientCommitment")} <code>{proof.publicInputs.client_commitment}</code> · {t(siteLocale, "providerPortal.proofs.artifact")}{" "}
+                        <code>{proof.proofArtifactRef}</code> · {t(siteLocale, "providerPortal.proofs.circuit")} <code>{proof.circuitId}</code>
                       </small>
                     </div>
                   </article>
                 ))
               ) : (
-                <small>No provider proof certificates processed yet.</small>
+                <small>{t(siteLocale, "providerPortal.proofs.noneProcessed")}</small>
               )}
             </div>
           </Section>
@@ -7565,21 +7959,52 @@ function providerCasePriorityRank(priority: ShelterCasePriority): number {
   return 2;
 }
 
-function providerCasePriorityLabel(priority: ShelterCasePriority): string {
-  if (priority === "urgent") return "Urgent";
-  if (priority === "standard") return "Standard";
-  return "Monitor";
+function providerCasePriorityLabel(priority: ShelterCasePriority, locale: SupportedLocale): string {
+  if (priority === "urgent") return t(locale, "providerPortal.cases.urgent");
+  if (priority === "standard") return t(locale, "providerPortal.cases.standard");
+  return t(locale, "providerPortal.cases.monitor");
 }
 
-function providerCaseStatusLabel(status: ShelterCaseStatus): string {
-  return status
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+function providerCaseStatusLabel(status: ShelterCaseStatus, locale: SupportedLocale): string {
+  if (status === "intake") return t(locale, "providerPortal.cases.intake");
+  if (status === "active") return t(locale, "providerPortal.cases.active");
+  if (status === "waiting_on_client") return t(locale, "providerPortal.cases.waitingOnClient");
+  if (status === "eligible") return t(locale, "providerPortal.cases.eligible");
+  return t(locale, "providerPortal.cases.closed");
 }
 
-function providerEligibilityLabel(criterionId: ShelterEligibilityCriterion): string {
+function providerEligibilityLabel(criterionId: ShelterEligibilityCriterion, locale: SupportedLocale): string {
+  if (criterionId === "us_citizen") return t(locale, "providerPortal.criteria.usCitizen");
+  if (criterionId === "service_area_resident") return t(locale, "providerPortal.criteria.serviceAreaResident");
+  if (criterionId === "income_eligible") return t(locale, "providerPortal.criteria.incomeEligible");
+  if (criterionId === "identity_verified") return t(locale, "providerPortal.criteria.identityVerified");
   return providerEligibilityCriteria.find((criterion) => criterion.id === criterionId)?.label ?? criterionId;
+}
+
+function providerEligibilityClaim(criterionId: ShelterEligibilityCriterion, locale: SupportedLocale): string {
+  if (criterionId === "us_citizen") return t(locale, "providerPortal.criteria.claim.usCitizen");
+  if (criterionId === "service_area_resident") return t(locale, "providerPortal.criteria.claim.serviceAreaResident");
+  if (criterionId === "income_eligible") return t(locale, "providerPortal.criteria.claim.incomeEligible");
+  if (criterionId === "identity_verified") return t(locale, "providerPortal.criteria.claim.identityVerified");
+  return t(locale, "providerPortal.proofs.defaultEligibilityClaim");
+}
+
+function providerProofTypeLabel(proofType: string | undefined, locale: SupportedLocale): string {
+  if (!proofType) return "";
+  if (proofType === "service_attendance") return t(locale, "providerPortal.proofs.proofType.serviceAttendance");
+  if (proofType === "document_reviewed") return t(locale, "providerPortal.proofs.proofType.documentReviewed");
+  if (proofType === "benefits_referral") return t(locale, "providerPortal.proofs.proofType.benefitsReferral");
+  if (proofType === "housing_step") return t(locale, "providerPortal.proofs.proofType.housingStep");
+  if (proofType === "us_citizenship") return t(locale, "providerPortal.proofs.proofType.usCitizenship");
+  if (proofType === "service_area_residency") return t(locale, "providerPortal.proofs.proofType.serviceAreaResidency");
+  if (proofType === "income_eligibility") return t(locale, "providerPortal.proofs.proofType.incomeEligibility");
+  if (proofType === "identity_verified") return t(locale, "providerPortal.proofs.proofType.identityVerified");
+  return proofType.replace(/_/g, " ");
+}
+
+function providerProofVerificationStatusLabel(status: string, locale: SupportedLocale): string {
+  if (status === "verified") return t(locale, "providerPortal.proofs.verificationStatus.verified");
+  return status;
 }
 
 function formatProviderPercent(value: number, total: number): string {
@@ -7594,11 +8019,17 @@ function latestProviderTimestamp(values: string[]): string | undefined {
     .sort((left, right) => right.time - left.time)[0]?.value;
 }
 
-function formatProviderActivityDate(value: string | undefined): string {
-  if (!value) return "No activity";
+function formatProviderActivityDate(value: string | undefined, locale: SupportedLocale): string {
+  if (!value) return t(locale, "providerPortal.analytics.noActivity");
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  return date.toLocaleString(locale, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function providerActivityToneLabel(tone: "neutral" | "warning" | "success", locale: SupportedLocale): string {
+  if (tone === "success") return t(locale, "providerPortal.analytics.toneSuccess");
+  if (tone === "warning") return t(locale, "providerPortal.analytics.toneWarning");
+  return t(locale, "providerPortal.analytics.toneNeutral");
 }
 
 type RecipientAnalysisMode = "summary" | "redacted" | "vector" | "extract-text" | "form" | "graphrag";
