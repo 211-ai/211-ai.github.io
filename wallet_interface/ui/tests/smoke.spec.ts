@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
+import QRCode from "qrcode";
 
 const walletApiBaseUrl = encodeURIComponent(`http://127.0.0.1:${process.env.PLAYWRIGHT_PORT ?? 5174}`);
 const appSessionKey = "abby-ui-session-v1";
@@ -92,6 +93,35 @@ test("telephone login requests a server-signed magic link text message", async (
   expect(magicLinkRequests[0]).toMatchObject({
     contact: "5035550199",
     portal: "client"
+  });
+});
+
+test("email login requests a server-signed magic link email", async ({ page }) => {
+  const magicLinkRequests: unknown[] = [];
+  await page.route("**/auth/magic-link/request", async (route: Route) => {
+    magicLinkRequests.push(route.request().postDataJSON());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        channel: "email",
+        provider_message_id: "mock-login-email",
+        provider_status: "queued",
+        status: "sent"
+      })
+    });
+  });
+
+  await page.goto("/");
+  await expectLoginForm(page);
+  await page.getByRole("button", { name: /Service provider/i }).click();
+  await page.getByLabel(/Email address or telephone/i).fill("Abby.User@example.org");
+  await page.getByRole("button", { name: /Send sign-in link/i }).click();
+
+  await expect(page.getByText(/We emailed your Abby sign-in link/i)).toBeVisible();
+  expect(magicLinkRequests).toHaveLength(1);
+  expect(magicLinkRequests[0]).toMatchObject({
+    contact: "abby.user@example.org",
+    portal: "provider"
   });
 });
 
@@ -1353,6 +1383,208 @@ test("wallet page can generate and connect a new wallet", async ({ page }) => {
   await expect(calls).toContain("create");
   await expect(calls).toContain("records");
   await expect(calls).toContain("proofs");
+});
+
+test("wallet recovery works with magic link plus QR passphrase", async ({ page }) => {
+  const passphrase = "correct horse battery staple";
+  const walletId = "wallet-qr-recovery";
+  const actorDid = "did:key:owner-qr";
+  const bundleId = "recovery-bundle-passphrase";
+  let storedEncryptedBundle: Record<string, unknown> | undefined;
+  let sawRecoveryBundleRead = false;
+  let filecoinBackupPayload = "";
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem("abby-filecoin-storage-config", JSON.stringify({ uploadUrl: "/filecoin-upload" }));
+    class MockBarcodeDetector {
+      async detect() {
+        return [{ rawValue: (window as Window & { __abbyRecoveryQrRawValue?: string }).__abbyRecoveryQrRawValue || "" }];
+      }
+    }
+    (window as Window & { BarcodeDetector?: typeof MockBarcodeDetector }).BarcodeDetector = MockBarcodeDetector;
+  });
+
+  await page.route("**/filecoin-upload", async (route) => {
+    const payload = route.request().postDataBuffer()?.toString("utf8") || "";
+    if (!payload.includes("211-ai-wallet-recovery-backup-v1")) {
+      await route.fulfill({
+        json: {
+          ipfsCid: "bafy-wallet-proof",
+          message: "Stored wallet proof bundle.",
+          provider: "ipfs-filecoin"
+        }
+      });
+      return;
+    }
+    filecoinBackupPayload = payload;
+    expect(payload).toContain("wallet-recovery-bundle.json");
+    expect(payload).not.toContain(passphrase);
+    expect(payload).not.toContain("walletContentKey");
+    await route.fulfill({
+      json: {
+        filecoinPinRequestId: "pin-recovery-backup",
+        filecoinPinStatus: "queued",
+        ipfsCid: "bafy-recovery-backup",
+        message: "Encrypted recovery bundle queued.",
+        provider: "ipfs-filecoin",
+        statusUrl: "/filecoin-upload/status/pin-recovery-backup"
+      }
+    });
+  });
+
+  await page.route("**/wallets/**", async (route) => {
+    const url = new URL(route.request().url());
+    const path = url.pathname;
+    if (path === `/wallets/${walletId}`) {
+      await route.fulfill({
+        json: {
+          wallet_id: walletId,
+          owner_did: actorDid,
+          controller_dids: [actorDid],
+          device_dids: [],
+          governance_policy: {}
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/recovery-bundles") && route.request().method() === "POST") {
+      const request = route.request().postDataJSON();
+      storedEncryptedBundle = request.encrypted_bundle;
+      expect(request.wrapping_method).toBe("passphrase");
+      expect(storedEncryptedBundle?.plaintextKeySentToServer).toBe(false);
+      await route.fulfill({
+        json: {
+          bundle: {
+            actor_did: actorDid,
+            bundle_id: bundleId,
+            created_at: new Date().toISOString(),
+            encrypted_bundle: storedEncryptedBundle,
+            kdf: request.kdf,
+            public_metadata: request.public_metadata,
+            recovery_hint: request.recovery_hint,
+            status: "active",
+            updated_at: new Date().toISOString(),
+            wallet_id: walletId,
+            wrapping_method: "passphrase"
+          },
+          privacy: { plaintext_wallet_key_received: false, server_can_decrypt: false }
+        }
+      });
+      return;
+    }
+    if (path.endsWith(`/recovery-bundles/${bundleId}`) && route.request().method() === "GET") {
+      sawRecoveryBundleRead = true;
+      expect(route.request().headers().authorization).toContain("abby-magic-ucan-v1.mock");
+      await route.fulfill({
+        json: {
+          bundle: {
+            actor_did: actorDid,
+            bundle_id: bundleId,
+            created_at: new Date().toISOString(),
+            encrypted_bundle: storedEncryptedBundle,
+            kdf: {},
+            public_metadata: {},
+            recovery_hint: "",
+            status: "active",
+            updated_at: new Date().toISOString(),
+            wallet_id: walletId,
+            wrapping_method: "passphrase"
+          },
+          privacy: { plaintext_wallet_key_returned: false, server_can_decrypt: false }
+        }
+      });
+      return;
+    }
+    if (path.endsWith("/access-requests")) {
+      await route.fulfill({ json: { requests: [] } });
+      return;
+    }
+    if (path.endsWith("/grant-receipts")) {
+      await route.fulfill({ json: { receipts: [] } });
+      return;
+    }
+    if (path.endsWith("/records")) {
+      await route.fulfill({ json: { records: [] } });
+      return;
+    }
+    if (path.endsWith("/audit")) {
+      await route.fulfill({ json: { events: [] } });
+      return;
+    }
+    if (path.endsWith("/proofs")) {
+      await route.fulfill({ json: { proofs: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/saved-services")) {
+      await route.fulfill({ json: { saved_services: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/plans")) {
+      await route.fulfill({ json: { plans: [] } });
+      return;
+    }
+    if (path.endsWith("/portal/interactions")) {
+      await route.fulfill({ json: { interactions: [] } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: "unexpected wallet request", path } });
+  });
+
+  await page.goto(walletRoute("uploads", actorDid, { walletId }));
+  await expect(page.getByRole("heading", { name: /^Wallet$/i })).toBeVisible();
+  await page.getByLabel(/Recovery passphrase/i).fill(passphrase);
+  await page.getByRole("button", { name: /Save passphrase recovery/i }).click();
+  await expect(page.getByText(/Passphrase recovery and recovery QR are ready/i)).toBeVisible();
+  await expect(page.getByText(/Encrypted recovery backup queued on IPFS\/Filecoin \(bafy-recovery-backup\)/i)).toBeVisible();
+  await expect(page.getByAltText(/Wallet recovery QR code/i)).toBeVisible();
+  await expect(page.getByText(/QR contains the recovery passphrase/i)).toBeVisible();
+  expect(storedEncryptedBundle).toBeTruthy();
+  expect(JSON.stringify(storedEncryptedBundle)).not.toContain(passphrase);
+  expect(filecoinBackupPayload).toContain("211-ai-wallet-recovery-backup-v1");
+  expect(filecoinBackupPayload).not.toContain(passphrase);
+
+  const recoveryQrPayload = JSON.stringify({
+    apiBaseUrl: decodeURIComponent(walletApiBaseUrl),
+    bundleId,
+    containsRecoverySecret: true,
+    passphrase,
+    schema: "211-ai-wallet-recovery-qr-v1",
+    serverCanDecrypt: false,
+    walletId,
+    wrappingMethod: "passphrase"
+  });
+  expect(JSON.parse(recoveryQrPayload)).toMatchObject({
+    containsRecoverySecret: true,
+    passphrase,
+    serverCanDecrypt: false
+  });
+  await page.evaluate(
+    ({ payload }) => {
+      window.localStorage.setItem(
+        "abby.magicLoginUcan.v1",
+        JSON.stringify({
+          audience: "did:abby:contact:test",
+          capabilities: [{ can: "wallet/recovery/read_encrypted", with: `wallet://${location.hostname}/recovery-bundles/*` }],
+          expires_at: Date.now() + 600000,
+          profile: "abby-magic-ucan-v1",
+          token: "abby-magic-ucan-v1.mock"
+        })
+      );
+      (window as Window & { __abbyRecoveryQrRawValue?: string }).__abbyRecoveryQrRawValue = payload;
+    },
+    { payload: recoveryQrPayload }
+  );
+  await page.getByLabel(/Import recovery QR picture/i).setInputFiles({
+    name: "recovery-qr.png",
+    mimeType: "image/png",
+    buffer: await QRCode.toBuffer(recoveryQrPayload)
+  });
+
+  await expect(page.getByText(/Recovery QR unlocked the wallet locally/i)).toBeVisible();
+  expect(sawRecoveryBundleRead).toBe(true);
+  await page.getByLabel(/Recovery passphrase/i).fill(passphrase);
+  await page.getByRole("button", { name: /Unlock cached recovery/i }).click();
+  await expect(page.getByText(/Wallet recovery key restored locally/i)).toBeVisible();
 });
 
 test("settings screen saves and restores wallet snapshots", async ({ page }) => {

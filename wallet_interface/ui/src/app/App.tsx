@@ -71,6 +71,7 @@ import {
   toFilecoinStoragePatch,
   uploadFileToFilecoinStorage,
   uploadProofBundleToFilecoinStorage,
+  uploadRecoveryBundleToFilecoinStorage,
   uploadWalletRecordToFilecoinStorage
 } from "../services/filecoinStorage";
 import { readRuntimeWalletApiBaseUrl, readRuntimeWalletApiConfig } from "../lib/runtimeConfig";
@@ -4595,8 +4596,30 @@ function UploadsScreen({
           width: 220
         })
       );
+      let backupMessage = "";
+      if (filecoinStorageConfig) {
+        const recoveryBackupPayload = JSON.stringify({
+          schema: "211-ai-wallet-recovery-backup-v1",
+          bundleId: response.bundle.bundle_id,
+          containsPassphrase: false,
+          containsPlaintextWalletKey: false,
+          encryptedBundle: response.bundle.encrypted_bundle,
+          publicMetadata: response.bundle.public_metadata,
+          serverCanDecrypt: false,
+          walletId: apiConfig.walletId,
+          wrappingMethod: response.bundle.wrapping_method
+        });
+        const backup = await uploadRecoveryBundleToFilecoinStorage(recoveryBackupPayload, {
+          clientConfig: filecoinStorageConfig,
+          walletConfig: apiConfig
+        });
+        const backupCid = backup.ipfsCid || backup.cid || backup.root?.["/"];
+        backupMessage = backupCid
+          ? ` Encrypted recovery backup queued on IPFS/Filecoin (${backupCid}).`
+          : " Encrypted recovery backup queued on IPFS/Filecoin.";
+      }
       setRecoveryStatus("ready");
-      setRecoveryMessage("Passphrase recovery and recovery QR are ready for this wallet.");
+      setRecoveryMessage(`Passphrase recovery and recovery QR are ready for this wallet.${backupMessage}`);
     } catch (error) {
       setRecoveryStatus("failed");
       setRecoveryMessage(error instanceof Error ? error.message : "Passphrase recovery setup failed.");

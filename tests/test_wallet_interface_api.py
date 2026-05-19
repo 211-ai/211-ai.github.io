@@ -97,6 +97,16 @@ def test_magic_login_request_sends_signed_sms_and_verify_connects_wallet(monkeyp
     assert body["ucan"]["profile"] == "abby-magic-ucan-v1"
     assert body["ucan"]["token"].startswith("abby-magic-ucan-v1.")
     assert {"with": "wallet://wallet-abc", "can": "wallet/recovery/start"} in body["ucan"]["capabilities"]
+    assert {"with": "wallet://wallet-abc/recovery-bundles/*", "can": "wallet/recovery/read_encrypted"} in body[
+        "ucan"
+    ]["capabilities"]
+    assert body["ucan"]["caveats"]["server_can_decrypt"] is False
+    assert body["ucan"]["caveats"]["no_plaintext_key_access"] is True
+    assert deliveries[0]["metadata"]["message_type"] == "magic_login"
+    assert deliveries[0]["metadata"]["portal"] == "client"
+    assert deliveries[0]["metadata"]["wallet_id"] == "wallet-abc"
+    assert deliveries[0]["metadata"]["nonce"]
+    assert "test-magic-login-secret" not in message
 
 
 def test_magic_ucan_reads_encrypted_recovery_bundle_without_plaintext_key(monkeypatch) -> None:
@@ -165,6 +175,62 @@ def test_magic_ucan_reads_encrypted_recovery_bundle_without_plaintext_key(monkey
     assert qr_scoped_response.json()["bundle"]["bundle_id"] == bundle_id
 
 
+def test_magic_ucan_recovery_bundle_scope_rejects_missing_invalid_and_wrong_wallet_tokens(monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
+    deliveries: list[dict[str, object]] = []
+
+    def fake_sms_delivery(**kwargs):
+        deliveries.append(kwargs)
+        return {"provider": "mock", "provider_status": "queued"}
+
+    monkeypatch.setattr(wallet_api_module, "_send_sms_notification", fake_sms_delivery)
+    client = _client()
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+    wallet_id = wallet["wallet_id"]
+    store_response = client.post(
+        f"/wallets/{wallet_id}/recovery-bundles",
+        json={
+            "actor_did": "did:key:owner",
+            "encrypted_bundle": {"ciphertext": "encrypted-only"},
+            "wrapping_method": "passphrase",
+            "public_metadata": {"serverCanDecrypt": False},
+        },
+    )
+    assert store_response.status_code == 200, store_response.text
+
+    missing_response = client.get(f"/wallets/{wallet_id}/recovery-bundles/latest")
+    assert missing_response.status_code == 401
+
+    invalid_response = client.get(
+        f"/wallets/{wallet_id}/recovery-bundles/latest",
+        headers={"authorization": "Bearer not-a-real-ucan"},
+    )
+    assert invalid_response.status_code == 401
+
+    request_response = client.post(
+        "/auth/magic-link/request",
+        json={
+            "contact": "(503) 555-0100",
+            "portal": "client",
+            "wallet_id": "wallet-other",
+            "wallet_api_base_url": "https://211-ai.com",
+            "actor_did": "did:key:owner",
+            "base_url": "https://211-ai.com/",
+        },
+    )
+    assert request_response.status_code == 200, request_response.text
+    token = str(deliveries[0]["message"]).split("abbyLogin=", 1)[1].split("#", 1)[0]
+    verify_response = client.post("/auth/magic-link/verify", json={"token": token})
+    assert verify_response.status_code == 200, verify_response.text
+    wrong_wallet_ucan = verify_response.json()["ucan"]["token"]
+
+    wrong_wallet_response = client.get(
+        f"/wallets/{wallet_id}/recovery-bundles/latest",
+        headers={"authorization": f"Bearer {wrong_wallet_ucan}"},
+    )
+    assert wrong_wallet_response.status_code == 403
+
+
 def test_magic_login_request_sends_signed_email(monkeypatch) -> None:
     monkeypatch.setenv("WALLET_MAGIC_LOGIN_SECRET", "test-magic-login-secret")
     deliveries: list[dict[str, object]] = []
@@ -188,7 +254,78 @@ def test_magic_login_request_sends_signed_email(monkeypatch) -> None:
     assert response.status_code == 200, response.text
     assert response.json()["channel"] == "email"
     assert deliveries[0]["to_email"] == "abby.user@example.org"
-    assert "abbyLogin=" in str(deliveries[0]["body"])
+    body = str(deliveries[0]["body"])
+    assert "abbyLogin=" in body
+    assert deliveries[0]["metadata"]["message_type"] == "magic_login"
+    assert deliveries[0]["metadata"]["portal"] == "provider"
+    token = body.split("abbyLogin=", 1)[1].split("#", 1)[0].split("\n", 1)[0]
+    verify_response = client.post("/auth/magic-link/verify", json={"token": token})
+    assert verify_response.status_code == 200, verify_response.text
+    verify_payload = verify_response.json()
+    assert verify_payload["contact"] == "abby.user@example.org"
+    assert verify_payload["portal"] == "provider"
+    assert verify_payload["ucan"]["caveats"]["server_can_decrypt"] is False
+
+
+def test_filecoin_upload_bridge_backs_up_encrypted_wallet_recovery_artifact_without_secret_material(monkeypatch) -> None:
+    client = _client()
+    added: list[bytes] = []
+    passphrase = "correct horse battery staple"
+    plaintext_wallet_key = "plain-wallet-content-key"
+    encrypted_recovery_backup = json.dumps(
+        {
+            "schema": "211-ai-wallet-recovery-backup-v1",
+            "walletId": "wallet-backup",
+            "bundleId": "bundle-backup",
+            "containsPassphrase": False,
+            "containsPlaintextWalletKey": False,
+            "encryptedBundle": {"ciphertext": "encrypted-wallet-recovery-only"},
+            "serverCanDecrypt": False,
+        },
+        separators=(",", ":"),
+    ).encode("utf-8")
+    assert passphrase.encode("utf-8") not in encrypted_recovery_backup
+    assert plaintext_wallet_key.encode("utf-8") not in encrypted_recovery_backup
+
+    class FakeIpfsBackend:
+        def add_bytes(self, data: bytes, *, pin: bool = True) -> str:
+            assert pin is True
+            added.append(data)
+            return "bafy-recovery-backup"
+
+    monkeypatch.setattr(wallet_api_module, "get_ipfs_backend", lambda: FakeIpfsBackend())
+    monkeypatch.setenv("WALLET_FILECOIN_PIN_SERVICE_URL", "mock")
+
+    response = client.post(
+        "/filecoin-upload",
+        data={
+            "metadata": json.dumps(
+                {
+                    "fileName": "wallet-recovery-bundle.json",
+                    "mimeType": "application/vnd.211-ai.wallet.recovery+json",
+                    "sha256": hashlib.sha256(encrypted_recovery_backup).hexdigest(),
+                    "walletId": "wallet-backup",
+                }
+            )
+        },
+        files={
+            "file": (
+                "wallet-recovery-bundle.json",
+                encrypted_recovery_backup,
+                "application/vnd.211-ai.wallet.recovery+json",
+            )
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["ipfsCid"] == "bafy-recovery-backup"
+    assert payload["filecoinPinStatus"] == "queued"
+    assert payload["statusUrl"].startswith("/filecoin-upload/status/")
+    assert added == [encrypted_recovery_backup]
+    added_text = added[0].decode("utf-8")
+    assert passphrase not in added_text
+    assert plaintext_wallet_key not in added_text
 
 
 def test_filecoin_upload_bridge_accepts_multipart(monkeypatch) -> None:
