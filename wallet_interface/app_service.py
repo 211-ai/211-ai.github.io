@@ -8,13 +8,15 @@ import hmac
 import json
 import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Sequence
 from uuid import uuid4
 
 from ._vendor import ensure_ipfs_datasets_py_path
+from .hmis import HmisExecutionResult, HmisService, ManualReviewHmisAdapter
+from .hmis.adapters import HmisAdapter
 from .service_matching import ServiceMatch, ServiceRecord, load_services_jsonl, match_services
 
 ensure_ipfs_datasets_py_path()
@@ -218,6 +220,27 @@ def _flag_from_env(name: str, *, default: bool) -> bool:
 PORTAL_STATE_TYPE = "wallet_repository_portal_state_v1"
 PORTAL_STATE_FILENAME = "portal-state.json"
 PHONE_IDENTITY_NAMESPACE = "211-ai:phone-number:v1"
+
+
+def _default_hmis_lookup_fixtures() -> List[Dict[str, Any]]:
+    return [
+        {
+            "external_client_id": "hmis-client-001",
+            "name": "Alex Johnson",
+            "date_of_birth": "1989-02-14",
+            "program_ref": "rosehaven-day-center",
+            "status": "active",
+            "match_confidence": 0.98,
+        },
+        {
+            "external_client_id": "hmis-client-002",
+            "name": "Jordan Rivera",
+            "date_of_birth": "1992-09-08",
+            "program_ref": "downtown-shelter",
+            "status": "pending",
+            "match_confidence": 0.91,
+        },
+    ]
 SERVICE_PLAN_SHARE_DEFAULT_SCOPES = ("service_summary",)
 SERVICE_PLAN_SHARE_SCOPE_FIELDS: Dict[str, List[str]] = {
     "service_summary": [
@@ -886,6 +909,8 @@ class WalletInterfaceService:
         auto_persist: bool | None = None,
         auto_load_repository: bool | None = None,
         services: Sequence[ServiceRecord] | None = None,
+        hmis_adapter: HmisAdapter | None = None,
+        hmis_lookup_fixtures: Sequence[Mapping[str, Any]] | None = None,
     ) -> None:
         if wallet_service is None:
             storage = create_encrypted_blob_store(
@@ -930,6 +955,10 @@ class WalletInterfaceService:
             self.repository.load_all(self.wallet_service)
             self._load_portal_state(required=False)
         self.services = list(services or [])
+        resolved_hmis_adapter = hmis_adapter or ManualReviewHmisAdapter(
+            fixtures=[dict(item) for item in (hmis_lookup_fixtures or _default_hmis_lookup_fixtures())]
+        )
+        self.hmis_service = HmisService(adapter=resolved_hmis_adapter)
 
     @classmethod
     def from_services_jsonl(
@@ -962,6 +991,64 @@ class WalletInterfaceService:
             auto_load_repository=auto_load_repository,
             services=load_services_jsonl(path),
         )
+
+    def _hmis_execution_to_dict(self, result: HmisExecutionResult) -> Dict[str, Any]:
+        payload: Dict[str, Any] = {
+            "adapter_result": {
+                "ok": result.adapter_result.ok,
+                "action_type": result.adapter_result.action_type,
+                "adapter_name": result.adapter_result.adapter_name,
+                "status": result.adapter_result.status,
+                "summary": result.adapter_result.summary,
+                "external_refs": dict(result.adapter_result.external_refs),
+                "normalized_payload": dict(result.adapter_result.normalized_payload),
+                "errors": list(result.adapter_result.errors),
+                "warnings": list(result.adapter_result.warnings),
+                "retryable": result.adapter_result.retryable,
+                "reconciliation_required": result.adapter_result.reconciliation_required,
+            },
+            "sync_event": asdict(result.sync_event),
+        }
+        if result.consent_decision is not None:
+            payload["consent_decision"] = asdict(result.consent_decision)
+        return payload
+
+    def lookup_hmis_clients(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        date_of_birth: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="lookup_client",
+            payload={
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "date_of_birth": str(date_of_birth or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/lookup_client",
+            resource=_portal_resource(wallet_id, "hmis", "lookup-client"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
 
     def save_wallet_snapshot(self, wallet_id: str) -> Path:
         if self.repository is None:

@@ -562,6 +562,13 @@ class ServiceInteractionUpdateRequest(BaseModel):
     metadata: Dict[str, Any] | None = None
 
 
+class HmisClientLookupRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    date_of_birth: str = ""
+    program_ref: str = ""
+
+
 class RedactedAnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -2450,6 +2457,19 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 metadata=request.metadata,
             )
             return record.to_dict()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/lookup-clients")
+    def lookup_hmis_clients(wallet_id: str, request: HmisClientLookupRequest) -> Dict[str, Any]:
+        try:
+            return app_service.lookup_hmis_clients(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                date_of_birth=request.date_of_birth,
+                program_ref=request.program_ref,
+            )
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

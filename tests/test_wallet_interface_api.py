@@ -178,6 +178,53 @@ def test_filecoin_upload_bridge_can_handoff_to_filecoin_pin_sidecar(monkeypatch)
     )
 
     assert response.status_code == 200
+
+
+def test_hmis_client_lookup_returns_fixture_candidates_and_audits() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ],
+        hmis_lookup_fixtures=[
+            {
+                "external_client_id": "hmis-client-001",
+                "name": "Alex Johnson",
+                "date_of_birth": "1989-02-14",
+                "program_ref": "rosehaven-day-center",
+                "status": "active",
+            }
+        ],
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/lookup-clients",
+        json={
+            "actor_did": "did:key:owner",
+            "name": "alex",
+            "date_of_birth": "1989-02-14",
+            "program_ref": "rosehaven-day-center",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["adapter_result"]["ok"] is True
+    assert payload["adapter_result"]["normalized_payload"]["candidate_count"] == 1
+    assert payload["adapter_result"]["normalized_payload"]["candidates"][0]["external_client_id"] == "hmis-client-001"
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/lookup_client" in actions
     payload = response.json()
     assert payload["ipfsCid"] == "bafy-uploaded-file"
     assert payload["requestId"] == "pin-123"

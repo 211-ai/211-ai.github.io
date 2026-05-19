@@ -1217,6 +1217,14 @@ export function App() {
             onNavigate={navigate}
           />
         </nav>
+        <footer className="sidebar-footer">
+          <a className="sidebar-footer-link" href="/terms.html">
+            Terms and Conditions
+          </a>
+          <a className="sidebar-footer-link" href="/privacy.html">
+            Privacy Policy
+          </a>
+        </footer>
       </aside>
 
       <main className="main">
@@ -2168,6 +2176,18 @@ function HomeScreen({
         <div className="home-footer-stat">
           <small>Contact sharing</small>
           <span>Ready to review</span>
+        </div>
+        <div className="home-footer-divider" />
+        <div className="home-footer-stat">
+          <small>Legal</small>
+          <div className="home-footer-links">
+            <a className="home-footer-link" href="/terms.html">
+              Terms
+            </a>
+            <a className="home-footer-link" href="/privacy.html">
+              Privacy
+            </a>
+          </div>
         </div>
       </div>
       <section className="support-card" aria-labelledby="support-card-title">

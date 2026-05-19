@@ -44,6 +44,8 @@ This folder contains active runbooks, architecture references, implementation pl
 - `HMIS_INTEGRATION_IMPLEMENTATION_PLAN.md` — HMIS integration implementation plan
 - `HMIS_INTEGRATION_TODO.md` — HMIS integration backlog
 - `HMIS_INTEGRATION_THREAT_MODEL.md` — HMIS integration threat model
+- `HMIS_GOVERNANCE_ACCESS_MATRIX.md` — HMIS governance owners, roles, environments, and approval matrix
+- `HMIS_CONSENT_DISCLOSURE_CONTRACT.md` — HMIS consent, scope, and disclosure contract
 - `AI_AGENT_CHAT_IMPLEMENTATION_PLAN.md` — agent chat implementation plan
 - `AI_AGENT_CHAT_IMPLEMENTATION_TODO.md` — agent chat backlog
 - `AI_AGENT_CHAT_RUNBOOK.md` — agent chat operational runbook
