@@ -569,6 +569,33 @@ class HmisClientLookupRequest(BaseModel):
     program_ref: str = ""
 
 
+class HmisHouseholdLookupRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    program_ref: str = ""
+
+
+class HmisProgramLinkListRequest(BaseModel):
+    actor_did: str
+    name: str = ""
+    program_ref: str = ""
+    
+class HmisReferralDraftRequest(BaseModel):
+    actor_did: str
+    local_subject_ref: str
+    destination_program_ref: str
+    service_plan_id: str = ""
+    service_doc_id: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    summary: str = ""
+    eligibility_notes: str = ""
+    contact_notes: str = ""
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class RedactedAnalyzeRecordRequest(BaseModel):
     actor_did: str
     actor_key_hex: str | None = None
@@ -2470,6 +2497,63 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 date_of_birth=request.date_of_birth,
                 program_ref=request.program_ref,
             )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/lookup-households")
+    def lookup_hmis_households(wallet_id: str, request: HmisHouseholdLookupRequest) -> Dict[str, Any]:
+        try:
+            return app_service.lookup_hmis_households(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                program_ref=request.program_ref,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/program-links")
+    def list_hmis_program_links(wallet_id: str, request: HmisProgramLinkListRequest) -> Dict[str, Any]:
+        try:
+            return app_service.list_hmis_program_links(
+                wallet_id,
+                actor_did=request.actor_did,
+                name=request.name,
+                program_ref=request.program_ref,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/wallets/{wallet_id}/hmis/referral-drafts")
+    def list_hmis_referral_drafts(wallet_id: str, status: str | None = None) -> Dict[str, Any]:
+        try:
+            return {
+                "referral_drafts": [
+                    draft.to_dict() for draft in app_service.list_hmis_referral_drafts(wallet_id, status=status)
+                ]
+            }
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/wallets/{wallet_id}/hmis/referral-drafts")
+    def create_hmis_referral_draft(wallet_id: str, request: HmisReferralDraftRequest) -> Dict[str, Any]:
+        try:
+            return app_service.create_hmis_referral_draft(
+                wallet_id,
+                actor_did=request.actor_did,
+                local_subject_ref=request.local_subject_ref,
+                destination_program_ref=request.destination_program_ref,
+                service_plan_id=request.service_plan_id,
+                service_doc_id=request.service_doc_id,
+                provider_name=request.provider_name,
+                program_name=request.program_name,
+                summary=request.summary,
+                eligibility_notes=request.eligibility_notes,
+                contact_notes=request.contact_notes,
+                source_content_cid=request.source_content_cid,
+                source_page_cid=request.source_page_cid,
+                metadata=request.metadata,
+            ).to_dict()
         except Exception as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 

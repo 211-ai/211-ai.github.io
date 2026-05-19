@@ -194,11 +194,27 @@ def test_hmis_client_lookup_returns_fixture_candidates_and_audits() -> None:
         ],
         hmis_lookup_fixtures=[
             {
+                "entity_type": "client",
                 "external_client_id": "hmis-client-001",
                 "name": "Alex Johnson",
                 "date_of_birth": "1989-02-14",
                 "program_ref": "rosehaven-day-center",
                 "status": "active",
+            },
+            {
+                "entity_type": "household",
+                "external_household_id": "hmis-household-001",
+                "household_name": "Johnson Household",
+                "program_ref": "rosehaven-day-center",
+                "status": "active",
+            },
+            {
+                "entity_type": "program",
+                "local_program_ref": "rosehaven-day-center",
+                "external_program_id": "hmis-program-rosehaven",
+                "external_project_id": "hmis-project-001",
+                "program_name": "Rose Haven Day Center",
+                "status": "verified",
             }
         ],
     )
@@ -225,6 +241,129 @@ def test_hmis_client_lookup_returns_fixture_candidates_and_audits() -> None:
     assert audit_response.status_code == 200
     actions = [event["action"] for event in audit_response.json()["audit_events"]]
     assert "hmis/lookup_client" in actions
+
+
+def test_hmis_household_lookup_and_program_links_return_fixture_results() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ],
+        hmis_lookup_fixtures=[
+            {
+                "entity_type": "household",
+                "external_household_id": "hmis-household-001",
+                "household_name": "Johnson Household",
+                "program_ref": "rosehaven-day-center",
+                "status": "active",
+            },
+            {
+                "entity_type": "program",
+                "local_program_ref": "rosehaven-day-center",
+                "external_program_id": "hmis-program-rosehaven",
+                "external_project_id": "hmis-project-001",
+                "program_name": "Rose Haven Day Center",
+                "status": "verified",
+            },
+        ],
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    household_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/lookup-households",
+        json={
+            "actor_did": "did:key:owner",
+            "name": "johnson",
+            "program_ref": "rosehaven-day-center",
+        },
+    )
+    assert household_response.status_code == 200
+    household_payload = household_response.json()
+    assert household_payload["adapter_result"]["normalized_payload"]["candidate_count"] == 1
+    assert (
+        household_payload["adapter_result"]["normalized_payload"]["candidates"][0]["external_household_id"]
+        == "hmis-household-001"
+    )
+
+    program_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/program-links",
+        json={
+            "actor_did": "did:key:owner",
+            "name": "rose haven",
+            "program_ref": "rosehaven-day-center",
+        },
+    )
+    assert program_response.status_code == 200
+    program_payload = program_response.json()
+    assert program_payload["adapter_result"]["normalized_payload"]["candidate_count"] == 1
+    assert (
+        program_payload["adapter_result"]["normalized_payload"]["candidates"][0]["external_program_id"]
+        == "hmis-program-rosehaven"
+    )
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/lookup_household" in actions
+    assert "hmis/list_program_links" in actions
+
+
+def test_hmis_referral_draft_create_and_list_persists_manual_review_packet() -> None:
+    service = WalletInterfaceService(
+        services=[
+            ServiceRecord(
+                id="housing-1",
+                name="Portland Housing Help",
+                description="Rent assistance and emergency shelter navigation.",
+                categories="housing shelter rent",
+                city="Portland",
+                state="OR",
+            )
+        ]
+    )
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    create_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts",
+        json={
+            "actor_did": "did:key:owner",
+            "local_subject_ref": "wallet:user-1",
+            "destination_program_ref": "rosehaven-day-center",
+            "service_plan_id": "plan-1",
+            "service_doc_id": "service-doc-1",
+            "provider_name": "Rose Haven",
+            "program_name": "Day Center",
+            "summary": "Client needs same-day shelter intake.",
+            "eligibility_notes": "Adult individual seeking shelter.",
+            "contact_notes": "Call ahead before arrival.",
+        },
+    )
+
+    assert create_response.status_code == 200
+    create_payload = create_response.json()
+    assert create_payload["status"] == "draft"
+    assert create_payload["destination_program_ref"] == "rosehaven-day-center"
+    assert create_payload["packet"]["review_mode"] == "manual"
+    assert create_payload["metadata"]["adapter_name"] == "manual-review"
+
+    list_response = client.get(f"/wallets/{wallet['wallet_id']}/hmis/referral-drafts")
+    assert list_response.status_code == 200
+    list_payload = list_response.json()
+    assert len(list_payload["referral_drafts"]) == 1
+    assert list_payload["referral_drafts"][0]["referral_draft_id"] == create_payload["referral_draft_id"]
+
+    audit_response = client.get(f"/wallets/{wallet['wallet_id']}/audit-events")
+    assert audit_response.status_code == 200
+    actions = [event["action"] for event in audit_response.json()["audit_events"]]
+    assert "hmis/create_referral_draft" in actions
     payload = response.json()
     assert payload["ipfsCid"] == "bafy-uploaded-file"
     assert payload["requestId"] == "pin-123"

@@ -225,6 +225,7 @@ PHONE_IDENTITY_NAMESPACE = "211-ai:phone-number:v1"
 def _default_hmis_lookup_fixtures() -> List[Dict[str, Any]]:
     return [
         {
+            "entity_type": "client",
             "external_client_id": "hmis-client-001",
             "name": "Alex Johnson",
             "date_of_birth": "1989-02-14",
@@ -233,12 +234,30 @@ def _default_hmis_lookup_fixtures() -> List[Dict[str, Any]]:
             "match_confidence": 0.98,
         },
         {
+            "entity_type": "client",
             "external_client_id": "hmis-client-002",
             "name": "Jordan Rivera",
             "date_of_birth": "1992-09-08",
             "program_ref": "downtown-shelter",
             "status": "pending",
             "match_confidence": 0.91,
+        },
+        {
+            "entity_type": "household",
+            "external_household_id": "hmis-household-001",
+            "household_name": "Johnson Household",
+            "program_ref": "rosehaven-day-center",
+            "status": "active",
+            "match_confidence": 0.95,
+        },
+        {
+            "entity_type": "program",
+            "local_program_ref": "rosehaven-day-center",
+            "external_program_id": "hmis-program-rosehaven",
+            "external_project_id": "hmis-project-001",
+            "program_name": "Rose Haven Day Center",
+            "status": "verified",
+            "match_confidence": 0.99,
         },
     ]
 SERVICE_PLAN_SHARE_DEFAULT_SCOPES = ("service_summary",)
@@ -633,6 +652,76 @@ class ServiceInteractionRecord:
 
 
 @dataclass
+class HmisReferralDraftRecord:
+    referral_draft_id: str
+    wallet_id: str
+    actor_did: str
+    local_subject_ref: str
+    destination_program_ref: str
+    service_plan_id: str = ""
+    service_doc_id: str = ""
+    provider_name: str = ""
+    program_name: str = ""
+    summary: str = ""
+    eligibility_notes: str = ""
+    contact_notes: str = ""
+    source_content_cid: str = ""
+    source_page_cid: str = ""
+    status: str = "draft"
+    created_at: str = ""
+    updated_at: str = ""
+    packet: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "referral_draft_id": self.referral_draft_id,
+            "wallet_id": self.wallet_id,
+            "actor_did": self.actor_did,
+            "local_subject_ref": self.local_subject_ref,
+            "destination_program_ref": self.destination_program_ref,
+            "service_plan_id": self.service_plan_id,
+            "service_doc_id": self.service_doc_id,
+            "provider_name": self.provider_name,
+            "program_name": self.program_name,
+            "summary": self.summary,
+            "eligibility_notes": self.eligibility_notes,
+            "contact_notes": self.contact_notes,
+            "source_content_cid": self.source_content_cid,
+            "source_page_cid": self.source_page_cid,
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "packet": dict(self.packet),
+            "metadata": dict(self.metadata),
+        }
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "HmisReferralDraftRecord":
+        return cls(
+            referral_draft_id=str(payload.get("referral_draft_id") or ""),
+            wallet_id=str(payload.get("wallet_id") or ""),
+            actor_did=str(payload.get("actor_did") or ""),
+            local_subject_ref=str(payload.get("local_subject_ref") or ""),
+            destination_program_ref=str(payload.get("destination_program_ref") or ""),
+            service_plan_id=str(payload.get("service_plan_id") or ""),
+            service_doc_id=str(payload.get("service_doc_id") or ""),
+            provider_name=str(payload.get("provider_name") or ""),
+            program_name=str(payload.get("program_name") or ""),
+            summary=str(payload.get("summary") or ""),
+            eligibility_notes=str(payload.get("eligibility_notes") or ""),
+            contact_notes=str(payload.get("contact_notes") or ""),
+            source_content_cid=str(payload.get("source_content_cid") or ""),
+            source_page_cid=str(payload.get("source_page_cid") or ""),
+            status=str(payload.get("status") or "draft"),
+            created_at=str(payload.get("created_at") or ""),
+            updated_at=str(payload.get("updated_at") or ""),
+            packet=dict(payload.get("packet") or {}),
+            metadata=dict(payload.get("metadata") or {}),
+        )
+
+
+@dataclass
 class MissingPersonDeadDropRecord:
     wallet_id: str
     actor_did: str = ""
@@ -936,6 +1025,7 @@ class WalletInterfaceService:
         self.saved_services: Dict[str, SavedServiceRecord] = {}
         self.service_plans: Dict[str, ServicePlanRecord] = {}
         self.service_interactions: Dict[str, ServiceInteractionRecord] = {}
+        self.hmis_referral_drafts: Dict[str, HmisReferralDraftRecord] = {}
         self.missing_person_dead_drops: Dict[str, MissingPersonDeadDropRecord] = {}
         self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
         self.inbound_sms_messages: Dict[str, InboundSmsMessageRecord] = {}
@@ -1026,6 +1116,7 @@ class WalletInterfaceService:
         result = self.hmis_service.execute(
             action_type="lookup_client",
             payload={
+                "action_type": "lookup_client",
                 "local_ref": wallet_id,
                 "criteria": {
                     "name": str(name or "").strip(),
@@ -1049,6 +1140,167 @@ class WalletInterfaceService:
         )
         self._persist_wallet_if_configured(wallet_id)
         return self._hmis_execution_to_dict(result)
+
+    def lookup_hmis_households(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="lookup_household",
+            payload={
+                "action_type": "lookup_household",
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/lookup_household",
+            resource=_portal_resource(wallet_id, "hmis", "lookup-household"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
+
+    def list_hmis_program_links(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        name: str = "",
+        program_ref: str = "",
+    ) -> Dict[str, Any]:
+        self._require_portal_actor(wallet_id, actor_did)
+        result = self.hmis_service.execute(
+            action_type="list_program_links",
+            payload={
+                "action_type": "list_program_links",
+                "local_ref": wallet_id,
+                "criteria": {
+                    "name": str(name or "").strip(),
+                    "program_ref": str(program_ref or "").strip(),
+                },
+            },
+            actor_id=actor_did,
+        )
+        candidate_count = int(result.adapter_result.normalized_payload.get("candidate_count") or 0)
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/list_program_links",
+            resource=_portal_resource(wallet_id, "hmis", "program-links"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "candidate_count": candidate_count,
+                "program_ref": str(program_ref or "").strip(),
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return self._hmis_execution_to_dict(result)
+
+    def list_hmis_referral_drafts(self, wallet_id: str, *, status: str | None = None) -> List[HmisReferralDraftRecord]:
+        self.wallet_service._wallet(wallet_id)
+        drafts = [draft for draft in self.hmis_referral_drafts.values() if draft.wallet_id == wallet_id]
+        if status is not None:
+            drafts = [draft for draft in drafts if draft.status == status]
+        return sorted(drafts, key=lambda item: (item.created_at, item.referral_draft_id))
+
+    def create_hmis_referral_draft(
+        self,
+        wallet_id: str,
+        *,
+        actor_did: str,
+        local_subject_ref: str,
+        destination_program_ref: str,
+        service_plan_id: str = "",
+        service_doc_id: str = "",
+        provider_name: str = "",
+        program_name: str = "",
+        summary: str = "",
+        eligibility_notes: str = "",
+        contact_notes: str = "",
+        source_content_cid: str = "",
+        source_page_cid: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> HmisReferralDraftRecord:
+        self._require_portal_actor(wallet_id, actor_did)
+        now = _portal_now()
+        result = self.hmis_service.execute(
+            action_type="create_referral_draft",
+            payload={
+                "local_ref": wallet_id,
+                "local_subject_ref": str(local_subject_ref or "").strip(),
+                "destination_program_ref": str(destination_program_ref or "").strip(),
+                "service_plan_id": str(service_plan_id or "").strip(),
+                "service_doc_id": str(service_doc_id or "").strip(),
+                "provider_name": str(provider_name or "").strip(),
+                "program_name": str(program_name or "").strip(),
+                "summary": str(summary or "").strip(),
+                "eligibility_notes": str(eligibility_notes or "").strip(),
+                "contact_notes": str(contact_notes or "").strip(),
+            },
+            actor_id=actor_did,
+        )
+        if not result.adapter_result.ok:
+            raise ValueError(result.adapter_result.summary)
+
+        draft = HmisReferralDraftRecord(
+            referral_draft_id=_portal_id("hmis-referral-draft"),
+            wallet_id=wallet_id,
+            actor_did=actor_did,
+            local_subject_ref=str(local_subject_ref or "").strip(),
+            destination_program_ref=str(destination_program_ref or "").strip(),
+            service_plan_id=str(service_plan_id or "").strip(),
+            service_doc_id=str(service_doc_id or "").strip(),
+            provider_name=str(provider_name or "").strip(),
+            program_name=str(program_name or "").strip(),
+            summary=str(summary or "").strip(),
+            eligibility_notes=str(eligibility_notes or "").strip(),
+            contact_notes=str(contact_notes or "").strip(),
+            source_content_cid=str(source_content_cid or "").strip(),
+            source_page_cid=str(source_page_cid or "").strip(),
+            status="draft",
+            created_at=now,
+            updated_at=now,
+            packet=dict(result.adapter_result.normalized_payload.get("draft_packet") or {}),
+            metadata={
+                **dict(metadata or {}),
+                "adapter_name": result.adapter_result.adapter_name,
+                "adapter_summary": result.adapter_result.summary,
+                "warnings": list(result.adapter_result.warnings),
+            },
+        )
+        self.hmis_referral_drafts[draft.referral_draft_id] = draft
+        self._portal_audit(
+            wallet_id,
+            actor_did=actor_did,
+            action="hmis/create_referral_draft",
+            resource=_portal_resource(wallet_id, "hmis", f"referral-drafts/{draft.referral_draft_id}"),
+            details={
+                "adapter": result.adapter_result.adapter_name,
+                "destination_program_ref": draft.destination_program_ref,
+                "service_plan_id": draft.service_plan_id,
+                "service_doc_id": draft.service_doc_id,
+                "status": draft.status,
+            },
+        )
+        self._persist_wallet_if_configured(wallet_id)
+        return draft
 
     def save_wallet_snapshot(self, wallet_id: str) -> Path:
         if self.repository is None:
@@ -1340,6 +1592,13 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.timestamp, item.interaction_id),
                 )
             ],
+            "hmis_referral_drafts": [
+                record.to_dict()
+                for record in sorted(
+                    self.hmis_referral_drafts.values(),
+                    key=lambda item: (item.wallet_id, item.created_at, item.referral_draft_id),
+                )
+            ],
             "missing_person_dead_drops": [
                 record.to_dict()
                 for record in sorted(self.missing_person_dead_drops.values(), key=lambda item: item.wallet_id)
@@ -1428,6 +1687,15 @@ class WalletInterfaceService:
                 if isinstance(item, Mapping)
             )
             if record.interaction_id
+        }
+        self.hmis_referral_drafts = {
+            record.referral_draft_id: record
+            for record in (
+                HmisReferralDraftRecord.from_dict(item)
+                for item in payload.get("hmis_referral_drafts", [])
+                if isinstance(item, Mapping)
+            )
+            if record.referral_draft_id
         }
         self.missing_person_dead_drops = {
             record.wallet_id: record
