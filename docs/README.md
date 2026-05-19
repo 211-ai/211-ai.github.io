@@ -41,6 +41,9 @@ This folder contains active runbooks, architecture references, implementation pl
 - `211_SERVICE_NAVIGATION_PORTAL_TODO.md` — portal backlog
 - `211_SERVICE_NAVIGATION_PORTAL_RUNBOOK.md` — portal operations runbook
 - `211_SERVICE_NAVIGATION_PORTAL_THREAT_MODEL.md` — portal threat model
+- `HMIS_INTEGRATION_IMPLEMENTATION_PLAN.md` — HMIS integration implementation plan
+- `HMIS_INTEGRATION_TODO.md` — HMIS integration backlog
+- `HMIS_INTEGRATION_THREAT_MODEL.md` — HMIS integration threat model
 - `AI_AGENT_CHAT_IMPLEMENTATION_PLAN.md` — agent chat implementation plan
 - `AI_AGENT_CHAT_IMPLEMENTATION_TODO.md` — agent chat backlog
 - `AI_AGENT_CHAT_RUNBOOK.md` — agent chat operational runbook

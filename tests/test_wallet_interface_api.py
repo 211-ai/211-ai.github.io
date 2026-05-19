@@ -3,12 +3,14 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+from collections.abc import Mapping
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
 from ipfs_datasets_py.wallet import DeterministicLocationRegionProofBackend
 from wallet_interface import ServiceRecord, WalletInterfaceService, create_app
+from wallet_interface.app_service import phone_identity_cid
 import wallet_interface.api as wallet_api_module
 from ipfs_datasets_py.wallet.crypto import random_key
 from ipfs_datasets_py.wallet.ucan import resource_for_export, resource_for_record, resource_for_wallet
@@ -2640,6 +2642,10 @@ def test_wallet_api_inbound_sms_bridge_records_message_and_persists(tmp_path, mo
     assert inbound_message["provider_message_id"] == "SM-inbound-1"
     assert inbound_message["related_notification_id"] == queued["notification_id"]
     assert inbound_message["received_at"] == "2026-05-13T00:00:00+00:00"
+    phone_cid = phone_identity_cid("+15035550123")
+    assert inbound_message["metadata"]["phoneIdentityCids"]["from_phone"] == phone_cid
+    assert phone_cid in service.phone_identity_links
+    assert wallet["wallet_id"] in service.phone_identity_links[phone_cid]
 
     list_response = client.get(f"/wallets/{wallet['wallet_id']}/messages/sms/inbound")
     assert list_response.status_code == 200
@@ -2655,6 +2661,161 @@ def test_wallet_api_inbound_sms_bridge_records_message_and_persists(tmp_path, mo
     assert restored_list.status_code == 200
     assert restored_list.json()["count"] == 1
     assert restored_list.json()["messages"][0]["related_notification_id"] == queued["notification_id"]
+
+
+def test_wallet_api_inbound_sms_bridge_accepts_unclaimed_public_sms(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_SMS_INBOUND_BEARER_TOKEN", "bridge-secret")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+
+    inbound_response = client.post(
+        "/messages/sms/inbound",
+        headers={"authorization": "Bearer bridge-secret"},
+        json={
+            "message_id": "sms-bridge-unclaimed-1",
+            "wallet_id": "",
+            "from_phone": "+15035550123",
+            "to_phone": "+15036838900",
+            "message": "I need help finding food nearby.",
+            "provider": "twilio",
+            "provider_message_id": "SM-unclaimed-1",
+            "created_at": "2026-05-18T21:00:00+00:00",
+            "metadata": {"account_sid": "AC123"},
+        },
+    )
+
+    assert inbound_response.status_code == 200
+    inbound_message = inbound_response.json()["message"]
+    assert inbound_message["wallet_id"] == ""
+    assert inbound_message["bridge_message_id"] == "sms-bridge-unclaimed-1"
+    assert inbound_message["provider_message_id"] == "SM-unclaimed-1"
+    assert inbound_message["metadata"]["phoneIdentityCids"]["from_phone"] == phone_identity_cid("+15035550123")
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    assert any(
+        record.provider_message_id == "SM-unclaimed-1"
+        for record in restored_service.inbound_sms_messages.values()
+    )
+
+
+def test_wallet_api_inbound_sms_bridge_resolves_wallet_by_phone_identity_cid(tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("WALLET_SMS_INBOUND_BEARER_TOKEN", "bridge-secret")
+    service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    client = _client_with_service(service)
+    wallet = client.post("/wallets", json={"owner_did": "did:key:owner"}).json()
+
+    queue_response = client.post(
+        f"/wallets/{wallet['wallet_id']}/notifications/sms/queue",
+        json={
+            "actor_did": "did:key:owner",
+            "to_phone": "+1 (503) 555-0199",
+            "message": "Initial opt-in message.",
+            "reason": "identity-link",
+        },
+    )
+    assert queue_response.status_code == 200
+    phone_cid = phone_identity_cid("+15035550199")
+    assert queue_response.json()["metadata"]["phoneIdentityCids"]["to_phone"] == phone_cid
+
+    inbound_response = client.post(
+        "/messages/sms/inbound",
+        headers={"authorization": "Bearer bridge-secret"},
+        json={
+            "message_id": "sms-bridge-resolved-1",
+            "wallet_id": "",
+            "from_phone": "+15035550199",
+            "to_phone": "+15036838900",
+            "message": "This should attach to my wallet.",
+            "provider": "twilio",
+            "provider_message_id": "SM-resolved-1",
+        },
+    )
+
+    assert inbound_response.status_code == 200
+    inbound_message = inbound_response.json()["message"]
+    assert inbound_message["wallet_id"] == wallet["wallet_id"]
+    assert inbound_message["metadata"]["phoneIdentityCids"]["from_phone"] == phone_cid
+
+    restored_service = WalletInterfaceService(repository_root=tmp_path / "wallet-repository", services=[])
+    assert restored_service.phone_identity_links[phone_cid] == [wallet["wallet_id"]]
+
+
+def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch) -> None:
+    wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
+    wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
+    wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
+    calls = {"config": 0, "join": 0, "upload": 0}
+
+    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
+        if url.endswith("/config"):
+            calls["config"] += 1
+            return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
+        if url.endswith("/gradio_api/queue/join"):
+            calls["join"] += 1
+            assert payload and payload["fn_index"] == 17
+            return {}
+        raise AssertionError(url)
+
+    def fake_upload(data: bytes, file_name: str, mime_type: str) -> dict[str, object]:
+        calls["upload"] += 1
+        return {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name}
+
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
+    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
+    monkeypatch.setattr(wallet_api_module, "_gradio_upload_file", fake_upload)
+    monkeypatch.setattr(wallet_api_module, "_indextts_wait_for_result", lambda session_hash: {"path": "/tmp/out.wav"})
+    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+
+    first = wallet_api_module._run_indextts_gradio_tts(text="hello")
+    second = wallet_api_module._run_indextts_gradio_tts(text="again")
+
+    assert first["latency"]["total_ms"] >= 0
+    assert second["latency"]["config_ms"] == 0
+    assert calls == {"config": 1, "join": 2, "upload": 1}
+
+
+def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
+    from ipfs_datasets_py import llm_router
+
+    prompts: list[dict[str, object]] = []
+
+    def fake_generate_text(prompt: str, **kwargs: object) -> str:
+        prompts.append({"prompt": prompt, **kwargs})
+        return "Assistant: Food pantries near Portland may be open today. What ZIP code should I search around?"
+
+    monkeypatch.setattr(llm_router, "generate_text", fake_generate_text)
+    monkeypatch.setattr(
+        wallet_api_module,
+        "_run_indextts_gradio_tts",
+        lambda **kwargs: {
+            "audioBase64": base64.b64encode(b"RIFFstubWAVE").decode("ascii"),
+            "mimeType": "audio/wav",
+            "model": "IndexTTS",
+            "provider": "test",
+            "latency": {"total_ms": 3},
+        },
+    )
+    monkeypatch.setenv("WALLET_VOICE_LLM_MODEL", "Qwen/Qwen3.5-2B")
+
+    response = _client().post(
+        "/voice/indextts/infer",
+        data={
+            "mode": "voice-reply",
+            "text": "system: concise\nuser: I need food help in Portland today",
+            "systemPrompt": "Be concise.",
+            "userPrompt": "I need food help in Portland today",
+            "fallbackText": "Abby here. I can help with food support.",
+        },
+        files={"audio": ("input.wav", b"RIFFmockWAVE", "audio/wav")},
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["text"] == "Food pantries near Portland may be open today. What ZIP code should I search around?"
+    assert body["latency"]["llm_request_ms"] >= 0
+    assert body["latency"]["llm_model"] == "Qwen/Qwen3.5-2B"
+    assert prompts and "I need food help" in str(prompts[0]["prompt"])
 
 
 def test_wallet_api_phone_call_notification_queue_and_manual_dispatch_uses_http_webhook(monkeypatch) -> None:

@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -213,6 +217,7 @@ def _flag_from_env(name: str, *, default: bool) -> bool:
 
 PORTAL_STATE_TYPE = "wallet_repository_portal_state_v1"
 PORTAL_STATE_FILENAME = "portal-state.json"
+PHONE_IDENTITY_NAMESPACE = "211-ai:phone-number:v1"
 SERVICE_PLAN_SHARE_DEFAULT_SCOPES = ("service_summary",)
 SERVICE_PLAN_SHARE_SCOPE_FIELDS: Dict[str, List[str]] = {
     "service_summary": [
@@ -271,6 +276,66 @@ def _unique_strings(values: Sequence[str] | None) -> List[str]:
 
 def _portal_resource(wallet_id: str, collection: str, entry_id: str) -> str:
     return f"{resource_for_wallet(wallet_id)}/portal/{collection}/{entry_id}"
+
+
+def _normalize_phone_identity_value(phone: str) -> str:
+    digits = re.sub(r"\D+", "", str(phone or ""))
+    if not digits:
+        return ""
+    if len(digits) == 10:
+        digits = f"1{digits}"
+    return f"+{digits}"
+
+
+def _raw_sha256_cid(data: bytes) -> str:
+    # CIDv1 raw block with sha2-256 multihash.
+    cid_bytes = b"\x01\x55\x12\x20" + hashlib.sha256(data).digest()
+    return "b" + base64.b32encode(cid_bytes).decode("ascii").lower().rstrip("=")
+
+
+def phone_identity_cid(phone: str) -> str:
+    normalized = _normalize_phone_identity_value(phone)
+    if not normalized:
+        return ""
+    namespace = str(os.getenv("WALLET_PHONE_IDENTITY_NAMESPACE") or PHONE_IDENTITY_NAMESPACE).strip()
+    secret = str(os.getenv("WALLET_PHONE_IDENTITY_SECRET") or "").strip()
+    payload = f"{namespace}:{normalized}".encode("utf-8")
+    digest_input = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).digest() if secret else payload
+    return _raw_sha256_cid(digest_input)
+
+
+def _phone_identity_link(name: str, cid: str) -> Dict[str, str]:
+    return {"name": name, "/": cid, "mediaType": "application/vnd.211-ai.phone-identity+raw"}
+
+
+def _with_phone_identity_metadata(
+    metadata: Mapping[str, Any] | None,
+    *,
+    from_phone: str = "",
+    to_phone: str = "",
+) -> Dict[str, Any]:
+    result = dict(metadata or {})
+    identities = dict(result.get("phoneIdentityCids") or {})
+    links = [dict(link) for link in result.get("ipldLinks") or [] if isinstance(link, Mapping)]
+    existing = {
+        (str(link.get("name") or ""), str(link.get("/") or link.get("cid") or ""))
+        for link in links
+    }
+    for key, phone in (("from_phone", from_phone), ("to_phone", to_phone)):
+        cid = phone_identity_cid(phone)
+        if not cid:
+            continue
+        identities[key] = cid
+        link = _phone_identity_link(f"sms_{key}_identity", cid)
+        marker = (link["name"], cid)
+        if marker not in existing:
+            links.append(link)
+            existing.add(marker)
+    if identities:
+        result["phoneIdentityCids"] = identities
+        result["ipldLinks"] = links
+        result.setdefault("phoneIdentitySchema", "211-ai-phone-identity-cid-v1")
+    return result
 
 
 def _normalize_service_plan_share_scopes(scopes: Sequence[str] | None) -> List[str]:
@@ -850,6 +915,7 @@ class WalletInterfaceService:
         self.sms_notifications: Dict[str, SmsNotificationRecord] = {}
         self.inbound_sms_messages: Dict[str, InboundSmsMessageRecord] = {}
         self.phone_call_notifications: Dict[str, PhoneCallNotificationRecord] = {}
+        self.phone_identity_links: Dict[str, List[str]] = {}
         self.auto_persist = (
             _flag_from_env("WALLET_AUTO_PERSIST", default=True)
             if auto_persist is None
@@ -1212,6 +1278,11 @@ class WalletInterfaceService:
                     key=lambda item: (item.wallet_id, item.created_at, item.notification_id),
                 )
             ],
+            "phone_identity_links": {
+                cid: sorted(wallet_ids)
+                for cid, wallet_ids in sorted(self.phone_identity_links.items())
+                if cid and wallet_ids
+            },
         }
 
     def _save_portal_state(self) -> Path | None:
@@ -1307,6 +1378,17 @@ class WalletInterfaceService:
             )
             if record.notification_id
         }
+        raw_phone_identity_links = payload.get("phone_identity_links")
+        self.phone_identity_links = (
+            {
+                str(cid): _unique_strings([str(wallet_id) for wallet_id in wallet_ids])
+                for cid, wallet_ids in raw_phone_identity_links.items()
+                if isinstance(cid, str) and isinstance(wallet_ids, list)
+            }
+            if isinstance(raw_phone_identity_links, Mapping)
+            else {}
+        )
+        self._rebuild_phone_identity_links()
 
     def _wallet_principals(self, wallet_id: str) -> set[str]:
         wallet = self.wallet_service._wallet(wallet_id)
@@ -1349,6 +1431,64 @@ class WalletInterfaceService:
 
     def _phone_call_notification_resource(self, wallet_id: str, notification_id: str) -> str:
         return _portal_resource(wallet_id, "notifications", f"calls/{notification_id}")
+
+    def _link_phone_identity_to_wallet(self, phone_or_cid: str, wallet_id: str) -> None:
+        normalized_wallet_id = str(wallet_id or "").strip()
+        if not normalized_wallet_id:
+            return
+        cid = str(phone_or_cid or "").strip()
+        if not cid.startswith("baf"):
+            cid = phone_identity_cid(cid)
+        if not cid:
+            return
+        wallet_ids = self.phone_identity_links.setdefault(cid, [])
+        if normalized_wallet_id not in wallet_ids:
+            wallet_ids.append(normalized_wallet_id)
+            wallet_ids.sort()
+
+    def _wallet_ids_for_phone_identity(self, phone_or_cid: str) -> List[str]:
+        cid = str(phone_or_cid or "").strip()
+        if not cid.startswith("baf"):
+            cid = phone_identity_cid(cid)
+        if not cid:
+            return []
+        return _unique_strings(self.phone_identity_links.get(cid) or [])
+
+    def _rebuild_phone_identity_links(self) -> None:
+        for notification in self.sms_notifications.values():
+            if notification.wallet_id and notification.to_phone:
+                self._link_phone_identity_to_wallet(notification.to_phone, notification.wallet_id)
+            metadata_cids = notification.metadata.get("phoneIdentityCids")
+            if isinstance(metadata_cids, Mapping):
+                for cid in metadata_cids.values():
+                    self._link_phone_identity_to_wallet(str(cid or ""), notification.wallet_id)
+        for message in self.inbound_sms_messages.values():
+            if not message.wallet_id:
+                continue
+            if message.from_phone:
+                self._link_phone_identity_to_wallet(message.from_phone, message.wallet_id)
+            metadata_cids = message.metadata.get("phoneIdentityCids")
+            if isinstance(metadata_cids, Mapping):
+                for cid in metadata_cids.values():
+                    self._link_phone_identity_to_wallet(str(cid or ""), message.wallet_id)
+        for drop in self.missing_person_dead_drops.values():
+            profile = drop.bundle.get("profile") if isinstance(drop.bundle, Mapping) else None
+            if isinstance(profile, Mapping):
+                self._link_phone_identity_to_wallet(str(profile.get("phone") or ""), drop.wallet_id)
+
+    def _resolve_wallet_id_for_inbound_phone_identity(
+        self,
+        *,
+        from_phone: str,
+        external_reference: str = "",
+    ) -> str:
+        normalized_reference = str(external_reference or "").strip()
+        if normalized_reference:
+            notification = self.sms_notifications.get(normalized_reference)
+            if notification is not None:
+                return notification.wallet_id
+        matches = self._wallet_ids_for_phone_identity(from_phone)
+        return matches[0] if len(matches) == 1 else ""
 
     def create_wallet(
         self,
@@ -1619,7 +1759,7 @@ class WalletInterfaceService:
         received_at: str = "",
         metadata: Mapping[str, Any] | None = None,
     ) -> InboundSmsMessageRecord:
-        self.wallet_service._wallet(wallet_id)
+        normalized_wallet_id = str(wallet_id or "").strip()
         normalized_from_phone = str(from_phone or "").strip()
         normalized_to_phone = str(to_phone or "").strip()
         normalized_message = str(message or "")
@@ -1627,16 +1767,32 @@ class WalletInterfaceService:
             raise ValueError("from_phone is required")
         if not normalized_message.strip():
             raise ValueError("message is required")
+        if not normalized_wallet_id:
+            normalized_wallet_id = self._resolve_wallet_id_for_inbound_phone_identity(
+                from_phone=normalized_from_phone,
+                external_reference=external_reference,
+            )
+        if normalized_wallet_id:
+            self.wallet_service._wallet(normalized_wallet_id)
 
-        related_notification = self._related_sms_notification_for_inbound(
-            wallet_id,
+        related_notification = (
+            self._related_sms_notification_for_inbound(
+                normalized_wallet_id,
+                from_phone=normalized_from_phone,
+                external_reference=external_reference,
+            )
+            if normalized_wallet_id
+            else None
+        )
+        enriched_metadata = _with_phone_identity_metadata(
+            metadata,
             from_phone=normalized_from_phone,
-            external_reference=external_reference,
+            to_phone=normalized_to_phone,
         )
         now = _portal_now()
         record = InboundSmsMessageRecord(
             inbound_message_id=_portal_id("sms-inbound"),
-            wallet_id=wallet_id,
+            wallet_id=normalized_wallet_id,
             from_phone=normalized_from_phone,
             to_phone=normalized_to_phone,
             message=normalized_message,
@@ -1647,24 +1803,28 @@ class WalletInterfaceService:
             related_notification_id=(related_notification.notification_id if related_notification is not None else ""),
             external_reference=str(external_reference or ""),
             received_at=str(received_at or now),
-            metadata=dict(metadata or {}),
+            metadata=enriched_metadata,
             created_at=now,
             updated_at=now,
         )
         self.inbound_sms_messages[record.inbound_message_id] = record
-        self._portal_audit(
-            wallet_id,
-            actor_did=str(actor_did or "did:wallet:sms-bridge"),
-            action="notification/sms_inbound",
-            resource=self._inbound_sms_message_resource(wallet_id, record.inbound_message_id),
-            details={
-                "from_phone": record.from_phone,
-                "provider": record.provider,
-                "provider_message_id": record.provider_message_id,
-                "related_notification_id": record.related_notification_id,
-            },
-        )
-        self._persist_wallet_if_configured(wallet_id)
+        if normalized_wallet_id:
+            self._link_phone_identity_to_wallet(normalized_from_phone, normalized_wallet_id)
+            self._portal_audit(
+                normalized_wallet_id,
+                actor_did=str(actor_did or "did:wallet:sms-bridge"),
+                action="notification/sms_inbound",
+                resource=self._inbound_sms_message_resource(normalized_wallet_id, record.inbound_message_id),
+                details={
+                    "from_phone": record.from_phone,
+                    "provider": record.provider,
+                    "provider_message_id": record.provider_message_id,
+                    "related_notification_id": record.related_notification_id,
+                },
+            )
+            self._persist_wallet_if_configured(normalized_wallet_id)
+        elif self.repository is not None and self.auto_persist:
+            self._save_portal_state()
         return record
 
     def queue_sms_notification(
@@ -1688,6 +1848,7 @@ class WalletInterfaceService:
         normalized_due_at = str(due_at or "").strip()
         if normalized_due_at and _portal_datetime(normalized_due_at) is None:
             raise ValueError("due_at must be an ISO 8601 timestamp")
+        enriched_metadata = _with_phone_identity_metadata(metadata, to_phone=normalized_phone)
         now = _portal_now()
         record = SmsNotificationRecord(
             notification_id=_portal_id("sms"),
@@ -1702,11 +1863,12 @@ class WalletInterfaceService:
             last_error="",
             last_provider_message_id="",
             last_dispatched_reason="",
-            metadata=dict(metadata or {}),
+            metadata=enriched_metadata,
             created_at=now,
             updated_at=now,
         )
         self.sms_notifications[record.notification_id] = record
+        self._link_phone_identity_to_wallet(normalized_phone, wallet_id)
         self._portal_audit(
             wallet_id,
             actor_did=actor_did,

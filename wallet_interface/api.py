@@ -12,6 +12,7 @@ import os
 import re
 import smtplib
 import struct
+import threading
 import time
 import uuid
 import wave
@@ -1980,7 +1981,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
     @app.post("/voice/indextts/infer")
     async def indextts_voice_infer(
         audio: UploadFile | None = File(default=None),
+        mode: str = Form(default=""),
         text: str = Form(default=""),
+        systemPrompt: str | None = Form(default=None),
+        system_prompt: str | None = Form(default=None),
+        userPrompt: str | None = Form(default=None),
+        user_prompt: str | None = Form(default=None),
+        fallbackText: str | None = Form(default=None),
         fallback_text: str | None = Form(default=None),
         voice_description: str | None = Form(default=None),
     ) -> Dict[str, Any]:
@@ -1988,7 +1995,13 @@ def create_app(*, service: WalletInterfaceService | None = None):
             reference_audio = await audio.read() if audio is not None else None
             reference_name = getattr(audio, "filename", None) if audio is not None else None
             reference_type = getattr(audio, "content_type", None) if audio is not None else None
-            reply_text = (text or fallback_text or "").strip()
+            reply_text, generation_latency = _generate_indextts_voice_reply_text(
+                mode=mode,
+                text=text,
+                system_prompt=system_prompt or systemPrompt,
+                user_prompt=user_prompt or userPrompt,
+                fallback_text=fallback_text or fallbackText,
+            )
             audio_payload = _run_indextts_gradio_tts(
                 text=reply_text,
                 voice_description=voice_description,
@@ -1997,6 +2010,9 @@ def create_app(*, service: WalletInterfaceService | None = None):
                 reference_audio_mime_type=reference_type,
             )
             audio_payload["text"] = reply_text
+            latency = dict(audio_payload.get("latency") or {})
+            latency.update(generation_latency)
+            audio_payload["latency"] = latency
             return audio_payload
         except Exception as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
@@ -4001,14 +4017,126 @@ def _http_bytes(url: str) -> tuple[bytes, str]:
         return response.read(), response.headers.get("Content-Type") or "audio/wav"
 
 
+_INDEXTTS_CACHE_LOCK = threading.Lock()
+_INDEXTTS_CONFIG_CACHE: Dict[tuple[str, str], Dict[str, Any]] = {}
+_INDEXTTS_FN_INDEX_CACHE: Dict[tuple[str, str], int] = {}
+_INDEXTTS_REFERENCE_CACHE: Dict[tuple[str, str], Dict[str, Any]] = {}
+
+
+def _voice_llm_timeout_seconds() -> float:
+    try:
+        return max(5.0, float(os.getenv("WALLET_VOICE_LLM_TIMEOUT_SECONDS", "20")))
+    except Exception:
+        return 20.0
+
+
+def _clean_voice_reply_text(text: str, *, prompt: str = "", fallback_text: str = "") -> str:
+    cleaned = str(text or "").strip()
+    prompt = str(prompt or "").strip()
+    if prompt and cleaned.startswith(prompt):
+        cleaned = cleaned[len(prompt) :].strip()
+    for marker in ("Assistant:", "Abby:", "Response:", "Answer:"):
+        index = cleaned.rfind(marker)
+        if index >= 0:
+            cleaned = cleaned[index + len(marker) :].strip()
+            break
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if not cleaned:
+        cleaned = str(fallback_text or "").strip()
+    max_chars = 520
+    if len(cleaned) > max_chars:
+        trimmed = cleaned[:max_chars].rsplit(" ", 1)[0].strip()
+        cleaned = trimmed or cleaned[:max_chars].strip()
+    return cleaned
+
+
+def _generate_indextts_voice_reply_text(
+    *,
+    mode: str,
+    text: str,
+    system_prompt: str | None,
+    user_prompt: str | None,
+    fallback_text: str | None,
+) -> tuple[str, Dict[str, Any]]:
+    timings: Dict[str, Any] = {}
+    fallback = str(fallback_text or "").strip()
+    prompt = str(text or "").strip()
+    if str(mode or "").strip().lower() != "voice-reply":
+        reply_text = prompt or fallback
+        if not reply_text:
+            raise ValueError("text is required")
+        return reply_text, timings
+
+    user_text = str(user_prompt or "").strip()
+    system_text = str(system_prompt or "").strip()
+    if not prompt:
+        prompt = "\n\n".join(part for part in (system_text, f"Caller request: {user_text}" if user_text else "") if part)
+    if not prompt:
+        raise ValueError("text or user_prompt is required")
+
+    llm_start = time.perf_counter()
+    try:
+        kwargs = _prepare_hf_router_environment(
+            {
+                "max_new_tokens": int(os.getenv("WALLET_VOICE_LLM_MAX_NEW_TOKENS", "120")),
+                "temperature": float(os.getenv("WALLET_VOICE_LLM_TEMPERATURE", "0.2")),
+                "timeout": _voice_llm_timeout_seconds(),
+            }
+        )
+        from ipfs_datasets_py import llm_router  # noqa: WPS433
+
+        provider = os.getenv("WALLET_VOICE_LLM_PROVIDER", "hf_inference_api").strip() or "hf_inference_api"
+        model_name = (
+            os.getenv("WALLET_VOICE_LLM_MODEL")
+            or os.getenv("WALLET_AI_ROUTER_LLM_MODEL")
+            or "Qwen/Qwen3.5-2B"
+        ).strip()
+        generated = llm_router.generate_text(
+            prompt,
+            model_name=model_name,
+            provider=provider,
+            **kwargs,
+        )
+        timings["llm_request_ms"] = max(0, int((time.perf_counter() - llm_start) * 1000))
+        timings["llm_provider"] = provider
+        timings["llm_model"] = model_name
+        return _clean_voice_reply_text(generated, prompt=prompt, fallback_text=fallback), timings
+    except Exception as exc:
+        timings["llm_request_ms"] = max(0, int((time.perf_counter() - llm_start) * 1000))
+        timings["llm_error"] = str(exc)[:240]
+        if fallback:
+            return fallback, timings
+        raise
+
+
+def _indextts_cache_ttl_seconds() -> float:
+    try:
+        return max(0.0, float(os.getenv("WALLET_INDEXTTS_CACHE_TTL_SECONDS", "3600")))
+    except Exception:
+        return 3600.0
+
+
 def _indextts_config() -> Dict[str, Any]:
-    return _http_json("GET", f"{_indextts_space_base_url()}/config")
+    cache_key = (_indextts_space_base_url(), _indextts_api_name())
+    now = time.time()
+    with _INDEXTTS_CACHE_LOCK:
+        cached = _INDEXTTS_CONFIG_CACHE.get(cache_key)
+        if cached and now - float(cached.get("created_at", 0)) < _indextts_cache_ttl_seconds():
+            return dict(cached["config"])
+    config = _http_json("GET", f"{_indextts_space_base_url()}/config")
+    with _INDEXTTS_CACHE_LOCK:
+        _INDEXTTS_CONFIG_CACHE[cache_key] = {"created_at": now, "config": dict(config)}
+    return config
 
 
 def _indextts_fn_index(config: Mapping[str, Any]) -> int:
     raw = os.getenv("WALLET_INDEXTTS_FN_INDEX", "").strip()
     if raw:
         return int(raw)
+    cache_key = (_indextts_space_base_url(), _indextts_api_name())
+    with _INDEXTTS_CACHE_LOCK:
+        if cache_key in _INDEXTTS_FN_INDEX_CACHE:
+            return _INDEXTTS_FN_INDEX_CACHE[cache_key]
     api_name = _indextts_api_name()
     dependencies = config.get("dependencies")
     if not isinstance(dependencies, list):
@@ -4018,15 +4146,24 @@ def _indextts_fn_index(config: Mapping[str, Any]) -> int:
         normalized = api_name if api_name.startswith("/") else f"/{api_name}"
         for dep in candidates:
             if str(dep.get("api_name") or "") in {api_name, normalized, normalized.lstrip("/")}:
-                return int(dep.get("id"))
+                fn_index = int(dep.get("id"))
+                with _INDEXTTS_CACHE_LOCK:
+                    _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
+                return fn_index
         raise ValueError(f"IndexTTS api_name {api_name!r} was not found in Gradio config")
     for dep in candidates:
         name = str(dep.get("api_name") or "").lower()
         if any(marker in name for marker in ("tts", "synth", "generate", "infer", "predict")):
-            return int(dep.get("id"))
+            fn_index = int(dep.get("id"))
+            with _INDEXTTS_CACHE_LOCK:
+                _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
+            return fn_index
     for dep in candidates:
         if dep.get("api_name"):
-            return int(dep.get("id"))
+            fn_index = int(dep.get("id"))
+            with _INDEXTTS_CACHE_LOCK:
+                _INDEXTTS_FN_INDEX_CACHE[cache_key] = fn_index
+            return fn_index
     raise ValueError("could not discover an IndexTTS Gradio fn_index")
 
 
@@ -4038,11 +4175,20 @@ def _run_indextts_gradio_tts(
     reference_audio_name: str | None = None,
     reference_audio_mime_type: str | None = None,
 ) -> Dict[str, Any]:
+    total_start = time.perf_counter()
+    timings: Dict[str, int] = {}
     prompt = str(text or "").strip()
     if not prompt:
         raise ValueError("text is required")
+    stage_start = time.perf_counter()
     config = _indextts_config()
+    timings["config_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+    stage_start = time.perf_counter()
     uploaded_reference = _indextts_upload_reference_audio(reference_audio, reference_audio_name, reference_audio_mime_type)
+    timings["reference_upload_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+    stage_start = time.perf_counter()
+    fn_index = _indextts_fn_index(config)
+    timings["fn_index_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
     data = _indextts_request_data(
         text=prompt,
         voice_description=voice_description,
@@ -4051,17 +4197,24 @@ def _run_indextts_gradio_tts(
     session_hash = uuid.uuid4().hex
     join_payload = {
         "data": data,
-        "fn_index": _indextts_fn_index(config),
+        "fn_index": fn_index,
         "session_hash": session_hash,
     }
+    stage_start = time.perf_counter()
     _http_json("POST", f"{_indextts_space_base_url()}/gradio_api/queue/join", join_payload)
+    timings["queue_join_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
+    stage_start = time.perf_counter()
     result = _indextts_wait_for_result(session_hash)
+    timings["queue_wait_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
     audio_ref = _find_gradio_audio_reference(result)
     if not audio_ref:
         raise ValueError("IndexTTS completed without an audio file in the Gradio output")
+    stage_start = time.perf_counter()
     audio_bytes, mime_type = _fetch_gradio_file(audio_ref)
+    timings["file_fetch_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
     if audio_bytes.startswith(b"RIFF") and b"WAVE" in audio_bytes[:16]:
         mime_type = "audio/wav"
+    timings["total_ms"] = max(0, int((time.perf_counter() - total_start) * 1000))
     return {
         "audioBase64": base64.b64encode(audio_bytes).decode("ascii"),
         "mimeType": mime_type or "audio/wav",
@@ -4072,6 +4225,7 @@ def _run_indextts_gradio_tts(
         if isinstance(uploaded_reference, Mapping)
         else "",
         "text": prompt,
+        "latency": timings,
     }
 
 
@@ -4085,14 +4239,31 @@ def _indextts_upload_reference_audio(
         return _gradio_upload_file(audio, file_name or "reference.wav", guessed_type)
     path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_PATH", "").strip()
     if path and os.path.exists(path):
+        stat = os.stat(path)
+        cache_key = (os.path.abspath(path), f"{stat.st_mtime_ns}:{stat.st_size}")
+        with _INDEXTTS_CACHE_LOCK:
+            cached = _INDEXTTS_REFERENCE_CACHE.get(cache_key)
+            if cached:
+                return dict(cached)
         with open(path, "rb") as handle:
             data = handle.read()
         mime_type = mimetypes.guess_type(path)[0] or "audio/wav"
-        return _gradio_upload_file(data, os.path.basename(path), mime_type)
+        uploaded = _gradio_upload_file(data, os.path.basename(path), mime_type)
+        with _INDEXTTS_CACHE_LOCK:
+            _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
+        return uploaded
     remote_path = os.getenv("WALLET_INDEXTTS_REFERENCE_AUDIO_REMOTE_PATH", "").strip()
     if remote_path:
         return {"path": remote_path, "meta": {"_type": "gradio.FileData"}, "orig_name": os.path.basename(remote_path) or "reference.wav"}
-    return _gradio_upload_file(_default_indextts_reference_wav(), "abby-reference.wav", "audio/wav")
+    cache_key = ("default-abby-reference", "v1")
+    with _INDEXTTS_CACHE_LOCK:
+        cached = _INDEXTTS_REFERENCE_CACHE.get(cache_key)
+        if cached:
+            return dict(cached)
+    uploaded = _gradio_upload_file(_default_indextts_reference_wav(), "abby-reference.wav", "audio/wav")
+    with _INDEXTTS_CACHE_LOCK:
+        _INDEXTTS_REFERENCE_CACHE[cache_key] = dict(uploaded)
+    return uploaded
 
 
 def _default_indextts_reference_wav() -> bytes:
