@@ -36,7 +36,6 @@ type LocalizationKey =
   | "login.invalidContact"
   | "login.emailSent"
   | "login.textSent"
-  | "login.magicLinkFailed"
   | "login.localFallbackWarning"
   | "login.localReady"
   | "login.codeExpired"
@@ -45,60 +44,33 @@ type LocalizationKey =
   | "login.magicInvalid"
   | "login.magicExpired"
   | "login.magicVerifyFailed"
+  | "providerPortal.cases.title"
   | "login.prepareAccess"
   | "login.sendLink"
-  | "login.demoPad"
   | "login.codeLabel"
   | "login.verifyCode"
   | "login.openMagicLink"
   | "login.localDevNote"
-  | "login.openAssistant"
-  | "home.today"
-  | "home.welcome"
   | "home.quickActions"
   | "home.nextCheckIn"
   | "home.checkInNow"
   | "home.closestHelp"
   | "home.findingNearby"
-  | "home.noNearbyMatches"
-  | "home.noCategories"
-  | "home.addHelpSettings"
-  | "home.updateSettings"
-  | "home.newMessages"
-  | "home.newMessagesAria"
-  | "home.read"
-  | "home.unread"
   | "home.from"
   | "home.openMessages"
-  | "home.noMessages"
   | "home.urgentItems"
   | "home.urgentItemsAria"
   | "home.noUrgentItems"
-  | "home.openCalendar"
-  | "home.contacts"
-  | "home.contactsDetail"
   | "home.sharing"
   | "home.sharingDetail"
   | "home.safetyPlanSetup"
   | "home.savedFiles"
   | "home.fileSingular"
-  | "home.filePlural"
-  | "home.contactSharing"
-  | "home.reviewReady"
-  | "home.legal"
-  | "home.terms"
-  | "home.privacy"
-  | "home.needHelpToday"
-  | "home.supportDescription"
   | "home.findHelp"
   | "registration.eyebrow"
-  | "registration.title"
   | "registration.note"
   | "profile.legalName"
   | "profile.legalNameHelp"
-  | "profile.preferredName"
-  | "profile.preferredNameHelp"
-  | "profile.pronouns"
   | "profile.pronounsHelp"
   | "profile.pronounsPlaceholder"
   | "profile.birthDate"
@@ -678,33 +650,69 @@ type LocalizationKey =
   | "providerPortal.messages.send"
   | "providerPortal.messages.sentByTo"
   | "providerPortal.messages.empty"
-  | "providerPortal.cases.title"
+  | "providerPortal.messages.empty"
+  | "providerPortal.messages.defaultSubject"
+  | "providerPortal.messages.defaultBody"
+  | "providerPortal.messages.serviceReminderSubject"
+  | "providerPortal.messages.serviceReminderBody"
+  | "providerPortal.messages.caseUpdateSubject"
+  | "providerPortal.messages.caseUpdateBody"
+  | "providerPortal.messages.senderFallback"
+  | "providerPortal.messages.fallbackSubject"
   | "providerPortal.cases.openCases"
   | "providerPortal.cases.urgentCases"
   | "providerPortal.cases.waitingOnClient"
+  | "providerPortal.operations.invalidUpload"
   | "providerPortal.cases.eligibilityProofs"
   | "providerPortal.cases.caseStatus"
   | "providerPortal.cases.allCases"
+  | "providerPortal.operations.defaultCaseGoal"
+  | "providerPortal.operations.defaultCaseNextStep"
+  | "providerPortal.operations.defaultCaseNotes"
   | "providerPortal.cases.intake"
   | "providerPortal.cases.active"
   | "providerPortal.cases.eligible"
   | "providerPortal.cases.closed"
   | "providerPortal.cases.due"
+    "providerPortal.messages.defaultSubject": "Appointment reminder",
+    "providerPortal.messages.defaultBody": "Reminder from your service provider: please check your Abby calendar for your next appointment.",
+    "providerPortal.messages.serviceReminderSubject": "Service reminder",
+    "providerPortal.messages.serviceReminderBody": "Hi {client}, this is {staff} from {shelter}. Please check your Abby calendar for your next service step.",
+    "providerPortal.messages.caseUpdateSubject": "Case update: {goal}",
+    "providerPortal.messages.caseUpdateBody": "Hi {client}, this is {staff} from {shelter}. Your next step is: {step}",
+    "providerPortal.messages.senderFallback": "your service provider",
+    "providerPortal.messages.fallbackSubject": "Service message",
   | "providerPortal.cases.unassigned"
   | "providerPortal.cases.proofSingular"
+    "providerPortal.operations.invalidUpload": "We can't use this file. Use JPG, PNG, WebP, or PDF.",
   | "providerPortal.cases.proofPlural"
   | "providerPortal.cases.noServices"
   | "providerPortal.cases.statusField"
+    "providerPortal.operations.defaultCaseGoal": "Complete intake and service plan.",
+    "providerPortal.operations.defaultCaseNextStep": "Confirm eligibility criteria and collect consent for referrals.",
+    "providerPortal.operations.defaultCaseNotes": "Created from assisted provider registration.",
   | "providerPortal.cases.priorityField"
   | "providerPortal.cases.urgent"
   | "providerPortal.cases.standard"
   | "providerPortal.cases.monitor"
   | "providerPortal.cases.dueDate"
+    "providerPortal.messages.defaultSubject": "Recordatorio de cita",
+    "providerPortal.messages.defaultBody": "Recordatorio de tu proveedor de servicios: revisa tu calendario de Abby para tu proxima cita.",
+    "providerPortal.messages.serviceReminderSubject": "Recordatorio de servicio",
+    "providerPortal.messages.serviceReminderBody": "Hola {client}, soy {staff} de {shelter}. Revisa tu calendario de Abby para tu siguiente paso de servicio.",
+    "providerPortal.messages.caseUpdateSubject": "Actualizacion del caso: {goal}",
+    "providerPortal.messages.caseUpdateBody": "Hola {client}, soy {staff} de {shelter}. Tu siguiente paso es: {step}",
+    "providerPortal.messages.senderFallback": "tu proveedor de servicios",
+    "providerPortal.messages.fallbackSubject": "Mensaje de servicio",
   | "providerPortal.cases.nextStep"
   | "providerPortal.cases.notes"
+    "providerPortal.operations.invalidUpload": "No podemos usar este archivo. Usa JPG, PNG, WebP o PDF.",
   | "providerPortal.cases.proved"
   | "providerPortal.cases.needed"
   | "providerPortal.cases.proveUsCitizen"
+    "providerPortal.operations.defaultCaseGoal": "Completar la admision y el plan de servicio.",
+    "providerPortal.operations.defaultCaseNextStep": "Confirmar criterios de elegibilidad y recopilar consentimiento para derivaciones.",
+    "providerPortal.operations.defaultCaseNotes": "Creado desde el registro asistido del proveedor.",
   | "providerPortal.cases.prepareProof"
   | "providerPortal.cases.messageClient"
   | "providerPortal.cases.eligibilityProof"
@@ -822,7 +830,63 @@ type LocalizationKey =
   | "providerPortal.criteria.claim.usCitizen"
   | "providerPortal.criteria.claim.serviceAreaResident"
   | "providerPortal.criteria.claim.incomeEligible"
-  | "providerPortal.criteria.claim.identityVerified";
+  | "providerPortal.criteria.claim.identityVerified"
+  | "providerPortal.operations.title"
+  | "providerPortal.operations.needVerifiedOperator"
+  | "providerPortal.operations.createUserAccount"
+  | "providerPortal.operations.legalName"
+  | "providerPortal.operations.pronouns"
+  | "providerPortal.operations.pronounsPlaceholder"
+  | "providerPortal.operations.photoId"
+  | "providerPortal.operations.photoIdHelp"
+  | "providerPortal.operations.selectedFile"
+  | "providerPortal.operations.currentSafeLocation"
+  | "providerPortal.operations.quickHealthCheck"
+  | "providerPortal.operations.botCheck"
+  | "providerPortal.operations.localPrecinctNotified"
+  | "providerPortal.operations.foundPermanentHousing"
+  | "providerPortal.operations.createUser"
+  | "providerPortal.operations.contactListRequests"
+  | "providerPortal.operations.contactListNote"
+  | "providerPortal.operations.personName"
+  | "providerPortal.operations.phoneOrEmail"
+  | "providerPortal.operations.sendContactRequest"
+  | "providerPortal.operations.pendingRequestExists"
+  | "providerPortal.operations.userAskedAdd"
+  | "providerPortal.operations.shelterAskedUser"
+  | "providerPortal.operations.approve"
+  | "providerPortal.operations.deny"
+  | "providerPortal.operations.noContactRequests"
+  | "providerPortal.operations.createdBy"
+  | "providerPortal.operations.dob"
+  | "providerPortal.operations.userAccount"
+  | "providerPortal.operations.noUserAccounts"
+  | "providerPortal.operations.userOversight"
+  | "providerPortal.operations.precinctNotified"
+  | "providerPortal.operations.precinctNotNotified"
+  | "providerPortal.operations.housingFound"
+  | "providerPortal.operations.housingNotFound"
+  | "providerPortal.operations.healthCheck"
+  | "providerPortal.operations.noShelterUsers"
+  | "providerPortal.operations.noPreferredUsers"
+  | "providerPortal.operations.sharedDeviceSafety"
+  | "providerPortal.operations.confirmUserPresent"
+  | "providerPortal.operations.clearBrowserData"
+  | "providerPortal.operations.auditLog"
+  | "providerPortal.operations.providerAdministrator"
+  | "providerPortal.operations.isAdministrator"
+  | "providerPortal.operations.provider"
+  | "providerPortal.operations.addStaffMember"
+  | "providerPortal.operations.staffName"
+  | "providerPortal.operations.staffEmail"
+  | "providerPortal.operations.addStaff"
+  | "providerPortal.operations.staffRoster"
+  | "providerPortal.operations.revoked"
+  | "providerPortal.operations.revokeAccess"
+  | "providerPortal.operations.reverify"
+  | "providerPortal.operations.removeStaff"
+  | "providerPortal.operations.noStaffAccounts"
+  | "providerPortal.operations.noContact";
 
 const STRINGS: Record<SupportedLocale, Record<LocalizationKey, string>> = {
   en: {
@@ -1477,6 +1541,14 @@ const STRINGS: Record<SupportedLocale, Record<LocalizationKey, string>> = {
     "providerPortal.messages.send": "Send message",
     "providerPortal.messages.sentByTo": "Sent by {staff} to {contact}",
     "providerPortal.messages.empty": "No provider messages sent for this shelter yet.",
+    "providerPortal.messages.defaultSubject": "Appointment reminder",
+    "providerPortal.messages.defaultBody": "Reminder from your service provider: please check your Abby calendar for your next appointment.",
+    "providerPortal.messages.serviceReminderSubject": "Service reminder",
+    "providerPortal.messages.serviceReminderBody": "Hi {client}, this is {staff} from {shelter}. Please check your Abby calendar for your next service step.",
+    "providerPortal.messages.caseUpdateSubject": "Case update: {goal}",
+    "providerPortal.messages.caseUpdateBody": "Hi {client}, this is {staff} from {shelter}. Your next step is: {step}",
+    "providerPortal.messages.senderFallback": "your service provider",
+    "providerPortal.messages.fallbackSubject": "Service message",
     "providerPortal.cases.title": "Case management",
     "providerPortal.cases.openCases": "Open cases",
     "providerPortal.cases.urgentCases": "Urgent cases",
@@ -1622,6 +1694,66 @@ const STRINGS: Record<SupportedLocale, Record<LocalizationKey, string>> = {
     "providerPortal.criteria.claim.serviceAreaResident": "Client meets service-area residency criteria without exposing exact address.",
     "providerPortal.criteria.claim.incomeEligible": "Client meets income eligibility criteria without exposing income documents.",
     "providerPortal.criteria.claim.identityVerified": "Client identity has been verified without exposing the underlying identity document.",
+    "providerPortal.operations.title": "Verified staff workspace",
+    "providerPortal.operations.needVerifiedOperator": "Select a verified staff operator to create client or staff accounts.",
+    "providerPortal.operations.createUserAccount": "Create user account",
+    "providerPortal.operations.legalName": "Legal or full name",
+    "providerPortal.operations.pronouns": "Pronouns",
+    "providerPortal.operations.pronounsPlaceholder": "call me she/her, he/him, they/them",
+    "providerPortal.operations.photoId": "Photo or photo ID",
+    "providerPortal.operations.photoIdHelp": "Use a JPG, PNG, WebP, or PDF file. We will not show a preview.",
+    "providerPortal.operations.selectedFile": "Selected file: {value}",
+    "providerPortal.operations.currentSafeLocation": "Current safe location",
+    "providerPortal.operations.invalidUpload": "We can't use this file. Use JPG, PNG, WebP, or PDF.",
+    "providerPortal.operations.quickHealthCheck": "Quick health check complete (step 1)",
+    "providerPortal.operations.botCheck": "Bot check complete (step 2)",
+    "providerPortal.operations.localPrecinctNotified": "Local precinct notified as emergency contact",
+    "providerPortal.operations.foundPermanentHousing": "Found permanent housing",
+    "providerPortal.operations.createUser": "Create user account",
+    "providerPortal.operations.contactListRequests": "Contact list requests",
+    "providerPortal.operations.contactListNote": "Send a request only. The person must approve before this shelter is added.",
+    "providerPortal.operations.personName": "Person name",
+    "providerPortal.operations.phoneOrEmail": "Phone or email",
+    "providerPortal.operations.sendContactRequest": "Send contact request",
+    "providerPortal.operations.pendingRequestExists": "A request is already waiting for this shelter and person.",
+    "providerPortal.operations.userAskedAdd": "User asked to add {shelter}.",
+    "providerPortal.operations.shelterAskedUser": "{shelter} asked this user.",
+    "providerPortal.operations.approve": "Approve",
+    "providerPortal.operations.deny": "Deny",
+    "providerPortal.operations.noContactRequests": "No contact list requests for this shelter yet.",
+    "providerPortal.operations.createdBy": "Created by {name}",
+    "providerPortal.operations.dob": "DOB {value}",
+    "providerPortal.operations.defaultCaseGoal": "Complete intake and service plan.",
+    "providerPortal.operations.defaultCaseNextStep": "Confirm eligibility criteria and collect consent for referrals.",
+    "providerPortal.operations.defaultCaseNotes": "Created from assisted provider registration.",
+    "providerPortal.operations.userAccount": "User account",
+    "providerPortal.operations.noUserAccounts": "No user accounts created for this shelter yet.",
+    "providerPortal.operations.userOversight": "Shelter user oversight",
+    "providerPortal.operations.precinctNotified": "Precinct notified",
+    "providerPortal.operations.precinctNotNotified": "Precinct not notified",
+    "providerPortal.operations.housingFound": "Found housing",
+    "providerPortal.operations.housingNotFound": "Housing not found",
+    "providerPortal.operations.healthCheck": "Health check",
+    "providerPortal.operations.noShelterUsers": "No shelter-registered users for this shelter yet.",
+    "providerPortal.operations.noPreferredUsers": "No users listed this shelter as preferred shelter.",
+    "providerPortal.operations.sharedDeviceSafety": "Shared-device safety",
+    "providerPortal.operations.confirmUserPresent": "Confirm user is present for assisted setup",
+    "providerPortal.operations.clearBrowserData": "Clear browser data after shared-device session",
+    "providerPortal.operations.auditLog": "Staff action will be added to the audit log",
+    "providerPortal.operations.providerAdministrator": "Provider administrator",
+    "providerPortal.operations.isAdministrator": "I am an administrator for this provider",
+    "providerPortal.operations.provider": "Provider",
+    "providerPortal.operations.addStaffMember": "Add staff member",
+    "providerPortal.operations.staffName": "Staff name",
+    "providerPortal.operations.staffEmail": "Staff email",
+    "providerPortal.operations.addStaff": "Add staff member",
+    "providerPortal.operations.staffRoster": "Provider staff roster",
+    "providerPortal.operations.revoked": "Revoked",
+    "providerPortal.operations.revokeAccess": "Revoke access",
+    "providerPortal.operations.reverify": "Re-verify",
+    "providerPortal.operations.removeStaff": "Remove staff",
+    "providerPortal.operations.noStaffAccounts": "No staff accounts registered for this shelter yet.",
+    "providerPortal.operations.noContact": "No contact",
   },
   es: {
     "login.signIn": "Inicia sesion en Abby",
@@ -2275,6 +2407,14 @@ const STRINGS: Record<SupportedLocale, Record<LocalizationKey, string>> = {
     "providerPortal.messages.send": "Enviar mensaje",
     "providerPortal.messages.sentByTo": "Enviado por {staff} a {contact}",
     "providerPortal.messages.empty": "Todavia no se enviaron mensajes del proveedor para este refugio.",
+    "providerPortal.messages.defaultSubject": "Recordatorio de cita",
+    "providerPortal.messages.defaultBody": "Recordatorio de tu proveedor de servicios: revisa tu calendario de Abby para tu proxima cita.",
+    "providerPortal.messages.serviceReminderSubject": "Recordatorio de servicio",
+    "providerPortal.messages.serviceReminderBody": "Hola {client}, soy {staff} de {shelter}. Revisa tu calendario de Abby para tu siguiente paso de servicio.",
+    "providerPortal.messages.caseUpdateSubject": "Actualizacion del caso: {goal}",
+    "providerPortal.messages.caseUpdateBody": "Hola {client}, soy {staff} de {shelter}. Tu siguiente paso es: {step}",
+    "providerPortal.messages.senderFallback": "tu proveedor de servicios",
+    "providerPortal.messages.fallbackSubject": "Mensaje de servicio",
     "providerPortal.cases.title": "Gestion de casos",
     "providerPortal.cases.openCases": "Casos abiertos",
     "providerPortal.cases.urgentCases": "Casos urgentes",
@@ -2420,6 +2560,66 @@ const STRINGS: Record<SupportedLocale, Record<LocalizationKey, string>> = {
     "providerPortal.criteria.claim.serviceAreaResident": "El cliente cumple los criterios de residencia del area de servicio sin exponer la direccion exacta.",
     "providerPortal.criteria.claim.incomeEligible": "El cliente cumple los criterios de elegibilidad por ingresos sin exponer documentos de ingresos.",
     "providerPortal.criteria.claim.identityVerified": "La identidad del cliente ha sido verificada sin exponer el documento de identidad subyacente.",
+    "providerPortal.operations.title": "Espacio de trabajo de personal verificado",
+    "providerPortal.operations.needVerifiedOperator": "Selecciona un operador de personal verificado para crear cuentas de clientes o personal.",
+    "providerPortal.operations.createUserAccount": "Crear cuenta de usuario",
+    "providerPortal.operations.legalName": "Nombre legal o completo",
+    "providerPortal.operations.pronouns": "Pronombres",
+    "providerPortal.operations.pronounsPlaceholder": "llamame ella, el, elle",
+    "providerPortal.operations.photoId": "Foto o identificacion con foto",
+    "providerPortal.operations.photoIdHelp": "Usa un archivo JPG, PNG, WebP o PDF. No mostraremos una vista previa.",
+    "providerPortal.operations.selectedFile": "Archivo seleccionado: {value}",
+    "providerPortal.operations.currentSafeLocation": "Ubicacion segura actual",
+    "providerPortal.operations.invalidUpload": "No podemos usar este archivo. Usa JPG, PNG, WebP o PDF.",
+    "providerPortal.operations.quickHealthCheck": "Control rapido de salud completado (paso 1)",
+    "providerPortal.operations.botCheck": "Control de bot completado (paso 2)",
+    "providerPortal.operations.localPrecinctNotified": "Distrito local notificado como contacto de emergencia",
+    "providerPortal.operations.foundPermanentHousing": "Se encontro vivienda permanente",
+    "providerPortal.operations.createUser": "Crear cuenta de usuario",
+    "providerPortal.operations.contactListRequests": "Solicitudes de lista de contactos",
+    "providerPortal.operations.contactListNote": "Envia solo una solicitud. La persona debe aprobar antes de que se agregue este refugio.",
+    "providerPortal.operations.personName": "Nombre de la persona",
+    "providerPortal.operations.phoneOrEmail": "Telefono o correo",
+    "providerPortal.operations.sendContactRequest": "Enviar solicitud de contacto",
+    "providerPortal.operations.pendingRequestExists": "Ya hay una solicitud esperando para este refugio y esta persona.",
+    "providerPortal.operations.userAskedAdd": "La persona pidio agregar a {shelter}.",
+    "providerPortal.operations.shelterAskedUser": "{shelter} solicito a esta persona.",
+    "providerPortal.operations.approve": "Aprobar",
+    "providerPortal.operations.deny": "Denegar",
+    "providerPortal.operations.noContactRequests": "Todavia no hay solicitudes de lista de contactos para este refugio.",
+    "providerPortal.operations.createdBy": "Creado por {name}",
+    "providerPortal.operations.dob": "Nacimiento {value}",
+    "providerPortal.operations.defaultCaseGoal": "Completar la admision y el plan de servicio.",
+    "providerPortal.operations.defaultCaseNextStep": "Confirmar criterios de elegibilidad y recopilar consentimiento para derivaciones.",
+    "providerPortal.operations.defaultCaseNotes": "Creado desde el registro asistido del proveedor.",
+    "providerPortal.operations.userAccount": "Cuenta de usuario",
+    "providerPortal.operations.noUserAccounts": "Todavia no se crearon cuentas de usuario para este refugio.",
+    "providerPortal.operations.userOversight": "Supervision de usuarios del refugio",
+    "providerPortal.operations.precinctNotified": "Distrito notificado",
+    "providerPortal.operations.precinctNotNotified": "Distrito no notificado",
+    "providerPortal.operations.housingFound": "Vivienda encontrada",
+    "providerPortal.operations.housingNotFound": "No se encontro vivienda",
+    "providerPortal.operations.healthCheck": "Control de salud",
+    "providerPortal.operations.noShelterUsers": "Todavia no hay usuarios registrados por este refugio.",
+    "providerPortal.operations.noPreferredUsers": "Ningun usuario indico este refugio como refugio preferido.",
+    "providerPortal.operations.sharedDeviceSafety": "Seguridad en dispositivo compartido",
+    "providerPortal.operations.confirmUserPresent": "Confirmar que la persona esta presente para la configuracion asistida",
+    "providerPortal.operations.clearBrowserData": "Borrar los datos del navegador despues de la sesion en dispositivo compartido",
+    "providerPortal.operations.auditLog": "La accion del personal se agregara al registro de auditoria",
+    "providerPortal.operations.providerAdministrator": "Administrador del proveedor",
+    "providerPortal.operations.isAdministrator": "Soy administrador de este proveedor",
+    "providerPortal.operations.provider": "Proveedor",
+    "providerPortal.operations.addStaffMember": "Agregar miembro del personal",
+    "providerPortal.operations.staffName": "Nombre del personal",
+    "providerPortal.operations.staffEmail": "Correo del personal",
+    "providerPortal.operations.addStaff": "Agregar miembro del personal",
+    "providerPortal.operations.staffRoster": "Lista de personal del proveedor",
+    "providerPortal.operations.revoked": "Revocado",
+    "providerPortal.operations.revokeAccess": "Revocar acceso",
+    "providerPortal.operations.reverify": "Verificar de nuevo",
+    "providerPortal.operations.removeStaff": "Eliminar personal",
+    "providerPortal.operations.noStaffAccounts": "Todavia no hay cuentas de personal registradas para este refugio.",
+    "providerPortal.operations.noContact": "Sin contacto",
   },
 };
 

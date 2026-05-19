@@ -12,33 +12,23 @@ import {
   FileUp,
   HeartHandshake,
   History,
-  Home,
-  KeyRound,
+      relationship: "",
+      email: "",
   Landmark,
   LockKeyhole,
   LogOut,
   Menu,
-  MessageSquare,
   Mic,
   RefreshCw,
   Save,
   Search,
   Settings as SettingsIcon,
-  ShieldCheck,
-  Trash2,
   Upload,
   UsersRound,
-  Wrench
 } from "lucide-react";
 import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
-import { primeVoiceChatActivation } from "../components/agent/AgentAudioChatSurface";
-import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
-import { getRouteLabel } from "../agent/surfaceRegistry";
-import {
-  getServiceDetailDocIdFromHash,
-  openCanonicalServiceDetailRoute
-} from "../agent/tools/serviceDetailTools";
+        request.direction === "shelter_to_user" && request.status === "pending" && requestBelongsToCurrentUser(request)
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
@@ -46,13 +36,6 @@ import { InteractionsScreen } from "./InteractionsScreen";
 import { CalendarScreen } from "./CalendarScreen";
 import {
   getServicePlanDocIdFromHash,
-  ServicePlanScreen,
-  setLocationServicePlanHash
-} from "./ServicePlanScreen";
-import { generateOpenRouterText } from "../lib/openRouterClient";
-import { generateHuggingFaceWalletRouterText } from "../lib/huggingFaceWalletRouterClient";
-import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
-import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
 import { search211Info } from "../services/graphRagService";
 import {
   getPrimaryIntakeText,
@@ -3723,36 +3706,45 @@ function ContactsScreen({
   const [draft, setDraft] = useState({
     firstName: "",
     lastName: "",
-    relationship: "",
-    email: "",
+    subject: t(siteLocale, "providerPortal.messages.defaultSubject"),
+    body: t(siteLocale, "providerPortal.messages.defaultBody")
     phone: "",
     type: "emergency_contact" as DisclosureRecipientType
   });
   const [draftScopes, setDraftScopes] = useState<DisclosureDataScope[]>([...defaultDisclosureScopes]);
-  const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
+      setManagedUserUploadError(t(siteLocale, "providerPortal.operations.invalidUpload"));
   const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
   const [requestedPrecinct, setRequestedPrecinct] = useState(LOCAL_PRECINCT_OPTIONS[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
-  const userContact = profile.email || profile.phone || "abby@example.org";
-  const userContactKey = userContact.trim().toLowerCase();
+        goal: t(siteLocale, "providerPortal.operations.defaultCaseGoal"),
+        nextStep: t(siteLocale, "providerPortal.operations.defaultCaseNextStep"),
   const requestBelongsToCurrentUser = (request: ShelterContactRequest) =>
     request.userName.trim().toLowerCase() === userName.trim().toLowerCase() ||
-    request.userContact.trim().toLowerCase() === userContactKey;
+        notes: t(siteLocale, "providerPortal.operations.defaultCaseNotes"),
   const userShelterRequests = contactRequests.filter(requestBelongsToCurrentUser);
   const incomingShelterNudges = contactRequests.filter(
     (request) =>
       request.direction === "shelter_to_user" && request.status === "pending" && requestBelongsToCurrentUser(request)
-  );
-  const hasPendingRequestedShelter = contactRequests.some(
+      subject: t(siteLocale, "providerPortal.messages.serviceReminderSubject"),
+      body: tFormat(siteLocale, "providerPortal.messages.serviceReminderBody", {
+        client: client.preferredName || client.legalName,
+        shelter: operatorShelter,
+        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback")
+      })
     (request) =>
       request.status === "pending" &&
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
-  const hasSavedRequestedPrecinct = recipients.some((recipient) => isLocalPrecinctRecipient(recipient, requestedPrecinct));
-  const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId);
+      subject: tFormat(siteLocale, "providerPortal.messages.caseUpdateSubject", { goal: caseRecord.goal }),
+      body: tFormat(siteLocale, "providerPortal.messages.caseUpdateBody", {
+        client: client.preferredName || client.legalName,
+        shelter: operatorShelter,
+        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback"),
+        step: caseRecord.nextStep
+      })
 
   function addShelterRecipient(shelterName: string) {
     if (recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName)) {
@@ -6718,7 +6710,7 @@ function ShelterScreen({
       shelter: operatorShelter,
       clientId: selectedMessageClient.id,
       clientName: selectedMessageClient.preferredName || selectedMessageClient.legalName,
-      clientContact: contactLabelForShelterUser(selectedMessageClient),
+      clientContact: contactLabelForShelterUser(selectedMessageClient, siteLocale),
       channel: messageDraft.channel,
       subject: messageDraft.subject.trim() || "Service message",
       body: messageDraft.body.trim(),
@@ -6968,7 +6960,7 @@ function ShelterScreen({
                     {formatShelterDate(account.createdAt)}
                   </small>
                   <div className="badge-row">
-                    <Badge>{contactLabelForShelterUser(account)}</Badge>
+                    <Badge>{contactLabelForShelterUser(account, siteLocale)}</Badge>
                     <Badge tone={account.foundPermanentHousing ? "success" : "warning"}>
                       {account.foundPermanentHousing ? t(siteLocale, "providerPortal.clients.housingFound") : t(siteLocale, "providerPortal.clients.needsSupport")}
                     </Badge>
@@ -7525,34 +7517,34 @@ function ShelterScreen({
       ) : null}
       {view === "operations" ? (
         <>
-      <Section title="Verified staff workspace">
+      <Section title={t(siteLocale, "providerPortal.operations.title")}>
         <div className="shelter-staff-panel">
           {!selectedOperator ? (
-            <small className="pin-request-note">Select a verified staff operator to create client or staff accounts.</small>
+            <small className="pin-request-note">{t(siteLocale, "providerPortal.operations.needVerifiedOperator")}</small>
           ) : (
             <>
-              <Section title="Create user account">
+              <Section title={t(siteLocale, "providerPortal.operations.createUserAccount")}>
                 <form className="form-grid" onSubmit={createManagedUserAccount}>
-                  <Field label="Legal or full name" required>
+                  <Field label={t(siteLocale, "providerPortal.operations.legalName")} required>
                     <input
                       value={userDraft.legalName}
                       onChange={(event) => setUserDraft({ ...userDraft, legalName: event.target.value })}
                     />
                   </Field>
-                  <Field label="Preferred name">
+                  <Field label={t(siteLocale, "profile.preferredName")}>
                     <input
                       value={userDraft.preferredName}
                       onChange={(event) => setUserDraft({ ...userDraft, preferredName: event.target.value })}
                     />
                   </Field>
-                  <Field label="Pronouns">
+                  <Field label={t(siteLocale, "providerPortal.operations.pronouns")}>
                     <input
-                      placeholder="call me she/her, he/him, they/them"
+                      placeholder={t(siteLocale, "providerPortal.operations.pronounsPlaceholder")}
                       value={userDraft.pronouns}
                       onChange={(event) => setUserDraft({ ...userDraft, pronouns: event.target.value })}
                     />
                   </Field>
-                  <Field label="Birth date">
+                  <Field label={t(siteLocale, "profile.birthDate")}>
                     <input
                       type="date"
                       value={userDraft.dateOfBirth}
@@ -7561,8 +7553,8 @@ function ShelterScreen({
                   </Field>
                   <Field
                     error={managedUserUploadError}
-                    help="Use a JPG, PNG, WebP, or PDF file. We will not show a preview."
-                    label="Photo or photo ID"
+                    help={t(siteLocale, "providerPortal.operations.photoIdHelp")}
+                    label={t(siteLocale, "providerPortal.operations.photoId")}
                     required
                   >
                     <input
@@ -7572,30 +7564,30 @@ function ShelterScreen({
                     />
                     {managedUserFileDetail ? (
                       <small className="registration-file-detail" aria-live="polite">
-                        Selected file: {managedUserFileDetail}
+                        {tFormat(siteLocale, "providerPortal.operations.selectedFile", { value: managedUserFileDetail })}
                       </small>
                     ) : null}
                   </Field>
-                  <Field help="Used for text reminders." label="Phone">
+                  <Field help={t(siteLocale, "profile.phoneHelp")} label={t(siteLocale, "profile.phone")}>
                     <input
                       value={userDraft.phone}
                       onChange={(event) => setUserDraft({ ...userDraft, phone: event.target.value })}
                     />
                   </Field>
-                  <Field help="Used for email reminders." label="Email">
+                  <Field help={t(siteLocale, "profile.emailHelp")} label={t(siteLocale, "profile.email")}>
                     <input
                       type="email"
                       value={userDraft.email}
                       onChange={(event) => setUserDraft({ ...userDraft, email: event.target.value })}
                     />
                   </Field>
-                  <Field label="Current safe location">
+                  <Field label={t(siteLocale, "providerPortal.operations.currentSafeLocation")}>
                     <input
                       value={userDraft.currentLocation}
                       onChange={(event) => setUserDraft({ ...userDraft, currentLocation: event.target.value })}
                     />
                   </Field>
-                  <Field label="Preferred shelter">
+                  <Field label={t(siteLocale, "profile.shelter")}>
                     <input
                       value={userDraft.preferredShelter}
                       onChange={(event) => setUserDraft({ ...userDraft, preferredShelter: event.target.value })}
@@ -7613,10 +7605,10 @@ function ShelterScreen({
                       }
                       type="checkbox"
                     />
-                    <span>Quick health check complete (step 1)</span>
+                    <span>{t(siteLocale, "providerPortal.operations.quickHealthCheck")}</span>
                   </label>
                   <div className="full-span">
-                    <span className="field-label">Service needs</span>
+                    <span className="field-label">{t(siteLocale, "profile.serviceNeeds")}</span>
                     <div className="chip-grid">
                       {serviceNeeds.map((need) => (
                         <button
@@ -7626,7 +7618,7 @@ function ShelterScreen({
                           onClick={() => toggleManagedUserNeed(need)}
                           type="button"
                         >
-                          {need}
+                          {translateServiceNeed(siteLocale, need)}
                         </button>
                       ))}
                     </div>
@@ -7640,7 +7632,7 @@ function ShelterScreen({
                       }
                       type="checkbox"
                     />
-                    <span>Bot check complete (step 2)</span>
+                    <span>{t(siteLocale, "providerPortal.operations.botCheck")}</span>
                   </label>
                   <label className="consent-box full-span">
                     <input
@@ -7649,7 +7641,7 @@ function ShelterScreen({
                       type="checkbox"
                     />
                     <span>
-                      <strong>Local precinct notified as emergency contact</strong>
+                      <strong>{t(siteLocale, "providerPortal.operations.localPrecinctNotified")}</strong>
                     </span>
                   </label>
                   <label className="consent-box full-span">
@@ -7659,7 +7651,7 @@ function ShelterScreen({
                       type="checkbox"
                     />
                     <span>
-                      <strong>Found permanent housing</strong>
+                      <strong>{t(siteLocale, "providerPortal.operations.foundPermanentHousing")}</strong>
                     </span>
                   </label>
                   <div className="full-span">
@@ -7672,24 +7664,24 @@ function ShelterScreen({
                       }
                       type="submit"
                     >
-                      Create user account
+                      {t(siteLocale, "providerPortal.operations.createUser")}
                     </Button>
                   </div>
                 </form>
               </Section>
 
-              <Section title="Contact list requests">
+              <Section title={t(siteLocale, "providerPortal.operations.contactListRequests")}>
                 <p className="section-note">
-                  Send a request only. The person must approve before this shelter is added.
+                  {t(siteLocale, "providerPortal.operations.contactListNote")}
                 </p>
                 <form className="form-grid" onSubmit={sendShelterNudge}>
-                  <Field label="Person name" required>
+                  <Field label={t(siteLocale, "providerPortal.operations.personName")} required>
                     <input
                       value={nudgeDraft.userName}
                       onChange={(event) => setNudgeDraft({ ...nudgeDraft, userName: event.target.value })}
                     />
                   </Field>
-                  <Field label="Phone or email" required>
+                  <Field label={t(siteLocale, "providerPortal.operations.phoneOrEmail")} required>
                     <input
                       value={nudgeDraft.userContact}
                       onChange={(event) => setNudgeDraft({ ...nudgeDraft, userContact: event.target.value })}
@@ -7697,12 +7689,12 @@ function ShelterScreen({
                   </Field>
                   <div className="full-span centered-action">
                     <Button disabled={hasPendingShelterNudge()} type="submit" variant="secondary">
-                      <MessageSquare size={18} /> Send contact request
+                      <MessageSquare size={18} /> {t(siteLocale, "providerPortal.operations.sendContactRequest")}
                     </Button>
                   </div>
                   {hasPendingShelterNudge() ? (
                     <small className="full-span pin-request-note">
-                      A request is already waiting for this shelter and person.
+                      {t(siteLocale, "providerPortal.operations.pendingRequestExists")}
                     </small>
                   ) : null}
                 </form>
@@ -7714,30 +7706,30 @@ function ShelterScreen({
                           <h3>{request.userName}</h3>
                           <p>
                             {request.direction === "user_to_shelter"
-                              ? `User asked to add ${request.shelterName}.`
-                              : `${request.shelterName} asked this user.`}
+                              ? tFormat(siteLocale, "providerPortal.operations.userAskedAdd", { shelter: request.shelterName })
+                              : tFormat(siteLocale, "providerPortal.operations.shelterAskedUser", { shelter: request.shelterName })}
                           </p>
                           <div className="badge-row">
                             <Badge>{request.userContact}</Badge>
                             <Badge tone={request.status === "approved" ? "success" : request.status === "denied" ? "warning" : "neutral"}>
-                              {request.status}
+                              {formatContactRequestStatus(request.status, siteLocale)}
                             </Badge>
                           </div>
                         </div>
                         {request.direction === "user_to_shelter" && request.status === "pending" ? (
                           <div className="row-actions">
                             <Button onClick={() => decideUserShelterRequest(request.id, "approved")} variant="secondary">
-                              Approve
+                              {t(siteLocale, "providerPortal.operations.approve")}
                             </Button>
                             <Button onClick={() => decideUserShelterRequest(request.id, "denied")} variant="danger">
-                              Deny
+                              {t(siteLocale, "providerPortal.operations.deny")}
                             </Button>
                           </div>
                         ) : null}
                       </article>
                     ))
                   ) : (
-                    <small>No contact list requests for this shelter yet.</small>
+                    <small>{t(siteLocale, "providerPortal.operations.noContactRequests")}</small>
                   )}
                 </div>
               </Section>
@@ -7750,19 +7742,21 @@ function ShelterScreen({
                         <h3>{account.preferredName || account.legalName}</h3>
                         <p>{account.legalName}</p>
                         <small>
-                          Created by {shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? "Staff"}
-                          {account.dateOfBirth ? ` · DOB ${account.dateOfBirth}` : ""}
+                          {tFormat(siteLocale, "providerPortal.operations.createdBy", {
+                            name: shelterStaffAccounts.find((item) => item.id === account.createdByStaffId)?.displayName ?? t(siteLocale, "providerPortal.clients.staffFallback")
+                          })}
+                          {account.dateOfBirth ? ` · ${tFormat(siteLocale, "providerPortal.operations.dob", { value: account.dateOfBirth })}` : ""}
                         </small>
                       </div>
-                      <Badge>User account</Badge>
+                      <Badge>{t(siteLocale, "providerPortal.operations.userAccount")}</Badge>
                     </article>
                   ))
                 ) : (
-                  <small>No user accounts created for this shelter yet.</small>
+                  <small>{t(siteLocale, "providerPortal.operations.noUserAccounts")}</small>
                 )}
               </div>
 
-              <Section title="Shelter user oversight">
+              <Section title={t(siteLocale, "providerPortal.operations.userOversight")}>
                 <div className="list-stack">
                   {staffRegisteredUsersForShelter.length ? (
                     staffRegisteredUsersForShelter.map((account) => (
@@ -7772,18 +7766,18 @@ function ShelterScreen({
                           <p>{account.legalName}</p>
                           <div className="badge-row">
                             <Badge tone={account.localPrecinctNotified ? "success" : "warning"}>
-                              {account.localPrecinctNotified ? "Precinct notified" : "Precinct not notified"}
+                              {account.localPrecinctNotified ? t(siteLocale, "providerPortal.operations.precinctNotified") : t(siteLocale, "providerPortal.operations.precinctNotNotified")}
                             </Badge>
                             <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
-                              {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
+                              {account.foundPermanentHousing ? t(siteLocale, "providerPortal.operations.housingFound") : t(siteLocale, "providerPortal.operations.housingNotFound")}
                             </Badge>
-                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">{t(siteLocale, "providerPortal.operations.healthCheck")}</Badge> : null}
                           </div>
                         </div>
                       </article>
                     ))
                   ) : (
-                    <small>No shelter-registered users for this shelter yet.</small>
+                    <small>{t(siteLocale, "providerPortal.operations.noShelterUsers")}</small>
                   )}
                 </div>
                 <div className="list-stack">
@@ -7795,18 +7789,18 @@ function ShelterScreen({
                           <p>{account.legalName}</p>
                           <div className="badge-row">
                             <Badge tone={account.localPrecinctNotified ? "success" : "warning"}>
-                              {account.localPrecinctNotified ? "Precinct notified" : "Precinct not notified"}
+                              {account.localPrecinctNotified ? t(siteLocale, "providerPortal.operations.precinctNotified") : t(siteLocale, "providerPortal.operations.precinctNotNotified")}
                             </Badge>
                             <Badge tone={account.foundPermanentHousing ? "success" : "neutral"}>
-                              {account.foundPermanentHousing ? "Found housing" : "Housing not found"}
+                              {account.foundPermanentHousing ? t(siteLocale, "providerPortal.operations.housingFound") : t(siteLocale, "providerPortal.operations.housingNotFound")}
                             </Badge>
-                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">Health check</Badge> : null}
+                            {account.easyBotCheckStatus === "failed" ? <Badge tone="warning">{t(siteLocale, "providerPortal.operations.healthCheck")}</Badge> : null}
                           </div>
                         </div>
                       </article>
                     ))
                   ) : (
-                    <small>No users listed this shelter as preferred shelter.</small>
+                    <small>{t(siteLocale, "providerPortal.operations.noPreferredUsers")}</small>
                   )}
                 </div>
               </Section>
@@ -7814,7 +7808,7 @@ function ShelterScreen({
           )}
         </div>
       </Section>
-      <Section title="Shared-device safety">
+      <Section title={t(siteLocale, "providerPortal.operations.sharedDeviceSafety")}>
         <div className="checklist">
           <label>
             <input
@@ -7822,7 +7816,7 @@ function ShelterScreen({
               onChange={(event) => setChecklist({ ...checklist, userPresent: event.target.checked })}
               type="checkbox"
             />{" "}
-            Confirm user is present for assisted setup
+            {t(siteLocale, "providerPortal.operations.confirmUserPresent")}
           </label>
           <label>
             <input
@@ -7830,7 +7824,7 @@ function ShelterScreen({
               onChange={(event) => setChecklist({ ...checklist, clearBrowserData: event.target.checked })}
               type="checkbox"
             />{" "}
-            Clear browser data after shared-device session
+            {t(siteLocale, "providerPortal.operations.clearBrowserData")}
           </label>
           <label>
             <input
@@ -7838,11 +7832,11 @@ function ShelterScreen({
               onChange={(event) => setChecklist({ ...checklist, auditLogConfirmed: event.target.checked })}
               type="checkbox"
             />{" "}
-            Staff action will be added to the audit log
+            {t(siteLocale, "providerPortal.operations.auditLog")}
           </label>
         </div>
       </Section>
-      <Section title="Provider administrator">
+      <Section title={t(siteLocale, "providerPortal.operations.providerAdministrator")}>
         <label className="consent-box">
           <input
             checked={isShelterAdmin}
@@ -7855,12 +7849,12 @@ function ShelterScreen({
             type="checkbox"
           />
           <span>
-            <strong>I am an administrator for this provider</strong>
+            <strong>{t(siteLocale, "providerPortal.operations.isAdministrator")}</strong>
           </span>
         </label>
         {isShelterAdmin ? (
           <div className="shelter-staff-panel provider-admin-panel">
-            <Field label="Provider" required>
+            <Field label={t(siteLocale, "providerPortal.operations.provider")} required>
               <select value={adminShelter} onChange={(event) => setAdminShelter(event.target.value)}>
                 {shelterOptions.map((shelter) => (
                   <option key={shelter} value={shelter}>
@@ -7869,15 +7863,15 @@ function ShelterScreen({
                 ))}
               </select>
             </Field>
-            <Section title="Add staff member">
+            <Section title={t(siteLocale, "providerPortal.operations.addStaffMember")}>
               <form className="form-grid provider-admin-staff-form" onSubmit={createStaffAccount}>
-                <Field label="Staff name" required>
+                <Field label={t(siteLocale, "providerPortal.operations.staffName")} required>
                   <input
                     value={staffDraft.displayName}
                     onChange={(event) => setStaffDraft({ ...staffDraft, displayName: event.target.value })}
                   />
                 </Field>
-                <Field label="Staff email">
+                <Field label={t(siteLocale, "providerPortal.operations.staffEmail")}>
                   <input
                     type="email"
                     value={staffDraft.email}
@@ -7887,38 +7881,38 @@ function ShelterScreen({
                 <div className="full-span row-actions">
                   <Button disabled={!staffDraft.displayName.trim()} type="submit">
                     <UsersRound aria-hidden="true" size={18} />
-                    Add staff member
+                    {t(siteLocale, "providerPortal.operations.addStaff")}
                   </Button>
                 </div>
               </form>
             </Section>
-            <Section title="Provider staff roster">
+            <Section title={t(siteLocale, "providerPortal.operations.staffRoster")}>
             <div className="list-stack">
               {staffForShelter.length ? (
                 staffForShelter.map((account) => (
                   <article className="list-item provider-staff-roster-item" key={account.id}>
                     <div>
                       <h3>{account.displayName}</h3>
-                      <p>{account.email || "No email provided"}</p>
+                      <p>{account.email || t(siteLocale, "providerPortal.analytics.noEmail")}</p>
                       <div className="badge-row">
                         <Badge tone={account.verified ? "success" : "warning"}>
-                          {account.verified ? "Verified" : "Revoked"}
+                          {account.verified ? t(siteLocale, "contacts.verified") : t(siteLocale, "providerPortal.operations.revoked")}
                         </Badge>
                         <Badge>{formatShelterDate(account.updatedAt)}</Badge>
                       </div>
                     </div>
                     <div className="row-actions">
                       <Button onClick={() => updateStaffVerification(account.id, !account.verified)} variant="secondary">
-                        {account.verified ? "Revoke access" : "Re-verify"}
+                        {account.verified ? t(siteLocale, "providerPortal.operations.revokeAccess") : t(siteLocale, "providerPortal.operations.reverify")}
                       </Button>
                       <Button onClick={() => removeStaffAccount(account.id)} variant="danger">
-                        Remove staff
+                        {t(siteLocale, "providerPortal.operations.removeStaff")}
                       </Button>
                     </div>
                   </article>
                 ))
               ) : (
-                <small>No staff accounts registered for this shelter yet.</small>
+                <small>{t(siteLocale, "providerPortal.operations.noStaffAccounts")}</small>
               )}
             </div>
             </Section>
@@ -7931,8 +7925,8 @@ function ShelterScreen({
   );
 }
 
-function contactLabelForShelterUser(account: ShelterUserAccount): string {
-  return account.phone || account.email || "No contact";
+function contactLabelForShelterUser(account: ShelterUserAccount, locale: SupportedLocale): string {
+  return account.phone || account.email || t(locale, "providerPortal.operations.noContact");
 }
 
 function formatShelterDate(value: string): string {
