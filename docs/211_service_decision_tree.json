@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-19T22:09:32.437469+00:00",
+  "generatedAt": "2026-05-19T22:50:42.990598+00:00",
   "purpose": "Route Abby service-navigation turns to grounded 211 answers, prompt-template clarification/fallback, or live agents.",
   "nodes": [
     {
@@ -38,7 +38,7 @@
     "grounded_211_answer": {
       "templateId": "grounded_service_match",
       "title": "Grounded 211 Service Match",
-      "observedSimulationCount": 755,
+      "observedSimulationCount": 814,
       "checklist": [
         "Name the matched provider or program.",
         "Mention eligibility, intake steps, documents, phone, hours, or location only when present in evidence.",
@@ -49,7 +49,7 @@
     "clarifying_prompt": {
       "templateId": "clarify_need_or_location",
       "title": "Clarify Need or Location",
-      "observedSimulationCount": 94,
+      "observedSimulationCount": 153,
       "checklist": [
         "Ask only one question.",
         "Avoid collecting unnecessary sensitive information.",
@@ -78,10 +78,10 @@
     }
   },
   "observedTransitions": {
-    "clarifying_prompt->grounded_211_answer": 84,
+    "clarifying_prompt->grounded_211_answer": 143,
     "clarifying_prompt->live_agent": 1,
     "grounded_211_answer->grounded_211_answer": 1,
-    "grounded_211_answer->live_agent": 61,
+    "grounded_211_answer->live_agent": 120,
     "grounded_211_answer->template_guided_fallback": 1,
     "live_agent->live_agent": 3,
     "template_guided_fallback->live_agent": 61

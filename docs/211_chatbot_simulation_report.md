@@ -1,6 +1,6 @@
 # 211 Chatbot Simulation Report
 
-- Generated: 2026-05-19T22:09:32.437469+00:00
+- Generated: 2026-05-19T22:50:42.990598+00:00
 - Scenarios: 1024
 - Route expectations passed: 1024/1024
 - Decision-tree leaves: grounded_211_answer, clarifying_prompt, template_guided_fallback, live_agent
@@ -5507,18 +5507,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for detox help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need detox help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need detox help.`
+- Assistant: A grounded 211 match is MEDICAL DETOX AND CLINICALLY MANAGED DETOX. The record lists location not listed in this record. Phone: (541) 523-4049, (541) 406-4363. Eligibility: Single-parent households with children ages 0-6. Source: https://www.211info.org/agency/13274/10088/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (56.77)
+- Top evidence:
+  - `service:a80fc4c7b16e0d53` score `56.7661`: MEDICAL DETOX AND CLINICALLY MANAGED DETOX
+  - `service:45707f0c70045863` score `53.913`: DETOX SERVICES
+  - `page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy` score `46.6976`: Detoxification - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress domestic violence survivor advocacy in Portland (PASS)
 
@@ -5729,18 +5754,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for clothing help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need clothing help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need clothing help.`
+- Assistant: A grounded 211 match is PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA. The record lists 3905 SE 91st Avenue Portland, OR 97266, 817 S 10th Street Coos Bay, OR 97420. Phone: (503) 916-5100, (541) 267-3104. Eligibility: Ages 0-21 and their families who are experiencing homelessness; Food pantry: Families with children within the NCSD boundries All other. Source: https://gethelp.211info.org/get-help/foster-families/school-clothing/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (48.09)
+- Top evidence:
+  - `service:30661e4b59d224ae` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+  - `service:4726b554e40e4c77` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+  - `service:8a834cdd8d8ceba3` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress warming center in Portland (PASS)
 
@@ -5951,18 +6001,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for dental clinic (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need dental clinic.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need dental clinic.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE. The record lists 5329 NE Martin Luther King Jr Boulevard Portland, OR 97211. Phone: (503) 988-3387. Eligibility: Home visiting. Source: https://www.211info.org/get-help/health-care/prenatal-postnatal-home-visitation-programs-african-american-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (68.65)
+- Top evidence:
+  - `service:119ca1b7c61c8ad1` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:1277e7a84dfeb48e` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:96d8aa19d315c2bb` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mental health services in Gresham (PASS)
 
@@ -6173,18 +6248,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for shower services (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need shower services.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need shower services.`
+- Assistant: A grounded 211 match is CITY OF GRESHAM. The record lists 1333 NW Eastman Parkway Gresham, OR 97030. Phone: (503) 618-3000, (503) 823-3333. Eligibility: Residents of City of Gresham. Source: https://gethelp.211info.org/agency/2448/1857/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (54.97)
+- Top evidence:
+  - `service:d968ced621aea83d` score `54.966`: CITY OF GRESHAM
+  - `service:d7abe58ca7495460` score `53.4315`: CITY OF GRESHAM POLICE DEPARTMENT
+  - `service:9800cfa31b9bccb1` score `50.756`: OREGON DEPARTMENT OF HUMAN SERVICES CAF MULTNOMAH COUNTY GRESHAM SELF-SUFFICIENCY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mail service in Gresham (PASS)
 
@@ -6395,18 +6495,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for transportation help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need transportation help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need transportation help.`
+- Assistant: A grounded 211 match is CASCADES WEST RIDE LINE. The record lists 1400 Queen Avenue SE Suite 201 Albany, OR 97322. Phone: (541) 924-8738, (541) 967-8630. Eligibility: Eligible Oregon Health Plan (OHP) Medicaid clients and InterCommunity Health Network Coordinated Care Organization members that have been qualified and appear in Cascades West Ride Line electronic eligibility files, and Samaritan Advantage Medical clients.. Source: https://gethelp.211info.org/agency/9489/7481/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (98.80)
+- Top evidence:
+  - `service:156176ac73be0658` score `98.798`: CASCADES WEST RIDE LINE
+  - `service:80bb5c1077a6fe59` score `91.8651`: CASCADES WEST RIDE LINE
+  - `page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte` score `87.2057`: Transportation - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress medical clinic in Beaverton (PASS)
 
@@ -6617,18 +6742,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for disability benefits help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need disability benefits help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need disability benefits help.`
+- Assistant: A grounded 211 match is SNAP FAQ HOW TO PROTECT THE EBT CARD. The record lists 3520 Frontage Road Reedsport, OR 97467, 209 SW 4th Avenue Suite 200 Portland, OR 97204. Phone: (855) 328-6715, (541) 271-9700. Eligibility: Varies by program; Income eligibility for SNAP follows a guideline of 200% of the Federal Poverty Level (FPL) or below. Eligibility for SNAP and other benefits is determined on a case-by-case basis.. Source: https://www.211info.org/get-help/food/benefits-and-services-assistance-food-stamps-snap-recipients/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (70.54)
+- Top evidence:
+  - `service:02b582c05d666cd2` score `70.5392`: SNAP FAQ HOW TO PROTECT THE EBT CARD
+  - `service:ea585d467287a4d5` score `70.5392`: HOW TO PROTECT THE EBT CARD AND SNAP BENEFITS
+  - `page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu` score `68.748`: Benefits and Services Assistance * Food Stamps/SNAP Recipients - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress laundry services in Beaverton (PASS)
 
@@ -6839,18 +6989,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for legal aid (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need legal aid.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need legal aid.`
+- Assistant: A grounded 211 match is GENERAL LEGAL AID. The record lists 230 NE Second Avenue Suite F Hillsboro, OR 97124. Phone: (503) 640-4115, (877) 296-4076. Eligibility: Low-income individuals who are at or below 125% of the Federal Poverty Level (FPL). Source: https://gethelp.211info.org/agency/19750/15475/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (78.27)
+- Top evidence:
+  - `service:886116c15fd78132` score `78.2714`: GENERAL LEGAL AID
+  - `service:ed3bd6f2e5ca5b5b` score `77.9334`: GENERAL LEGAL AID
+  - `service:3694ab25654f4b81` score `75.8518`: GENERAL LEGAL AID
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress ID replacement help in Hillsboro (PASS)
 
@@ -7061,18 +7236,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for senior meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need senior meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need senior meals.`
+- Assistant: A grounded 211 match is CARE FACILITIES AND SENIOR HOUSING. The record lists 5240 NE Elam Young Parkway Suite 300 Hillsboro, OR 97124. Phone: (503) 846-3060. Eligibility: Varies by service. Source: https://www.211info.org/agency/9226/6815/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (54.58)
+- Top evidence:
+  - `service:33a0c02e2f3ac40a` score `54.584`: CARE FACILITIES AND SENIOR HOUSING
+  - `service:3e6d01012573fc89` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:cf214c29c2d9d13a` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress youth day center in Hillsboro (PASS)
 
@@ -7283,18 +7483,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for eviction prevention (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need eviction prevention.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need eviction prevention.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM. The record lists location not listed in this record. Phone: (503) 222-5555, (503) 226-3099. Eligibility: Household with any type of eviction notice for non-payment of rent (72 hour, 10 day, 30 day, court ordered, notice of restitution). Source: https://gethelp.211info.org/agency/2013/25595/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (94.53)
+- Top evidence:
+  - `service:6f7a5b8f93e42931` score `94.5254`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:5baf40645f0369dd` score `84.2449`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:bca29fac3dc200d0` score `70.6924`: FORECLOSURE AVOIDANCE AND EVICTION PREVENTION
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress utility assistance in Clackamas County (PASS)
 
@@ -7505,18 +7730,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for employment help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need employment help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need employment help.`
+- Assistant: A grounded 211 match is CLACKAMAS COUNTY VETERANS EMPLOYMENT PROGRAM. The record lists 821 Main Street Oregon City, OR 97045. Phone: (503) 650-4678. Eligibility: Veterans who have served in a war, or have recently separated from service, have service-connected disabilities, or have significant barriers to employment.. Source: https://www.211info.org/agency/995/21371/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (76.61)
+- Top evidence:
+  - `service:3af525274aceaedb` score `76.6088`: CLACKAMAS COUNTY VETERANS EMPLOYMENT PROGRAM
+  - `page:bafkreiaotjijhrkjshavcqemq5lwy2unu6zhasx4rjbnu4vjceblrbucgi` score `57.5262`: CLACKAMAS COUNTY VETERANS EMPLOYMENT PROGRAM - 211info
+  - `service:77801dbfae971c49` score `56.9129`: CHILDREN FAMILY & COMMUNITY CONNECTIONS FOR CLACKAMAS COUNTY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress veteran housing help in Clackamas County (PASS)
 
@@ -7727,18 +7977,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for community meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need community meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need community meals.`
+- Assistant: A grounded 211 match is UNION GOSPEL MISSION OF SALEM MEN'S. The record lists location not listed in this record. Phone: (503) 362-3983. Eligibility: Men age 18 and older and men age 18 and older with minor children who are homeless. Source: https://www.211info.org/get-help/food/community-meals-homeless-men/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (60.87)
+- Top evidence:
+  - `service:ae4a0e9f42786e10` score `60.8675`: UNION GOSPEL MISSION OF SALEM MEN'S
+  - `service:d8559ced93d0f936` score `53.0955`: COMMUNITY MEALS AND PANTRY
+  - `service:0420159846f1dd26` score `48.1353`: COMMUNITY MEALS AND PANTRY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress rent assistance in Salem (PASS)
 
@@ -7949,18 +8224,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for diapers (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need diapers.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need diapers.`
+- Assistant: A grounded 211 match is DIAPERS. The record lists 3050 Game Farm Road Springfield, OR 97478. Phone: (541) 221-0824. Eligibility: OHP, WIC, or SNAP recipients. Source: https://www.211info.org/agency/24393/20535/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.37)
+- Top evidence:
+  - `service:72a4239cdad3e299` score `75.3737`: DIAPERS
+  - `service:c196660a779416f8` score `70.3811`: EMERGENCY DIAPER CLOSET
+  - `service:25f3554514a1b499` score `70.1359`: PDX DIAPER BANK DONATIONS
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress child care help in Salem (PASS)
 
@@ -8171,18 +8471,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for cooling center (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need cooling center.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need cooling center.`
+- Assistant: A grounded 211 match is Extreme Heat Cooling Centers - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/search/97701/100/?search_term=Extreme%20Heat%20Cooling%20Centers. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (76.98)
+- Top evidence:
+  - `page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy` score `76.9786`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i` score `75.9909`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a` score `75.5799`: Extreme Heat Cooling Centers - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress food pantry in Eugene (PASS)
 
@@ -8393,18 +8718,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for detox help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need detox help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need detox help.`
+- Assistant: A grounded 211 match is MEDICAL DETOX AND CLINICALLY MANAGED DETOX. The record lists location not listed in this record. Phone: (541) 523-4049, (541) 406-4363. Eligibility: Single-parent households with children ages 0-6. Source: https://www.211info.org/agency/13274/10088/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (56.77)
+- Top evidence:
+  - `service:a80fc4c7b16e0d53` score `56.7661`: MEDICAL DETOX AND CLINICALLY MANAGED DETOX
+  - `service:5859932a69e4e47a` score `52.7279`: BUCKLEY SOBERING AND DETOX SERVICES
+  - `service:3e4063037c39ae4c` score `51.6743`: WILLAMETTE FAMILY INC BUCKLEY CENTER BUCKLEY SOBERING AND DETOX SERVICES
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress domestic violence survivor advocacy in Eugene (PASS)
 
@@ -8615,18 +8965,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for clothing help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need clothing help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need clothing help.`
+- Assistant: A grounded 211 match is EUGENE SERVICE STATION. The record lists 450 Highway 99 N Eugene, OR 97402. Phone: (541) 689-6747. Eligibility: Low-income and homeless adults without minor children. Source: https://gethelp.211info.org/agency/19761/6338/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (47.53)
+- Top evidence:
+  - `service:fbd5bccefe3a07a8` score `47.5316`: EUGENE SERVICE STATION
+  - `service:cdae73e665cd7e51` score `44.6714`: EUGENE SERVICE STATION
+  - `service:225c81db65f1ee12` score `43.5538`: CITY OF EUGENE PARKS AND RECREATION
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress warming center in Eugene (PASS)
 
@@ -8837,18 +9212,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for dental clinic (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need dental clinic.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need dental clinic.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE. The record lists 5329 NE Martin Luther King Jr Boulevard Portland, OR 97211. Phone: (503) 988-3387. Eligibility: Home visiting. Source: https://www.211info.org/get-help/health-care/prenatal-postnatal-home-visitation-programs-african-american-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (68.65)
+- Top evidence:
+  - `service:119ca1b7c61c8ad1` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:1277e7a84dfeb48e` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:96d8aa19d315c2bb` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mental health services in Medford (PASS)
 
@@ -9059,18 +9459,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for shower services (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need shower services.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need shower services.`
+- Assistant: A grounded 211 match is SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES. The record lists 3520 SE Yamhill Street Portland, OR 97214, 910 Queen Avenue SE Albany, OR 97321. Phone: (971) 202-1721, (541) 276-3418. Eligibility: Unrestricted; -Laundry vouchers: Unrestricted -Prescription assistance: Must have a written or phoned-in prescription from Walmart or Safeway -Rent assistance: Must be facing immediate eviction, potential homelessness, or experiencing homelessness -Lodging: Must be transitioning to permanent housing -Auto repairs: Must be in need of transportation to employment, medical appointment, or school. Source: https://www.211info.org/get-help/basic-needs/laundry-vouchers/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (50.42)
+- Top evidence:
+  - `service:4995f7ec89526256` score `50.4161`: SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES
+  - `service:5382d9761def72c9` score `50.4161`: SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES
+  - `service:0a101fddb9d7862a` score `45.3337`: UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mail service in Medford (PASS)
 
@@ -9281,18 +9706,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for transportation help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need transportation help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need transportation help.`
+- Assistant: A grounded 211 match is CASCADES WEST RIDE LINE. The record lists 1400 Queen Avenue SE Suite 201 Albany, OR 97322. Phone: (541) 924-8738, (541) 967-8630. Eligibility: Eligible Oregon Health Plan (OHP) Medicaid clients and InterCommunity Health Network Coordinated Care Organization members that have been qualified and appear in Cascades West Ride Line electronic eligibility files, and Samaritan Advantage Medical clients.. Source: https://gethelp.211info.org/agency/9489/7481/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (98.80)
+- Top evidence:
+  - `service:156176ac73be0658` score `98.798`: CASCADES WEST RIDE LINE
+  - `service:80bb5c1077a6fe59` score `91.8651`: CASCADES WEST RIDE LINE
+  - `page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte` score `87.2057`: Transportation - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress medical clinic in Portland (PASS)
 
@@ -9503,18 +9953,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for disability benefits help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need disability benefits help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need disability benefits help.`
+- Assistant: A grounded 211 match is SOCIAL SECURITY DISABILITY BENEFITS. The record lists 820 SW 2nd Avenue Suite 200 Portland, OR 97204. Phone: (503) 228-5222. Eligibility: Unrestricted; anyone seeking social security disability benefits. Source: https://www.211info.org/agency/18970/14515/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (76.45)
+- Top evidence:
+  - `service:87b89caa28f00960` score `76.449`: SOCIAL SECURITY DISABILITY BENEFITS
+  - `page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu` score `71.1831`: Benefits and Services Assistance * Food Stamps/SNAP Recipients - 211info
+  - `service:02b582c05d666cd2` score `70.5392`: SNAP FAQ HOW TO PROTECT THE EBT CARD
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress laundry services in Portland (PASS)
 
@@ -9725,18 +10200,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for legal aid (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need legal aid.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need legal aid.`
+- Assistant: A grounded 211 match is GENERAL LEGAL AID. The record lists location not listed in this record. Phone: (503) 581-5265, (800) 359-1845. Eligibility: Income below 125% of the Federal Poverty Level. Must live in or have a legal issue in Marion or Polk Counties.. Source: https://www.211info.org/agency/19617/15259/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.85)
+- Top evidence:
+  - `service:3694ab25654f4b81` score `75.8518`: GENERAL LEGAL AID
+  - `service:a4f4532cd4713872` score `73.0738`: GENERAL LEGAL AID
+  - `page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu` score `72.8071`: General Legal Aid - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress ID replacement help in Gresham (PASS)
 
@@ -9947,18 +10447,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for senior meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need senior meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need senior meals.`
+- Assistant: A grounded 211 match is SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER. The record lists 2331 High Lookee Warm Springs, OR 97761, 489 Water Avenue NW Albany, OR 97321. Phone: (541) 553-3313, (541) 967-7647. Eligibility: Must be an established Meals on Wheels of Linn, Benton, Lincoln participant and meet on of the following: -Age 60 and older and their spouses -Age 55 and older who identify as Native American -Age 18 and older with disabilities; Age 60 and older. Source: https://www.211info.org/get-help/food/congregate-meals-nutrition-sites-native-american-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (53.05)
+- Top evidence:
+  - `service:3e6d01012573fc89` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:cf214c29c2d9d13a` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:e93eb5db903fdd34` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress youth day center in Gresham (PASS)
 
@@ -10169,18 +10694,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for eviction prevention (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need eviction prevention.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need eviction prevention.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM. The record lists location not listed in this record. Phone: (503) 222-5555, (503) 226-3099. Eligibility: Household with any type of eviction notice for non-payment of rent (72 hour, 10 day, 30 day, court ordered, notice of restitution). Source: https://gethelp.211info.org/agency/2013/25595/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (79.04)
+- Top evidence:
+  - `service:6f7a5b8f93e42931` score `79.037`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:5baf40645f0369dd` score `71.0059`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:bca29fac3dc200d0` score `70.6924`: FORECLOSURE AVOIDANCE AND EVICTION PREVENTION
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress utility assistance in Beaverton (PASS)
 
@@ -10391,18 +10941,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for employment help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need employment help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need employment help.`
+- Assistant: A grounded 211 match is Work Clothing - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/get-help/employment/work-clothing/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (50.78)
+- Top evidence:
+  - `page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge` score `50.7751`: Work Clothing - 211info
+  - `page:bafkreidrfqevqh6pxnnaot472yywzq2iruq2dgveqkiv34qplytymrduvu` score `50.7751`: Work Clothing - 211info
+  - `page:bafkreiewrcan5xmbqdxyz7d756hv2ekyoxnqqufb6oticmbviucpnf2ndi` score `50.2786`: Work Clothing - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress veteran housing help in Beaverton (PASS)
 
@@ -10613,18 +11188,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for community meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need community meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need community meals.`
+- Assistant: A grounded 211 match is COMMUNITY MEALS AND PANTRY. The record lists 909 SW 11th Avenue Portland, OR 97205. Phone: (503) 228-7465. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/2964/2271/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (53.10)
+- Top evidence:
+  - `service:d8559ced93d0f936` score `53.0955`: COMMUNITY MEALS AND PANTRY
+  - `service:a927abbe60497dda` score `48.3337`: HILLSBORO FAMILY SHELTER
+  - `service:0420159846f1dd26` score `48.1353`: COMMUNITY MEALS AND PANTRY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress rent assistance in Hillsboro (PASS)
 
@@ -10835,18 +11435,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for diapers (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need diapers.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need diapers.`
+- Assistant: A grounded 211 match is DIAPERS. The record lists 3050 Game Farm Road Springfield, OR 97478. Phone: (541) 221-0824. Eligibility: OHP, WIC, or SNAP recipients. Source: https://www.211info.org/agency/24393/20535/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.37)
+- Top evidence:
+  - `service:72a4239cdad3e299` score `75.3737`: DIAPERS
+  - `service:c196660a779416f8` score `70.3811`: EMERGENCY DIAPER CLOSET
+  - `service:25f3554514a1b499` score `70.1359`: PDX DIAPER BANK DONATIONS
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress child care help in Hillsboro (PASS)
 
@@ -11057,18 +11682,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for cooling center (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need cooling center.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need cooling center.`
+- Assistant: A grounded 211 match is Extreme Heat Cooling Centers - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/search/97007/100/?search_term=Extreme%20Heat%20Cooling%20Centers. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (85.87)
+- Top evidence:
+  - `page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq` score `85.8716`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy` score `76.9786`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i` score `75.9909`: Extreme Heat Cooling Centers - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress food pantry in Clackamas County (PASS)
 
@@ -11279,18 +11929,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for detox help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need detox help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need detox help.`
+- Assistant: A grounded 211 match is MEDICAL DETOX AND CLINICALLY MANAGED DETOX. The record lists location not listed in this record. Phone: (541) 523-4049, (541) 406-4363. Eligibility: Single-parent households with children ages 0-6. Source: https://www.211info.org/agency/13274/10088/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (56.77)
+- Top evidence:
+  - `service:a80fc4c7b16e0d53` score `56.7661`: MEDICAL DETOX AND CLINICALLY MANAGED DETOX
+  - `service:2d63f632b46d0d29` score `48.9785`: CLACKAMAS COUNTY SHERIFF'S OFFICE CLACKAMAS COUNTY TRANSITION CENTER
+  - `service:c1be66b3f546e230` score `48.9785`: CLACKAMAS COUNTY SHERIFF'S OFFICE CLACKAMAS COUNTY TRANSITION CENTER
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress domestic violence survivor advocacy in Clackamas County (PASS)
 
@@ -11501,18 +12176,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for clothing help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need clothing help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need clothing help.`
+- Assistant: A grounded 211 match is CLACKAMAS COUNTY SHERIFF'S OFFICE CLACKAMAS COUNTY TRANSITION CENTER. The record lists 2219 Kaen Road Oregon City, OR 97045. Phone: (503) 722-6199. Eligibility: Adults with involvement in the criminal justice system. Source: https://gethelp.211info.org/get-help/diverse-populations/opioid-antidote-distribution-ex-offenders/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (48.98)
+- Top evidence:
+  - `service:2d63f632b46d0d29` score `48.9785`: CLACKAMAS COUNTY SHERIFF'S OFFICE CLACKAMAS COUNTY TRANSITION CENTER
+  - `service:c1be66b3f546e230` score `48.9785`: CLACKAMAS COUNTY SHERIFF'S OFFICE CLACKAMAS COUNTY TRANSITION CENTER
+  - `service:77801dbfae971c49` score `47.5955`: CHILDREN FAMILY & COMMUNITY CONNECTIONS FOR CLACKAMAS COUNTY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress warming center in Clackamas County (PASS)
 
@@ -11723,18 +12423,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for dental clinic (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need dental clinic.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need dental clinic.`
+- Assistant: A grounded 211 match is OREGON STATE DIVISION OF MEDICAL ASSISTANCE PROGRAMS OREGON VETERAN. The record lists 500 Summer Street NE E-49 Salem, OR 97301, 1800 15th Street Suite 100 Denver, CO 80202. Phone: (800) 699-9075, (503) 594-0837. Eligibility: Veterans and individuals who cannot pay for dental care and who are age 65 and older, have a permanent disability, or are medically compromised.; Veterans who live in Oregon and do not qualify for full OHP benefits and have household income at or below 400% federal poverty level.. Source: https://gethelp.211info.org/get-help/health-care/dental-hygiene-veterans/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (69.30)
+- Top evidence:
+  - `service:4cd6737ca6799e9a` score `69.304`: OREGON STATE DIVISION OF MEDICAL ASSISTANCE PROGRAMS OREGON VETERAN
+  - `service:119ca1b7c61c8ad1` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:1277e7a84dfeb48e` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mental health services in Salem (PASS)
 
@@ -11945,18 +12670,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for shower services (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need shower services.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need shower services.`
+- Assistant: A grounded 211 match is UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES. The record lists 1025 G Street Springfield, OR 97477, 4060 W Amazon Drive Eugene, OR 97405. Phone: (503) 362-3983, (541) 345-3628. Eligibility: Households experiencing homelessness and at least one child age 17 and younger in their care; Families with children under age 18 and pregnant women (proof of pregnancy required) who are experiencing homelessness. Source: https://www.211info.org/get-help/basic-needs/public-showers-baths-homeless-families/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (73.36)
+- Top evidence:
+  - `service:0a101fddb9d7862a` score `73.3565`: UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES
+  - `service:e8a466e479abed71` score `73.3565`: UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES
+  - `service:0f62cb5986e7ce0b` score `73.3565`: UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mail service in Salem (PASS)
 
@@ -12167,18 +12917,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for transportation help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need transportation help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need transportation help.`
+- Assistant: A grounded 211 match is CASCADES WEST RIDE LINE. The record lists 1400 Queen Avenue SE Suite 201 Albany, OR 97322. Phone: (541) 924-8738, (541) 967-8630. Eligibility: Eligible Oregon Health Plan (OHP) Medicaid clients and InterCommunity Health Network Coordinated Care Organization members that have been qualified and appear in Cascades West Ride Line electronic eligibility files, and Samaritan Advantage Medical clients.. Source: https://gethelp.211info.org/agency/9489/7481/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (98.80)
+- Top evidence:
+  - `service:156176ac73be0658` score `98.798`: CASCADES WEST RIDE LINE
+  - `service:80bb5c1077a6fe59` score `91.8651`: CASCADES WEST RIDE LINE
+  - `page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte` score `87.2057`: Transportation - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress medical clinic in Eugene (PASS)
 
@@ -12389,18 +13164,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for disability benefits help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need disability benefits help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need disability benefits help.`
+- Assistant: A grounded 211 match is PLAZA DE NUESTRA COMUNIDAD EUGENE MAIN OFFICE MOBILE FOOD PANTY AND BENEFITS ASSISTANCE. The record lists 195 W 12th Avenue Eugene, OR 97401, 565 12th Street Astoria, OR 97103. Phone: (541) 687-2667, (503) 325-4547. Eligibility: Unrestricted; Unrestricted; primary focus is Latino and immigrant population. Source: https://www.211info.org/get-help/food/food-pantries-hispanic-latino-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.92)
+- Top evidence:
+  - `service:8969865724a665f2` score `75.9179`: PLAZA DE NUESTRA COMUNIDAD EUGENE MAIN OFFICE MOBILE FOOD PANTY AND BENEFITS ASSISTANCE
+  - `service:02b582c05d666cd2` score `70.5392`: SNAP FAQ HOW TO PROTECT THE EBT CARD
+  - `service:ea585d467287a4d5` score `70.5392`: HOW TO PROTECT THE EBT CARD AND SNAP BENEFITS
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress laundry services in Eugene (PASS)
 
@@ -12611,18 +13411,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for legal aid (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need legal aid.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need legal aid.`
+- Assistant: A grounded 211 match is General Legal Aid - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://gethelp.211info.org/get-help/legal-public-safety/general-legal-aid/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (77.09)
+- Top evidence:
+  - `page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu` score `77.0869`: General Legal Aid - 211info
+  - `page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha` score `76.7341`: General Legal Aid - 211info
+  - `service:3694ab25654f4b81` score `75.8518`: GENERAL LEGAL AID
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress ID replacement help in Medford (PASS)
 
@@ -12833,18 +13658,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for senior meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need senior meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need senior meals.`
+- Assistant: A grounded 211 match is SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER. The record lists 2331 High Lookee Warm Springs, OR 97761, 489 Water Avenue NW Albany, OR 97321. Phone: (541) 553-3313, (541) 967-7647. Eligibility: Must be an established Meals on Wheels of Linn, Benton, Lincoln participant and meet on of the following: -Age 60 and older and their spouses -Age 55 and older who identify as Native American -Age 18 and older with disabilities; Age 60 and older. Source: https://www.211info.org/get-help/food/congregate-meals-nutrition-sites-native-american-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (53.05)
+- Top evidence:
+  - `service:3e6d01012573fc89` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:cf214c29c2d9d13a` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:e93eb5db903fdd34` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress youth day center in Medford (PASS)
 
@@ -13055,18 +13905,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for eviction prevention (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need eviction prevention.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need eviction prevention.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM. The record lists location not listed in this record. Phone: (503) 222-5555, (503) 226-3099. Eligibility: Household with any type of eviction notice for non-payment of rent (72 hour, 10 day, 30 day, court ordered, notice of restitution). Source: https://gethelp.211info.org/agency/2013/25595/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (79.04)
+- Top evidence:
+  - `service:6f7a5b8f93e42931` score `79.037`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:5baf40645f0369dd` score `71.0059`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:bca29fac3dc200d0` score `70.6924`: FORECLOSURE AVOIDANCE AND EVICTION PREVENTION
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress utility assistance in Portland (PASS)
 
@@ -13277,18 +14152,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for employment help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need employment help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need employment help.`
+- Assistant: A grounded 211 match is EASTERSEALS OREGON PORTLAND SENIOR COMMUNITY SERVICE EMPLOYMENT PROGRAM. The record lists 237 NE Broadway Street Suite 100 Portland, OR 97232. Phone: (503) 222-8500. Eligibility: -Ages 55 and older, unemployed, and income for the last 6 months must be below 125% of the federal poverty guidelines. Social Security benefits and some other incomes do not count towards income. -Be unemployed and willing to obtain competitive employment -Priority given to veterans, spouses of veterans, homeless or at-risk of becoming homeless, and people with disabilities. Source: https://www.211info.org/get-help/diverse-populations/comprehensive-job-assistance-centers-older-adults/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (68.13)
+- Top evidence:
+  - `service:aaf8de3f37e4469a` score `68.1299`: EASTERSEALS OREGON PORTLAND SENIOR COMMUNITY SERVICE EMPLOYMENT PROGRAM
+  - `service:e40ceb0a0e58d31b` score `68.1299`: EASTERSEALS OREGON PORTLAND SENIOR COMMUNITY SERVICE EMPLOYMENT PROGRAM
+  - `page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge` score `54.8981`: Work Clothing - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress veteran housing help in Portland (PASS)
 
@@ -13499,18 +14399,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for community meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need community meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need community meals.`
+- Assistant: A grounded 211 match is CITY OF GRESHAM. The record lists 1333 NW Eastman Parkway Gresham, OR 97030. Phone: (503) 618-3000, (503) 823-3333. Eligibility: Residents of City of Gresham. Source: https://gethelp.211info.org/agency/2448/1857/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (55.35)
+- Top evidence:
+  - `service:d968ced621aea83d` score `55.3542`: CITY OF GRESHAM
+  - `service:d7abe58ca7495460` score `54.6662`: CITY OF GRESHAM POLICE DEPARTMENT
+  - `service:d8559ced93d0f936` score `53.0955`: COMMUNITY MEALS AND PANTRY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress rent assistance in Gresham (PASS)
 
@@ -13721,18 +14646,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for diapers (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need diapers.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need diapers.`
+- Assistant: A grounded 211 match is DIAPERS. The record lists 3050 Game Farm Road Springfield, OR 97478. Phone: (541) 221-0824. Eligibility: OHP, WIC, or SNAP recipients. Source: https://www.211info.org/agency/24393/20535/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.37)
+- Top evidence:
+  - `service:72a4239cdad3e299` score `75.3737`: DIAPERS
+  - `service:c196660a779416f8` score `70.3811`: EMERGENCY DIAPER CLOSET
+  - `service:25f3554514a1b499` score `70.1359`: PDX DIAPER BANK DONATIONS
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress child care help in Gresham (PASS)
 
@@ -13943,18 +14893,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for cooling center (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need cooling center.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need cooling center.`
+- Assistant: A grounded 211 match is Extreme Heat Cooling Centers - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/search/97701/100/?search_term=Extreme%20Heat%20Cooling%20Centers. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (76.98)
+- Top evidence:
+  - `page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy` score `76.9786`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i` score `75.9909`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a` score `75.5799`: Extreme Heat Cooling Centers - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress food pantry in Beaverton (PASS)
 
@@ -14165,18 +15140,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for detox help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need detox help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need detox help.`
+- Assistant: A grounded 211 match is MEDICAL DETOX AND CLINICALLY MANAGED DETOX. The record lists location not listed in this record. Phone: (541) 523-4049, (541) 406-4363. Eligibility: Single-parent households with children ages 0-6. Source: https://www.211info.org/agency/13274/10088/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (56.77)
+- Top evidence:
+  - `service:a80fc4c7b16e0d53` score `56.7661`: MEDICAL DETOX AND CLINICALLY MANAGED DETOX
+  - `page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy` score `50.7645`: Detoxification - 211info
+  - `page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui` score `50.7645`: Detoxification - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress domestic violence survivor advocacy in Beaverton (PASS)
 
@@ -14387,18 +15387,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for clothing help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need clothing help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need clothing help.`
+- Assistant: A grounded 211 match is GSM BEAVERTON GROUPS AND CLASSES. The record lists 7929 SW Cirrus Drive Beaverton, OR 97008. Phone: (503) 644-2339. Eligibility: Unrestricted. Source: https://www.211info.org/agency/54/19282/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (42.75)
+- Top evidence:
+  - `service:7a5cca37934277c2` score `42.7491`: GSM BEAVERTON GROUPS AND CLASSES
+  - `service:fd3b16d707204ad2` score `42.7491`: VIRGINIA GARCIA MEMORIAL HEALTH CENTER BEAVERTON HIGH SCHOOL SBHC SCHOOL BASED HEALTH CENTER
+  - `service:0de8e3b5ff9b859a` score `37.8423`: CLOTHING AND DIAPER BANK
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress warming center in Beaverton (PASS)
 
@@ -14609,18 +15634,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for dental clinic (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need dental clinic.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need dental clinic.`
+- Assistant: A grounded 211 match is PACIFIC UNIVERSITY PACIFIC EYE CLINIC HILLSBORO PACIFIC. The record lists 120 minutes. 222 SE 8th Avenue Suite 110 Hillsboro, OR 97123, 450 Tatone Street Boardman, OR 97818. Phone: (503) 352-7300, (541) 481-5444. Eligibility: Unrestricted; Age 16 and older who meet income guidelines. Source: https://gethelp.211info.org/get-help/health-care/eye-care/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (81.92)
+- Top evidence:
+  - `service:11c8cb54e283cb73` score `81.9243`: PACIFIC UNIVERSITY PACIFIC EYE CLINIC HILLSBORO PACIFIC
+  - `service:ae7950a80cfa3f78` score `81.9243`: PACIFIC UNIVERSITY PACIFIC EYE CLINIC HILLSBORO PACIFIC
+  - `service:176623b9d4cfda18` score `71.4972`: DENTAL CLINIC
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mental health services in Hillsboro (PASS)
 
@@ -14831,18 +15881,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for shower services (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need shower services.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need shower services.`
+- Assistant: A grounded 211 match is SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES. The record lists 3520 SE Yamhill Street Portland, OR 97214, 910 Queen Avenue SE Albany, OR 97321. Phone: (971) 202-1721, (541) 276-3418. Eligibility: Unrestricted; -Laundry vouchers: Unrestricted -Prescription assistance: Must have a written or phoned-in prescription from Walmart or Safeway -Rent assistance: Must be facing immediate eviction, potential homelessness, or experiencing homelessness -Lodging: Must be transitioning to permanent housing -Auto repairs: Must be in need of transportation to employment, medical appointment, or school. Source: https://www.211info.org/get-help/basic-needs/laundry-vouchers/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (50.42)
+- Top evidence:
+  - `service:4995f7ec89526256` score `50.4161`: SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES
+  - `service:5382d9761def72c9` score `50.4161`: SUNNYSIDE SHOWER PROJECT SUNNYSIDE METHODIST CHRUCH SHOWERS AND HYGIENE SERVICES
+  - `service:0a101fddb9d7862a` score `45.3337`: UNION GOSPEL MISSION OF SALEM MEN'S MISSION SHOWER FACILITIES
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mail service in Hillsboro (PASS)
 
@@ -15053,18 +16128,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for transportation help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need transportation help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need transportation help.`
+- Assistant: A grounded 211 match is CASCADES WEST RIDE LINE. The record lists 1400 Queen Avenue SE Suite 201 Albany, OR 97322. Phone: (541) 924-8738, (541) 967-8630. Eligibility: Eligible Oregon Health Plan (OHP) Medicaid clients and InterCommunity Health Network Coordinated Care Organization members that have been qualified and appear in Cascades West Ride Line electronic eligibility files, and Samaritan Advantage Medical clients.. Source: https://gethelp.211info.org/agency/9489/7481/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (100.65)
+- Top evidence:
+  - `service:156176ac73be0658` score `100.6473`: CASCADES WEST RIDE LINE
+  - `service:80bb5c1077a6fe59` score `91.8651`: CASCADES WEST RIDE LINE
+  - `page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte` score `87.2057`: Transportation - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress medical clinic in Clackamas County (PASS)
 
@@ -15275,18 +16375,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for disability benefits help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Clackamas County and need disability benefits help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Clackamas County and need disability benefits help.`
+- Assistant: A grounded 211 match is WASHINGTON COUNTY DISABILITY AGING AND VETERAN SERVICES SENIOR HEALTH INSURANCE BENEFITS ASSISTANCE. The record lists 5240 NE Elam Young Parkway Suite 300 Hillsboro, OR 97124, 1 West Main Street Suite 303 Medford, OR 97501. Phone: (503) 846-3094, (541) 857-7780. Eligibility: Individuals with Medicare and their family members or caregivers; Veterans or dependents of veterans, with a focus on those with disabilities. Source: https://gethelp.211info.org/get-help/health-care/medicare-information-counseling/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (73.92)
+- Top evidence:
+  - `service:59169fe563af08b7` score `73.9152`: WASHINGTON COUNTY DISABILITY AGING AND VETERAN SERVICES SENIOR HEALTH INSURANCE BENEFITS ASSISTANCE
+  - `service:6cc3b66978eab7fc` score `73.9152`: WASHINGTON COUNTY DISABILITY AGING AND VETERAN SERVICES SENIOR HEALTH INSURANCE BENEFITS ASSISTANCE
+  - `page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu` score `71.8791`: Benefits and Services Assistance * Food Stamps/SNAP Recipients - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress laundry services in Clackamas County (PASS)
 
@@ -15497,18 +16622,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for legal aid (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need legal aid.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need legal aid.`
+- Assistant: A grounded 211 match is GENERAL LEGAL AID. The record lists 280 Liberty Street Suite 200 Salem, OR 97301. Phone: (503) 485-0696. Eligibility: Low-income individuals who are at or below 125% of the Federal Poverty Level (FPL). Source: https://gethelp.211info.org/agency/19752/15475/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (95.93)
+- Top evidence:
+  - `service:799e6ab996caa563` score `95.9298`: GENERAL LEGAL AID
+  - `service:1c2165c5293480a3` score `89.1121`: LEGAL AID SERVICES OF OREGON SALEM FARMWORKER OFFICE FARMWORKER PROGRAM
+  - `service:252041b98d8d25e0` score `89.1121`: LEGAL AID SERVICES OF OREGON SALEM FARMWORKER OFFICE FARMWORKER PROGRAM
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress ID replacement help in Salem (PASS)
 
@@ -15719,18 +16869,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for senior meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Salem and need senior meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Salem and need senior meals.`
+- Assistant: A grounded 211 match is UNION GOSPEL MISSION OF SALEM MEN'S. The record lists location not listed in this record. Phone: (503) 362-3983. Eligibility: Men age 18 and older and men age 18 and older with minor children who are homeless. Source: https://www.211info.org/get-help/food/community-meals-homeless-men/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (59.54)
+- Top evidence:
+  - `service:ae4a0e9f42786e10` score `59.5381`: UNION GOSPEL MISSION OF SALEM MEN'S
+  - `service:3e6d01012573fc89` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+  - `service:cf214c29c2d9d13a` score `53.0464`: SENIOR CENTERS JEFFERSON COUNTY WARM SPRINGS SENIOR WELLNESS CENTER SENIOR CENTER
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress youth day center in Salem (PASS)
 
@@ -15941,18 +17116,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for eviction prevention (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need eviction prevention.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need eviction prevention.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM. The record lists location not listed in this record. Phone: (503) 222-5555, (503) 226-3099. Eligibility: Household with any type of eviction notice for non-payment of rent (72 hour, 10 day, 30 day, court ordered, notice of restitution). Source: https://gethelp.211info.org/agency/2013/25595/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (79.04)
+- Top evidence:
+  - `service:6f7a5b8f93e42931` score `79.037`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:5baf40645f0369dd` score `71.0059`: MULTNOMAH COUNTY EVICTION PREVENTION PROGRAM
+  - `service:bca29fac3dc200d0` score `70.6924`: FORECLOSURE AVOIDANCE AND EVICTION PREVENTION
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress utility assistance in Eugene (PASS)
 
@@ -16163,18 +17363,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for employment help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Eugene and need employment help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Eugene and need employment help.`
+- Assistant: A grounded 211 match is Work Clothing - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/get-help/employment/work-clothing/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (54.44)
+- Top evidence:
+  - `page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge` score `54.4373`: Work Clothing - 211info
+  - `page:bafkreidrfqevqh6pxnnaot472yywzq2iruq2dgveqkiv34qplytymrduvu` score `54.4373`: Work Clothing - 211info
+  - `page:bafkreiewrcan5xmbqdxyz7d756hv2ekyoxnqqufb6oticmbviucpnf2ndi` score `53.9409`: Work Clothing - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress veteran housing help in Eugene (PASS)
 
@@ -16385,18 +17610,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for community meals (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need community meals.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need community meals.`
+- Assistant: A grounded 211 match is COMMUNITY MEALS AND PANTRY. The record lists 909 SW 11th Avenue Portland, OR 97205. Phone: (503) 228-7465. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/2964/2271/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (53.10)
+- Top evidence:
+  - `service:d8559ced93d0f936` score `53.0955`: COMMUNITY MEALS AND PANTRY
+  - `service:0420159846f1dd26` score `48.1353`: COMMUNITY MEALS AND PANTRY
+  - `page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze` score `45.8978`: Congregate Meals/Nutrition Sites * Native American Community - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress rent assistance in Medford (PASS)
 
@@ -16607,18 +17857,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for diapers (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need diapers.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need diapers.`
+- Assistant: A grounded 211 match is DIAPERS. The record lists 3050 Game Farm Road Springfield, OR 97478. Phone: (541) 221-0824. Eligibility: OHP, WIC, or SNAP recipients. Source: https://www.211info.org/agency/24393/20535/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (75.37)
+- Top evidence:
+  - `service:72a4239cdad3e299` score `75.3737`: DIAPERS
+  - `service:c196660a779416f8` score `70.3811`: EMERGENCY DIAPER CLOSET
+  - `service:25f3554514a1b499` score `70.1359`: PDX DIAPER BANK DONATIONS
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress child care help in Medford (PASS)
 
@@ -16829,18 +18104,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for cooling center (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Medford and need cooling center.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Medford and need cooling center.`
+- Assistant: A grounded 211 match is Extreme Heat Cooling Centers - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/search/97701/100/?search_term=Extreme%20Heat%20Cooling%20Centers. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (76.98)
+- Top evidence:
+  - `page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy` score `76.9786`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i` score `75.9909`: Extreme Heat Cooling Centers - 211info
+  - `page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a` score `75.5799`: Extreme Heat Cooling Centers - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress food pantry in Portland (PASS)
 
@@ -17051,18 +18351,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for detox help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need detox help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need detox help.`
+- Assistant: A grounded 211 match is MEDICAL DETOX AND CLINICALLY MANAGED DETOX. The record lists location not listed in this record. Phone: (541) 523-4049, (541) 406-4363. Eligibility: Single-parent households with children ages 0-6. Source: https://www.211info.org/agency/13274/10088/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (56.77)
+- Top evidence:
+  - `service:a80fc4c7b16e0d53` score `56.7661`: MEDICAL DETOX AND CLINICALLY MANAGED DETOX
+  - `service:45707f0c70045863` score `53.913`: DETOX SERVICES
+  - `page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy` score `46.6976`: Detoxification - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress domestic violence survivor advocacy in Portland (PASS)
 
@@ -17273,18 +18598,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for clothing help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Portland and need clothing help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Portland and need clothing help.`
+- Assistant: A grounded 211 match is PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA. The record lists 3905 SE 91st Avenue Portland, OR 97266, 817 S 10th Street Coos Bay, OR 97420. Phone: (503) 916-5100, (541) 267-3104. Eligibility: Ages 0-21 and their families who are experiencing homelessness; Food pantry: Families with children within the NCSD boundries All other. Source: https://gethelp.211info.org/get-help/foster-families/school-clothing/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (48.09)
+- Top evidence:
+  - `service:30661e4b59d224ae` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+  - `service:4726b554e40e4c77` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+  - `service:8a834cdd8d8ceba3` score `48.0942`: PORTLAND PUBLIC SCHOOLS BENSON POLYTECHNIC HIGH SCHOOL AT MARSHALL CAMPUS PTA
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress warming center in Portland (PASS)
 
@@ -17495,18 +18845,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for dental clinic (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need dental clinic.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need dental clinic.`
+- Assistant: A grounded 211 match is MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE. The record lists 5329 NE Martin Luther King Jr Boulevard Portland, OR 97211. Phone: (503) 988-3387. Eligibility: Home visiting. Source: https://www.211info.org/get-help/health-care/prenatal-postnatal-home-visitation-programs-african-american-community/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (68.65)
+- Top evidence:
+  - `service:119ca1b7c61c8ad1` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:1277e7a84dfeb48e` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+  - `service:96d8aa19d315c2bb` score `68.6548`: MULTNOMAH COUNTY HEALTH DEPARTMENT NORTH EAST HEALTH CENTER AND DENTAL CLINIC HEALTHY BIRTH INITIATIVE
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mental health services in Gresham (PASS)
 
@@ -17717,18 +19092,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for shower services (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Gresham and need shower services.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Gresham and need shower services.`
+- Assistant: A grounded 211 match is CITY OF GRESHAM. The record lists 1333 NW Eastman Parkway Gresham, OR 97030. Phone: (503) 618-3000, (503) 823-3333. Eligibility: Residents of City of Gresham. Source: https://gethelp.211info.org/agency/2448/1857/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (54.97)
+- Top evidence:
+  - `service:d968ced621aea83d` score `54.966`: CITY OF GRESHAM
+  - `service:d7abe58ca7495460` score `53.4315`: CITY OF GRESHAM POLICE DEPARTMENT
+  - `service:9800cfa31b9bccb1` score `50.756`: OREGON DEPARTMENT OF HUMAN SERVICES CAF MULTNOMAH COUNTY GRESHAM SELF-SUFFICIENCY
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress mail service in Gresham (PASS)
 
@@ -17939,18 +19339,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for transportation help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need transportation help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need transportation help.`
+- Assistant: A grounded 211 match is CASCADES WEST RIDE LINE. The record lists 1400 Queen Avenue SE Suite 201 Albany, OR 97322. Phone: (541) 924-8738, (541) 967-8630. Eligibility: Eligible Oregon Health Plan (OHP) Medicaid clients and InterCommunity Health Network Coordinated Care Organization members that have been qualified and appear in Cascades West Ride Line electronic eligibility files, and Samaritan Advantage Medical clients.. Source: https://gethelp.211info.org/agency/9489/7481/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (98.80)
+- Top evidence:
+  - `service:156176ac73be0658` score `98.798`: CASCADES WEST RIDE LINE
+  - `service:80bb5c1077a6fe59` score `91.8651`: CASCADES WEST RIDE LINE
+  - `page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte` score `87.2057`: Transportation - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress medical clinic in Beaverton (PASS)
 
@@ -18161,18 +19586,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for disability benefits help (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Beaverton and need disability benefits help.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Beaverton and need disability benefits help.`
+- Assistant: A grounded 211 match is SNAP FAQ HOW TO PROTECT THE EBT CARD. The record lists 3520 Frontage Road Reedsport, OR 97467, 209 SW 4th Avenue Suite 200 Portland, OR 97204. Phone: (855) 328-6715, (541) 271-9700. Eligibility: Varies by program; Income eligibility for SNAP follows a guideline of 200% of the Federal Poverty Level (FPL) or below. Eligibility for SNAP and other benefits is determined on a case-by-case basis.. Source: https://www.211info.org/get-help/food/benefits-and-services-assistance-food-stamps-snap-recipients/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (70.54)
+- Top evidence:
+  - `service:02b582c05d666cd2` score `70.5392`: SNAP FAQ HOW TO PROTECT THE EBT CARD
+  - `service:ea585d467287a4d5` score `70.5392`: HOW TO PROTECT THE EBT CARD AND SNAP BENEFITS
+  - `page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu` score `68.748`: Benefits and Services Assistance * Food Stamps/SNAP Recipients - 211info
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress laundry services in Beaverton (PASS)
 
@@ -18383,18 +19833,43 @@ Turn 2:
   - `page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y` score `116.6908`: Rental Application Fee Payment Assistance - 211info
   - `service:1b6e1c18557fb6a5` score `98.5438`: EMERGENCY RENTAL ASSISTANCE
 
-### Stress out-of-domain handoff (PASS)
+### Stress deeper guided flow for legal aid (PASS)
 
-- Expected routes: `['live_agent']`
-- Actual routes: `['live_agent']`
+- Expected routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
+- Actual routes: `['clarifying_prompt', 'grounded_211_answer', 'live_agent']`
 
 Turn 1:
-- User: Can you debug my CUDA kernel?
+- User: I need help but I do not know where to start.
+- Route: `clarifying_prompt`
+- Retrieval query: `I need help but I do not know where to start.`
+- Assistant: I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?
+- Reasons: user is asking for broad help without a service type
+- Top evidence:
+  - `service:e8399a8259fb5c21` score `54.0407`: Get to Know 211info: Erick Maddox, Chair, Board of Directors
+  - `service:8cff3ea3d8ce0793` score `50.1087`: HEAD START LOCATOR
+  - `service:28acd183a54cc8a5` score `47.8684`: Get to Know 211info: Piseth Pich, Chair, Board of Directors
+
+Turn 2:
+- User: I am in Hillsboro and need legal aid.
+- Route: `grounded_211_answer`
+- Retrieval query: `I am in Hillsboro and need legal aid.`
+- Assistant: A grounded 211 match is GENERAL LEGAL AID. The record lists 230 NE Second Avenue Suite F Hillsboro, OR 97124. Phone: (503) 640-4115, (877) 296-4076. Eligibility: Low-income individuals who are at or below 125% of the Federal Poverty Level (FPL). Source: https://gethelp.211info.org/agency/19750/15475/. Confirm details before traveling, since service availability can change.
+- Reasons: strong local 211 retrieval score (78.27)
+- Top evidence:
+  - `service:886116c15fd78132` score `78.2714`: GENERAL LEGAL AID
+  - `service:ed3bd6f2e5ca5b5b` score `77.9334`: GENERAL LEGAL AID
+  - `service:3694ab25654f4b81` score `75.8518`: GENERAL LEGAL AID
+
+Turn 3:
+- User: Can I talk to a person about this?
 - Route: `live_agent`
-- Retrieval query: `Can you debug my CUDA kernel?`
+- Retrieval query: `Can I talk to a person about this?`
 - Assistant: I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact.
-- Reasons: request is outside 211 service navigation
-- Top evidence: none
+- Reasons: user explicitly requested a human/live agent
+- Top evidence:
+  - `service:2483a54d7c1a5a73` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:9f1278d91afb2484` score `30.0593`: IN PERSON TAX ASSISTANCE
+  - `service:f198b7d9146a19ac` score `30.0593`: IN PERSON TAX ASSISTANCE
 
 ### Stress ID replacement help in Hillsboro (PASS)
 

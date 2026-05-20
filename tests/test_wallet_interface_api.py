@@ -3434,6 +3434,73 @@ def test_indextts_proxy_caches_config_fn_index_and_default_reference(monkeypatch
     assert calls == {"config": 1, "join": 2, "upload": 1}
 
 
+def test_indextts_spoken_text_normalizes_numbers_and_address_abbreviations() -> None:
+    assert wallet_api_module._normalize_indextts_spoken_text("Call 911, then ask 211-ai.") == (
+        "Call nine one one, then ask two one one AI."
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text("Meet at SE 32nd ave, apt #4.") == (
+        "Meet at South East thirty second Avenue, Apartment 4."
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text("Shelter: S.E. 82nd Ave Ste 10") == (
+        "Shelter: South East eighty second Avenue Suite 10"
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text("Food help near N.W. 23rd Pl and SW 4th St.") == (
+        "Food help near North West twenty third Place and South West fourth Street."
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Source: https://www.211info.org/agency/1439/14182/. Confirm details before traveling."
+    ) == "Confirm details before traveling."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Visit https://gethelp.211info.org/get-help/food/ or call 211."
+    ) == "Visit the two one one info website or call two one one."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Visit website."
+    ) == "Visit website."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "A grounded 211 match is FOOD PANTRY. Source: https://www.211info.org/agency/1439/14182/. Confirm details before traveling."
+    ) == "I found FOOD PANTRY. Confirm details before traveling."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "A grounded 211 match is EYE CLINIC. The record lists 120 minutes. 222 SE 8th Avenue Suite 110 Hillsboro, OR 97123. Phone: (503) 352-7300."
+    ) == "I found EYE CLINIC. The address is 222 South East eighth Avenue Suite 110 Hillsboro, OR 97123. Phone: (503) 352-7300."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "The record lists latitude: 45.5152 longitude: -122.6784. Source: https://example.org/a."
+    ) == ""
+
+
+def test_indextts_proxy_sends_normalized_speech_text(monkeypatch) -> None:
+    wallet_api_module._INDEXTTS_CONFIG_CACHE.clear()
+    wallet_api_module._INDEXTTS_FN_INDEX_CACHE.clear()
+    wallet_api_module._INDEXTTS_REFERENCE_CACHE.clear()
+    queued_payloads: list[Mapping[str, object]] = []
+
+    def fake_http_json(method: str, url: str, payload: Mapping[str, object] | None = None) -> dict[str, object]:
+        if url.endswith("/config"):
+            return {"dependencies": [{"id": 17, "api_name": "/gen_single"}]}
+        if url.endswith("/gradio_api/queue/join"):
+            assert payload is not None
+            queued_payloads.append(payload)
+            return {}
+        raise AssertionError(url)
+
+    monkeypatch.setenv("WALLET_INDEXTTS_SPACE_URL", "https://example.test")
+    monkeypatch.setenv("WALLET_INDEXTTS_API_NAME", "gen_single")
+    monkeypatch.setattr(wallet_api_module, "_http_json", fake_http_json)
+    monkeypatch.setattr(
+        wallet_api_module,
+        "_gradio_upload_file",
+        lambda data, file_name, mime_type: {"path": "/tmp/abby-reference.wav", "meta": {"_type": "gradio.FileData"}, "orig_name": file_name},
+    )
+    monkeypatch.setattr(wallet_api_module, "_indextts_wait_for_result", lambda session_hash: {"path": "/tmp/out.wav"})
+    monkeypatch.setattr(wallet_api_module, "_fetch_gradio_file", lambda ref: (b"RIFFstubWAVE", "audio/wav"))
+
+    result = wallet_api_module._run_indextts_gradio_tts(text="Visit SE 32nd ave or call 211.")
+
+    assert result["text"] == "Visit South East thirty second Avenue or call two one one."
+    assert result["originalText"] == "Visit SE 32nd ave or call 211."
+    assert queued_payloads
+    assert queued_payloads[0]["data"][2] == "Visit South East thirty second Avenue or call two one one."
+
+
 def test_indextts_voice_reply_generates_llm_text_before_tts(monkeypatch) -> None:
     from ipfs_datasets_py import llm_router
 

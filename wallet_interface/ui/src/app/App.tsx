@@ -12,30 +12,34 @@ import {
   FileUp,
   HeartHandshake,
   History,
-      relationship: "",
-      email: "",
+  Home,
+  KeyRound,
   Landmark,
   LockKeyhole,
   LogOut,
   Menu,
   Mic,
+  MessageSquare,
   RefreshCw,
   Save,
   Search,
   Settings as SettingsIcon,
+  ShieldCheck,
   Upload,
   UsersRound,
+  Wrench,
 } from "lucide-react";
 import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
-        request.direction === "shelter_to_user" && request.status === "pending" && requestBelongsToCurrentUser(request)
+import type { AgentChatMode } from "../components/agent/AgentChatDrawer";
+import { primeVoiceChatActivation } from "../components/agent/AgentAudioChatSurface";
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
 import { ServiceDetailScreen } from "./ServiceDetailScreen";
 import { InteractionsScreen } from "./InteractionsScreen";
 import { CalendarScreen } from "./CalendarScreen";
-import {
-  getServicePlanDocIdFromHash,
+import { getServicePlanDocIdFromHash, ServicePlanScreen, setLocationServicePlanHash } from "./ServicePlanScreen";
+import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../agent/tools/serviceDetailTools";
 import { search211Info } from "../services/graphRagService";
 import {
   getPrimaryIntakeText,
@@ -112,10 +116,6 @@ import {
   plainNonGrantedCapabilities
 } from "../services/capabilities";
 import {
-  approveAccessRequest,
-  approveThresholdApproval,
-  addBinaryDocument,
-  addTextDocument,
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
@@ -165,27 +165,23 @@ import {
   createDefaultAppState,
   defaultManagedUserDraft,
   defaultShelterChecklist,
-  disclosureScopes,
   getRouteFromHash,
   primaryRoutes,
   providerEligibilityCriteria,
   readPersistedAppState,
   secondaryRoutes,
-  serviceNeeds,
   setLocationRouteHash,
   shelterOptions,
   ShelterCasePriority,
   ShelterCaseRecord,
   ShelterCaseStatus,
-  ShelterEligibilityCriterion,
   ShelterProviderMessage,
   ShelterStaffAccount,
   ShelterUserAccount,
-  writePersistedAppState
+  writePersistedAppState,
 } from "./appState";
 import {
   detectBrowserLocale,
-  getLocaleOptionLabel,
   normalizeSiteLocale,
   readAssistantAutoTranslatePreference,
   readAssistantTranslationLocalePreference,
@@ -200,9 +196,8 @@ import {
   type SupportedLocale,
   writeAssistantAutoTranslatePreference,
   writeAssistantTranslationLocalePreference,
-  writeSiteLocalePreference,
+  writeSiteLocalePreference
 } from "../lib/localization";
-
 const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
@@ -246,7 +241,6 @@ type LoginAuthResult = {
 type ServerMagicLoginResponse = {
   channel?: string;
   contact?: string;
-  expires_at?: number;
   portal?: LoginPortal;
   valid?: boolean;
   wallet_config?: {
@@ -264,13 +258,6 @@ const routeIcons: Record<RouteId, typeof Home> = {
   calendar: CalendarClock,
   messages: MessageSquare,
   contacts: ContactRound,
-  "sharing-rules": ShieldCheck,
-  uploads: FileUp,
-  settings: SettingsIcon,
-  "social-services": HeartHandshake,
-  interactions: History,
-  shelter: UsersRound,
-  "provider-clients": ContactRound,
   "provider-cases": ClipboardCheck,
   "provider-messages": MessageSquare,
   "provider-analytics": BarChart3,
@@ -3706,45 +3693,36 @@ function ContactsScreen({
   const [draft, setDraft] = useState({
     firstName: "",
     lastName: "",
-    subject: t(siteLocale, "providerPortal.messages.defaultSubject"),
-    body: t(siteLocale, "providerPortal.messages.defaultBody")
+    relationship: "",
+    email: "",
     phone: "",
     type: "emergency_contact" as DisclosureRecipientType
   });
   const [draftScopes, setDraftScopes] = useState<DisclosureDataScope[]>([...defaultDisclosureScopes]);
-      setManagedUserUploadError(t(siteLocale, "providerPortal.operations.invalidUpload"));
+  const [editingRecipientId, setEditingRecipientId] = useState<string | null>(null);
   const [editingScopes, setEditingScopes] = useState<DisclosureDataScope[]>([]);
   const [requestedShelter, setRequestedShelter] = useState(shelterOptions[0]);
   const [requestedPrecinct, setRequestedPrecinct] = useState(LOCAL_PRECINCT_OPTIONS[0]);
 
   const userName = profile.preferredName || profile.legalName || "Abby Example";
-        goal: t(siteLocale, "providerPortal.operations.defaultCaseGoal"),
-        nextStep: t(siteLocale, "providerPortal.operations.defaultCaseNextStep"),
+  const userContact = [profile.phone, profile.email].map((item) => item.trim()).filter(Boolean).join(" / ");
   const requestBelongsToCurrentUser = (request: ShelterContactRequest) =>
     request.userName.trim().toLowerCase() === userName.trim().toLowerCase() ||
-        notes: t(siteLocale, "providerPortal.operations.defaultCaseNotes"),
+    request.userContact.trim().toLowerCase() === userContact.trim().toLowerCase();
   const userShelterRequests = contactRequests.filter(requestBelongsToCurrentUser);
   const incomingShelterNudges = contactRequests.filter(
     (request) =>
       request.direction === "shelter_to_user" && request.status === "pending" && requestBelongsToCurrentUser(request)
-      subject: t(siteLocale, "providerPortal.messages.serviceReminderSubject"),
-      body: tFormat(siteLocale, "providerPortal.messages.serviceReminderBody", {
-        client: client.preferredName || client.legalName,
-        shelter: operatorShelter,
-        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback")
-      })
+  );
+  const hasPendingRequestedShelter = contactRequests.some(
     (request) =>
+      request.direction === "user_to_shelter" &&
       request.status === "pending" &&
       request.shelterName === requestedShelter &&
       requestBelongsToCurrentUser(request)
   );
-      subject: tFormat(siteLocale, "providerPortal.messages.caseUpdateSubject", { goal: caseRecord.goal }),
-      body: tFormat(siteLocale, "providerPortal.messages.caseUpdateBody", {
-        client: client.preferredName || client.legalName,
-        shelter: operatorShelter,
-        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback"),
-        step: caseRecord.nextStep
-      })
+  const hasSavedRequestedPrecinct = recipients.some((recipient) => isLocalPrecinctRecipient(recipient, requestedPrecinct));
+  const editingRecipient = recipients.find((recipient) => recipient.id === editingRecipientId) ?? null;
 
   function addShelterRecipient(shelterName: string) {
     if (recipients.some((recipient) => recipient.type === "shelter_staff" && recipient.agencyName === shelterName)) {
@@ -6287,8 +6265,8 @@ function ShelterScreen({
   const [messageDraft, setMessageDraft] = useState({
     clientId: "",
     channel: "sms" as ShelterProviderMessage["channel"],
-    subject: "Appointment reminder",
-    body: "Reminder from your service provider: please check your Abby calendar for your next appointment."
+    subject: t(siteLocale, "providerPortal.messages.defaultSubject"),
+    body: t(siteLocale, "providerPortal.messages.defaultBody")
   });
   const [proofDraft, setProofDraft] = useState({
     clientId: "",
@@ -6449,7 +6427,7 @@ function ShelterScreen({
         name: providerProofClientLabel(proof, usersForOperatorShelter)
       }),
       detail: tFormat(siteLocale, "providerPortal.analytics.activityProofDetail", {
-        certificate: proof.publicInputs.certificate_type || proof.proofType.replace("provider_", ""),
+        certificate: providerProofTypeLabel(proof.publicInputs.certificate_type || proof.proofType.replace("provider_", ""), siteLocale),
         verifier: proof.verifier
       }),
       tone: "success" as const,
@@ -6527,7 +6505,7 @@ function ShelterScreen({
     if (!isAcceptedIdentityDocument(file)) {
       setUserDraft({ ...userDraft, photoAssetId: "" });
       setManagedUserFileDetail("");
-      setManagedUserUploadError("We can't use this file. Use JPG, PNG, WebP, or PDF.");
+      setManagedUserUploadError(t(siteLocale, "providerPortal.operations.invalidUpload"));
       return;
     }
 
@@ -6574,11 +6552,11 @@ function ShelterScreen({
         caseManagerStaffId: selectedOperator.id,
         status: "intake",
         priority: userDraft.localPrecinctNotified ? "standard" : "urgent",
-        goal: "Complete intake and service plan.",
-        nextStep: "Confirm eligibility criteria and collect consent for referrals.",
+        goal: t(siteLocale, "providerPortal.operations.defaultCaseGoal"),
+        nextStep: t(siteLocale, "providerPortal.operations.defaultCaseNextStep"),
         dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
         services: userDraft.serviceNeeds,
-        notes: "Created from assisted provider registration.",
+        notes: t(siteLocale, "providerPortal.operations.defaultCaseNotes"),
         eligibilityCriteria: ["identity_verified"],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -6685,8 +6663,12 @@ function ShelterScreen({
     setMessageDraft({
       clientId: client.id,
       channel: client.phone ? "sms" : client.email ? "email" : "in_app",
-      subject: "Service reminder",
-      body: `Hi ${client.preferredName || client.legalName}, this is ${activeProviderOperator?.displayName ?? "your service provider"} from ${operatorShelter}. Please check your Abby calendar for your next service step.`
+      subject: t(siteLocale, "providerPortal.messages.serviceReminderSubject"),
+      body: tFormat(siteLocale, "providerPortal.messages.serviceReminderBody", {
+        client: client.preferredName || client.legalName,
+        shelter: operatorShelter,
+        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback")
+      })
     });
     navigate("provider-messages");
   }
@@ -6695,8 +6677,13 @@ function ShelterScreen({
     setMessageDraft({
       clientId: client.id,
       channel: client.phone ? "sms" : client.email ? "email" : "in_app",
-      subject: `Case update: ${caseRecord.goal}`,
-      body: `Hi ${client.preferredName || client.legalName}, this is ${activeProviderOperator?.displayName ?? "your service provider"} from ${operatorShelter}. Your next step is: ${caseRecord.nextStep}`
+      subject: tFormat(siteLocale, "providerPortal.messages.caseUpdateSubject", { goal: caseRecord.goal }),
+      body: tFormat(siteLocale, "providerPortal.messages.caseUpdateBody", {
+        client: client.preferredName || client.legalName,
+        shelter: operatorShelter,
+        staff: activeProviderOperator?.displayName ?? t(siteLocale, "providerPortal.messages.senderFallback"),
+        step: caseRecord.nextStep
+      })
     });
     navigate("provider-messages");
   }
@@ -6712,7 +6699,7 @@ function ShelterScreen({
       clientName: selectedMessageClient.preferredName || selectedMessageClient.legalName,
       clientContact: contactLabelForShelterUser(selectedMessageClient, siteLocale),
       channel: messageDraft.channel,
-      subject: messageDraft.subject.trim() || "Service message",
+      subject: messageDraft.subject.trim() || t(siteLocale, "providerPortal.messages.fallbackSubject"),
       body: messageDraft.body.trim(),
       staffId: activeProviderOperator.id,
       staffName: activeProviderOperator.displayName,

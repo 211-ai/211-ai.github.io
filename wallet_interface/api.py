@@ -4624,6 +4624,326 @@ def _indextts_timeout_seconds() -> float:
         return 180.0
 
 
+_ADDRESS_DIRECTION_WORDS = {
+    "n": "North",
+    "s": "South",
+    "e": "East",
+    "w": "West",
+    "ne": "North East",
+    "nw": "North West",
+    "se": "South East",
+    "sw": "South West",
+}
+
+_STREET_SUFFIX_WORDS = {
+    "aly": "Alley",
+    "allee": "Alley",
+    "aly.": "Alley",
+    "ave": "Avenue",
+    "ave.": "Avenue",
+    "aven": "Avenue",
+    "avenu": "Avenue",
+    "avenue": "Avenue",
+    "blvd": "Boulevard",
+    "blvd.": "Boulevard",
+    "boul": "Boulevard",
+    "boulevard": "Boulevard",
+    "cir": "Circle",
+    "cir.": "Circle",
+    "circle": "Circle",
+    "ct": "Court",
+    "ct.": "Court",
+    "court": "Court",
+    "dr": "Drive",
+    "dr.": "Drive",
+    "drive": "Drive",
+    "hwy": "Highway",
+    "hwy.": "Highway",
+    "highway": "Highway",
+    "ln": "Lane",
+    "ln.": "Lane",
+    "lane": "Lane",
+    "pkwy": "Parkway",
+    "pkwy.": "Parkway",
+    "parkway": "Parkway",
+    "pl": "Place",
+    "pl.": "Place",
+    "place": "Place",
+    "rd": "Road",
+    "rd.": "Road",
+    "road": "Road",
+    "st": "Street",
+    "st.": "Street",
+    "street": "Street",
+    "ter": "Terrace",
+    "ter.": "Terrace",
+    "terrace": "Terrace",
+    "trl": "Trail",
+    "trl.": "Trail",
+    "trail": "Trail",
+    "way": "Way",
+}
+
+_UNIT_WORDS = {
+    "apt": "Apartment",
+    "apt.": "Apartment",
+    "bldg": "Building",
+    "bldg.": "Building",
+    "fl": "Floor",
+    "fl.": "Floor",
+    "ste": "Suite",
+    "ste.": "Suite",
+    "suite": "Suite",
+    "unit": "Unit",
+}
+
+_OMITTED_VOICE_FIELDS = (
+    "source",
+    "source url",
+    "url",
+    "website",
+    "link",
+    "cid",
+    "ipfs cid",
+    "hash",
+    "bundle hash",
+    "record id",
+    "schema",
+    "metadata",
+)
+
+
+def _number_to_words(value: int) -> str:
+    if value < 0 or value > 9999:
+        return str(value)
+    ones = [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
+    ]
+    tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+    if value < 20:
+        return ones[value]
+    if value < 100:
+        return tens[value // 10] if value % 10 == 0 else f"{tens[value // 10]} {ones[value % 10]}"
+    if value < 1000:
+        rest = value % 100
+        return f"{ones[value // 100]} hundred" + (f" {_number_to_words(rest)}" if rest else "")
+    rest = value % 1000
+    return f"{_number_to_words(value // 1000)} thousand" + (f" {_number_to_words(rest)}" if rest else "")
+
+
+def _ordinal_to_words(value: int) -> str:
+    irregular = {
+        1: "first",
+        2: "second",
+        3: "third",
+        4: "fourth",
+        5: "fifth",
+        6: "sixth",
+        7: "seventh",
+        8: "eighth",
+        9: "ninth",
+        10: "tenth",
+        11: "eleventh",
+        12: "twelfth",
+        13: "thirteenth",
+        14: "fourteenth",
+        15: "fifteenth",
+        16: "sixteenth",
+        17: "seventeenth",
+        18: "eighteenth",
+        19: "nineteenth",
+    }
+    tens_ordinals = {
+        20: "twentieth",
+        30: "thirtieth",
+        40: "fortieth",
+        50: "fiftieth",
+        60: "sixtieth",
+        70: "seventieth",
+        80: "eightieth",
+        90: "ninetieth",
+    }
+    if value in irregular:
+        return irregular[value]
+    if value in tens_ordinals:
+        return tens_ordinals[value]
+    if value < 100:
+        return f"{_number_to_words(value - value % 10)} {_ordinal_to_words(value % 10)}"
+    if value < 10000:
+        base = _number_to_words(value - value % 100)
+        rest = value % 100
+        return f"{base} {_ordinal_to_words(rest)}" if rest else f"{base}th"
+    return str(value)
+
+
+def _normalize_direction_token(token: str) -> str:
+    compact = re.sub(r"[^A-Za-z]", "", token).lower()
+    return _ADDRESS_DIRECTION_WORDS.get(compact, token)
+
+
+def _normalize_suffix_token(token: str) -> str:
+    return _STREET_SUFFIX_WORDS.get(token.lower(), token)
+
+
+def _domain_to_spoken_site(url: str) -> str:
+    parsed = urllib_parse.urlparse(url if re.match(r"^[a-z][a-z0-9+.-]*://", url, re.IGNORECASE) else f"https://{url}")
+    host = (parsed.netloc or parsed.path.split("/", 1)[0]).lower()
+    host = host.removeprefix("www.")
+    if not host:
+        return "the website"
+    if host in {"211info.org", "gethelp.211info.org"}:
+        return "the two one one info website"
+    first_label = host.split(".", 1)[0].replace("-", " ").strip()
+    return f"the {first_label} website" if first_label else "the website"
+
+
+def _strip_unspoken_fields(text: str) -> str:
+    spoken = str(text or "")
+    omitted_pattern = "|".join(re.escape(field) for field in sorted(_OMITTED_VOICE_FIELDS, key=len, reverse=True))
+    spoken = re.sub(
+        r"(?i)\b(?:phone|eligibility|address|location|hours|email|website)\s*:\s*[^.;]*(?:not listed|not available|unavailable|not provided)[^.;]*(?=$|[.;])",
+        " ",
+        spoken,
+    )
+    spoken = re.sub(
+        rf"(?i)(?:^|[\s.;])(?:{omitted_pattern})\s*:\s*(?:https?://\S+|www\.\S+|[^\n.;]+)(?=$|[\n.;])",
+        " ",
+        spoken,
+    )
+    spoken = re.sub(
+        r"(?i)(?:^|[.!?]\s+)[^.!?]*(?:not listed|not available|unavailable|not provided) in this record[^.!?]*[.!?]?",
+        " ",
+        spoken,
+    )
+    return re.sub(r"\s*([.;,])\s*(?:[.;,]\s*)+", r"\1 ", spoken)
+
+
+def _normalize_urls_for_speech(text: str) -> str:
+    url_pattern = r"(?i)\b(?:https?://|www\.)[^\s<>)\]]+|\b[A-Za-z0-9][A-Za-z0-9.-]*\.(?:org|com|gov|net|edu)(?:/[^\s<>)\]]*)?"
+
+    def replace_url(match: re.Match[str]) -> str:
+        raw_url = match.group(0).rstrip(".,;:")
+        trailing = match.group(0)[len(raw_url) :]
+        return f"{_domain_to_spoken_site(raw_url)}{trailing}"
+
+    return re.sub(url_pattern, replace_url, text)
+
+
+def _strip_coordinates(text: str) -> str:
+    cleaned = re.sub(r"(?i)\b(?:lat(?:itude)?|lon(?:gitude)?|lng)\s*[:=]?\s*-?\d+(?:\.\d+)?", " ", text)
+    cleaned = re.sub(r"\b-?\d{1,3}\.\d{3,}\s*,\s*-?\d{1,3}\.\d{3,}\b", " ", cleaned)
+    return cleaned
+
+
+def _normalize_record_list_sentence(text: str) -> str:
+    direction_pattern = r"(?:N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.)"
+    suffix_pattern = "|".join(sorted((re.escape(key) for key in _STREET_SUFFIX_WORDS), key=len, reverse=True))
+    address_start = re.compile(
+        rf"\b\d{{1,6}}\s+(?:(?:{direction_pattern})\s+)?(?:\d{{1,3}}(?:st|nd|rd|th)?|[A-Za-z][A-Za-z'.-]+)\s+(?:{suffix_pattern})\b",
+        re.IGNORECASE,
+    )
+
+    def replace_record_list(match: re.Match[str]) -> str:
+        listed = _strip_coordinates(match.group("listed"))
+        if re.search(r"(?i)\b(?:not listed|not available|unavailable|not provided)\b", listed):
+            return " "
+        listed = re.sub(r"(?i)\b\d+\s*(?:minute|minutes|min|mins)\b\.?\s*", " ", listed)
+        listed = re.sub(r"\s+", " ", listed).strip(" ;,.")
+        address_match = address_start.search(listed)
+        if address_match:
+            listed = listed[address_match.start() :].strip(" ;,.")
+        if not listed:
+            return " "
+        return f"The address is {listed}."
+
+    return re.sub(
+        r"(?i)\bThe record lists\s+(?P<listed>.*?)(?=\s+(?:Phone|Eligibility|Source|Confirm)\s*:| Confirm\b|$)",
+        replace_record_list,
+        text,
+    )
+
+
+def _normalize_indextts_spoken_text(text: str) -> str:
+    spoken = _strip_unspoken_fields(text)
+    spoken = _strip_coordinates(spoken)
+    spoken = _normalize_record_list_sentence(spoken)
+    spoken = _normalize_urls_for_speech(spoken)
+    spoken = re.sub(r"(?i)\ba grounded\s+211\s+match\s+is\b", "I found", spoken)
+    spoken = re.sub(r"(?i)\ba grounded\s+two one one\s+match\s+is\b", "I found", spoken)
+    spoken = re.sub(r"(?i)\bgrounded detail\b", "detail", spoken)
+    spoken = re.sub(r"(?i)\b211[\s-]?ai\b", "two one one AI", spoken)
+    spoken = re.sub(r"(?i)\b211[\s-]?info\b", "two one one info", spoken)
+    spoken = re.sub(r"(?<!\d)911(?!\d)", "nine one one", spoken)
+    spoken = re.sub(r"(?<!\d)211(?!\d)", "two one one", spoken)
+
+    direction_pattern = r"(?:N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.)"
+    suffix_pattern = "|".join(sorted((re.escape(key) for key in _STREET_SUFFIX_WORDS), key=len, reverse=True))
+
+    spoken = re.sub(
+        rf"\b(?P<direction>{direction_pattern})\s+(?P<number>\d{{1,3}})(?:st|nd|rd|th)?\s+(?P<suffix>{suffix_pattern})\b",
+        lambda match: (
+            f"{_normalize_direction_token(match.group('direction'))} "
+            f"{_ordinal_to_words(int(match.group('number')))} "
+            f"{_normalize_suffix_token(match.group('suffix'))}"
+        ),
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        rf"\b(?P<number>\d{{1,3}})(?:st|nd|rd|th)?\s+(?P<suffix>{suffix_pattern})\b",
+        lambda match: f"{_ordinal_to_words(int(match.group('number')))} {_normalize_suffix_token(match.group('suffix'))}",
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        rf"\b(?P<direction>{direction_pattern})\b(?=\s+\d)",
+        lambda match: _normalize_direction_token(match.group("direction")),
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        rf"\b(?P<suffix>{suffix_pattern})\b",
+        lambda match: _normalize_suffix_token(match.group("suffix")),
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        r"\b(?P<label>apt\.?|ste\.?|suite|unit|bldg\.?|fl\.?)\s*#?\s*(?P<unit>[A-Za-z0-9-]+)\b",
+        lambda match: f"{_UNIT_WORDS.get(match.group('label').lower(), match.group('label'))} {match.group('unit')}",
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        r"\b(?P<number>\d{1,3})(?:st|nd|rd|th)\b",
+        lambda match: _ordinal_to_words(int(match.group("number"))),
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(r"\s+([.,;:!?])", r"\1", spoken)
+    spoken = re.sub(r"(?:\.\s*){2,}", ". ", spoken)
+    spoken = re.sub(r"\s+", " ", spoken).strip(" ;,")
+    return spoken.lstrip(".,; ")
+
+
 def _indextts_headers(*, accept: str = "application/json") -> Dict[str, str]:
     headers = {"Accept": accept}
     token = (
@@ -4830,9 +5150,10 @@ def _run_indextts_gradio_tts(
 ) -> Dict[str, Any]:
     total_start = time.perf_counter()
     timings: Dict[str, int] = {}
-    prompt = str(text or "").strip()
-    if not prompt:
+    raw_prompt = str(text or "").strip()
+    if not raw_prompt:
         raise ValueError("text is required")
+    prompt = _normalize_indextts_spoken_text(raw_prompt)
     stage_start = time.perf_counter()
     config = _indextts_config()
     timings["config_ms"] = max(0, int((time.perf_counter() - stage_start) * 1000))
@@ -4878,6 +5199,7 @@ def _run_indextts_gradio_tts(
         if isinstance(uploaded_reference, Mapping)
         else "",
         "text": prompt,
+        "originalText": raw_prompt if raw_prompt != prompt else "",
         "latency": timings,
     }
 

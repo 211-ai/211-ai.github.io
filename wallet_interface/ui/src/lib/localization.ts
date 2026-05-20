@@ -674,45 +674,21 @@ type LocalizationKey =
   | "providerPortal.cases.eligible"
   | "providerPortal.cases.closed"
   | "providerPortal.cases.due"
-    "providerPortal.messages.defaultSubject": "Appointment reminder",
-    "providerPortal.messages.defaultBody": "Reminder from your service provider: please check your Abby calendar for your next appointment.",
-    "providerPortal.messages.serviceReminderSubject": "Service reminder",
-    "providerPortal.messages.serviceReminderBody": "Hi {client}, this is {staff} from {shelter}. Please check your Abby calendar for your next service step.",
-    "providerPortal.messages.caseUpdateSubject": "Case update: {goal}",
-    "providerPortal.messages.caseUpdateBody": "Hi {client}, this is {staff} from {shelter}. Your next step is: {step}",
-    "providerPortal.messages.senderFallback": "your service provider",
-    "providerPortal.messages.fallbackSubject": "Service message",
   | "providerPortal.cases.unassigned"
   | "providerPortal.cases.proofSingular"
-    "providerPortal.operations.invalidUpload": "We can't use this file. Use JPG, PNG, WebP, or PDF.",
   | "providerPortal.cases.proofPlural"
   | "providerPortal.cases.noServices"
   | "providerPortal.cases.statusField"
-    "providerPortal.operations.defaultCaseGoal": "Complete intake and service plan.",
-    "providerPortal.operations.defaultCaseNextStep": "Confirm eligibility criteria and collect consent for referrals.",
-    "providerPortal.operations.defaultCaseNotes": "Created from assisted provider registration.",
   | "providerPortal.cases.priorityField"
   | "providerPortal.cases.urgent"
   | "providerPortal.cases.standard"
   | "providerPortal.cases.monitor"
   | "providerPortal.cases.dueDate"
-    "providerPortal.messages.defaultSubject": "Recordatorio de cita",
-    "providerPortal.messages.defaultBody": "Recordatorio de tu proveedor de servicios: revisa tu calendario de Abby para tu proxima cita.",
-    "providerPortal.messages.serviceReminderSubject": "Recordatorio de servicio",
-    "providerPortal.messages.serviceReminderBody": "Hola {client}, soy {staff} de {shelter}. Revisa tu calendario de Abby para tu siguiente paso de servicio.",
-    "providerPortal.messages.caseUpdateSubject": "Actualizacion del caso: {goal}",
-    "providerPortal.messages.caseUpdateBody": "Hola {client}, soy {staff} de {shelter}. Tu siguiente paso es: {step}",
-    "providerPortal.messages.senderFallback": "tu proveedor de servicios",
-    "providerPortal.messages.fallbackSubject": "Mensaje de servicio",
   | "providerPortal.cases.nextStep"
   | "providerPortal.cases.notes"
-    "providerPortal.operations.invalidUpload": "No podemos usar este archivo. Usa JPG, PNG, WebP o PDF.",
   | "providerPortal.cases.proved"
   | "providerPortal.cases.needed"
   | "providerPortal.cases.proveUsCitizen"
-    "providerPortal.operations.defaultCaseGoal": "Completar la admision y el plan de servicio.",
-    "providerPortal.operations.defaultCaseNextStep": "Confirmar criterios de elegibilidad y recopilar consentimiento para derivaciones.",
-    "providerPortal.operations.defaultCaseNotes": "Creado desde el registro asistido del proveedor.",
   | "providerPortal.cases.prepareProof"
   | "providerPortal.cases.messageClient"
   | "providerPortal.cases.eligibilityProof"
@@ -859,6 +835,10 @@ type LocalizationKey =
   | "providerPortal.operations.noContactRequests"
   | "providerPortal.operations.createdBy"
   | "providerPortal.operations.dob"
+  | "providerPortal.operations.invalidUpload"
+  | "providerPortal.operations.defaultCaseGoal"
+  | "providerPortal.operations.defaultCaseNextStep"
+  | "providerPortal.operations.defaultCaseNotes"
   | "providerPortal.operations.userAccount"
   | "providerPortal.operations.noUserAccounts"
   | "providerPortal.operations.userOversight"
