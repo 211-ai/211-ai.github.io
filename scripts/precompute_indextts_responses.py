@@ -433,6 +433,225 @@ def _normalize_phone_numbers(text: str) -> str:
     )
 
 
+def _normalize_phone_extensions(text: str) -> str:
+    return re.sub(
+        r"\b(?:ext\.?|extension|x)\s*#?\s*(?P<extension>\d{1,6})\b",
+        lambda match: f"extension {_digits_to_words(match.group('extension'))}",
+        text,
+        flags=re.IGNORECASE,
+    )
+
+
+def _title_case_program_name(value: str) -> str:
+    acronyms = {
+        "CAF",
+        "DHS",
+        "EBT",
+        "HIV",
+        "HUD",
+        "ID",
+        "LGBTQ",
+        "LGBTQIA",
+        "NARA",
+        "NW",
+        "SNAP",
+        "SSDI",
+        "SSI",
+        "VA",
+        "WIC",
+    }
+    small_words = {"and", "or", "of", "for", "to", "the", "a", "an", "in", "on", "at", "by", "with"}
+    tokens = re.split(r"(\s+|-)", value.strip())
+    output: list[str] = []
+    word_index = 0
+    for token in tokens:
+        if not token or token.isspace() or token == "-":
+            output.append(token)
+            continue
+        bare = re.sub(r"[^A-Za-z0-9]", "", token)
+        if not bare:
+            output.append(token)
+            continue
+        upper = bare.upper()
+        lower = token.lower()
+        if upper in acronyms:
+            replacement = token.replace(bare, upper)
+        elif word_index > 0 and lower in small_words:
+            replacement = lower
+        elif "'" in token:
+            replacement = "'".join(part.capitalize() for part in lower.split("'"))
+        else:
+            replacement = lower.capitalize()
+        replacement = replacement.replace("Peerplus", "Peer Plus")
+        replacement = replacement.replace("Sbhc", "school based health center")
+        replacement = replacement.replace("Chruch", "Church")
+        output.append(replacement)
+        word_index += 1
+    return re.sub(r"\s+and$", "", "".join(output), flags=re.IGNORECASE)
+
+
+def _normalize_phone_list_prosody(text: str) -> str:
+    digit_word = r"(?:zero|one|two|three|four|five|six|seven|eight|nine)"
+    phone = rf"{digit_word}(?: {digit_word}){{2}}, {digit_word}(?: {digit_word}){{2}}, {digit_word}(?: {digit_word}){{3}}"
+
+    def replace_pair(match: re.Match[str]) -> str:
+        first = match.group("first")
+        second = match.group("second")
+        second_extension = match.group("second_extension") or ""
+        trailing = match.group("trailing")
+        if first == second and second_extension:
+            return f"You can call {first}, {second_extension}{trailing}"
+        return f"You can call {first}. Another number is {second}{second_extension}{trailing}"
+
+    return re.sub(
+        rf"\bPhone:\s*(?P<first>{phone}),\s*(?P<second>{phone})(?P<second_extension>\s+extension\s+(?:{digit_word}\s*){{1,6}})?(?P<trailing>[.;])",
+        replace_pair,
+        text,
+        flags=re.IGNORECASE,
+    )
+
+
+def _normalize_address_prosody(text: str) -> str:
+    suffix_pattern = "|".join(sorted((re.escape(value) for value in set(_STREET_SUFFIX_WORDS.values())), key=len, reverse=True))
+    state_pattern = "|".join(sorted((re.escape(value) for value in set(_STATE_WORDS.values())), key=len, reverse=True))
+    normalized = re.sub(
+        rf"\b(?P<street>{suffix_pattern})\s+(?P<city>(?!(?:North|South|East|West)\b)[A-Z][a-z]+(?:\s+[A-Z][a-z]+){{0,2}}),?\s+(?P<state>{state_pattern})\b",
+        lambda match: f"{match.group('street')}, {match.group('city')}, {match.group('state')}",
+        text,
+    )
+    normalized = re.sub(
+        r"\b(?P<street>Street|Avenue|Road|Boulevard|Drive|Lane|Loop|Parkway|Court|Way)\s+(?P<unit>[A-Z])(?P<number>\d{1,4})(?=\s+[A-Z][a-z]+,\s+(?:Oregon|Washington|California|Colorado)\b)",
+        lambda match: f"{match.group('street')}, building {match.group('unit')} {_number_to_words(int(match.group('number')))}",
+        normalized,
+    )
+    normalized = re.sub(
+        r"\b(?P<label>Suite|Unit|Apartment|Building|Floor)\s+(?P<unit>[A-Za-z0-9-]+)\s+(?=[A-Z][A-Za-z]+,?\s+(?:Oregon|Washington|California|Colorado)\b)",
+        lambda match: f"{match.group('label')} {match.group('unit')}, ",
+        normalized,
+    )
+    normalized = re.sub(
+        r"\b(?P<street>Street|Avenue|Road|Boulevard|Drive|Lane|Loop|Parkway|Court|Way)\s+(?P<direction>North|South|East|West|North East|North West|South East|South West)\s+(?=[A-Z][a-z]+,?\s+(?:Oregon|Washington|California|Colorado)\b)",
+        lambda match: f"{match.group('street')} {match.group('direction')}, ",
+        normalized,
+    )
+    return normalized
+
+
+def _prefer_primary_voice_contact(text: str) -> str:
+    state_pattern = "|".join(sorted((re.escape(value) for value in set(_STATE_WORDS.values())), key=len, reverse=True))
+    zip_words = r"(?:zero|one|two|three|four|five|six|seven|eight|nine)(?: (?:zero|one|two|three|four|five|six|seven|eight|nine)){4}(?: dash (?:zero|one|two|three|four|five|six|seven|eight|nine)(?: (?:zero|one|two|three|four|five|six|seven|eight|nine)){3})?"
+    address_stop = re.compile(r",\s+(?=\d{2,6}\s+)")
+
+    def replace_address(match: re.Match[str]) -> str:
+        address = match.group("address")
+        remainder = match.group("remainder")
+        split = address_stop.search(address)
+        if not split:
+            return match.group(0)
+        primary = address[: split.start()].strip(" ,")
+        return f"The address is {primary}. There may be more locations in the service details.{remainder}"
+
+    spoken = re.sub(
+        rf"The address is (?P<address>.*?\b(?:{state_pattern}) {zip_words})(?P<remainder>\. (?:You can call|Phone number:))",
+        replace_address,
+        text,
+    )
+    return spoken
+
+
+def _normalize_sentence_prosody(text: str) -> str:
+    spoken = re.sub(
+        r"\bI found (?P<name>[A-Z][A-Z0-9 &'(),/-]{3,})\.",
+        lambda match: f"I found {_title_case_program_name(match.group('name'))}.",
+        text,
+    )
+    spoken = re.sub(
+        r"\bI found (?P<name>[A-Z][A-Z0-9 &'(),/-]{3,})\s+(?=Phone:|Phone number:|Eligibility:|The address is\b)",
+        lambda match: f"I found {_title_case_program_name(match.group('name'))}. ",
+        spoken,
+    )
+    spoken = re.sub(
+        r"\bI found (VA [^.]*? Community Resource and Referral Center)\s+VA Community Resource and Referral Center\.",
+        r"I found \1.",
+        spoken,
+    )
+    spoken = re.sub(
+        r"\bI found Saint (?P<name>[A-Z][A-Z0-9 &'(),/-]{3,})\.",
+        lambda match: f"I found Saint {_title_case_program_name(match.group('name'))}.",
+        spoken,
+    )
+    spoken = _normalize_phone_list_prosody(spoken)
+    spoken = re.sub(
+        r"\bAges?\s+(?P<start>\d{1,3})\s*-\s*(?P<end>\d{1,3})\b",
+        lambda match: f"Ages {_number_to_words(int(match.group('start')))} to {_number_to_words(int(match.group('end')))}",
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(
+        r"\bage\s+(?P<age>\d{1,3})\b",
+        lambda match: f"age {_number_to_words(int(match.group('age')))}",
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = _normalize_address_prosody(spoken)
+    spoken = _prefer_primary_voice_contact(spoken)
+    spoken = spoken.replace("&", "and")
+    spoken = re.sub(
+        r"\bConfirm details before traveling, since service availability can change\.",
+        "Please confirm details before you go, since service availability can change.",
+        spoken,
+    )
+    spoken = re.sub(r"\bPhone:\s*", "You can call ", spoken)
+    spoken = re.sub(r"\bPhone number:\s*", "You can call ", spoken)
+    spoken = re.sub(r"\bAlternate phone number:\s*", "Another number is ", spoken)
+    spoken = re.sub(r"\bAges ([^.]+?) All other\b", r"Ages \1. Other eligibility rules may apply", spoken)
+    spoken = re.sub(r"\bI found Need Help Finding Child Care\?\s*Call two one one\.", "For help finding child care, call two one one.", spoken)
+    spoken = re.sub(r"\bEligibility:\s*Unrestricted\.\s*anyone\b", "Eligibility: anyone", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bEligibility:\s*Unrestricted[.;]\s*Varies by program\.", "Eligibility varies by program.", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bEligibility:\s*(?P<body>[^.]+?\.)\s*Unrestricted[.;]", r"Eligibility: \g<body>", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bEligibility:\s*Unrestricted[.;]", "Eligibility is unrestricted.", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bEligibility:\s*None\.\s*", "Eligibility: ", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bEligibility:\s*", "Eligibility: ", spoken)
+    spoken = re.sub(r"\bEligibility:\s*Individuals and families with minor children in substance use disorder recovery\.", "Eligibility: individuals and families with minor children who are in substance use disorder recovery.", spoken)
+    spoken = re.sub(r"\bFPL\b", "federal poverty level", spoken)
+    spoken = re.sub(r"\bFederal Poverty Level\b", "federal poverty level", spoken)
+    spoken = re.sub(r"\s*\(federal poverty level\)", "", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bFamiles\b", "Families", spoken)
+    spoken = re.sub(r"\s+(Veteran must\b)", r". \1", spoken)
+    spoken = re.sub(r"\s+(Any discharge\b)", r". \1", spoken)
+    spoken = re.sub(r"\s+(Household must\b)", r". \1", spoken)
+    spoken = re.sub(r"\s+(Documentation may\b)", r". \1", spoken)
+    spoken = re.sub(
+        r"\bschool based health center\s+School Based Health Center\b",
+        "school-based health center",
+        spoken,
+        flags=re.IGNORECASE,
+    )
+    spoken = re.sub(r"\bschool based health center\b", "school-based health center", spoken, flags=re.IGNORECASE)
+    spoken = re.sub(r"\bMen'S\b", "Men's", spoken)
+    spoken = re.sub(r"\s*;\s*", ". ", spoken)
+    spoken = _shorten_long_eligibility_for_voice(spoken)
+    state_pattern = "|".join(sorted((re.escape(value) for value in set(_STATE_WORDS.values())), key=len, reverse=True))
+    zip_words = r"(?:zero|one|two|three|four|five|six|seven|eight|nine)(?: (?:zero|one|two|three|four|five|six|seven|eight|nine)){4}(?: dash (?:zero|one|two|three|four|five|six|seven|eight|nine)(?: (?:zero|one|two|three|four|five|six|seven|eight|nine)){3})?"
+    spoken = re.sub(rf"\b(?P<state>{state_pattern}) (?P<zip>{zip_words})\b", r"\g<state>. ZIP code \g<zip>", spoken)
+    spoken = re.sub(r"\s+([.,;:!?])", r"\1", spoken)
+    return re.sub(r"([.!?])\s*(?=(?:You can call|Another number|Eligibility|Please confirm)\b)", r"\1 ", spoken)
+
+
+def _shorten_long_eligibility_for_voice(text: str) -> str:
+    match = re.search(r"\bEligibility(?: is|:)\s+(?P<body>.*?)(?=\s+Before traveling\b|$)", text)
+    if not match:
+        return text
+    body = match.group("body").strip()
+    if len(body) <= 220:
+        return text
+    first_clause = re.split(r"(?<=[.!?])\s+|(?:\s+[A-Z][a-z]+:)", body, maxsplit=1)[0].strip()
+    if len(first_clause) > 180:
+        first_clause = first_clause[:180].rsplit(" ", 1)[0].strip() + "."
+    replacement = f"Eligibility: {first_clause} More eligibility details may be in the service details."
+    return f"{text[:match.start()]}{replacement}{text[match.end():]}"
+
+
 def _normalize_percentages_and_currency(text: str) -> str:
     def numberish_to_words(value: str) -> str:
         if "." in value:
@@ -518,6 +737,7 @@ def normalize_indextts_spoken_text(text: str) -> str:
     spoken = _normalize_record_list_sentence(spoken)
     spoken = _normalize_urls_for_speech(spoken)
     spoken = _normalize_phone_numbers(spoken)
+    spoken = _normalize_phone_extensions(spoken)
     spoken = _normalize_percentages_and_currency(spoken)
     spoken = _normalize_hours_and_separators(spoken)
     spoken = re.sub(r"\bST\s+(?=[A-Z])", "Saint ", spoken)
@@ -580,6 +800,7 @@ def normalize_indextts_spoken_text(text: str) -> str:
         flags=re.IGNORECASE,
     )
     spoken = _normalize_zip_codes(spoken)
+    spoken = _normalize_sentence_prosody(spoken)
     spoken = re.sub(r"\s+([.,;:!?])", r"\1", spoken)
     spoken = re.sub(r"(?:\.\s*){2,}", ". ", spoken)
     spoken = re.sub(r"\s+", " ", spoken).strip(" ;,")

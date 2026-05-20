@@ -139,6 +139,10 @@ For the wallet UI integration, the first extracted HTTP slice now also exists in
 `ipfs_datasets_py.wallet.api` and is mounted into the shared FastAPI service.
 That adapter now owns the core `/wallets` create/read routes, document upload,
 record metadata update/delete,
+location region/distance proof creation,
+document privacy profile proof creation,
+record metadata generation,
+analytics template/consent list-create-revoke,
 record-grant creation, threshold approval reads/writes, and access-request
 create/review/decision flows, plus snapshot list/save/verify/load, record-key
 rotation, encrypted storage verify/repair, and record, proof, audit,

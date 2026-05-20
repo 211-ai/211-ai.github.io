@@ -29,6 +29,27 @@ For the extracted Python-backed slice, the UI currently depends on these routes:
 - `POST /wallets/{wallet_id}/documents`
 - `PATCH /wallets/{wallet_id}/records/{record_id}/metadata`
 - `DELETE /wallets/{wallet_id}/records/{record_id}`
+- `POST /wallets/{wallet_id}/locations/{location_record_id}/region-proofs`
+- `POST /wallets/{wallet_id}/locations/{location_record_id}/distance-proofs`
+- `POST /wallets/{wallet_id}/records/{record_id}/document-profile-proofs`
+- `POST /wallets/{wallet_id}/records/{record_id}/metadata/generate`
+- `GET /analytics/templates`
+- `GET /wallets/{wallet_id}/analytics/consents`
+- `POST /wallets/{wallet_id}/analytics/consents/from-template`
+- `POST /wallets/{wallet_id}/analytics/consents/{consent_id}/revoke`
+- `GET /wallets/{wallet_id}/dead-drops/missing-person`
+- `PUT /wallets/{wallet_id}/dead-drops/missing-person`
+- `POST /wallets/{wallet_id}/dead-drops/missing-person`
+- `POST /wallets/{wallet_id}/dead-drops/missing-person/dispatch`
+- `GET /wallets/{wallet_id}/portal/saved-services`
+- `POST /wallets/{wallet_id}/portal/saved-services`
+- `GET /wallets/{wallet_id}/portal/plans`
+- `POST /wallets/{wallet_id}/portal/plans`
+- `PATCH /wallets/{wallet_id}/portal/plans/{plan_id}`
+- `POST /wallets/{wallet_id}/portal/plans/{plan_id}/share-grants`
+- `GET /wallets/{wallet_id}/portal/interactions`
+- `POST /wallets/{wallet_id}/portal/interactions`
+- `GET /ops/health`
 - `GET /wallets/snapshots`
 - `POST /wallets/{wallet_id}/snapshot`
 - `GET /wallets/{wallet_id}/snapshot`
@@ -93,6 +114,20 @@ and record deletion, so upload cards can persist user-facing metadata and prune
 wallet records without using the legacy wallet-interface state store. Metadata
 generation remains outside this extracted slice because it still depends on the
 broader router/proof pipeline.
+The canonical adapter now also serves owner-backed location region and distance
+proof creation, and snapshot persistence preserves the principal secrets needed
+for reloaded wallets to keep decrypting and proving against existing records.
+It also now serves document privacy profile proof receipts with sanitized public
+inputs, so the UI can persist privacy-profile proof artifacts without routing
+that behavior through the legacy wallet-interface service.
+The adapter now also generates wallet record metadata by orchestrating the
+canonical redacted analysis, vector-profile, GraphRAG, text extraction, form
+analysis, and privacy-profile proof steps, then writing the resulting
+`privacyProfile*` fields back onto the record metadata payload.
+The current extracted analytics slice also covers analytics template listing and
+wallet consent list/create/revoke flows. The adapter discovers shared templates
+by aggregating them from saved wallet snapshots, which is enough for the
+existing UI contract without introducing a separate global analytics store yet.
 The missing-person dead-drop safety setting also uses this API config: when a
 wallet API and wallet actor are connected, Abby saves the dead-drop bundle on
 the backend with `PUT /wallets/{wallet_id}/dead-drops/missing-person` and
