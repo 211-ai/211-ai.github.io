@@ -3455,13 +3455,68 @@ def test_indextts_spoken_text_normalizes_numbers_and_address_abbreviations() -> 
     ) == "Visit the two one one info website or call two one one."
     assert wallet_api_module._normalize_indextts_spoken_text(
         "Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Visit website."
-    ) == "Visit website."
+    ) == ""
     assert wallet_api_module._normalize_indextts_spoken_text(
         "A grounded 211 match is FOOD PANTRY. Source: https://www.211info.org/agency/1439/14182/. Confirm details before traveling."
     ) == "I found FOOD PANTRY. Confirm details before traveling."
     assert wallet_api_module._normalize_indextts_spoken_text(
         "A grounded 211 match is EYE CLINIC. The record lists 120 minutes. 222 SE 8th Avenue Suite 110 Hillsboro, OR 97123. Phone: (503) 352-7300."
-    ) == "I found EYE CLINIC. The address is 222 South East eighth Avenue Suite 110 Hillsboro, OR 97123. Phone: (503) 352-7300."
+    ) == "I found EYE CLINIC. The address is 222 South East eighth Avenue Suite 110 Hillsboro, Oregon nine seven one two three. Phone: five zero three, three five two, seven three zero zero."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Mail goes to Portland, OR 97206-1234 or use 97204."
+    ) == "Mail goes to Portland, Oregon nine seven two zero six dash one two three four or use nine seven two zero four."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Try 450 Highway 99 N Eugene, OR 97402, 1400 Queen Avenue SE Suite 201 Albany, OR 97322, or 15325 NW Central Drive Suite J-8 Portland, OR 97229."
+    ) == (
+        "Try 450 Highway ninety nine North Eugene, Oregon nine seven four zero two, "
+        "1400 Queen Avenue South East Suite 201 Albany, Oregon nine seven three two two, "
+        "or 15325 North West Central Drive Suite J-8 Portland, Oregon nine seven two two nine."
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Ages 18-24 who are fleeing domestic violence."
+    ) == "Ages 18-24 who are fleeing domestic violence."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "The office is at 101 E Broadway Suite 200 Eugene, OR 97401."
+    ) == "The office is at 101 East Broadway Suite 200 Eugene, Oregon nine seven four zero one."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Monday/Wednesday 8:30am - 4:30pm, call (503) 771-7914, income 80-100% AMI, up to $500."
+    ) == (
+        "Monday, Wednesday 8:30 AM to 4:30 PM, call five zero three, seven seven one, seven nine one four, "
+        "income eighty to one hundred percent AMI, up to five hundred dollars."
+    )
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Monday/Wednesday/Thursday 1:15pm-3:45pm"
+    ) == "Monday, Wednesday, Thursday 1:15 PM to 3:45 PM"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "-Drop-in Center: 7 days per week 8:30am-5pm"
+    ) == "Drop-in Center: 7 days per week 8:30 AM to 5 PM"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Must have served post 9/11 and be eligible."
+    ) == "Must have served post September eleventh and be eligible."
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "223 SE M Street Grants Pass, OR 97526"
+    ) == "223 South East M Street Grants Pass, Oregon nine seven five two six"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "6329 NE Martin Luther King Jr Boulevard Portland, OR 97211"
+    ) == "6329 North East Martin Luther King Jr Boulevard Portland, Oregon nine seven two one one"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "51 W Washington Burns, OR 97720"
+    ) == "51 West Washington Burns, Oregon nine seven seven two zero"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Laundry Facilities * Homeless Youth - 211info"
+    ) == "Laundry Facilities for Homeless Youth"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "24 hours per day / 7 days a week"
+    ) == "24 hours per day, 7 days a week"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "29796 SW Town Center Loop E Wilsonville, OR 97070"
+    ) == "29796 South West Town Center Loop East Wilsonville, Oregon nine seven zero seven zero"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "ST VINCENT DE PAUL Email (541) 536-1956 Get Directions Visit Website More Details Print & Share X Print & Share Print PDF"
+    ) == "Saint VINCENT DE PAUL"
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "ST VINCENT DE PAUL OF LANE COUNTY"
+    ) == "Saint VINCENT DE PAUL OF LANE COUNTY"
     assert wallet_api_module._normalize_indextts_spoken_text(
         "The record lists latitude: 45.5152 longitude: -122.6784. Source: https://example.org/a."
     ) == ""

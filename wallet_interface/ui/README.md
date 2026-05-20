@@ -7,6 +7,12 @@ recipient access, and benefits-protection opt-in.
 The app currently uses local mock state and can be connected to the backend
 later through `src/services/`.
 
+The wallet implementation boundary now lives in Python. The browser app keeps
+`src/services/walletApi.ts` as a typed HTTP client, while the canonical wallet
+logic, snapshot persistence, audit history, grants, receipts, and proof state
+live in `ipfs_datasets_py.wallet` and are exposed through
+`ipfs_datasets_py.wallet.api` mounted on the shared FastAPI app.
+
 Access requests and grant receipts can be loaded from the wallet API by setting:
 
 ```bash
@@ -14,6 +20,39 @@ VITE_WALLET_API_BASE_URL=http://localhost:8000
 VITE_DEMO_WALLET_ID=wallet-...
 VITE_DEMO_ACTOR_DID=did:key:owner
 ```
+
+For the extracted Python-backed slice, the UI currently depends on these routes:
+
+- `POST /wallets`
+- `GET /wallets/{wallet_id}`
+- `POST /wallets/{wallet_id}/documents/text`
+- `POST /wallets/{wallet_id}/documents`
+- `GET /wallets/snapshots`
+- `POST /wallets/{wallet_id}/snapshot`
+- `GET /wallets/{wallet_id}/snapshot`
+- `POST /wallets/{wallet_id}/snapshot/load`
+- `GET /wallets/{wallet_id}/records`
+- `POST /wallets/{wallet_id}/records/{record_id}/rotate-key`
+- `GET /wallets/{wallet_id}/records/{record_id}/storage`
+- `POST /wallets/{wallet_id}/records/{record_id}/storage/repair`
+- `GET /wallets/{wallet_id}/proofs`
+- `GET /wallets/{wallet_id}/audit`
+- `POST /wallets/{wallet_id}/records/{record_id}/grants`
+- `GET /wallets/{wallet_id}/access-requests`
+- `POST /wallets/{wallet_id}/access-requests`
+- `POST /wallets/{wallet_id}/access-requests/{request_id}/approve`
+- `POST /wallets/{wallet_id}/access-requests/{request_id}/reject`
+- `POST /wallets/{wallet_id}/access-requests/{request_id}/revoke`
+- `GET /wallets/{wallet_id}/grant-receipts`
+- `GET /wallets/{wallet_id}/approvals`
+- `POST /wallets/{wallet_id}/approvals`
+- `POST /wallets/{wallet_id}/approvals/{approval_id}/approve`
+- `GET /wallets/{wallet_id}/storage`
+- `POST /wallets/{wallet_id}/storage/repair`
+
+Those routes are intended to be served by `ipfs_datasets_py.mcp_server.fastapi_service:app`.
+The larger `walletApi.ts` surface still includes additional write and portal
+routes that remain to be migrated into Python.
 
 When those variables are absent, the recipient-access screen uses local mock
 access-request and receipt state for demos and tests.

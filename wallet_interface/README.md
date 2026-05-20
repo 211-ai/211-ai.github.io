@@ -3,6 +3,8 @@
 This package is the 211-AI application layer for the wallet work. It should stay
 thin: encryption, UCAN-style grant evaluation, key wrapping, proof receipts,
 analytics consent, and audit logging live in `ipfs_datasets_py.wallet`.
+The browser-facing TypeScript code should consume that Python implementation
+through HTTP rather than reimplementing wallet rules in the frontend.
 
 ## Current Scope
 
@@ -132,6 +134,16 @@ the encrypted descriptors without granting plaintext access. Import also checks
 the expected `wallet_export_v1` type and required bundle sections.
 `POST /exports/storage` reports encrypted blob availability for records
 referenced by a verified export bundle.
+
+For the wallet UI integration, the first extracted HTTP slice now also exists in
+`ipfs_datasets_py.wallet.api` and is mounted into the shared FastAPI service.
+That adapter now owns the core `/wallets` create/read routes, document upload,
+record-grant creation, threshold approval reads/writes, and access-request
+create/review/decision flows, plus snapshot list/save/verify/load, record-key
+rotation, encrypted storage verify/repair, and record, proof, audit,
+access-request, and grant-receipt listing. The TypeScript
+`wallet_interface/ui/src/services/walletApi.ts` module should remain a transport
+client over that surface.
 
 For missing-person dead-drop escalation, the API can arm and persist a true
 server-side dead drop with `PUT /wallets/{wallet_id}/dead-drops/missing-person`,

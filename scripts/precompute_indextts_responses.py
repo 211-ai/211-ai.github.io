@@ -72,6 +72,7 @@ _STREET_SUFFIX_WORDS = {
     "ln": "Lane",
     "ln.": "Lane",
     "lane": "Lane",
+    "loop": "Loop",
     "pkwy": "Parkway",
     "pkwy.": "Parkway",
     "parkway": "Parkway",
@@ -104,6 +105,60 @@ _UNIT_WORDS = {
     "ste.": "Suite",
     "suite": "Suite",
     "unit": "Unit",
+}
+
+_STATE_WORDS = {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "DC": "District of Columbia",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming",
 }
 
 _OMITTED_VOICE_FIELDS = (
@@ -213,6 +268,102 @@ def _normalize_suffix_token(token: str) -> str:
     return _STREET_SUFFIX_WORDS.get(token.lower(), token)
 
 
+def _digits_to_words(value: str) -> str:
+    digit_words = {
+        "0": "zero",
+        "1": "one",
+        "2": "two",
+        "3": "three",
+        "4": "four",
+        "5": "five",
+        "6": "six",
+        "7": "seven",
+        "8": "eight",
+        "9": "nine",
+    }
+    return " ".join(digit_words.get(char, char) for char in value)
+
+
+def _normalize_zip_codes(text: str) -> str:
+    def replace_state_zip(match: re.Match[str]) -> str:
+        if match.group("state") != match.group("state").upper():
+            return match.group(0)
+        state = _STATE_WORDS.get(match.group("state").upper(), match.group("state"))
+        zip_code = _digits_to_words(match.group("zip"))
+        plus_four = match.group("plus4")
+        if plus_four:
+            zip_code = f"{zip_code} dash {_digits_to_words(plus_four)}"
+        return f"{state} {zip_code}"
+
+    normalized = re.sub(
+        r"\b(?P<state>AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(?P<zip>\d{5})(?:-(?P<plus4>\d{4}))?\b",
+        replace_state_zip,
+        text,
+        flags=re.IGNORECASE,
+    )
+    direction_pattern = r"(?:N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.|North|South|East|West|North East|North West|South East|South West)"
+    suffix_pattern = "|".join(sorted((re.escape(value) for value in set(_STREET_SUFFIX_WORDS) | set(_STREET_SUFFIX_WORDS.values())), key=len, reverse=True))
+    return re.sub(
+        rf"(?<![\d-])(?P<zip>\d{{5}})(?:-(?P<plus4>\d{{4}}))?(?![\d-])(?!(?:\s+(?:{direction_pattern})\b|\s+[A-Z][A-Za-z'.-]+\s+(?:{suffix_pattern})\b))",
+        lambda match: (
+            f"{_digits_to_words(match.group('zip'))}"
+            + (f" dash {_digits_to_words(match.group('plus4'))}" if match.group("plus4") else "")
+        ),
+        normalized,
+    )
+
+
+def _normalize_address_directions_and_highways(text: str) -> str:
+    direction_pattern = r"(?:N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.)"
+    suffix_pattern = "|".join(sorted((re.escape(value) for value in set(_STREET_SUFFIX_WORDS) | set(_STREET_SUFFIX_WORDS.values())), key=len, reverse=True))
+
+    def replace_numbered_or_named_street(match: re.Match[str]) -> str:
+        street = match.group("street")
+        numbered = re.fullmatch(r"\d{1,3}(?:st|nd|rd|th)?", street, flags=re.IGNORECASE)
+        street_words = _ordinal_to_words(int(re.sub(r"\D", "", street))) if numbered else street
+        return (
+            f"{match.group('number')} "
+            f"{_normalize_direction_token(match.group('direction'))} "
+            f"{street_words} "
+            f"{_normalize_suffix_token(match.group('suffix'))}"
+        )
+
+    normalized = re.sub(
+        rf"\b(?P<number>\d{{1,6}})\s+(?P<direction>{direction_pattern})\s+(?P<street>\d{{1,3}}(?:st|nd|rd|th)?|[A-Z][A-Za-z'.-]*(?:\s+[A-Z][A-Za-z'.-]*){{0,4}})\s+(?P<suffix>{suffix_pattern})\b",
+        replace_numbered_or_named_street,
+        text,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        rf"\b(?P<number>\d{{1,6}})\s+(?P<direction>{direction_pattern})\s+(?P<street>[A-Z][A-Za-z'.-]+)\b(?=\s+(?:Suite|Room|Floor|Unit|Apartment|Building)\b)",
+        lambda match: f"{match.group('number')} {_normalize_direction_token(match.group('direction'))} {match.group('street')}",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        rf"\b(?P<number>\d{{1,6}})\s+(?P<direction>{direction_pattern})\s+(?P<street>[A-Z][A-Za-z'.-]+)\b(?=\s+(?:[A-Z][a-z]+,?\s+)?(?:OR|WA|CA|CO|Oregon|Washington|California|Colorado)\b|$)",
+        lambda match: f"{match.group('number')} {_normalize_direction_token(match.group('direction'))} {match.group('street')}",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        rf"\b(?P<suffix>{suffix_pattern})\s+(?P<direction>{direction_pattern})\b",
+        lambda match: f"{_normalize_suffix_token(match.group('suffix'))} {_normalize_direction_token(match.group('direction'))}",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(
+        r"\bHighway\s+(?P<number>\d{1,3})(?:\s+(?P<direction>N|S|E|W))?\b",
+        lambda match: (
+            f"Highway {_number_to_words(int(match.group('number')))}"
+            + (f" {_normalize_direction_token(match.group('direction'))}" if match.group("direction") else "")
+        ),
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    return normalized
+
+
 def _domain_to_spoken_site(url: str) -> str:
     parsed = urllib_parse.urlparse(url if re.match(r"^[a-z][a-z0-9+.-]*://", url, re.IGNORECASE) else f"https://{url}")
     host = (parsed.netloc or parsed.path.split("/", 1)[0]).lower()
@@ -257,7 +408,76 @@ def _normalize_urls_for_speech(text: str) -> str:
     return re.sub(url_pattern, replace_url, text)
 
 
+def _strip_scraped_page_chrome(text: str) -> str:
+    cleaned = str(text or "")
+    cleaned = re.sub(r"(?i)\bEmail\s+(?:\(\d{3}\)\s*)?\d{3}[-.]\d{4}\s+Get Directions\s+Visit Website\s+More Details\s+", " ", cleaned)
+    cleaned = re.sub(r"(?i)\b(?:Email|Get Directions|Visit Website|More Details|Print\s*&\s*Share|Print PDF)\b", " ", cleaned)
+    cleaned = re.sub(r"\bX\s+Print\s*&\s*Share\b", " ", cleaned)
+    cleaned = re.sub(r"\bX\b", " ", cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def _normalize_phone_numbers(text: str) -> str:
+    def replace_phone(match: re.Match[str]) -> str:
+        digits = re.sub(r"\D", "", match.group(0))
+        if len(digits) == 11 and digits.startswith("1"):
+            digits = digits[1:]
+        if len(digits) != 10:
+            return match.group(0)
+        return f"{_digits_to_words(digits[:3])}, {_digits_to_words(digits[3:6])}, {_digits_to_words(digits[6:])}"
+
+    return re.sub(
+        r"(?:\+?1[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]?\d{3}[\s.-]?\d{4}\b",
+        replace_phone,
+        text,
+    )
+
+
+def _normalize_percentages_and_currency(text: str) -> str:
+    def numberish_to_words(value: str) -> str:
+        if "." in value:
+            left, right = value.split(".", 1)
+            return f"{_number_to_words(int(left))} point {_digits_to_words(right)}"
+        return _number_to_words(int(value))
+
+    normalized = re.sub(
+        r"\b(?P<start>\d{1,3})(?:\.\d+)?\s*-\s*(?P<end>\d{1,3}(?:\.\d+)?)%",
+        lambda match: f"{numberish_to_words(match.group('start'))} to {numberish_to_words(match.group('end'))} percent",
+        text,
+    )
+    normalized = re.sub(
+        r"\b(?P<value>\d{1,3}(?:\.\d+)?)%",
+        lambda match: f"{numberish_to_words(match.group('value'))} percent",
+        normalized,
+    )
+    return re.sub(
+        r"\$(?P<amount>\d{1,4})(?:\.(?P<cents>\d{2}))?",
+        lambda match: (
+            f"{_number_to_words(int(match.group('amount')))} dollars"
+            + (f" and {_number_to_words(int(match.group('cents')))} cents" if match.group("cents") else "")
+        ),
+        normalized,
+    )
+
+
+def _normalize_hours_and_separators(text: str) -> str:
+    day_names = "Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday"
+    text = re.sub(r"\s*[-–]\s*211info\b", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\s*\*\s*", " for ", text)
+    text = re.sub(r"\s+/\s+", ", ", text)
+    normalized = re.sub(rf"\b({day_names})(?:/({day_names}))+\b", lambda match: match.group(0).replace("/", ", "), text)
+    normalized = re.sub(r"\b([A-Za-z]+)/([A-Za-z]+)\b", r"\1 and \2", normalized)
+    normalized = re.sub(r"(?m)(^|\s)-(?=[A-Za-z])", r"\1", normalized)
+    normalized = re.sub(r"\s+-\s*", " to ", normalized)
+    normalized = re.sub(r"(?<=\d)(am|pm)\b", lambda match: f" {match.group(1).upper()}", normalized, flags=re.IGNORECASE)
+    normalized = re.sub(r"(?<=\b(?:AM|PM))\s*-\s*(?=\d)", " to ", normalized)
+    normalized = re.sub(r"\b9/11\b", "September eleventh", normalized)
+    return normalized
+
+
 def _strip_coordinates(text: str) -> str:
+    if re.fullmatch(r"\s*-?\d{1,3}\.\d{3,}\s*", str(text or "")):
+        return ""
     cleaned = re.sub(r"(?i)\b(?:lat(?:itude)?|lon(?:gitude)?|lng)\s*[:=]?\s*-?\d+(?:\.\d+)?", " ", text)
     cleaned = re.sub(r"\b-?\d{1,3}\.\d{3,}\s*,\s*-?\d{1,3}\.\d{3,}\b", " ", cleaned)
     return cleaned
@@ -292,10 +512,15 @@ def _normalize_record_list_sentence(text: str) -> str:
 
 
 def normalize_indextts_spoken_text(text: str) -> str:
-    spoken = _strip_unspoken_fields(text)
+    spoken = _strip_scraped_page_chrome(text)
+    spoken = _strip_unspoken_fields(spoken)
     spoken = _strip_coordinates(spoken)
     spoken = _normalize_record_list_sentence(spoken)
     spoken = _normalize_urls_for_speech(spoken)
+    spoken = _normalize_phone_numbers(spoken)
+    spoken = _normalize_percentages_and_currency(spoken)
+    spoken = _normalize_hours_and_separators(spoken)
+    spoken = re.sub(r"\bST\s+(?=[A-Z])", "Saint ", spoken)
     spoken = re.sub(r"(?i)\ba grounded\s+211\s+match\s+is\b", "I found", spoken)
     spoken = re.sub(r"(?i)\ba grounded\s+two one one\s+match\s+is\b", "I found", spoken)
     spoken = re.sub(r"(?i)\bgrounded detail\b", "detail", spoken)
@@ -319,7 +544,9 @@ def normalize_indextts_spoken_text(text: str) -> str:
     )
     spoken = re.sub(
         rf"\b(?P<number>\d{{1,3}})(?:st|nd|rd|th)?\s+(?P<suffix>{suffix_pattern})\b",
-        lambda match: f"{_ordinal_to_words(int(match.group('number')))} {_normalize_suffix_token(match.group('suffix'))}",
+        lambda match: f"{match.group('number')} {_normalize_suffix_token(match.group('suffix'))}"
+        if match.group("suffix").lower().rstrip(".") in {"hwy", "highway"}
+        else f"{_ordinal_to_words(int(match.group('number')))} {_normalize_suffix_token(match.group('suffix'))}",
         spoken,
         flags=re.IGNORECASE,
     )
@@ -329,24 +556,30 @@ def normalize_indextts_spoken_text(text: str) -> str:
         spoken,
         flags=re.IGNORECASE,
     )
+    spoken = _normalize_address_directions_and_highways(spoken)
     spoken = re.sub(
         rf"\b(?P<suffix>{suffix_pattern})\b",
-        lambda match: _normalize_suffix_token(match.group("suffix")),
+        lambda match: match.group("suffix")
+        if match.group("suffix").isupper()
+        else _normalize_suffix_token(match.group("suffix")),
         spoken,
         flags=re.IGNORECASE,
     )
     spoken = re.sub(
-        r"\b(?P<label>apt\.?|ste\.?|suite|unit|bldg\.?|fl\.?)\s*#?\s*(?P<unit>[A-Za-z0-9-]+)\b",
+        r"\b(?P<label>apt\.?|ste\.?|suite|unit|bldg\.?|fl\.?)\s+#?\s*(?P<unit>[A-Za-z0-9-]+)\b",
         lambda match: f"{_UNIT_WORDS.get(match.group('label').lower(), match.group('label'))} {match.group('unit')}",
         spoken,
         flags=re.IGNORECASE,
     )
     spoken = re.sub(
         r"\b(?P<number>\d{1,3})(?:st|nd|rd|th)\b",
-        lambda match: _ordinal_to_words(int(match.group("number"))),
+        lambda match: match.group(0)
+        if re.search(r"(?:Suite|Room|Floor|Unit|Building|Apartment)\s+$", spoken[max(0, match.start() - 24) : match.start()], re.IGNORECASE)
+        else _ordinal_to_words(int(match.group("number"))),
         spoken,
         flags=re.IGNORECASE,
     )
+    spoken = _normalize_zip_codes(spoken)
     spoken = re.sub(r"\s+([.,;:!?])", r"\1", spoken)
     spoken = re.sub(r"(?:\.\s*){2,}", ". ", spoken)
     spoken = re.sub(r"\s+", " ", spoken).strip(" ;,")
@@ -780,7 +1013,6 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    load_secret_env()
     include_assistant = not args.voice_responses_only
     include_voice = not args.assistant_responses_only
     responses = load_audio_responses(
@@ -798,6 +1030,7 @@ def main() -> None:
         for item in responses:
             manifest_entries.append({**item, "status": "planned", "audioPath": "", "mp3Path": ""})
     else:
+        load_secret_env()
         if not args.reference_audio.exists():
             raise FileNotFoundError(args.reference_audio)
         config = indextts_config()
