@@ -27,6 +27,8 @@ For the extracted Python-backed slice, the UI currently depends on these routes:
 - `GET /wallets/{wallet_id}`
 - `POST /wallets/{wallet_id}/documents/text`
 - `POST /wallets/{wallet_id}/documents`
+- `PATCH /wallets/{wallet_id}/records/{record_id}/metadata`
+- `DELETE /wallets/{wallet_id}/records/{record_id}`
 - `GET /wallets/snapshots`
 - `POST /wallets/{wallet_id}/snapshot`
 - `GET /wallets/{wallet_id}/snapshot`
@@ -38,6 +40,23 @@ For the extracted Python-backed slice, the UI currently depends on these routes:
 - `GET /wallets/{wallet_id}/proofs`
 - `GET /wallets/{wallet_id}/audit`
 - `POST /wallets/{wallet_id}/records/{record_id}/grants`
+- `POST /wallets/{wallet_id}/grants/{parent_grant_id}/delegate`
+- `POST /wallets/{wallet_id}/grants/{grant_id}/revoke`
+- `POST /wallets/{wallet_id}/records/{record_id}/analysis-invocations`
+- `POST /wallets/{wallet_id}/records/{record_id}/decrypt-invocations`
+- `POST /wallets/{wallet_id}/records/{record_id}/decrypt`
+- `POST /wallets/{wallet_id}/records/{record_id}/analyze`
+- `POST /wallets/{wallet_id}/records/{record_id}/analyze/redacted`
+- `POST /wallets/{wallet_id}/records/{record_id}/vector-profile`
+- `POST /wallets/{wallet_id}/records/{record_id}/extract-text/redacted`
+- `POST /wallets/{wallet_id}/records/{record_id}/forms/analyze/redacted`
+- `POST /wallets/{wallet_id}/records/graphrag/redacted`
+- `POST /wallets/{wallet_id}/exports/grants`
+- `POST /wallets/{wallet_id}/exports/invocations`
+- `POST /wallets/{wallet_id}/exports`
+- `POST /exports/verify`
+- `POST /exports/import`
+- `POST /exports/storage`
 - `GET /wallets/{wallet_id}/access-requests`
 - `POST /wallets/{wallet_id}/access-requests`
 - `POST /wallets/{wallet_id}/access-requests/{request_id}/approve`
@@ -47,6 +66,16 @@ For the extracted Python-backed slice, the UI currently depends on these routes:
 - `GET /wallets/{wallet_id}/approvals`
 - `POST /wallets/{wallet_id}/approvals`
 - `POST /wallets/{wallet_id}/approvals/{approval_id}/approve`
+- `POST /wallets/{wallet_id}/emergency-revoke`
+- `POST /wallets/{wallet_id}/controllers`
+- `POST /wallets/{wallet_id}/controllers/remove`
+- `POST /wallets/{wallet_id}/devices`
+- `POST /wallets/{wallet_id}/devices/revoke`
+- `POST /wallets/{wallet_id}/recovery-policy`
+- `POST /wallets/{wallet_id}/recovery-bundles`
+- `GET /wallets/{wallet_id}/recovery-bundles/latest`
+- `GET /wallets/{wallet_id}/recovery-bundles/{bundle_id}`
+- `POST /wallets/{wallet_id}/controllers/recover`
 - `GET /wallets/{wallet_id}/storage`
 - `POST /wallets/{wallet_id}/storage/repair`
 
@@ -59,6 +88,11 @@ access-request and receipt state for demos and tests.
 The uploads screen also uses the same API config to list encrypted document
 records and add files through the multipart wallet document endpoint, with a
 text-document fallback for simpler local API deployments.
+That same extracted surface now also supports direct record metadata patching
+and record deletion, so upload cards can persist user-facing metadata and prune
+wallet records without using the legacy wallet-interface state store. Metadata
+generation remains outside this extracted slice because it still depends on the
+broader router/proof pipeline.
 The missing-person dead-drop safety setting also uses this API config: when a
 wallet API and wallet actor are connected, Abby saves the dead-drop bundle on
 the backend with `PUT /wallets/{wallet_id}/dead-drops/missing-person` and
@@ -89,11 +123,24 @@ invokes that specific grant. Active receipts held by the current actor that
 include `record/share` or `document/share` can also create attenuated delegated
 grants for another DID through the wallet API.
 Recipient receipts can also run redacted document analysis and vector-profile
-creation when their output caveats allow it. Those actions show safe derived
-output alongside encrypted artifact metadata, matching the wallet package's
-`redacted_derived_only` and `vector_profile` output caveats. The API client also
-exposes redacted text extraction, form analysis, and GraphRAG helpers for later
-UI flows.
+creation when their output caveats allow it. Those actions now resolve through
+the extracted Python wallet adapter routes for analysis invocation issuance,
+decrypt invocation issuance, decrypt, summary analysis, redacted analysis,
+vector profiles, redacted text extraction, redacted form analysis, and
+redacted GraphRAG creation. The UI continues to consume those capabilities
+through `src/services/walletApi.ts`.
+The same extracted adapter also now serves the export bundle flow used by the
+Exports screen: export grants, export invocations, bounded encrypted bundle
+creation, bundle verification, import, and encrypted storage checks.
+It also now covers delegated record grants, direct grant revocation, and
+wallet-level emergency revoke so the UI can attenuate share-capable grants and
+run incident-response revocations without falling back to the legacy API.
+The same Python-backed surface now also covers controller add/remove, device
+add/revoke, recovery-policy updates, and recovery-contact controller recovery
+for the Security and recovery settings flows.
+Recovery-bundle storage and magic-UCAN-protected encrypted bundle reads are now
+also served by the extracted adapter, so the wallet recovery flow no longer has
+to fall back to the legacy wallet-interface service for those endpoints.
 When connected to the wallet API, the audit screen loads the wallet audit
 timeline so grant, invocation, analysis, repair, and revocation events remain
 traceable with actor, resource, decision, and grant metadata.

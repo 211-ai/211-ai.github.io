@@ -4,6 +4,7 @@ import type {
 } from "./commandSchemas";
 import type { EvidenceBundle, EvidenceItem } from "./types";
 import type { GraphRagAnswer, GraphRagEvidence, SearchResult } from "../lib/graphrag";
+import { build211ServiceEvidenceExcerpt } from "../lib/graphrag";
 import {
   answer211InfoQuestion,
   build211InfoCitations,
@@ -178,7 +179,7 @@ function buildSearchSummary(query: string, results: SearchResult[]): string {
     .map((result, index) => {
       const document = result.document;
       const label = document.provider_name || document.program_name || document.title || result.docId;
-      return `[${index + 1}] ${label}: ${cleanSnippet(result.snippet || document.text.slice(0, 320))}`;
+      return `[${index + 1}] ${label}: ${build211ServiceEvidenceExcerpt(result, 320)}`;
     })
     .join("\n\n");
 
@@ -202,7 +203,7 @@ function evidenceItemFromSearchResult(result: SearchResult): EvidenceItem {
     id: result.docId,
     title,
     source: document.source_url || document.host || "211 corpus",
-    snippet: cleanSnippet(result.snippet || document.text.slice(0, 500)),
+    snippet: build211ServiceEvidenceExcerpt(result, 500),
     score: result.score,
     citation: {
       label: title,
@@ -235,8 +236,4 @@ function hashString(value: string): string {
     hash = (hash * 33) ^ value.charCodeAt(index);
   }
   return (hash >>> 0).toString(36);
-}
-
-function cleanSnippet(value: string): string {
-  return value.replace(/\s+/g, " ").trim();
 }

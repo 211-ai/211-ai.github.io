@@ -1,6 +1,16 @@
 import { get211RelatedGraph } from "./corpus";
 import { search211Corpus } from "./search";
 import type { GraphEdge, GraphNode, GraphRagEvidence, SearchCoordinates, SearchFilters, SearchResult } from "./types";
+import {
+  getPrimaryAddress,
+  getPrimaryEligibilityText,
+  getPrimaryIntakeText,
+  getPrimaryPhone,
+  getPrimaryRequiredDocumentsText,
+  getServiceAreaServedText,
+  getServiceExtractValues,
+  getServiceLocationLabel,
+} from "./serviceDocument";
 import { generateWalletRouterText, type WalletApiConfig } from "../../services/walletApi";
 
 export interface GraphRagAnswer {
@@ -133,13 +143,14 @@ export function build211GraphRagPrompt(
     .map((result, index) => {
       const document = result.document;
       const label = document.provider_name || document.program_name || document.title || document.doc_id;
+      const excerpt = build211ServiceEvidenceExcerpt(result, excerptCharacters);
       return [
         `[${index + 1}] ${label}`,
         `Program: ${document.program_name || "not listed"}`,
         `Categories: ${document.categories || "not listed"}`,
         `Location: ${[document.city, document.state].filter(Boolean).join(", ") || "not listed"}`,
-        `Source: ${document.source_url || document.source_content_cid || document.doc_id}`,
-        `Excerpt: ${cleanExcerpt(result.snippet || document.text, excerptCharacters)}`,
+        `Evidence ID: ${document.doc_id || result.docId}`,
+        `Excerpt: ${excerpt}`,
       ].join("\n");
     })
     .join("\n\n");
@@ -174,11 +185,35 @@ export function buildEvidenceSummary(results: SearchResult[]): string {
     .map((result, index) => {
       const document = result.document;
       const label = document.provider_name || document.program_name || document.title || result.docId;
-      return `[${index + 1}] ${label}: ${cleanExcerpt(result.snippet || document.text.slice(0, 500))}`;
+      return `[${index + 1}] ${label}: ${build211ServiceEvidenceExcerpt(result)}`;
     })
     .join("\n\n");
 
   return `The strongest local 211 corpus matches are:\n\n${lead}\n\nUse the cited source pages or contact 211/the listed provider to confirm current availability and eligibility.`;
+}
+
+export function build211ServiceEvidenceExcerpt(result: SearchResult, maxCharacters = 500): string {
+  const document = result.document;
+  const structuredParts = [
+    labeledPart("Provider", document.provider_name),
+    labeledPart("Program", document.program_name || document.title),
+    labeledPart("Categories", document.categories),
+    labeledPart("Location", getServiceLocationLabel(document)),
+    labeledPart("Address", formatStructuredAddress(result)),
+    labeledPart("Phone", getPrimaryPhone(document)?.value),
+    labeledPart("Hours", firstExtractValue(document.hours)),
+    labeledPart("Eligibility", getPrimaryEligibilityText(document)),
+    labeledPart("Intake", getPrimaryIntakeText(document)),
+    labeledPart("Documents", getPrimaryRequiredDocumentsText(document)),
+    labeledPart("Fees", firstExtractValue(document.fees)),
+    labeledPart("Languages", firstExtractValue(document.languages)),
+    labeledPart("Area served", getServiceAreaServedText(document)),
+  ].filter(Boolean);
+  const structuredExcerpt = structuredParts.join(". ");
+  if (structuredExcerpt) {
+    return cleanExcerpt(structuredExcerpt, maxCharacters);
+  }
+  return cleanExcerpt(cleanRaw211EvidenceText(result.snippet || document.text), maxCharacters);
 }
 
 export function build211GraphRagFallbackAnswer(results: SearchResult[]): string {
@@ -236,8 +271,46 @@ export function isGrounded211GraphRagAnswer(answer: string): boolean {
 }
 
 function cleanExcerpt(excerpt: string, maxCharacters = 500): string {
-  const normalized = excerpt.replace(/\s+/g, " ").trim();
+  const normalized = cleanRaw211EvidenceText(excerpt);
   if (normalized.length <= maxCharacters) return normalized;
   const truncated = normalized.slice(0, maxCharacters).replace(/\s+\S*$/, "").trim();
   return `${truncated}...`;
+}
+
+function labeledPart(label: string, value: unknown): string {
+  const text = typeof value === "string" ? cleanRaw211EvidenceText(value) : "";
+  return text ? `${label}: ${text}` : "";
+}
+
+function firstExtractValue(values: Parameters<typeof getServiceExtractValues>[0]): string {
+  return getServiceExtractValues(values)
+    .map((item) => item.value || "")
+    .map(cleanRaw211EvidenceText)
+    .find(Boolean) || "";
+}
+
+function formatStructuredAddress(result: SearchResult): string {
+  const address = getPrimaryAddress(result.document);
+  if (!address) return "";
+  return cleanRaw211EvidenceText(
+    [
+      address.address || address.street || address.maps_query,
+      address.city,
+      address.state,
+      address.postal_code,
+    ]
+      .filter(Boolean)
+      .join(", "),
+  );
+}
+
+function cleanRaw211EvidenceText(value: string): string {
+  return value
+    .replace(/\b(?:https?:\/\/|www\.)\S+/gi, "")
+    .replace(/\b(?:Source|Website|URL|CID|contentCid|pageCid|docId)\s*:\s*\S+/gi, "")
+    .replace(/\b(?:Email|Get Directions|Visit Website|More Details|Print & Share|Print PDF)\b/gi, " ")
+    .replace(/\b(?:latitude|longitude|lat|lon)\s*[:=]?\s*-?\d+(?:\.\d+)?\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
 }

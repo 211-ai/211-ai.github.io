@@ -138,10 +138,20 @@ referenced by a verified export bundle.
 For the wallet UI integration, the first extracted HTTP slice now also exists in
 `ipfs_datasets_py.wallet.api` and is mounted into the shared FastAPI service.
 That adapter now owns the core `/wallets` create/read routes, document upload,
+record metadata update/delete,
 record-grant creation, threshold approval reads/writes, and access-request
 create/review/decision flows, plus snapshot list/save/verify/load, record-key
 rotation, encrypted storage verify/repair, and record, proof, audit,
-access-request, and grant-receipt listing. The TypeScript
+access-request, and grant-receipt listing. It also now owns record-scoped
+analysis/decrypt invocation issuance plus decrypt, summary analysis, redacted
+analysis, vector-profile, redacted text extraction, redacted form analysis,
+and redacted GraphRAG routes. The extracted adapter also now serves export
+grant creation, export invocation issuance, encrypted export bundle creation,
+bundle verification, bundle import, and export storage verification. It also
+owns delegated grant creation, direct grant revocation, and wallet-level
+emergency revoke routes, plus controller add/remove, device add/revoke,
+recovery-policy updates, controller recovery, and encrypted recovery-bundle
+store/read routes guarded by the magic recovery UCAN. The TypeScript
 `wallet_interface/ui/src/services/walletApi.ts` module should remain a transport
 client over that surface.
 

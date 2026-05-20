@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-20T03:08:48Z",
+  "provider": "IndexTeam/IndexTTS-2-Demo",
+  "spaceUrl": "https://indexteam-indextts-2-demo.hf.space",
+  "referenceAudio": "/home/barberb/211-ai.github.io/tmp_assets/abby-reference.wav",
+  "voiceDescription": "Same as the voice reference",
+  "responseCount": 5,
+  "sources": {
+    "dag": "/home/barberb/211-ai.github.io/docs/211_conversation_dag.json",
+    "results": "/home/barberb/211-ai.github.io/docs/211_chatbot_simulation_results.json",
+    "includeAssistantResponses": true,
+    "includeVoiceResponses": true,
+    "idScheme": "abby-tts-{sha256(spoken_normalized_text)[:20]}"
+  },
+  "normalization": {
+    "emergencyNumbers": {
+      "211": "two one one",
+      "911": "nine one one"
+    },
+    "addresses": {
+      "directions": {
+        "n": "North",
+        "s": "South",
+        "e": "East",
+        "w": "West",
+        "ne": "North East",
+        "nw": "North West",
+        "se": "South East",
+        "sw": "South West"
+      },
+      "streetSuffixes": {
+        "aly": "Alley",
+        "allee": "Alley",
+        "aly.": "Alley",
+        "ave": "Avenue",
+        "ave.": "Avenue",
+        "aven": "Avenue",
+        "avenu": "Avenue",
+        "avenue": "Avenue",
+        "blvd": "Boulevard",
+        "blvd.": "Boulevard",
+        "boul": "Boulevard",
+        "boulevard": "Boulevard",
+        "cir": "Circle",
+        "cir.": "Circle",
+        "circle": "Circle",
+        "ct": "Court",
+        "ct.": "Court",
+        "court": "Court",
+        "dr": "Drive",
+        "dr.": "Drive",
+        "drive": "Drive",
+        "hwy": "Highway",
+        "hwy.": "Highway",
+        "highway": "Highway",
+        "ln": "Lane",
+        "ln.": "Lane",
+        "lane": "Lane",
+        "loop": "Loop",
+        "pkwy": "Parkway",
+        "pkwy.": "Parkway",
+        "parkway": "Parkway",
+        "pl": "Place",
+        "pl.": "Place",
+        "place": "Place",
+        "rd": "Road",
+        "rd.": "Road",
+        "road": "Road",
+        "st": "Street",
+        "st.": "Street",
+        "street": "Street",
+        "ter": "Terrace",
+        "ter.": "Terrace",
+        "terrace": "Terrace",
+        "trl": "Trail",
+        "trl.": "Trail",
+        "trail": "Trail",
+        "way": "Way"
+      },
+      "unitLabels": {
+        "apt": "Apartment",
+        "apt.": "Apartment",
+        "bldg": "Building",
+        "bldg.": "Building",
+        "fl": "Floor",
+        "fl.": "Floor",
+        "ste": "Suite",
+        "ste.": "Suite",
+        "suite": "Suite",
+        "unit": "Unit"
+      },
+      "numberedStreetOrdinals": true
+    }
+  },
+  "mp3": {
+    "enabled": true,
+    "bitrate": "64k",
+    "preferred": true,
+    "wavDeprecated": true
+  },
+  "responses": [
+    {
+      "id": "abby-tts-04498a36a995363da9bd",
+      "textHash": "04498a36a995363da9bd",
+      "text": "I found BIRTH CERTIFICATES. The address is 800 North East Oregon Street Portland, Oregon nine seven two three two. Phone: nine seven one, six seven three, one two two two, nine seven one, six seven three, one two nine nine. Eligibility: Individuals experiencing homelessness who were born in Oregon. Confirm details before traveling, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is BIRTH CERTIFICATES. The record lists 800 NE Oregon Street Portland, OR 97232. Phone: (971) 673-1222, (971) 673-1299. Eligibility: Individuals experiencing homelessness who were born in Oregon. Source: https://gethelp.211info.org/agency/5458/20127/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "birth_certificate_help#turn-1"
+      ],
+      "status": "generated_mp3",
+      "audioPath": "",
+      "mimeType": "",
+      "audioBytes": 0,
+      "latencyMs": 19712,
+      "wavDeprecated": true,
+      "mp3Path": "tmp_assets/indextts-dedup-samples/abby-tts-04498a36a995363da9bd.mp3",
+      "mp3MimeType": "audio/mpeg",
+      "mp3Bytes": 163048,
+      "preferredAudioPath": "tmp_assets/indextts-dedup-samples/abby-tts-04498a36a995363da9bd.mp3",
+      "preferredMimeType": "audio/mpeg"
+    },
+    {
+      "id": "abby-tts-0953f2414b631f43b5a3",
+      "textHash": "0953f2414b631f43b5a3",
+      "text": "I found Housing Related Coordinated Entry for Veterans. Confirm details before traveling, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is Housing Related Coordinated Entry * Veterans - 211info. The record lists location not listed in this record. Phone: phone not listed in this record. Eligibility: eligibility not listed in this record. Source: https://www.211info.org/get-help/housing-shelter/housing-related-coordinated-entry-veterans/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "stress_0172_veteran_housing_eugene_4#turn-1",
+        "stress_0328_veteran_housing_clackamas_4#turn-1",
+        "stress_0484_veteran_housing_beaverton_4#turn-1"
+      ],
+      "status": "generated_mp3",
+      "audioPath": "",
+      "mimeType": "",
+      "audioBytes": 0,
+      "latencyMs": 11754,
+      "wavDeprecated": true,
+      "mp3Path": "tmp_assets/indextts-dedup-samples/abby-tts-0953f2414b631f43b5a3.mp3",
+      "mp3MimeType": "audio/mpeg",
+      "mp3Bytes": 74440,
+      "preferredAudioPath": "tmp_assets/indextts-dedup-samples/abby-tts-0953f2414b631f43b5a3.mp3",
+      "preferredMimeType": "audio/mpeg"
+    },
+    {
+      "id": "abby-tts-0c20fe304b76bc4b2b13",
+      "textHash": "0c20fe304b76bc4b2b13",
+      "text": "I found SNAP REPLACEMENT BENEFITS. The address is 500 Summer Street North East E48 Salem, Oregon nine seven three zero one. Phone: eight zero zero, six nine nine, nine zero seven five. Eligibility: Households who receive SNAP who lost or disposed of food that was unsafe to eat due to storms, flooding, power outages or fires can request that replacement benefits be issued for the cost of the food lost. Confirm details before traveling, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is SNAP REPLACEMENT BENEFITS. The record lists 500 Summer Street NE E48 Salem, OR 97301. Phone: (800) 699-9075. Eligibility: Households who receive SNAP who lost or disposed of food that was unsafe to eat due to storms, flooding, power outages or fires can request that replacement benefits be issued for the cost of the food lost.. Source: https://www.211info.org/agency/19956/20974/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "matrix_id_replacement_portland#turn-1",
+        "matrix_id_replacement_beaverton#turn-1",
+        "matrix_id_replacement_hillsboro#turn-1",
+        "matrix_id_replacement_clackamas#turn-1",
+        "matrix_id_replacement_salem#turn-1",
+        "matrix_id_replacement_eugene#turn-1",
+        "matrix_id_replacement_medford#turn-1",
+        "matrix_disability_benefits_salem#turn-1",
+        "stress_0006_id_replacement_portland_6#turn-2",
+        "stress_0084_id_replacement_hillsboro_0#turn-1",
+        "stress_0136_id_replacement_salem_4#turn-1",
+        "stress_0149_disability_benefits_salem_5#turn-1",
+        "stress_0162_id_replacement_eugene_6#turn-2",
+        "stress_0292_id_replacement_hillsboro_4#turn-1",
+        "stress_0318_id_replacement_clackamas_6#turn-2",
+        "stress_0357_disability_benefits_salem_9#turn-1",
+        "stress_0396_id_replacement_medford_0#turn-1",
+        "stress_0474_id_replacement_beaverton_6#turn-2",
+        "stress_0552_id_replacement_salem_0#turn-1",
+        "stress_0565_disability_benefits_salem_1#turn-1",
+        "stress_0604_id_replacement_medford_4#turn-1",
+        "stress_0630_id_replacement_portland_6#turn-2",
+        "stress_0708_id_replacement_hillsboro_0#turn-1"
+      ],
+      "status": "generated_mp3",
+      "audioPath": "",
+      "mimeType": "",
+      "audioBytes": 0,
+      "latencyMs": 24247,
+      "wavDeprecated": true,
+      "mp3Path": "tmp_assets/indextts-dedup-samples/abby-tts-0c20fe304b76bc4b2b13.mp3",
+      "mp3MimeType": "audio/mpeg",
+      "mp3Bytes": 269000,
+      "preferredAudioPath": "tmp_assets/indextts-dedup-samples/abby-tts-0c20fe304b76bc4b2b13.mp3",
+      "preferredMimeType": "audio/mpeg"
+    },
+    {
+      "id": "abby-tts-0c37b7284a77d0cee6d0",
+      "textHash": "0c37b7284a77d0cee6d0",
+      "text": "I found DAYTIME WINTER WARMING CENTER. The address is 11200 South West Murray Scholls Place Suite 102 Beaverton, Oregon nine seven zero zero seven. Phone: five zero three, six four four, two one nine seven. Eligibility: Unrestricted. Confirm details before traveling, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is DAYTIME WINTER WARMING CENTER. The record lists 11200 SW Murray Scholls Place Suite 102 Beaverton, OR 97007. Phone: (503) 644-2197. Eligibility: Unrestricted. Source: https://gethelp.211info.org/agency/27117/21962/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "matrix_warming_center_beaverton#turn-1",
+        "stress_0076_warming_center_beaverton_4#turn-1",
+        "stress_0492_warming_center_beaverton_0#turn-1",
+        "stress_0700_warming_center_beaverton_4#turn-1"
+      ],
+      "status": "generated_mp3",
+      "audioPath": "",
+      "mimeType": "",
+      "audioBytes": 0,
+      "latencyMs": 14552,
+      "wavDeprecated": true,
+      "mp3Path": "tmp_assets/indextts-dedup-samples/abby-tts-0c37b7284a77d0cee6d0.mp3",
+      "mp3MimeType": "audio/mpeg",
+      "mp3Bytes": 151136,
+      "preferredAudioPath": "tmp_assets/indextts-dedup-samples/abby-tts-0c37b7284a77d0cee6d0.mp3",
+      "preferredMimeType": "audio/mpeg"
+    },
+    {
+      "id": "abby-tts-0d9ff19f56eb23895ac4",
+      "textHash": "0d9ff19f56eb23895ac4",
+      "text": "I found CHILD, ADOLESCENT, AND FAMILY SERVICES. The address is 1500 North West Bethany Boulevard Suite 320 Beaverton, Oregon nine seven zero zero six. Phone: five zero three, six two six, nine four nine four, five zero three, five six seven, three two six zero. Eligibility: Ages 0-17. Confirm details before traveling, since service availability can change.",
+      "originalTexts": [
+        "A grounded 211 match is CHILD, ADOLESCENT, AND FAMILY SERVICES. The record lists 1500 NW Bethany Boulevard Suite 320 Beaverton, OR 97006. Phone: (503) 626-9494, (503) 567-3260. Eligibility: Ages 0-17. Source: https://gethelp.211info.org/agency/16404/25055/. Confirm details before traveling, since service availability can change."
+      ],
+      "routes": [
+        "grounded_211_answer"
+      ],
+      "serviceTags": [],
+      "locationTags": [],
+      "sourceTypes": [
+        "simulation.assistant"
+      ],
+      "sourceIds": [
+        "stress_0073_showers_beaverton_1#turn-1",
+        "stress_0697_showers_beaverton_1#turn-1"
+      ],
+      "status": "generated_mp3",
+      "audioPath": "",
+      "mimeType": "",
+      "audioBytes": 0,
+      "latencyMs": 20967,
+      "wavDeprecated": true,
+      "mp3Path": "tmp_assets/indextts-dedup-samples/abby-tts-0d9ff19f56eb23895ac4.mp3",
+      "mp3MimeType": "audio/mpeg",
+      "mp3Bytes": 220308,
+      "preferredAudioPath": "tmp_assets/indextts-dedup-samples/abby-tts-0d9ff19f56eb23895ac4.mp3",
+      "preferredMimeType": "audio/mpeg"
+    }
+  ]
+}

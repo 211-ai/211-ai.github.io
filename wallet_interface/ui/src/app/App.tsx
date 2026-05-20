@@ -25,13 +25,15 @@ import {
   Search,
   Settings as SettingsIcon,
   ShieldCheck,
+  Share2,
+  Trash2,
   Upload,
   UsersRound,
   Wrench,
 } from "lucide-react";
 import QRCode from "qrcode";
 import { ActionCard, Badge, Button, Field, Section, StatusBanner } from "../components/ui";
-import type { AgentChatMode } from "../components/agent/AgentChatDrawer";
+import { AgentChatDrawer, type AgentChatMode } from "../components/agent/AgentChatDrawer";
 import { primeVoiceChatActivation } from "../components/agent/AgentAudioChatSurface";
 import type { AppActionRuntime } from "./appActions";
 import { useAgentChatService } from "../services/agentChatService";
@@ -39,7 +41,10 @@ import { ServiceDetailScreen } from "./ServiceDetailScreen";
 import { InteractionsScreen } from "./InteractionsScreen";
 import { CalendarScreen } from "./CalendarScreen";
 import { getServicePlanDocIdFromHash, ServicePlanScreen, setLocationServicePlanHash } from "./ServicePlanScreen";
+import { ServiceQuickActions } from "../components/services/ServiceQuickActions";
+import { SavedServicesPanel } from "../components/services/SavedServicesPanel";
 import { getServiceDetailDocIdFromHash, openCanonicalServiceDetailRoute } from "../agent/tools/serviceDetailTools";
+import { getRouteLabel } from "../agent/surfaceRegistry";
 import { search211Info } from "../services/graphRagService";
 import {
   getPrimaryIntakeText,
@@ -119,12 +124,16 @@ import {
   analyzeRecordFormRedactedWithGrant,
   analyzeRecordRedactedWithGrant,
   analyzeRecordWithGrant,
+  approveAccessRequest,
+  approveThresholdApproval,
   createDocumentPrivacyProfileProof,
   createRecordVectorProfileWithGrant,
   createLocationRegionProof,
   createRedactedGraphRAG,
   createVerifiedExportBundleView,
   createWallet,
+  addBinaryDocument,
+  addTextDocument,
   deleteWalletRecord,
   dispatchMissingPersonDeadDrop,
   delegateGrant,
@@ -172,9 +181,12 @@ import {
   secondaryRoutes,
   setLocationRouteHash,
   shelterOptions,
+  disclosureScopes,
+  serviceNeeds,
   ShelterCasePriority,
   ShelterCaseRecord,
   ShelterCaseStatus,
+  ShelterEligibilityCriterion,
   ShelterProviderMessage,
   ShelterStaffAccount,
   ShelterUserAccount,
@@ -191,6 +203,7 @@ import {
   t,
   tFormat,
   TRANSLATION_LOCALE_OPTIONS,
+  getLocaleOptionLabel,
   translateRouteLabel,
   translateServiceNeed,
   type SupportedLocale,
@@ -198,6 +211,8 @@ import {
   writeAssistantTranslationLocalePreference,
   writeSiteLocalePreference
 } from "../lib/localization";
+import { generateHuggingFaceWalletRouterText } from "../lib/huggingFaceWalletRouterClient";
+import { generateOpenRouterText } from "../lib/openRouterClient";
 const APP_SESSION_KEY = "abby-ui-session-v1";
 const WALLET_API_CONFIG_KEY = "abby-wallet-api-config";
 const ID_DOCUMENT_ACCEPT_ATTR = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf";
@@ -263,6 +278,13 @@ const routeIcons: Record<RouteId, typeof Home> = {
   "provider-analytics": BarChart3,
   "provider-proofs": ShieldCheck,
   "provider-operations": Wrench,
+  "sharing-rules": Share2,
+  uploads: Upload,
+  settings: SettingsIcon,
+  "social-services": HeartHandshake,
+  interactions: History,
+  shelter: Home,
+  "provider-clients": UsersRound,
   "recipient-access": KeyRound,
   "benefits-protection": Landmark,
   analytics: BarChart3,
