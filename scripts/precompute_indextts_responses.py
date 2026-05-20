@@ -918,6 +918,13 @@ def indextts_headers(*, accept: str = "application/json") -> dict[str, str]:
     return headers
 
 
+def describe_indextts_auth() -> str:
+    headers = indextts_headers()
+    auth = headers.get("Authorization", "")
+    bill_to = headers.get("X-HF-Bill-To", "")
+    return f"hf_auth={'yes' if auth.startswith('Bearer ') else 'no'} hf_token_chars={max(0, len(auth) - len('Bearer '))} hf_bill_to={bill_to or 'unset'}"
+
+
 def http_json(method: str, url: str, payload: Any | None = None) -> Any:
     data = None if payload is None else json.dumps(payload).encode("utf-8")
     headers = indextts_headers()
@@ -1283,6 +1290,7 @@ def main() -> None:
         load_secret_env()
         if not args.reference_audio.exists():
             raise FileNotFoundError(args.reference_audio)
+        print(f"IndexTTS auth: {describe_indextts_auth()}")
         config = indextts_config()
         fn_index = indextts_fn_index(config)
         reference = upload_reference(args.reference_audio)

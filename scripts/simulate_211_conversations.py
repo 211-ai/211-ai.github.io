@@ -545,11 +545,14 @@ def load_documents(path: Path, *, limit: int | None = None) -> list[ServiceDocum
 
 
 class Local211Retriever:
-    def __init__(self, documents: list[ServiceDocument]) -> None:
+    def __init__(self, documents: list[ServiceDocument], *, candidate_limit: int = 600) -> None:
         self.documents = documents
+        self.candidate_limit = max(50, candidate_limit)
         self._doc_terms: dict[str, Counter[str]] = {}
         self._doc_lengths: dict[str, int] = {}
         self._document_frequency: Counter[str] = Counter()
+        self._term_index: dict[str, list[int]] = {}
+        self._search_cache: dict[tuple[str, int], list[SearchHit]] = {}
         for doc in documents:
             weighted_text = " ".join(
                 [
@@ -566,14 +569,28 @@ class Local211Retriever:
             self._doc_terms[doc.doc_id] = terms
             self._doc_lengths[doc.doc_id] = sum(terms.values())
             self._document_frequency.update(terms.keys())
+            doc_index = len(self._term_index.get("__docs__", []))
+            self._term_index.setdefault("__docs__", []).append(doc_index)
+            for term in terms:
+                self._term_index.setdefault(term, []).append(doc_index)
 
     def search(self, query: str, limit: int = 5) -> list[SearchHit]:
         query_terms = expand_query_terms(tokenize(query))
         if not query_terms:
             return []
+        cache_key = (" ".join(query_terms), limit)
+        cached = self._search_cache.get(cache_key)
+        if cached is not None:
+            return cached
         scored: list[SearchHit] = []
         total_docs = max(1, len(self.documents))
-        for doc in self.documents:
+        candidate_counts: Counter[int] = Counter()
+        for term in query_terms:
+            idf = math.log((total_docs + 1) / (1 + self._document_frequency[term])) + 1.0
+            for doc_index in self._term_index.get(term, []):
+                candidate_counts[doc_index] += max(1, int(idf * 10))
+        for doc_index, _overlap in candidate_counts.most_common(self.candidate_limit):
+            doc = self.documents[doc_index]
             terms = self._doc_terms.get(doc.doc_id, Counter())
             score = 0.0
             matched: list[str] = []
@@ -597,7 +614,9 @@ class Local211Retriever:
             if score > 0:
                 scored.append(SearchHit(document=doc, score=round(score, 4), matched_terms=sorted(set(matched))))
         scored.sort(key=lambda hit: hit.score, reverse=True)
-        return scored[:limit]
+        hits = scored[:limit]
+        self._search_cache[cache_key] = hits
+        return hits
 
 
 def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[ConversationScenario]:
@@ -1301,8 +1320,12 @@ def top_similar_records(
     vectors: list[list[float] | dict[str, float]],
     *,
     limit: int = 3,
+    candidate_limit: int = 50,
 ) -> dict[str, list[dict[str, Any]]]:
     similar: dict[str, list[dict[str, Any]]] = {}
+    if candidate_limit <= 0:
+        return {record["id"]: [] for record in records}
+    candidate_limit = max(limit, candidate_limit)
     if vectors and all(isinstance(vector, dict) for vector in vectors):
         inverted: dict[str, list[int]] = {}
         for index, vector in enumerate(vectors):
@@ -1323,7 +1346,7 @@ def top_similar_records(
             scores: list[dict[str, Any]] = []
             left_norm = norms[index]
             if left_norm:
-                for other_index, overlap in candidates.most_common(250):
+                for other_index, overlap in candidates.most_common(candidate_limit):
                     other = records[other_index]
                     other_vector = vectors[other_index] if isinstance(vectors[other_index], dict) else {}
                     right_norm = norms[other_index]
@@ -1343,6 +1366,44 @@ def top_similar_records(
                             "overlap": overlap,
                         }
                     )
+            scores.sort(key=lambda item: item["score"], reverse=True)
+            similar[record["id"]] = scores[:limit]
+        return similar
+
+    if vectors and all(isinstance(vector, list) for vector in vectors):
+        inverted: dict[str, list[int]] = {}
+        token_sets: list[set[str]] = []
+        for index, record in enumerate(records):
+            text = " ".join(
+                str(record.get(key) or "")
+                for key in ("normalizedQuery", "user", "route", "scenarioTitle")
+            )
+            tokens = {token for token in tokenize(text) if token not in STOPWORDS}
+            token_sets.append(tokens)
+            for token in tokens:
+                inverted.setdefault(token, []).append(index)
+        for index, record in enumerate(records):
+            candidates: Counter[int] = Counter()
+            for token in token_sets[index]:
+                for other_index in inverted.get(token, []):
+                    if other_index != index:
+                        candidates[other_index] += 1
+            scores: list[dict[str, Any]] = []
+            for other_index, overlap in candidates.most_common(candidate_limit):
+                other = records[other_index]
+                score = cosine_dense(vectors[index], vectors[other_index])  # type: ignore[arg-type]
+                if score <= 0:
+                    continue
+                scores.append(
+                    {
+                        "recordId": other["id"],
+                        "score": score,
+                        "route": other["route"],
+                        "scenarioId": other["scenarioId"],
+                        "user": other["user"],
+                        "overlap": overlap,
+                    }
+                )
             scores.sort(key=lambda item: item["score"], reverse=True)
             similar[record["id"]] = scores[:limit]
         return similar
@@ -1549,6 +1610,7 @@ def build_conversation_memory(
     embedding_model: str = DEFAULT_EMBEDDING_MODEL,
     embedding_device: str | None = None,
     embedding_batch_size: int = 16,
+    similarity_candidate_limit: int = 50,
 ) -> dict[str, Any]:
     records: list[dict[str, Any]] = []
     texts: list[str] = []
@@ -1583,7 +1645,7 @@ def build_conversation_memory(
         record["memoryText"] = text
         record["embedding"] = vector
 
-    similar = top_similar_records(records, vectors)
+    similar = top_similar_records(records, vectors, candidate_limit=similarity_candidate_limit)
     for record in records:
         record["similarCases"] = similar.get(record["id"], [])
 
@@ -1826,21 +1888,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
     parser.add_argument("--embedding-device", default=None)
     parser.add_argument("--embedding-batch-size", type=int, default=16)
+    parser.add_argument("--similarity-candidate-limit", type=int, default=50)
     parser.add_argument("--scenario-target", type=int, default=DEFAULT_SCENARIO_TARGET)
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
+    started_at = datetime.now(timezone.utc)
     templates = load_prompt_templates(args.prompt_templates)
+    print(f"Loaded {len(templates)} prompt templates")
     documents = load_documents(args.corpus, limit=args.document_limit)
+    print(f"Loaded {len(documents)} documents")
     retriever = Local211Retriever(documents)
     scenarios = default_scenarios(target_count=args.scenario_target)
+    print(f"Generated {len(scenarios)} scenarios")
     results = [
         simulate_conversation(scenario, retriever, templates, use_llm_router=args.use_llm_router)
         for scenario in scenarios
     ]
+    turn_count = sum(len(result["turns"]) for result in results)
+    print(f"Simulated {len(results)} scenarios / {turn_count} turns")
     tree = build_decision_tree(results, templates)
+    print("Built decision tree")
     memory = build_conversation_memory(
         results,
         generated_at=tree["generatedAt"],
@@ -1848,8 +1918,11 @@ def main() -> None:
         embedding_model=args.embedding_model,
         embedding_device=args.embedding_device,
         embedding_batch_size=args.embedding_batch_size,
+        similarity_candidate_limit=args.similarity_candidate_limit,
     )
+    print(f"Built conversation memory with {memory.get('recordCount')} embedded records")
     dag = build_conversation_dag(memory, results, generated_at=tree["generatedAt"])
+    print(f"Built DAG with {dag.get('nodeCount')} nodes / {dag.get('edgeCount')} edges")
     payload = {
         "schemaVersion": 1,
         "generatedAt": tree["generatedAt"],
@@ -1866,6 +1939,7 @@ def main() -> None:
     args.conversation_memory.write_text(json.dumps(memory, indent=2), encoding="utf-8")
     args.conversation_dag.write_text(json.dumps(dag, indent=2), encoding="utf-8")
     write_dag_shards(args.conversation_dag_shards, dag, memory.get("embedding", {}))
+    print("Wrote DAG shards")
     write_report(args.report, results, tree)
     print(f"Wrote {args.results}")
     print(f"Wrote {args.decision_tree}")
@@ -1873,6 +1947,7 @@ def main() -> None:
     print(f"Wrote {args.conversation_dag}")
     print(f"Wrote {args.conversation_dag_shards}")
     print(f"Wrote {args.report}")
+    print(f"Elapsed seconds: {(datetime.now(timezone.utc) - started_at).total_seconds():.1f}")
     failed = [result["id"] for result in results if not result["passed"]]
     if failed:
         print(f"Scenarios needing review: {', '.join(failed)}")
