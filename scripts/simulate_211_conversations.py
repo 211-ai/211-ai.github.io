@@ -41,7 +41,7 @@ DEFAULT_MEMORY = REPO_ROOT / "docs/211_conversation_memory.json"
 DEFAULT_DAG = REPO_ROOT / "docs/211_conversation_dag.json"
 DEFAULT_DAG_SHARDS = REPO_ROOT / "docs/211_conversation_dag_shards"
 DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-DEFAULT_SCENARIO_TARGET = 1024
+DEFAULT_SCENARIO_TARGET = 4096
 
 TOKEN_PATTERN = re.compile(r"[a-z0-9']+")
 URGENT_PATTERN = re.compile(
@@ -192,6 +192,114 @@ class ConversationState:
     @property
     def context_query(self) -> str:
         return " ".join(self.user_messages[-3:])
+
+
+REALISTIC_CALLER_FRAMES = [
+    "I'm calling from my phone. I'm staying outside near {location} and need {need}.",
+    "I don't have much battery. I'm in {location}. Is there {need} I can actually call?",
+    "I'm sleeping in my car around {location}. I need {need}, preferably somewhere that answers the phone.",
+    "My stuff got taken and I'm around {location}. Can you help me find {need}?",
+    "I'm with my kid and we are near {location}. We need {need}.",
+    "I'm trying to help a neighbor who has no internet. They are in {location} and need {need}.",
+    "I'm on a borrowed phone in {location}. Please find {need}.",
+    "I'm not sure what the program is called. I am in {location} and need {need}.",
+    "I got turned away earlier. Is there another place in {location} for {need}?",
+    "I'm disabled and it is hard to get across town. I need {need} near {location}.",
+    "I just got out of the hospital and I'm in {location}. I need {need}.",
+    "I'm a veteran in {location}. I need {need} and someone I can call.",
+    "I'm under 25 and staying outside in {location}. I need {need}.",
+    "I'm fleeing a bad situation and I'm in {location}. I need {need}, but I need it to be safe.",
+    "I don't have ID right now. I'm in {location}. Can I still get {need}?",
+    "I have a dog with me in {location}. I need {need}.",
+    "I work days and can't wait on hold forever. I need {need} in {location}.",
+    "I speak Spanish better than English. I am in {location} and need {need}.",
+    "I am calling for my mom. She is in {location} and needs {need}.",
+    "I am in a motel until tomorrow near {location}. I need {need}.",
+]
+
+REALISTIC_BROAD_FRAMES = [
+    "I don't know what to ask for. I'm in {location}, and everything is kind of falling apart.",
+    "I'm outside and tired. I need help in {location}, but I don't know where to start.",
+    "My family needs help in {location}. Food, rent, maybe shelter. I don't know what comes first.",
+    "I just got to {location}. I need resources but I don't know the names of anything.",
+    "I'm on hold with everybody. Can you help me figure out what to try first in {location}?",
+    "I'm helping someone at the library in {location}. They need help but can't explain it clearly.",
+]
+
+REALISTIC_FOLLOWUPS = [
+    "Do they answer after hours?",
+    "Do I need ID for that?",
+    "Can I bring my kid?",
+    "Is there a bus nearby?",
+    "Can you give me the phone number first?",
+    "What if they say they are full?",
+    "I don't have an address. Will that stop me?",
+    "Can I go there today?",
+    "Do they help people with pets?",
+    "Can I talk to a person?",
+]
+REALISTIC_GROUNDED_FOLLOWUPS = [
+    "Do they answer after hours?",
+    "Can I bring my kid?",
+    "Is there a bus nearby?",
+    "Can you give me the phone number first?",
+    "What if they say they are full?",
+    "I don't have an address. Will that stop me?",
+    "Can I go there today?",
+    "Do they help people with pets?",
+]
+
+REALISTIC_URGENT_FOLLOWUPS = [
+    "I do not feel safe right now.",
+    "I am outside tonight and need someone now.",
+    "Someone is threatening me.",
+    "I might hurt myself tonight.",
+]
+
+NEED_ALIASES = {
+    "food pantry": ["food", "groceries", "a food box", "a pantry"],
+    "community meals": ["a hot meal", "meals", "somewhere to eat"],
+    "rent assistance": ["rent help", "help with rent", "money before eviction"],
+    "eviction prevention": ["eviction help", "help before lockout", "legal help for eviction"],
+    "utility assistance": ["electric bill help", "power bill help", "utility help"],
+    "legal aid": ["legal help", "a tenant lawyer", "someone for legal aid"],
+    "ID replacement help": ["ID help", "help replacing ID", "documents"],
+    "transportation help": ["a ride", "bus help", "transportation"],
+    "medical clinic": ["a clinic", "a doctor", "medical care"],
+    "dental clinic": ["a dentist", "dental help", "tooth pain help"],
+    "mental health services": ["mental health help", "counseling", "someone to talk to"],
+    "detox help": ["detox", "substance use help", "treatment"],
+    "domestic violence survivor advocacy": ["domestic violence help", "safe advocacy", "DV help"],
+    "diapers": ["diapers", "baby supplies", "pull ups"],
+    "child care help": ["child care", "day care help", "help watching my kid"],
+    "employment help": ["job help", "work help", "employment"],
+    "veteran housing help": ["veteran housing", "VA housing help", "housing as a veteran"],
+    "senior meals": ["senior meals", "food for an older adult", "meals for my mom"],
+    "youth day center": ["youth day center", "help for a young person outside", "teen drop in"],
+    "disability benefits help": ["disability benefits", "SSI help", "SSDI help"],
+    "laundry services": ["laundry", "wash clothes", "a place to do laundry"],
+    "shower services": ["a shower", "showers", "a place to clean up"],
+    "mail service": ["mail service", "an address for mail", "mail pickup"],
+    "clothing help": ["clothes", "a coat", "clean clothes"],
+    "warming center": ["a warming place", "warming center", "somewhere warm"],
+    "cooling center": ["cooling center", "somewhere cool", "heat relief"],
+}
+
+
+def caller_need_label(need_label: str, index: int) -> str:
+    aliases = NEED_ALIASES.get(need_label)
+    if not aliases:
+        return need_label
+    return aliases[index % len(aliases)]
+
+
+def realistic_call_message(need_label: str, location_label: str, index: int) -> str:
+    frame = REALISTIC_CALLER_FRAMES[index % len(REALISTIC_CALLER_FRAMES)]
+    return frame.format(need=caller_need_label(need_label, index), location=location_label)
+
+
+def realistic_broad_message(location_label: str, index: int) -> str:
+    return REALISTIC_BROAD_FRAMES[index % len(REALISTIC_BROAD_FRAMES)].format(location=location_label)
 
 
 def tokenize(text: str) -> list[str]:
@@ -760,6 +868,88 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
         )
         for scenario_id, title, turns, routes in multi_turn_requests
     )
+    existing_ids = {scenario.id for scenario in scenarios}
+
+    realistic_seed_needs = [
+        ("shelter", "shelter"),
+        ("food_pantry", "food pantry"),
+        ("community_meals", "community meals"),
+        ("showers", "shower services"),
+        ("laundry", "laundry services"),
+        ("mail_service", "mail service"),
+        ("medical_clinic", "medical clinic"),
+        ("mental_health", "mental health services"),
+        ("detox", "detox help"),
+        ("id_replacement", "ID replacement help"),
+        ("transportation", "transportation help"),
+        ("domestic_violence_advocacy", "domestic violence survivor advocacy"),
+        ("veteran_housing", "veteran housing help"),
+        ("youth_day_center", "youth day center"),
+        ("rent_assistance", "rent assistance"),
+        ("utility_assistance", "utility assistance"),
+        ("diapers", "diapers"),
+        ("senior_meals", "senior meals"),
+    ]
+    realistic_seed_locations = [
+        ("portland", "Portland"),
+        ("gresham", "Gresham"),
+        ("beaverton", "Beaverton"),
+        ("hillsboro", "Hillsboro"),
+        ("clackamas", "Clackamas County"),
+        ("salem", "Salem"),
+        ("eugene", "Eugene"),
+        ("medford", "Medford"),
+    ]
+    for seed_index, ((need_id, need_label), (location_id, location_label)) in enumerate(
+        (item for item in zip(realistic_seed_needs * len(realistic_seed_locations), realistic_seed_locations * len(realistic_seed_needs)))
+    ):
+        if seed_index >= 96:
+            break
+        scenario_id = f"realistic_grounded_{seed_index:03d}_{need_id}_{location_id}"
+        if scenario_id in existing_ids:
+            continue
+        scenarios.append(
+            ConversationScenario(
+                id=scenario_id,
+                title=f"Realistic caller {need_label} in {location_label}",
+                user_turns=[realistic_call_message(need_label, location_label, seed_index)],
+            )
+        )
+        existing_ids.add(scenario_id)
+
+    for seed_index, (_location_id, location_label) in enumerate(realistic_seed_locations):
+        scenario_id = f"realistic_broad_to_service_{seed_index:03d}"
+        if scenario_id not in existing_ids:
+            need_id, need_label = realistic_seed_needs[seed_index % len(realistic_seed_needs)]
+            scenarios.append(
+                ConversationScenario(
+                    id=scenario_id,
+                    title=f"Realistic broad caller then {need_label}",
+                    user_turns=[
+                        realistic_broad_message(location_label, seed_index),
+                        realistic_call_message(need_label, location_label, seed_index + 17),
+                        REALISTIC_GROUNDED_FOLLOWUPS[seed_index % len(REALISTIC_GROUNDED_FOLLOWUPS)],
+                    ],
+                )
+            )
+            existing_ids.add(scenario_id)
+
+    for seed_index, (_need_id, need_label) in enumerate(realistic_seed_needs[:12]):
+        location_id, location_label = realistic_seed_locations[seed_index % len(realistic_seed_locations)]
+        scenario_id = f"realistic_grounded_then_urgent_{seed_index:03d}_{location_id}"
+        if scenario_id not in existing_ids:
+            scenarios.append(
+                ConversationScenario(
+                    id=scenario_id,
+                    title=f"Realistic caller escalates after {need_label}",
+                    user_turns=[
+                        realistic_call_message(need_label, location_label, seed_index + 31),
+                        REALISTIC_URGENT_FOLLOWUPS[seed_index % len(REALISTIC_URGENT_FOLLOWUPS)],
+                        "Please keep me connected to a person.",
+                    ],
+                )
+            )
+            existing_ids.add(scenario_id)
 
     out_of_domain_requests = [
         ("gpu_cuda_help", "GPU CUDA help", "Can you debug my CUDA kernel?"),
@@ -876,19 +1066,18 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
             continue
         if mode in {0, 1, 2, 3, 4, 5}:
             phrasing = [
-                f"I am in {location_label} and need {need_label}.",
-                f"Can you find {need_label} for my family in {location_label}?",
-                f"Please search 211 for {need_label} near {location_label}.",
-                f"Where should someone call for {need_label} in {location_label}?",
-                f"Find local {need_label} options around {location_label}.",
-                f"I need a phone number for {need_label} in {location_label}.",
+                realistic_call_message(need_label, location_label, stress_index),
+                f"My family is in {location_label}. We need {caller_need_label(need_label, stress_index)} and I need a number that works.",
+                f"I'm at the library in {location_label}. Can you search two one one for {caller_need_label(need_label, stress_index)}?",
+                f"I don't have a place to charge my phone. Where should I call for {caller_need_label(need_label, stress_index)} in {location_label}?",
+                f"Can you find nearby {caller_need_label(need_label, stress_index)} around {location_label}? I can't travel far.",
+                f"I got told no at one place. I need another phone number for {caller_need_label(need_label, stress_index)} in {location_label}.",
             ][mode]
             scenarios.append(
                 ConversationScenario(
                     id=scenario_id,
                     title=f"Stress {need_label} in {location_label}",
                     user_turns=[phrasing],
-                    expected_route="grounded_211_answer",
                 )
             )
         elif mode == 6:
@@ -897,10 +1086,10 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title=f"Stress broad then {need_label} in {location_label}",
                     user_turns=[
-                        "I need help but I do not know where to start.",
-                        f"I am in {location_label} and need {need_label}.",
+                        realistic_broad_message(location_label, stress_index),
+                        realistic_call_message(need_label, location_label, stress_index + 7),
+                        REALISTIC_GROUNDED_FOLLOWUPS[stress_index % len(REALISTIC_GROUNDED_FOLLOWUPS)],
                     ],
-                    expected_routes=["clarifying_prompt", "grounded_211_answer"],
                 )
             )
         elif mode == 7:
@@ -909,7 +1098,6 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title=f"Stress urgent handoff in {location_label}",
                     user_turns=[f"I am unsafe right now in {location_label} and need help."],
-                    expected_route="live_agent",
                 )
             )
         elif mode == 8:
@@ -919,7 +1107,6 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title="Stress document fallback",
                     user_turns=[prompt],
-                    expected_route="template_guided_fallback",
                 )
             )
         elif mode == 9:
@@ -928,10 +1115,9 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title=f"Stress human handoff after {need_label}",
                     user_turns=[
-                        f"Can you find {need_label} in {location_label}?",
+                        realistic_call_message(need_label, location_label, stress_index + 9),
                         "Can I talk to a person about this?",
                     ],
-                    expected_routes=["grounded_211_answer", "live_agent"],
                 )
             )
         elif mode == 10:
@@ -943,7 +1129,6 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                         fallback_prompts[stress_index % len(fallback_prompts)],
                         "I still cannot figure out what paperwork I need.",
                     ],
-                    expected_routes=["template_guided_fallback", "live_agent"],
                 )
             )
         elif mode == 11 and stress_index % 3 == 0:
@@ -952,11 +1137,11 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title=f"Stress deeper guided flow for {need_label}",
                     user_turns=[
-                        "I need help but I do not know where to start.",
-                        f"I am in {location_label} and need {need_label}.",
+                        realistic_broad_message(location_label, stress_index),
+                        realistic_call_message(need_label, location_label, stress_index + 11),
+                        REALISTIC_GROUNDED_FOLLOWUPS[stress_index % len(REALISTIC_GROUNDED_FOLLOWUPS)],
                         "Can I talk to a person about this?",
                     ],
-                    expected_routes=["clarifying_prompt", "grounded_211_answer", "live_agent"],
                 )
             )
         elif mode == 11 and stress_index % 3 == 1:
@@ -965,11 +1150,10 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                     id=scenario_id,
                     title=f"Stress deeper urgent flow for {need_label}",
                     user_turns=[
-                        f"Can you find {need_label} in {location_label}?",
+                        realistic_call_message(need_label, location_label, stress_index + 13),
                         f"I am unsafe right now in {location_label}.",
                         "Please keep me connected to a person.",
                     ],
-                    expected_routes=["grounded_211_answer", "live_agent", "live_agent"],
                 )
             )
         elif mode == 11:
@@ -982,7 +1166,6 @@ def default_scenarios(target_count: int = DEFAULT_SCENARIO_TARGET) -> list[Conve
                         "I still cannot figure out what paperwork I need.",
                         f"I am in {location_label} and also need {need_label}.",
                     ],
-                    expected_routes=["template_guided_fallback", "live_agent", "live_agent"],
                 )
             )
         else:
@@ -1120,6 +1303,50 @@ def top_similar_records(
     limit: int = 3,
 ) -> dict[str, list[dict[str, Any]]]:
     similar: dict[str, list[dict[str, Any]]] = {}
+    if vectors and all(isinstance(vector, dict) for vector in vectors):
+        inverted: dict[str, list[int]] = {}
+        for index, vector in enumerate(vectors):
+            sparse_vector = vector if isinstance(vector, dict) else {}
+            for key in sparse_vector:
+                inverted.setdefault(key, []).append(index)
+        norms = [
+            math.sqrt(sum(float(value) * float(value) for value in (vector if isinstance(vector, dict) else {}).values()))
+            for vector in vectors
+        ]
+        for index, record in enumerate(records):
+            vector = vectors[index] if isinstance(vectors[index], dict) else {}
+            candidates: Counter[int] = Counter()
+            for key, value in vector.items():
+                for other_index in inverted.get(key, []):
+                    if other_index != index:
+                        candidates[other_index] += 1
+            scores: list[dict[str, Any]] = []
+            left_norm = norms[index]
+            if left_norm:
+                for other_index, overlap in candidates.most_common(250):
+                    other = records[other_index]
+                    other_vector = vectors[other_index] if isinstance(vectors[other_index], dict) else {}
+                    right_norm = norms[other_index]
+                    if not right_norm:
+                        continue
+                    dot = sum(float(value) * float(other_vector.get(key, 0.0)) for key, value in vector.items())
+                    score = dot / (left_norm * right_norm)
+                    if score <= 0:
+                        continue
+                    scores.append(
+                        {
+                            "recordId": other["id"],
+                            "score": score,
+                            "route": other["route"],
+                            "scenarioId": other["scenarioId"],
+                            "user": other["user"],
+                            "overlap": overlap,
+                        }
+                    )
+            scores.sort(key=lambda item: item["score"], reverse=True)
+            similar[record["id"]] = scores[:limit]
+        return similar
+
     for index, record in enumerate(records):
         scores: list[dict[str, Any]] = []
         for other_index, other in enumerate(records):

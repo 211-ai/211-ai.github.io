@@ -12,6 +12,7 @@ import re
 import subprocess
 import time
 import uuid
+from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping
 from urllib import parse as urllib_parse
@@ -1209,6 +1210,23 @@ def load_audio_responses(dag_path: Path, results_path: Path, *, include_assistan
     return responses
 
 
+def write_progress(path: Path | None, entries: list[dict[str, Any]], total: int, started_at: float) -> None:
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    status_counts = Counter(str(entry.get("status") or "unknown") for entry in entries)
+    payload = {
+        "schemaVersion": 1,
+        "updatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "elapsedSeconds": round(time.time() - started_at, 3),
+        "completed": len(entries),
+        "total": total,
+        "statusCounts": dict(sorted(status_counts.items())),
+        "lastResponse": entries[-1] if entries else None,
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dag", type=Path, default=DEFAULT_DAG)
@@ -1218,6 +1236,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--public-manifest", type=Path, default=DEFAULT_PUBLIC_MANIFEST)
     parser.add_argument("--voice-description", default="Same as the voice reference")
+    parser.add_argument("--offset", type=int, default=0, help="Skip this many deduplicated responses before applying --limit.")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--mp3", dest="write_mp3", action="store_true", default=True)
@@ -1226,6 +1245,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--delete-wav-after-mp3", action="store_true", default=True)
     parser.add_argument("--keep-wav", dest="delete_wav_after_mp3", action="store_false")
     parser.add_argument("--stop-on-error", action="store_true")
+    parser.add_argument(
+        "--max-runtime-seconds",
+        type=float,
+        default=None,
+        help="Stop starting new synthesis jobs after this many seconds. Existing cached MP3s are still recorded in the manifest.",
+    )
+    parser.add_argument("--progress-json", type=Path, default=None, help="Write resumable progress after every response.")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--voice-responses-only", action="store_true")
     parser.add_argument("--assistant-responses-only", action="store_true")
@@ -1234,6 +1260,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    started_at = time.time()
     include_assistant = not args.voice_responses_only
     include_voice = not args.assistant_responses_only
     responses = load_audio_responses(
@@ -1242,6 +1269,8 @@ def main() -> None:
         include_assistant=include_assistant,
         include_voice=include_voice,
     )
+    if args.offset:
+        responses = responses[max(0, args.offset) :]
     if args.limit is not None:
         responses = responses[: max(0, args.limit)]
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -1258,6 +1287,9 @@ def main() -> None:
         fn_index = indextts_fn_index(config)
         reference = upload_reference(args.reference_audio)
         for index, item in enumerate(responses, start=1):
+            if args.max_runtime_seconds is not None and time.time() - started_at >= args.max_runtime_seconds:
+                print(f"[{index}/{len(responses)}] stopping before new work: max runtime reached")
+                break
             audio_path = args.output_dir / f"{item['id']}.wav"
             mp3_path = args.output_dir / f"{item['id']}.mp3"
             if not audio_path.exists() and mp3_path.exists() and not args.force:
@@ -1277,6 +1309,7 @@ def main() -> None:
                     }
                 )
                 print(f"[{index}/{len(responses)}] cached {mp3_path.name}")
+                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 continue
             if audio_path.exists() and not args.force:
                 if args.write_mp3:
@@ -1304,6 +1337,7 @@ def main() -> None:
                     entry.update({"mp3Path": "", "preferredAudioPath": display_path(audio_path), "preferredMimeType": "audio/wav"})
                 manifest_entries.append(entry)
                 print(f"[{index}/{len(responses)}] cached {audio_path.name}")
+                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 continue
             try:
                 print(f"[{index}/{len(responses)}] synthesizing {item['id']}: {item['text']}")
@@ -1336,6 +1370,7 @@ def main() -> None:
                 manifest_entries.append(
                     entry
                 )
+                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
             except Exception as exc:
                 print(f"[{index}/{len(responses)}] failed {item['id']}: {exc}")
                 manifest_entries.append(
@@ -1347,6 +1382,7 @@ def main() -> None:
                         "error": f"{type(exc).__name__}: {exc}",
                     }
                 )
+                write_progress(args.progress_json, manifest_entries, len(responses), started_at)
                 if args.stop_on_error:
                     break
 
