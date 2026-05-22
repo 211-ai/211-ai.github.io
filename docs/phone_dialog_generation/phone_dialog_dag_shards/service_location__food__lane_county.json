@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__food__lane_county",
+  "kind": "service_location",
+  "key": "food__lane_county",
+  "nodeCount": 9,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000155#turn-2",
+      "scenarioId": "phone_dialog_0000155",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Lane County, and I\u2019m calling for my neighbor, she\u2019s 78 and not getting enough food in the week.",
+      "normalizedQuery": "lane county calling neighbor she 78 getting enough food pantry meal meals groceries week",
+      "voiceResponse": "First step: call **2-1-1** now \u2014 **two, one, one** \u2014 and ask for **Lane County food pantries, community meals, and senior food delivery** for your 78-year-old neighbor. You can say, \u201cI\u2019m on a borrowed phone and want to share minimal personal details.\u201d I only have Portland-specific numbers in my records, so 211 is the best direct connection for Lane County right now.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:44bdd22d74dc9985"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **2-1-1** now \u2014 **two, one, one** \u2014 and ask for **Lane County food pantries, community meals, and senior food delivery** for your 78-year-old neighbor. You can say, \u201cI\u2019m on a borrowed phone and want to share minimal personal details.\u201d I only have Portland-specific numbers in my records, so 211 is the best direct connection for Lane County right now.",
+      "voiceResponseAlternatives": [
+        "First step: when you reconnect, dial **2-1-1** \u2014 **two, one, one** \u2014 and say, \u201cBefore I share names, please explain your privacy policy and who my information is shared with.\u201d You can also say you\u2019re on a borrowed phone and want to give only minimal details until they answer that.",
+        "Write this one now: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000155#turn-4",
+      "scenarioId": "phone_dialog_0000155",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Before I give names, is this private? I don\u2019t want her information shared around without us knowing.",
+      "normalizedQuery": "hi sorry this isn phone battery at like two percent give main number first case we cut off lane county calling neighbor she 78 getting enough food pantry meal meals groceries week really needs senior delivery if possible since drive much anymore before names private don want her information shared around without us knowing",
+      "voiceResponse": "First step: when you reconnect, dial **2-1-1** \u2014 **two, one, one** \u2014 and say, \u201cBefore I share names, please explain your privacy policy and who my information is shared with.\u201d You can also say you\u2019re on a borrowed phone and want to give only minimal details until they answer that.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b3d7aa7d9150b9d1",
+        "service:b8c762144d937988",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: when you reconnect, dial **2-1-1** \u2014 **two, one, one** \u2014 and say, \u201cBefore I share names, please explain your privacy policy and who my information is shared with.\u201d You can also say you\u2019re on a borrowed phone and want to give only minimal details until they answer that.",
+      "voiceResponseAlternatives": [
+        "First step: call **2-1-1** now \u2014 **two, one, one** \u2014 and ask for **Lane County food pantries, community meals, and senior food delivery** for your 78-year-old neighbor. You can say, \u201cI\u2019m on a borrowed phone and want to share minimal personal details.\u201d I only have Portland-specific numbers in my records, so 211 is the best direct connection for Lane County right now.",
+        "Write this one now: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000155#turn-5",
+      "scenarioId": "phone_dialog_0000155",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that number slower? I\u2019ve got traffic noise and I missed the middle part.",
+      "normalizedQuery": "lane county calling neighbor she 78 getting enough food pantry meal meals groceries week really needs senior like delivery if possible since drive much anymore before give names this private don want her information shared around without us knowing repeat number slower ve got traffic noise missed middle part",
+      "voiceResponse": "Most important number: **2-1-1** \u2014 **two, one, one**. If you wanted the backup Portland number again, it is: **5-0-3, 4-8-4, 8-8-0-0**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number: **2-1-1** \u2014 **two, one, one**. If you wanted the backup Portland number again, it is: **5-0-3, 4-8-4, 8-8-0-0**.",
+      "voiceResponseAlternatives": [
+        "I only gave one place so far. I only gave one. Springfield OASIS Drop-In Day Center. Address: 1-0-2-5 G Street, Springfield. Again: 1-0-2-5 G Street, Springfield. Phone: 5-4-1, 3-4-5, 3-6-2-8. Again: 5-4-1, 3-4-5, 3-6-2-8.",
+        "You\u2019re okay, I can repeat it. Best match: the **Oregon Food Bank Food Pantry and Meal Locator**. It helps you find nearby food pantries and community meal sites in Lane County, including senior-friendly options. Eligibility is **unrestricted**. Documents **vary by site**. If you want, I can stay with you and do it step by step."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000298#turn-1",
+      "scenarioId": "phone_dialog_0000298",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, uh, I\u2019m in Lane County and I need somewhere I can eat today, like a community meal, but I can\u2019t do a lot of forms.",
+      "normalizedQuery": "hi uh lane county somewhere eat like community meal lot forms",
+      "voiceResponse": "I hear you. Let\u2019s keep this simple. I found one Lane County spot: Springfield OASIS Drop-In Day Center, at **1025 G Street, Springfield**. That is **1-0-2-5 G Street, Springfield**. Phone is **5-4-1, 3-4-5, 3-6-2-8**. Again: **5-4-1, 3-4-5, 3-6-2-8**. Important detail: they prioritize families with a child age 17 or younger. Do you have a child with you right now?",
+      "evidenceDocIds": [
+        "service:4aae3f37206457d6",
+        "service:7206228a1df21d85",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrm7zsflmekb2v2h24n5usg5lgra53hxh7kapyqut7ndxi2orrmu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Let\u2019s keep this simple. I found one Lane County spot: Springfield OASIS Drop-In Day Center, at **1025 G Street, Springfield**. That is **1-0-2-5 G Street, Springfield**. Phone is **5-4-1, 3-4-5, 3-6-2-8**. Again: **5-4-1, 3-4-5, 3-6-2-8**. Important detail: they prioritize families with a child age 17 or younger. Do you have a child with you right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I\u2019m glad you called. For Lane County, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator**. It can find nearby senior-friendly food pantries, community meal sites, and other food distributions. Eligibility is unrestricted, and documents vary by site. If you want, I can stay with you and help you go step by step through what to ask for when you contact a site.",
+        "I hear how scared you are, and you\u2019re doing the right thing calling. Let\u2019s focus on getting her food today. A place I can give you now is **Food Pantry and Meals**. The number is **5 0 3, 7 7 1, 7 9 1 4**. They list eligibility as unrestricted and no documents required. Address is **8 8 0 0 Southeast 80th Avenue, Portland**. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000298#turn-4",
+      "scenarioId": "phone_dialog_0000298",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that second place? I missed it, there\u2019s people yelling in the background here.",
+      "normalizedQuery": "hi uh lane county somewhere eat like community meal lot forms sorry slow down trying listen just head all over place right now they ask id full name don want information wait was second missed it there people yelling background here",
+      "voiceResponse": "I only gave one place so far. I only gave one. Springfield OASIS Drop-In Day Center. Address: 1-0-2-5 G Street, Springfield. Again: 1-0-2-5 G Street, Springfield. Phone: 5-4-1, 3-4-5, 3-6-2-8. Again: 5-4-1, 3-4-5, 3-6-2-8.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I only gave one place so far. I only gave one. Springfield OASIS Drop-In Day Center. Address: 1-0-2-5 G Street, Springfield. Again: 1-0-2-5 G Street, Springfield. Phone: 5-4-1, 3-4-5, 3-6-2-8. Again: 5-4-1, 3-4-5, 3-6-2-8.",
+      "voiceResponseAlternatives": [
+        "Most important number: **2-1-1** \u2014 **two, one, one**. If you wanted the backup Portland number again, it is: **5-0-3, 4-8-4, 8-8-0-0**.",
+        "You\u2019re okay, I can repeat it. Best match: the **Oregon Food Bank Food Pantry and Meal Locator**. It helps you find nearby food pantries and community meal sites in Lane County, including senior-friendly options. Eligibility is **unrestricted**. Documents **vary by site**. If you want, I can stay with you and do it step by step."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000480#turn-4",
+      "scenarioId": "phone_dialog_0000480",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Wait, say that phone number again? My battery is at two percent and I\u2019m trying to write it down.",
+      "normalizedQuery": "hi sorry kinda all over place right now lane county youth day center little brother slow down bit didn catch name there traffic noise at he 16 we were outside last night so needs somewhere safe be during maybe food pantry meal meals groceries showers wait say phone number again battery two percent trying write it",
+      "voiceResponse": "Write this one now: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Write this one now: **5-4-1, 3-4-2, 7-7-2-8**. Again: **5-4-1, 3-4-2, 7-7-2-8**.",
+      "voiceResponseAlternatives": [
+        "First step: call **2-1-1** now \u2014 **two, one, one** \u2014 and ask for **Lane County food pantries, community meals, and senior food delivery** for your 78-year-old neighbor. You can say, \u201cI\u2019m on a borrowed phone and want to share minimal personal details.\u201d I only have Portland-specific numbers in my records, so 211 is the best direct connection for Lane County right now.",
+        "First step: when you reconnect, dial **2-1-1** \u2014 **two, one, one** \u2014 and say, \u201cBefore I share names, please explain your privacy policy and who my information is shared with.\u201d You can also say you\u2019re on a borrowed phone and want to give only minimal details until they answer that."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000506#turn-1",
+      "scenarioId": "phone_dialog_0000506",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I keep losing my train of thought... I need food help for seniors, for my mom, we\u2019re in Lane County.",
+      "normalizedQuery": "hi sorry keep losing train thought food pantry meal meals groceries seniors mom we re lane county",
+      "voiceResponse": "You\u2019re doing okay, and I\u2019m glad you called. For Lane County, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator**. It can find nearby senior-friendly food pantries, community meal sites, and other food distributions. Eligibility is unrestricted, and documents vary by site. If you want, I can stay with you and help you go step by step through what to ask for when you contact a site.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and I\u2019m glad you called. For Lane County, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator**. It can find nearby senior-friendly food pantries, community meal sites, and other food distributions. Eligibility is unrestricted, and documents vary by site. If you want, I can stay with you and help you go step by step through what to ask for when you contact a site.",
+      "voiceResponseAlternatives": [
+        "I hear you. Let\u2019s keep this simple. I found one Lane County spot: Springfield OASIS Drop-In Day Center, at **1025 G Street, Springfield**. That is **1-0-2-5 G Street, Springfield**. Phone is **5-4-1, 3-4-5, 3-6-2-8**. Again: **5-4-1, 3-4-5, 3-6-2-8**. Important detail: they prioritize families with a child age 17 or younger. Do you have a child with you right now?",
+        "I hear how scared you are, and you\u2019re doing the right thing calling. Let\u2019s focus on getting her food today. A place I can give you now is **Food Pantry and Meals**. The number is **5 0 3, 7 7 1, 7 9 1 4**. They list eligibility as unrestricted and no documents required. Address is **8 8 0 0 Southeast 80th Avenue, Portland**. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000506#turn-2",
+      "scenarioId": "phone_dialog_0000506",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, can you say that again? I\u2019m in the parking lot and I can\u2019t hear you over this truck.",
+      "normalizedQuery": "hi sorry keep losing train thought food pantry meal meals groceries seniors mom we re lane county wait hold on say again parking lot hear over this truck",
+      "voiceResponse": "You\u2019re okay, I can repeat it. Best match: the **Oregon Food Bank Food Pantry and Meal Locator**. It helps you find nearby food pantries and community meal sites in Lane County, including senior-friendly options. Eligibility is **unrestricted**. Documents **vary by site**. If you want, I can stay with you and do it step by step.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "service:b26681286f52f9ba"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I can repeat it. Best match: the **Oregon Food Bank Food Pantry and Meal Locator**. It helps you find nearby food pantries and community meal sites in Lane County, including senior-friendly options. Eligibility is **unrestricted**. Documents **vary by site**. If you want, I can stay with you and do it step by step.",
+      "voiceResponseAlternatives": [
+        "Most important number: **2-1-1** \u2014 **two, one, one**. If you wanted the backup Portland number again, it is: **5-0-3, 4-8-4, 8-8-0-0**.",
+        "I only gave one place so far. I only gave one. Springfield OASIS Drop-In Day Center. Address: 1-0-2-5 G Street, Springfield. Again: 1-0-2-5 G Street, Springfield. Phone: 5-4-1, 3-4-5, 3-6-2-8. Again: 5-4-1, 3-4-5, 3-6-2-8."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000506#turn-3",
+      "scenarioId": "phone_dialog_0000506",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She\u2019s 74 and she didn\u2019t eat yesterday, and I know I already said that, I just\u2014 I\u2019m freaking out a little.",
+      "normalizedQuery": "hi sorry keep losing train thought food pantry meal meals groceries seniors mom we re lane county wait hold on say again parking lot hear over this truck she 74 didn eat yesterday know already said just freaking little",
+      "voiceResponse": "I hear how scared you are, and you\u2019re doing the right thing calling. Let\u2019s focus on getting her food today. A place I can give you now is **Food Pantry and Meals**. The number is **5 0 3, 7 7 1, 7 9 1 4**. They list eligibility as unrestricted and no documents required. Address is **8 8 0 0 Southeast 80th Avenue, Portland**. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scared you are, and you\u2019re doing the right thing calling. Let\u2019s focus on getting her food today. A place I can give you now is **Food Pantry and Meals**. The number is **5 0 3, 7 7 1, 7 9 1 4**. They list eligibility as unrestricted and no documents required. Address is **8 8 0 0 Southeast 80th Avenue, Portland**. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "I hear you. Let\u2019s keep this simple. I found one Lane County spot: Springfield OASIS Drop-In Day Center, at **1025 G Street, Springfield**. That is **1-0-2-5 G Street, Springfield**. Phone is **5-4-1, 3-4-5, 3-6-2-8**. Again: **5-4-1, 3-4-5, 3-6-2-8**. Important detail: they prioritize families with a child age 17 or younger. Do you have a child with you right now?",
+        "You\u2019re doing okay, and I\u2019m glad you called. For Lane County, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator**. It can find nearby senior-friendly food pantries, community meal sites, and other food distributions. Eligibility is unrestricted, and documents vary by site. If you want, I can stay with you and help you go step by step through what to ask for when you contact a site."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000155#turn-2",
+      "to": "phone_dialog_0000155#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000155#turn-4",
+      "to": "phone_dialog_0000155#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000155#turn-5",
+      "to": "phone_dialog_0000155#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000298#turn-1",
+      "to": "phone_dialog_0000298#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000298#turn-4",
+      "to": "phone_dialog_0000298#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000480#turn-4",
+      "to": "phone_dialog_0000480#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000506#turn-1",
+      "to": "phone_dialog_0000506#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000506#turn-2",
+      "to": "phone_dialog_0000506#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000506#turn-3",
+      "to": "phone_dialog_0000506#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    }
+  ]
+}

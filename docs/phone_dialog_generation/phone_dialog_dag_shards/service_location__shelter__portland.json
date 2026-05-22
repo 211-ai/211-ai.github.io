@@ -1,0 +1,891 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__shelter__portland",
+  "kind": "service_location",
+  "key": "shelter__portland",
+  "nodeCount": 25,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000143#turn-1",
+      "scenarioId": "phone_dialog_0000143",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s really loud in here by the shelter desk. I\u2019m in Portland and I need legal help.",
+      "normalizedQuery": "hi sorry it really loud here by shelter shelters homeless overnight warming desk portland legal aid attorney advocacy",
+      "voiceResponse": "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+      "voiceResponseAlternatives": [
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access.",
+        "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000143#turn-3",
+      "scenarioId": "phone_dialog_0000143",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that name, a bus just pulled up. Can you say it slower?",
+      "normalizedQuery": "hi sorry it really loud here by shelter shelters homeless overnight warming desk portland legal aid attorney advocacy criminal more like landlord stuff maybe eviction papers point actually local wait missed name bus just pulled up say slower",
+      "voiceResponse": "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:dc93c9592519c012"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+        "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+        "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000143#turn-4",
+      "scenarioId": "phone_dialog_0000143",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Also, before I give anything, who sees this call info? I\u2019m not trying to get tracked for asking for help.",
+      "normalizedQuery": "hi sorry it really loud here by shelter shelters homeless overnight warming desk portland legal aid attorney advocacy criminal more like landlord stuff maybe eviction papers point actually local wait missed name bus just pulled up say slower also before give anything who sees this call info trying tracked asking",
+      "voiceResponse": "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:a110aba06fd372f6",
+        "service:b2642cda89edcc08"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access.",
+        "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000156#turn-1",
+      "scenarioId": "phone_dialog_0000156",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I keep losing my train of thought. I\u2019m in Portland and I really need a youth day center like, today.",
+      "normalizedQuery": "hi sorry keep losing train thought portland really youth day center like",
+      "voiceResponse": "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+      "evidenceDocIds": [
+        "service:91a7ba74d4e81fb2",
+        "service:e7eb01f86edf4e6c",
+        "service:2030914897d3bd98",
+        "service:21675134a2e7a499",
+        "service:7134ddbeb5597161"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access.",
+        "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000156#turn-2",
+      "scenarioId": "phone_dialog_0000156",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you stay with me, my battery\u2019s at like two percent and I\u2019ve been outside all night.",
+      "normalizedQuery": "hi sorry keep losing train thought portland really youth day center like stay battery at two percent ve been outside all night",
+      "voiceResponse": "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:8076a16efabc189a",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:98249e32a262b454"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000156#turn-3",
+      "scenarioId": "phone_dialog_0000156",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, what did you ask? I\u2019m 19, yeah, 19, and I just need somewhere safe to be during the day.",
+      "normalizedQuery": "hi sorry keep losing train thought portland really youth day center like stay battery at two percent ve been outside all night did ask 19 yeah just somewhere safe be during",
+      "voiceResponse": "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great, and thank you for telling me your age. You\u2019re 19, so this fits. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe place to be during the day right now.\u201d Address: **1132 Southwest 13th Avenue, Portland**. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000156#turn-4",
+      "scenarioId": "phone_dialog_0000156",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, wait, can you just give me the closest one first? I can\u2019t write fast, people are yelling around me.",
+      "normalizedQuery": "hi sorry keep losing train thought portland really youth day center like stay battery at two percent ve been outside all night did ask 19 yeah just somewhere safe be during wait give closest one first write fast people yelling around",
+      "voiceResponse": "I hear you. Let\u2019s do just one, closest first: **Outside In Day Program**. Call **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Address: **1132 Southwest 13th Avenue, Portland**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe daytime place now.\u201d I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Let\u2019s do just one, closest first: **Outside In Day Program**. Call **503\u2026 535\u2026 3800**. If no answer: **503\u2026 535\u2026 3860**. Address: **1132 Southwest 13th Avenue, Portland**. Say: \u201cI\u2019m 19, outside, exhausted, and need a safe daytime place now.\u201d I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000208#turn-1",
+      "scenarioId": "phone_dialog_0000208",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? The signal keeps cutting out... I need help with housing, for a veteran, in Portland.",
+      "normalizedQuery": "hi sorry hear okay signal keeps cutting housing veteran veterans va portland",
+      "voiceResponse": "Yes, I hear you. I\u2019m here with you. For veteran housing help in Portland, call the VA Community Resource and Referral Center at **503-808-1256**. That is **503\u2026 808\u2026 1256**. They also have **503-655-8575**. That is **503\u2026 655\u2026 8575**. Portland address: **7916 Southeast Foster Road, Portland, 97206**. That is **7916 Southeast Foster Road**. Is the veteran homeless now, or at risk of losing housing?",
+      "evidenceDocIds": [
+        "service:ad5200d1cca9f0a3",
+        "service:afd6b15b4ed6ccff",
+        "service:135f60a712cd422e",
+        "service:a9529c969da25392",
+        "service:067bd4965b6b8144"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. I\u2019m here with you. For veteran housing help in Portland, call the VA Community Resource and Referral Center at **503-808-1256**. That is **503\u2026 808\u2026 1256**. They also have **503-655-8575**. That is **503\u2026 655\u2026 8575**. Portland address: **7916 Southeast Foster Road, Portland, 97206**. That is **7916 Southeast Foster Road**. Is the veteran homeless now, or at risk of losing housing?",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000208#turn-2",
+      "scenarioId": "phone_dialog_0000208",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It's for me... I lost my brother last month and I'm just not keeping things straight, I'm sorry.",
+      "normalizedQuery": "hi sorry hear okay signal keeps cutting housing veteran veterans va portland it's lost brother last month i'm just keeping things straight",
+      "voiceResponse": "I\u2019m so sorry about your brother. You do not need to apologize. I\u2019m here with you. For veteran housing help, call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**. Backup number is **503\u2026 655\u2026 8575**. Again: **503\u2026 655\u2026 8575**. One step at a time. Do you have a safe place to sleep tonight?",
+      "evidenceDocIds": [
+        "service:ad5200d1cca9f0a3",
+        "service:afd6b15b4ed6ccff",
+        "service:135f60a712cd422e",
+        "service:a9529c969da25392",
+        "service:067bd4965b6b8144"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry about your brother. You do not need to apologize. I\u2019m here with you. For veteran housing help, call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**. Backup number is **503\u2026 655\u2026 8575**. Again: **503\u2026 655\u2026 8575**. One step at a time. Do you have a safe place to sleep tonight?",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000208#turn-3",
+      "scenarioId": "phone_dialog_0000208",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, you broke up after the part about who to call, can you say that number again slowly?",
+      "normalizedQuery": "hi sorry hear okay signal keeps cutting housing veteran veterans va portland it's lost brother last month i'm just keeping things straight wait broke up after part who call say number again slowly",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+      "evidenceDocIds": [
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "service:ad5200d1cca9f0a3",
+        "service:afd6b15b4ed6ccff",
+        "service:135f60a712cd422e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+        "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+        "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000208#turn-4",
+      "scenarioId": "phone_dialog_0000208",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I can write it down, hold on... okay, go ahead one more time.",
+      "normalizedQuery": "hi sorry hear okay signal keeps cutting housing veteran veterans va portland it's lost brother last month i'm just keeping things straight wait broke up after part who call say number again slowly write it down hold on go ahead one more time",
+      "voiceResponse": "Yes. I\u2019m with you. Write this down: **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+      "evidenceDocIds": [
+        "service:2e6a4c77b4bef070",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "service:5819b975ba599d15",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "service:25a95eff19ab7393"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019m with you. Write this down: **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000247#turn-1",
+      "scenarioId": "phone_dialog_0000247",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear great on this line, can you speak up a little? I\u2019m in Portland and I need a cooling center today.",
+      "normalizedQuery": "hi sorry hear great on this line speak up little portland cooling center",
+      "voiceResponse": "Absolutely, I\u2019ll speak clearly. In Portland today, the best local source is **211info\u2019s \u201cExtreme Heat Cooling Centers\u201d** list. It shows nearby sites and says to tap **\u201cMore Details\u201d** for exact addresses and accessibility. There are multiple matches in the area. If you want, I can walk you through it step by step, slowly, and we can find the closest open one without sharing personal information.",
+      "evidenceDocIds": [
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreif4og5zucxk34jijkz3jef7rhndut2hzlnasqrzckxudqu23dd6wi",
+        "service:1d56d075879d5aa4",
+        "service:34d9e92d3ede5e98",
+        "service:f8bd62b91746838c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019ll speak clearly. In Portland today, the best local source is **211info\u2019s \u201cExtreme Heat Cooling Centers\u201d** list. It shows nearby sites and says to tap **\u201cMore Details\u201d** for exact addresses and accessibility. There are multiple matches in the area. If you want, I can walk you through it step by step, slowly, and we can find the closest open one without sharing personal information.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000247#turn-3",
+      "scenarioId": "phone_dialog_0000247",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hold on, I wrote it down wrong, can you repeat the address slower, like number first, then street?",
+      "normalizedQuery": "hi sorry hear great on this line speak up little portland cooling center wait did say powell gresham missed part there traffic noise here hold wrote it down wrong repeat address slower like number first then street",
+      "voiceResponse": "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreialu5ak2tauj23x4thfmerioihd4sxwfscsj3pp76usadcfkowvga",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+      "voiceResponseAlternatives": [
+        "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+        "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+        "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+        "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000247#turn-4",
+      "scenarioId": "phone_dialog_0000247",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Yeah, and the hours too, please, I keep mixing that up when people talk fast.",
+      "normalizedQuery": "hi sorry hear great on this line speak up little portland cooling center wait did say powell gresham missed part there traffic noise here hold wrote it down wrong repeat address slower like number first then street yeah hours too please keep mixing when people talk fast",
+      "voiceResponse": "You\u2019re doing fine. I don\u2019t have verified hours in front of me from this source, and I don\u2019t want to guess. Best next step: open **Extreme Heat Cooling Centers**, pick one site, then tap **More Details** for today\u2019s exact hours. If you prefer, we can do it one location at a time, slowly, so you can write down **hours first, then address**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing fine. I don\u2019t have verified hours in front of me from this source, and I don\u2019t want to guess. Best next step: open **Extreme Heat Cooling Centers**, pick one site, then tap **More Details** for today\u2019s exact hours. If you prefer, we can do it one location at a time, slowly, so you can write down **hours first, then address**.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000247#turn-6",
+      "scenarioId": "phone_dialog_0000247",
+      "turnIndex": 5,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "calendar_event_support",
+      "user": "Sorry, I\u2019m repeating myself, my phone battery is low, just the closest Portland cooling center and that follow-up reminder, please.",
+      "normalizedQuery": "sorry repeating myself phone battery low just closest portland cooling center follow up reminder please",
+      "voiceResponse": "Absolutely. For the closest Portland site, open **Extreme Heat Cooling Centers**, set radius to **5 miles**, then choose the top result and tap **More Details** for the exact address and today\u2019s hours. I can set the follow-up reminder for tomorrow now. What time do you want it?",
+      "evidenceDocIds": [
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreif4og5zucxk34jijkz3jef7rhndut2hzlnasqrzckxudqu23dd6wi",
+        "service:1d56d075879d5aa4",
+        "service:a558e2f5ba96f584",
+        "service:ff2dacd41a59ac37"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. For the closest Portland site, open **Extreme Heat Cooling Centers**, set radius to **5 miles**, then choose the top result and tap **More Details** for the exact address and today\u2019s hours. I can set the follow-up reminder for tomorrow now. What time do you want it?",
+      "voiceResponseAlternatives": [
+        "Yes. One next step: I\u2019ll help you set a follow-up reminder with this message: \u201cHi, this is [your name]. I\u2019m following up to check whether you received my intake. Thank you.\u201d What time today do you want the reminder to send it?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000273#turn-3",
+      "scenarioId": "phone_dialog_0000273",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Can you find one that\u2019s open now, close to downtown if possible?",
+      "normalizedQuery": "hi sorry really it right now somewhere warm tonight portland like warming center shelter shelters homeless overnight big intake process just lot one open close downtown if possible",
+      "voiceResponse": "I want to be clear: I only have two warming options in this list, and they are not in Portland. One is **2-7-5 N-E 2nd Street, Bend**. One is **5-0-1 3rd Street, La Grande**. To check what is open now, call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want me to stay with you while you call?",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:44c59889cf7386e6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I want to be clear: I only have two warming options in this list, and they are not in Portland. One is **2-7-5 N-E 2nd Street, Bend**. One is **5-0-1 3rd Street, La Grande**. To check what is open now, call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want me to stay with you while you call?",
+      "voiceResponseAlternatives": [
+        "I hear you, and you are not alone. If you might hurt yourself or are in immediate danger, call **9-1-1** right now. For same-day veteran housing help in Portland, call the VA Resource Center at **5-0-3, 8-0-8, 1-2-5-6**. I can repeat that: **5-0-3, 8-0-8, 1-2-5-6**.",
+        "I\u2019m really glad you told me. This sounds urgent. If you might hurt yourself, or feel unsafe right now, call **9-1-1** now. For immediate veteran housing help in Portland, call **VA Portland Community Resource and Referral Center** at **5-0-3, 8-0-8, 1-2-5-6**. I\u2019ll repeat: **5-0-3, 8-0-8, 1-2-5-6**.",
+        "One next step: let\u2019s get you to a live 211 specialist now so they can find another hiring option and help with follow-up. You can say: \u201cI called Job Connection at Goodwill and didn\u2019t hear back. I need immediate job leads in Portland.\u201d If you want, I can repeat that sentence slowly."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000273#turn-4",
+      "scenarioId": "phone_dialog_0000273",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "provider_contact_support",
+      "user": "And can you contact them for me first, just to check they still have space?",
+      "normalizedQuery": "hi sorry really it right now somewhere warm tonight portland like warming center shelter shelters homeless overnight big intake process just lot one open close downtown if possible contact them first check they still have space",
+      "voiceResponse": "I can\u2019t place the call for you, but I can script it right now. Say this: \u201cHi, I need a warm place tonight. Can you tell me if you have space right now, and the fastest walk-in option with minimal intake?\u201d Call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want a 20-second voicemail version too?",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:44c59889cf7386e6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can\u2019t place the call for you, but I can script it right now. Say this: \u201cHi, I need a warm place tonight. Can you tell me if you have space right now, and the fastest walk-in option with minimal intake?\u201d Call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want a 20-second voicemail version too?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000407#turn-4",
+      "scenarioId": "phone_dialog_0000407",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, the bus is loud, I missed that last part, can you repeat the number slower?",
+      "normalizedQuery": "hi sorry this borrowed phone it at like two percent give main shelter shelters homeless overnight warming number first case we cut off friend he downtown portland multnomah county has nowhere sleep tonight don want his name put some database right now options without giving all personal info bus loud missed last part repeat slower",
+      "voiceResponse": "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:df6f05609bb7717a",
+        "service:bd5c5bd198f76c8b",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+        "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+        "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+        "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000507#turn-1",
+      "scenarioId": "phone_dialog_0000507",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I'm at the bus stop and it's loud, but I need a youth day center in Portland for my nephew, he's 17 and kind of drifting all day.",
+      "normalizedQuery": "hi sorry i'm at bus stop it's loud youth day center portland nephew he's 17 kind drifting all",
+      "voiceResponse": "Absolutely. Two good options in Portland for a 17-year-old: First, **PDX Saints Love Day Center**, at **247 Southeast 82nd Avenue, Portland, 97216**. They offer meals, clothing, restrooms, hygiene supplies, bus passes, and help with ID documents. If he also needs mental health support, there\u2019s **Nickerson Adolescent Day Treatment** at **8425 North Lombard Street** for ages 11 to 18. Phone is **503, 645, 9010**.",
+      "evidenceDocIds": [
+        "service:979a210e07d85305",
+        "page:bafkreigf3qdgysbxhu7fxjwbc3nel2kitoq35hvv46hr63xhood52koxm4",
+        "service:d47f85e332cf0039",
+        "page:bafkreidoctya3agf5itpbnrurrubgdfj2zetrz6godtjztqcf2fj3l6co4",
+        "service:d0c4c53db9bc2e90"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Two good options in Portland for a 17-year-old: First, **PDX Saints Love Day Center**, at **247 Southeast 82nd Avenue, Portland, 97216**. They offer meals, clothing, restrooms, hygiene supplies, bus passes, and help with ID documents. If he also needs mental health support, there\u2019s **Nickerson Adolescent Day Treatment** at **8425 North Lombard Street** for ages 11 to 18. Phone is **503, 645, 9010**.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need legal help. You can share only what you want. You can share only what you want. I\u2019ll keep this simple. What kind of legal help is it: housing, family, immigration, or criminal?",
+        "I hear you. Privacy matters. You can share only what you want. You can share only what you want. To get legal aid, you can give just basics first, like county and landlord issue. You can skip full details until you trust the process. If you want, I can repeat the legal aid name and numbers again, slowly.",
+        "You\u2019re okay, and I\u2019m glad you called. For Portland, the strongest match I have is Native American Youth and Family Center, at **5135 Northeast Columbia Boulevard, Portland, 97218**. Their number is **503\u2026 288\u2026 8177**. Call now and say, \u201cI need youth day support today and I\u2019m exhausted and outside.\u201d If you want, I can stay with you while you dial and help with what to say first.",
+        "I can stay with you. You\u2019ve been carrying a lot all night, and we\u2019ll keep this simple. Call **Outside In Day Program** now: **503\u2026 535\u2026 3800**. If no answer, try **503\u2026 535\u2026 3860**. Say: \u201cI\u2019m 16 to 24, outside, exhausted, and need day center help right now.\u201d They\u2019re at **1132 Southwest 13th Avenue** in Portland, and they offer showers, food, laundry, and phone access."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000559#turn-1",
+      "scenarioId": "phone_dialog_0000559",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I can\u2019t hear great on this line and I\u2019m kind of falling apart right now... I\u2019m a veteran in Portland and I need housing help today.",
+      "normalizedQuery": "hi sorry hear great on this line kind falling apart right now veteran veterans va portland housing",
+      "voiceResponse": "I hear you, and you are not alone. If you might hurt yourself or are in immediate danger, call **9-1-1** right now. For same-day veteran housing help in Portland, call the VA Resource Center at **5-0-3, 8-0-8, 1-2-5-6**. I can repeat that: **5-0-3, 8-0-8, 1-2-5-6**.",
+      "evidenceDocIds": [
+        "service:ad5200d1cca9f0a3",
+        "service:afd6b15b4ed6ccff",
+        "service:135f60a712cd422e",
+        "service:a9529c969da25392",
+        "service:067bd4965b6b8144"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you are not alone. If you might hurt yourself or are in immediate danger, call **9-1-1** right now. For same-day veteran housing help in Portland, call the VA Resource Center at **5-0-3, 8-0-8, 1-2-5-6**. I can repeat that: **5-0-3, 8-0-8, 1-2-5-6**.",
+      "voiceResponseAlternatives": [
+        "I want to be clear: I only have two warming options in this list, and they are not in Portland. One is **2-7-5 N-E 2nd Street, Bend**. One is **5-0-1 3rd Street, La Grande**. To check what is open now, call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want me to stay with you while you call?",
+        "I\u2019m really glad you told me. This sounds urgent. If you might hurt yourself, or feel unsafe right now, call **9-1-1** now. For immediate veteran housing help in Portland, call **VA Portland Community Resource and Referral Center** at **5-0-3, 8-0-8, 1-2-5-6**. I\u2019ll repeat: **5-0-3, 8-0-8, 1-2-5-6**.",
+        "One next step: let\u2019s get you to a live 211 specialist now so they can find another hiring option and help with follow-up. You can say: \u201cI called Job Connection at Goodwill and didn\u2019t hear back. I need immediate job leads in Portland.\u201d If you want, I can repeat that sentence slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000559#turn-2",
+      "scenarioId": "phone_dialog_0000559",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I missed the name, did you say Bradley or Broadway?",
+      "normalizedQuery": "hi sorry hear great on this line kind falling apart right now veteran veterans va portland housing say again slower missed name did bradley broadway",
+      "voiceResponse": "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**.",
+      "evidenceDocIds": [
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "service:ad5200d1cca9f0a3",
+        "service:afd6b15b4ed6ccff",
+        "service:135f60a712cd422e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure, slowly: it\u2019s **VA Portland Community Resource and Referral Center**. Not Bradley or Broadway. I can repeat: **VA Portland Community Resource and Referral Center**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+        "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+        "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+        "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000559#turn-3",
+      "scenarioId": "phone_dialog_0000559",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019ve been sleeping in my car two nights, I\u2019m trying to keep it together but I can\u2019t keep doing this.",
+      "normalizedQuery": "hi sorry hear great on this line kind falling apart right now veteran veterans va portland housing say again slower missed name did bradley broadway ve been sleeping car two nights trying keep it together doing",
+      "voiceResponse": "I\u2019m really glad you told me. This sounds urgent. If you might hurt yourself, or feel unsafe right now, call **9-1-1** now. For immediate veteran housing help in Portland, call **VA Portland Community Resource and Referral Center** at **5-0-3, 8-0-8, 1-2-5-6**. I\u2019ll repeat: **5-0-3, 8-0-8, 1-2-5-6**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "service:ad5200d1cca9f0a3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This sounds urgent. If you might hurt yourself, or feel unsafe right now, call **9-1-1** now. For immediate veteran housing help in Portland, call **VA Portland Community Resource and Referral Center** at **5-0-3, 8-0-8, 1-2-5-6**. I\u2019ll repeat: **5-0-3, 8-0-8, 1-2-5-6**.",
+      "voiceResponseAlternatives": [
+        "I want to be clear: I only have two warming options in this list, and they are not in Portland. One is **2-7-5 N-E 2nd Street, Bend**. One is **5-0-1 3rd Street, La Grande**. To check what is open now, call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want me to stay with you while you call?",
+        "I hear you, and you are not alone. If you might hurt yourself or are in immediate danger, call **9-1-1** right now. For same-day veteran housing help in Portland, call the VA Resource Center at **5-0-3, 8-0-8, 1-2-5-6**. I can repeat that: **5-0-3, 8-0-8, 1-2-5-6**.",
+        "One next step: let\u2019s get you to a live 211 specialist now so they can find another hiring option and help with follow-up. You can say: \u201cI called Job Connection at Goodwill and didn\u2019t hear back. I need immediate job leads in Portland.\u201d If you want, I can repeat that sentence slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000559#turn-4",
+      "scenarioId": "phone_dialog_0000559",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If there\u2019s a number, please read it in chunks, like three digits at a time, and I\u2019ll repeat it back.",
+      "normalizedQuery": "hi sorry hear great on this line kind falling apart right now veteran veterans va portland housing say again slower missed name did bradley broadway ve been sleeping car two nights trying keep it together doing if there number please read chunks like three digits at time ll repeat back",
+      "voiceResponse": "Yes. I\u2019ll read it in chunks: **5-0-3** \u2026 **8-0-8** \u2026 **1-2-5-6**. That\u2019s **5-0-3, 8-0-8, 1-2-5-6**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll read it in chunks: **5-0-3** \u2026 **8-0-8** \u2026 **1-2-5-6**. That\u2019s **5-0-3, 8-0-8, 1-2-5-6**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slower now. The name is **Legal Aid Services of Oregon**, Salem Regional Office. Again: **Legal Aid Services of Oregon**, Salem Regional Office.",
+        "Yes. I\u2019ll say it slowly. Call **503\u2026 808\u2026 1256**. Again: **503\u2026 808\u2026 1256**.",
+        "You\u2019re right, and you didn\u2019t miss it, I haven\u2019t given a street address yet. What I can repeat is this: open **Extreme Heat Cooling Centers**, then tap **More Details** on one location. That page shows the exact address, line by line, number first. If you want, we can do one location together, slowly.",
+        "Of course. The number is: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. I\u2019ll say it once more: **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000585#turn-3",
+      "scenarioId": "phone_dialog_0000585",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I think I called them yesterday, or maybe the day before, and I never heard back.",
+      "normalizedQuery": "hi sorry really tracking well right now portland job like anything hiring soon say slower didn catch name place brain just fried think called them yesterday maybe day before never heard back",
+      "voiceResponse": "One next step: let\u2019s get you to a live 211 specialist now so they can find another hiring option and help with follow-up. You can say: \u201cI called Job Connection at Goodwill and didn\u2019t hear back. I need immediate job leads in Portland.\u201d If you want, I can repeat that sentence slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "One next step: let\u2019s get you to a live 211 specialist now so they can find another hiring option and help with follow-up. You can say: \u201cI called Job Connection at Goodwill and didn\u2019t hear back. I need immediate job leads in Portland.\u201d If you want, I can repeat that sentence slowly.",
+      "voiceResponseAlternatives": [
+        "I want to be clear: I only have two warming options in this list, and they are not in Portland. One is **2-7-5 N-E 2nd Street, Bend**. One is **5-0-1 3rd Street, La Grande**. To check what is open now, call **5-0-3, 6-5-0, 5-6-2-2**. Again: **5-0-3, 6-5-0, 5-6-2-2**. Do you want me to stay with you while you call?",
+        "I hear you, and you are not alone. If you might hurt yourself or are in immediate danger, call **9-1-1** right now. For same-day veteran housing help in Portland, call the VA Resource Center at **5-0-3, 8-0-8, 1-2-5-6**. I can repeat that: **5-0-3, 8-0-8, 1-2-5-6**.",
+        "I\u2019m really glad you told me. This sounds urgent. If you might hurt yourself, or feel unsafe right now, call **9-1-1** now. For immediate veteran housing help in Portland, call **VA Portland Community Resource and Referral Center** at **5-0-3, 8-0-8, 1-2-5-6**. I\u2019ll repeat: **5-0-3, 8-0-8, 1-2-5-6**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000585#turn-4",
+      "scenarioId": "phone_dialog_0000585",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "calendar_event_support",
+      "user": "Could you help me send them a follow-up message, just asking if they got my intake?",
+      "normalizedQuery": "hi sorry really tracking well right now portland job like anything hiring soon say slower didn catch name place brain just fried think called them yesterday maybe day before never heard back could send follow up message asking if they got intake",
+      "voiceResponse": "Yes. One next step: I\u2019ll help you set a follow-up reminder with this message: \u201cHi, this is [your name]. I\u2019m following up to check whether you received my intake. Thank you.\u201d What time today do you want the reminder to send it?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One next step: I\u2019ll help you set a follow-up reminder with this message: \u201cHi, this is [your name]. I\u2019m following up to check whether you received my intake. Thank you.\u201d What time today do you want the reminder to send it?",
+      "voiceResponseAlternatives": [
+        "Absolutely. For the closest Portland site, open **Extreme Heat Cooling Centers**, set radius to **5 miles**, then choose the top result and tap **More Details** for the exact address and today\u2019s hours. I can set the follow-up reminder for tomorrow now. What time do you want it?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000143#turn-1",
+      "to": "phone_dialog_0000143#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000143#turn-3",
+      "to": "phone_dialog_0000143#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000143#turn-4",
+      "to": "phone_dialog_0000143#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000156#turn-1",
+      "to": "phone_dialog_0000156#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000156#turn-2",
+      "to": "phone_dialog_0000156#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000156#turn-3",
+      "to": "phone_dialog_0000156#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000156#turn-4",
+      "to": "phone_dialog_0000156#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000208#turn-1",
+      "to": "phone_dialog_0000208#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000208#turn-2",
+      "to": "phone_dialog_0000208#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000208#turn-3",
+      "to": "phone_dialog_0000208#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000208#turn-4",
+      "to": "phone_dialog_0000208#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000247#turn-1",
+      "to": "phone_dialog_0000247#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000247#turn-3",
+      "to": "phone_dialog_0000247#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000247#turn-4",
+      "to": "phone_dialog_0000247#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000273#turn-3",
+      "to": "phone_dialog_0000273#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000273#turn-4",
+      "to": "phone_dialog_0000273#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000407#turn-4",
+      "to": "phone_dialog_0000407#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000507#turn-1",
+      "to": "phone_dialog_0000507#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000559#turn-1",
+      "to": "phone_dialog_0000559#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000559#turn-2",
+      "to": "phone_dialog_0000559#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000559#turn-3",
+      "to": "phone_dialog_0000559#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000559#turn-4",
+      "to": "phone_dialog_0000559#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000585#turn-3",
+      "to": "phone_dialog_0000585#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000585#turn-4",
+      "to": "phone_dialog_0000585#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    }
+  ]
+}

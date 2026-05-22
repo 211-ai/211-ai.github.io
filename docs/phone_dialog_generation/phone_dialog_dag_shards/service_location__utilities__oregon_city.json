@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__utilities__oregon_city",
+  "kind": "service_location",
+  "key": "utilities__oregon_city",
+  "nodeCount": 1,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000331#turn-4",
+      "scenarioId": "phone_dialog_0000331",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, repeat the phone number one digit at a time, please. I wrote down a 7 or maybe that was a 1.",
+      "normalizedQuery": "hi sorry hear great on this phone oregon city power bill before they shut it off say again slower missed agency name thought said clackamas sure yeah keep talking over got shutoff notice friday gas too just electric wait repeat number one digit at time please wrote down maybe was",
+      "voiceResponse": "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:b30d1ccbf8ca9924",
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000331#turn-4",
+      "to": "phone_dialog_0000331#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    }
+  ]
+}

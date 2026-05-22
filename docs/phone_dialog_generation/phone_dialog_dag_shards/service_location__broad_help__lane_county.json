@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__broad_help__lane_county",
+  "kind": "service_location",
+  "key": "broad_help__lane_county",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000142#turn-4",
+      "scenarioId": "phone_dialog_0000142",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, hold on, bus is going by... okay. If you give me a number, can you repeat it slow? My battery\u2019s at 4 percent.",
+      "normalizedQuery": "hi sorry hear outside it loud power bill like urgent don want info all over place wait before say address who see this last time asked somewhere they kept asking stuff then got nothing lane county eugene shutoff notice says tomorrow bunch offices have car right now hold on bus going by okay if give number repeat slow battery at percent",
+      "voiceResponse": "Yeah, absolutely. Slow version: I\u2019m asking for the shutoff **time** on your notice, not your address. Just the time if you can see it, like \u201c10 a.m.\u201d or \u201c5 p.m.\u201d If you can\u2019t check right now, that\u2019s okay too.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, absolutely. Slow version: I\u2019m asking for the shutoff **time** on your notice, not your address. Just the time if you can see it, like \u201c10 a.m.\u201d or \u201c5 p.m.\u201d If you can\u2019t check right now, that\u2019s okay too.",
+      "voiceResponseAlternatives": [
+        "Yes. Call this number now, slowly: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. Backup number: **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3**, extension **2 0 9**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000285#turn-1",
+      "scenarioId": "phone_dialog_0000285",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Can you hear me okay? I\u2019m in Lane County and I need help for domestic violence stuff, like survivor advocate support.",
+      "normalizedQuery": "hello hear okay lane county domestic violence stuff like survivor advocate support",
+      "voiceResponse": "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:ee0eedb7ecfb8991",
+        "page:bafkreibm6ikg6mphycubmvcn5nvxrytnxyq377k53nel7jmae6icpapili",
+        "page:bafkreihwffbfxwfpzygyi2gkhj47hdxoscfrd5td3txt4wkdq5klgmvwkm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**.",
+      "voiceResponseAlternatives": [
+        "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000285#turn-2",
+      "scenarioId": "phone_dialog_0000285",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, your voice is cutting out... can you say that again, slower? I didn\u2019t catch the number.",
+      "normalizedQuery": "hello hear okay lane county domestic violence stuff like survivor advocate support sorry your voice cutting say again slower didn catch number",
+      "voiceResponse": "Yes. Call this number now, slowly: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. Backup number: **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3**, extension **2 0 9**.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:ee0eedb7ecfb8991",
+        "page:bafkreibm6ikg6mphycubmvcn5nvxrytnxyq377k53nel7jmae6icpapili",
+        "page:bafkreihwffbfxwfpzygyi2gkhj47hdxoscfrd5td3txt4wkdq5klgmvwkm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call this number now, slowly: **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. Backup number: **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3**, extension **2 0 9**.",
+      "voiceResponseAlternatives": [
+        "Yeah, absolutely. Slow version: I\u2019m asking for the shutoff **time** on your notice, not your address. Just the time if you can see it, like \u201c10 a.m.\u201d or \u201c5 p.m.\u201d If you can\u2019t check right now, that\u2019s okay too."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000285#turn-3",
+      "scenarioId": "phone_dialog_0000285",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I haven\u2019t really slept and I keep losing track, but I do need someone safe to talk to today.",
+      "normalizedQuery": "hello hear okay lane county domestic violence stuff like survivor advocate support sorry your voice cutting say again slower didn catch number haven really slept keep losing track someone safe talk",
+      "voiceResponse": "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**.",
+      "evidenceDocIds": [
+        "service:e232f8e870bdd119",
+        "service:bc6bf15066f03220",
+        "page:bafkreigqgyp7hvipbibxnzlzfj2spt46q35nblkcto34vw72gtcfpx6zdq",
+        "page:bafkreih5vwnudy63cpwtgoftaaof3phxja2us4hhun2lbz3jgx2w7dufjq",
+        "service:5365a85b387044f7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000142#turn-4",
+      "to": "phone_dialog_0000142#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000285#turn-1",
+      "to": "phone_dialog_0000285#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000285#turn-2",
+      "to": "phone_dialog_0000285#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000285#turn-3",
+      "to": "phone_dialog_0000285#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    }
+  ]
+}

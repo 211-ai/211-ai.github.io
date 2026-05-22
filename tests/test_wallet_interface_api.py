@@ -3444,6 +3444,9 @@ def test_indextts_spoken_text_normalizes_numbers_and_address_abbreviations() -> 
     assert wallet_api_module._normalize_indextts_spoken_text("Shelter: S.E. 82nd Ave Ste 10") == (
         "Shelter: South East eighty second Avenue Suite 10"
     )
+    assert wallet_api_module._normalize_indextts_spoken_text(
+        "Write this down: 8800 Southeast 8 0th Avenue, Portland."
+    ) == "Write this down: 8800 Southeast eightieth Avenue, Portland."
     assert wallet_api_module._normalize_indextts_spoken_text("Food help near N.W. 23rd Pl and SW 4th St.") == (
         "Food help near North West twenty third Place and South West fourth Street."
     )

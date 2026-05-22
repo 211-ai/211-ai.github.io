@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__work__portland",
+  "kind": "service_location",
+  "key": "work__portland",
+  "nodeCount": 12,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000147#turn-5",
+      "scenarioId": "phone_dialog_0000147",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If you find clinics, I need one reachable by transit from Portland, and I\u2019d prefer somewhere that can do exam plus maybe a filling, not just a consult.",
+      "normalizedQuery": "pay something just specialist level bill overdue because kept prioritizing work deadlines over pain signals which hindsight was bad optimization before call places abby check wallet docs tell already have there proof like id insurance card anything they usually ask trying avoid an appointment then turned away missing one form actually had somewhere else if clinics reachable by transit from portland prefer exam plus maybe filling consult",
+      "voiceResponse": "I don\u2019t have a strong local clinic match in my records right now, and I don\u2019t want to guess. We can do this two ways: I can connect you to a human 211 specialist to find transit-reachable clinics that do exams and likely fillings, or I can keep helping you prep your call script. If you want me to narrow it first, what ZIP code are you starting from?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a strong local clinic match in my records right now, and I don\u2019t want to guess. We can do this two ways: I can connect you to a human 211 specialist to find transit-reachable clinics that do exams and likely fillings, or I can keep helping you prep your call script. If you want me to narrow it first, what ZIP code are you starting from?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000234#turn-1",
+      "scenarioId": "phone_dialog_0000234",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m sorry, it\u2019s loud in here and I\u2019m kind of falling apart... I need help finding work in Portland.",
+      "normalizedQuery": "hi sorry it loud here kind falling apart finding work portland",
+      "voiceResponse": "I\u2019m here with you. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Are you safe right now?",
+      "evidenceDocIds": [
+        "service:604454602aa57dcf",
+        "service:6025d243ccfa0fb5",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:85872e3409878912",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Are you safe right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, I can help with that. I have one option for work clothes in Salem, and one in Portland for kids and expectant parents. Quick question: is this for **adult work clothes**, or for **children/maternity clothes**?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000234#turn-2",
+      "scenarioId": "phone_dialog_0000234",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again, slower? I missed the name of the place, people are yelling behind me.",
+      "normalizedQuery": "hi sorry it loud here kind falling apart finding work portland say again slower missed name place people yelling behind",
+      "voiceResponse": "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:add9524a893c2ea9",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+      "voiceResponseAlternatives": [
+        "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+        "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+        "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**.",
+        "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000234#turn-3",
+      "scenarioId": "phone_dialog_0000234",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m 68, I worked janitorial before, and I just... I can\u2019t remember what bus you said to take.",
+      "normalizedQuery": "hi sorry it loud here kind falling apart finding work portland say again slower missed name place people yelling behind 68 worked janitorial before just remember bus said take",
+      "voiceResponse": "You\u2019re okay, I\u2019ll go slow. I don\u2019t have a bus number I can confirm from here, and I don\u2019t want to guess. Please call **2-1-1** now and ask: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you feel like you might hurt yourself, call **9-1-1** right now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll go slow. I don\u2019t have a bus number I can confirm from here, and I don\u2019t want to guess. Please call **2-1-1** now and ask: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you feel like you might hurt yourself, call **9-1-1** right now.",
+      "voiceResponseAlternatives": [
+        "Yes. The number for **Clothes That Work** is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. I\u2019ll repeat it once more: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**.",
+        "Good catch. It\u2019s **not** 503-2-8 or 503-2-9. The number is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. Middle part is **3 6 4**. I\u2019ll repeat once: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000234#turn-4",
+      "scenarioId": "phone_dialog_0000234",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, I\u2019m writing this on a receipt... what was the address again?",
+      "normalizedQuery": "hi sorry it loud here kind falling apart finding work portland say again slower missed name place people yelling behind 68 worked janitorial before just remember bus said take wait hold on writing this receipt was address",
+      "voiceResponse": "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+      "voiceResponseAlternatives": [
+        "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+        "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+        "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**.",
+        "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000377#turn-1",
+      "scenarioId": "phone_dialog_0000377",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Portland and I need help finding a place for clothes, like coats and work clothes.",
+      "normalizedQuery": "hi portland finding place clothes like coats work",
+      "voiceResponse": "Absolutely, I can help with that. I have one option for work clothes in Salem, and one in Portland for kids and expectant parents. Quick question: is this for **adult work clothes**, or for **children/maternity clothes**?",
+      "evidenceDocIds": [
+        "service:8149fdd1582fa7a0",
+        "service:bbea7883a5477e64",
+        "page:bafkreie4ogwjzmtnfpgu6xfmohmbz7dqch7use25losrmsdvhvyf7fp2be",
+        "page:bafkreiawyejqa5wpxyt27oz2a6lgsprly6hqfrdwxkg3m5pqkwsxnvfts4",
+        "page:bafkreieq5xwlmw2iwfnlolhnbqxpvshr5jlzdxf4qwqsnqdflatap5onva"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I can help with that. I have one option for work clothes in Salem, and one in Portland for kids and expectant parents. Quick question: is this for **adult work clothes**, or for **children/maternity clothes**?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Are you safe right now?"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000377#turn-2",
+      "scenarioId": "phone_dialog_0000377",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I missed that name. Can you say the agency again, slower?",
+      "normalizedQuery": "hi portland finding place clothes like coats work sorry missed name say agency again slower",
+      "voiceResponse": "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+      "evidenceDocIds": [
+        "service:8149fdd1582fa7a0",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie4ogwjzmtnfpgu6xfmohmbz7dqch7use25losrmsdvhvyf7fp2be",
+        "page:bafkreiawyejqa5wpxyt27oz2a6lgsprly6hqfrdwxkg3m5pqkwsxnvfts4",
+        "page:bafkreieq5xwlmw2iwfnlolhnbqxpvshr5jlzdxf4qwqsnqdflatap5onva"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+        "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+        "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**.",
+        "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000377#turn-3",
+      "scenarioId": "phone_dialog_0000377",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number too, please, in chunks... I\u2019m hard of hearing on this line.",
+      "normalizedQuery": "hi portland finding place clothes like coats work sorry missed name say agency again slower phone number too please chunks hard hearing on this line",
+      "voiceResponse": "Yes. The number for **Clothes That Work** is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. I\u2019ll repeat it once more: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**.",
+      "evidenceDocIds": [
+        "service:8149fdd1582fa7a0",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:05e18f06586fde74",
+        "service:bbea7883a5477e64",
+        "service:5fd8e43cfc766596"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number for **Clothes That Work** is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. I\u2019ll repeat it once more: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ll go slow. I don\u2019t have a bus number I can confirm from here, and I don\u2019t want to guess. Please call **2-1-1** now and ask: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you feel like you might hurt yourself, call **9-1-1** right now.",
+        "Good catch. It\u2019s **not** 503-2-8 or 503-2-9. The number is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. Middle part is **3 6 4**. I\u2019ll repeat once: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000377#turn-4",
+      "scenarioId": "phone_dialog_0000377",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, was that 503-2-8, or 503-2-9? I don\u2019t want to write it down wrong.",
+      "normalizedQuery": "hi portland finding place clothes like coats work sorry missed name say agency again slower phone number too please chunks hard hearing on this line wait was 503 don want write it down wrong",
+      "voiceResponse": "Good catch. It\u2019s **not** 503-2-8 or 503-2-9. The number is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. Middle part is **3 6 4**. I\u2019ll repeat once: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Good catch. It\u2019s **not** 503-2-8 or 503-2-9. The number is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. Middle part is **3 6 4**. I\u2019ll repeat once: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ll go slow. I don\u2019t have a bus number I can confirm from here, and I don\u2019t want to guess. Please call **2-1-1** now and ask: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you feel like you might hurt yourself, call **9-1-1** right now.",
+        "Yes. The number for **Clothes That Work** is: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**. I\u2019ll repeat it once more: **5 0 3** \u2026 **3 6 4** \u2026 **9 9 3 6**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000485#turn-2",
+      "scenarioId": "phone_dialog_0000485",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out for a second, was that in Portland proper or out by Gresham? I\u2019m trying to write this down.",
+      "normalizedQuery": "hi clothing like somewhere work clothes this week multnomah county sorry cut second was portland proper by gresham trying write down",
+      "voiceResponse": "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**.",
+      "evidenceDocIds": [
+        "service:8149fdd1582fa7a0",
+        "service:567e5b7c27ae7419",
+        "page:bafkreidrfqevqh6pxnnaot472yywzq2iruq2dgveqkiv34qplytymrduvu",
+        "page:bafkreihrax4vlyumpstv5dnn4dbuqpgemgftkurp32chxkgr3wjhzd2k3e",
+        "page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+        "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+        "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+        "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000585#turn-1",
+      "scenarioId": "phone_dialog_0000585",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m really not tracking well right now... I\u2019m in Portland and I need job help, like anything hiring soon.",
+      "normalizedQuery": "hi sorry really tracking well right now portland job like anything hiring soon",
+      "voiceResponse": "Okay. One next step: call Job Connection at Goodwill right now for fast job-search help in Portland. The number is **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. I can repeat it: **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. They\u2019re at **1943 Southeast Sixth Avenue, Portland, 97214**. If you feel in immediate danger, call **9 1 1** now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:088d318339287376",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. One next step: call Job Connection at Goodwill right now for fast job-search help in Portland. The number is **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. I can repeat it: **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. They\u2019re at **1943 Southeast Sixth Avenue, Portland, 97214**. If you feel in immediate danger, call **9 1 1** now.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000585#turn-2",
+      "scenarioId": "phone_dialog_0000585",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I didn\u2019t catch the name of that place, my brain is just fried.",
+      "normalizedQuery": "hi sorry really tracking well right now portland job like anything hiring soon say slower didn catch name place brain just fried",
+      "voiceResponse": "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:088d318339287376",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Write this down first: **Job Connection at Goodwill**. Slowly: **Job** \u2026 **Connection** \u2026 **at** \u2026 **Goodwill**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number I said was **9-1-1**. If you might hurt yourself or someone else, call **9-1-1** right now. Are you safe right now?",
+        "I don\u2019t have a confirmed address to give you. Please write this number instead: **2-1-1**. Call and say: \u201cI\u2019m in Portland, age 68, former janitorial worker, and I need job help and the best bus route.\u201d If you might hurt yourself, call **9-1-1** now.",
+        "Of course. The agency is **Clothes That Work**. I\u2019ll say it slowly: **Clothes** \u2026 **That** \u2026 **Work**. Again: **Clothes That Work**.",
+        "Portland proper. The address I gave is **1532 Northeast 37th Avenue, Portland**. That\u2019s **one-five-three-two, Northeast 37th Avenue, Portland**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000147#turn-5",
+      "to": "phone_dialog_0000147#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000234#turn-1",
+      "to": "phone_dialog_0000234#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000234#turn-2",
+      "to": "phone_dialog_0000234#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000234#turn-3",
+      "to": "phone_dialog_0000234#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000234#turn-4",
+      "to": "phone_dialog_0000234#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000377#turn-1",
+      "to": "phone_dialog_0000377#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000377#turn-2",
+      "to": "phone_dialog_0000377#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000377#turn-3",
+      "to": "phone_dialog_0000377#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000377#turn-4",
+      "to": "phone_dialog_0000377#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000485#turn-2",
+      "to": "phone_dialog_0000485#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000585#turn-1",
+      "to": "phone_dialog_0000585#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000585#turn-2",
+      "to": "phone_dialog_0000585#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

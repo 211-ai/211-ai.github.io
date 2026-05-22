@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__documents__beaverton",
+  "kind": "service_location",
+  "key": "documents__beaverton",
+  "nodeCount": 2,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000252#turn-1",
+      "scenarioId": "phone_dialog_0000252",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, I\u2019m in Beaverton right now and I really need help replacing my ID, I lost everything.",
+      "normalizedQuery": "hi um beaverton right now really replacing id lost everything",
+      "voiceResponse": "You\u2019re not alone, and we can keep this simple. I can connect you to a live specialist right now to find the fastest ID-replacement help in Beaverton, including same-day options and nearby document support. If your phone battery is low, we can do the shortest path first and get you connected immediately.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:078087b57125137d",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de",
+        "service:16c906930c61dd47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone, and we can keep this simple. I can connect you to a live specialist right now to find the fastest ID-replacement help in Beaverton, including same-day options and nearby document support. If your phone battery is low, we can do the shortest path first and get you connected immediately.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000603#turn-1",
+      "scenarioId": "phone_dialog_0000603",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, this is a borrowed phone and I'm at like two percent, so can you give me the most important number first for replacing my ID in Beaverton?",
+      "normalizedQuery": "hi sorry this borrowed phone i'm at like two percent so give most important number first replacing id beaverton",
+      "voiceResponse": "Yes. Most important number: **2-1-1**. Again: **2-1-1**. Call 2-1-1 and say, \u201cI need ID replacement help in Beaverton.\u201d They can route you fast. If the call drops, call back **2-1-1**. Do you want a one-sentence script to read when they answer?",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Most important number: **2-1-1**. Again: **2-1-1**. Call 2-1-1 and say, \u201cI need ID replacement help in Beaverton.\u201d They can route you fast. If the call drops, call back **2-1-1**. Do you want a one-sentence script to read when they answer?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000252#turn-1",
+      "to": "phone_dialog_0000252#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000603#turn-1",
+      "to": "phone_dialog_0000603#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    }
+  ]
+}

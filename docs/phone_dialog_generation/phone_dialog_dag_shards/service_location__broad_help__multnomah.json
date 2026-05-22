@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__broad_help__multnomah",
+  "kind": "service_location",
+  "key": "broad_help__multnomah",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000069#turn-1",
+      "scenarioId": "phone_dialog_0000069",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I didn't sleep, um... I need help for domestic violence, like an advocate, in Multnomah County.",
+      "normalizedQuery": "hi sorry didn't sleep um domestic violence like an advocate multnomah county",
+      "voiceResponse": "I\u2019m glad you called. For Multnomah County, call **Call to Safety** for a domestic violence advocate: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free is **8-8-8, 2-3-5, 5-3-3-3**. They can do safety planning, advocacy, and help with transport to safety. If you are in immediate danger right now, call **9-1-1**.",
+      "evidenceDocIds": [
+        "service:4d55efde415ecce2",
+        "service:2a8dfbe44adb059e",
+        "service:e232f8e870bdd119",
+        "service:fd5de844e523fa13",
+        "page:bafkreienlugsyfq2ximthab6ol46hzz7eampw5b6add5nsf2fckf7bk5ze"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called. For Multnomah County, call **Call to Safety** for a domestic violence advocate: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free is **8-8-8, 2-3-5, 5-3-3-3**. They can do safety planning, advocacy, and help with transport to safety. If you are in immediate danger right now, call **9-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000069#turn-2",
+      "scenarioId": "phone_dialog_0000069",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I'm hard of hearing on this ear, and I miss parts on the phone.",
+      "normalizedQuery": "hi sorry didn't sleep um domestic violence like an advocate multnomah county say slower i'm hard hearing on this ear miss parts phone",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger: **9-1-1**.",
+      "evidenceDocIds": [
+        "service:2b32d7191207ca8c",
+        "service:4d55efde415ecce2",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "service:15f8dd60fd23a40a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger: **9-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000420#turn-1",
+      "scenarioId": "phone_dialog_0000420",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I need help right now. I\u2019m in Multnomah County and I can\u2019t go back to where I was staying.",
+      "normalizedQuery": "hi right now multnomah county go back was staying",
+      "voiceResponse": "First, if you\u2019re in immediate danger right now, call **9-1-1**. I want to be honest: the shelter records I have here are for **La Grande, Bend, and La Pine**, not Multnomah County. I can connect you to a **live 211 specialist now** to find same-day options in Multnomah County.",
+      "evidenceDocIds": [
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:078087b57125137d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you\u2019re in immediate danger right now, call **9-1-1**. I want to be honest: the shelter records I have here are for **La Grande, Bend, and La Pine**, not Multnomah County. I can connect you to a **live 211 specialist now** to find same-day options in Multnomah County.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on this line with me right now while I complete your live transfer to a 211 specialist. If you think he may find you soon, call **9-1-1** now. While we connect, move toward a nearby public, well-lit spot with other people if you safely can, and keep your phone on low power. I\u2019m staying with you through this transfer."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000420#turn-4",
+      "scenarioId": "phone_dialog_0000420",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have family I can call, and I\u2019m scared he\u2019ll find me if I stay in the same area.",
+      "normalizedQuery": "hi right now multnomah county go back was staying it domestic violence outside stuff barely slept phone battery at like six percent survivor advocate tonight just list someone talk through next don have family call scared he ll if stay same area",
+      "voiceResponse": "Next step: stay on this line with me right now while I complete your live transfer to a 211 specialist. If you think he may find you soon, call **9-1-1** now. While we connect, move toward a nearby public, well-lit spot with other people if you safely can, and keep your phone on low power. I\u2019m staying with you through this transfer.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiaobtvhasqn22xpjuujosbgahpr3zeaytx5d3yatmh4bsblyn3qfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on this line with me right now while I complete your live transfer to a 211 specialist. If you think he may find you soon, call **9-1-1** now. While we connect, move toward a nearby public, well-lit spot with other people if you safely can, and keep your phone on low power. I\u2019m staying with you through this transfer.",
+      "voiceResponseAlternatives": [
+        "First, if you\u2019re in immediate danger right now, call **9-1-1**. I want to be honest: the shelter records I have here are for **La Grande, Bend, and La Pine**, not Multnomah County. I can connect you to a **live 211 specialist now** to find same-day options in Multnomah County."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000069#turn-1",
+      "to": "phone_dialog_0000069#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000069#turn-2",
+      "to": "phone_dialog_0000069#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000420#turn-1",
+      "to": "phone_dialog_0000420#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000420#turn-4",
+      "to": "phone_dialog_0000420#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    }
+  ]
+}

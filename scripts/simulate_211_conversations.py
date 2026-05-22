@@ -51,7 +51,70 @@ URGENT_PATTERN = re.compile(
     r")\b",
     re.I,
 )
+URGENT_EMERGENCY_PATTERN = re.compile(
+    r"\b(danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|bleeding|cannot breathe|immediate danger|911)\b",
+    re.I,
+)
 LIVE_AGENT_PATTERN = re.compile(r"\b(human|person|live agent|case worker|call me|talk to someone|operator)\b", re.I)
+SAFETY_GUARDRAIL_PATTERN = re.compile(
+    r"\b("
+    r"pass out|passing out|faint|fainting|weak and dizzy|dizzy and weak|"
+    r"freezing|panic attack|panicking|spiraling|at risk|"
+    r"hearing voices|hearing things|hallucinating|"
+    r"can't keep going|cannot keep going|thoughts are getting dark|"
+    r"might collapse|not doing well|not okay"
+    r")\b",
+    re.I,
+)
+REPEAT_REQUEST_PATTERN = re.compile(
+    r"\b("
+    r"repeat|say (?:that|it) again|say that slower|slow down|go over that|read that back|"
+    r"what was that|what was the number|what was the address|what was the name|"
+    r"i missed that|i did(?:n't| not) hear|i could(?:n't| not) hear|"
+    r"you broke up|you cut out|spell that|can you say that again"
+    r")\b",
+    re.I,
+)
+MANGLED_SPEECH_MARKER_PATTERN = re.compile(
+    r"(\[(?:inaudible|garbled|static|noise)\]|\((?:inaudible|garbled|static|noise)\)|\b(?:s[- ]?shel|c[- ]?can|h[- ]?hel)\b|\.{3,})",
+    re.I,
+)
+NAVIGATION_VERB_PATTERN = re.compile(r"\b(open|show|go to|take me to|switch|navigate|pull up|bring up|visit|jump to)\b", re.I)
+SURFACE_PATTERN = re.compile(
+    r"\b("
+    r"calendar|messages?|provider messages?|proof(?: center)?|uploads?|security|audit|"
+    r"interactions?|contacts?|sharing rules?|exports?|settings?|saved services?|service plan|wallet"
+    r")\b",
+    re.I,
+)
+WALLET_SURFACE_PATTERN = re.compile(
+    r"\b("
+    r"wallet|uploads?|my files?|my documents?|proof(?: center)?|qr|cid|ipfs|"
+    r"recovery bundle|recovery|snapshot|export bundle|grant|access request|audit log|audit history"
+    r")\b|"
+    r"\bin my wallet\b|\bmy wallet\b",
+    re.I,
+)
+CALENDAR_EVENT_PATTERN = re.compile(
+    r"\b(calendar|reminder|event|appointment|schedule|scheduled|follow[- ]?up|tomorrow|next week)\b",
+    re.I,
+)
+PROVIDER_CONTACT_PATTERN = re.compile(
+    r"\b("
+    r"text|sms|email|message|voicemail|reach out|contact (?:them|the provider|the clinic|the shelter)|"
+    r"call (?:them|them back|the provider|the clinic|the shelter)|"
+    r"send (?:a )?(?:text|message|email)|write (?:a )?(?:text|message|email)"
+    r")\b",
+    re.I,
+)
+SERVICE_INTERACTION_PATTERN = re.compile(
+    r"\b("
+    r"visited|visit|went there|went to|saw them|met with|spoke with|talked to|"
+    r"called them back|left a voicemail|check[- ]?in|intake|screening|"
+    r"they told me|record that|log that|note that|visit went|appointment went"
+    r")\b",
+    re.I,
+)
 SERVICE_PATTERN = re.compile(
     r"\b("
     r"211|shelter|shelters|housing|rent|eviction|food|pantry|meal|meals|benefits|snap|oregon health plan|"
@@ -145,6 +208,20 @@ SERVICE_TAGS = {
     "daily_needs": {"laundry", "shower", "mail", "clothing", "internet", "tax", "pet"},
 }
 
+SURFACE_LABEL_KEYWORDS = [
+    ("calendar", ("calendar", "reminder", "appointment", "event")),
+    ("messages", ("messages", "message", "sms", "text", "email", "provider messages")),
+    ("proof center", ("proof center", "proofs", "proof")),
+    ("uploads", ("uploads", "upload", "files", "documents")),
+    ("interactions", ("interactions", "history", "visits")),
+    ("audit", ("audit", "audit log", "audit history")),
+    ("contacts", ("contacts", "recipients")),
+    ("sharing rules", ("sharing rules", "sharing")),
+    ("exports", ("exports", "export bundle", "bundle")),
+    ("security", ("security", "snapshot", "recovery")),
+    ("wallet", ("wallet",)),
+]
+
 
 @dataclass
 class ServiceDocument:
@@ -188,6 +265,8 @@ class ConversationState:
     clarification_count: int = 0
     fallback_count: int = 0
     live_agent_triggered: bool = False
+    safety_guardrail_count: int = 0
+    speech_unclear_count: int = 0
 
     @property
     def context_query(self) -> str:
@@ -1206,19 +1285,63 @@ def route_turn(message: str, hits: list[SearchHit], state: ConversationState | N
     reasons: list[str] = []
     top_score = hits[0].score if hits else 0.0
     context_query = f"{state.context_query if state else ''} {message}".strip()
-    service_related = bool(SERVICE_PATTERN.search(context_query) or BROAD_HELP_PATTERN.search(context_query))
+    surface_navigation = infer_surface_navigation_target(message)
+    wallet_surface = bool(WALLET_SURFACE_PATTERN.search(message))
+    calendar_request = bool(CALENDAR_EVENT_PATTERN.search(message))
+    provider_contact_request = bool(PROVIDER_CONTACT_PATTERN.search(message))
+    service_interaction_request = bool(SERVICE_INTERACTION_PATTERN.search(message))
+    repeat_request = bool(REPEAT_REQUEST_PATTERN.search(message))
+    mangled_speech = looks_mangled_or_incoherent(message, context_query=context_query)
+    safety_guardrail = bool(SAFETY_GUARDRAIL_PATTERN.search(context_query))
+    supported_wallet_or_app_action = bool(
+        surface_navigation or wallet_surface or calendar_request or provider_contact_request or service_interaction_request
+    )
+    service_related = bool(
+        SERVICE_PATTERN.search(context_query)
+        or BROAD_HELP_PATTERN.search(context_query)
+        or supported_wallet_or_app_action
+    )
     has_location = bool(LOCATION_PATTERN.search(context_query))
     urgent = bool(URGENT_PATTERN.search(message))
+    if urgent and supported_wallet_or_app_action and not URGENT_EMERGENCY_PATTERN.search(message):
+        urgent = False
     asks_human = bool(LIVE_AGENT_PATTERN.search(message))
 
-    if state and state.live_agent_triggered:
-        reasons.append("live-agent handoff already triggered in this conversation")
-        return "live_agent", reasons
     if urgent:
         reasons.append("urgent safety or same-day crisis signal")
         return "live_agent", reasons
     if asks_human:
         reasons.append("user explicitly requested a human/live agent")
+        return "live_agent", reasons
+    if safety_guardrail and state and state.safety_guardrail_count >= 1:
+        reasons.append("repeated safety-risk signal after an earlier guardrail response")
+        return "live_agent", reasons
+    if safety_guardrail:
+        reasons.append("caller sounds medically fragile, at risk, or in need of a safety check")
+        return "safety_guardrail_support", reasons
+    if repeat_request and ((state and state.user_messages) or hits):
+        reasons.append("caller asked Abby to repeat or restate details from the current conversation")
+        return "repeat_or_restate", reasons
+    if mangled_speech:
+        reasons.append("caller speech is garbled, partial, or hard to understand over the phone")
+        return "speech_unclear_clarification", reasons
+    if surface_navigation:
+        reasons.append(f"user wants a specific app surface or portal view ({surface_navigation})")
+        return "app_surface_navigation", reasons
+    if wallet_surface:
+        reasons.append("user is asking about wallet files, proofs, exports, or recovery surfaces")
+        return "wallet_document_support", reasons
+    if calendar_request:
+        reasons.append("user needs calendar, reminder, or appointment help")
+        return "calendar_event_support", reasons
+    if provider_contact_request:
+        reasons.append("user wants help contacting a provider or composing a message")
+        return "provider_contact_support", reasons
+    if service_interaction_request:
+        reasons.append("user is describing or logging a provider visit, call, or follow-up")
+        return "service_interaction_support", reasons
+    if state and state.live_agent_triggered:
+        reasons.append("live-agent handoff already triggered in this conversation")
         return "live_agent", reasons
     if state and state.fallback_count >= 1 and hits and DOCUMENT_REQUIREMENT_PATTERN.search(context_query):
         top = hits[0].document
@@ -1249,12 +1372,57 @@ def route_turn(message: str, hits: list[SearchHit], state: ConversationState | N
 def update_conversation_state(state: ConversationState, message: str, route: str) -> None:
     state.user_messages.append(message)
     state.route_history.append(route)
-    if route == "clarifying_prompt":
+    if route in {"clarifying_prompt", "speech_unclear_clarification"}:
         state.clarification_count += 1
     if route == "template_guided_fallback":
         state.fallback_count += 1
+    if route == "safety_guardrail_support":
+        state.safety_guardrail_count += 1
+    if route == "speech_unclear_clarification":
+        state.speech_unclear_count += 1
     if route == "live_agent":
         state.live_agent_triggered = True
+
+
+def infer_surface_navigation_target(text: str) -> str | None:
+    if not NAVIGATION_VERB_PATTERN.search(text) or not SURFACE_PATTERN.search(text):
+        return None
+    lower = text.lower()
+    for label, keywords in SURFACE_LABEL_KEYWORDS:
+        if any(keyword in lower for keyword in keywords):
+            return label
+    return "wallet"
+
+
+def infer_surface_label(text: str, default: str = "wallet") -> str:
+    lower = (text or "").lower()
+    for label, keywords in SURFACE_LABEL_KEYWORDS:
+        if any(keyword in lower for keyword in keywords):
+            return label
+    return default
+
+
+def looks_mangled_or_incoherent(message: str, *, context_query: str = "") -> bool:
+    text = str(message or "").strip()
+    if not text:
+        return True
+    if MANGLED_SPEECH_MARKER_PATTERN.search(text):
+        return True
+    tokens = tokenize(text.lower())
+    if not tokens:
+        return True
+    filler_tokens = {"uh", "um", "umm", "huh", "mm", "mmm", "sorry", "hello"}
+    filler_count = sum(1 for token in tokens if token in filler_tokens)
+    repeated_fragment = any(tokens[index] == tokens[index - 1] == tokens[index - 2] for index in range(2, len(tokens)))
+    broken_ratio = filler_count / max(len(tokens), 1)
+    has_service_signal = bool(SERVICE_PATTERN.search(context_query) or BROAD_HELP_PATTERN.search(context_query))
+    if repeated_fragment and not has_service_signal:
+        return True
+    if broken_ratio >= 0.4 and len(tokens) <= 10:
+        return True
+    if len(tokens) <= 3 and filler_count >= 1 and not has_service_signal:
+        return True
+    return False
 
 
 def build_retrieval_query(message: str, state: ConversationState) -> str:
@@ -1433,6 +1601,23 @@ def top_similar_records(
 def route_voice_response(route: str, record: dict[str, Any]) -> str:
     if route == "clarifying_prompt":
         return "I can help. What city are you in, and what kind of help do you need most?"
+    if route == "speech_unclear_clarification":
+        return "I am having trouble hearing you. Are you asking about food, shelter, medical care, or something else?"
+    if route == "safety_guardrail_support":
+        return "Before we go further, I need to check your safety. Are you in immediate danger, or do you need emergency help right now?"
+    if route == "repeat_or_restate":
+        return "I can repeat the number, address, or next step slowly and one piece at a time."
+    if route == "app_surface_navigation":
+        surface = infer_surface_label(str(record.get("user") or ""), "wallet")
+        return f"I can open the {surface} screen and stay with you while you use it."
+    if route == "wallet_document_support":
+        return "I can check your wallet files, uploads, proofs, exports, or recovery items without exposing more than you ask for."
+    if route == "calendar_event_support":
+        return "I can help set a reminder, review an appointment, or add a follow-up event."
+    if route == "provider_contact_support":
+        return "I can help draft a message, text, email, or call plan for the provider."
+    if route == "service_interaction_support":
+        return "I can record what happened with the provider and the next follow-up step."
     if route == "live_agent":
         if any("urgent" in str(reason).lower() or "safety" in str(reason).lower() for reason in record.get("reasons", [])):
             return "This sounds urgent. If you are in immediate danger, call 911. I can connect this to a person."
@@ -1669,6 +1854,36 @@ def deterministic_response(route: str, message: str, hits: list[SearchHit], temp
                 "I would hand this to a live agent with your stated need and location so they can help navigate options quickly."
             )
         return "I cannot safely answer this from the 211 service dataset. I would offer a live-agent handoff or direct 211 contact."
+    if route == "speech_unclear_clarification":
+        return (
+            "I am having trouble hearing you clearly. Please say just the main need first, like food, shelter, medical care, benefits, or safety."
+        )
+    if route == "safety_guardrail_support":
+        return (
+            "Before we keep searching, I need to check your safety. Are you in immediate danger, having trouble breathing, or needing emergency help right now?"
+        )
+    if route == "repeat_or_restate":
+        return "I can repeat the last number, address, or next step more slowly. Tell me which part you want again."
+    if route == "app_surface_navigation":
+        surface = infer_surface_label(message, "wallet")
+        return f"I can take you to the {surface} screen so you can review or act on that information directly."
+    if route == "wallet_document_support":
+        return (
+            "I can help with your wallet files, uploads, proofs, export bundles, or recovery materials. "
+            "Tell me which wallet item you want to review and I can focus on that surface."
+        )
+    if route == "calendar_event_support":
+        return (
+            "I can help set a reminder, review an appointment time, or prepare a follow-up event tied to that service."
+        )
+    if route == "provider_contact_support":
+        return (
+            "I can help draft what to say to the provider, or prepare a text, email, voicemail, or call plan for that contact."
+        )
+    if route == "service_interaction_support":
+        return (
+            "I can help record that visit, call, or intake result and capture the next follow-up step so it stays in your service history."
+        )
     if route == "clarifying_prompt":
         return "I can search the 211 records, but I need one detail first: what city or county are you in, and what kind of help do you need most today?"
     if route == "template_guided_fallback":
@@ -1744,6 +1959,8 @@ def simulate_conversation(
                 "state": {
                     "clarificationCount": state.clarification_count,
                     "fallbackCount": state.fallback_count,
+                    "safetyGuardrailCount": state.safety_guardrail_count,
+                    "speechUnclearCount": state.speech_unclear_count,
                     "liveAgentTriggered": state.live_agent_triggered,
                 },
             }
@@ -1773,13 +1990,67 @@ def build_decision_tree(results: list[dict[str, Any]], templates: dict[str, dict
     return {
         "schemaVersion": 1,
         "generatedAt": datetime.now(timezone.utc).isoformat(),
-        "purpose": "Route Abby service-navigation turns to grounded 211 answers, prompt-template clarification/fallback, or live agents.",
+        "purpose": "Route Abby turns across safety checks, speech repair, grounded 211 answers, repeat/restate, wallet/app surfaces, provider follow-up actions, clarification/fallback, or live agents.",
         "nodes": [
             {
                 "id": "start",
                 "question": "Does the user mention immediate danger, medical emergency, self-harm, violence, or urgent shelter tonight?",
                 "yes": "live_agent",
+                "no": "safety_guardrail",
+            },
+            {
+                "id": "safety_guardrail",
+                "question": "Does the caller sound medically fragile, at risk, or in need of a brief safety check even if it is not yet a clear emergency?",
+                "yes": "safety_guardrail_support",
+                "no": "speech_unclear",
+            },
+            {
+                "id": "speech_unclear",
+                "question": "Is the caller's speech garbled, partial, spotty, or too unclear to safely interpret?",
+                "yes": "speech_unclear_clarification",
+                "no": "repeat_request",
+            },
+            {
+                "id": "repeat_request",
+                "question": "Is the caller asking Abby to repeat, restate, spell, slow down, or confirm what was already said?",
+                "yes": "repeat_or_restate",
+                "no": "surface_or_wallet_action",
+            },
+            {
+                "id": "surface_or_wallet_action",
+                "question": "Is the request about a supported app surface or wallet task such as files, proofs, messages, calendar, exports, uploads, or interaction history?",
+                "yes": "surface_action_router",
                 "no": "service_related",
+            },
+            {
+                "id": "surface_action_router",
+                "question": "Is the user asking to open, show, or switch to a specific app surface?",
+                "yes": "app_surface_navigation",
+                "no": "wallet_or_followup_action",
+            },
+            {
+                "id": "wallet_or_followup_action",
+                "question": "Is the user asking about wallet files, uploads, proofs, exports, recovery, or audit items?",
+                "yes": "wallet_document_support",
+                "no": "followup_action_router",
+            },
+            {
+                "id": "followup_action_router",
+                "question": "Is the request about scheduling, reminders, provider contact, or logging what happened with a service provider?",
+                "yes": "calendar_or_contact",
+                "no": "service_related",
+            },
+            {
+                "id": "calendar_or_contact",
+                "question": "Is the main need a reminder, appointment, or calendar event?",
+                "yes": "calendar_event_support",
+                "no": "contact_or_interaction",
+            },
+            {
+                "id": "contact_or_interaction",
+                "question": "Is the user asking Abby to help contact a provider or compose a message?",
+                "yes": "provider_contact_support",
+                "no": "service_interaction_support",
             },
             {
                 "id": "service_related",

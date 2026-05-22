@@ -1,0 +1,639 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__daily_needs__portland",
+  "kind": "service_location",
+  "key": "daily_needs__portland",
+  "nodeCount": 18,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000052#turn-1",
+      "scenarioId": "phone_dialog_0000052",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I\u2019m kind of a mess right now... I need somewhere in Portland where I can get my mail, like a mailing address.",
+      "normalizedQuery": "hi sorry kind mess right now somewhere portland mail like mailing address",
+      "voiceResponse": "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:2ef319d5e12550a7",
+        "service:57fcd59e218a59f6",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+      "voiceResponseAlternatives": [
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours.",
+        "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000052#turn-2",
+      "scenarioId": "phone_dialog_0000052",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? There\u2019s people yelling in this lobby and I missed the name.",
+      "normalizedQuery": "hi sorry kind mess right now somewhere portland mail like mailing address say again there people yelling this lobby missed name",
+      "voiceResponse": "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:57fcd59e218a59f6",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000078#turn-2",
+      "scenarioId": "phone_dialog_0000078",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Portland, and I need a place where I can take a shower today.",
+      "normalizedQuery": "portland place take shower",
+      "voiceResponse": "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+      "evidenceDocIds": [
+        "service:e25fd4aa967fb6a0",
+        "service:9d8134994edb4433",
+        "service:4995f7ec89526256",
+        "service:5382d9761def72c9",
+        "service:0a101fddb9d7862a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours.",
+        "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000078#turn-3",
+      "scenarioId": "phone_dialog_0000078",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Can you say that number again, slow? I didn\u2019t catch the middle part.",
+      "normalizedQuery": "hi sorry this isn phone battery almost dead give most important number first portland place take shower say again slow didn catch middle part",
+      "voiceResponse": "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+      "evidenceDocIds": [
+        "service:e25fd4aa967fb6a0",
+        "service:9d8134994edb4433",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours.",
+        "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000078#turn-5",
+      "scenarioId": "phone_dialog_0000078",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Wait, sorry, there\u2019s traffic noise here, did you say what time they stop taking people?",
+      "normalizedQuery": "portland place take shower say number again slow didn catch middle part memory great right now could also contact provider let them know trying come wait sorry there traffic noise here did time they stop taking people",
+      "voiceResponse": "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000104#turn-1",
+      "scenarioId": "phone_dialog_0000104",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m calling for my brother, not for me. He\u2019s in Portland and he really needs somewhere to do laundry this week.",
+      "normalizedQuery": "hi sorry calling brother he portland really needs somewhere laundry this week",
+      "voiceResponse": "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "service:ba024a031f6ac689",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call.",
+        "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000104#turn-2",
+      "scenarioId": "phone_dialog_0000104",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again a little slower? I\u2019m hard of hearing on this phone line.",
+      "normalizedQuery": "hi sorry calling brother he portland really needs somewhere laundry this week say again little slower hard hearing on phone line",
+      "voiceResponse": "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "service:05e18f06586fde74",
+        "service:2df047f2c695ae0a",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000186#turn-3",
+      "scenarioId": "phone_dialog_0000186",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, hold on, there\u2019s noise here... okay, yes, I can get to Portland by bus, I just need a shower place open today.",
+      "normalizedQuery": "wait hold on there noise here okay yes portland by bus just shower place open",
+      "voiceResponse": "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+      "evidenceDocIds": [
+        "service:1a9f7226720e0919",
+        "service:5fd8e43cfc766596",
+        "service:755193c3d210f2d9",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreic4a2biijrw5hogq5caqvp7kwrw3usxgumfuma43fclnpm3yc3d44"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call.",
+        "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000186#turn-5",
+      "scenarioId": "phone_dialog_0000186",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "provider_contact_support",
+      "user": "My phone battery is low, so if you can message them now and then tell me the address one more time, I can write it down.",
+      "normalizedQuery": "say again slower didn catch name place wait hold on there noise here okay yes portland by bus just shower open keep forgetting things sorry could contact provider ask if they have hours this afternoon phone battery low so message them now then tell address one more time write it down",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. I can\u2019t send the message for you, but I can give you exact words right now: call **2\u20261\u20261** and say, \u201cI\u2019m heading to Portland and need the nearest daytime drop-in center with shower hours this afternoon. Please give me the address slowly so I can write it down.\u201d I don\u2019t have a confirmed address yet, so 211 will give you the current one.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. I can\u2019t send the message for you, but I can give you exact words right now: call **2\u20261\u20261** and say, \u201cI\u2019m heading to Portland and need the nearest daytime drop-in center with shower hours this afternoon. Please give me the address slowly so I can write it down.\u201d I don\u2019t have a confirmed address yet, so 211 will give you the current one.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000403#turn-1",
+      "scenarioId": "phone_dialog_0000403",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear great on this line, can you talk slower? I\u2019m in Portland and I need help getting my mail somewhere safe.",
+      "normalizedQuery": "hi sorry hear great on this line talk slower portland getting mail somewhere safe",
+      "voiceResponse": "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+      "evidenceDocIds": [
+        "service:3cad750d175008ab",
+        "page:bafkreibky3d4pdd7s44feqtlrd2n65vcjjolv4byu65yix6wtwtahw55cy",
+        "page:bafkreihqhzsgxtldjfbrfj7opmvrzms2f4cahcaq6zhn2xf2r2hcuwwkpy",
+        "service:d037a0544f088c6d",
+        "service:c652c5ab18b3d442"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call.",
+        "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000403#turn-2",
+      "scenarioId": "phone_dialog_0000403",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that name, was it Union or Umatilla? Please say it again, slow.",
+      "normalizedQuery": "hi sorry hear great on this line talk slower portland getting mail somewhere safe wait missed name was it union umatilla please say again slow",
+      "voiceResponse": "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000403#turn-4",
+      "scenarioId": "phone_dialog_0000403",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Also I don\u2019t want my home address shared around, is there a place that keeps things private?",
+      "normalizedQuery": "hi sorry hear great on this line talk slower portland getting mail somewhere safe wait missed name was it union umatilla please say again slow kind overwhelmed right now there noise here so give address one number at time also don want home shared around place keeps things private",
+      "voiceResponse": "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I hear you. You want privacy. You do not want your home address shared. I heard that. I do not have a confirmed local private-mail provider in front of me right now. I can connect you to a live 211 specialist now, and they can find a private option near you. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a solid Portland mailing-address listing in front of me right now, and I don\u2019t want to guess. I can connect you to a live person now who can find same-day mail pickup or address options near you. If you feel in immediate danger at any point, call 911. Would you like me to stay with you while I connect you?",
+        "Yes. Fastest shower option in Portland: Call **9 7 1, 2 0 2, 1 7 2 1**. Again: **9 7 1, 2 0 2, 1 7 2 1**. It is Sunnyside Shower Project, at **3 5 2 0 S E Yamhill Street, Portland, Oregon 9 7 2 1 4**. Again: **3 5 2 0 S E Yamhill Street**. They offer showers and hygiene supplies. Do you want a short script for what to say when they answer?",
+        "Yes. Slow, one number at a time. It is: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**. Again: **9 7 1 \u2026 6 7 3 \u2026 1 2 2 2**.",
+        "I did not give a stop time, and I do not have a confirmed cutoff time right now. I\u2019ll get you to a live 211 agent now so they can confirm today\u2019s intake hours. I\u2019ll repeat that: live 211 agent now, to confirm today\u2019s intake hours."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000429#turn-2",
+      "scenarioId": "phone_dialog_0000429",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m in Portland, like near downtown, I think\u2014sorry\u2014can you find somewhere I can wash up today?",
+      "normalizedQuery": "hi sorry haven really slept keep losing train thought place shower portland like downtown think somewhere wash up",
+      "voiceResponse": "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:33691fdf0a700447",
+        "service:27e274f68ae6936d",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c004e23c82cd0a15",
+        "service:11a726c9716c9ab9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000429#turn-3",
+      "scenarioId": "phone_dialog_0000429",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what did you say the name was? My phone cut out for a second, can you repeat that slower?",
+      "normalizedQuery": "hi sorry haven really slept keep losing train thought place shower portland like downtown think somewhere wash up wait did say name was phone cut second repeat slower",
+      "voiceResponse": "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu",
+        "service:a9b60d735dd34af5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **Rose Haven Day Center**. I\u2019ll say it slower: **Rose\u2026 Haven\u2026 Day\u2026 Center**.",
+      "voiceResponseAlternatives": [
+        "Of course. I didn\u2019t give a Portland place name yet. I said I can connect you to a live 211 person now, so they can find same-day mail address or pickup options near you without guessing. If you want, I can stay with you while I connect you.",
+        "Of course. Slowly: call **2-1-1** \u2014 that\u2019s **two\u2026 one\u2026 one**. Ask for **Laundry Facilities in Portland**. Then ask them to filter by your brother\u2019s **ZIP code** and **this week\u2019s open hours**.",
+        "It is **JOIN PDX**. I\u2019ll say it again, slow: **JOIN PDX**. That is J O I N \u2026 P D X."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000429#turn-6",
+      "scenarioId": "phone_dialog_0000429",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you give me the address and what time they open, just the closest shower spot in Portland first?",
+      "normalizedQuery": "give address time they open just closest shower spot portland first",
+      "voiceResponse": "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d",
+      "evidenceDocIds": [
+        "service:007760ddef8134ed",
+        "service:1a9f7226720e0919",
+        "service:a558e2f5ba96f584",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:1b6e1c18557fb6a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Closest shower spot I have for Portland is **Rose Haven Day Center**, at **1740 Northwest Glisan Street**. I don\u2019t have a confirmed opening time in front of me. Call them now to get today\u2019s shower hours: **503 \u2026 248 \u2026 6364**. Ask: \u201cWhat time do showers open today?\u201d",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000455#turn-1",
+      "scenarioId": "phone_dialog_0000455",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Portland and I\u2019m trying to find somewhere I can do laundry cheap, maybe free if that exists.",
+      "normalizedQuery": "hi portland trying somewhere laundry cheap maybe free if exists",
+      "voiceResponse": "Next step: open 211info and search **Basic Needs \u2192 Laundry Facilities** in Portland, then also check **Laundry Vouchers**. I can confirm 211info shows **53 laundry facility providers** and **13 voucher providers** in that category. If you want to stay private, you can browse listings without sharing extra personal details first, then contact only the sites you choose.",
+      "evidenceDocIds": [
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4",
+        "page:bafkreiadxi4jvchhydh6rrmf63tgd3a3xragkwz3cb2rcjeoarpdom5xi4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: open 211info and search **Basic Needs \u2192 Laundry Facilities** in Portland, then also check **Laundry Vouchers**. I can confirm 211info shows **53 laundry facility providers** and **13 voucher providers** in that category. If you want to stay private, you can browse listings without sharing extra personal details first, then contact only the sites you choose.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000455#turn-2",
+      "scenarioId": "phone_dialog_0000455",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m kind of nervous about giving out my info, though. Is this going into some database or shared with anyone?",
+      "normalizedQuery": "hi portland trying somewhere laundry cheap maybe free if exists kind nervous giving info though this going into some database shared anyone",
+      "voiceResponse": "Next step: stay in the 211info laundry listings and don\u2019t enter personal details yet. From what I have here, I can confirm listings exist, but I don\u2019t have verified details about data-sharing policy, so I don\u2019t want to guess. A privacy-first way is to use the public listings first, then ask each laundry site directly what information they require before you share anything.",
+      "evidenceDocIds": [
+        "service:07b702b8ba249a9b",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreif5nierarg63qi7u2htac4jiko5ib4j7gai2hzlorsow2w7vrgsfe",
+        "page:bafkreicoszom6mhqjm7kprxaqc3hdbaclgmail3cj5zudgkarwpedis6x4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay in the 211info laundry listings and don\u2019t enter personal details yet. From what I have here, I can confirm listings exist, but I don\u2019t have verified details about data-sharing policy, so I don\u2019t want to guess. A privacy-first way is to use the public listings first, then ask each laundry site directly what information they require before you share anything.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000455#turn-3",
+      "scenarioId": "phone_dialog_0000455",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have a car, so I need something on the bus line, preferably on the east side.",
+      "normalizedQuery": "hi portland trying somewhere laundry cheap maybe free if exists kind nervous giving info though this going into some database shared anyone don have car so something on bus line preferably east side",
+      "voiceResponse": "Next step: in the 211info **Basic Needs \u2192 Laundry Facilities** list, focus only on East Portland listings and contact those sites first to ask if they\u2019re on a bus line. I can\u2019t confirm bus-route details from what I have here, so the safest privacy-first move is to share only your cross streets and ask, \u201cAre you near a TriMet stop, and what info do you require before service?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: in the 211info **Basic Needs \u2192 Laundry Facilities** list, focus only on East Portland listings and contact those sites first to ask if they\u2019re on a bus line. I can\u2019t confirm bus-route details from what I have here, so the safest privacy-first move is to share only your cross streets and ask, \u201cAre you near a TriMet stop, and what info do you require before service?\u201d",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling for him. For Portland, 211 has a **Laundry Facilities** list with multiple providers. Fastest step: call **2-1-1** \u2014 that\u2019s **two, one, one** \u2014 and ask them to filter by his ZIP code and this week\u2019s open hours. If you want, I can help you with exactly what to say when you call.",
+        "You\u2019re doing the right thing, and I\u2019m glad you checked back in. For a shower place open today in Portland, the best next step is to call **211** now. Dial it slowly as **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m heading into Portland by bus and I need the nearest daytime drop-in center with shower access that\u2019s open today.\u201d If you want, I can repeat that sentence once more.",
+        "Yes. I will go slow. In Portland, JOIN PDX can help with safe mail pickup and P.O. box setup. Phone: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. I\u2019ll repeat it: 5 0 3 \u2026 2 3 2 \u2026 2 0 3 1. Address: 1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3. Please bring a photo ID for mail. Do you want me to help you with what to say when you call?",
+        "Yes. Go to **Rose Haven Day Center** for showers today: **1740 Northwest Glisan Street, Portland**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. They also have laundry, hygiene items, and food. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000052#turn-1",
+      "to": "phone_dialog_0000052#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000052#turn-2",
+      "to": "phone_dialog_0000052#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000078#turn-2",
+      "to": "phone_dialog_0000078#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000078#turn-3",
+      "to": "phone_dialog_0000078#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000078#turn-5",
+      "to": "phone_dialog_0000078#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000104#turn-1",
+      "to": "phone_dialog_0000104#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000104#turn-2",
+      "to": "phone_dialog_0000104#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000186#turn-3",
+      "to": "phone_dialog_0000186#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000403#turn-1",
+      "to": "phone_dialog_0000403#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000403#turn-2",
+      "to": "phone_dialog_0000403#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000403#turn-4",
+      "to": "phone_dialog_0000403#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000429#turn-2",
+      "to": "phone_dialog_0000429#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000429#turn-3",
+      "to": "phone_dialog_0000429#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000455#turn-1",
+      "to": "phone_dialog_0000455#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000455#turn-2",
+      "to": "phone_dialog_0000455#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000455#turn-3",
+      "to": "phone_dialog_0000455#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    }
+  ]
+}

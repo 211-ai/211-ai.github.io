@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__transportation__portland",
+  "kind": "service_location",
+  "key": "transportation__portland",
+  "nodeCount": 3,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000442#turn-1",
+      "scenarioId": "phone_dialog_0000442",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hey, my battery is at one percent, can you give me the most important number first for a ride in Portland?",
+      "normalizedQuery": "hey battery at one percent give most important number first ride portland",
+      "voiceResponse": "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "service:b3d7aa7d9150b9d1",
+        "service:21c309be2f940e04",
+        "page:bafkreifoku5qrv6dgv6bqkrqt5bam35cvg3sfhh6uh7m25whtt2usha4wi",
+        "page:bafkreifgexgwxmhf4ek2bwq2wuxmclz3ijayd24rforrdjy6elznxsfvye"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000442#turn-2",
+      "scenarioId": "phone_dialog_0000442",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "transportation",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? The bus is loud, I missed that last part.",
+      "normalizedQuery": "hey battery at one percent give most important number first ride portland sorry bus loud missed last part",
+      "voiceResponse": "Totally. If they don\u2019t answer, call **2-1-1** right after. I\u2019ll say it slowly: **2\u2026 1\u2026 1**. You can say: \u201cI\u2019m in Portland and need a ride today.\u201d",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "service:b3d7aa7d9150b9d1",
+        "service:86384c62740499ba",
+        "service:21c309be2f940e04",
+        "page:bafkreigxuoloiiiifcm7sq3utxkqk667kou6vcvndbvqpvicwurr3cel4a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally. If they don\u2019t answer, call **2-1-1** right after. I\u2019ll say it slowly: **2\u2026 1\u2026 1**. You can say: \u201cI\u2019m in Portland and need a ride today.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000442#turn-4",
+      "scenarioId": "phone_dialog_0000442",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Before we do anything, is this private? This is not my phone.",
+      "normalizedQuery": "hey battery at one percent give most important number first ride portland sorry bus loud missed last part 19 stranded tonight transportation transport across town safe before we anything this private phone",
+      "voiceResponse": "Short answer: not fully private on a borrowed phone. I can keep this minimal so you share only what you want. Fast next step: call **2-1-1** now for a safe ride option tonight in Portland. If you need, say only: \u201cI need a safe ride across town tonight.\u201d Afterward, clear the recent call from the phone log if that helps you feel safer.",
+      "evidenceDocIds": [
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:a52e78bc8469df64",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreieznzlz6nnvrlusp6pmzpfht43luh7syporirphcwn66nvz6jehcm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Short answer: not fully private on a borrowed phone. I can keep this minimal so you share only what you want. Fast next step: call **2-1-1** now for a safe ride option tonight in Portland. If you need, say only: \u201cI need a safe ride across town tonight.\u201d Afterward, clear the recent call from the phone log if that helps you feel safer.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000442#turn-1",
+      "to": "phone_dialog_0000442#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000442#turn-2",
+      "to": "phone_dialog_0000442#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000442#turn-4",
+      "to": "phone_dialog_0000442#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->provider_contact_support"
+    }
+  ]
+}

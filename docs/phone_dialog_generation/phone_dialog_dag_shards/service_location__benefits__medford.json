@@ -1,0 +1,771 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__benefits__medford",
+  "kind": "service_location",
+  "key": "benefits__medford",
+  "nodeCount": 22,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000120#turn-4",
+      "scenarioId": "phone_dialog_0000120",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you say that number again slower? I missed the middle part, there\u2019s traffic noise here.",
+      "normalizedQuery": "hi sorry this borrowed phone it's almost dead give most important number first medford right now downtown just somewhere safe go it tooth actually pain really bad face swelling little dental dentist clinic medical health low cost free if possible say again slower missed middle part there traffic noise here",
+      "voiceResponse": "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+      "voiceResponseAlternatives": [
+        "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+        "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**",
+        "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000120#turn-5",
+      "scenarioId": "phone_dialog_0000120",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "calendar_event_support",
+      "user": "Do they take walk-ins, or do I need an appointment first?",
+      "normalizedQuery": "medford right now downtown just somewhere safe go it tooth actually pain really bad face swelling little dental dentist clinic medical health low cost free if possible say number again slower missed middle part there traffic noise here they take walk ins an appointment first",
+      "voiceResponse": "Next step: call them now and ask, \u201cDo you take walk-ins today, or is an appointment required?\u201d The number is **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. If you want, I can set a reminder so you don\u2019t lose track, what time should I set it for?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:f7f1a44948506f7a",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call them now and ask, \u201cDo you take walk-ins today, or is an appointment required?\u201d The number is **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. If you want, I can set a reminder so you don\u2019t lose track, what time should I set it for?",
+      "voiceResponseAlternatives": [
+        "I hear you, and that\u2019s a smart plan. Quick next step: I can help you set one reminder for tomorrow afternoon right now so you don\u2019t miss it. What exact time tomorrow afternoon should I use?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000146#turn-1",
+      "scenarioId": "phone_dialog_0000146",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can barely hear on this phone line... I need a medical clinic in Medford, like today if possible.",
+      "normalizedQuery": "hi sorry barely hear on this phone line medical clinic health medford like if possible",
+      "voiceResponse": "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+      "evidenceDocIds": [
+        "service:7aac824b62477306",
+        "service:22ee94049c99d6aa",
+        "service:a8682c03031f55ca",
+        "service:4e95f280f5ec2ed8",
+        "service:929eeefd245d3386"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again.",
+        "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000146#turn-4",
+      "scenarioId": "phone_dialog_0000146",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you can, please contact them for me and ask if they can fit me in this afternoon.",
+      "normalizedQuery": "hi sorry barely hear on this phone line medical clinic health medford like if possible i'm kind all over place right now chest has been hurting off missed last appointment say name again slower caught maybe half it please contact them ask they fit afternoon",
+      "voiceResponse": "I hear you, and I\u2019ve got you. I can\u2019t place the call myself, but I can script it so it\u2019s quick. Say: \u201cHi, this is [your name]. I missed my last appointment and I\u2019m having on-and-off chest pain. Can you fit me in this afternoon, please? My callback number is [your number].\u201d Call: **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. If chest pain is happening now, call **9-1-1** first.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019ve got you. I can\u2019t place the call myself, but I can script it so it\u2019s quick. Say: \u201cHi, this is [your name]. I missed my last appointment and I\u2019m having on-and-off chest pain. Can you fit me in this afternoon, please? My callback number is [your number].\u201d Call: **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. If chest pain is happening now, call **9-1-1** first.",
+      "voiceResponseAlternatives": [
+        "You can absolutely ask about self-pay first. Their listing says insurance info is needed \u201cif applicable,\u201d so it doesn\u2019t have to be the first thing you share. You could say: \u201cHi, I\u2019m calling to ask about self-pay options and pricing before I discuss insurance.\u201d If you want, you can share insurance later once you decide to book."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000146#turn-6",
+      "scenarioId": "phone_dialog_0000146",
+      "turnIndex": 5,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "service_interaction_support",
+      "user": "And tell them I\u2019m in Medford and I need the soonest visit, even if it\u2019s just urgent care.",
+      "normalizedQuery": "say clinic medical health name again slower caught maybe half it if please contact them ask they fit this afternoon wait hold on there noise here okay repeat phone number chunks like three digits at time tell medford soonest visit even just urgent care",
+      "voiceResponse": "You\u2019re doing the right thing. Here\u2019s the update for your call: \u201cHi, I\u2019m in Medford. I need the soonest visit you have today, even urgent care if that\u2019s all that\u2019s open. I\u2019ve had on-and-off chest pain and I need to be seen.\u201d Then give your callback number. Call: **5-4-1** \u2026 **6-1-8** \u2026 **1-3-0-0**. If chest pain is happening right now, call **9-1-1** first.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Here\u2019s the update for your call: \u201cHi, I\u2019m in Medford. I need the soonest visit you have today, even urgent care if that\u2019s all that\u2019s open. I\u2019ve had on-and-off chest pain and I need to be seen.\u201d Then give your callback number. Call: **5-4-1** \u2026 **6-1-8** \u2026 **1-3-0-0**. If chest pain is happening right now, call **9-1-1** first.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000211#turn-2",
+      "scenarioId": "phone_dialog_0000211",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Medford, and I need help applying for disability benefits, I\u2019m really behind on this.",
+      "normalizedQuery": "medford applying disability benefits snap assistance really behind on this",
+      "voiceResponse": "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+      "evidenceDocIds": [
+        "service:add9524a893c2ea9",
+        "service:ea585d467287a4d5",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:028f2c81cf7533a3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+        "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**",
+        "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000211#turn-3",
+      "scenarioId": "phone_dialog_0000211",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that office name? Did you say Milford or Medford?",
+      "normalizedQuery": "hi hear great this borrowed phone on like two percent so give main number first medford applying disability benefits snap assistance really behind sorry was office name did say milford",
+      "voiceResponse": "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:add9524a893c2ea9",
+        "service:ea585d467287a4d5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+      "voiceResponseAlternatives": [
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**.",
+        "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000211#turn-4",
+      "scenarioId": "phone_dialog_0000211",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you say the phone number slow, one digit at a time?",
+      "normalizedQuery": "hi hear great this borrowed phone on like two percent so give main number first medford applying disability benefits snap assistance really behind sorry was office name did say milford slow one digit at time",
+      "voiceResponse": "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+        "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+        "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000211#turn-5",
+      "scenarioId": "phone_dialog_0000211",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "calendar_event_support",
+      "user": "If this call drops, can you put a follow-up reminder for me tomorrow afternoon so I don\u2019t miss the next step?",
+      "normalizedQuery": "medford applying disability benefits snap assistance really behind on this sorry was office name did say milford phone number slow one digit at time if call drops put follow up reminder tomorrow afternoon so don miss next step",
+      "voiceResponse": "I hear you, and that\u2019s a smart plan. Quick next step: I can help you set one reminder for tomorrow afternoon right now so you don\u2019t miss it. What exact time tomorrow afternoon should I use?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:9f02d53fbb3e9c6a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that\u2019s a smart plan. Quick next step: I can help you set one reminder for tomorrow afternoon right now so you don\u2019t miss it. What exact time tomorrow afternoon should I use?",
+      "voiceResponseAlternatives": [
+        "Next step: call them now and ask, \u201cDo you take walk-ins today, or is an appointment required?\u201d The number is **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. If you want, I can set a reminder so you don\u2019t lose track, what time should I set it for?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000445#turn-1",
+      "scenarioId": "phone_dialog_0000445",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I\u2019m really not doing well right now... I\u2019m in Medford and I need mental health help today.",
+      "normalizedQuery": "hi sorry really doing well right now medford mental health",
+      "voiceResponse": "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:5a04af88f4853a11",
+        "service:91726752b7b56c46",
+        "service:c2084da2f559db16",
+        "service:7912f9a5f2ad796d",
+        "service:dd8e0269cf575bae"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you might hurt yourself or can\u2019t stay safe right now, call **911** right now. If you can make one call, contact Jackson County Mental Health in Medford at **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, try **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. You\u2019re not alone. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**. I\u2019ll say it once more: **5-4-1 \u2026 6-4-6 \u2026 7-3-8-5**.",
+        "I hear how stressful this is, and we can keep it simple. Main number first: **971 \u2026 319 \u2026 9793**. Say: \u201cI\u2019m in Medford and I need help applying for disability benefits.\u201d Backup number: **360 \u2026 521 \u2026 6527**. If the call drops, redial the main number first.",
+        "Absolutely \u2014 here\u2019s the main number, one digit at a time: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.** Again: **9 \u2026 7 \u2026 1 \u2026 3 \u2026 1 \u2026 9 \u2026 9 \u2026 7 \u2026 9 \u2026 3.**"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000445#turn-2",
+      "scenarioId": "phone_dialog_0000445",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little? I\u2019m trying to follow, I\u2019m just really shaky and overwhelmed.",
+      "normalizedQuery": "hi sorry really doing well right now medford mental health slow down little trying follow just shaky overwhelmed",
+      "voiceResponse": "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+      "evidenceDocIds": [
+        "service:0371faf23a9ac44e",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0748e2355b430ac7",
+        "service:2e6a4c77b4bef070"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**.",
+        "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000445#turn-3",
+      "scenarioId": "phone_dialog_0000445",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, did you say Main Street or Maple Street? I missed that part.",
+      "normalizedQuery": "hi sorry really doing well right now medford mental health slow down little trying follow just shaky overwhelmed wait did say main street maple missed part",
+      "voiceResponse": "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:0748e2355b430ac7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**.",
+        "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000445#turn-4",
+      "scenarioId": "phone_dialog_0000445",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I can\u2019t write fast, can you repeat the number one more time, like really slowly?",
+      "normalizedQuery": "hi sorry really doing well right now medford mental health slow down little trying follow just shaky overwhelmed wait did say main street maple missed part write fast repeat number one more time like slowly",
+      "voiceResponse": "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000471#turn-1",
+      "scenarioId": "phone_dialog_0000471",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know I\u2019m talking fast, I haven\u2019t slept and my tooth is throbbing into my jaw, I\u2019m in Medford and I need a dental clinic like, today.",
+      "normalizedQuery": "hi sorry know talking fast haven slept tooth throbbing into jaw medford dental dentist clinic medical health like",
+      "voiceResponse": "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+      "evidenceDocIds": [
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreibikn76mh6j2j76n7jcydzm75ymrkhcavyfoh3s5cyuy7aifghdte",
+        "page:bafkreien3hs6at6ghlqjwnm7pcbjiq7hin5gg2h6lwgq2lyih2g5ytwqxa",
+        "page:bafkreidc6skebkc54co5zho222zelnr3warf6hwielrdx7xm2inwhjzkoe",
+        "page:bafkreie2dntfkpaqvi2n7wjcbfhig4oqowbjndu5lfvvsbqmgpq5cdeqhu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again.",
+        "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000497#turn-1",
+      "scenarioId": "phone_dialog_0000497",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Medford and I need a medical clinic I can get into this week, preferably low-cost.",
+      "normalizedQuery": "hi medford medical clinic health into this week preferably low cost",
+      "voiceResponse": "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+      "evidenceDocIds": [
+        "service:a939d0834914cd25",
+        "service:7aac824b62477306",
+        "service:a8682c03031f55ca",
+        "service:2acbc3c96c48d7bf",
+        "page:bafkreid4siei6xh2yp2o62kxangvqeegevvt4tlxxsrzxxduiu6zqgsq4q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again.",
+        "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000497#turn-3",
+      "scenarioId": "phone_dialog_0000497",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "And what was the address in Medford? I\u2019m writing this down.",
+      "normalizedQuery": "hi medford medical clinic health into this week preferably low cost sorry missed name say again little slower was address writing down",
+      "voiceResponse": "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**.",
+      "evidenceDocIds": [
+        "service:0371faf23a9ac44e",
+        "service:7aac824b62477306",
+        "service:a8682c03031f55ca",
+        "service:babfb1ac3ac28a54",
+        "service:fa597809b842c38b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure. In Medford, the addresses are: **125 South Central Avenue, Suite 201** and **221 West Stewart Avenue, Suite 101**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000497#turn-4",
+      "scenarioId": "phone_dialog_0000497",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number one more time, digit by digit?",
+      "normalizedQuery": "hi medford medical clinic health into this week preferably low cost sorry missed name say again little slower was address writing down repeat phone number one more time digit by",
+      "voiceResponse": "Sure. The number is **5, 4, 1 \u2026 3, 4, 4 \u2026 9, 4, 1, 1**. That\u2019s **541-344-9411**.",
+      "evidenceDocIds": [
+        "service:34d9e92d3ede5e98",
+        "service:0371faf23a9ac44e",
+        "service:7aac824b62477306",
+        "service:a80fc4c7b16e0d53",
+        "service:a8682c03031f55ca"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure. The number is **5, 4, 1 \u2026 3, 4, 4 \u2026 9, 4, 1, 1**. That\u2019s **541-344-9411**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, and I know this is stressful. The place name was **Medford**. That\u2019s **Med** \u2026 **ford**. Not Milford, **Medford**.",
+        "Take one breath with me. Call Jackson County Mental Health: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. If that doesn\u2019t connect, call: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**. If you can\u2019t stay safe right now, call **9 1 1**.",
+        "I didn\u2019t give a street address. I only gave a phone number for Jackson County Mental Health. The number is: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. Backup number: **5 4 1** \u2026 **7 7 4** \u2026 **8 2 0 1**.",
+        "Yes. Call this number now, slowly: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**. I\u2019ll repeat it once more: **5 4 1** \u2026 **7 7 4** \u2026 **3 3 3 3**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000497#turn-5",
+      "scenarioId": "phone_dialog_0000497",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "provider_contact_support",
+      "user": "Before I call them, do I have to share my insurance info right away, or can I ask about self-pay first?",
+      "normalizedQuery": "sorry missed clinic medical health name say again little slower was address medford writing this down repeat phone number one more time digit by before call them have share insurance info right away ask self pay first",
+      "voiceResponse": "You can absolutely ask about self-pay first. Their listing says insurance info is needed \u201cif applicable,\u201d so it doesn\u2019t have to be the first thing you share. You could say: \u201cHi, I\u2019m calling to ask about self-pay options and pricing before I discuss insurance.\u201d If you want, you can share insurance later once you decide to book.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:22ee94049c99d6aa",
+        "service:4e95f280f5ec2ed8",
+        "page:bafkreidho2kwo4zgbmkhbgbka6a3nypzzd7pqzm3dypcwc77oksdklccke",
+        "service:07b702b8ba249a9b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You can absolutely ask about self-pay first. Their listing says insurance info is needed \u201cif applicable,\u201d so it doesn\u2019t have to be the first thing you share. You could say: \u201cHi, I\u2019m calling to ask about self-pay options and pricing before I discuss insurance.\u201d If you want, you can share insurance later once you decide to book.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019ve got you. I can\u2019t place the call myself, but I can script it so it\u2019s quick. Say: \u201cHi, this is [your name]. I missed my last appointment and I\u2019m having on-and-off chest pain. Can you fit me in this afternoon, please? My callback number is [your number].\u201d Call: **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. If chest pain is happening now, call **9-1-1** first."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000562#turn-1",
+      "scenarioId": "phone_dialog_0000562",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I\u2019m outside and it\u2019s loud. I need help getting disability benefits, like now, and I\u2019m in Medford.",
+      "normalizedQuery": "hi sorry hear outside it loud getting disability benefits snap assistance like now medford",
+      "voiceResponse": "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again.",
+      "evidenceDocIds": [
+        "service:ea585d467287a4d5",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:02b582c05d666cd2",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:314f807c8277e945"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000562#turn-2",
+      "scenarioId": "phone_dialog_0000562",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I already got turned away once, so I\u2019m not trying to give my whole life story again. Are you gonna save this somewhere?",
+      "normalizedQuery": "hi sorry hear outside it loud getting disability benefits snap assistance like now medford already got turned away once so trying give whole life story again gonna save this somewhere",
+      "voiceResponse": "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:ea585d467287a4d5",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You don\u2019t need to tell your whole story here. Share only what you want, and we can keep this simple. If you want the fastest next step, call **8 5 5, 3 2 8, 6 7 1 5** and say: \u201cI was turned away and I need disability-benefit next steps.\u201d If they push for too much, you can repeat: \u201cI only want the minimum needed to apply.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000562#turn-3",
+      "scenarioId": "phone_dialog_0000562",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, sorry, what did you say? My signal keeps cutting. I can\u2019t keep taking buses across town just to be told no.",
+      "normalizedQuery": "hi sorry hear outside it loud getting disability benefits snap assistance like now medford already got turned away once so trying give whole life story again gonna save this somewhere wait did say signal keeps cutting keep taking buses across town just be told no",
+      "voiceResponse": "You\u2019re right, let\u2019s keep it simple. Call **8 5 5, 3 2 8, 6 7 1 5**. Again: **8 5 5, 3 2 8, 6 7 1 5**. You can say: \u201cI need disability-benefit next steps, and I was turned away before.\u201d No bus ride needed for that first step.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right, let\u2019s keep it simple. Call **8 5 5, 3 2 8, 6 7 1 5**. Again: **8 5 5, 3 2 8, 6 7 1 5**. You can say: \u201cI need disability-benefit next steps, and I was turned away before.\u201d No bus ride needed for that first step.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000562#turn-5",
+      "scenarioId": "phone_dialog_0000562",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m serious, I need someone in Medford I can actually reach, and I need to know they won\u2019t bounce me.",
+      "normalizedQuery": "already got turned away once so trying give whole life story again gonna save this somewhere wait sorry did say signal keeps cutting keep taking buses across town just be told no message call benefits snap assistance office first ask they don show up nothing serious someone medford actually reach know won bounce",
+      "voiceResponse": "I hear you. Needing one reachable contact in Medford makes sense. Best first step without traveling: call **8 5 5, 3 2 8, 6 7 1 5** and ask for a Medford-connected benefits contact and a document checklist before any visit. You can say: \u201cI was turned away before. I need one point person and exact requirements so I\u2019m not sent around.\u201d If they start bouncing you, repeat that same line.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Needing one reachable contact in Medford makes sense. Best first step without traveling: call **8 5 5, 3 2 8, 6 7 1 5** and ask for a Medford-connected benefits contact and a document checklist before any visit. You can say: \u201cI was turned away before. I need one point person and exact requirements so I\u2019m not sent around.\u201d If they start bouncing you, repeat that same line.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000120#turn-4",
+      "to": "phone_dialog_0000120#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000120#turn-5",
+      "to": "phone_dialog_0000120#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000146#turn-1",
+      "to": "phone_dialog_0000146#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000146#turn-4",
+      "to": "phone_dialog_0000146#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000211#turn-2",
+      "to": "phone_dialog_0000211#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000211#turn-3",
+      "to": "phone_dialog_0000211#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000211#turn-4",
+      "to": "phone_dialog_0000211#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000211#turn-5",
+      "to": "phone_dialog_0000211#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000445#turn-1",
+      "to": "phone_dialog_0000445#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000445#turn-2",
+      "to": "phone_dialog_0000445#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000445#turn-3",
+      "to": "phone_dialog_0000445#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000445#turn-4",
+      "to": "phone_dialog_0000445#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000471#turn-1",
+      "to": "phone_dialog_0000471#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000497#turn-1",
+      "to": "phone_dialog_0000497#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000497#turn-3",
+      "to": "phone_dialog_0000497#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000497#turn-4",
+      "to": "phone_dialog_0000497#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000562#turn-1",
+      "to": "phone_dialog_0000562#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000562#turn-2",
+      "to": "phone_dialog_0000562#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000562#turn-3",
+      "to": "phone_dialog_0000562#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000562#turn-5",
+      "to": "phone_dialog_0000562#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    }
+  ]
+}

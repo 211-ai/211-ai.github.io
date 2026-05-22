@@ -1,0 +1,383 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__medford",
+  "kind": "service_location",
+  "key": "health__medford",
+  "nodeCount": 11,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000068#turn-2",
+      "scenarioId": "phone_dialog_0000068",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "He needs detox help, like today if possible, and we\u2019re in Medford.",
+      "normalizedQuery": "he needs detox like if possible we re medford",
+      "voiceResponse": "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:ba024a031f6ac689",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+      "voiceResponseAlternatives": [
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000068#turn-3",
+      "scenarioId": "phone_dialog_0000068",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You cut out for a second, can you say that provider name again slower?",
+      "normalizedQuery": "hi sorry hear okay calling cousin he needs detox like if possible we re medford cut second say provider name again slower",
+      "voiceResponse": "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000068#turn-4",
+      "scenarioId": "phone_dialog_0000068",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have all his info yet, just his first name and phone number.",
+      "normalizedQuery": "hi sorry hear okay calling cousin he needs detox like if possible we re medford cut second say provider name again slower don have all his info yet just first phone number",
+      "voiceResponse": "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000419#turn-1",
+      "scenarioId": "phone_dialog_0000419",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m kind of falling apart right now. I need detox help, like today, in Medford.",
+      "normalizedQuery": "hi sorry kind falling apart right now detox like medford",
+      "voiceResponse": "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:2ef319d5e12550a7",
+        "service:45707f0c70045863",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000419#turn-2",
+      "scenarioId": "phone_dialog_0000419",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I didn\u2019t catch it, the line keeps cutting out.",
+      "normalizedQuery": "hi sorry kind falling apart right now detox like medford say again slower didn catch it line keeps cutting",
+      "voiceResponse": "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000419#turn-4",
+      "scenarioId": "phone_dialog_0000419",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, there\u2019s noise here... okay, can you repeat the name and number in small chunks?",
+      "normalizedQuery": "hi sorry kind falling apart right now detox like medford say again slower didn catch it line keeps cutting scared give too much info this private does shared police job wait hold on there noise here okay repeat name number small chunks",
+      "voiceResponse": "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**.",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000419#turn-6",
+      "scenarioId": "phone_dialog_0000419",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Please stay with me while I write it down, and if there\u2019s more than one place in Medford, give me the closest one first.",
+      "normalizedQuery": "scared give too much info this private does shared police job wait hold on there noise here okay repeat name number small chunks alone tonight shaking crying just somewhere safe go detox please stay while write it down if more than one place medford closest first",
+      "voiceResponse": "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:9d8134994edb4433"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. Write this first: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Tell them: \u201cI need detox help tonight in Medford. Please give me the closest opening first.\u201d Share only what feels safe. If you feel you might not stay safe right now, call **9-1-1** immediately.",
+      "voiceResponseAlternatives": [
+        "Okay. I hear you. Your cousin needs detox help today, and you\u2019re in Medford. Detox help today, in Medford. I can connect you to a live specialist right now. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now. Repeat, call 9-1-1 now.",
+        "That is okay. First name and phone number is enough to start. First name and phone number is enough to start. I can bring in a live 2-1-1 specialist now. A live specialist now. Before I connect you, is your cousin with you right now?",
+        "I hear you. This is urgent, and you deserve help today. If you might hurt yourself or feel medically unsafe, call **9-1-1** now. For detox help, call this first: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. You can share only the minimum details you want. If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000523#turn-1",
+      "scenarioId": "phone_dialog_0000523",
+      "turnIndex": 0,
+      "route": "calendar_event_support",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "calendar_event_support",
+      "user": "Hi, sorry, the signal is awful on my end. I\u2019m in Medford and I need a ride to my medical appointment.",
+      "normalizedQuery": "hi sorry signal awful on end medford ride medical appointment",
+      "voiceResponse": "I hear you. You need a ride to a medical appointment in Medford. I can help with timing so you don\u2019t miss it. What day and time is your appointment?",
+      "evidenceDocIds": [
+        "service:d9380e3f0b953616",
+        "service:06227c05cc4eea25",
+        "service:156176ac73be0658",
+        "service:98ac0349caf0cda6",
+        "service:a52e78bc8469df64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need a ride to a medical appointment in Medford. I can help with timing so you don\u2019t miss it. What day and time is your appointment?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000523#turn-2",
+      "scenarioId": "phone_dialog_0000523",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I missed the name of the program.",
+      "normalizedQuery": "hi sorry signal awful on end medford ride medical appointment say again slower missed name program",
+      "voiceResponse": "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**.",
+      "evidenceDocIds": [
+        "service:22ee94049c99d6aa",
+        "service:156176ac73be0658",
+        "service:d9380e3f0b953616",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm",
+        "service:4e95f280f5ec2ed8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The program name is **Cascades West Ride Line**. I\u2019ll repeat it. **Cascades West Ride Line**.",
+      "voiceResponseAlternatives": [
+        "Yes. I said I can connect you to a live specialist at 2-1-1 info. Repeat: 2-1-1 info.",
+        "Yes. I\u2019ll say just the numbers, slowly. First detox line: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**. Second line: **5-4-1, 4-0-6, 4-3-6-3**. Again: **5-4-1, 4-0-6, 4-3-6-3**.",
+        "Yes. Name: detox help line in Medford. Number: **5-4-1, 5-2-3, 4-0-4-9**. Again: **5-4-1, 5-2-3, 4-0-4-9**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000523#turn-3",
+      "scenarioId": "phone_dialog_0000523",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Did you say Mercy or Marcy? I can\u2019t hear certain sounds well on this phone.",
+      "normalizedQuery": "hi sorry signal awful on end medford ride medical appointment say again slower missed name program did mercy marcy hear certain sounds well this phone",
+      "voiceResponse": "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y.",
+      "evidenceDocIds": [
+        "service:085eb42951591644",
+        "service:a8a1d2861569981d",
+        "service:22ee94049c99d6aa",
+        "service:4e95f280f5ec2ed8",
+        "page:bafkreiehc2akf3kpwcbgzkxmsrg7ivyd4r3bg2rgnci7hxnehpyujvp27y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000523#turn-4",
+      "scenarioId": "phone_dialog_0000523",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t drive anymore, and the bus stop is too far for me to walk.",
+      "normalizedQuery": "hi sorry signal awful on end medford ride medical appointment say again slower missed name program did mercy marcy hear certain sounds well this phone don drive anymore bus stop too far walk",
+      "voiceResponse": "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?",
+      "evidenceDocIds": [
+        "service:085eb42951591644",
+        "service:a8a1d2861569981d",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:22ee94049c99d6aa",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need help because walking to the bus stop is too hard. A program to try is Mercy Medical Angels. Phone: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. I\u2019ll repeat it: **7 5 7** \u2026 **3 1 8** \u2026 **9 1 7 4**. They can help with medical travel support. They may ask about income and your appointment details. Do you want me to help you with what to say when you call?",
+      "voiceResponseAlternatives": [
+        "Mercy. I said **Mercy**. Like \u201cmercy,\u201d M-E-R-C-Y."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000068#turn-2",
+      "to": "phone_dialog_0000068#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000068#turn-3",
+      "to": "phone_dialog_0000068#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000068#turn-4",
+      "to": "phone_dialog_0000068#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000419#turn-1",
+      "to": "phone_dialog_0000419#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000419#turn-2",
+      "to": "phone_dialog_0000419#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000419#turn-4",
+      "to": "phone_dialog_0000419#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000523#turn-1",
+      "to": "phone_dialog_0000523#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000523#turn-2",
+      "to": "phone_dialog_0000523#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000523#turn-3",
+      "to": "phone_dialog_0000523#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000523#turn-4",
+      "to": "phone_dialog_0000523#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    }
+  ]
+}

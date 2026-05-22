@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__documents__gresham",
+  "kind": "service_location",
+  "key": "documents__gresham",
+  "nodeCount": 5,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000360#turn-1",
+      "scenarioId": "phone_dialog_0000360",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I'm at the bus stop in Gresham and it's loud out here. I need help replacing my ID, mine got lost.",
+      "normalizedQuery": "hi sorry i'm at bus stop gresham it's loud here replacing id mine got lost",
+      "voiceResponse": "First step: call Greyhound now and ask what they accept if your ID was lost, so you can still travel while replacing it. The number is **800 \u2026 231 \u2026 2222**. Backup number: **800 \u2026 531 \u2026 5332**. I only have bus-service listings in front of me right now, not an ID-replacement office listing.",
+      "evidenceDocIds": [
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey",
+        "page:bafkreihqdih5hb3qfoh7fp2soi6tbjxrnkp5lnw2j64chqumtvjoh6mfkm",
+        "page:bafkreigkhn5ke2czbz2unrzpwkkungvrxsrdqhu6s7ztvw5rik35ya3fbm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call Greyhound now and ask what they accept if your ID was lost, so you can still travel while replacing it. The number is **800 \u2026 231 \u2026 2222**. Backup number: **800 \u2026 531 \u2026 5332**. I only have bus-service listings in front of me right now, not an ID-replacement office listing.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000360#turn-2",
+      "scenarioId": "phone_dialog_0000360",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just pulled up and I missed the place name.",
+      "normalizedQuery": "hi sorry i'm at bus stop gresham it's loud here replacing id mine got lost say again just pulled up missed place name",
+      "voiceResponse": "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**.",
+      "voiceResponseAlternatives": [
+        "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000529#turn-5",
+      "scenarioId": "phone_dialog_0000529",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "If they need anything from me before pickup, tell me exactly what to bring, please.",
+      "normalizedQuery": "slow down little trying listen kind panicking gresham on east side don have anyone who drive far wait missed name say place again phone number one more time if they anything from before pickup tell exactly bring please",
+      "voiceResponse": "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreia6ueivkjerbf6qkfpph4umgigr742z77nwzqgg3klzv25iwegpdy",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000576#turn-5",
+      "scenarioId": "phone_dialog_0000576",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "wallet_document_support",
+      "user": "Also what proof do I need again, like if my wallet got stolen, do I need a police report or just anything with my name?",
+      "normalizedQuery": "outside phone at like three percent so if repeat place name slower wait sorry keep saying this car gresham tonight fastest won turn away no address message provider tell them still coming just running behind also proof again wallet got stolen police report anything",
+      "voiceResponse": "You\u2019re doing the right thing asking now. For the **Gresham Police Department**, the listing says **required documents: none**. So for a stolen wallet report, you should be able to call or go in without proof first. If they ask later, bring any ID or paper with your name when you can. Number is: **503-618-3000**. Again: **503\u2026 618\u2026 3000**.",
+      "evidenceDocIds": [
+        "service:d7abe58ca7495460",
+        "page:bafkreie5ncth6bphx7avj7dqxmkhinjocastdd5zy67peh7bcezxhvvqde",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing asking now. For the **Gresham Police Department**, the listing says **required documents: none**. So for a stolen wallet report, you should be able to call or go in without proof first. If they ask later, bring any ID or paper with your name when you can. Number is: **503-618-3000**. Again: **503\u2026 618\u2026 3000**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000576#turn-6",
+      "scenarioId": "phone_dialog_0000576",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hello? You cut out for a second, can you say the number one more time before my battery dies?",
+      "normalizedQuery": "wait sorry keep saying this car gresham tonight fastest place won turn away no address message provider tell them still coming just running behind also proof again like if wallet got stolen police report anything name hello cut second say number one more time before battery dies",
+      "voiceResponse": "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**.",
+      "evidenceDocIds": [
+        "service:d7abe58ca7495460",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie5ncth6bphx7avj7dqxmkhinjocastdd5zy67peh7bcezxhvvqde",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**.",
+      "voiceResponseAlternatives": [
+        "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000360#turn-1",
+      "to": "phone_dialog_0000360#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000360#turn-2",
+      "to": "phone_dialog_0000360#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000576#turn-5",
+      "to": "phone_dialog_0000576#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->repeat_or_restate"
+    }
+  ]
+}

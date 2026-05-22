@@ -1,0 +1,542 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__food__bend",
+  "kind": "service_location",
+  "key": "food__bend",
+  "nodeCount": 15,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000020#turn-1",
+      "scenarioId": "phone_dialog_0000020",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my aunt, she\u2019s 79 and lives in Bend. I\u2019m trying to find senior meal delivery or a lunch site for her.",
+      "normalizedQuery": "hi calling aunt she 79 lives bend trying senior meal delivery lunch site her",
+      "voiceResponse": "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+      "voiceResponseAlternatives": [
+        "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+        "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+        "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone.",
+        "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000020#turn-2",
+      "scenarioId": "phone_dialog_0000020",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I\u2019m hard of hearing on this phone line, can you say that program name again, slower?",
+      "normalizedQuery": "hi calling aunt she 79 lives bend trying senior meal delivery lunch site her sorry hard hearing on this phone line say program name again slower",
+      "voiceResponse": "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:85d2f5b548e5d934",
+        "service:ea2e4b209d94cfad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+        "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+        "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone.",
+        "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000020#turn-3",
+      "scenarioId": "phone_dialog_0000020",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I only know she\u2019s near the east side, by Pilot Butte, and she doesn\u2019t drive much anymore.",
+      "normalizedQuery": "hi calling aunt she 79 lives bend trying senior meal delivery lunch site her sorry hard hearing on this phone line say program name again slower only know east side by pilot butte doesn drive much anymore",
+      "voiceResponse": "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+        "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+        "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone.",
+        "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000020#turn-4",
+      "scenarioId": "phone_dialog_0000020",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number in chunks, like three digits at a time? I missed the middle part.",
+      "normalizedQuery": "hi calling aunt she 79 lives bend trying senior meal delivery lunch site her sorry hard hearing on this phone line say program name again slower only know east side by pilot butte doesn drive much anymore repeat number chunks like three digits at time missed middle part",
+      "voiceResponse": "Sure. The number is **2-1-1**. In chunks: **2 \u2026 1 \u2026 1**. I\u2019ll repeat it once more: **2 \u2026 1 \u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure. The number is **2-1-1**. In chunks: **2 \u2026 1 \u2026 1**. I\u2019ll repeat it once more: **2 \u2026 1 \u2026 1**.",
+      "voiceResponseAlternatives": [
+        "I said: I can connect you **now** to a live 2-1-1 specialist for hot meals in Bend tonight. I\u2019ll repeat: connect you **now** to live **2-1-1** for Bend meal options tonight.",
+        "Yes. I\u2019ll say the address slowly. Eight eight zero zero. Southeast eight zeroth Avenue. Portland, Oregon. Nine seven two zero six. I\u2019ll repeat it once. Eight eight zero zero, Southeast eight zeroth Avenue, Portland, Oregon, nine seven two zero six.",
+        "Yes. Here it is one digit at a time: **5, 4, 1 \u2014 3, 2, 2 \u2014 8, 7, 6, 8**. Extension: **1, 3**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000163#turn-2",
+      "scenarioId": "phone_dialog_0000163",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Community meals, yeah, like hot meals tonight... I\u2019m in Bend, Oregon, Bend.",
+      "normalizedQuery": "community meals yeah like hot tonight bend oregon",
+      "voiceResponse": "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:379dfc0d5431eab7",
+        "service:36a7acd50d5f62be"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+        "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+        "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station.",
+        "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000163#turn-3",
+      "scenarioId": "phone_dialog_0000163",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, did you say ten or two? I missed that, there\u2019s traffic noise here.",
+      "normalizedQuery": "hello sorry hear well talk slower food pantry meal meals groceries community yeah like hot tonight bend oregon wait did say ten two missed there traffic noise here",
+      "voiceResponse": "I said: I can connect you **now** to a live 2-1-1 specialist for hot meals in Bend tonight. I\u2019ll repeat: connect you **now** to live **2-1-1** for Bend meal options tonight.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I said: I can connect you **now** to a live 2-1-1 specialist for hot meals in Bend tonight. I\u2019ll repeat: connect you **now** to live **2-1-1** for Bend meal options tonight.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**. In chunks: **2 \u2026 1 \u2026 1**. I\u2019ll repeat it once more: **2 \u2026 1 \u2026 1**.",
+        "Yes. I\u2019ll say the address slowly. Eight eight zero zero. Southeast eight zeroth Avenue. Portland, Oregon. Nine seven two zero six. I\u2019ll repeat it once. Eight eight zero zero, Southeast eight zeroth Avenue, Portland, Oregon, nine seven two zero six.",
+        "Yes. Here it is one digit at a time: **5, 4, 1 \u2014 3, 2, 2 \u2014 8, 7, 6, 8**. Extension: **1, 3**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000163#turn-4",
+      "scenarioId": "phone_dialog_0000163",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I keep losing words on this call, sorry, can you repeat the address one number at a time?",
+      "normalizedQuery": "hello sorry hear well talk slower food pantry meal meals groceries community yeah like hot tonight bend oregon wait did say ten two missed there traffic noise here keep losing words on this call repeat address one number at time",
+      "voiceResponse": "Yes. I\u2019ll say the address slowly. Eight eight zero zero. Southeast eight zeroth Avenue. Portland, Oregon. Nine seven two zero six. I\u2019ll repeat it once. Eight eight zero zero, Southeast eight zeroth Avenue, Portland, Oregon, nine seven two zero six.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:44bdd22d74dc9985"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say the address slowly. Eight eight zero zero. Southeast eight zeroth Avenue. Portland, Oregon. Nine seven two zero six. I\u2019ll repeat it once. Eight eight zero zero, Southeast eight zeroth Avenue, Portland, Oregon, nine seven two zero six.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**. In chunks: **2 \u2026 1 \u2026 1**. I\u2019ll repeat it once more: **2 \u2026 1 \u2026 1**.",
+        "I said: I can connect you **now** to a live 2-1-1 specialist for hot meals in Bend tonight. I\u2019ll repeat: connect you **now** to live **2-1-1** for Bend meal options tonight.",
+        "Yes. Here it is one digit at a time: **5, 4, 1 \u2014 3, 2, 2 \u2014 8, 7, 6, 8**. Extension: **1, 3**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000189#turn-1",
+      "scenarioId": "phone_dialog_0000189",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I am running on no sleep... I need help finding a food pantry in Bend.",
+      "normalizedQuery": "hi sorry running on no sleep finding food pantry meal meals groceries bend",
+      "voiceResponse": "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "service:814332268a1258d1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+        "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+        "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+        "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000189#turn-4",
+      "scenarioId": "phone_dialog_0000189",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "And the address too, please, one more time... I want to write it down right.",
+      "normalizedQuery": "hi sorry running on no sleep finding food pantry meal meals groceries bend keep thoughts straight right now like as soon possible say name again slower missed middle part address too please one more time want write it down",
+      "voiceResponse": "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:5d979c369ec12230",
+        "service:0a73d5bebe1d5050",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+      "voiceResponseAlternatives": [
+        "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+        "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+        "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station.",
+        "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000371#turn-1",
+      "scenarioId": "phone_dialog_0000371",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Bend and I\u2019m trying to find meal help for seniors for my mom.",
+      "normalizedQuery": "hi bend trying meal seniors mom",
+      "voiceResponse": "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details.",
+      "evidenceDocIds": [
+        "service:1090306857226ac3",
+        "service:126d6b946ea9f76a",
+        "service:08e7e3653a8593a8",
+        "service:1c2972fe0c781d85",
+        "service:1cabc48714fc7bf5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re right to be careful about privacy. You can share only what you\u2019re comfortable with. For Bend, a local starting point is Deschutes County Seniors Mental Health at **541\u2026322\u20267500**; they often help connect older adults to local supports. I also see Hearts for Seniors, which includes meal prep help, at **541\u2026646\u20267385**. Both listings show **no required documents**. If you want, I can help you script exactly what to ask without sharing extra personal details.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+        "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+        "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+        "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000371#turn-3",
+      "scenarioId": "phone_dialog_0000371",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we go further, who can see what I tell you? I don\u2019t want her info all over the place.",
+      "normalizedQuery": "hi bend trying meal seniors mom she 74 stand long enough cook most days so we regular meals just once before go further who see tell don want her info all over place",
+      "voiceResponse": "That\u2019s a very fair question. I can\u2019t see a privacy policy detail in what I have here, so safest move is to share the minimum and ask their rules first. You can say: \u201cBefore I give details, what do you record, who can access it, and can we stay anonymous?\u201d You can also describe needs without names at first. If you want, I can help you word a 20-second script that protects your mom\u2019s info.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a very fair question. I can\u2019t see a privacy policy detail in what I have here, so safest move is to share the minimum and ask their rules first. You can say: \u201cBefore I give details, what do you record, who can access it, and can we stay anonymous?\u201d You can also describe needs without names at first. If you want, I can help you word a 20-second script that protects your mom\u2019s info.",
+      "voiceResponseAlternatives": [
+        "Next step: call **2-1-1** and ask for **senior meal delivery** and **congregate meals/nutrition sites** in **Bend** for your 79-year-old aunt. If it helps, say: \u201cI\u2019m calling on her behalf and need lunch-site options or home-delivered meals near Bend.\u201d",
+        "Of course. The program names are: **senior meal delivery** \u2026 and **congregate meals**, also called **nutrition sites**. I\u2019ll say them again slowly: **senior meal delivery** \u2026 **congregate meals / nutrition sites**.",
+        "Next step: call **2-1-1** now, and tell them your aunt is on Bend\u2019s east side near Pilot Butte and doesn\u2019t drive much, so you need nearby lunch sites or delivery options. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**. If helpful, say: \u201cI\u2019m calling on her behalf, and transportation is limited.\u201d",
+        "You\u2019re okay, I\u2019ve got you. For Bend, the best match I have is the **Oregon Food Bank Food Pantry and Meal Locator** to find nearby pantry and meal sites. If using a website is hard right now, I can connect you to a **211 specialist** who can look up Bend options with you on the phone."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000514#turn-4",
+      "scenarioId": "phone_dialog_0000514",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what street was that on? Say it slower, please.",
+      "normalizedQuery": "hey sorry it loud here bend somewhere eat tonight say again bus just pulled up missed name 22 places keep telling stuff don have meal want turned away wait street was on slower please",
+      "voiceResponse": "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:0c199a9aef4e80f0",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+        "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+        "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station.",
+        "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000540#turn-2",
+      "scenarioId": "phone_dialog_0000540",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend, near the bus station, and I need a food pantry today.",
+      "normalizedQuery": "bend bus station food pantry meal meals groceries",
+      "voiceResponse": "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:97fd6b13a5399d5a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station.",
+      "voiceResponseAlternatives": [
+        "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+        "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+        "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+        "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000540#turn-4",
+      "scenarioId": "phone_dialog_0000540",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that number, can you say it again one digit at a time?",
+      "normalizedQuery": "hi sorry this isn phone it die give most important number first bend bus station food pantry meal meals groceries cut second repeat name slower wait missed say again one digit at time",
+      "voiceResponse": "Yes. Here it is one digit at a time: **5, 4, 1 \u2014 3, 2, 2 \u2014 8, 7, 6, 8**. Extension: **1, 3**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:97fd6b13a5399d5a",
+        "service:0420159846f1dd26"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here it is one digit at a time: **5, 4, 1 \u2014 3, 2, 2 \u2014 8, 7, 6, 8**. Extension: **1, 3**.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**. In chunks: **2 \u2026 1 \u2026 1**. I\u2019ll repeat it once more: **2 \u2026 1 \u2026 1**.",
+        "I said: I can connect you **now** to a live 2-1-1 specialist for hot meals in Bend tonight. I\u2019ll repeat: connect you **now** to live **2-1-1** for Bend meal options tonight.",
+        "Yes. I\u2019ll say the address slowly. Eight eight zero zero. Southeast eight zeroth Avenue. Portland, Oregon. Nine seven two zero six. I\u2019ll repeat it once. Eight eight zero zero, Southeast eight zeroth Avenue, Portland, Oregon, nine seven two zero six."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000540#turn-5",
+      "scenarioId": "phone_dialog_0000540",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If I can\u2019t get there before they close, what\u2019s the next best place I should try right after?",
+      "normalizedQuery": "bend bus station food pantry meal meals groceries cut second repeat name slower wait missed number say it again one digit at time if there before they close next best place should try right after",
+      "voiceResponse": "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:97fd6b13a5399d5a",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If you can\u2019t make it before closing, next step is stay on this line so I can connect you to a live 211 specialist for the nearest Bend pantry open right now. I don\u2019t have a verified second Bend pantry name in front of me, but the Oregon Food Bank Food Pantry and Meal Locator is the backup to find what\u2019s open immediately.",
+      "voiceResponseAlternatives": [
+        "Yes. Bend, Oregon. I heard you: hot meals tonight in Bend. Hot meals tonight in Bend. I do not have a confirmed Bend meal site in my current list. I can connect you to a live 211 specialist now for nearby meals tonight. Do you want me to connect you now?",
+        "I don\u2019t have one single pantry street address from that locator to read out. I can connect you to a 211 specialist right now, and they\u2019ll give you the closest open pantry address in Bend.",
+        "There isn\u2019t a street from me yet, just the **2-1-1** line. Say it like this: **two\u2026 one\u2026 one**. A live specialist can check a meal spot in Bend that\u2019s open tonight and tell you what they\u2019ll accept before you go. If you feel unsafe right now, call **9-1-1**.",
+        "Next step: stay on this line and I\u2019ll connect you to a live 211 specialist now to find a Bend food pantry open today. I only have Portland pantry listings in front of me right now, so a live agent is the fastest local match near the bus station."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000020#turn-1",
+      "to": "phone_dialog_0000020#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000020#turn-2",
+      "to": "phone_dialog_0000020#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000020#turn-3",
+      "to": "phone_dialog_0000020#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000020#turn-4",
+      "to": "phone_dialog_0000020#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000163#turn-2",
+      "to": "phone_dialog_0000163#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000163#turn-3",
+      "to": "phone_dialog_0000163#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000163#turn-4",
+      "to": "phone_dialog_0000163#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000189#turn-1",
+      "to": "phone_dialog_0000189#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000189#turn-4",
+      "to": "phone_dialog_0000189#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000371#turn-1",
+      "to": "phone_dialog_0000371#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000371#turn-3",
+      "to": "phone_dialog_0000371#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000514#turn-4",
+      "to": "phone_dialog_0000514#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000540#turn-2",
+      "to": "phone_dialog_0000540#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000540#turn-4",
+      "to": "phone_dialog_0000540#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__food__clackamas",
+  "kind": "service_location",
+  "key": "food__clackamas",
+  "nodeCount": 19,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000101#turn-3",
+      "scenarioId": "phone_dialog_0000101",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She lives in Clackamas, near 82nd, and can\u2019t stand long enough to cook most days.",
+      "normalizedQuery": "hi calling mom she 74 needs meals sorry there bus pulling up missed part say it again lives clackamas 82nd stand long enough cook most days",
+      "voiceResponse": "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:34cb5644f0b5e84b",
+        "service:a00836c0ceaf3f7f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+      "voiceResponseAlternatives": [
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record.",
+        "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000101#turn-5",
+      "scenarioId": "phone_dialog_0000101",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat the phone number slower? I\u2019m writing it down on my notes app.",
+      "normalizedQuery": "sorry there bus pulling up missed part say it again she lives clackamas 82nd stand long enough cook most days know if home delivered meals just places has go person wait repeat phone number slower writing down on notes app",
+      "voiceResponse": "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+      "voiceResponseAlternatives": [
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**.",
+        "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000244#turn-2",
+      "scenarioId": "phone_dialog_0000244",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Can you help me find community meals in Clackamas? I\u2019m in the county, near Oregon City.",
+      "normalizedQuery": "community meals clackamas county oregon city",
+      "voiceResponse": "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+      "evidenceDocIds": [
+        "service:77801dbfae971c49",
+        "service:363dbf226b1c81ba",
+        "service:fb07599cc929a055",
+        "service:3af525274aceaedb",
+        "service:03f0d7f3a93aaddb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+      "voiceResponseAlternatives": [
+        "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+        "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know.",
+        "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000244#turn-3",
+      "scenarioId": "phone_dialog_0000244",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019m hard of hearing on this phone, can you say that slower and one part at a time?",
+      "normalizedQuery": "hi sorry trying keep it together just lost sister haven really eaten community meals clackamas county oregon city hard hearing on this phone say slower one part at time",
+      "voiceResponse": "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:9165926869cb4022",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:a767978dd81d0893"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**.",
+        "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000244#turn-4",
+      "scenarioId": "phone_dialog_0000244",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed the street name, I\u2019m sorry. Could you repeat the address again?",
+      "normalizedQuery": "hi sorry trying keep it together just lost sister haven really eaten community meals clackamas county oregon city hard hearing on this phone say slower one part at time wait missed street name could repeat address again",
+      "voiceResponse": "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:9165926869cb4022",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**.",
+        "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000244#turn-5",
+      "scenarioId": "phone_dialog_0000244",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "And the phone number too, please, like in small chunks so I can write it down right.",
+      "normalizedQuery": "community meals clackamas county oregon city hard hearing on this phone say slower one part at time wait missed street name sorry could repeat address again number too please like small chunks so write it down right",
+      "voiceResponse": "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:9165926869cb4022",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+        "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know.",
+        "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000270#turn-1",
+      "scenarioId": "phone_dialog_0000270",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, I\u2019m in Clackamas and I need help finding a food pantry close by.",
+      "normalizedQuery": "hi um clackamas finding food pantry meal meals groceries close by",
+      "voiceResponse": "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record.",
+        "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000270#turn-2",
+      "scenarioId": "phone_dialog_0000270",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m a little upset today, can you say that slower? I didn\u2019t catch the name.",
+      "normalizedQuery": "hi um clackamas finding food pantry meal meals groceries close by sorry little upset say slower didn catch name",
+      "voiceResponse": "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:d8559ced93d0f936",
+        "service:edd660b46aff2c3f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000270#turn-3",
+      "scenarioId": "phone_dialog_0000270",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Is that in Clackamas or am I mixing it up with somewhere else?",
+      "normalizedQuery": "hi um clackamas finding food pantry meal meals groceries close by sorry little upset say slower didn catch name mixing it up somewhere else",
+      "voiceResponse": "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:d8559ced93d0f936",
+        "service:edd660b46aff2c3f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record.",
+        "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000270#turn-4",
+      "scenarioId": "phone_dialog_0000270",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Could you repeat the address one more time, and maybe the hours too?",
+      "normalizedQuery": "hi um clackamas finding food pantry meal meals groceries close by sorry little upset say slower didn catch name mixing it up somewhere else could repeat address one more time maybe hours too",
+      "voiceResponse": "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:9ee1311037ada173",
+        "service:44bdd22d74dc9985",
+        "service:f5bb344ee65668e0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call to confirm today\u2019s hours at **503\u2026 771\u2026 7914**. The address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. I don\u2019t have confirmed hours listed here, so calling is the best way to get the exact time today.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000452#turn-2",
+      "scenarioId": "phone_dialog_0000452",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "She lives in Clackamas County and she\u2019s 78, and we need senior meal help, like home-delivered if possible.",
+      "normalizedQuery": "she lives clackamas county 78 we senior meal like home delivered if possible",
+      "voiceResponse": "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know.",
+      "evidenceDocIds": [
+        "service:622ed24a25aa16de",
+        "service:04f0607b0e730df7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+        "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+        "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000452#turn-3",
+      "scenarioId": "phone_dialog_0000452",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little and say that again? I missed the program name.",
+      "normalizedQuery": "hi sorry calling aunt kinda all over place right now she lives clackamas county 78 we senior meal like home delivered if possible slow down little say again missed program name",
+      "voiceResponse": "Of course. The program name I mentioned was **the Warm Springs meal program**. Just to repeat clearly: that one is for elders on the **Warm Springs Reservation**, so it may not fit your aunt in Clackamas County.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The program name I mentioned was **the Warm Springs meal program**. Just to repeat clearly: that one is for elders on the **Warm Springs Reservation**, so it may not fit your aunt in Clackamas County.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000452#turn-5",
+      "scenarioId": "phone_dialog_0000452",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Wait, one more time on the number, please, I want to make sure I wrote it right for her.",
+      "normalizedQuery": "she lives clackamas county 78 we senior meal like home delivered if possible slow down little say again missed program name also phone at two percent open meals screen app so just tap through fast wait one more time on number please want make sure wrote it right her",
+      "voiceResponse": "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It\u2019s **503 \u2026 771 \u2026 7914**. Again: **5-0-3, 7-7-1, 7-9-1-4**.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help right now. For Oregon City and Clackamas County, call Children, Family and Community Connections at **5-0-3, 6-5-5, 8-8-4-0**. That\u2019s **5-0-3, 6-5-5, 8-8-4-0**. Address: **821 Main Street, Oregon City, 9-7-0-4-5**. If you want, I can stay with you while we connect to a live 211 specialist now.",
+        "Yes. Phone number, slowly: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**.",
+        "Thank you, that helps. Since she\u2019s 78 in Clackamas County, senior meal support, including home-delivered meals, is the right request. I do want to avoid a bad lead: the Warm Springs meal program is for elders on the Warm Springs Reservation. If you\u2019d like, I can complete the live handoff now so a 211 specialist can find Clackamas options quickly, and you only need to share what you already know."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-1",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I need help right away finding a place for meals, like community dinners, in Clackamas.",
+      "normalizedQuery": "hi right away finding place meals like community dinners clackamas",
+      "voiceResponse": "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:06316d26dda9c85b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-2",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I don't hear very well on calls, can you say the place name again slower?",
+      "normalizedQuery": "hi right away finding place meals like community dinners clackamas sorry don't hear very well on calls say name again slower",
+      "voiceResponse": "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The place name is: **Right Track Resource Center**. I\u2019ll say it slowly: **Right** \u2026 **Track** \u2026 **Resource** \u2026 **Center**.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-3",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Did you say Clack-a-miss or Clackamas? I'm in Clackamas County and I need food today.",
+      "normalizedQuery": "did say clack miss clackamas i'm county food pantry meal meals groceries",
+      "voiceResponse": "Yes, **Clackamas** County, like \u201cClack-uh-muss.\u201d First step: call **Clackamas Service Center** now for food and to-go meals today. Number: **503** \u2026 **771** \u2026 **7914**. I\u2019ll repeat: **503** \u2026 **771** \u2026 **7914**. Address is **8800 Southeast 80th Avenue, Portland**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, **Clackamas** County, like \u201cClack-uh-muss.\u201d First step: call **Clackamas Service Center** now for food and to-go meals today. Number: **503** \u2026 **771** \u2026 **7914**. I\u2019ll repeat: **503** \u2026 **771** \u2026 **7914**. Address is **8800 Southeast 80th Avenue, Portland**.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-4",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number one digit at a time, please?",
+      "normalizedQuery": "hi right away finding place meals like community dinners clackamas sorry don't hear very well on calls say name again slower did clack miss i'm county food pantry meal groceries repeat phone number one digit at time please",
+      "voiceResponse": "First step: call now. The number, one digit at a time, is: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 7 \u2026 1 \u2026 7 \u2026 9 \u2026 1 \u2026 4**. I\u2019ll repeat: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 7 \u2026 1 \u2026 7 \u2026 9 \u2026 1 \u2026 4**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:50c3f1836a5a0b95",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call now. The number, one digit at a time, is: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 7 \u2026 1 \u2026 7 \u2026 9 \u2026 1 \u2026 4**. I\u2019ll repeat: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 7 \u2026 1 \u2026 7 \u2026 9 \u2026 1 \u2026 4**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, you got it. The number is **5-4-1** \u2026 **9-1-6** \u2026 **8-3-3-3**. I\u2019ll say it once more: **(541) 916-8333**.",
+        "Of course. One part at a time. Phone number: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. I\u2019ll repeat it: **5-0-3** \u2026 **6-5-5** \u2026 **8-8-4-0**. Address: **8-2-1 Main Street**, Oregon City, **9-7-0-4-5**.",
+        "Yes. The street name is **Main Street**. I\u2019ll repeat it: **Main Street**.",
+        "Of course. The name is **Clackamas Service Center Food Pantry and Meals**. I\u2019ll say it again slowly: **Clackamas** \u2026 **Service Center** \u2026 **Food Pantry and Meals**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-5",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there's any way to mark this urgent, please do, I haven't eaten since yesterday.",
+      "normalizedQuery": "sorry don't hear very well on calls say place name again slower did clack miss clackamas i'm county food pantry meal meals groceries repeat phone number one digit at time please if there's any way mark this urgent haven't eaten since yesterday",
+      "voiceResponse": "First step: call them now and say, \u201cThis is urgent, I have not eaten since yesterday, can I get food today?\u201d Number: **503 \u2026 771 \u2026 7914**. I\u2019ll repeat: **503 \u2026 771 \u2026 7914**. They are the **Clackamas Service Center**, at **8800 Southeast 80th Avenue, Portland**. You do not need documents.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:b3d7aa7d9150b9d1",
+        "service:44bdd22d74dc9985",
+        "service:83d9d6ee97f5d757"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call them now and say, \u201cThis is urgent, I have not eaten since yesterday, can I get food today?\u201d Number: **503 \u2026 771 \u2026 7914**. I\u2019ll repeat: **503 \u2026 771 \u2026 7914**. They are the **Clackamas Service Center**, at **8800 Southeast 80th Avenue, Portland**. You do not need documents.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000595#turn-6",
+      "scenarioId": "phone_dialog_0000595",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I can get there by bus, but only if it's open this evening.",
+      "normalizedQuery": "did say clack miss clackamas i'm county food pantry meal meals groceries repeat phone number one digit at time please if there's any way mark this urgent haven't eaten since yesterday there by bus only it's open evening",
+      "voiceResponse": "First step: call **Clackamas Service Center** now and ask, \u201cAre you open this evening, and can I be seen today? This is urgent.\u201d The number is **503 \u2026 771 \u2026 7914**. I\u2019ll repeat: **503 \u2026 771 \u2026 7914**. If they\u2019re closed tonight, I can give you another food site number next.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:c01f119ad70632fe",
+        "service:0420159846f1dd26"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **Clackamas Service Center** now and ask, \u201cAre you open this evening, and can I be seen today? This is urgent.\u201d The number is **503 \u2026 771 \u2026 7914**. I\u2019ll repeat: **503 \u2026 771 \u2026 7914**. If they\u2019re closed tonight, I can give you another food site number next.",
+      "voiceResponseAlternatives": [
+        "Thanks, that helps, and you\u2019re doing the right thing for her. I don\u2019t have a strong verified Clackamas meal provider in front of me right now. Fastest next step is to ask for **home-delivered meals** and **in-home support for seniors near 82nd in Clackamas**. If you want, I can give you a 20-second script to use on that call so you can get to eligibility and wait time quickly.",
+        "Next step: call **Clackamas Service Center Food Pantry and Meals** now at **503\u2026 771\u2026 7914**. They\u2019re at **8800 Southeast 80th Avenue, Portland, 97206**. They provide food, to-go meals, and sometimes home-delivered food boxes and pet food. Eligibility is unrestricted, and no documents are required. If you want, I can repeat the phone number slowly again.",
+        "Next step: please call them now and confirm location: **503\u2026 771\u2026 7914**. You\u2019re not mixing it up. The site I gave is **Clackamas Service Center Food Pantry and Meals**, and the listed address is **8800 Southeast 80th Avenue, Portland, 97206**.",
+        "First step: call **Right Track Resource Center** now and ask for community meal options closest to Clackamas. Number one: **541** \u2026 **962** \u2026 **7994**. Second number: **541** \u2026 **910** \u2026 **3056**. I only have a listed address in La Grande: **501 3rd Street, La Grande, Oregon, 97850**. I also see a 211info meals page showing multiple providers, but no phone numbers in this record."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000101#turn-3",
+      "to": "phone_dialog_0000101#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000101#turn-5",
+      "to": "phone_dialog_0000101#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000244#turn-2",
+      "to": "phone_dialog_0000244#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000244#turn-3",
+      "to": "phone_dialog_0000244#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000244#turn-4",
+      "to": "phone_dialog_0000244#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000244#turn-5",
+      "to": "phone_dialog_0000244#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000270#turn-1",
+      "to": "phone_dialog_0000270#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000270#turn-2",
+      "to": "phone_dialog_0000270#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000270#turn-3",
+      "to": "phone_dialog_0000270#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000270#turn-4",
+      "to": "phone_dialog_0000270#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000452#turn-2",
+      "to": "phone_dialog_0000452#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000452#turn-3",
+      "to": "phone_dialog_0000452#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000595#turn-1",
+      "to": "phone_dialog_0000595#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000595#turn-2",
+      "to": "phone_dialog_0000595#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000595#turn-3",
+      "to": "phone_dialog_0000595#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000595#turn-4",
+      "to": "phone_dialog_0000595#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000595#turn-5",
+      "to": "phone_dialog_0000595#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    }
+  ]
+}

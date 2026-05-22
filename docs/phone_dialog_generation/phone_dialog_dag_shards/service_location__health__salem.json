@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__salem",
+  "kind": "service_location",
+  "key": "health__salem",
+  "nodeCount": 7,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000037#turn-1",
+      "scenarioId": "phone_dialog_0000037",
+      "turnIndex": 0,
+      "route": "calendar_event_support",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "calendar_event_support",
+      "user": "Hi, sorry, I\u2019m having trouble catching my breath... I\u2019m in Salem and I need a ride to a medical appointment.",
+      "normalizedQuery": "hi sorry having trouble catching breath salem ride medical appointment",
+      "voiceResponse": "I\u2019m with you. If your breathing gets worse right now, you can call 911. For a medical ride, we can try Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8**. What time is your appointment?",
+      "evidenceDocIds": [
+        "service:06227c05cc4eea25",
+        "service:156176ac73be0658",
+        "service:98ac0349caf0cda6",
+        "service:21c309be2f940e04",
+        "service:80bb5c1077a6fe59"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. If your breathing gets worse right now, you can call 911. For a medical ride, we can try Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8**. What time is your appointment?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000037#turn-2",
+      "scenarioId": "phone_dialog_0000037",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? The line cut out, and there\u2019s noise here.",
+      "normalizedQuery": "hi sorry having trouble catching breath salem ride medical appointment say again line cut there noise here",
+      "voiceResponse": "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreibqbfknxt3faakfuvibzctcxxghijhmcsfeyccmbzs5yy7qfcmxgu",
+        "page:bafkreiceupfx7mjfohjq4caazmp3r2xt3fhzr6dnjih4xsuj6xbe5dnkui",
+        "service:06227c05cc4eea25"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000037#turn-3",
+      "scenarioId": "phone_dialog_0000037",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have family nearby, and I\u2019m really weak today, so I can\u2019t do the bus steps... I need door-to-door if possible.",
+      "normalizedQuery": "hi sorry having trouble catching breath salem ride medical appointment say again line cut there noise here don have family nearby really weak so bus steps door if possible",
+      "voiceResponse": "You\u2019re doing the right thing calling. Yes, ask for **door-to-door medical transport** when you call Cascades West Ride Line: **5 4 1, 9 2 4, 8 7 3 8**. Backup is **8 6 6, 7 2 4, 2 9 7 5**. They coordinate rides for people with no other way to get to covered medical care, including many OHP members. If you want, I can give you a short sentence to read to them.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreibqbfknxt3faakfuvibzctcxxghijhmcsfeyccmbzs5yy7qfcmxgu",
+        "page:bafkreiceupfx7mjfohjq4caazmp3r2xt3fhzr6dnjih4xsuj6xbe5dnkui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling. Yes, ask for **door-to-door medical transport** when you call Cascades West Ride Line: **5 4 1, 9 2 4, 8 7 3 8**. Backup is **8 6 6, 7 2 4, 2 9 7 5**. They coordinate rides for people with no other way to get to covered medical care, including many OHP members. If you want, I can give you a short sentence to read to them.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000284#turn-2",
+      "scenarioId": "phone_dialog_0000284",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s in Salem and he finally said he wants detox help tonight, but I don\u2019t know where to start.",
+      "normalizedQuery": "he salem finally said wants detox tonight don know start",
+      "voiceResponse": "You\u2019re doing the right thing. Since he wants detox tonight, I\u2019m getting you to a live 211 specialist right now to find an open option in Salem. If he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 immediately. Stay with him if you can while we connect.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:28acd183a54cc8a5",
+        "service:437ec64b59b0ac16",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Since he wants detox tonight, I\u2019m getting you to a live 211 specialist right now to find an open option in Salem. If he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 immediately. Stay with him if you can while we connect.",
+      "voiceResponseAlternatives": [
+        "You can ask questions first. He does not need to give his full name right away just to start getting options. Tell the 2-1-1 specialist you\u2019re calling for your brother and want detox tonight in Salem, and share only what you know. If there\u2019s any immediate danger or a medical emergency, call 9-1-1 right away.",
+        "Yes, you can keep it private. You can ask questions first and share only what you\u2019re comfortable sharing; he does not need to give his full name right away to start getting detox options tonight in Salem. I\u2019ll keep you with the live 2-1-1 specialist for private options. If he becomes medically unsafe at any point, call 9-1-1 immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000284#turn-3",
+      "scenarioId": "phone_dialog_0000284",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little when you give options? I\u2019m writing this in my car and I keep missing stuff.",
+      "normalizedQuery": "hi sorry calling brother kind all over place right now he salem finally said wants detox tonight don know start slow down little when give options writing this car keep missing stuff",
+      "voiceResponse": "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time.",
+      "voiceResponseAlternatives": [
+        "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000284#turn-4",
+      "scenarioId": "phone_dialog_0000284",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Also, do we have to give his full name right away, or can we ask questions first?",
+      "normalizedQuery": "hi sorry calling brother kind all over place right now he salem finally said wants detox tonight don know start slow down little when give options writing this car keep missing stuff also we have his full name away ask questions first",
+      "voiceResponse": "You can ask questions first. He does not need to give his full name right away just to start getting options. Tell the 2-1-1 specialist you\u2019re calling for your brother and want detox tonight in Salem, and share only what you know. If there\u2019s any immediate danger or a medical emergency, call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You can ask questions first. He does not need to give his full name right away just to start getting options. Tell the 2-1-1 specialist you\u2019re calling for your brother and want detox tonight in Salem, and share only what you know. If there\u2019s any immediate danger or a medical emergency, call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Since he wants detox tonight, I\u2019m getting you to a live 211 specialist right now to find an open option in Salem. If he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 immediately. Stay with him if you can while we connect.",
+        "Yes, you can keep it private. You can ask questions first and share only what you\u2019re comfortable sharing; he does not need to give his full name right away to start getting detox options tonight in Salem. I\u2019ll keep you with the live 2-1-1 specialist for private options. If he becomes medically unsafe at any point, call 9-1-1 immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000284#turn-5",
+      "scenarioId": "phone_dialog_0000284",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s scared about people finding out, so I need someplace that handles this private.",
+      "normalizedQuery": "he salem finally said wants detox tonight don know start slow down little when give options writing this car keep missing stuff also we have his full name right away ask questions first scared people finding so someplace handles private",
+      "voiceResponse": "Yes, you can keep it private. You can ask questions first and share only what you\u2019re comfortable sharing; he does not need to give his full name right away to start getting detox options tonight in Salem. I\u2019ll keep you with the live 2-1-1 specialist for private options. If he becomes medically unsafe at any point, call 9-1-1 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you can keep it private. You can ask questions first and share only what you\u2019re comfortable sharing; he does not need to give his full name right away to start getting detox options tonight in Salem. I\u2019ll keep you with the live 2-1-1 specialist for private options. If he becomes medically unsafe at any point, call 9-1-1 immediately.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Since he wants detox tonight, I\u2019m getting you to a live 211 specialist right now to find an open option in Salem. If he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 immediately. Stay with him if you can while we connect.",
+        "You can ask questions first. He does not need to give his full name right away just to start getting options. Tell the 2-1-1 specialist you\u2019re calling for your brother and want detox tonight in Salem, and share only what you know. If there\u2019s any immediate danger or a medical emergency, call 9-1-1 right away."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000037#turn-1",
+      "to": "phone_dialog_0000037#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000037#turn-2",
+      "to": "phone_dialog_0000037#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000037#turn-3",
+      "to": "phone_dialog_0000037#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000284#turn-2",
+      "to": "phone_dialog_0000284#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000284#turn-3",
+      "to": "phone_dialog_0000284#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000284#turn-4",
+      "to": "phone_dialog_0000284#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000284#turn-5",
+      "to": "phone_dialog_0000284#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    }
+  ]
+}

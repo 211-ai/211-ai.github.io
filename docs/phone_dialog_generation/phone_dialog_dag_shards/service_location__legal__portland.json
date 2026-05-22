@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__legal__portland",
+  "kind": "service_location",
+  "key": "legal__portland",
+  "nodeCount": 3,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000494#turn-2",
+      "scenarioId": "phone_dialog_0000494",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I'm in Portland, on the east side, and I need legal aid, like low-cost or free if possible.",
+      "normalizedQuery": "i'm portland on east side legal aid attorney advocacy like low cost free if possible",
+      "voiceResponse": "You did the right thing calling. For low-cost or free legal aid, try Oregon Law Center: **8 7 7, 2 9 6, 4 0 7 6**. Another number is **5 0 3, 6 4 0, 4 1 1 5**. They help with civil legal issues for low-income people, and they said no documents are required at intake. If you want, I can help you plan exactly what to say when they answer.",
+      "evidenceDocIds": [
+        "service:ed3bd6f2e5ca5b5b",
+        "service:886116c15fd78132",
+        "service:845e7c7de82757e1",
+        "service:9daa4747aa898de5",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. For low-cost or free legal aid, try Oregon Law Center: **8 7 7, 2 9 6, 4 0 7 6**. Another number is **5 0 3, 6 4 0, 4 1 1 5**. They help with civil legal issues for low-income people, and they said no documents are required at intake. If you want, I can help you plan exactly what to say when they answer.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000494#turn-3",
+      "scenarioId": "phone_dialog_0000494",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "legal",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down and say that again? I didn't catch the name, people are talking in the background here.",
+      "normalizedQuery": "hi sorry i'm really panicking little got this court paper don't even know start portland on east side legal aid attorney advocacy like low cost free if possible slow down say again didn't catch name people talking background here",
+      "voiceResponse": "Of course. The name is **Oregon Law Center**. I\u2019ll say it slowly: **Oregon \u2026 Law \u2026 Center**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreicuwafofc7at3r5slvg4m7hdnp5ny3f73xyfam7h6gpjygcenroay",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreieieiylvtx53hrcncy52q6j6zkqxxtb73xnqduxwb5p27a7dlaomm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Oregon Law Center**. I\u2019ll say it slowly: **Oregon \u2026 Law \u2026 Center**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000494#turn-5",
+      "scenarioId": "phone_dialog_0000494",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "legal",
+      "locationTag": "portland",
+      "promptTemplate": "wallet_document_support",
+      "user": "Wait, sorry, I'm mixed up, is proof of address enough if my license still has my old place on it?",
+      "normalizedQuery": "i'm portland on east side legal aid attorney advocacy like low cost free if possible slow down say again didn't catch name people talking background here also intake id notice phone wallet actual paper copies wait sorry mixed up proof address enough license still has old place it",
+      "voiceResponse": "Yes, that can still work for intake. Bring your license, plus one current proof of address, and keep the notice in your phone wallet ready to show. If they need anything else, they\u2019ll tell you on the call. If you want, I can give you a 10-second script to explain the old address clearly.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5fd8e43cfc766596",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:0befd318ee463a18"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that can still work for intake. Bring your license, plus one current proof of address, and keep the notice in your phone wallet ready to show. If they need anything else, they\u2019ll tell you on the call. If you want, I can give you a 10-second script to explain the old address clearly.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000494#turn-2",
+      "to": "phone_dialog_0000494#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000494#turn-3",
+      "to": "phone_dialog_0000494#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000494#turn-5",
+      "to": "phone_dialog_0000494#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
+    }
+  ]
+}

@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__clackamas",
+  "kind": "service_location",
+  "key": "health__clackamas",
+  "nodeCount": 10,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000257#turn-1",
+      "scenarioId": "phone_dialog_0000257",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Clackamas and I need detox help today, like somewhere I can actually get in fast.",
+      "normalizedQuery": "hi clackamas detox like somewhere actually fast",
+      "voiceResponse": "You\u2019ve got a couple same-day options. Closest listed is Fora Health Detox in Portland: 10230 Southeast Cherry Blossom Drive, Portland, 97216. Their number is **503, 535, 1151**. Another detox line is **541, 523, 4049** or **541, 406, 4363**. If you want fastest access, call now and say: \u201cI\u2019m in Clackamas and need detox admission today. Do you have an open bed or intake now?\u201d If you want, I can help you script that in one sentence.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019ve got a couple same-day options. Closest listed is Fora Health Detox in Portland: 10230 Southeast Cherry Blossom Drive, Portland, 97216. Their number is **503, 535, 1151**. Another detox line is **541, 523, 4049** or **541, 406, 4363**. If you want fastest access, call now and say: \u201cI\u2019m in Clackamas and need detox admission today. Do you have an open bed or intake now?\u201d If you want, I can help you script that in one sentence.",
+      "voiceResponseAlternatives": [
+        "Yes. It\u2019s **503, 535, 1151**. I\u2019ll say it in chunks: **503** \u2026 **535** \u2026 **1151**.",
+        "You\u2019re okay, and I\u2019m right here with you. I haven\u2019t given you a phone number yet, so there\u2019s nothing you missed. Let\u2019s do one small step, slowly: tell me your appointment **time** in one chunk, like \u201c10:00 AM\u201d or \u201c2:00 PM.\u201d"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000257#turn-2",
+      "scenarioId": "phone_dialog_0000257",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, your voice is cutting out, can you repeat that place name and the intake hours?",
+      "normalizedQuery": "hi clackamas detox like somewhere actually fast sorry your voice cutting repeat place name intake hours",
+      "voiceResponse": "Sure. The place name is **Fora Health Detox** in Portland, at **10230 Southeast Cherry Blossom Drive, 97216**. I don\u2019t have confirmed intake hours on this line. For fastest access, call and ask: \u201cDo you have detox intake open right now?\u201d",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:09f0f9ede3cd2dda",
+        "service:a80fc4c7b16e0d53",
+        "service:5859932a69e4e47a",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure. The place name is **Fora Health Detox** in Portland, at **10230 Southeast Cherry Blossom Drive, 97216**. I don\u2019t have confirmed intake hours on this line. For fastest access, call and ask: \u201cDo you have detox intake open right now?\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely. You\u2019re doing your best, and we can go slowly. Here\u2019s the one thing I need: **what day and what time is your appointment?** Just those two parts: **day**, then **time**.",
+        "You\u2019re okay, and I\u2019m glad you asked. I haven\u2019t given a time yet. The detail I still need is your appointment time. Just the time, in one chunk, like: \u201c2:00 PM\u201d or \u201c10:00 AM.\u201d",
+        "Yes. I\u2019ll say it slower. If he is in immediate danger, call **9-1-1** now. That is **9\u2026 1\u2026 1**. **9\u2026 1\u2026 1**. If he is not in immediate danger, I will transfer you now for fast detox placement in Clackamas."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000257#turn-3",
+      "scenarioId": "phone_dialog_0000257",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I missed the number after area code 503, can you say the full phone number one more time, slower?",
+      "normalizedQuery": "hi clackamas detox like somewhere actually fast sorry your voice cutting repeat place name intake hours missed number after area code 503 say full phone one more time slower",
+      "voiceResponse": "Yes. It\u2019s **503, 535, 1151**. I\u2019ll say it in chunks: **503** \u2026 **535** \u2026 **1151**.",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:a80fc4c7b16e0d53",
+        "service:09f0f9ede3cd2dda",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e48215cf7cc69a4f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It\u2019s **503, 535, 1151**. I\u2019ll say it in chunks: **503** \u2026 **535** \u2026 **1151**.",
+      "voiceResponseAlternatives": [
+        "You\u2019ve got a couple same-day options. Closest listed is Fora Health Detox in Portland: 10230 Southeast Cherry Blossom Drive, Portland, 97216. Their number is **503, 535, 1151**. Another detox line is **541, 523, 4049** or **541, 406, 4363**. If you want fastest access, call now and say: \u201cI\u2019m in Clackamas and need detox admission today. Do you have an open bed or intake now?\u201d If you want, I can help you script that in one sentence.",
+        "You\u2019re okay, and I\u2019m right here with you. I haven\u2019t given you a phone number yet, so there\u2019s nothing you missed. Let\u2019s do one small step, slowly: tell me your appointment **time** in one chunk, like \u201c10:00 AM\u201d or \u201c2:00 PM.\u201d"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000361#turn-1",
+      "scenarioId": "phone_dialog_0000361",
+      "turnIndex": 0,
+      "route": "calendar_event_support",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "calendar_event_support",
+      "user": "Hi... sorry, I\u2019m really not doing well, and I need help getting a ride to my medical appointment in Clackamas.",
+      "normalizedQuery": "hi sorry really doing well getting ride medical appointment clackamas",
+      "voiceResponse": "You\u2019re not a bother, and I\u2019m glad you called. I can help with this step by step. To line up a ride for your medical appointment, what day and time is the appointment?",
+      "evidenceDocIds": [
+        "service:06227c05cc4eea25",
+        "service:156176ac73be0658",
+        "service:98ac0349caf0cda6",
+        "page:bafkreib6nmht7udiukswm5qdmshwpitxtcttggofjrfwvaercrz5c2rrqy",
+        "page:bafkreigah2lp2bdts3f3gwdfch33w6ngsvbgpp6q4dy2j6rvq7ccxr5iqa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not a bother, and I\u2019m glad you called. I can help with this step by step. To line up a ride for your medical appointment, what day and time is the appointment?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000361#turn-2",
+      "scenarioId": "phone_dialog_0000361",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little? I\u2019m trying to listen but I keep missing parts.",
+      "normalizedQuery": "hi sorry really doing well getting ride medical appointment clackamas slow down little trying listen keep missing parts",
+      "voiceResponse": "Absolutely. You\u2019re doing your best, and we can go slowly. Here\u2019s the one thing I need: **what day and what time is your appointment?** Just those two parts: **day**, then **time**.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:98ac0349caf0cda6",
+        "service:f7f1a44948506f7a",
+        "service:06227c05cc4eea25",
+        "service:2f02cc6d44c2cf94"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You\u2019re doing your best, and we can go slowly. Here\u2019s the one thing I need: **what day and what time is your appointment?** Just those two parts: **day**, then **time**.",
+      "voiceResponseAlternatives": [
+        "Sure. The place name is **Fora Health Detox** in Portland, at **10230 Southeast Cherry Blossom Drive, 97216**. I don\u2019t have confirmed intake hours on this line. For fastest access, call and ask: \u201cDo you have detox intake open right now?\u201d",
+        "You\u2019re okay, and I\u2019m glad you asked. I haven\u2019t given a time yet. The detail I still need is your appointment time. Just the time, in one chunk, like: \u201c2:00 PM\u201d or \u201c10:00 AM.\u201d",
+        "Yes. I\u2019ll say it slower. If he is in immediate danger, call **9-1-1** now. That is **9\u2026 1\u2026 1**. **9\u2026 1\u2026 1**. If he is not in immediate danger, I will transfer you now for fast detox placement in Clackamas."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000361#turn-3",
+      "scenarioId": "phone_dialog_0000361",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I heard Tuesday at 2, or was it 10? I\u2019m sorry, could you repeat that time again?",
+      "normalizedQuery": "hi sorry really doing well getting ride medical appointment clackamas slow down little trying listen keep missing parts wait heard tuesday at was it 10 could repeat time again",
+      "voiceResponse": "You\u2019re okay, and I\u2019m glad you asked. I haven\u2019t given a time yet. The detail I still need is your appointment time. Just the time, in one chunk, like: \u201c2:00 PM\u201d or \u201c10:00 AM.\u201d",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m glad you asked. I haven\u2019t given a time yet. The detail I still need is your appointment time. Just the time, in one chunk, like: \u201c2:00 PM\u201d or \u201c10:00 AM.\u201d",
+      "voiceResponseAlternatives": [
+        "Sure. The place name is **Fora Health Detox** in Portland, at **10230 Southeast Cherry Blossom Drive, 97216**. I don\u2019t have confirmed intake hours on this line. For fastest access, call and ask: \u201cDo you have detox intake open right now?\u201d",
+        "Absolutely. You\u2019re doing your best, and we can go slowly. Here\u2019s the one thing I need: **what day and what time is your appointment?** Just those two parts: **day**, then **time**.",
+        "Yes. I\u2019ll say it slower. If he is in immediate danger, call **9-1-1** now. That is **9\u2026 1\u2026 1**. **9\u2026 1\u2026 1**. If he is not in immediate danger, I will transfer you now for fast detox placement in Clackamas."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000361#turn-4",
+      "scenarioId": "phone_dialog_0000361",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "There\u2019s a lot of noise here and I\u2019m kind of panicking... can you say the phone number one more time, slowly?",
+      "normalizedQuery": "hi sorry really doing well getting ride medical appointment clackamas slow down little trying listen keep missing parts wait heard tuesday at was it 10 could repeat time again there lot noise here kind panicking say phone number one more slowly",
+      "voiceResponse": "You\u2019re okay, and I\u2019m right here with you. I haven\u2019t given you a phone number yet, so there\u2019s nothing you missed. Let\u2019s do one small step, slowly: tell me your appointment **time** in one chunk, like \u201c10:00 AM\u201d or \u201c2:00 PM.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m right here with you. I haven\u2019t given you a phone number yet, so there\u2019s nothing you missed. Let\u2019s do one small step, slowly: tell me your appointment **time** in one chunk, like \u201c10:00 AM\u201d or \u201c2:00 PM.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019ve got a couple same-day options. Closest listed is Fora Health Detox in Portland: 10230 Southeast Cherry Blossom Drive, Portland, 97216. Their number is **503, 535, 1151**. Another detox line is **541, 523, 4049** or **541, 406, 4363**. If you want fastest access, call now and say: \u201cI\u2019m in Clackamas and need detox admission today. Do you have an open bed or intake now?\u201d If you want, I can help you script that in one sentence.",
+        "Yes. It\u2019s **503, 535, 1151**. I\u2019ll say it in chunks: **503** \u2026 **535** \u2026 **1151**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000608#turn-2",
+      "scenarioId": "phone_dialog_0000608",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s in Clackamas and he said he wants detox today if possible, somewhere safe he can get in fast.",
+      "normalizedQuery": "he clackamas said wants detox if possible somewhere safe fast",
+      "voiceResponse": "Thank you. I hear you. He is in Clackamas, and he wants detox today, fast and safe. Clackamas, detox today, fast and safe. I will connect you to a live specialist now for immediate placement options. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. He is in Clackamas, and he wants detox today, fast and safe. Clackamas, detox today, fast and safe. I will connect you to a live specialist now for immediate placement options. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now.",
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll repeat slowly. The location I heard is **Clackamas**. **Clackamas**. No street address yet. No street address yet. If he is in immediate danger, call **9\u2026 1\u2026 1** now. **9\u2026 1\u2026 1**. If not, I will transfer you now for fast detox placement."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000608#turn-3",
+      "scenarioId": "phone_dialog_0000608",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing on this phone, can you say that slower and do the number in chunks?",
+      "normalizedQuery": "hi calling nephew only know part going on he clackamas said wants detox if possible somewhere safe fast sorry hard hearing this phone say slower number chunks",
+      "voiceResponse": "Yes. I\u2019ll say it slower. If he is in immediate danger, call **9-1-1** now. That is **9\u2026 1\u2026 1**. **9\u2026 1\u2026 1**. If he is not in immediate danger, I will transfer you now for fast detox placement in Clackamas.",
+      "evidenceDocIds": [
+        "service:f343701d786b3ebc",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. If he is in immediate danger, call **9-1-1** now. That is **9\u2026 1\u2026 1**. **9\u2026 1\u2026 1**. If he is not in immediate danger, I will transfer you now for fast detox placement in Clackamas.",
+      "voiceResponseAlternatives": [
+        "Sure. The place name is **Fora Health Detox** in Portland, at **10230 Southeast Cherry Blossom Drive, 97216**. I don\u2019t have confirmed intake hours on this line. For fastest access, call and ask: \u201cDo you have detox intake open right now?\u201d",
+        "Absolutely. You\u2019re doing your best, and we can go slowly. Here\u2019s the one thing I need: **what day and what time is your appointment?** Just those two parts: **day**, then **time**.",
+        "You\u2019re okay, and I\u2019m glad you asked. I haven\u2019t given a time yet. The detail I still need is your appointment time. Just the time, in one chunk, like: \u201c2:00 PM\u201d or \u201c10:00 AM.\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000608#turn-4",
+      "scenarioId": "phone_dialog_0000608",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Wait, I missed the middle part, there\u2019s noise here and I couldn\u2019t catch the address.",
+      "normalizedQuery": "hi calling nephew only know part going on he clackamas said wants detox if possible somewhere safe fast sorry hard hearing this phone say slower number chunks wait missed middle there noise here couldn catch address",
+      "voiceResponse": "Of course. I\u2019ll repeat slowly. The location I heard is **Clackamas**. **Clackamas**. No street address yet. No street address yet. If he is in immediate danger, call **9\u2026 1\u2026 1** now. **9\u2026 1\u2026 1**. If not, I will transfer you now for fast detox placement.",
+      "evidenceDocIds": [
+        "service:f343701d786b3ebc",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "service:05e18f06586fde74",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll repeat slowly. The location I heard is **Clackamas**. **Clackamas**. No street address yet. No street address yet. If he is in immediate danger, call **9\u2026 1\u2026 1** now. **9\u2026 1\u2026 1**. If not, I will transfer you now for fast detox placement.",
+      "voiceResponseAlternatives": [
+        "Thank you. I hear you. He is in Clackamas, and he wants detox today, fast and safe. Clackamas, detox today, fast and safe. I will connect you to a live specialist now for immediate placement options. Before I transfer, is he in immediate danger right now? If yes, call 9-1-1 now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000257#turn-1",
+      "to": "phone_dialog_0000257#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000257#turn-2",
+      "to": "phone_dialog_0000257#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000257#turn-3",
+      "to": "phone_dialog_0000257#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000361#turn-1",
+      "to": "phone_dialog_0000361#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000361#turn-2",
+      "to": "phone_dialog_0000361#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000361#turn-3",
+      "to": "phone_dialog_0000361#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000361#turn-4",
+      "to": "phone_dialog_0000361#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000608#turn-2",
+      "to": "phone_dialog_0000608#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000608#turn-3",
+      "to": "phone_dialog_0000608#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000608#turn-4",
+      "to": "phone_dialog_0000608#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    }
+  ]
+}

@@ -146,6 +146,99 @@ def test_document_requirement_without_document_evidence_uses_template_fallback()
     assert "without document or intake evidence" in reasons[0]
 
 
+def test_repeat_request_routes_to_repeat_or_restate_even_after_live_agent_state() -> None:
+    sim = _load_simulation_module()
+    state = sim.ConversationState(
+        user_messages=["I need dental help in Eugene right now."],
+        live_agent_triggered=True,
+    )
+    document = sim.ServiceDocument(
+        doc_id="service:dental",
+        title="Dental Clinic",
+        text="Dental care record.",
+        provider_name="Dental Provider",
+    )
+    hits = [sim.SearchHit(document=document, score=88.0, matched_terms=["dental", "eugene"])]
+
+    route, reasons = sim.route_turn("Can you repeat that number again? You cut out.", hits, state)
+
+    assert route == "repeat_or_restate"
+    assert "repeat or restate" in reasons[0]
+
+
+def test_safety_guardrail_route_handles_at_risk_but_not_confirmed_emergency() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("I feel weak and dizzy and I might pass out if I stay outside much longer.", [])
+
+    assert route == "safety_guardrail_support"
+    assert "safety check" in reasons[0] or "at risk" in reasons[0]
+
+
+def test_repeated_safety_guardrail_signal_escalates_to_live_agent() -> None:
+    sim = _load_simulation_module()
+    state = sim.ConversationState(safety_guardrail_count=1)
+
+    route, reasons = sim.route_turn("I feel weak and dizzy and I might pass out if I stay outside much longer.", [], state)
+
+    assert route == "live_agent"
+    assert "earlier guardrail" in reasons[0]
+
+
+def test_mangled_speech_routes_to_speech_unclear_clarification() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("[static] uh sorry c-can you hear me ... s-shelter maybe", [])
+
+    assert route == "speech_unclear_clarification"
+    assert "garbled" in reasons[0] or "hard to understand" in reasons[0]
+
+
+def test_wallet_document_question_routes_to_wallet_document_support() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("What proof files and uploads are in my wallet right now?", [])
+
+    assert route == "wallet_document_support"
+    assert "wallet files" in reasons[0]
+
+
+def test_calendar_question_routes_to_calendar_event_support() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("Can you put that intake appointment on my calendar and remind me tomorrow?", [])
+
+    assert route == "calendar_event_support"
+    assert "calendar" in reasons[0] or "appointment" in reasons[0]
+
+
+def test_provider_message_request_routes_to_provider_contact_support() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("Can you help me text the shelter back and leave a voicemail if they do not answer?", [])
+
+    assert route == "provider_contact_support"
+    assert "contacting a provider" in reasons[0]
+
+
+def test_service_interaction_request_routes_to_service_interaction_support() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("I went to the clinic and they told me to bring ID next time. Can you note that?", [])
+
+    assert route == "service_interaction_support"
+    assert "provider visit" in reasons[0] or "follow-up" in reasons[0]
+
+
+def test_navigation_request_routes_to_app_surface_navigation() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("Open the calendar screen so I can see my follow-up event.", [])
+
+    assert route == "app_surface_navigation"
+    assert "calendar" in reasons[0]
+
+
 def test_local_retriever_finds_grounded_service_match() -> None:
     sim = _load_simulation_module()
     document = sim.ServiceDocument(

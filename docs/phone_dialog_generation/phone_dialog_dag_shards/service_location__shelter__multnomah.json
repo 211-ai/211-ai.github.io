@@ -1,0 +1,634 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__shelter__multnomah",
+  "kind": "service_location",
+  "key": "shelter__multnomah",
+  "nodeCount": 18,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000004#turn-4",
+      "scenarioId": "phone_dialog_0000004",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Is that on Northeast or Southeast? I'm writing this down and I don't want to go to the wrong one.",
+      "normalizedQuery": "hi sorry i'm trying keep it together mom just passed apartment so hot can't breathe there multnomah county portland somewhere cool sit while wait missed name say cooling place again little slower on northeast southeast writing this down don't want go wrong one",
+      "voiceResponse": "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:9a29766010d20f69"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+        "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+        "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**.",
+        "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000056#turn-5",
+      "scenarioId": "phone_dialog_0000056",
+      "turnIndex": 4,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "service_interaction_support",
+      "user": "If there\u2019s an intake line or someone on-call, I can conference her in as soon as you tell me what to do.",
+      "normalizedQuery": "she multnomah county gresham got put this afternoon don have every detail older has her medications worried being outside overnight please escalate as urgent us shelter shelters homeless warming bed right now if there an intake line someone on call conference soon tell",
+      "voiceResponse": "You\u2019re doing exactly the right thing. I\u2019ve already marked this urgent, so the next step is to conference her in now to the intake/on-call line and request immediate overnight bed placement near Gresham. When they answer, say: older adult, displaced today, has medications, and cannot stay outside tonight. If the call drops, redial **5-4-1, 9-6-2, 7-9-9-4**. If her safety turns immediate at any point, call **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing exactly the right thing. I\u2019ve already marked this urgent, so the next step is to conference her in now to the intake/on-call line and request immediate overnight bed placement near Gresham. When they answer, say: older adult, displaced today, has medications, and cannot stay outside tonight. If the call drops, redial **5-4-1, 9-6-2, 7-9-9-4**. If her safety turns immediate at any point, call **9-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000160#turn-2",
+      "scenarioId": "phone_dialog_0000160",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Multnomah County, near Portland, and I don\u2019t have a stable address anymore.",
+      "normalizedQuery": "hi um sorry having rough day just basic stuff right now multnomah county portland don have stable address anymore",
+      "voiceResponse": "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+      "evidenceDocIds": [
+        "service:9fc8a4423060d526",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "page:bafkreibrfnugwr2drajj5tzukt6mg3x7qgsld5dstwvz3izn5r2f6vvpxy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+      "voiceResponseAlternatives": [
+        "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+        "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+        "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**.",
+        "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000160#turn-4",
+      "scenarioId": "phone_dialog_0000160",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I didn\u2019t catch that phone number, I\u2019m hard of hearing on this line. Can you say it slower, in chunks?",
+      "normalizedQuery": "hi um sorry having rough day just basic stuff right now multnomah county portland don have stable address anymore really somewhere mail like mailing pickup didn catch phone number hard hearing on this line say it slower chunks",
+      "voiceResponse": "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:a558e2f5ba96f584",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+      "voiceResponseAlternatives": [
+        "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+        "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+        "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**.",
+        "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000199#turn-4",
+      "scenarioId": "phone_dialog_0000199",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Did you say Tri-Met or something else? I misheard that, sorry.",
+      "normalizedQuery": "hi sorry hear great here it really loud multnomah county getting ride say again slower missed name place at shelter shelters homeless overnight warming lobby kind falling apart right now just transportation transport bus so appointment did tri met something else misheard",
+      "voiceResponse": "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one.",
+        "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000264#turn-3",
+      "scenarioId": "phone_dialog_0000264",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "We\u2019re in Multnomah County, near Portland, and he needs somewhere safe to be during the day.",
+      "normalizedQuery": "hi sorry hear outside phone keeps cutting trying 17 year old we youth day center re multnomah county portland he needs somewhere safe be during",
+      "voiceResponse": "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**.",
+      "evidenceDocIds": [
+        "service:8076a16efabc189a",
+        "service:b7dd0bad2c9d0625",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**.",
+      "voiceResponseAlternatives": [
+        "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+        "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+        "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+        "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000264#turn-4",
+      "scenarioId": "phone_dialog_0000264",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that name? You dropped for a second.",
+      "normalizedQuery": "hi sorry hear outside phone keeps cutting trying 17 year old we youth day center re multnomah county portland he needs somewhere safe be during repeat name dropped second",
+      "voiceResponse": "Yes \u2014 the name is **Outside In Day Program**. That\u2019s **Outside In Day Program**.",
+      "evidenceDocIds": [
+        "service:8076a16efabc189a",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:b7dd0bad2c9d0625",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes \u2014 the name is **Outside In Day Program**. That\u2019s **Outside In Day Program**.",
+      "voiceResponseAlternatives": [
+        "Of course. You\u2019re doing great. The main number is: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**. I\u2019ll say it once more: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**.",
+        "Next step: please open that same listing and tap **More Details** again. I only have **\u201c5 0 3\u201d** from what you heard; I do not have the full phone number in my view yet. Once you see it, read it to me once, and I\u2019ll repeat every digit back slowly, one at a time.",
+        "Next step: please grab a pen, and I\u2019ll repeat the number slowly. It\u2019s **5-0-3, 5-4-2, 2-7-1-7**. Again: **5-0-3, 5-4-2, 2-7-1-7**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000264#turn-5",
+      "scenarioId": "phone_dialog_0000264",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at like two percent, so if there\u2019s one close bus-wise, that helps a lot.",
+      "normalizedQuery": "trying 17 year old we youth day center re multnomah county portland he needs somewhere safe be during repeat name dropped second battery at like two percent so if there one close bus wise helps lot",
+      "voiceResponse": "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Go to **Outside In Day Program** in Portland: **1132 Southwest 13th Avenue**. Call now: **503 \u2026 535 \u2026 3800**. They can help with a safe daytime space, meals, showers, laundry, and phone access. If he is in immediate danger right now, call **911** first.",
+      "voiceResponseAlternatives": [
+        "Please stay on the line with me now while I connect you to the live 211 specialist. I don\u2019t have a Northeast or Southeast site to confirm right now, and the last update said cooling centers were not open as of May 1, 2026. The specialist can give you the exact address before you travel. If your breathing gets worse at any point, call 9-1-1 right away.",
+        "Thank you for telling me. Next step: please stay on the line now, and I\u2019ll connect you to a live 211 specialist for Multnomah County who can help with options even without a stable address. If we get disconnected, call STUFF A BUS at **5-4-1, 9-9-4, 4-9-6-8**. They list **no required documents**.",
+        "Yes. The number is: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**. I\u2019ll say it again: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+        "Yes. In Portland, try **Outside In Day Program** for youth ages **16 to 24**. Call **503 \u2026 535 \u2026 3800**. Address: **1132 Southwest 13th Avenue, Portland**. They can offer a safe daytime space, meals, showers, laundry, and phone access. If he\u2019s in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000264#turn-6",
+      "scenarioId": "phone_dialog_0000264",
+      "turnIndex": 5,
+      "route": "provider_contact_support",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you can text the address too, please do, in case this call dies.",
+      "normalizedQuery": "we re multnomah county portland he needs somewhere safe be during day repeat name dropped second battery at like two percent so if there one close bus wise helps lot text address too please case this call dies",
+      "voiceResponse": "I can\u2019t send a text from this line, but here\u2019s one you can copy now: \u201cOutside In Day Program 1132 Southwest 13th Avenue, Portland Call: 503 \u2026 535 \u2026 3800 Safe daytime space, meals, showers, laundry, phone access.\u201d If he\u2019s in immediate danger, call 911 first.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can\u2019t send a text from this line, but here\u2019s one you can copy now: \u201cOutside In Day Program 1132 Southwest 13th Avenue, Portland Call: 503 \u2026 535 \u2026 3800 Safe daytime space, meals, showers, laundry, phone access.\u201d If he\u2019s in immediate danger, call 911 first.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000316#turn-3",
+      "scenarioId": "phone_dialog_0000316",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m in Multnomah County, Portland side, sorry if I sound all over the place.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first veteran veterans va housing dad he served army basically places stay now multnomah county portland side if sound all over place",
+      "voiceResponse": "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibvfd7auavywzmikvkkgjxc3brfowip4q23cqlxsuukznyssb2jpy",
+        "page:bafkreigphzqbjatlhxsrpxhpiofe747mqkryui4nroaoc4afuktkujk3ue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one.",
+        "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000316#turn-4",
+      "scenarioId": "phone_dialog_0000316",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that last part with people talking in here, can you repeat the number slower?",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first veteran veterans va housing dad he served army basically places stay now multnomah county portland side if sound all over place wait missed last part people talking here repeat slower",
+      "voiceResponse": "Of course. You\u2019re doing great. The main number is: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**. I\u2019ll say it once more: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreibvfd7auavywzmikvkkgjxc3brfowip4q23cqlxsuukznyssb2jpy",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. You\u2019re doing great. The main number is: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**. I\u2019ll say it once more: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**.",
+      "voiceResponseAlternatives": [
+        "Yes \u2014 the name is **Outside In Day Program**. That\u2019s **Outside In Day Program**.",
+        "Next step: please open that same listing and tap **More Details** again. I only have **\u201c5 0 3\u201d** from what you heard; I do not have the full phone number in my view yet. Once you see it, read it to me once, and I\u2019ll repeat every digit back slowly, one at a time.",
+        "Next step: please grab a pen, and I\u2019ll repeat the number slowly. It\u2019s **5-0-3, 5-4-2, 2-7-1-7**. Again: **5-0-3, 5-4-2, 2-7-1-7**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000355#turn-1",
+      "scenarioId": "phone_dialog_0000355",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, the line keeps cutting out. I\u2019m in Multnomah County and I need a cooling center today.",
+      "normalizedQuery": "hi sorry line keeps cutting multnomah county cooling center",
+      "voiceResponse": "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+      "evidenceDocIds": [
+        "page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy",
+        "page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a",
+        "page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "page:bafkreiatjfdrlq7tk7qqnraubcxtplfjdmri5ogjb2ygiomx2oikn3ipzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one.",
+        "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000355#turn-2",
+      "scenarioId": "phone_dialog_0000355",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that location again? I didn\u2019t catch the street name.",
+      "normalizedQuery": "hi sorry line keeps cutting multnomah county cooling center say location again didn catch street name",
+      "voiceResponse": "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one.",
+      "evidenceDocIds": [
+        "page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy",
+        "page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a",
+        "page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i",
+        "page:bafkreiatjfdrlq7tk7qqnraubcxtplfjdmri5ogjb2ygiomx2oikn3ipzi",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one.",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000355#turn-3",
+      "scenarioId": "phone_dialog_0000355",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t hear great on phone calls, can you give me their number really slow, one digit at a time?",
+      "normalizedQuery": "hi sorry line keeps cutting multnomah county cooling center say location again didn catch street name don hear great on phone calls give their number really slow one digit at time",
+      "voiceResponse": "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreialu5ak2tauj23x4thfmerioihd4sxwfscsj3pp76usadcfkowvga",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreifq5ndsc7c7luidmjnvyyyclqci677ytxa4ztdgkent6o3b4kvwwe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: open the **Extreme Heat Cooling Centers** page you already have, then tap **More Details** for your site. I don\u2019t have a phone number in the information I can see right now, so I can\u2019t read digits yet. If you read me the number once you see it, I\u2019ll repeat it back one digit at a time, very slowly.",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000355#turn-4",
+      "scenarioId": "phone_dialog_0000355",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I got 503... then it dropped. Please repeat the whole number.",
+      "normalizedQuery": "hi sorry line keeps cutting multnomah county cooling center say location again didn catch street name don hear great on phone calls give their number really slow one digit at time wait got 503 then it dropped please repeat whole",
+      "voiceResponse": "Next step: please open that same listing and tap **More Details** again. I only have **\u201c5 0 3\u201d** from what you heard; I do not have the full phone number in my view yet. Once you see it, read it to me once, and I\u2019ll repeat every digit back slowly, one at a time.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please open that same listing and tap **More Details** again. I only have **\u201c5 0 3\u201d** from what you heard; I do not have the full phone number in my view yet. Once you see it, read it to me once, and I\u2019ll repeat every digit back slowly, one at a time.",
+      "voiceResponseAlternatives": [
+        "Yes \u2014 the name is **Outside In Day Program**. That\u2019s **Outside In Day Program**.",
+        "Of course. You\u2019re doing great. The main number is: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**. I\u2019ll say it once more: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**.",
+        "Next step: please grab a pen, and I\u2019ll repeat the number slowly. It\u2019s **5-0-3, 5-4-2, 2-7-1-7**. Again: **5-0-3, 5-4-2, 2-7-1-7**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000615#turn-1",
+      "scenarioId": "phone_dialog_0000615",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m gonna talk fast and then lose my place, that\u2019s just me. I\u2019m trying to find a youth day center for my nephew in Multnomah County, somewhere he can go during the day and stay safe.",
+      "normalizedQuery": "hi sorry gonna talk fast then lose place just trying youth day center nephew multnomah county somewhere he go during stay safe",
+      "voiceResponse": "First step: call **Safe Place for Youth** and ask if they have daytime safe options or referrals for Multnomah County youth. The number is **5-0-3, 5-4-2, 2-7-1-7**. I\u2019ll repeat: **5-0-3, 5-4-2, 2-7-1-7**. What I have is a Hillsboro location: **454 Southeast Washington Street, Hillsboro**. Eligibility says runaway or homeless youth ages **12 to 20**.",
+      "evidenceDocIds": [
+        "service:ac5079153805801e",
+        "service:755193c3d210f2d9",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibnagkfk7x3go76gda4vnv3qo3ftgzti5wkme7ybi7ftgct4pnopi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **Safe Place for Youth** and ask if they have daytime safe options or referrals for Multnomah County youth. The number is **5-0-3, 5-4-2, 2-7-1-7**. I\u2019ll repeat: **5-0-3, 5-4-2, 2-7-1-7**. What I have is a Hillsboro location: **454 Southeast Washington Street, Hillsboro**. Eligibility says runaway or homeless youth ages **12 to 20**.",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000615#turn-2",
+      "scenarioId": "phone_dialog_0000615",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we go further, I\u2019m pretty private about family stuff, so please don\u2019t put his full name anywhere yet, okay?",
+      "normalizedQuery": "hi sorry gonna talk fast then lose place just trying youth day center nephew multnomah county somewhere he go during stay safe before we further pretty private family stuff so please don put his full name anywhere yet okay",
+      "voiceResponse": "Absolutely. Next step: share only his first name or initials when you call, and ask the program what they require before giving anything else. I won\u2019t add or ask for his full name right now. If you want, I can help you script one privacy line to say on the call.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Next step: share only his first name or initials when you call, and ask the program what they require before giving anything else. I won\u2019t add or ask for his full name right now. If you want, I can help you script one privacy line to say on the call.",
+      "voiceResponseAlternatives": [
+        "Not TriMet. It\u2019s **Coordinated Entry for Families** in Multnomah County. I\u2019ll say it slowly: **Coordinated\u2026 Entry\u2026 for\u2026 Families**.",
+        "You\u2019re doing the right thing, and you\u2019re not all over the place. Portland in Multnomah County is the right area for **Housing Related Coordinated Entry for Homeless Veterans**. Fastest step now: call **4 5 8 \u2026 2 2 1 \u2026 0 7 1 8**. If they don\u2019t answer, call **5 4 1 \u2026 7 4 3 \u2026 7 1 7 0**. Say: \u201cMy dad is an Army veteran in Multnomah County and needs a safe place tonight.\u201d",
+        "Yes. Next step: open **211info** and search **\u201cExtreme Heat Cooling Centers.\u201d** For Multnomah County, that page shows matching providers, and it says mapped points are only estimates. Please tap **\u201cMore Details\u201d** on a site to get the exact location and accessibility notes. If you want, I can stay with you while you check one location now.",
+        "Next step: please tap **\u201cMore Details\u201d** on the cooling center listing you\u2019re viewing. I don\u2019t have a street name in my view, and that page says map points are only estimates. The exact address is inside **\u201cMore Details.\u201d** If you want, tell me the site name slowly, and I\u2019ll help you confirm the right one."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000615#turn-3",
+      "scenarioId": "phone_dialog_0000615",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Also I\u2019m hard of hearing on this line, so if you give me a phone number, can you do it in chunks and repeat it once?",
+      "normalizedQuery": "hi sorry gonna talk fast then lose place just trying youth day center nephew multnomah county somewhere he go during stay safe before we further pretty private family stuff so please don put his full name anywhere yet okay also hard hearing on this line if give phone number it chunks repeat once",
+      "voiceResponse": "Next step: please grab a pen, and I\u2019ll repeat the number slowly. It\u2019s **5-0-3, 5-4-2, 2-7-1-7**. Again: **5-0-3, 5-4-2, 2-7-1-7**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please grab a pen, and I\u2019ll repeat the number slowly. It\u2019s **5-0-3, 5-4-2, 2-7-1-7**. Again: **5-0-3, 5-4-2, 2-7-1-7**.",
+      "voiceResponseAlternatives": [
+        "Yes \u2014 the name is **Outside In Day Program**. That\u2019s **Outside In Day Program**.",
+        "Of course. You\u2019re doing great. The main number is: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**. I\u2019ll say it once more: **4 5 8** \u2026 **2 2 1** \u2026 **0 7 1 8**.",
+        "Next step: please open that same listing and tap **More Details** again. I only have **\u201c5 0 3\u201d** from what you heard; I do not have the full phone number in my view yet. Once you see it, read it to me once, and I\u2019ll repeat every digit back slowly, one at a time."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000004#turn-4",
+      "to": "phone_dialog_0000004#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000160#turn-2",
+      "to": "phone_dialog_0000160#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000160#turn-4",
+      "to": "phone_dialog_0000160#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000199#turn-4",
+      "to": "phone_dialog_0000199#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000264#turn-3",
+      "to": "phone_dialog_0000264#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000264#turn-4",
+      "to": "phone_dialog_0000264#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000264#turn-5",
+      "to": "phone_dialog_0000264#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000316#turn-3",
+      "to": "phone_dialog_0000316#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000316#turn-4",
+      "to": "phone_dialog_0000316#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000355#turn-1",
+      "to": "phone_dialog_0000355#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000355#turn-2",
+      "to": "phone_dialog_0000355#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000355#turn-3",
+      "to": "phone_dialog_0000355#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000355#turn-4",
+      "to": "phone_dialog_0000355#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000615#turn-1",
+      "to": "phone_dialog_0000615#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000615#turn-2",
+      "to": "phone_dialog_0000615#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000615#turn-3",
+      "to": "phone_dialog_0000615#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

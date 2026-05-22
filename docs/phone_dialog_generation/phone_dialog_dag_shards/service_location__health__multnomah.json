@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__multnomah",
+  "kind": "service_location",
+  "key": "health__multnomah",
+  "nodeCount": 3,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000095#turn-1",
+      "scenarioId": "phone_dialog_0000095",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "Hi, um, I need detox help in Multnomah County, like tonight if possible.",
+      "normalizedQuery": "hi um detox multnomah county like tonight if possible",
+      "voiceResponse": "First step: if you\u2019re in immediate danger or might overdose, call 911 now. For detox help tonight, I can connect you to a live 211 specialist right now so you can share only what you\u2019re comfortable sharing. I do have two detox numbers listed: **541 \u2014 523 \u2014 4049** and **541 \u2014 406 \u2014 4363**. Do you want me to stay with you while we connect to a live agent?",
+      "evidenceDocIds": [
+        "service:df6f05609bb7717a",
+        "page:bafkreig27lb2rhd5nvrrsxzzfvxrg5ryzsnvhiuvz3qjijoqyhb4fnaa4q",
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "service:90c7ca5c66c5c48e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: if you\u2019re in immediate danger or might overdose, call 911 now. For detox help tonight, I can connect you to a live 211 specialist right now so you can share only what you\u2019re comfortable sharing. I do have two detox numbers listed: **541 \u2014 523 \u2014 4049** and **541 \u2014 406 \u2014 4363**. Do you want me to stay with you while we connect to a live agent?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000095#turn-2",
+      "scenarioId": "phone_dialog_0000095",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down a second? I\u2019m trying to write this and I keep missing what you said.",
+      "normalizedQuery": "hi um detox multnomah county like tonight if possible sorry slow down second trying write this keep missing said",
+      "voiceResponse": "First step: write down these two detox numbers. Ready? I\u2019ll go slowly. First number: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**. Second number: **5 4 1** \u2026 **4 0 6** \u2026 **4 3 6 3**. If you want, I can repeat them again one at a time.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:df6f05609bb7717a",
+        "page:bafkreig27lb2rhd5nvrrsxzzfvxrg5ryzsnvhiuvz3qjijoqyhb4fnaa4q",
+        "service:7a13b77aa237b2eb",
+        "service:d4ed0b8d9caa6515"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: write down these two detox numbers. Ready? I\u2019ll go slowly. First number: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**. Second number: **5 4 1** \u2026 **4 0 6** \u2026 **4 3 6 3**. If you want, I can repeat them again one at a time.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I know the line is rough. The place name is **Fora Health**. I\u2019ll say it again: **Fora Health**. If you want, I can repeat the phone number next, slowly."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000446#turn-3",
+      "scenarioId": "phone_dialog_0000446",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? The call keeps cutting out, I missed the name of the place.",
+      "normalizedQuery": "hi sorry barely hear detox like keep doing this multnomah county portland side gresham think kind all over place right now say again call keeps cutting missed name",
+      "voiceResponse": "You\u2019re okay, I know the line is rough. The place name is **Fora Health**. I\u2019ll say it again: **Fora Health**. If you want, I can repeat the phone number next, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b35874fb2b694983",
+        "page:bafkreibrfnugwr2drajj5tzukt6mg3x7qgsld5dstwvz3izn5r2f6vvpxy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I know the line is rough. The place name is **Fora Health**. I\u2019ll say it again: **Fora Health**. If you want, I can repeat the phone number next, slowly.",
+      "voiceResponseAlternatives": [
+        "First step: write down these two detox numbers. Ready? I\u2019ll go slowly. First number: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**. Second number: **5 4 1** \u2026 **4 0 6** \u2026 **4 3 6 3**. If you want, I can repeat them again one at a time."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000095#turn-1",
+      "to": "phone_dialog_0000095#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000095#turn-2",
+      "to": "phone_dialog_0000095#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000446#turn-3",
+      "to": "phone_dialog_0000446#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    }
+  ]
+}

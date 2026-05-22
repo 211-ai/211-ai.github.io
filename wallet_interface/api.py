@@ -4806,6 +4806,8 @@ def _number_to_words(value: int) -> str:
 
 
 def _ordinal_to_words(value: int) -> str:
+    if value <= 0:
+        return "zero"
     irregular = {
         1: "first",
         2: "second",
@@ -5339,6 +5341,7 @@ def _normalize_indextts_spoken_text(text: str) -> str:
     spoken = re.sub(r"(?i)\b211[\s-]?info\b", "two one one info", spoken)
     spoken = re.sub(r"(?<!\d)911(?!\d)", "nine one one", spoken)
     spoken = re.sub(r"(?<!\d)211(?!\d)", "two one one", spoken)
+    spoken = re.sub(r"\b(?P<tens>\d)\s+(?P<ones>\d)(?P<suffix>st|nd|rd|th)\b", r"\g<tens>\g<ones>\g<suffix>", spoken, flags=re.IGNORECASE)
 
     direction_pattern = r"(?:N|S|E|W|NE|NW|SE|SW|N\.E\.|N\.W\.|S\.E\.|S\.W\.)"
     suffix_pattern = "|".join(sorted((re.escape(key) for key in _STREET_SUFFIX_WORDS), key=len, reverse=True))

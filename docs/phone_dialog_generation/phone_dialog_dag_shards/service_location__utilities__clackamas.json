@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__utilities__clackamas",
+  "kind": "service_location",
+  "key": "utilities__clackamas",
+  "nodeCount": 6,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000088#turn-1",
+      "scenarioId": "phone_dialog_0000088",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, I\u2019m sorry, I\u2019m having a hard time today. I\u2019m in Clackamas and I need help with my electric bill before they shut it off.",
+      "normalizedQuery": "hi um sorry having hard time clackamas electric bill before they shut it off",
+      "voiceResponse": "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:da11f17166e8f630",
+        "service:b30d1ccbf8ca9924",
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. I can help with this. For Clackamas, try Portland General Electric first: `800-544-1795` \u2014 that\u2019s `800, 544, 1795`. Or `503-464-7777` \u2014 `503, 464, 7777`. Ask for shutoff prevention and payment options right now. Ask for shutoff prevention and payment options right now. If your account is with Salem Electric instead, call `503-362-3601` \u2014 `503, 362, 3601`. Which electric company is on your bill?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000088#turn-2",
+      "scenarioId": "phone_dialog_0000088",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I missed the name of the program, there\u2019s a lot of noise in here.",
+      "normalizedQuery": "hi um sorry having hard time clackamas electric bill before they shut it off say slower missed name program there lot noise here",
+      "voiceResponse": "Yes. Slowly. The program name is: **Public Safety Power Shutoffs**. I\u2019ll say it again: **Public Safety Power Shutoffs**. You can ask for that, and for shutoff prevention help.",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:da11f17166e8f630",
+        "service:b30d1ccbf8ca9924",
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slowly. The program name is: **Public Safety Power Shutoffs**. I\u2019ll say it again: **Public Safety Power Shutoffs**. You can ask for that, and for shutoff prevention help.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019m here with you. The number is: **800, 544, 1795**. I\u2019ll say it again: **800, 544, 1795**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000088#turn-3",
+      "scenarioId": "phone_dialog_0000088",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, sorry, I\u2019m crying, can you repeat the phone number one more time, just really slow?",
+      "normalizedQuery": "hi um sorry having hard time clackamas electric bill before they shut it off say slower missed name program there lot noise here wait crying repeat phone number one more just really slow",
+      "voiceResponse": "Yes. I\u2019m here with you. The number is: **800, 544, 1795**. I\u2019ll say it again: **800, 544, 1795**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b30d1ccbf8ca9924",
+        "service:da11f17166e8f630",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1341a8cba2a5d24e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019m here with you. The number is: **800, 544, 1795**. I\u2019ll say it again: **800, 544, 1795**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slowly. The program name is: **Public Safety Power Shutoffs**. I\u2019ll say it again: **Public Safety Power Shutoffs**. You can ask for that, and for shutoff prevention help."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000088#turn-4",
+      "scenarioId": "phone_dialog_0000088",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "calendar_event_support",
+      "user": "I talked to them last week but I don\u2019t know if my application went through. Can you help me send them a follow-up message?",
+      "normalizedQuery": "hi um sorry having hard time clackamas electric bill before they shut it off say slower missed name program there lot noise here wait crying repeat phone number one more just really slow talked them last week don know if application went through send follow up message",
+      "voiceResponse": "Yes. I can help with that. We can do this step by step. I can draft a short follow-up message, and set a reminder so you send it today. I can draft a short follow-up message, and set a reminder so you send it today. What time should I set that reminder for?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that. We can do this step by step. I can draft a short follow-up message, and set a reminder so you send it today. I can draft a short follow-up message, and set a reminder so you send it today. What time should I set that reminder for?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000439#turn-4",
+      "scenarioId": "phone_dialog_0000439",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Wait, did you say Clackamas Community Action or something else? I missed the name.",
+      "normalizedQuery": "hi sorry line cutting calling mom clackamas her power might shut off say again slower don hear great on phone she got shutoff notice from pge trying utility utilities heat electric wait did community action something else missed name",
+      "voiceResponse": "Something else. I said **Portland General Electric**, not Clackamas Community Action. Call **PGE Public Safety Power Shutoffs** at **8-0-0, 5-4-4, 1-7-9-5**. If there is immediate danger, call **9-1-1** now.",
+      "evidenceDocIds": [
+        "service:b30d1ccbf8ca9924",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:da11f17166e8f630"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Something else. I said **Portland General Electric**, not Clackamas Community Action. Call **PGE Public Safety Power Shutoffs** at **8-0-0, 5-4-4, 1-7-9-5**. If there is immediate danger, call **9-1-1** now.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **8-0-0, 5-4-4, 1-7-9-5**. I\u2019ll say it again: **8-0-0, 5-4-4, 1-7-9-5**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000439#turn-5",
+      "scenarioId": "phone_dialog_0000439",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Could you read the phone number one digit at a time, please?",
+      "normalizedQuery": "say again slower don hear great on phone she got shutoff notice from pge trying utility utilities heat electric her wait did clackamas community action something else missed name could read number one digit at time please",
+      "voiceResponse": "Yes. The number is **8-0-0, 5-4-4, 1-7-9-5**. I\u2019ll say it again: **8-0-0, 5-4-4, 1-7-9-5**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:9c4a0ab059aed565"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **8-0-0, 5-4-4, 1-7-9-5**. I\u2019ll say it again: **8-0-0, 5-4-4, 1-7-9-5**.",
+      "voiceResponseAlternatives": [
+        "Something else. I said **Portland General Electric**, not Clackamas Community Action. Call **PGE Public Safety Power Shutoffs** at **8-0-0, 5-4-4, 1-7-9-5**. If there is immediate danger, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000088#turn-1",
+      "to": "phone_dialog_0000088#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000088#turn-2",
+      "to": "phone_dialog_0000088#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000088#turn-3",
+      "to": "phone_dialog_0000088#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000088#turn-4",
+      "to": "phone_dialog_0000088#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000439#turn-4",
+      "to": "phone_dialog_0000439#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000439#turn-5",
+      "to": "phone_dialog_0000439#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->wallet_document_support"
+    }
+  ]
+}

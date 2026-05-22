@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__transportation__salem",
+  "kind": "service_location",
+  "key": "transportation__salem",
+  "nodeCount": 6,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000037#turn-5",
+      "scenarioId": "phone_dialog_0000037",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "calendar_event_support",
+      "user": "Sorry, I keep repeating myself, I know. It\u2019s transportation help in Salem, for tomorrow morning if there\u2019s anything.",
+      "normalizedQuery": "sorry keep repeating myself know it transportation transport ride bus salem tomorrow morning if there anything",
+      "voiceResponse": "You\u2019re okay, and repeating is totally fine. I can help set this up for tomorrow morning in Salem. What time is your appointment? Then I\u2019ll give you a short, low-share script to request door-to-door medical transport through Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8** (backup **8 6 6, 7 2 4, 2 9 7 5**).",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:772d7d7943af2255",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and repeating is totally fine. I can help set this up for tomorrow morning in Salem. What time is your appointment? Then I\u2019ll give you a short, low-share script to request door-to-door medical transport through Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8** (backup **8 6 6, 7 2 4, 2 9 7 5**).",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000037#turn-6",
+      "scenarioId": "phone_dialog_0000037",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone battery is low, so if there\u2019s a number I need, please read it slowly and repeat it once.",
+      "normalizedQuery": "don have family nearby really weak so bus steps door if possible before give more info gets shared ride program want details all over sorry keep repeating myself know it transportation transport salem tomorrow morning there anything phone battery low number please read slowly repeat once",
+      "voiceResponse": "Yes. Here it is slowly. Cascades West Ride Line: **5 4 1, 9 2 4, 8 7 3 8**. Again: **5 4 1, 9 2 4, 8 7 3 8**. Backup number: **8 6 6, 7 2 4, 2 9 7 5**. Again: **8 6 6, 7 2 4, 2 9 7 5**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here it is slowly. Cascades West Ride Line: **5 4 1, 9 2 4, 8 7 3 8**. Again: **5 4 1, 9 2 4, 8 7 3 8**. Backup number: **8 6 6, 7 2 4, 2 9 7 5**. Again: **8 6 6, 7 2 4, 2 9 7 5**.",
+      "voiceResponseAlternatives": [
+        "Yes. I\u2019ll say it slowly. The CARE-RIDE number is: **5-4-1, 2-7-6, 8-2-9-4**. Again: **5-4-1, 2-7-6, 8-2-9-4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000388#turn-1",
+      "scenarioId": "phone_dialog_0000388",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can barely hear in here... I\u2019m in Salem and I need help getting a ride today.",
+      "normalizedQuery": "hi sorry barely hear here salem getting ride",
+      "voiceResponse": "I hear you. I\u2019m here with you. I found a same-day ride option for urgent care or ER: **CARE-RIDE**. It runs daily, **5 AM to 10 PM**. Call **5-4-1, 2-7-6, 8-2-9-4**. Again: **5-4-1, 2-7-6, 8-2-9-4**. It\u2019s based at **500 Southwest Dorion Avenue, Pendleton**. Do you need a medical ride today, or a different kind of ride?",
+      "evidenceDocIds": [
+        "service:06227c05cc4eea25",
+        "service:98ac0349caf0cda6",
+        "service:a52e78bc8469df64",
+        "service:156176ac73be0658",
+        "service:c11da83204b4dafc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019m here with you. I found a same-day ride option for urgent care or ER: **CARE-RIDE**. It runs daily, **5 AM to 10 PM**. Call **5-4-1, 2-7-6, 8-2-9-4**. Again: **5-4-1, 2-7-6, 8-2-9-4**. It\u2019s based at **500 Southwest Dorion Avenue, Pendleton**. Do you need a medical ride today, or a different kind of ride?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000388#turn-3",
+      "scenarioId": "phone_dialog_0000388",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? There\u2019s people yelling next to me and I missed the number.",
+      "normalizedQuery": "hi sorry barely hear here salem getting ride just got hospital kind mess right now don really know supposed next say slower there people yelling missed number",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. The CARE-RIDE number is: **5-4-1, 2-7-6, 8-2-9-4**. Again: **5-4-1, 2-7-6, 8-2-9-4**.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. The CARE-RIDE number is: **5-4-1, 2-7-6, 8-2-9-4**. Again: **5-4-1, 2-7-6, 8-2-9-4**.",
+      "voiceResponseAlternatives": [
+        "Yes. Here it is slowly. Cascades West Ride Line: **5 4 1, 9 2 4, 8 7 3 8**. Again: **5 4 1, 9 2 4, 8 7 3 8**. Backup number: **8 6 6, 7 2 4, 2 9 7 5**. Again: **8 6 6, 7 2 4, 2 9 7 5**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000388#turn-5",
+      "scenarioId": "phone_dialog_0000388",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Wait, sorry, one more time... who do I call first from Salem for transportation help?",
+      "normalizedQuery": "wait sorry one more time who call first from salem transportation transport ride bus",
+      "voiceResponse": "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:a52e78bc8469df64",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000388#turn-6",
+      "scenarioId": "phone_dialog_0000388",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Thank you, I\u2019m trying, I just keep getting overwhelmed.",
+      "normalizedQuery": "say slower there people yelling next missed number anything emergency rides if don have money right now wait sorry one more time who call first from salem transportation transport ride bus thank trying just keep getting overwhelmed",
+      "voiceResponse": "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:156176ac73be0658",
+        "service:a52e78bc8469df64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000037#turn-5",
+      "to": "phone_dialog_0000037#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000388#turn-1",
+      "to": "phone_dialog_0000388#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000388#turn-3",
+      "to": "phone_dialog_0000388#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000388#turn-5",
+      "to": "phone_dialog_0000388#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    }
+  ]
+}

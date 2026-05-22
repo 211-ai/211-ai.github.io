@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__documents__portland",
+  "kind": "service_location",
+  "key": "documents__portland",
+  "nodeCount": 11,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000052#turn-3",
+      "scenarioId": "phone_dialog_0000052",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I just lost my mom this week and I can\u2019t keep my paperwork straight, I\u2019m sorry.",
+      "normalizedQuery": "hi sorry kind mess right now somewhere portland mail like mailing address say again there people yelling this lobby missed name just lost mom week keep paperwork straight",
+      "voiceResponse": "You don\u2019t need to apologize. I\u2019m really sorry about your mom. We can keep this simple: I can connect you to a live 211 person right now, and they can help with mail-address options and what paperwork to keep first, one step at a time. If it helps, I can stay on the line while we connect so you don\u2019t have to do this alone.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:078087b57125137d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize. I\u2019m really sorry about your mom. We can keep this simple: I can connect you to a live 211 person right now, and they can help with mail-address options and what paperwork to keep first, one step at a time. If it helps, I can stay on the line while we connect so you don\u2019t have to do this alone.",
+      "voiceResponseAlternatives": [
+        "I hear you. I don\u2019t want to guess and give you bad info. I can\u2019t confirm exact accepted documents from what I have here right now. Two safe options: 1) I connect you to a live specialist to confirm exactly what Portland will accept without a physical ID. 2) I give you one short line to use when you call: \u201cWhat documents do you accept today if I don\u2019t have my physical ID yet?\u201d",
+        "I have Portland in front of me. I have Portland in front of me. I do not see a Gresham address in what I have here. If you want, I can connect you to a live agent to confirm the exact location."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000117#turn-1",
+      "scenarioId": "phone_dialog_0000117",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I barely slept... I\u2019m in Portland and I lost my ID, I need to replace it but I can\u2019t think straight.",
+      "normalizedQuery": "hi sorry barely slept portland lost id replace it think straight",
+      "voiceResponse": "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next.",
+      "evidenceDocIds": [
+        "service:68365296f83c2564",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:354980161ba297e3",
+        "service:6025d243ccfa0fb5",
+        "service:9f02d53fbb3e9c6a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next.",
+      "voiceResponseAlternatives": [
+        "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000117#turn-2",
+      "scenarioId": "phone_dialog_0000117",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You cut out after the part about where to go, can you say that again slower?",
+      "normalizedQuery": "hi sorry barely slept portland lost id replace it think straight cut after part go say again slower",
+      "voiceResponse": "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:a8985ec91c7fc1f1",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+        "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+        "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step.",
+        "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000117#turn-5",
+      "scenarioId": "phone_dialog_0000117",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "If I show up without the physical ID, what exactly do they accept there in Portland?",
+      "normalizedQuery": "if show up without physical id exactly they accept there portland",
+      "voiceResponse": "I hear you. I don\u2019t want to guess and give you bad info. I can\u2019t confirm exact accepted documents from what I have here right now. Two safe options: 1) I connect you to a live specialist to confirm exactly what Portland will accept without a physical ID. 2) I give you one short line to use when you call: \u201cWhat documents do you accept today if I don\u2019t have my physical ID yet?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreifsc6qhdom6euicpklgpjs2qbjd3uiyxqyyzta4ci4m4ikamgknqa",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreig4me5upcwhs3yyt2sxk6r3rvqucnlcv7pg6zfinccdjzf3nnpudy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I don\u2019t want to guess and give you bad info. I can\u2019t confirm exact accepted documents from what I have here right now. Two safe options: 1) I connect you to a live specialist to confirm exactly what Portland will accept without a physical ID. 2) I give you one short line to use when you call: \u201cWhat documents do you accept today if I don\u2019t have my physical ID yet?\u201d",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize. I\u2019m really sorry about your mom. We can keep this simple: I can connect you to a live 211 person right now, and they can help with mail-address options and what paperwork to keep first, one step at a time. If it helps, I can stay on the line while we connect so you don\u2019t have to do this alone.",
+        "I have Portland in front of me. I have Portland in front of me. I do not see a Gresham address in what I have here. If you want, I can connect you to a live agent to confirm the exact location."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000117#turn-6",
+      "scenarioId": "phone_dialog_0000117",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, my phone\u2019s at like three percent, can you repeat the number one more time so I can write it down?",
+      "normalizedQuery": "there something wallet app pull up right now like proof temporary while wait new card hold on said two documents only caught one because signal keeps dropping if show without physical id exactly they accept portland sorry phone at three percent repeat number more time so write it down",
+      "voiceResponse": "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+      "voiceResponseAlternatives": [
+        "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+        "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+        "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step.",
+        "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000147#turn-6",
+      "scenarioId": "phone_dialog_0000147",
+      "turnIndex": 5,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "wallet_document_support",
+      "user": "Also, if my wallet is missing something critical, just tell me exactly what to upload so I can do it once and stop context-switching.",
+      "normalizedQuery": "before call places abby check wallet docs tell already have there proof like id insurance card anything they usually ask trying avoid an appointment then turned away missing one form actually had somewhere else if clinics reachable by transit from portland prefer exam plus maybe filling just consult also something critical exactly upload so it once stop context switching",
+      "voiceResponse": "Totally fair. If you want one clean upload pass, do this priority set: `photo ID` first, then `insurance card` (front and back) if you have one, then any `benefit/coverage card` (front and back), and one `proof of address` if available. If a card is missing, upload what you do have now and keep a note: \u201ccan provide at visit.\u201d That usually prevents the back-and-forth without oversharing.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair. If you want one clean upload pass, do this priority set: `photo ID` first, then `insurance card` (front and back) if you have one, then any `benefit/coverage card` (front and back), and one `proof of address` if available. If a card is missing, upload what you do have now and keep a note: \u201ccan provide at visit.\u201d That usually prevents the back-and-forth without oversharing.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000303#turn-6",
+      "scenarioId": "phone_dialog_0000303",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "And if there\u2019s a hotline or case manager number, repeat it twice please so I can text it to her correctly.",
+      "normalizedQuery": "wait say agency name again slower bus loud missed middle part she portland 82nd two kids gather paperwork just exact first step so don send her circles sorry interrupting myself this when stressed yes please include anything talk landlord if there hotline case manager number repeat it twice text correctly",
+      "voiceResponse": "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+      "voiceResponseAlternatives": [
+        "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+        "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+        "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step.",
+        "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000368#turn-5",
+      "scenarioId": "phone_dialog_0000368",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I wrote that wrong, did you say they\u2019re in Portland or Gresham?",
+      "normalizedQuery": "kind all over place right now say slower missed name program wait hold on there lot noise here okay repeat phone number one more time only know part her info don have paperwork she still call start something sorry wrote wrong did they re portland gresham",
+      "voiceResponse": "I have Portland in front of me. I have Portland in front of me. I do not see a Gresham address in what I have here. If you want, I can connect you to a live agent to confirm the exact location.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I have Portland in front of me. I have Portland in front of me. I do not see a Gresham address in what I have here. If you want, I can connect you to a live agent to confirm the exact location.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize. I\u2019m really sorry about your mom. We can keep this simple: I can connect you to a live 211 person right now, and they can help with mail-address options and what paperwork to keep first, one step at a time. If it helps, I can stay on the line while we connect so you don\u2019t have to do this alone.",
+        "I hear you. I don\u2019t want to guess and give you bad info. I can\u2019t confirm exact accepted documents from what I have here right now. Two safe options: 1) I connect you to a live specialist to confirm exactly what Portland will accept without a physical ID. 2) I give you one short line to use when you call: \u201cWhat documents do you accept today if I don\u2019t have my physical ID yet?\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000368#turn-6",
+      "scenarioId": "phone_dialog_0000368",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone battery is at like 2 percent, can you just repeat the next step really clearly so I can text it to her?",
+      "normalizedQuery": "wait hold on there lot noise here okay repeat phone number one more time only know part her info don have all paperwork she still call start something sorry wrote wrong did say they re portland gresham battery at like percent just next step really clearly so text it",
+      "voiceResponse": "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step.",
+      "voiceResponseAlternatives": [
+        "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+        "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+        "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+        "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000468#turn-1",
+      "scenarioId": "phone_dialog_0000468",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear great on this line. I\u2019m in Portland and I lost my ID, and I really need help replacing it.",
+      "normalizedQuery": "hi sorry hear great on this line portland lost id really replacing it",
+      "voiceResponse": "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:354980161ba297e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000468#turn-3",
+      "scenarioId": "phone_dialog_0000468",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that office name slower? I missed it when that bus went by.",
+      "normalizedQuery": "hi sorry hear great on this line portland lost id really replacing it sleeping car right now phone at like three percent so we quick repeat office name slower missed when bus went by",
+      "voiceResponse": "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is: **Right 2 Dream Too**. I\u2019ll say it again, slow: **Right. Two. Dream. Too.**",
+      "voiceResponseAlternatives": [
+        "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+        "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+        "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+        "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000052#turn-3",
+      "to": "phone_dialog_0000052#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000117#turn-1",
+      "to": "phone_dialog_0000117#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000117#turn-2",
+      "to": "phone_dialog_0000117#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000117#turn-5",
+      "to": "phone_dialog_0000117#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000368#turn-5",
+      "to": "phone_dialog_0000368#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000468#turn-1",
+      "to": "phone_dialog_0000468#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000468#turn-3",
+      "to": "phone_dialog_0000468#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

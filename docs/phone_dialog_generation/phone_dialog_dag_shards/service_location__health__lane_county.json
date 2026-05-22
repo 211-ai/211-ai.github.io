@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__lane_county",
+  "kind": "service_location",
+  "key": "health__lane_county",
+  "nodeCount": 3,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000311#turn-1",
+      "scenarioId": "phone_dialog_0000311",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m at the bus stop and it\u2019s loud out here. I\u2019m in Lane County and I need detox help, like today if possible.",
+      "normalizedQuery": "hi sorry at bus stop it loud here lane county detox like if possible",
+      "voiceResponse": "You\u2019re doing the right thing reaching out, especially in a loud spot. For same-day detox, I have **Fora Health Detox Services**. Their number is **5 0 3, 5 3 5, 1 1 5 1**. They\u2019re at **10230 Southeast Cherry Blossom Drive, Portland**. They take adults **18 and older** for alcohol or drug withdrawal support, and if you have insurance, keep that handy. If you want, I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:45707f0c70045863",
+        "service:1700408eea20aebe",
+        "service:6dd36999ac80549e",
+        "service:cb07e10067abbb3d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing reaching out, especially in a loud spot. For same-day detox, I have **Fora Health Detox Services**. Their number is **5 0 3, 5 3 5, 1 1 5 1**. They\u2019re at **10230 Southeast Cherry Blossom Drive, Portland**. They take adults **18 and older** for alcohol or drug withdrawal support, and if you have insurance, keep that handy. If you want, I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and I\u2019m glad you asked. You can keep this as private as possible: when you call, give only what they need for care, and ask, \u201cWhat do you record, and who can see it?\u201d You can also use just a first name to start. If you want, we can take it one step at a time and I\u2019ll repeat the detox number now: **5 0 3, 5 3 5, 1 1 5 1**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000311#turn-2",
+      "scenarioId": "phone_dialog_0000311",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we go too far, does this get shared anywhere? I don\u2019t want my name or stuff ending up in some system.",
+      "normalizedQuery": "hi sorry at bus stop it loud here lane county detox like if possible before we go too far does this shared anywhere don want name stuff ending up some system",
+      "voiceResponse": "That makes total sense, and I\u2019m glad you asked. You can keep this as private as possible: when you call, give only what they need for care, and ask, \u201cWhat do you record, and who can see it?\u201d You can also use just a first name to start. If you want, we can take it one step at a time and I\u2019ll repeat the detox number now: **5 0 3, 5 3 5, 1 1 5 1**.",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and I\u2019m glad you asked. You can keep this as private as possible: when you call, give only what they need for care, and ask, \u201cWhat do you record, and who can see it?\u201d You can also use just a first name to start. If you want, we can take it one step at a time and I\u2019ll repeat the detox number now: **5 0 3, 5 3 5, 1 1 5 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing reaching out, especially in a loud spot. For same-day detox, I have **Fora Health Detox Services**. Their number is **5 0 3, 5 3 5, 1 1 5 1**. They\u2019re at **10230 Southeast Cherry Blossom Drive, Portland**. They take adults **18 and older** for alcohol or drug withdrawal support, and if you have insurance, keep that handy. If you want, I can stay with you while you call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000311#turn-3",
+      "scenarioId": "phone_dialog_0000311",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, a bus just went by, I missed that part. Can you repeat the place name and the number slower?",
+      "normalizedQuery": "hi sorry at bus stop it loud here lane county detox like if possible before we go too far does this shared anywhere don want name stuff ending up some system wait just went by missed part repeat place number slower",
+      "voiceResponse": "Absolutely, and you\u2019re okay. The place is **Fora Health Detox Services**. The number is: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5 1**. I can repeat it again while you dial, one chunk at a time.",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and you\u2019re okay. The place is **Fora Health Detox Services**. The number is: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5 1**. I can repeat it again while you dial, one chunk at a time.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000311#turn-1",
+      "to": "phone_dialog_0000311#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000311#turn-2",
+      "to": "phone_dialog_0000311#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000311#turn-3",
+      "to": "phone_dialog_0000311#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__broad_help__beaverton",
+  "kind": "service_location",
+  "key": "broad_help__beaverton",
+  "nodeCount": 1,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000226#turn-1",
+      "scenarioId": "phone_dialog_0000226",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, can you hear me? I\u2019m outside and it\u2019s loud. I need help for my friend, not me, in Beaverton.",
+      "normalizedQuery": "hi sorry hear outside it loud friend beaverton",
+      "voiceResponse": "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
+      "evidenceDocIds": [
+        "service:7a5cca37934277c2",
+        "service:fd3b16d707204ad2",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000226#turn-1",
+      "to": "phone_dialog_0000226#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
+    }
+  ]
+}

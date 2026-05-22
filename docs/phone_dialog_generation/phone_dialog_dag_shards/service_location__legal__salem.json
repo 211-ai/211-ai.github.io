@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__legal__salem",
+  "kind": "service_location",
+  "key": "legal__salem",
+  "nodeCount": 3,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000089#turn-1",
+      "scenarioId": "phone_dialog_0000089",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "legal",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I need legal aid in Salem, but I can\u2019t talk loud right now.",
+      "normalizedQuery": "hi legal aid attorney advocacy salem talk loud right now",
+      "voiceResponse": "I hear you. If you\u2019re in immediate danger, call 911 now. For legal aid in Salem, call General Legal Aid at **5 0 3, 4 8 5, 0 6 9 6**. Address: **280 Liberty Street, Suite 200, Salem**. If this is farmworker-related, call **5 0 3, 9 8 1, 5 2 9 1**.",
+      "evidenceDocIds": [
+        "service:799e6ab996caa563",
+        "service:1c2165c5293480a3",
+        "service:252041b98d8d25e0",
+        "service:331d3bf1bed204ec",
+        "service:4c69fc06bd8aef68"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. If you\u2019re in immediate danger, call 911 now. For legal aid in Salem, call General Legal Aid at **5 0 3, 4 8 5, 0 6 9 6**. Address: **280 Liberty Street, Suite 200, Salem**. If this is farmworker-related, call **5 0 3, 9 8 1, 5 2 9 1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000089#turn-2",
+      "scenarioId": "phone_dialog_0000089",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "legal",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, your audio cut out, can you repeat the name of that place?",
+      "normalizedQuery": "hi legal aid attorney advocacy salem talk loud right now sorry your audio cut repeat name place",
+      "voiceResponse": "Yes \u2014 the place is **General Legal Aid**, also called the **Oregon Law Center Salem Regional Office**.",
+      "evidenceDocIds": [
+        "service:799e6ab996caa563",
+        "service:1c2165c5293480a3",
+        "service:252041b98d8d25e0",
+        "service:331d3bf1bed204ec",
+        "service:4c69fc06bd8aef68"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes \u2014 the place is **General Legal Aid**, also called the **Oregon Law Center Salem Regional Office**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000089#turn-3",
+      "scenarioId": "phone_dialog_0000089",
+      "turnIndex": 2,
+      "route": "provider_contact_support",
+      "serviceTag": "legal",
+      "locationTag": "salem",
+      "promptTemplate": "provider_contact_support",
+      "user": "I\u2019m trying to keep this private, so please don\u2019t text me anything detailed.",
+      "normalizedQuery": "hi legal aid attorney advocacy salem talk loud right now sorry your audio cut repeat name place trying keep this private so please don text anything detailed",
+      "voiceResponse": "Understood. I won\u2019t text details. Say this on a call or voicemail: \u201cHi, I need confidential legal aid in Salem. I can\u2019t speak freely right now. Please call me back and leave only a safe callback time.\u201d Call **General Legal Aid** at **5 0 3, 4 8 5, 0 6 9 6**. If you\u2019re in immediate danger, call **9 1 1**.",
+      "evidenceDocIds": [
+        "service:799e6ab996caa563",
+        "service:3694ab25654f4b81",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha",
+        "service:a4f4532cd4713872",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Understood. I won\u2019t text details. Say this on a call or voicemail: \u201cHi, I need confidential legal aid in Salem. I can\u2019t speak freely right now. Please call me back and leave only a safe callback time.\u201d Call **General Legal Aid** at **5 0 3, 4 8 5, 0 6 9 6**. If you\u2019re in immediate danger, call **9 1 1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000089#turn-1",
+      "to": "phone_dialog_0000089#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000089#turn-2",
+      "to": "phone_dialog_0000089#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000089#turn-3",
+      "to": "phone_dialog_0000089#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->live_agent"
+    }
+  ]
+}

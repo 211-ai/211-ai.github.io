@@ -1,0 +1,1382 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__daily_needs__statewide",
+  "kind": "service_location",
+  "key": "daily_needs__statewide",
+  "nodeCount": 40,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000052#turn-4",
+      "scenarioId": "phone_dialog_0000052",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Could you open the mail services screen for me in the app so I can just tap it?",
+      "normalizedQuery": "could open mail services screen app so just tap it",
+      "voiceResponse": "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**.",
+        "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000069#turn-3",
+      "scenarioId": "phone_dialog_0000069",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I can't do anything that sends mail to my house, okay? He checks everything.",
+      "normalizedQuery": "can't anything sends mail house okay he checks everything",
+      "voiceResponse": "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+      "evidenceDocIds": [
+        "service:437ec64b59b0ac16",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:ba024a031f6ac689",
+        "service:aff99442bdc0d67e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+        "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000104#turn-4",
+      "scenarioId": "phone_dialog_0000104",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "calendar_event_support",
+      "user": "If you found a laundry program, can you help me send them a follow-up message from the app asking about hours and cost?",
+      "normalizedQuery": "if found laundry program send them follow up message from app asking hours cost",
+      "voiceResponse": "Yes. I can help with that. What time today should I set the reminder to send the follow-up message asking about hours and cost?",
+      "evidenceDocIds": [
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreihz5wh4pp6shplhbvchdhqfmbkzll5ahnwxggxrvywvzozrnkh2wm",
+        "page:bafkreibmn6xyxpuhpashuiyqx6q2yq4q752hhxd55cguurzjmnldm2qvcq",
+        "page:bafkreid5ck7bobsf6rfhzmuevcnifacfu3nmdlsdniusxnatyx2j4ez6ay"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that. What time today should I set the reminder to send the follow-up message asking about hours and cost?",
+      "voiceResponseAlternatives": [
+        "First step: call the Clothing Boutique now at **5 0 3 \u2026 7 8 8 \u2026 7 0 0 0** and ask for an appointment. If it helps, I can set a reminder so you don\u2019t freeze before calling. What exact time today should I set the reminder for?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000158#turn-1",
+      "scenarioId": "phone_dialog_0000158",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m all over the place right now... I need help finding somewhere to do laundry, but it\u2019s for my brother, not me.",
+      "normalizedQuery": "hi sorry all over place right now finding somewhere laundry it brother",
+      "voiceResponse": "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "service:604454602aa57dcf"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**.",
+        "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000159#turn-5",
+      "scenarioId": "phone_dialog_0000159",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, low battery too, so if you can give me the closest shower option first, I\u2019ll write it down.",
+      "normalizedQuery": "sorry low battery too so if give closest shower option first ll write it down",
+      "voiceResponse": "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:0f54d8a0521f759c",
+        "service:1c37cc90dfd15f98",
+        "service:2496c59f9003d250",
+        "service:73ad9d0cd40ccdbc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**.",
+        "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000160#turn-3",
+      "scenarioId": "phone_dialog_0000160",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "What I really need is somewhere I can get my mail, like a mailing address or mail pickup.",
+      "normalizedQuery": "really somewhere mail like mailing address pickup",
+      "voiceResponse": "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**.",
+      "evidenceDocIds": [
+        "page:bafkreidntxrmnp55yfrjz2hm72rxfxliewrqyv6dlnvrba5whwukanxox4",
+        "page:bafkreihhkc7fkhkjgxw6wfp37c7ktjn5kg4i6ha2mz5y2yvvknq5s37vki",
+        "page:bafkreiav36hcetfu7vrmvdpugb7rbzi6tftms6asw6q2w3oqv2nywa3ghy",
+        "page:bafkreihnaujhmygqtpncczy5mv7y2htihnnnvyxn7v44phxgqd7wcrulva",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000161#turn-3",
+      "scenarioId": "phone_dialog_0000161",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you open the clothing resources section in the app for me?",
+      "normalizedQuery": "open clothing resources section app",
+      "voiceResponse": "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+      "evidenceDocIds": [
+        "service:f750ab3e4e3027b9",
+        "service:41b7f1d43890b691",
+        "service:c63e4b1b69b75a1a",
+        "page:bafkreiatohkdg5ixk6up7la3ceqvmfwokibd5uwstn6t5wofmxfz7g7no4",
+        "page:bafkreif23iggrz2qjqqyaoxtipqpwx2miz7fmxx3wzvqmnaiih7x4bq3py"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+        "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000186#turn-4",
+      "scenarioId": "phone_dialog_0000186",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep forgetting things, I\u2019m sorry. Could you contact that provider for me and ask if they have shower hours this afternoon?",
+      "normalizedQuery": "keep forgetting things sorry could contact provider ask if they have shower hours this afternoon",
+      "voiceResponse": "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiewlfvlgmzj5t6caabk4b4eghwbextppwb3smkzrzeo2g5dbb3rre"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+        "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000213#turn-2",
+      "scenarioId": "phone_dialog_0000213",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hold on, there\u2019s a lot of noise in here, I missed that name. Can you say the shower place again, slower?",
+      "normalizedQuery": "hold on there lot noise here missed name say shower place again slower",
+      "voiceResponse": "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:755193c3d210f2d9",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiblfm62asxrlhp47wzoblukkxfhkvlz77hpm7sagjiuyzl4dnowa4",
+        "page:bafkreihmh3pfyyw4o5lyyxsiasbhtlkox3vvzponxitzymleubawbawf2y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+      "voiceResponseAlternatives": [
+        "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+        "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once.",
+        "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000215#turn-2",
+      "scenarioId": "phone_dialog_0000215",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out. I said I need clothing help, adult and kid sizes, and we don\u2019t have anything clean left.",
+      "normalizedQuery": "sorry cut said clothing adult kid sizes we don have anything clean left",
+      "voiceResponse": "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1a1916cf1f6f8f5c",
+        "service:3cf8ccc706653007",
+        "page:bafkreifzcfbdcm3jr3pkeqi4hq43vakq2glp66pznb3jkpn7lyc6arfley",
+        "page:bafkreicqshcitxg66sqcgun5jrry6yd7vq2i53enffxazgs735oawt2mxq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+        "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once.",
+        "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000241#turn-4",
+      "scenarioId": "phone_dialog_0000241",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "Could you message or contact that mail service for me and ask what I need to sign up?",
+      "normalizedQuery": "could message contact mail service ask sign up",
+      "voiceResponse": "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+      "evidenceDocIds": [
+        "page:bafkreiewlfvlgmzj5t6caabk4b4eghwbextppwb3smkzrzeo2g5dbb3rre",
+        "service:efb550a569573456",
+        "page:bafkreicexka75msbb2guzaony7usoeqfudvnp33c33exhc7uxs2ww54vmi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+        "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+        "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?",
+        "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000241#turn-5",
+      "scenarioId": "phone_dialog_0000241",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, a bus just went by, I couldn\u2019t hear the address part.",
+      "normalizedQuery": "there lot traffic here missed name say place again slower doing well enough make bunch calls myself could message contact mail service ask sign up sorry bus just went by couldn hear address part",
+      "voiceResponse": "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000241#turn-6",
+      "scenarioId": "phone_dialog_0000241",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My phone\u2019s at like three percent, so if you can send the provider contact request now, please do that.",
+      "normalizedQuery": "doing well enough make bunch calls myself could message contact mail service ask sign up sorry bus just went by couldn hear address part phone at like three percent so if send provider request now please",
+      "voiceResponse": "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiacnkk6y5xktut4slueqa2koudbk44wznzryxk5ofu6pkjpcbzkju",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear the urgency. I can\u2019t send it myself, but here\u2019s a one-line text you can copy right now: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service today. What do I need to sign up, and what is the fastest same-day option?\u201d Send it or read it on a call to St. Vincent de Paul, First Place Family Center: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000266#turn-2",
+      "scenarioId": "phone_dialog_0000266",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m sorry, my brain is all over the place, I just need a laundromat or laundry help that doesn\u2019t cost a lot.",
+      "normalizedQuery": "sorry brain all over place just laundromat laundry doesn cost lot",
+      "voiceResponse": "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today.",
+      "evidenceDocIds": [
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreibtv544zo5wjxq6lmn3flnetzoygmb43ajwbhdrxwkn3o6lfoavt4",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and I\u2019m glad you said that out loud. Let\u2019s keep this simple and low-cost. One option I can confirm is Just Compassion Unity Laundromat Laundry Service in Portland, where they provide detergent and quarters, and even a sack lunch and drink. Address is 11945 Southwest Pacific Highway, Suite 123, Portland, Oregon 97223. If you want Oregon City specifically, I can stay with you while we connect to a live specialist to find the closest affordable spot open today.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000266#turn-5",
+      "scenarioId": "phone_dialog_0000266",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "And please don\u2019t text me anything detailed, just tell me what I need to know here.",
+      "normalizedQuery": "sorry brain all over place just laundromat laundry doesn cost lot don really want give full name bunch personal stuff still places if there church program does vouchers free loads trying please text anything detailed tell know here",
+      "voiceResponse": "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+      "voiceResponseAlternatives": [
+        "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+        "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+        "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?",
+        "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000294#turn-4",
+      "scenarioId": "phone_dialog_0000294",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "app_surface_navigation",
+      "user": "Also, can you help me send them a message asking if they have shower slots open tomorrow morning?",
+      "normalizedQuery": "also send them message asking if they have shower slots open tomorrow morning",
+      "voiceResponse": "Yes. Go to your **Messages** screen, tap **new message**, and send it to **5 0 3 \u2026 5 4 2 \u2026 2 7 1 7**. Type: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning?\u201d Then tap **Send**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibtahypuoczrhoiluftmagexjvk7ok2wlk3a2jsyojke7lqnf4ztq",
+        "page:bafkreicvwg7gomutosb4dw3q3ionsw7e7e3rplzlnd2fuoahn3anlm5ici",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Go to your **Messages** screen, tap **new message**, and send it to **5 0 3 \u2026 5 4 2 \u2026 2 7 1 7**. Type: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning?\u201d Then tap **Send**.",
+      "voiceResponseAlternatives": [
+        "Next step: open the **Wallet** surface, then open the **Union Gospel Mission** card and tap **Call** so you can check shower access for this afternoon. Say: \u201cHi, are showers available this afternoon today?\u201d The number is **503 \u2026 362 \u2026 3983**. If you want, I can stay with you while you place the call."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000294#turn-5",
+      "scenarioId": "phone_dialog_0000294",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "And if possible, log that I tried to contact them today, because I forget and then I call twice.",
+      "normalizedQuery": "could pull up again remember said they had weekday hours just can't which place please say name phone number slowly one more time so write it down right this minute also send them message asking if have shower slots open tomorrow morning possible log tried contact because forget then call twice",
+      "voiceResponse": "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+        "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+        "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?",
+        "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000320#turn-5",
+      "scenarioId": "phone_dialog_0000320",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s anything free or voucher-based for laundry, that\u2019s what I need, near bus lines if possible.",
+      "normalizedQuery": "if there anything free voucher based laundry bus lines possible",
+      "voiceResponse": "Next step: let me connect you to a live 211 specialist now and ask specifically for free or voucher-based laundry options near bus lines. I don\u2019t need her full details to start, and you can share only what she\u2019s comfortable sharing. If you want, I can also pass along that transportation access is a priority so they focus on locations on or close to transit.",
+      "evidenceDocIds": [
+        "service:7012122b004d1df2",
+        "page:bafkreiazt4vzvxr4cowhxs3kfxcuis4igygry4wto5ylm2tms2ok4myc5u",
+        "page:bafkreiaovrrqe4tukedu6g6hk464wlkelsih6dapgl6lhp2jedtolqzoz4",
+        "service:e3f844bfd172d4eb",
+        "service:c00f8aa9991f01a8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: let me connect you to a live 211 specialist now and ask specifically for free or voucher-based laundry options near bus lines. I don\u2019t need her full details to start, and you can share only what she\u2019s comfortable sharing. If you want, I can also pass along that transportation access is a priority so they focus on locations on or close to transit.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000320#turn-6",
+      "scenarioId": "phone_dialog_0000320",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m at like five percent battery, can you give me the phone number one more time, just the number?",
+      "normalizedQuery": "wait broke up on part repeat name place slowly before we go further her full she really private doesn want details shared if there anything free voucher based laundry bus lines possible at like five percent battery give phone number one more time just",
+      "voiceResponse": "Next step: I can connect you to a live 211 specialist right now. I don\u2019t have a verified phone number in the details I can see, so I don\u2019t want to give you the wrong one.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I can connect you to a live 211 specialist right now. I don\u2019t have a verified phone number in the details I can see, so I don\u2019t want to give you the wrong one.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000348#turn-5",
+      "scenarioId": "phone_dialog_0000348",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you can, could you contact them for me and ask if they still have shower slots this afternoon?",
+      "normalizedQuery": "if could contact them ask they still have shower slots this afternoon",
+      "voiceResponse": "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiewlfvlgmzj5t6caabk4b4eghwbextppwb3smkzrzeo2g5dbb3rre"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?",
+      "voiceResponseAlternatives": [
+        "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+        "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+        "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+        "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000349#turn-3",
+      "scenarioId": "phone_dialog_0000349",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I need some kind of mail service, like delivery help or someone who can collect it for me.",
+      "normalizedQuery": "some kind mail service like delivery someone who collect it",
+      "voiceResponse": "Yes. I can help with that. I\u2019m connecting you now to a live agent to set up mail help, like pickup or delivery support, since you can\u2019t get out. If your breathing gets worse, or you feel faint, call **9-1-1** right now: **9\u2026 1\u2026 1**. Please stay on the line with me.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidnszy2b5nprljxatekvmk7ksj766v6uiphoo5pkjibnvatrd5ioy",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bf6fef9723c90605",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that. I\u2019m connecting you now to a live agent to set up mail help, like pickup or delivery support, since you can\u2019t get out. If your breathing gets worse, or you feel faint, call **9-1-1** right now: **9\u2026 1\u2026 1**. Please stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000349#turn-5",
+      "scenarioId": "phone_dialog_0000349",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "And if there\u2019s a phone number, please read it in small chunks and repeat it once.",
+      "normalizedQuery": "sorry didn catch hearing bad on this phone say place name again slower some kind mail service like delivery someone who collect it put reminder calendar call them tomorrow scared ll forget when meds hit if there number please read small chunks repeat once",
+      "voiceResponse": "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+        "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+        "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000350#turn-4",
+      "scenarioId": "phone_dialog_0000350",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "calendar_event_support",
+      "user": "Can you please contact a clothing provider for me, or send them a message that I need an appointment?",
+      "normalizedQuery": "please contact clothing provider send them message an appointment",
+      "voiceResponse": "First step: call the Clothing Boutique now at **5 0 3 \u2026 7 8 8 \u2026 7 0 0 0** and ask for an appointment. If it helps, I can set a reminder so you don\u2019t freeze before calling. What exact time today should I set the reminder for?",
+      "evidenceDocIds": [
+        "page:bafkreihz5wh4pp6shplhbvchdhqfmbkzll5ahnwxggxrvywvzozrnkh2wm",
+        "service:2cc848b26286a349",
+        "service:265f1842532af5b1",
+        "page:bafkreiewlfvlgmzj5t6caabk4b4eghwbextppwb3smkzrzeo2g5dbb3rre",
+        "page:bafkreiehka3s3whx6bb3gbefw7wpvh4ghuyphkxx73zn5l7qy62mdtjf4u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call the Clothing Boutique now at **5 0 3 \u2026 7 8 8 \u2026 7 0 0 0** and ask for an appointment. If it helps, I can set a reminder so you don\u2019t freeze before calling. What exact time today should I set the reminder for?",
+      "voiceResponseAlternatives": [
+        "Yes. I can help with that. What time today should I set the reminder to send the follow-up message asking about hours and cost?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000374#turn-3",
+      "scenarioId": "phone_dialog_0000374",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need somewhere I can do laundry, like cheap or free, because my clothes are all wet and I can\u2019t keep showing up like this.",
+      "normalizedQuery": "somewhere laundry like cheap free because clothes all wet keep showing up this",
+      "voiceResponse": "You\u2019re doing the right thing calling. In Clackamas, 211info has laundry voucher providers. Call **2-1-1** now and say: \u201cI\u2019m in Clackamas and need free or low-cost laundry vouchers today.\u201d If you want, I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru",
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4",
+        "service:8149fdd1582fa7a0",
+        "service:567e5b7c27ae7419",
+        "page:bafkreifsc6qhdom6euicpklgpjs2qbjd3uiyxqyyzta4ci4m4ikamgknqa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling. In Clackamas, 211info has laundry voucher providers. Call **2-1-1** now and say: \u201cI\u2019m in Clackamas and need free or low-cost laundry vouchers today.\u201d If you want, I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000375#turn-4",
+      "scenarioId": "phone_dialog_0000375",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "app_surface_navigation",
+      "user": "If they are open now, could you contact the provider for me and ask if they still have shower access this afternoon?",
+      "normalizedQuery": "if they open now could contact provider ask still have shower access this afternoon",
+      "voiceResponse": "Next step: open the **Wallet** surface, then open the **Union Gospel Mission** card and tap **Call** so you can check shower access for this afternoon. Say: \u201cHi, are showers available this afternoon today?\u201d The number is **503 \u2026 362 \u2026 3983**. If you want, I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:3bf79b1da127b257",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bf0682fd9fa9809c",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: open the **Wallet** surface, then open the **Union Gospel Mission** card and tap **Call** so you can check shower access for this afternoon. Say: \u201cHi, are showers available this afternoon today?\u201d The number is **503 \u2026 362 \u2026 3983**. If you want, I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "Yes. Go to your **Messages** screen, tap **new message**, and send it to **5 0 3 \u2026 5 4 2 \u2026 2 7 1 7**. Type: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning?\u201d Then tap **Send**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000375#turn-6",
+      "scenarioId": "phone_dialog_0000375",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, one more time, what number should I save in case I get disconnected?",
+      "normalizedQuery": "slow down little say part again missed street name when said it if they open now could contact provider ask still have shower access this afternoon also tell them much phone battery so text instead call would sorry one more time number should save case disconnected",
+      "voiceResponse": "Save this number: **503 \u2026 362 \u2026 3983**. I\u2019ll say it again slowly: **503 \u2026 362 \u2026 3983**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Save this number: **503 \u2026 362 \u2026 3983**. I\u2019ll say it again slowly: **503 \u2026 362 \u2026 3983**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000377#turn-6",
+      "scenarioId": "phone_dialog_0000377",
+      "turnIndex": 5,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "Before I call them, is it private if I just ask about clothing and don\u2019t give my full info?",
+      "normalizedQuery": "before call them it private if just ask clothing don give full info",
+      "voiceResponse": "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "service:07b702b8ba249a9b",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that\u2019s a reasonable way to do it. You can start with general questions and keep it minimal. You could say: \u201cHi, I\u2019m calling to ask about clothing help. I\u2019d like to ask anonymously first. What services do you offer, and what basic info is required before I decide?\u201d If they ask for more than you want to share, you can say: \u201cI\u2019m not ready to give full details yet. Can we stay general for now?\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+        "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+        "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+        "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000401#turn-3",
+      "scenarioId": "phone_dialog_0000401",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She\u2019s on a fixed income, so low-cost or free laundry help would be best, maybe pickup if that exists.",
+      "normalizedQuery": "she on fixed income so low cost free laundry would be best maybe pickup if exists",
+      "voiceResponse": "That makes total sense, and you\u2019re advocating well for her. For Salem, the best next step is to ask 211 to filter those laundry facilities by **free or low-cost first**, then ask specifically whether any sites offer **pickup or delivery support**. If you want, I can help you script exactly what to say so they screen quickly: \u201cMy aunt is in Salem, on fixed income, can\u2019t carry heavy bags, and needs free or low-cost laundry with possible pickup.\u201d",
+      "evidenceDocIds": [
+        "service:a939d0834914cd25",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2acbc3c96c48d7bf",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "service:fece8d20d3530e06"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re advocating well for her. For Salem, the best next step is to ask 211 to filter those laundry facilities by **free or low-cost first**, then ask specifically whether any sites offer **pickup or delivery support**. If you want, I can help you script exactly what to say so they screen quickly: \u201cMy aunt is in Salem, on fixed income, can\u2019t carry heavy bags, and needs free or low-cost laundry with possible pickup.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000429#turn-1",
+      "scenarioId": "phone_dialog_0000429",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I haven\u2019t really slept and I keep losing my train of thought... I need a place to shower.",
+      "normalizedQuery": "hi sorry haven really slept keep losing train thought place shower",
+      "voiceResponse": "You\u2019re doing the right thing calling. A place with showers is **Rose Haven Day Center** at **1740 Northwest Glisan Street, Portland**. Phone: **503, 248, 6364**. They serve **women, transgender, non-binary, and gender-expansive adults, plus minor children**. If that fits, call now and ask shower hours.",
+      "evidenceDocIds": [
+        "service:c686714d472302b2",
+        "service:e232f8e870bdd119",
+        "service:33691fdf0a700447",
+        "service:27e274f68ae6936d",
+        "service:59090cae0b688112"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling. A place with showers is **Rose Haven Day Center** at **1740 Northwest Glisan Street, Portland**. Phone: **503, 248, 6364**. They serve **women, transgender, non-binary, and gender-expansive adults, plus minor children**. If that fits, call now and ask shower hours.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000429#turn-4",
+      "scenarioId": "phone_dialog_0000429",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep asking the same thing, sorry, I just need somewhere that won\u2019t turn me away and has shower hours.",
+      "normalizedQuery": "keep asking same sorry just somewhere won turn away has shower hours",
+      "voiceResponse": "You\u2019re okay. Here\u2019s the place again: **Rose Haven Day Center** in Portland, at **1740 Northwest Glisan Street**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. When they answer, say: \u201cI\u2019m near downtown and need a shower today. Am I eligible, and what time can I come in?\u201d",
+      "evidenceDocIds": [
+        "service:a558e2f5ba96f584",
+        "service:0a101fddb9d7862a",
+        "service:e8a466e479abed71",
+        "service:0f62cb5986e7ce0b",
+        "service:95e4707f31d18121"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. Here\u2019s the place again: **Rose Haven Day Center** in Portland, at **1740 Northwest Glisan Street**. Call first for shower hours: **503 \u2026 248 \u2026 6364**. When they answer, say: \u201cI\u2019m near downtown and need a shower today. Am I eligible, and what time can I come in?\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000431#turn-4",
+      "scenarioId": "phone_dialog_0000431",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If this is in the app, can you open the clothing-help page for me, the one with places near me?",
+      "normalizedQuery": "if this app open clothing page one places",
+      "voiceResponse": "Totally understandable, and we can keep this low-share. I can\u2019t open the app on my side, but I can guide you there now: go to the **Clothing Help** page, then tap **Places Near Me**. From there, you can view locations and call without sharing extra details up front. If you want, I can stay with you and walk each tap slowly.",
+      "evidenceDocIds": [
+        "service:c30d87584c630a3a",
+        "service:2cc848b26286a349",
+        "service:b26681286f52f9ba",
+        "service:7450cc0225895ec2",
+        "service:8726cd539f0bb88b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally understandable, and we can keep this low-share. I can\u2019t open the app on my side, but I can guide you there now: go to the **Clothing Help** page, then tap **Places Near Me**. From there, you can view locations and call without sharing extra details up front. If you want, I can stay with you and walk each tap slowly.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000455#turn-4",
+      "scenarioId": "phone_dialog_0000455",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you find a place, can you message them first and ask if they have walk-in laundry hours this week?",
+      "normalizedQuery": "if place message them first ask they have walk laundry hours this week",
+      "voiceResponse": "Next step: call them now and ask only about walk-in laundry hours, without sharing personal details yet. Number is **5 4 1** \u2026 **3 4 2** \u2026 **7 7 2 8**. You can say: \u201cHi, I\u2019m checking whether you have walk-in laundry hours this week. What days and times?\u201d If you want, add: \u201cBefore I share info, what details do you require?\u201d I only have this listing for **First Place Family Center, Eugene**.",
+      "evidenceDocIds": [
+        "service:d237681c757d7e5d",
+        "service:ac09c8c1cd2f5037",
+        "page:bafkreib2s4h2iqmjym3n7d67z3qt3pditvnkjyrble433ejxbr5hngiorm",
+        "page:bafkreibxspsnq4jn6nbyjtnm3bkjcvdeccb6kkk5wzey23z47wdlufj2e4",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call them now and ask only about walk-in laundry hours, without sharing personal details yet. Number is **5 4 1** \u2026 **3 4 2** \u2026 **7 7 2 8**. You can say: \u201cHi, I\u2019m checking whether you have walk-in laundry hours this week. What days and times?\u201d If you want, add: \u201cBefore I share info, what details do you require?\u201d I only have this listing for **First Place Family Center, Eugene**.",
+      "voiceResponseAlternatives": [
+        "I hear you. I can\u2019t place the call myself, but I can make it easy for whoever is with you to call. Say this exactly: \u201cHi, I\u2019m in Bend and medically unwell. I need to start mail service. What do I need to sign up, and can you tell me the fastest same-day option?\u201d If they can only do USPS, call **8 0 0 \u2026 2 7 5 \u2026 8 7 7 7** and ask the same question.",
+        "You\u2019re doing the right thing, and we can keep it simple and private. If you call, say: \u201cI\u2019m in or near Oregon City. I need low-cost or free laundry help today. Please check **Laundry Vouchers** and **Laundry Products**, including church programs. I prefer places with minimal paperwork.\u201d If they ask personal details, you can say: \u201cI only want to share what\u2019s needed to get service.\u201d That\u2019s all you need to say.",
+        "Yes, good idea. Send this message: \u201cHi, this is [your first name]. Do you have shower slots open tomorrow morning? I\u2019m contacting you today, May 21, 2026.\u201d Then make a quick note to yourself: \u201cContacted Safe Place for Youth on May 21, 2026.\u201d",
+        "I can\u2019t place the call for you from here. But I can give you a fast script right now. Say: \u201cHi, I\u2019m checking if you have shower slots this afternoon. Can I come today, and do I need ID?\u201d Call: **5 4 1, 3 4 3, 4 7 4 7**. Again: **5 4 1, 3 4 3, 4 7 4 7**. Want a 10-second voicemail version too?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000495#turn-5",
+      "scenarioId": "phone_dialog_0000495",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019ve got some mail and an old photo copy, but no current card, so I need the fastest legit path to replace it.",
+      "normalizedQuery": "ve got some mail an old photo copy no current card so fastest legit path replace it",
+      "voiceResponse": "Next step: tell the live 211 specialist this exact line: \u201cI have mail and an old photo copy, but no current ID card, and I need the fastest legitimate replacement path.\u201d Then ask: \u201cWhat proof of identity can I use right now while replacement is pending?\u201d You\u2019re doing the right thing by being specific.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:0f54d8a0521f759c",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: tell the live 211 specialist this exact line: \u201cI have mail and an old photo copy, but no current ID card, and I need the fastest legitimate replacement path.\u201d Then ask: \u201cWhat proof of identity can I use right now while replacement is pending?\u201d You\u2019re doing the right thing by being specific.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Open the app and go to **Mail Services**. Once you\u2019re there, tap **\u201cGet Help Now\u201d** or **\u201cConnect to 211\u201d** to reach a live person who can find same-day mail address or pickup options near you. If the screen is hard to find, go to **Search** and type \u201cmail.\u201d I can stay with you while you do it.",
+        "You\u2019re okay. We can do this step by step. I can help find laundry options for your brother. If anyone is in immediate danger, call 9-1-1 now. Call 9-1-1 now. I can also connect you to a live agent right away. What city or ZIP code is your brother in?",
+        "I hear you. I don\u2019t have a verified closest shower site to give you from this line, so fastest next step is the live specialist already queued. Please stay on the line and say, \u201cclosest shower in or near Medford by bus, open early, clothing if possible.\u201d If you start feeling unsafe where you are, call 9-1-1 right away.",
+        "Next step: stay with me on the line, and I\u2019ll finish connecting you now to a live 211 specialist in Multnomah County for temporary mailing address or mail pickup options. If we get disconnected, call back at **5-4-1, 9-9-4, 4-9-6-8**. I can repeat that again: **5-4-1, 9-9-4, 4-9-6-8**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000509#turn-4",
+      "scenarioId": "phone_dialog_0000509",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you open the laundry resources screen for me in the app so I can see what\u2019s open now?",
+      "normalizedQuery": "open laundry resources screen app so see now",
+      "voiceResponse": "Yes. Go to the **Laundry Resources** screen in the app. Tap **Filters**, set **Open now**, and set location to **Downtown Eugene**. Then tap a listing to see hours, bus access, and call details. If you want, I can stay with you while you do those taps.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:bf0682fd9fa9809c",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de",
+        "service:5959bd235cc13850"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Go to the **Laundry Resources** screen in the app. Tap **Filters**, set **Open now**, and set location to **Downtown Eugene**. Then tap a listing to see hours, bus access, and call details. If you want, I can stay with you while you do those taps.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000537#turn-1",
+      "scenarioId": "phone_dialog_0000537",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I keep losing you... I haven't slept and I'm trying to find somewhere I can take a shower today.",
+      "normalizedQuery": "hi sorry keep losing haven't slept i'm trying somewhere take shower",
+      "voiceResponse": "You\u2019re okay. For a shower today, try **Union Gospel Mission Men\u2019s Mission Shower Facilities** in Salem: **777 Commercial Street N.E.** Call: **503-362-3983** That\u2019s: **5 0 3 \u2026 3 6 2 \u2026 3 9 8 3**. There\u2019s also a listed local line: **541-345-3628** That\u2019s: **5 4 1 \u2026 3 4 5 \u2026 3 6 2 8**. If the call drops, I can repeat just the number.",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "service:0a101fddb9d7862a",
+        "service:e8a466e479abed71",
+        "service:0f62cb5986e7ce0b",
+        "service:95e4707f31d18121"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. For a shower today, try **Union Gospel Mission Men\u2019s Mission Shower Facilities** in Salem: **777 Commercial Street N.E.** Call: **503-362-3983** That\u2019s: **5 0 3 \u2026 3 6 2 \u2026 3 9 8 3**. There\u2019s also a listed local line: **541-345-3628** That\u2019s: **5 4 1 \u2026 3 4 5 \u2026 3 6 2 8**. If the call drops, I can repeat just the number.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000565#turn-3",
+      "scenarioId": "phone_dialog_0000565",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need somewhere close that does mailbox service or can hold mail for me.",
+      "normalizedQuery": "somewhere close does mailbox service hold mail",
+      "voiceResponse": "First step: call the United States Postal Service and ask for the nearest Oregon City post office that can hold your mail. The number is **800 \u2026 275 \u2026 8777**. Say: \u201cI\u2019m medically fragile and need mail hold or mailbox options close to me.\u201d If the call drops, call that same number again: **800 \u2026 275 \u2026 8777**.",
+      "evidenceDocIds": [
+        "service:efb550a569573456",
+        "page:bafkreicexka75msbb2guzaony7usoeqfudvnp33c33exhc7uxs2ww54vmi",
+        "page:bafkreiddly7vzg4f53sutx2hghq5p5nlctagzoj5strv775nnymw37bdfi",
+        "service:7e3fb5f46d2f9e0d",
+        "service:1b22cb3a91b253a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call the United States Postal Service and ask for the nearest Oregon City post office that can hold your mail. The number is **800 \u2026 275 \u2026 8777**. Say: \u201cI\u2019m medically fragile and need mail hold or mailbox options close to me.\u201d If the call drops, call that same number again: **800 \u2026 275 \u2026 8777**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000565#turn-5",
+      "scenarioId": "phone_dialog_0000565",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And if you can, tell me the hours too, so I don\u2019t go when they\u2019re closed.",
+      "normalizedQuery": "hear signal keeps cutting stand line long pretty weak somewhere close does mailbox service hold mail sorry dropped second repeat name address slowly if tell hours too so don go when they re closed",
+      "voiceResponse": "Next step: call **United States Postal Service** now and ask for the nearest Oregon City location\u2019s hours before you go. Number: **800 \u2026 275 \u2026 8777**. I don\u2019t have verified hours in front of me, so please have them give you today\u2019s open and close times and the address in the same call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:0f54d8a0521f759c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **United States Postal Service** now and ask for the nearest Oregon City location\u2019s hours before you go. Number: **800 \u2026 275 \u2026 8777**. I don\u2019t have verified hours in front of me, so please have them give you today\u2019s open and close times and the address in the same call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000617#turn-1",
+      "scenarioId": "phone_dialog_0000617",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m on a borrowed phone and it\u2019s at two percent, can you give me the main number first for laundry help?",
+      "normalizedQuery": "hi on borrowed phone it at two percent give main number first laundry",
+      "voiceResponse": "Main number first: call **2-1-1**. Say: \u201cI need laundry help near me.\u201d They can give the closest laundry product or laundry service options fast. If the call drops, you can also look up **\u201cLaundry Products\u201d on 211info** when you have battery again.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "service:b3d7aa7d9150b9d1",
+        "service:675e8d8ba442bfca",
+        "service:d237681c757d7e5d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Main number first: call **2-1-1**. Say: \u201cI need laundry help near me.\u201d They can give the closest laundry product or laundry service options fast. If the call drops, you can also look up **\u201cLaundry Products\u201d on 211info** when you have battery again.",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000617#turn-2",
+      "scenarioId": "phone_dialog_0000617",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I missed that last part, there\u2019s traffic noise here. Can you repeat the number slower?",
+      "normalizedQuery": "hi on borrowed phone it at two percent give main number first laundry sorry missed last part there traffic noise here repeat slower",
+      "voiceResponse": "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:675e8d8ba442bfca"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**. Just dial **211**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow again. The shower place is **Rose Haven Day Center**. I\u2019ll repeat it: **Rose Haven Day Center**.",
+        "Next step: I can connect you to a live 211 specialist right now to look for same-day clothing in Bend, including adult and kid sizes. You only need to share the minimum details you\u2019re comfortable sharing.",
+        "I don\u2019t have a phone number yet. When I get it, I\u2019ll read it in small chunks, slowly, and repeat it once."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000618#turn-5",
+      "scenarioId": "phone_dialog_0000618",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I\u2019m talking over you\u2014go ahead. I just need the shower place and what time they let people in.",
+      "normalizedQuery": "sorry talking over go ahead just shower place time they let people",
+      "voiceResponse": "Thank you. I hear you. I do not have a confirmed shower site or entry time in what I can see right now. I do not have a confirmed shower site or entry time right now. What city are you in, so I can find the right shower location and hours?",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreigrbptm5afnoxxg32ujw7l45zl2zwe7z2w5ya6xd2h6i2wvnkd7e4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. I do not have a confirmed shower site or entry time in what I can see right now. I do not have a confirmed shower site or entry time right now. What city are you in, so I can find the right shower location and hours?",
+      "voiceResponseAlternatives": [
+        "You\u2019re right to say that. Your safety comes first. When you call, say: \u201cDo **not** send mail to my house. He checks everything. Use phone only, at safe times.\u201d Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. Toll-free: **8-8-8, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Totally, I can guide you there quickly. In the app, open the **Clothing Resources** section from the services list, then set location to **Beaverton** and sort by **closest**. Tap a listing to see phone, address, and hours, then use the call button right there. If you want, I can stay on the line and help you choose the best bus-accessible option before you call.",
+        "You don\u2019t need to apologize, and I\u2019m glad you asked. I can\u2019t place the call for you, but I can stay with you while you do it. Dial **2 \u2026 1 \u2026 1**. When they answer, say: \u201cI\u2019m in Multnomah County, heading to Portland, and I need a daytime drop-in center with shower hours this afternoon.\u201d If you want, I can repeat that line one short part at a time.",
+        "You\u2019re okay. I don\u2019t have a street address listed here, but the place is **St. Vincent de Paul, First Place Family Center**. Call this number and ask for the address: **5 4 1 \u2026 3 4 2 \u2026 7 7 2 8**. Backup: **5 4 1 \u2026 8 4 1 \u2026 1 9 7 4**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000052#turn-4",
+      "to": "phone_dialog_0000052#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000069#turn-3",
+      "to": "phone_dialog_0000069#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000104#turn-4",
+      "to": "phone_dialog_0000104#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000158#turn-1",
+      "to": "phone_dialog_0000158#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000160#turn-3",
+      "to": "phone_dialog_0000160#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000161#turn-3",
+      "to": "phone_dialog_0000161#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000186#turn-4",
+      "to": "phone_dialog_0000186#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000213#turn-2",
+      "to": "phone_dialog_0000213#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000215#turn-2",
+      "to": "phone_dialog_0000215#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000241#turn-4",
+      "to": "phone_dialog_0000241#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000241#turn-5",
+      "to": "phone_dialog_0000241#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000266#turn-2",
+      "to": "phone_dialog_0000266#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000294#turn-4",
+      "to": "phone_dialog_0000294#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000320#turn-5",
+      "to": "phone_dialog_0000320#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000348#turn-5",
+      "to": "phone_dialog_0000348#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000349#turn-3",
+      "to": "phone_dialog_0000349#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000350#turn-4",
+      "to": "phone_dialog_0000350#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000374#turn-3",
+      "to": "phone_dialog_0000374#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000375#turn-4",
+      "to": "phone_dialog_0000375#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000401#turn-3",
+      "to": "phone_dialog_0000401#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000429#turn-1",
+      "to": "phone_dialog_0000429#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000429#turn-4",
+      "to": "phone_dialog_0000429#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000431#turn-4",
+      "to": "phone_dialog_0000431#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000455#turn-4",
+      "to": "phone_dialog_0000455#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000495#turn-5",
+      "to": "phone_dialog_0000495#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000509#turn-4",
+      "to": "phone_dialog_0000509#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000537#turn-1",
+      "to": "phone_dialog_0000537#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000565#turn-3",
+      "to": "phone_dialog_0000565#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000617#turn-1",
+      "to": "phone_dialog_0000617#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000617#turn-2",
+      "to": "phone_dialog_0000617#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000618#turn-5",
+      "to": "phone_dialog_0000618#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    }
+  ]
+}

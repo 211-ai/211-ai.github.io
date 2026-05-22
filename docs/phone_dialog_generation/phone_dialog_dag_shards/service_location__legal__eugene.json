@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__legal__eugene",
+  "kind": "service_location",
+  "key": "legal__eugene",
+  "nodeCount": 2,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000197#turn-2",
+      "scenarioId": "phone_dialog_0000197",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "legal",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I need legal help in Eugene, kind of general at first, I just don\u2019t know where to start.",
+      "normalizedQuery": "legal aid attorney advocacy eugene kind general at first just don know start",
+      "voiceResponse": "Start here: **5-4-1, 4-8-5, 1-0-1-7**. That\u2019s General Legal Aid in Eugene. If helpful, ask for intake for general civil legal help. They can tell you next steps, and you can share only what you want. If you reach voicemail, leave your name and a safe callback number. Address if needed: **101 East Broadway, Suite 200, Eugene**. If anyone is in immediate danger, call **9-1-1**.",
+      "evidenceDocIds": [
+        "service:e0530c5806065ca3",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha",
+        "service:3694ab25654f4b81",
+        "service:b681fb7f468e02c2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Start here: **5-4-1, 4-8-5, 1-0-1-7**. That\u2019s General Legal Aid in Eugene. If helpful, ask for intake for general civil legal help. They can tell you next steps, and you can share only what you want. If you reach voicemail, leave your name and a safe callback number. Address if needed: **101 East Broadway, Suite 200, Eugene**. If anyone is in immediate danger, call **9-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000431#turn-3",
+      "scenarioId": "phone_dialog_0000431",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "legal",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little? I missed that part.",
+      "normalizedQuery": "hi sorry kind all over place right now finding clothes like clothing closet eugene before we anything this private don want info shared police immigration slow down little missed part",
+      "voiceResponse": "Absolutely, we can slow down. The key part is: you can keep this private. You do not need to share your immigration status or Social Security number. We can do this with just your first name and city, and only share the minimum needed.",
+      "evidenceDocIds": [
+        "service:bbea7883a5477e64",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:bb6aea3f778df0b5",
+        "service:f9a2427433ede4e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, we can slow down. The key part is: you can keep this private. You do not need to share your immigration status or Social Security number. We can do this with just your first name and city, and only share the minimum needed.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000197#turn-2",
+      "to": "phone_dialog_0000197#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000431#turn-3",
+      "to": "phone_dialog_0000431#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

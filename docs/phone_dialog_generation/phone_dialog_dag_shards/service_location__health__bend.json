@@ -1,0 +1,344 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__health__bend",
+  "kind": "service_location",
+  "key": "health__bend",
+  "nodeCount": 10,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000176#turn-1",
+      "scenarioId": "phone_dialog_0000176",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m calling for my nephew, not me, and this is a borrowed phone at like two percent battery. Can you give me the main detox number in Bend first?",
+      "normalizedQuery": "hi sorry calling nephew this borrowed phone at like two percent battery give main detox number bend first",
+      "voiceResponse": "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "service:b3d7aa7d9150b9d1",
+        "service:98249e32a262b454",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+        "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d",
+        "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000176#turn-2",
+      "scenarioId": "phone_dialog_0000176",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, you cut out when you said that, was that 541 or 514?",
+      "normalizedQuery": "hi sorry calling nephew this borrowed phone at like two percent battery give main detox number bend first wait cut when said was 541 514",
+      "voiceResponse": "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:a80fc4c7b16e0d53",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**.",
+        "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000176#turn-4",
+      "scenarioId": "phone_dialog_0000176",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the name of the program slower? I\u2019m in a parking lot and there\u2019s a lot of noise.",
+      "normalizedQuery": "hi sorry calling nephew this borrowed phone at like two percent battery give main detox number bend first wait cut when said was 541 514 he 27 been using fentanyl finally yes so just place call right now repeat name program slower parking lot there noise",
+      "voiceResponse": "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**.",
+      "voiceResponseAlternatives": [
+        "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000280#turn-4",
+      "scenarioId": "phone_dialog_0000280",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Are there any local programs here in Bend that can take me to medical visits?",
+      "normalizedQuery": "hi um bend having hard time right now since mom passed getting rides appointments because keep asking neighbors sorry emotional really transportation transport ride bus this week there any local programs here take medical visits",
+      "voiceResponse": "Yes. First step: call **Cascades West Ride Line** now and ask for a non-emergency medical ride from Bend this week. The number is **5-4-1, 9-2-4, 8-7-3-8**. If needed, their other line is **5-4-1, 9-6-7, 8-6-3-0**. They serve eligible OHP Medicaid, ICHN CCO, and Samaritan Advantage members.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "page:bafkreib6nmht7udiukswm5qdmshwpitxtcttggofjrfwvaercrz5c2rrqy",
+        "page:bafkreigah2lp2bdts3f3gwdfch33w6ngsvbgpp6q4dy2j6rvq7ccxr5iqa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First step: call **Cascades West Ride Line** now and ask for a non-emergency medical ride from Bend this week. The number is **5-4-1, 9-2-4, 8-7-3-8**. If needed, their other line is **5-4-1, 9-6-7, 8-6-3-0**. They serve eligible OHP Medicaid, ICHN CCO, and Samaritan Advantage members.",
+      "voiceResponseAlternatives": [
+        "First step: call Cascades West Ride Line now and ask them to enroll you for rides this week. Their number is **5-4-1, 9-2-4, 8-7-3-8**. For sign-up, they list **no required documents**. You do need to be an eligible **OHP Medicaid** client, an eligible **InterCommunity Health Network CCO** member in their files, or a **Samaritan Advantage Medical** client. I can stay with you while you make the call.",
+        "You\u2019re doing the right thing. If we disconnect, call these and start with privacy first: First number: **5-4-1** \u2026 **5-2-3** \u2026 **4-0-4-9**. Second number: **5-4-1** \u2026 **4-0-6** \u2026 **4-3-6-3**. Say: \u201cI need same-day detox in Bend and want to stay as anonymous as possible. What do you record before intake, and do you contact employers?\u201d"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000280#turn-5",
+      "scenarioId": "phone_dialog_0000280",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If you find one, can you tell me what I need to sign up?",
+      "normalizedQuery": "getting rides appointments because keep asking neighbors sorry emotional really transportation transport ride bus this week there any local programs here bend take medical visits if one tell sign up",
+      "voiceResponse": "First step: call Cascades West Ride Line now and ask them to enroll you for rides this week. Their number is **5-4-1, 9-2-4, 8-7-3-8**. For sign-up, they list **no required documents**. You do need to be an eligible **OHP Medicaid** client, an eligible **InterCommunity Health Network CCO** member in their files, or a **Samaritan Advantage Medical** client. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "service:a52e78bc8469df64",
+        "page:bafkreib6nmht7udiukswm5qdmshwpitxtcttggofjrfwvaercrz5c2rrqy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call Cascades West Ride Line now and ask them to enroll you for rides this week. Their number is **5-4-1, 9-2-4, 8-7-3-8**. For sign-up, they list **no required documents**. You do need to be an eligible **OHP Medicaid** client, an eligible **InterCommunity Health Network CCO** member in their files, or a **Samaritan Advantage Medical** client. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call **Cascades West Ride Line** now and ask for a non-emergency medical ride from Bend this week. The number is **5-4-1, 9-2-4, 8-7-3-8**. If needed, their other line is **5-4-1, 9-6-7, 8-6-3-0**. They serve eligible OHP Medicaid, ICHN CCO, and Samaritan Advantage members.",
+        "You\u2019re doing the right thing. If we disconnect, call these and start with privacy first: First number: **5-4-1** \u2026 **5-2-3** \u2026 **4-0-4-9**. Second number: **5-4-1** \u2026 **4-0-6** \u2026 **4-3-6-3**. Say: \u201cI need same-day detox in Bend and want to stay as anonymous as possible. What do you record before intake, and do you contact employers?\u201d"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000527#turn-1",
+      "scenarioId": "phone_dialog_0000527",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, sorry, I keep losing my train of thought. I\u2019m in Bend and I need detox help, like today if possible.",
+      "normalizedQuery": "hi um sorry keep losing train thought bend detox like if possible",
+      "voiceResponse": "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+      "evidenceDocIds": [
+        "service:c686714d472302b2",
+        "service:a80fc4c7b16e0d53",
+        "service:59090cae0b688112",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+        "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d",
+        "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000527#turn-2",
+      "scenarioId": "phone_dialog_0000527",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we go further, who can see this call? I\u2019m serious, I can\u2019t have my name showing up somewhere.",
+      "normalizedQuery": "hi um sorry keep losing train thought bend detox like if possible before we go further who see this call serious have name showing up somewhere",
+      "voiceResponse": "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c686714d472302b2",
+        "service:59090cae0b688112",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+        "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+        "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000527#turn-3",
+      "scenarioId": "phone_dialog_0000527",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, sorry, I know you asked something\u2014can you repeat that? The line cut out for a second.",
+      "normalizedQuery": "hi um sorry keep losing train thought bend detox like if possible before we go further who see this call serious have name showing up somewhere wait know asked something repeat line cut second",
+      "voiceResponse": "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The key part was: you can ask for detox without giving your full name first. You can say: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d Then ask: \u201cWhat do you record before I share anything?\u201d",
+      "voiceResponseAlternatives": [
+        "It\u2019s **541**. Main number again: **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Absolutely, with all that noise, here it is slowly: **the detox program in Bend**. And the first number to call is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000527#turn-4",
+      "scenarioId": "phone_dialog_0000527",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to be difficult, I just need to know if I can get into a program without, like, my employer finding out.",
+      "normalizedQuery": "hi um sorry keep losing train thought bend detox like if possible before we go further who see this call serious have name showing up somewhere wait know asked something repeat line cut second trying be difficult just into program without employer finding",
+      "voiceResponse": "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult at all. Yes, you can ask for help in a privacy-first way. When you call, start with: \u201cI need same-day detox, and I want to stay as anonymous as possible.\u201d Then ask: \u201cWhat do you record before intake, and do you contact employers?\u201d You can share only what feels safe, step by step. If you want, use the same two Bend detox numbers we already listed and ask those exact questions first.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling for him, especially with low battery. Main detox number to try first is **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9**. Backup number is **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**. If you want, I can give you a one-line script to say when they answer.",
+        "You\u2019re not bothering me. For detox today, I found **Medical Detox and Clinically Managed Detox**. You can call: **5 4 1, 5 2 3, 4 0 4 9**. Another line is **5 4 1, 4 0 6, 4 3 6 3**. You can keep it private on the call, ask about same-day intake, and share only what you\u2019re comfortable sharing. If they can\u2019t take you, we can quickly try the next option together.",
+        "That makes complete sense, and you\u2019re right to ask. You can keep this private with me and with providers by sharing only what you choose. You can ask about detox without giving your full name first, and ask what they record before you share anything. If you want, I can help with a short script like: \u201cI need same-day detox and want to stay as anonymous as possible. What can you do?\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000527#turn-6",
+      "scenarioId": "phone_dialog_0000527",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m talking over you\u2014my battery\u2019s at 3%, so if we disconnect, I still need a detox place in Bend that keeps things private.",
+      "normalizedQuery": "sorry talking over battery at so if we disconnect still detox place bend keeps things private",
+      "voiceResponse": "You\u2019re doing the right thing. If we disconnect, call these and start with privacy first: First number: **5-4-1** \u2026 **5-2-3** \u2026 **4-0-4-9**. Second number: **5-4-1** \u2026 **4-0-6** \u2026 **4-3-6-3**. Say: \u201cI need same-day detox in Bend and want to stay as anonymous as possible. What do you record before intake, and do you contact employers?\u201d",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "service:0f54d8a0521f759c",
+        "service:150f0f2cc852aa6d",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. If we disconnect, call these and start with privacy first: First number: **5-4-1** \u2026 **5-2-3** \u2026 **4-0-4-9**. Second number: **5-4-1** \u2026 **4-0-6** \u2026 **4-3-6-3**. Say: \u201cI need same-day detox in Bend and want to stay as anonymous as possible. What do you record before intake, and do you contact employers?\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. First step: call **Cascades West Ride Line** now and ask for a non-emergency medical ride from Bend this week. The number is **5-4-1, 9-2-4, 8-7-3-8**. If needed, their other line is **5-4-1, 9-6-7, 8-6-3-0**. They serve eligible OHP Medicaid, ICHN CCO, and Samaritan Advantage members.",
+        "First step: call Cascades West Ride Line now and ask them to enroll you for rides this week. Their number is **5-4-1, 9-2-4, 8-7-3-8**. For sign-up, they list **no required documents**. You do need to be an eligible **OHP Medicaid** client, an eligible **InterCommunity Health Network CCO** member in their files, or a **Samaritan Advantage Medical** client. I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000176#turn-1",
+      "to": "phone_dialog_0000176#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000176#turn-2",
+      "to": "phone_dialog_0000176#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000176#turn-4",
+      "to": "phone_dialog_0000176#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000280#turn-4",
+      "to": "phone_dialog_0000280#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000527#turn-1",
+      "to": "phone_dialog_0000527#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000527#turn-2",
+      "to": "phone_dialog_0000527#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000527#turn-3",
+      "to": "phone_dialog_0000527#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000527#turn-4",
+      "to": "phone_dialog_0000527#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    }
+  ]
+}

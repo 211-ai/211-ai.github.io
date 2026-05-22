@@ -1,0 +1,119 @@
+from __future__ import annotations
+
+from collections import Counter
+
+from scripts.phone_dialog_generation_daemon import (
+    build_seed,
+    target_mode_weight,
+    TARGET_MODE_PROFILE_BY_ID,
+    enrich_dag_with_phone_variants,
+    extract_first_json_object,
+)
+
+
+def test_extract_first_json_object_ignores_wrapping_text() -> None:
+    payload = extract_first_json_object('preface {"title":"hello","callerTurns":["one","two","three"]} suffix')
+    assert payload == {"title": "hello", "callerTurns": ["one", "two", "three"]}
+
+
+def test_build_seed_is_deterministic_for_counter() -> None:
+    import random
+
+    seed_a = build_seed(17, random.Random(211))
+    seed_b = build_seed(17, random.Random(211))
+    assert seed_a.seed_id == seed_b.seed_id
+    assert seed_a.service_need == seed_b.service_need
+    assert seed_a.location == seed_b.location
+    assert seed_a.caller["id"] == seed_b.caller["id"]
+    assert seed_a.channel["id"] == seed_b.channel["id"]
+    assert seed_a.style["id"] == seed_b.style["id"]
+
+
+def test_build_seed_rotates_channel_and_style_early() -> None:
+    import random
+
+    seeds = [build_seed(index, random.Random(211)) for index in range(1, 13)]
+    assert len({seed.channel["id"] for seed in seeds}) > 1
+    assert len({seed.style["id"] for seed in seeds}) > 1
+
+
+def test_underrepresented_route_profiles_get_more_weight() -> None:
+    common_profile = TARGET_MODE_PROFILE_BY_ID["clear_grounded_request"]
+    underrepresented_profile = TARGET_MODE_PROFILE_BY_ID["surface_navigation_request"]
+    route_counts = Counter({"grounded_211_answer": 500, "live_agent": 500, "app_surface_navigation": 5})
+    target_mode_counts = Counter({"clear_grounded_request": 40})
+
+    common_weight = target_mode_weight(common_profile, route_counts, target_mode_counts)
+    underrepresented_weight = target_mode_weight(underrepresented_profile, route_counts, target_mode_counts)
+
+    assert underrepresented_weight > common_weight
+
+
+def test_enrich_dag_with_phone_variants_uses_assistant_responses() -> None:
+    dag = {
+        "nodes": [
+            {
+                "id": "scenario-1#turn-1",
+                "scenarioId": "scenario-1",
+                "route": "grounded_211_answer",
+                "serviceTag": "food",
+                "locationTag": "portland",
+                "voiceResponse": "placeholder",
+            },
+            {
+                "id": "scenario-2#turn-1",
+                "scenarioId": "scenario-2",
+                "route": "grounded_211_answer",
+                "serviceTag": "food",
+                "locationTag": "portland",
+                "voiceResponse": "placeholder",
+            },
+        ]
+    }
+    memory = {
+        "records": [
+            {
+                "id": "scenario-1#turn-1",
+                "scenarioId": "scenario-1",
+                "user": "Need food in Portland",
+                "retrievalQuery": "food portland",
+                "route": "grounded_211_answer",
+                "assistant": "I found a pantry in Portland. Call 503 555 0100.",
+            },
+            {
+                "id": "scenario-2#turn-1",
+                "scenarioId": "scenario-2",
+                "user": "Need groceries in Portland",
+                "retrievalQuery": "groceries portland",
+                "route": "grounded_211_answer",
+                "assistant": "A likely match is a Portland pantry. I can repeat the number.",
+            },
+        ]
+    }
+    results = [
+        {
+            "id": "scenario-1",
+            "phone": {
+                "callerArchetype": {"id": "homeless_exhausted"},
+                "channelCondition": {"id": "bad_reception"},
+                "assistantStyle": {"id": "slow_clear_repetition"},
+            },
+        },
+        {
+            "id": "scenario-2",
+            "phone": {
+                "callerArchetype": {"id": "calm_practical"},
+                "channelCondition": {"id": "clear_line"},
+                "assistantStyle": {"id": "grounded_operator"},
+            },
+        },
+    ]
+
+    enriched = enrich_dag_with_phone_variants(dag, memory, results)
+
+    first = enriched["nodes"][0]
+    assert first["voiceResponse"] == "I found a pantry in Portland. Call 503 555 0100."
+    assert "A likely match is a Portland pantry. I can repeat the number." in first["voiceResponseAlternatives"]
+    assert first["callerArchetypeId"] == "homeless_exhausted"
+    assert first["channelConditionId"] == "bad_reception"
+    assert first["assistantStyleId"] == "slow_clear_repetition"

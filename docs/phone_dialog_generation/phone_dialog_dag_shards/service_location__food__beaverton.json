@@ -1,0 +1,597 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__food__beaverton",
+  "kind": "service_location",
+  "key": "food__beaverton",
+  "nodeCount": 17,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000109#turn-1",
+      "scenarioId": "phone_dialog_0000109",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I\u2019m really not doing well right now... I\u2019m in Beaverton and I need somewhere I can get a meal today.",
+      "normalizedQuery": "hi sorry really doing well right now beaverton somewhere meal",
+      "voiceResponse": "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:0d4be1a249bfe7ab",
+        "service:47542cbe7e757ba4",
+        "service:078087b57125137d",
+        "service:4cf2de0c28d3b829"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called. If you\u2019re struggling to breathe, have chest pain, or feel faint, call **911 now**. For a meal today, I can connect you to **Community Meal** at **(503) 383-1834**. That\u2019s **5 0 3, 3 8 3, 1 8 3 4**. If you want, stay with me while you place that call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000109#turn-3",
+      "scenarioId": "phone_dialog_0000109",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down and say that again? I didn\u2019t catch the name, the line is cutting out.",
+      "normalizedQuery": "hi sorry really doing well right now beaverton somewhere meal stand long enough cook shaky there community place close by slow down say again didn catch name line cutting",
+      "voiceResponse": "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+      "evidenceDocIds": [
+        "service:2e6a4c77b4bef070",
+        "service:5819b975ba599d15",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreienrutlrq6b7hmcvbl47pnohif2hiudjgd6nzl4xb6hiuihstriem"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+      "voiceResponseAlternatives": [
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000135#turn-1",
+      "scenarioId": "phone_dialog_0000135",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know I\u2019m talking fast, I\u2019m in Beaverton and I need a food pantry, like today if possible.",
+      "normalizedQuery": "hi sorry know talking fast beaverton food pantry meal meals groceries like if possible",
+      "voiceResponse": "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option.",
+        "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000135#turn-4",
+      "scenarioId": "phone_dialog_0000135",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "calendar_event_support",
+      "user": "Also, can you help me send them a follow-up message that I can come after 4:30, because I\u2019m getting conflicting info.",
+      "normalizedQuery": "hi sorry know talking fast beaverton food pantry meal meals groceries like if possible called one already maybe two hang on there lot noise here think they said bring id proof address wait repeat name wrote it down wrong signal cut second also send them follow up message come after 30 because getting conflicting info",
+      "voiceResponse": "Next step: send this text now, exactly: \u201cHi, this is [your name]. I\u2019m following up because I got conflicting information. I can arrive after 4:30 PM today. Can you confirm if that arrival time works, and what documents you want me to bring?\u201d Which pantry should we address it to: Clackamas Service Center or First Baptist Church Portland?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibmn6xyxpuhpashuiyqx6q2yq4q752hhxd55cguurzjmnldm2qvcq",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: send this text now, exactly: \u201cHi, this is [your name]. I\u2019m following up because I got conflicting information. I can arrive after 4:30 PM today. Can you confirm if that arrival time works, and what documents you want me to bring?\u201d Which pantry should we address it to: Clackamas Service Center or First Baptist Church Portland?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and thanks for checking. I said **today** for finding options through the Oregon Food Bank locator. For the **8800 Southeast 80th Avenue** site, I don\u2019t have a confirmed afternoon closing time in front of me. Do you want me to help you check **that location\u2019s hours for today**?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000317#turn-1",
+      "scenarioId": "phone_dialog_0000317",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling back about meal delivery for my dad in Beaverton, senior meals, sorry if I\u2019m repeating myself.",
+      "normalizedQuery": "hi calling back meal delivery dad beaverton senior meals sorry if repeating myself",
+      "voiceResponse": "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+      "evidenceDocIds": [
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:0d4be1a249bfe7ab",
+        "service:49fc013a99b51df9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option.",
+        "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000317#turn-2",
+      "scenarioId": "phone_dialog_0000317",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you check which program had the waitlist and which one was grab-and-go? I missed that part when the line cut out.",
+      "normalizedQuery": "hi calling back meal delivery dad beaverton senior meals sorry if repeating myself check which program had waitlist one was grab go missed part when line cut",
+      "voiceResponse": "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreianmqrdc6etanxfbn4yw7tz72czpifr2qr5q6rw5xffa6a3aoiebq",
+        "page:bafkreica62fzdzcoypdyul2hz3brwxsgcywesnx4uct4ecgiqiop2ax5cm",
+        "page:bafkreibn4wkeqmzupq2lzd24vxvtx63koadyscswz3e3uxfo2is3g4tlsm",
+        "page:bafkreicpdkocangeit3w2w2z5tnx7pmr6qhyvocmbizb6tih44k7jgcksy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000317#turn-3",
+      "scenarioId": "phone_dialog_0000317",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hold on, there\u2019s a lot of noise here... okay, yes, Beaverton, near Cedar Hills.",
+      "normalizedQuery": "hi calling back meal delivery dad beaverton senior meals sorry if repeating myself check which program had waitlist one was grab go missed part when line cut hold on there lot noise here okay yes cedar hills",
+      "voiceResponse": "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:ad8146a84abd0b66",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option.",
+        "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000317#turn-5",
+      "scenarioId": "phone_dialog_0000317",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "provider_contact_support",
+      "user": "Also, can you log that I already called them this morning and left a voicemail?",
+      "normalizedQuery": "check which program had waitlist one was grab go missed part when line cut hold on there lot noise here okay yes beaverton cedar hills message provider ask if they start next week say he needs low sodium meals also log already called them this morning left voicemail",
+      "voiceResponse": "Absolutely. I\u2019ll note it as: \u201cCaller already phoned this morning and left a voicemail.\u201d For your provider message, we can send: \u201cFollowing up\u2014I called this morning and left a voicemail. Can he start next week, and are low-sodium meals available?\u201d If you want, I can keep it exactly that short.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I\u2019ll note it as: \u201cCaller already phoned this morning and left a voicemail.\u201d For your provider message, we can send: \u201cFollowing up\u2014I called this morning and left a voicemail. Can he start next week, and are low-sodium meals available?\u201d If you want, I can keep it exactly that short.",
+      "voiceResponseAlternatives": [
+        "Great question. Safest assumption: anyone on that provider\u2019s intake or care team who handles requests may see the message. If you want extra privacy, we can keep it minimal: \u201cfollowing up on voicemail, can meals start next week, low-sodium needed,\u201d with no diagnosis or extra personal details. We can also use just first name or initials. If you\u2019d rather, I can give you a short script so you send it directly."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000317#turn-6",
+      "scenarioId": "phone_dialog_0000317",
+      "turnIndex": 5,
+      "route": "provider_contact_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "provider_contact_support",
+      "user": "One more thing, who can see that message and note? I just want to make sure his info stays private.",
+      "normalizedQuery": "hold on there lot noise here okay yes beaverton cedar hills message provider ask if they start next week say he needs low sodium meals also log already called them this morning left voicemail one more who see note just want make sure his info stays private",
+      "voiceResponse": "Great question. Safest assumption: anyone on that provider\u2019s intake or care team who handles requests may see the message. If you want extra privacy, we can keep it minimal: \u201cfollowing up on voicemail, can meals start next week, low-sodium needed,\u201d with no diagnosis or extra personal details. We can also use just first name or initials. If you\u2019d rather, I can give you a short script so you send it directly.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great question. Safest assumption: anyone on that provider\u2019s intake or care team who handles requests may see the message. If you want extra privacy, we can keep it minimal: \u201cfollowing up on voicemail, can meals start next week, low-sodium needed,\u201d with no diagnosis or extra personal details. We can also use just first name or initials. If you\u2019d rather, I can give you a short script so you send it directly.",
+      "voiceResponseAlternatives": [
+        "Absolutely. I\u2019ll note it as: \u201cCaller already phoned this morning and left a voicemail.\u201d For your provider message, we can send: \u201cFollowing up\u2014I called this morning and left a voicemail. Can he start next week, and are low-sodium meals available?\u201d If you want, I can keep it exactly that short."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000460#turn-1",
+      "scenarioId": "phone_dialog_0000460",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m kind of a mess today... I need help finding community meals near Beaverton.",
+      "normalizedQuery": "hi sorry kind mess finding community meals beaverton",
+      "voiceResponse": "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option.",
+      "evidenceDocIds": [
+        "service:7a5cca37934277c2",
+        "service:c7cb62d2344e1449",
+        "page:bafkreicxbzphm7i44ai3ketd4lb5cujncwt3nwlps5kc3fzuwjvnqvjdrm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:fef46dc01f825fb3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000460#turn-2",
+      "scenarioId": "phone_dialog_0000460",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? You cut out after the street name.",
+      "normalizedQuery": "hi sorry kind mess finding community meals beaverton say again cut after street name",
+      "voiceResponse": "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+      "evidenceDocIds": [
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreicxbzphm7i44ai3ketd4lb5cujncwt3nwlps5kc3fzuwjvnqvjdrm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000460#turn-3",
+      "scenarioId": "phone_dialog_0000460",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My husband passed last month and I just... I haven\u2019t been eating right, I\u2019m sorry.",
+      "normalizedQuery": "hi sorry kind mess finding community meals beaverton say again cut after street name husband passed last month just haven been eating right",
+      "voiceResponse": "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:078087b57125137d",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:57fcd59e218a59f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **Right Track Resource Center** and ask about today\u2019s lunch and food boxes. The number is **five-four-one** \u2026 **nine-six-two** \u2026 **seven-nine-nine-four**. If that line is busy, try **five-four-one** \u2026 **nine-one-zero** \u2026 **three-zero-five-six**. You don\u2019t need documents, and it\u2019s at **501 3rd Street, La Grande**. I can stay with you and repeat the number one part at a time.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000460#turn-4",
+      "scenarioId": "phone_dialog_0000460",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Did you say they serve dinner on Tuesdays too, or just lunch? I didn\u2019t catch that part.",
+      "normalizedQuery": "hi sorry kind mess finding community meals beaverton say again cut after street name husband passed last month just haven been eating right did they serve dinner on tuesdays too lunch didn catch part",
+      "voiceResponse": "Next step: please check the provider\u2019s listing on 211info for the current meal schedule. I don\u2019t have confirmed hours in the information I can see right now, so I can\u2019t verify whether Tuesday dinner is offered or if it\u2019s lunch only. If you want, I can stay with you and help you read the listing line by line.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please check the provider\u2019s listing on 211info for the current meal schedule. I don\u2019t have confirmed hours in the information I can see right now, so I can\u2019t verify whether Tuesday dinner is offered or if it\u2019s lunch only. If you want, I can stay with you and help you read the listing line by line.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000486#turn-1",
+      "scenarioId": "phone_dialog_0000486",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m at the bus stop and it\u2019s loud out here. I\u2019m in Beaverton and I need a food pantry today.",
+      "normalizedQuery": "hi sorry at bus stop it loud here beaverton food pantry meal meals groceries",
+      "voiceResponse": "I hear you, and we can keep this simple. For today, the fastest option is the Oregon Food Bank food pantry and meal locator online. If you can get to Portland, here are two open-access options: Clackamas Service Center, 8800 Southeast 80th Avenue, phone 503\u2026771\u20267914. Also First Baptist Church, 909 Southwest 11th Avenue, phone 503\u2026228\u20267465. No documents required at those two.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:2c8dd8b7005b202f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can keep this simple. For today, the fastest option is the Oregon Food Bank food pantry and meal locator online. If you can get to Portland, here are two open-access options: Clackamas Service Center, 8800 Southeast 80th Avenue, phone 503\u2026771\u20267914. Also First Baptist Church, 909 Southwest 11th Avenue, phone 503\u2026228\u20267465. No documents required at those two.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000486#turn-2",
+      "scenarioId": "phone_dialog_0000486",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What was the name again? I didn\u2019t catch it with this bus pulling in.",
+      "normalizedQuery": "hi sorry at bus stop it loud here beaverton food pantry meal meals groceries was name again didn catch this pulling",
+      "voiceResponse": "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:2c8dd8b7005b202f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No worries. The name is: **Oregon Food Bank Food Pantry and Meal Locator**. I\u2019ll say it once more: **Oregon Food Bank** \u2014 **Food Pantry and Meal Locator**.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Community Meal**. I\u2019ll say it slowly: **Com-mu-ni-ty Meal**.",
+        "Thanks for flagging it. I don\u2019t have a confirmed note on this line about which specific program was waitlisted versus grab-and-go. The confirmed part is: 12 Beaverton senior nutrition providers, including Native community options. If you want, two options: I can connect you to a 211 specialist now to confirm those two programs, or we can narrow to the closest meal sites first and then verify waitlist status.",
+        "Yes. Next step: on 211info, tap **Food**, then **Congregate Meals/Nutrition Sites, Native American Community**. Repeating the detail clearly: that page shows **12 matching service providers**. If the call cuts out again, I can repeat it one line at a time."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000486#turn-3",
+      "scenarioId": "phone_dialog_0000486",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Could you say the address slow for me? I forget things if it\u2019s too fast.",
+      "normalizedQuery": "hi sorry at bus stop it loud here beaverton food pantry meal meals groceries was name again didn catch this pulling could say address slow forget things if too fast",
+      "voiceResponse": "Of course. I\u2019ll say them slowly. First address: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. That\u2019s: **88 hundred\u2026 Southeast 80th Avenue**. Second address: **909 Southwest 11th Avenue, Portland, Oregon, 97205**. That\u2019s: **909\u2026 Southwest 11th Avenue**.",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say them slowly. First address: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. That\u2019s: **88 hundred\u2026 Southeast 80th Avenue**. Second address: **909 Southwest 11th Avenue, Portland, Oregon, 97205**. That\u2019s: **909\u2026 Southwest 11th Avenue**.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: open the Oregon Food Bank Food Pantry and Meal Locator now and search Beaverton for today\u2019s closest site. If you want a backup right now, two unrestricted options are in Portland: Clackamas Service Center at **(503) 771-7914** \u2014 that\u2019s **5 0 3\u2026 7 7 1\u2026 7 9 1 4**. First Baptist Church Portland at **(503) 228-7465** \u2014 **5 0 3\u2026 2 2 8\u2026 7 4 6 5**. Both list required documents as none or varies by site.",
+        "You\u2019re not repeating too much, and you\u2019re in the right place. I can see 12 local senior nutrition meal-site providers listed for the Beaverton area, including Native community options. If you want home-delivered meals for your dad, we can do this two ways: I can connect you to a 211 specialist now to match the best program, or I can stay with you while we narrow it to the closest meal sites first.",
+        "Perfect, Cedar Hills helps. Next step: I can narrow this to the closest Beaverton senior meal sites near Cedar Hills, then we can verify which one is grab-and-go and which has a waitlist with a 211 specialist. If you want fastest, I can connect you now and pass along \u201cBeaverton, near Cedar Hills, senior meal delivery for dad\u201d so you don\u2019t have to repeat it.",
+        "You\u2019re doing the right thing by calling. Next step: open 211info and search **Food**, then **Community Meals * Homeless Youth**. That page shows **9 matching providers** near your area. If you want, I can stay with you and walk you through it one step at a time, slowly, and help you choose the closest Beaverton option."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000486#turn-4",
+      "scenarioId": "phone_dialog_0000486",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "food",
+      "locationTag": "beaverton",
+      "promptTemplate": "calendar_event_support",
+      "user": "And is it open this afternoon, or did you say tomorrow? I\u2019m mixed up, sorry.",
+      "normalizedQuery": "hi sorry at bus stop it loud here beaverton food pantry meal meals groceries was name again didn catch this pulling could say address slow forget things if too fast open afternoon did tomorrow mixed up",
+      "voiceResponse": "You\u2019re okay, and thanks for checking. I said **today** for finding options through the Oregon Food Bank locator. For the **8800 Southeast 80th Avenue** site, I don\u2019t have a confirmed afternoon closing time in front of me. Do you want me to help you check **that location\u2019s hours for today**?",
+      "evidenceDocIds": [
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b8c762144d937988",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:d8559ced93d0f936"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and thanks for checking. I said **today** for finding options through the Oregon Food Bank locator. For the **8800 Southeast 80th Avenue** site, I don\u2019t have a confirmed afternoon closing time in front of me. Do you want me to help you check **that location\u2019s hours for today**?",
+      "voiceResponseAlternatives": [
+        "Next step: send this text now, exactly: \u201cHi, this is [your name]. I\u2019m following up because I got conflicting information. I can arrive after 4:30 PM today. Can you confirm if that arrival time works, and what documents you want me to bring?\u201d Which pantry should we address it to: Clackamas Service Center or First Baptist Church Portland?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000109#turn-1",
+      "to": "phone_dialog_0000109#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000109#turn-3",
+      "to": "phone_dialog_0000109#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000135#turn-1",
+      "to": "phone_dialog_0000135#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000135#turn-4",
+      "to": "phone_dialog_0000135#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000317#turn-1",
+      "to": "phone_dialog_0000317#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000317#turn-2",
+      "to": "phone_dialog_0000317#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000317#turn-3",
+      "to": "phone_dialog_0000317#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000317#turn-5",
+      "to": "phone_dialog_0000317#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000460#turn-1",
+      "to": "phone_dialog_0000460#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000460#turn-2",
+      "to": "phone_dialog_0000460#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000460#turn-3",
+      "to": "phone_dialog_0000460#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000460#turn-4",
+      "to": "phone_dialog_0000460#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000486#turn-1",
+      "to": "phone_dialog_0000486#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000486#turn-2",
+      "to": "phone_dialog_0000486#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000486#turn-3",
+      "to": "phone_dialog_0000486#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000486#turn-4",
+      "to": "phone_dialog_0000486#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
+    }
+  ]
+}

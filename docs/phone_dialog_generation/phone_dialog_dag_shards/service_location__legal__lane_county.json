@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__legal__lane_county",
+  "kind": "service_location",
+  "key": "legal__lane_county",
+  "nodeCount": 2,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000197#turn-3",
+      "scenarioId": "phone_dialog_0000197",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, bad connection in here, did you say Lane County? Can you repeat that slower?",
+      "normalizedQuery": "hi on borrowed phone it almost dead give most important number first legal aid attorney advocacy eugene kind general at just don know start sorry bad connection here did say lane county repeat slower",
+      "voiceResponse": "Yes, Lane County. It\u2019s **Lane County Legal Aid**, listed as **General Legal Aid** in Eugene. Number, slowly: **5-4-1 \u2026 4-8-5 \u2026 1-0-1-7**. Address: **101 East Broadway, Suite 200, Eugene**.",
+      "evidenceDocIds": [
+        "service:e0530c5806065ca3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, Lane County. It\u2019s **Lane County Legal Aid**, listed as **General Legal Aid** in Eugene. Number, slowly: **5-4-1 \u2026 4-8-5 \u2026 1-0-1-7**. Address: **101 East Broadway, Suite 200, Eugene**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000467#turn-2",
+      "scenarioId": "phone_dialog_0000467",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m in Lane County, near Eugene, and it\u2019s a legal problem with my landlord trying to force me out.",
+      "normalizedQuery": "lane county eugene it legal aid attorney advocacy problem landlord trying force",
+      "voiceResponse": "You did the right thing calling. A local option is General Legal Aid in Eugene. Phone: **5 4 1, 4 8 5, 1 0 1 7**. Extension: **1 0 0**. Address: **101 East Broadway, Suite 200, Eugene**. They help with landlord legal issues, and intake says no documents are required. If you want, you can call without giving extra details at first and just ask about eviction help.",
+      "evidenceDocIds": [
+        "service:e0530c5806065ca3",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha",
+        "service:3694ab25654f4b81",
+        "service:0963e94e6b3dc85a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. A local option is General Legal Aid in Eugene. Phone: **5 4 1, 4 8 5, 1 0 1 7**. Extension: **1 0 0**. Address: **101 East Broadway, Suite 200, Eugene**. They help with landlord legal issues, and intake says no documents are required. If you want, you can call without giving extra details at first and just ask about eviction help.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000197#turn-3",
+      "to": "phone_dialog_0000197#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000467#turn-2",
+      "to": "phone_dialog_0000467#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__broad_help__clackamas",
+  "kind": "service_location",
+  "key": "broad_help__clackamas",
+  "nodeCount": 2,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000127#turn-5",
+      "scenarioId": "phone_dialog_0000127",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "calendar_event_support",
+      "user": "Can you help me send a quick follow-up message to that provider saying I\u2019m available this afternoon?",
+      "normalizedQuery": "didn catch say number slower like one digit at time wait was clackamas service clark county hear badly on this line veteran veterans va place stay soon so next step after call them send quick follow up message provider saying available afternoon",
+      "voiceResponse": "Yes. You can send this now: \u201cHi, this is [your first name]. I\u2019m following up about housing help. I\u2019m available this afternoon and can talk any time between [start time] and [end time]. Please call or text me at this number. Thank you.\u201d If you want, I can fill in the exact time window with you.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:3af525274aceaedb",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You can send this now: \u201cHi, this is [your first name]. I\u2019m following up about housing help. I\u2019m available this afternoon and can talk any time between [start time] and [end time]. Please call or text me at this number. Thank you.\u201d If you want, I can fill in the exact time window with you.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000374#turn-2",
+      "scenarioId": "phone_dialog_0000374",
+      "turnIndex": 1,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Wait, hold on, a bus is pulling up... okay, I\u2019m in Clackamas, and I don\u2019t know where to start anymore.",
+      "normalizedQuery": "hi sorry barely hear here everything loud like basic stuff wait hold on bus pulling up okay clackamas don know start anymore",
+      "voiceResponse": "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. We\u2019ll do one step at a time. What do you need first right now: food, a safe place to stay tonight, or school supplies?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000127#turn-5",
+      "to": "phone_dialog_0000127#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000374#turn-2",
+      "to": "phone_dialog_0000374#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    }
+  ]
+}

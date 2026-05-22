@@ -1,0 +1,980 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "route__template_guided_fallback",
+  "kind": "route",
+  "key": "template_guided_fallback",
+  "nodeCount": 30,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000033#turn-6",
+      "scenarioId": "phone_dialog_0000033",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If this call drops, please make sure I still get those reminders, I don't want to miss it.",
+      "normalizedQuery": "haven't slept head's all over place stop this eviction before court wait hold on said bring id notice right repeat office name one more time put reminder calendar tomorrow morning call them another day deadline if drops please make sure still those reminders don't want miss it",
+      "voiceResponse": "I hear you. You won\u2019t lose your place with me. I still do not have one key detail to set both reminders. I need your exact court deadline date. Exact court deadline date, please.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You won\u2019t lose your place with me. I still do not have one key detail to set both reminders. I need your exact court deadline date. Exact court deadline date, please.",
+      "voiceResponseAlternatives": [
+        "Top step: call **2-1-1** now. Digit by digit: **2 \u2026 1 \u2026 1**. I don\u2019t have a verified backup number in my records right now. If you want, I can connect you to a human agent next.",
+        "I hear you. I don\u2019t have a strong local match in front of me for same-day places that definitely waive documents. We can still keep this simple: I can connect you to a live 211 specialist now and you can ask only for phone-based, same-day utility help with low-document options. If you want, I can also help you script exactly what to say so you don\u2019t get bounced around.",
+        "That\u2019s a good question. I don\u2019t have a confirmed local checklist in front of me. For now, yes, upload a clear photo of his DD-214 in Wallet Uploads so you have something ready. Then call **2-1-1** and ask if they need the original or a specific file type for the housing assessment. If you want, I can repeat that slowly."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000099#turn-6",
+      "scenarioId": "phone_dialog_0000099",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, there\u2019s traffic noise and I keep missing words, just the top next step and the backup number, please.",
+      "normalizedQuery": "wait said too fast repeat number one digit at time if there an emergency employment job work office same day hiring line first step before this phone dies also they documents tell exact proof should bring so don turned away again sorry traffic noise keep missing words just top next backup please",
+      "voiceResponse": "Top step: call **2-1-1** now. Digit by digit: **2 \u2026 1 \u2026 1**. I don\u2019t have a verified backup number in my records right now. If you want, I can connect you to a human agent next.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Top step: call **2-1-1** now. Digit by digit: **2 \u2026 1 \u2026 1**. I don\u2019t have a verified backup number in my records right now. If you want, I can connect you to a human agent next.",
+      "voiceResponseAlternatives": [
+        "I hear you. You won\u2019t lose your place with me. I still do not have one key detail to set both reminders. I need your exact court deadline date. Exact court deadline date, please.",
+        "I hear you. I don\u2019t have a strong local match in front of me for same-day places that definitely waive documents. We can still keep this simple: I can connect you to a live 211 specialist now and you can ask only for phone-based, same-day utility help with low-document options. If you want, I can also help you script exactly what to say so you don\u2019t get bounced around.",
+        "That\u2019s a good question. I don\u2019t have a confirmed local checklist in front of me. For now, yes, upload a clear photo of his DD-214 in Wallet Uploads so you have something ready. Then call **2-1-1** and ask if they need the original or a specific file type for the housing assessment. If you want, I can repeat that slowly."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000103#turn-5",
+      "scenarioId": "phone_dialog_0000103",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Did you say they help with SSI paperwork too, or just state disability?",
+      "normalizedQuery": "did say they ssi paperwork too just state disability",
+      "voiceResponse": "I may have missed that in my notes. I do not have a strong local match that confirms SSI paperwork versus state disability only. I can connect you to a person to verify this now. Do you want a live specialist?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreigecvz7zurvbyqbc374ty2wgbymmjfpajkse2h33bizpy3rgtxt2q",
+        "service:14af91703121303f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I may have missed that in my notes. I do not have a strong local match that confirms SSI paperwork versus state disability only. I can connect you to a person to verify this now. Do you want a live specialist?",
+      "voiceResponseAlternatives": [
+        "I don\u2019t have a strong local match for an exact document checklist here. We can keep it simple and private: ask for their minimum list first, before sharing records. You can say, \u201cWhat are the minimum documents to start a disability application by phone?\u201d If you want, I can give you a short script for that call, or you can ask a live staff person to walk you through it step by step.",
+        "One next step: I don\u2019t have a strong local match in what I can see here for SSI or SSDI paperwork help yet. I can still help narrow it fast. Are you applying for **SSI**, **SSDI**, or **both**?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000117#turn-4",
+      "scenarioId": "phone_dialog_0000117",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Wait, hold on, you said two documents, right? I only caught one because the signal keeps dropping.",
+      "normalizedQuery": "wait hold on said two documents right only caught one because signal keeps dropping",
+      "voiceResponse": "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+      "voiceResponseAlternatives": [
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you.",
+        "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000133#turn-4",
+      "scenarioId": "phone_dialog_0000133",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "family",
+      "locationTag": "medford",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If there\u2019s any place that can help with pickup or emergency mailing near Medford, I need that now.",
+      "normalizedQuery": "hi medford really mail service doing well barely stand long enough post office have medicine paperwork has be mailed please treat this as urgent scared going miss deadline lose care if there any place pickup emergency mailing now",
+      "voiceResponse": "I hear you. This is urgent. This is urgent. I do not have a strong local match for Medford pickup in what I can see right now. Fastest step now is USPS: **8 0 0, 2 7 5, 8 7 7 7**. Again: **8 0 0, 2 7 5, 8 7 7 7**. Do you want me to get you to a human 2-1-1 specialist now for local same-day options?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:f92f8043c8711c0b",
+        "service:3668dd4bab39820d",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is urgent. This is urgent. I do not have a strong local match for Medford pickup in what I can see right now. Fastest step now is USPS: **8 0 0, 2 7 5, 8 7 7 7**. Again: **8 0 0, 2 7 5, 8 7 7 7**. Do you want me to get you to a human 2-1-1 specialist now for local same-day options?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000135#turn-5",
+      "scenarioId": "phone_dialog_0000135",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, I keep circling back, I just don\u2019t want to show up and get turned away with my kids in the car.",
+      "normalizedQuery": "called one already maybe two hang on there lot noise here think they said bring id proof address wait repeat pantry name wrote it down wrong signal cut second also send them follow up message come after 30 because getting conflicting info sorry keep circling back just don want show turned away kids car",
+      "voiceResponse": "Next step: let\u2019s do one live confirmation call before you drive. I don\u2019t have a strong local match with verified pantry intake rules in the records I can see. If you want, I can connect you to a human 211 navigator now so they can verify that site\u2019s exact after-4:30 policy and required documents before you leave.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: let\u2019s do one live confirmation call before you drive. I don\u2019t have a strong local match with verified pantry intake rules in the records I can see. If you want, I can connect you to a human 211 navigator now so they can verify that site\u2019s exact after-4:30 policy and required documents before you leave.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000142#turn-5",
+      "scenarioId": "phone_dialog_0000142",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Also I\u2019m 22 and people keep saying I need documents I don\u2019t have with me. Is there any place that won\u2019t turn me away same day?",
+      "normalizedQuery": "also 22 people keep saying documents don have there any place won turn away same day",
+      "voiceResponse": "I hear you. I don\u2019t have a strong local match in front of me for same-day places that definitely waive documents. We can still keep this simple: I can connect you to a live 211 specialist now and you can ask only for phone-based, same-day utility help with low-document options. If you want, I can also help you script exactly what to say so you don\u2019t get bounced around.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreifsd4tnvuq6yd6q6mgdw72c5z66bp2hvv67xaphoqgh6oy625cj3i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I don\u2019t have a strong local match in front of me for same-day places that definitely waive documents. We can still keep this simple: I can connect you to a live 211 specialist now and you can ask only for phone-based, same-day utility help with low-document options. If you want, I can also help you script exactly what to say so you don\u2019t get bounced around.",
+      "voiceResponseAlternatives": [
+        "I hear you. You won\u2019t lose your place with me. I still do not have one key detail to set both reminders. I need your exact court deadline date. Exact court deadline date, please.",
+        "Top step: call **2-1-1** now. Digit by digit: **2 \u2026 1 \u2026 1**. I don\u2019t have a verified backup number in my records right now. If you want, I can connect you to a human agent next.",
+        "That\u2019s a good question. I don\u2019t have a confirmed local checklist in front of me. For now, yes, upload a clear photo of his DD-214 in Wallet Uploads so you have something ready. Then call **2-1-1** and ask if they need the original or a specific file type for the housing assessment. If you want, I can repeat that slowly."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000147#turn-5",
+      "scenarioId": "phone_dialog_0000147",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If you find clinics, I need one reachable by transit from Portland, and I\u2019d prefer somewhere that can do exam plus maybe a filling, not just a consult.",
+      "normalizedQuery": "pay something just specialist level bill overdue because kept prioritizing work deadlines over pain signals which hindsight was bad optimization before call places abby check wallet docs tell already have there proof like id insurance card anything they usually ask trying avoid an appointment then turned away missing one form actually had somewhere else if clinics reachable by transit from portland prefer exam plus maybe filling consult",
+      "voiceResponse": "I don\u2019t have a strong local clinic match in my records right now, and I don\u2019t want to guess. We can do this two ways: I can connect you to a human 211 specialist to find transit-reachable clinics that do exams and likely fillings, or I can keep helping you prep your call script. If you want me to narrow it first, what ZIP code are you starting from?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a strong local clinic match in my records right now, and I don\u2019t want to guess. We can do this two ways: I can connect you to a human 211 specialist to find transit-reachable clinics that do exams and likely fillings, or I can keep helping you prep your call script. If you want me to narrow it first, what ZIP code are you starting from?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000157#turn-5",
+      "scenarioId": "phone_dialog_0000157",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "What documents do we need for the disability application, like ID and doctor records?",
+      "normalizedQuery": "documents we disability application like id doctor records",
+      "voiceResponse": "I don\u2019t have a strong local match for an exact document checklist here. We can keep it simple and private: ask for their minimum list first, before sharing records. You can say, \u201cWhat are the minimum documents to start a disability application by phone?\u201d If you want, I can give you a short script for that call, or you can ask a live staff person to walk you through it step by step.",
+      "evidenceDocIds": [
+        "page:bafkreicsjpei2cha7asz7rd42u4ie4lxnb5sa7ok6jw6ubvsa56y6hvd6m",
+        "page:bafkreiaorccod4cfi32apmgwvqt4hlcc7rbvg7uniwbm4su7jtmi7a544u",
+        "page:bafkreihmwwpzvtso2aztmtmxqjqggxb7lujtu2n5yx6hg5jthaj5hf34yi",
+        "page:bafkreibhb4ki54aelcynkbali2e4z3spz4i47mojdnukzcbrft5jb3sw7e",
+        "page:bafkreifwixvqzdqaguc6tuteouaqhpz7rivbeytrr7jm35z4vibpzj6jue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a strong local match for an exact document checklist here. We can keep it simple and private: ask for their minimum list first, before sharing records. You can say, \u201cWhat are the minimum documents to start a disability application by phone?\u201d If you want, I can give you a short script for that call, or you can ask a live staff person to walk you through it step by step.",
+      "voiceResponseAlternatives": [
+        "I may have missed that in my notes. I do not have a strong local match that confirms SSI paperwork versus state disability only. I can connect you to a person to verify this now. Do you want a live specialist?",
+        "One next step: I don\u2019t have a strong local match in what I can see here for SSI or SSDI paperwork help yet. I can still help narrow it fast. Are you applying for **SSI**, **SSDI**, or **both**?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000167#turn-6",
+      "scenarioId": "phone_dialog_0000167",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "My battery is at two percent, so just tell me which document screen to open first so I can do this fast.",
+      "normalizedQuery": "say slower missed agency name if apply proof show phone wallet like id lease exactly hold on there noise here okay repeat number small chunks three digits at time battery two percent so just tell which document screen open first this fast",
+      "voiceResponse": "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you.",
+        "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000198#turn-3",
+      "scenarioId": "phone_dialog_0000198",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "medford",
+      "promptTemplate": "template_guided_fallback",
+      "user": "He\u2019s got doctor appointments coming up, and I keep mixing up what papers they said to bring, I wrote it down and now I can\u2019t find it.",
+      "normalizedQuery": "hi honey calling from medford husband he lost his id we don know start sorry say again slower didn catch office name this phone cuts got doctor appointments coming up keep mixing papers they said bring wrote it down now",
+      "voiceResponse": "I\u2019m sorry, I don\u2019t have a strong local match for that paper list. I don\u2019t have a strong local match. I can connect you to a 211 specialist to review what to bring for each appointment, step by step. Would you like me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, I don\u2019t have a strong local match for that paper list. I don\u2019t have a strong local match. I can connect you to a 211 specialist to review what to bring for each appointment, step by step. Would you like me to connect you now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000214#turn-5",
+      "scenarioId": "phone_dialog_0000214",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, I\u2019m kind of freaking out and my phone battery is at like two percent, can you give me the number again slowly?",
+      "normalizedQuery": "22 ve been turned away before so don trust this stuff much just one place won reject wait cut second repeat name outside there traffic missed it they id right proof address have paperwork sorry kind freaking phone battery at like two percent give number again slowly",
+      "voiceResponse": "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you.",
+        "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000221#turn-4",
+      "scenarioId": "phone_dialog_0000221",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Okay, got it. Do I need to bring anything besides my ID and lease?",
+      "normalizedQuery": "okay got it bring anything besides id lease",
+      "voiceResponse": "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:6025d243ccfa0fb5",
+        "service:68365296f83c2564",
+        "service:9b750cd8202e26f7",
+        "page:bafkreiaorccod4cfi32apmgwvqt4hlcc7rbvg7uniwbm4su7jtmi7a544u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000239#turn-5",
+      "scenarioId": "phone_dialog_0000239",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, what documents do they ask for, if any? I don\u2019t have much with me.",
+      "normalizedQuery": "sorry documents they ask if any don have much",
+      "voiceResponse": "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a confirmed document list in my local records. Fastest next step: call **2-1-1** now and ask, \u201cFor low-cost laundry near Canyon Road in Beaverton, what documents are required?\u201d You can add, \u201cI want to stay anonymous and share minimal info.\u201d Number again: **2\u20261\u20261**.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000248#turn-3",
+      "scenarioId": "phone_dialog_0000248",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "rent",
+      "locationTag": "hillsboro",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I only know some of his info, I don\u2019t have all his paperwork with me. Can he still call and start the process himself?",
+      "normalizedQuery": "hi sorry at bus stop it loud here calling nephew hillsboro he behind on rent eviction assistance trying him say agency name again slower missed part when went by only know some his info don have all paperwork still call start process himself",
+      "voiceResponse": "Yes, he can still call and start. I do not have a strong local match for exact paperwork rules right now. He should call, explain he is behind on rent, and ask to start intake with the information he has. If you want, I can connect you to a 211 specialist for live help with the document list.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, he can still call and start. I do not have a strong local match for exact paperwork rules right now. He should call, explain he is behind on rent, and ask to start intake with the information he has. If you want, I can connect you to a 211 specialist for live help with the document list.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000253#turn-6",
+      "scenarioId": "phone_dialog_0000253",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I have an insurance card and an ID in there, is that enough, or do I need some other document?",
+      "normalizedQuery": "have an insurance card id there enough some other document",
+      "voiceResponse": "You\u2019re doing great. Short answer: I do not have a strong local match for the exact ride proof list. Your insurance card and ID may be enough, but it depends on that ride request. Please open **Proof Center**, your **ride request**, then **Required Proof**. What exact words do you see there?",
+      "evidenceDocIds": [
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "page:bafkreiemvimtczhcn3mohrl6plj6ad2xf6gz5h44iu7vmwspgqjujrxd54",
+        "service:16b7ef2273327811",
+        "page:bafkreidcsfa446ivkcfoqbo36sf7c64rnsy575ypvu75vvbefaahmfrory",
+        "page:bafkreido5cb55mcbw3er22qcxrb6y3kdcmgavgrfwtztl6ekssqhuxz5aa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great. Short answer: I do not have a strong local match for the exact ride proof list. Your insurance card and ID may be enough, but it depends on that ride request. Please open **Proof Center**, your **ride request**, then **Required Proof**. What exact words do you see there?",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000260#turn-2",
+      "scenarioId": "phone_dialog_0000260",
+      "turnIndex": 1,
+      "route": "template_guided_fallback",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "template_guided_fallback",
+      "user": "It\u2019s for my sister, not me, and I don\u2019t have all her paperwork in front of me.",
+      "normalizedQuery": "hi on borrowed phone it at like two percent give main number first child care portland sister don have all her paperwork front",
+      "voiceResponse": "Next step: I don\u2019t have a strong local match from what I can see right now. One detail will help me narrow this fast: what ZIP code is your sister in?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I don\u2019t have a strong local match from what I can see right now. One detail will help me narrow this fast: what ZIP code is your sister in?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000332#turn-2",
+      "scenarioId": "phone_dialog_0000332",
+      "turnIndex": 1,
+      "route": "template_guided_fallback",
+      "serviceTag": "rent",
+      "locationTag": "bend",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I don\u2019t have all her paperwork with me, I just know the court date is coming up fast and she\u2019s really panicking.",
+      "normalizedQuery": "hi sorry at bus stop it loud here calling aunt bend she needs legal aid attorney advocacy an eviction notice don have all her paperwork just know court date coming up fast really panicking",
+      "voiceResponse": "You\u2019re doing the right thing calling now. I don\u2019t have a strong local match in front of me from what I can see, but I can still help fast. If you want, I can get you to a live specialist right away; they can give the quickest eviction-help options before court, even without full paperwork. One detail that helps them route correctly: what county is your aunt\u2019s court case in?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling now. I don\u2019t have a strong local match in front of me from what I can see, but I can still help fast. If you want, I can get you to a live specialist right away; they can give the quickest eviction-help options before court, even without full paperwork. One detail that helps them route correctly: what county is your aunt\u2019s court case in?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000346#turn-6",
+      "scenarioId": "phone_dialog_0000346",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "My battery\u2019s low, so can we keep it simple? Just the safest place to start and who won\u2019t turn me away.",
+      "normalizedQuery": "22 don really trust these offices if call this place they gonna report share stuff have car so it far there anywhere on bus line phone appointment sorry cut second documents did say first battery low we keep simple just safest start who won turn away",
+      "voiceResponse": "I hear you, and we can keep this simple. I don\u2019t have a strong local match in front of me for a specific \u201cwon\u2019t turn you away\u201d spot. Safest start is 211info right now and ask for a low-barrier shelter that takes walk-ins tonight and has bus access. If they offer options, pick the closest one first. What city are you in right now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can keep this simple. I don\u2019t have a strong local match in front of me for a specific \u201cwon\u2019t turn you away\u201d spot. Safest start is 211info right now and ask for a low-barrier shelter that takes walk-ins tonight and has bus access. If they offer options, pick the closest one first. What city are you in right now?",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000376#turn-6",
+      "scenarioId": "phone_dialog_0000376",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "If you can, give me one number slowly so I can write it down before my phone dies.",
+      "normalizedQuery": "don really want home address shared everywhere there way this more privately sorry crying little just repeat documents they usually ask wait hello re breaking up again did say an id proof county residence if give one number slowly so write it down before phone dies",
+      "voiceResponse": "I hear you, and you\u2019re doing great. I don\u2019t have a reliable local number in what I can see right now. If you want, I can connect you to a human helper next. What city or ZIP code should I use to find the right number fast?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing great. I don\u2019t have a reliable local number in what I can see right now. If you want, I can connect you to a human helper next. What city or ZIP code should I use to find the right number fast?",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000423#turn-2",
+      "scenarioId": "phone_dialog_0000423",
+      "turnIndex": 1,
+      "route": "template_guided_fallback",
+      "serviceTag": "work",
+      "locationTag": "bend",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I talked with them, kind of, but I missed part of what they said about orientation times and what paperwork they need from me.",
+      "normalizedQuery": "hi sorry at bus stop it loud following up on bend job program found yesterday talked them kind missed part they said orientation times paperwork from",
+      "voiceResponse": "I don\u2019t have a strong local match for their orientation schedule right now. I can still help fast. From what we had before: bring a state ID and Social Security card. Again: state ID and Social Security card. Do you want me to draft a short call script so you can ask them for the next orientation time and confirm paperwork in one call?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c47e6b8209817cce",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:03dbb4588634884b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a strong local match for their orientation schedule right now. I can still help fast. From what we had before: bring a state ID and Social Security card. Again: state ID and Social Security card. Do you want me to draft a short call script so you can ask them for the next orientation time and confirm paperwork in one call?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000424#turn-5",
+      "scenarioId": "phone_dialog_0000424",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Do I need his DD-214 in there, or is a photo of it okay for now?",
+      "normalizedQuery": "slow down little writing this phone keep missing said housing programs documents they us show like wallet app sorry repeat last part proof residency didn catch it his dd 214 there photo okay now",
+      "voiceResponse": "That\u2019s a good question. I don\u2019t have a confirmed local checklist in front of me. For now, yes, upload a clear photo of his DD-214 in Wallet Uploads so you have something ready. Then call **2-1-1** and ask if they need the original or a specific file type for the housing assessment. If you want, I can repeat that slowly.",
+      "evidenceDocIds": [
+        "page:bafkreihn5epi3jxz44llyuqvlx4sj4wv5bobekzuspd37itklysopmj7zm",
+        "page:bafkreiaf5gpmjbiwmsj3rzr52zuhkzze2bydzcfh4vlwpmy6loo23f3cqa",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya",
+        "page:bafkreifsc6qhdom6euicpklgpjs2qbjd3uiyxqyyzta4ci4m4ikamgknqa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a good question. I don\u2019t have a confirmed local checklist in front of me. For now, yes, upload a clear photo of his DD-214 in Wallet Uploads so you have something ready. Then call **2-1-1** and ask if they need the original or a specific file type for the housing assessment. If you want, I can repeat that slowly.",
+      "voiceResponseAlternatives": [
+        "I hear you. You won\u2019t lose your place with me. I still do not have one key detail to set both reminders. I need your exact court deadline date. Exact court deadline date, please.",
+        "Top step: call **2-1-1** now. Digit by digit: **2 \u2026 1 \u2026 1**. I don\u2019t have a verified backup number in my records right now. If you want, I can connect you to a human agent next.",
+        "I hear you. I don\u2019t have a strong local match in front of me for same-day places that definitely waive documents. We can still keep this simple: I can connect you to a live 211 specialist now and you can ask only for phone-based, same-day utility help with low-document options. If you want, I can also help you script exactly what to say so you don\u2019t get bounced around."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000427#turn-3",
+      "scenarioId": "phone_dialog_0000427",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I\u2019m in Salem, and I\u2019m trying to apply for disability benefits, but I keep getting stuck on the paperwork.",
+      "normalizedQuery": "salem trying apply disability benefits snap assistance keep getting stuck on paperwork",
+      "voiceResponse": "Thanks for sharing that. I don\u2019t have a strong local match for disability-application paperwork in my records right now. If you want, I can connect you to a live 211 specialist who can walk through the forms with you step by step. Or, I can help you draft a short call script so you can ask the benefits office for paperwork help without repeating your whole story.",
+      "evidenceDocIds": [
+        "service:ea585d467287a4d5",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:54ed3eab13015b62",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:314f807c8277e945"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for sharing that. I don\u2019t have a strong local match for disability-application paperwork in my records right now. If you want, I can connect you to a live 211 specialist who can walk through the forms with you step by step. Or, I can help you draft a short call script so you can ask the benefits office for paperwork help without repeating your whole story.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000454#turn-5",
+      "scenarioId": "phone_dialog_0000454",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Can you do the phone number in chunks? I can't hear fast numbers well.",
+      "normalizedQuery": "i'm 22 keep getting told different stuff don't have car so can't going office just turned away wait missed last part repeat name slower if use wallet app documents should save they believe first time like id diagnosis papers whatever proof ask phone number chunks hear fast numbers well",
+      "voiceResponse": "Yes. I\u2019ll chunk it slowly. The SNAP/EBT help line is: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I don\u2019t have a strong verified local match beyond that\u2014if you want, I can get you to a human now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll chunk it slowly. The SNAP/EBT help line is: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. I don\u2019t have a strong verified local match beyond that\u2014if you want, I can get you to a human now.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000455#turn-5",
+      "scenarioId": "phone_dialog_0000455",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Please don\u2019t give them my full name yet, just say a caller needs laundry help and ask what documents they require.",
+      "normalizedQuery": "please don give them full name yet just say caller needs laundry ask documents they require",
+      "voiceResponse": "Next step: call the site and say, \u201cA caller needs laundry help. Before sharing personal details, what documents do you require for service?\u201d I don\u2019t have a strong local match with verified laundry document requirements in what I can see right now. If you want, I can hand this to a live 211 specialist to help you contact providers while keeping your name private.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call the site and say, \u201cA caller needs laundry help. Before sharing personal details, what documents do you require for service?\u201d I don\u2019t have a strong local match with verified laundry document requirements in what I can see right now. If you want, I can hand this to a live 211 specialist to help you contact providers while keeping your name private.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000479#turn-4",
+      "scenarioId": "phone_dialog_0000479",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "food",
+      "locationTag": "salem",
+      "promptTemplate": "template_guided_fallback",
+      "user": "You mentioned a document for eligibility, right? What exactly do they need us to bring?",
+      "normalizedQuery": "hi sorry barely hear here at bus stop salem trying senior meal places mom say again just went by those meals only on weekdays every day also before give names who see this info don want her data shared around mentioned document eligibility right exactly they us bring",
+      "voiceResponse": "I don\u2019t have a strong local match for required documents in what I can see right now. The fastest safe step is a live 211 specialist, and you can ask privacy rules before sharing names. One detail I need first: which program or meal site are you applying to?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a strong local match for required documents in what I can see right now. The fastest safe step is a live 211 specialist, and you can ask privacy rules before sharing names. One detail I need first: which program or meal site are you applying to?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000535#turn-3",
+      "scenarioId": "phone_dialog_0000535",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I\u2019m trying to get disability benefits, like SSI or SSDI, and I don\u2019t understand the paperwork.",
+      "normalizedQuery": "trying disability benefits snap assistance like ssi ssdi don understand paperwork",
+      "voiceResponse": "One next step: I don\u2019t have a strong local match in what I can see here for SSI or SSDI paperwork help yet. I can still help narrow it fast. Are you applying for **SSI**, **SSDI**, or **both**?",
+      "evidenceDocIds": [
+        "page:bafkreictble7tc2b37vgtp6ltcb5lvwf7dzy27yxih26fboe7hjalrjdgm",
+        "page:bafkreigj6e3gkavcgtuxj5am3umjoutygnob3k6hgb4liebwyhbme2k72e",
+        "service:02b582c05d666cd2",
+        "service:ea585d467287a4d5",
+        "service:94ebb17ff6f193cc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "One next step: I don\u2019t have a strong local match in what I can see here for SSI or SSDI paperwork help yet. I can still help narrow it fast. Are you applying for **SSI**, **SSDI**, or **both**?",
+      "voiceResponseAlternatives": [
+        "I may have missed that in my notes. I do not have a strong local match that confirms SSI paperwork versus state disability only. I can connect you to a person to verify this now. Do you want a live specialist?",
+        "I don\u2019t have a strong local match for an exact document checklist here. We can keep it simple and private: ask for their minimum list first, before sharing records. You can say, \u201cWhat are the minimum documents to start a disability application by phone?\u201d If you want, I can give you a short script for that call, or you can ask a live staff person to walk you through it step by step."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000560#turn-3",
+      "scenarioId": "phone_dialog_0000560",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I don\u2019t have all her paperwork with me, so I\u2019m not sure what they\u2019ll ask for.",
+      "normalizedQuery": "hi calling aunt she 78 having hard time keeping food pantry meal meals groceries house we re hillsboro trying senior programs maybe home delivered if possible don have all her paperwork so sure they ll ask",
+      "voiceResponse": "A concrete next step is to call first and ask what to bring, since paperwork rules can vary by site. For the Clackamas Service Center listing I have, required documents are listed as none, but I do not have a strong Hillsboro-specific match yet. What is your aunt\u2019s ZIP code so I can narrow to a closer senior meal program and check document requirements?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "A concrete next step is to call first and ask what to bring, since paperwork rules can vary by site. For the Clackamas Service Center listing I have, required documents are listed as none, but I do not have a strong Hillsboro-specific match yet. What is your aunt\u2019s ZIP code so I can narrow to a closer senior meal program and check document requirements?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000603#turn-5",
+      "scenarioId": "phone_dialog_0000603",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I have a photo of my old ID and a utility bill, no birth certificate in hand, does that still get me in the door or am I wasting a bus trip?",
+      "normalizedQuery": "have photo old id utility utilities heat electric bill no birth certificate hand does still door wasting bus trip",
+      "voiceResponse": "Short answer: I can\u2019t confirm that from my local records. I don\u2019t have a strong match on accepted ID documents. Best next step now: call **2 \u2026 1 \u2026 1**. Again, call **2 \u2026 1 \u2026 1**. Say: \u201cI have a photo of my old ID and a utility bill, no birth certificate. Is that enough to start, and where should I go first?\u201d Do you want me to give you a 10-second script to read word-for-word?",
+      "evidenceDocIds": [
+        "page:bafkreiemvimtczhcn3mohrl6plj6ad2xf6gz5h44iu7vmwspgqjujrxd54",
+        "service:d9c7707e45d265ad",
+        "service:ee46fefe2a001b32",
+        "service:b0fd90b106c6a4ef",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Short answer: I can\u2019t confirm that from my local records. I don\u2019t have a strong match on accepted ID documents. Best next step now: call **2 \u2026 1 \u2026 1**. Again, call **2 \u2026 1 \u2026 1**. Say: \u201cI have a photo of my old ID and a utility bill, no birth certificate. Is that enough to start, and where should I go first?\u201d Do you want me to give you a 10-second script to read word-for-word?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000614#turn-6",
+      "scenarioId": "phone_dialog_0000614",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Please say the address one more time and the hours, then I\u2019ll write it down before my battery dies.",
+      "normalizedQuery": "she hasn really eaten since yesterday trying panic just know who delivers does pickup repeat number slower missed middle part this signal awful did say they id proof age heard then it dropped again please address one more time hours ll write down before battery dies",
+      "voiceResponse": "I don\u2019t have a confirmed address or hours in front of me right now. Fastest step is a live 211 specialist who can give both right away. Call **5 4 1** \u2026 **5 5 3** \u2026 **3 3 1 3**. If she gets weak, confused, or seems medically unsafe, call **9 1 1** now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a confirmed address or hours in front of me right now. Fastest step is a live 211 specialist who can give both right away. Call **5 4 1** \u2026 **5 5 3** \u2026 **3 3 1 3**. If she gets weak, confused, or seems medically unsafe, call **9 1 1** now.",
+      "voiceResponseAlternatives": [
+        "I may have misspoken there, and I don\u2019t want to guess. I don\u2019t have a strong local match that confirms \u201ctwo documents\u201d right now. We can keep it simple: I can connect you to a human specialist to confirm the exact two documents for your Portland ID replacement, or I can help you draft one short question to ask the DMV.",
+        "Open the **Proof Center** in your wallet first. That\u2019s the fastest place to add files and choose what to share. I don\u2019t have a strong local match for an exact required list yet, so if you want, I can connect you to a human for the precise checklist. You can share only what you choose.",
+        "I\u2019m sorry, I don\u2019t have a strong verified match for that number on my screen right now. What city are you in right now, so I can give you the fastest local line before your phone dies?",
+        "You\u2019re doing great keeping track on your break. I don\u2019t have a strong local match in my records to confirm the full document list for that rent program. The safest next step is to call IRCO and ask, \u201cWhat exact documents do I need besides photo ID and lease?\u201d If you want, I can also connect you to a live 211 specialist now to verify it with you."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000103#turn-5",
+      "to": "phone_dialog_0000103#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000117#turn-4",
+      "to": "phone_dialog_0000117#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000133#turn-4",
+      "to": "phone_dialog_0000133#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000135#turn-5",
+      "to": "phone_dialog_0000135#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000142#turn-5",
+      "to": "phone_dialog_0000142#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000147#turn-5",
+      "to": "phone_dialog_0000147#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000157#turn-5",
+      "to": "phone_dialog_0000157#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000198#turn-3",
+      "to": "phone_dialog_0000198#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000214#turn-5",
+      "to": "phone_dialog_0000214#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000221#turn-4",
+      "to": "phone_dialog_0000221#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000239#turn-5",
+      "to": "phone_dialog_0000239#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000248#turn-3",
+      "to": "phone_dialog_0000248#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000260#turn-2",
+      "to": "phone_dialog_0000260#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000332#turn-2",
+      "to": "phone_dialog_0000332#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000423#turn-2",
+      "to": "phone_dialog_0000423#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000424#turn-5",
+      "to": "phone_dialog_0000424#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000427#turn-3",
+      "to": "phone_dialog_0000427#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000454#turn-5",
+      "to": "phone_dialog_0000454#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000455#turn-5",
+      "to": "phone_dialog_0000455#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000479#turn-4",
+      "to": "phone_dialog_0000479#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000535#turn-3",
+      "to": "phone_dialog_0000535#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000560#turn-3",
+      "to": "phone_dialog_0000560#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000603#turn-5",
+      "to": "phone_dialog_0000603#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    }
+  ]
+}

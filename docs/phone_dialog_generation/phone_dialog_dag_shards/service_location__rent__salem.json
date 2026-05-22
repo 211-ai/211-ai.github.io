@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__rent__salem",
+  "kind": "service_location",
+  "key": "rent__salem",
+  "nodeCount": 9,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000167#turn-1",
+      "scenarioId": "phone_dialog_0000167",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear great on this line. I\u2019m in Salem and I need help with rent before I get an eviction notice.",
+      "normalizedQuery": "hi sorry hear great on this line salem rent eviction assistance before an notice",
+      "voiceResponse": "Absolutely. In Salem, you can try **Rent Payment Assistance** at Salvation Army Kroc Social Services. Phone: **5 0 3, 5 8 5, 6 6 8 8**. Address: **1 9 7 7 Front Street N-E, Salem, 9 7 3 0 1**. They report no documents needed at intake, and funding varies. They often require a **72-hour notice**, but you can call now to ask your options before that. You can share only what you\u2019re comfortable sharing.",
+      "evidenceDocIds": [
+        "service:8e7393d9b82b6a0b",
+        "service:6f7a5b8f93e42931",
+        "page:bafkreiadhps5mxrj65cxid5ywf5owzukbgqrgk4p7wmmucxrsq6hpvjhmu",
+        "page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y",
+        "service:c2911a3756f858bb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. In Salem, you can try **Rent Payment Assistance** at Salvation Army Kroc Social Services. Phone: **5 0 3, 5 8 5, 6 6 8 8**. Address: **1 9 7 7 Front Street N-E, Salem, 9 7 3 0 1**. They report no documents needed at intake, and funding varies. They often require a **72-hour notice**, but you can call now to ask your options before that. You can share only what you\u2019re comfortable sharing.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000167#turn-3",
+      "scenarioId": "phone_dialog_0000167",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I missed the agency name.",
+      "normalizedQuery": "hi sorry hear great on this line salem rent eviction assistance before an notice we go who see tell don want landlord immigration getting alerted say slower missed agency name",
+      "voiceResponse": "Of course. The agency name is **Salvation Army Kroc Social Services**. I\u2019ll say it slowly: **Sal-va-tion Ar-my** \u2026 **Kroc** \u2026 **Social Services**.",
+      "evidenceDocIds": [
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny",
+        "service:8e7393d9b82b6a0b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The agency name is **Salvation Army Kroc Social Services**. I\u2019ll say it slowly: **Sal-va-tion Ar-my** \u2026 **Kroc** \u2026 **Social Services**.",
+      "voiceResponseAlternatives": [
+        "Yes. The agency is **2-1-1**. I\u2019ll say it slowly: **two\u2026 one\u2026 one**. You\u2019re being connected to a **2-1-1 housing specialist** now.",
+        "Next step: call now. The number again, in three-digit chunks, is **5-0-3\u2026 5-8-1\u2026 5-2-6-5**. Backup number: **8-0-0\u2026 3-5-9\u2026 1-8-4-5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000440#turn-2",
+      "scenarioId": "phone_dialog_0000440",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s in Salem and got a paper on his door today, I think it\u2019s eviction, and he\u2019s really panicking.",
+      "normalizedQuery": "he salem got paper on his door think it eviction really panicking",
+      "voiceResponse": "Next step: I\u2019m connecting you to a live 211 housing specialist right now to go over that notice with you. If your brother might hurt himself or anyone else, call **9-1-1** now. I\u2019ll repeat: **9-1-1**. While we connect, please have him keep the paper nearby so the specialist can review the date and any court deadline.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:b1c486f2b438c521"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I\u2019m connecting you to a live 211 housing specialist right now to go over that notice with you. If your brother might hurt himself or anyone else, call **9-1-1** now. I\u2019ll repeat: **9-1-1**. While we connect, please have him keep the paper nearby so the specialist can review the date and any court deadline.",
+      "voiceResponseAlternatives": [
+        "Of course. Slow version: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. I\u2019ll say it once more: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. Backup: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "Yes. Call this one first for Salem eviction-prevention help: **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. If it doesn\u2019t connect, backup is: **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. You can say: \u201cI got a pay-or-file notice due Friday. I need same-day eviction prevention funds in Salem.\u201d",
+        "Thank you. You\u2019re in Salem. Salem. That helps. You\u2019re not doing this wrong. We can sort dates and papers together. I can connect you to a live rent specialist now, so you don\u2019t have to track it alone. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000440#turn-3",
+      "scenarioId": "phone_dialog_0000440",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that agency name? Can you say it slower?",
+      "normalizedQuery": "hi calling brother hear great on this line he salem got paper his door think it eviction really panicking sorry was agency name say slower",
+      "voiceResponse": "Yes. The agency is **2-1-1**. I\u2019ll say it slowly: **two\u2026 one\u2026 one**. You\u2019re being connected to a **2-1-1 housing specialist** now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The agency is **2-1-1**. I\u2019ll say it slowly: **two\u2026 one\u2026 one**. You\u2019re being connected to a **2-1-1 housing specialist** now.",
+      "voiceResponseAlternatives": [
+        "Of course. The agency name is **Salvation Army Kroc Social Services**. I\u2019ll say it slowly: **Sal-va-tion Ar-my** \u2026 **Kroc** \u2026 **Social Services**.",
+        "Next step: call now. The number again, in three-digit chunks, is **5-0-3\u2026 5-8-1\u2026 5-2-6-5**. Backup number: **8-0-0\u2026 3-5-9\u2026 1-8-4-5**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000440#turn-5",
+      "scenarioId": "phone_dialog_0000440",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number in chunks, like three digits at a time? I missed the middle part.",
+      "normalizedQuery": "he salem got paper on his door think it eviction really panicking sorry was agency name say slower fastest legal aid attorney advocacy option like if possible because deadline might be tomorrow morning repeat phone number chunks three digits at time missed middle part",
+      "voiceResponse": "Next step: call now. The number again, in three-digit chunks, is **5-0-3\u2026 5-8-1\u2026 5-2-6-5**. Backup number: **8-0-0\u2026 3-5-9\u2026 1-8-4-5**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call now. The number again, in three-digit chunks, is **5-0-3\u2026 5-8-1\u2026 5-2-6-5**. Backup number: **8-0-0\u2026 3-5-9\u2026 1-8-4-5**.",
+      "voiceResponseAlternatives": [
+        "Of course. The agency name is **Salvation Army Kroc Social Services**. I\u2019ll say it slowly: **Sal-va-tion Ar-my** \u2026 **Kroc** \u2026 **Social Services**.",
+        "Yes. The agency is **2-1-1**. I\u2019ll say it slowly: **two\u2026 one\u2026 one**. You\u2019re being connected to a **2-1-1 housing specialist** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000492#turn-4",
+      "scenarioId": "phone_dialog_0000492",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Wait, can you say that number again slower? I wrote the first part wrong.",
+      "normalizedQuery": "hi sorry battery like two percent fast salem landlord taped notice on door keep losing train thought haven slept basically car tonight unless something happens it says owe by friday they file eviction prevention money if possible wait say number again slower wrote first part wrong",
+      "voiceResponse": "Of course. Slow version: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. I\u2019ll say it once more: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. Backup: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+      "evidenceDocIds": [
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slow version: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. I\u2019ll say it once more: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. Backup: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m connecting you to a live 211 housing specialist right now to go over that notice with you. If your brother might hurt himself or anyone else, call **9-1-1** now. I\u2019ll repeat: **9-1-1**. While we connect, please have him keep the paper nearby so the specialist can review the date and any court deadline.",
+        "Yes. Call this one first for Salem eviction-prevention help: **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. If it doesn\u2019t connect, backup is: **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. You can say: \u201cI got a pay-or-file notice due Friday. I need same-day eviction prevention funds in Salem.\u201d",
+        "Thank you. You\u2019re in Salem. Salem. That helps. You\u2019re not doing this wrong. We can sort dates and papers together. I can connect you to a live rent specialist now, so you don\u2019t have to track it alone. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000492#turn-6",
+      "scenarioId": "phone_dialog_0000492",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m talking over you, just please give me the Salem place that can stop this first.",
+      "normalizedQuery": "it says owe by friday they file eviction prevention money like if possible wait say number again slower wrote first part wrong documents have id pay stubs storage unit don know enough sorry talking over just please give salem place stop this",
+      "voiceResponse": "Yes. Call this one first for Salem eviction-prevention help: **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. If it doesn\u2019t connect, backup is: **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. You can say: \u201cI got a pay-or-file notice due Friday. I need same-day eviction prevention funds in Salem.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b1c486f2b438c521"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call this one first for Salem eviction-prevention help: **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. If it doesn\u2019t connect, backup is: **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. You can say: \u201cI got a pay-or-file notice due Friday. I need same-day eviction prevention funds in Salem.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m connecting you to a live 211 housing specialist right now to go over that notice with you. If your brother might hurt himself or anyone else, call **9-1-1** now. I\u2019ll repeat: **9-1-1**. While we connect, please have him keep the paper nearby so the specialist can review the date and any court deadline.",
+        "Of course. Slow version: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. I\u2019ll say it once more: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. Backup: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "Thank you. You\u2019re in Salem. Salem. That helps. You\u2019re not doing this wrong. We can sort dates and papers together. I can connect you to a live rent specialist now, so you don\u2019t have to track it alone. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000518#turn-2",
+      "scenarioId": "phone_dialog_0000518",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, and I keep mixing up dates and papers, so I don\u2019t even know what I already applied for.",
+      "normalizedQuery": "hi sorry all over place right now rent eviction assistance before behind again salem keep mixing up dates papers so don even know already applied",
+      "voiceResponse": "Thank you. You\u2019re in Salem. Salem. That helps. You\u2019re not doing this wrong. We can sort dates and papers together. I can connect you to a live rent specialist now, so you don\u2019t have to track it alone. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:f525d65d4bd89731",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:22f25b2759f09c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. You\u2019re in Salem. Salem. That helps. You\u2019re not doing this wrong. We can sort dates and papers together. I can connect you to a live rent specialist now, so you don\u2019t have to track it alone. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m connecting you to a live 211 housing specialist right now to go over that notice with you. If your brother might hurt himself or anyone else, call **9-1-1** now. I\u2019ll repeat: **9-1-1**. While we connect, please have him keep the paper nearby so the specialist can review the date and any court deadline.",
+        "Of course. Slow version: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. I\u2019ll say it once more: **5 0 3** \u2026 **2 2 2** \u2026 **5 5 5 5**. Backup: **5 0 3** \u2026 **2 2 6** \u2026 **3 0 9 9**.",
+        "Yes. Call this one first for Salem eviction-prevention help: **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. If it doesn\u2019t connect, backup is: **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. You can say: \u201cI got a pay-or-file notice due Friday. I need same-day eviction prevention funds in Salem.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000518#turn-4",
+      "scenarioId": "phone_dialog_0000518",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "calendar_event_support",
+      "user": "If you find a place for me, can you put a reminder on my calendar to call them tomorrow morning?",
+      "normalizedQuery": "hi sorry all over place right now rent eviction assistance before behind again salem keep mixing up dates papers so don even know already applied landlord gave notice sleep just who this month if put reminder on calendar call them tomorrow morning",
+      "voiceResponse": "Yes. I can help with that. You want a reminder to call them tomorrow morning. Tomorrow morning. What time should I set it for?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that. You want a reminder to call them tomorrow morning. Tomorrow morning. What time should I set it for?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000167#turn-1",
+      "to": "phone_dialog_0000167#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000167#turn-3",
+      "to": "phone_dialog_0000167#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000440#turn-2",
+      "to": "phone_dialog_0000440#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000440#turn-3",
+      "to": "phone_dialog_0000440#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000440#turn-5",
+      "to": "phone_dialog_0000440#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000492#turn-4",
+      "to": "phone_dialog_0000492#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000518#turn-2",
+      "to": "phone_dialog_0000518#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000518#turn-4",
+      "to": "phone_dialog_0000518#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
+    }
+  ]
+}

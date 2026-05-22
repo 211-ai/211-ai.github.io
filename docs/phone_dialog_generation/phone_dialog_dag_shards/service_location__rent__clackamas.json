@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__rent__clackamas",
+  "kind": "service_location",
+  "key": "rent__clackamas",
+  "nodeCount": 5,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000062#turn-4",
+      "scenarioId": "phone_dialog_0000062",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Can you break the phone number into small parts, like three numbers at a time?",
+      "normalizedQuery": "hi called earlier legal aid attorney advocacy clackamas wrote number down wrong sorry say again slower hard hearing this line keeps cutting trying deal an eviction paper keep steps straight head right now break phone into small parts like three numbers at time",
+      "voiceResponse": "Of course. Here it is in small parts: **5 0 3** \u2026 **2 2 4** \u2026 **4 0 8 6**. I\u2019ll say it again: **5 0 3** \u2026 **2 2 4** \u2026 **4 0 8 6**. Backup number, same way: **8 0 0** \u2026 **3 5 9** \u2026 **1 8 4 5**.",
+      "evidenceDocIds": [
+        "service:0963e94e6b3dc85a",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:a4f4532cd4713872",
+        "service:3694ab25654f4b81",
+        "service:edd134b3af222b57"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Here it is in small parts: **5 0 3** \u2026 **2 2 4** \u2026 **4 0 8 6**. I\u2019ll say it again: **5 0 3** \u2026 **2 2 4** \u2026 **4 0 8 6**. Backup number, same way: **8 0 0** \u2026 **3 5 9** \u2026 **1 8 4 5**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000140#turn-2",
+      "scenarioId": "phone_dialog_0000140",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "He lives in Clackamas County, near Oregon City, and he got behind after his work hours were cut.",
+      "normalizedQuery": "hi calling brother trying rent eviction assistance him he lives clackamas county oregon city got behind after his work hours were cut",
+      "voiceResponse": "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000491#turn-1",
+      "scenarioId": "phone_dialog_0000491",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, this isn\u2019t my phone and it\u2019s at like two percent, can you give me the main number for rent help in Clackamas first?",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give main number rent eviction assistance clackamas first",
+      "voiceResponse": "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**.",
+      "evidenceDocIds": [
+        "service:2281747e76c4abb0",
+        "service:7f151957f57c77f1",
+        "service:9b525f484625fd37",
+        "service:1b6e1c18557fb6a5",
+        "service:3655daf83f45f8e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I\u2019ll keep this quick. The main rent-help number I have is **503-234-2048**. Again: **5-0-3, 2-3-4, 2-0-4-8**. If that line is busy, backup is **503-802-0082**: **5-0-3, 8-0-2, 0-0-8-2**.",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s switch to a live 211 specialist now so you can get Clackamas County rental help options for your brother near Oregon City. I don\u2019t have a verified local rent-assistance listing in front of me from this source, and I don\u2019t want to guess. When you connect, say he\u2019s in Clackamas County, behind on rent after reduced work hours, and ask for eviction-prevention or past-due rent programs plus required documents."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000491#turn-2",
+      "scenarioId": "phone_dialog_0000491",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, you cut out after the area code, can you repeat that slower?",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give main number rent eviction assistance clackamas first wait cut after area code repeat slower",
+      "voiceResponse": "Absolutely, I hear you. Main number, slowly: **5-0-3** \u2026 **2-3-4** \u2026 **2-0-4-8**. I\u2019ll say it once more: **503** \u2026 **234** \u2026 **2048**.",
+      "evidenceDocIds": [
+        "service:2281747e76c4abb0",
+        "service:7f151957f57c77f1",
+        "service:9b525f484625fd37",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I hear you. Main number, slowly: **5-0-3** \u2026 **2-3-4** \u2026 **2-0-4-8**. I\u2019ll say it once more: **503** \u2026 **234** \u2026 **2048**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000491#turn-4",
+      "scenarioId": "phone_dialog_0000491",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "rent",
+      "locationTag": "clackamas",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you can, could you contact that provider for me or send them a message that I need an intake call today?",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give main number rent eviction assistance clackamas first wait cut after area code repeat slower behind on month trying put all personal info there have full details just ask if could contact provider send them message an intake call",
+      "voiceResponse": "I hear you, and we can keep this private and quick. I can\u2019t contact them directly from here, but here\u2019s a voicemail/text you can use now: \u201cHi, I need a rent-help intake call today. I prefer to share only minimum personal details at first. Please call me back today if possible.\u201d Call: **503 \u2026 234 \u2026 2048**. If busy, try: **503 \u2026 802 \u2026 0082**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiadhps5mxrj65cxid5ywf5owzukbgqrgk4p7wmmucxrsq6hpvjhmu",
+        "service:1b6e1c18557fb6a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can keep this private and quick. I can\u2019t contact them directly from here, but here\u2019s a voicemail/text you can use now: \u201cHi, I need a rent-help intake call today. I prefer to share only minimum personal details at first. Please call me back today if possible.\u201d Call: **503 \u2026 234 \u2026 2048**. If busy, try: **503 \u2026 802 \u2026 0082**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000062#turn-4",
+      "to": "phone_dialog_0000062#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000140#turn-2",
+      "to": "phone_dialog_0000140#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000491#turn-1",
+      "to": "phone_dialog_0000491#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000491#turn-2",
+      "to": "phone_dialog_0000491#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000491#turn-4",
+      "to": "phone_dialog_0000491#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->grounded_211_answer"
+    }
+  ]
+}

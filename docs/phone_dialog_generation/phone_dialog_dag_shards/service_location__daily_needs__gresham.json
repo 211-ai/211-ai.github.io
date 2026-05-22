@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__daily_needs__gresham",
+  "kind": "service_location",
+  "key": "daily_needs__gresham",
+  "nodeCount": 11,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000269#turn-1",
+      "scenarioId": "phone_dialog_0000269",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Gresham right now and I need clothing help today, mostly warm clothes and shoes.",
+      "normalizedQuery": "hi gresham right now clothing mostly warm clothes shoes",
+      "voiceResponse": "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+      "evidenceDocIds": [
+        "service:7fc520d7a68a1f4a",
+        "service:8f9154f5de98caba",
+        "service:2cbe2274abaeab3b",
+        "service:4cd63f4e019d5636",
+        "service:52b9a055f4c58881"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+        "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+        "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000295#turn-2",
+      "scenarioId": "phone_dialog_0000295",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "This is for my brother, not me, he needs a place in Gresham where he can get his mail.",
+      "normalizedQuery": "this brother he needs place gresham his mail",
+      "voiceResponse": "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "service:ebcc2eae6f267a16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+      "voiceResponseAlternatives": [
+        "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+        "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+        "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000295#turn-3",
+      "scenarioId": "phone_dialog_0000295",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I didn\u2019t catch that name, can you say it again slower?",
+      "normalizedQuery": "hi on borrowed phone it die so give main number first this brother he needs place gresham his mail sorry didn catch name say again slower",
+      "voiceResponse": "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:d237681c757d7e5d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+        "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+        "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000295#turn-4",
+      "scenarioId": "phone_dialog_0000295",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "And the phone number too, one digit at a time please, I don\u2019t hear great on this line.",
+      "normalizedQuery": "hi on borrowed phone it die so give main number first this brother he needs place gresham his mail sorry didn catch name say again slower too one digit at time please don hear great line",
+      "voiceResponse": "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**.",
+      "voiceResponseAlternatives": [
+        "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+        "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+        "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000295#turn-5",
+      "scenarioId": "phone_dialog_0000295",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Wait, was that in Gresham or Portland? I might\u2019ve misheard you.",
+      "normalizedQuery": "this brother he needs place gresham his mail sorry didn catch name say it again slower phone number too one digit at time please don hear great on line wait was portland might ve misheard",
+      "voiceResponse": "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call **211info** now so a live specialist can confirm the exact city for that mail service. I can\u2019t confirm Gresham or Portland from what I have in front of me. Call: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**. Again: **5 0 3** \u2026 **2 8 3** \u2026 **6 8 8 1**.",
+      "voiceResponseAlternatives": [
+        "Okay, for same-day clothing and shoes, call **Professional Women\u2019s Clothes Closet** now at **5 0 3, 6 5 4, 3 1 6 1**. Address is **1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7**. They help women with clothing and shoes. If they can\u2019t do same-day, ask for the fastest referral.",
+        "Next step: I\u2019ll connect you to a live 211 specialist now to find mail service in Gresham for your brother. If this call drops, call this number back: **five zero three** \u2026 **two eight three** \u2026 **six eight eight one**. Again: **503** \u2026 **283** \u2026 **6881**.",
+        "Yes. Call this number now: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**. Again: **5 \u2026 0 \u2026 3 \u2026 2 \u2026 8 \u2026 3 \u2026 6 \u2026 8 \u2026 8 \u2026 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000321#turn-1",
+      "scenarioId": "phone_dialog_0000321",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m really tired and not tracking great... I\u2019m in Gresham and I need a place I can shower today.",
+      "normalizedQuery": "hi sorry really tired tracking great gresham place shower",
+      "voiceResponse": "You\u2019re doing the right thing calling while tired. Let\u2019s keep it simple: in Gresham, call the City of Gresham for same-day shower options and referrals. Phone: **5-0-3, 6-1-8, 3-0-0-0**. Address: **1333 Northwest Eastman Parkway, Gresham**. If they don\u2019t answer right away, call back and say: \u201cI need a place to shower today in Gresham.\u201d",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:0a101fddb9d7862a",
+        "service:e8a466e479abed71",
+        "service:0f62cb5986e7ce0b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling while tired. Let\u2019s keep it simple: in Gresham, call the City of Gresham for same-day shower options and referrals. Phone: **5-0-3, 6-1-8, 3-0-0-0**. Address: **1333 Northwest Eastman Parkway, Gresham**. If they don\u2019t answer right away, call back and say: \u201cI need a place to shower today in Gresham.\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely. You can keep this simple and share only what you want. For same-day low-cost laundry options in Gresham, try these local lines: City of Gresham: **5 0 3, 6 1 8, 3 0 0 0** Backup community line: **5 0 3, 8 2 3, 3 3 3 3** Ask: \u201cDo you know free or low-cost laundry sites open today near me?\u201d I can repeat either number slowly if you want.",
+        "I hear you. You can keep this very private and share only what feels safe. You can call and ask for laundry options without giving extra details about your situation. You do not need to mention your landlord. If it helps, just say: \u201cI\u2019m looking for free or low-cost laundry open today near Gresham.\u201d We can keep it to that."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000321#turn-2",
+      "scenarioId": "phone_dialog_0000321",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I didn\u2019t catch the name, my hearing\u2019s bad on this phone.",
+      "normalizedQuery": "hi sorry really tired tracking great gresham place shower say slower didn catch name hearing bad on this phone",
+      "voiceResponse": "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:755193c3d210f2d9",
+        "service:5e7600bff08f7fb7",
+        "service:3721fd2c629382ea",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+      "voiceResponseAlternatives": [
+        "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+        "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+        "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000347#turn-1",
+      "scenarioId": "phone_dialog_0000347",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, I\u2019m in Gresham and I need help finding somewhere I can do laundry cheap, like today if possible.",
+      "normalizedQuery": "hi um gresham finding somewhere laundry cheap like if possible",
+      "voiceResponse": "Absolutely. You can keep this simple and share only what you want. For same-day low-cost laundry options in Gresham, try these local lines: City of Gresham: **5 0 3, 6 1 8, 3 0 0 0** Backup community line: **5 0 3, 8 2 3, 3 3 3 3** Ask: \u201cDo you know free or low-cost laundry sites open today near me?\u201d I can repeat either number slowly if you want.",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:bb282e5eaf2a18e5",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "service:05a645e91c0322cd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You can keep this simple and share only what you want. For same-day low-cost laundry options in Gresham, try these local lines: City of Gresham: **5 0 3, 6 1 8, 3 0 0 0** Backup community line: **5 0 3, 8 2 3, 3 3 3 3** Ask: \u201cDo you know free or low-cost laundry sites open today near me?\u201d I can repeat either number slowly if you want.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling while tired. Let\u2019s keep it simple: in Gresham, call the City of Gresham for same-day shower options and referrals. Phone: **5-0-3, 6-1-8, 3-0-0-0**. Address: **1333 Northwest Eastman Parkway, Gresham**. If they don\u2019t answer right away, call back and say: \u201cI need a place to shower today in Gresham.\u201d",
+        "I hear you. You can keep this very private and share only what feels safe. You can call and ask for laundry options without giving extra details about your situation. You do not need to mention your landlord. If it helps, just say: \u201cI\u2019m looking for free or low-cost laundry open today near Gresham.\u201d We can keep it to that."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000347#turn-2",
+      "scenarioId": "phone_dialog_0000347",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down a little? I\u2019m kinda overwhelmed and I missed part of what you said.",
+      "normalizedQuery": "hi um gresham finding somewhere laundry cheap like if possible sorry slow down little kinda overwhelmed missed part said",
+      "voiceResponse": "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+      "evidenceDocIds": [
+        "service:99e8679fab689416",
+        "service:f7f1a44948506f7a",
+        "service:34d9e92d3ede5e98",
+        "service:bb282e5eaf2a18e5",
+        "service:3765a8082141d5b8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d",
+      "voiceResponseAlternatives": [
+        "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+        "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+        "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000347#turn-3",
+      "scenarioId": "phone_dialog_0000347",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I just need to check, this won\u2019t get shared with my landlord or anything, right? I\u2019m really nervous about my info.",
+      "normalizedQuery": "hi um gresham finding somewhere laundry cheap like if possible sorry slow down little kinda overwhelmed missed part said just check this won shared landlord anything right really nervous info",
+      "voiceResponse": "I hear you. You can keep this very private and share only what feels safe. You can call and ask for laundry options without giving extra details about your situation. You do not need to mention your landlord. If it helps, just say: \u201cI\u2019m looking for free or low-cost laundry open today near Gresham.\u201d We can keep it to that.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:99e8679fab689416"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You can keep this very private and share only what feels safe. You can call and ask for laundry options without giving extra details about your situation. You do not need to mention your landlord. If it helps, just say: \u201cI\u2019m looking for free or low-cost laundry open today near Gresham.\u201d We can keep it to that.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing calling while tired. Let\u2019s keep it simple: in Gresham, call the City of Gresham for same-day shower options and referrals. Phone: **5-0-3, 6-1-8, 3-0-0-0**. Address: **1333 Northwest Eastman Parkway, Gresham**. If they don\u2019t answer right away, call back and say: \u201cI need a place to shower today in Gresham.\u201d",
+        "Absolutely. You can keep this simple and share only what you want. For same-day low-cost laundry options in Gresham, try these local lines: City of Gresham: **5 0 3, 6 1 8, 3 0 0 0** Backup community line: **5 0 3, 8 2 3, 3 3 3 3** Ask: \u201cDo you know free or low-cost laundry sites open today near me?\u201d I can repeat either number slowly if you want."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000347#turn-4",
+      "scenarioId": "phone_dialog_0000347",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat that place name again? The line cut out and I only caught the street.",
+      "normalizedQuery": "hi um gresham finding somewhere laundry cheap like if possible sorry slow down little kinda overwhelmed missed part said just check this won shared landlord anything right really nervous info repeat place name again line cut only caught street",
+      "voiceResponse": "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, the place name was **Gresham**. Just that: **Gresham**. If you want, I can repeat the exact phrase too, slowly.",
+      "voiceResponseAlternatives": [
+        "The name is **So\u00f1ando Juntos**. Slowly: **So-nyan-do** \u2026 **Hoon-tos**.",
+        "Absolutely, and thanks for telling me. The name is: **City of Gresham**. I\u2019ll say it slowly: **City\u2026 of\u2026 Gresham**.",
+        "Of course. Let\u2019s go slowly. First number: **5 0 3** \u2026 **6 1 8** \u2026 **3 0 0 0**. Second number: **5 0 3** \u2026 **8 2 3** \u2026 **3 3 3 3**. If you call, you can say: \u201cDo you know free or low-cost laundry sites open today near me?\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000269#turn-1",
+      "to": "phone_dialog_0000269#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000295#turn-2",
+      "to": "phone_dialog_0000295#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000295#turn-3",
+      "to": "phone_dialog_0000295#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000295#turn-4",
+      "to": "phone_dialog_0000295#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000295#turn-5",
+      "to": "phone_dialog_0000295#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000321#turn-1",
+      "to": "phone_dialog_0000321#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000321#turn-2",
+      "to": "phone_dialog_0000321#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000347#turn-1",
+      "to": "phone_dialog_0000347#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000347#turn-2",
+      "to": "phone_dialog_0000347#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000347#turn-3",
+      "to": "phone_dialog_0000347#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000347#turn-4",
+      "to": "phone_dialog_0000347#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
+    }
+  ]
+}

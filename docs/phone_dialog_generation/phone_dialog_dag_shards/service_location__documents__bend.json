@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__documents__bend",
+  "kind": "service_location",
+  "key": "documents__bend",
+  "nodeCount": 8,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000111#turn-6",
+      "scenarioId": "phone_dialog_0000111",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s more than one in Bend, give me the closest one first and then a backup in case it\u2019s full.",
+      "normalizedQuery": "say name again slower hard hearing on this phone missed middle part also address please one piece at time like street number then write better than hear wait hold truck just went by okay repeat hours whether id come tonight if there more bend give closest first backup case it full",
+      "voiceResponse": "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:df7b407e86484ab8",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
+        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000306#turn-1",
+      "scenarioId": "phone_dialog_0000306",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m sorry, this line keeps cutting out. I\u2019m in Bend and I lost my ID, and I don\u2019t remember where I\u2019m supposed to start.",
+      "normalizedQuery": "hi sorry this line keeps cutting bend lost id don remember supposed start",
+      "voiceResponse": "You\u2019re okay, and we can take this one step at a time. For ID loss in Bend, the best next step is a live 211 specialist who can give the exact local replacement office and required papers. I don\u2019t have a strong ID-specific listing in front of me right now. If helpful, I can stay with you while we do this slowly, and repeat each step clearly.",
+      "evidenceDocIds": [
+        "service:8cff3ea3d8ce0793",
+        "service:f6e3397fac47f70e",
+        "service:297dae4b1412f715",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:00b89c80517a176a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and we can take this one step at a time. For ID loss in Bend, the best next step is a live 211 specialist who can give the exact local replacement office and required papers. I don\u2019t have a strong ID-specific listing in front of me right now. If helpful, I can stay with you while we do this slowly, and repeat each step clearly.",
+      "voiceResponseAlternatives": [
+        "Of course. The name I said was: **live 211 specialist**. I didn\u2019t give a specific office name yet. So the step is: call **2-1-1** and ask for **ID replacement help in Bend**. I can stay with you and repeat each step slowly."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000306#turn-2",
+      "scenarioId": "phone_dialog_0000306",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that office name again, slower? I missed the middle part.",
+      "normalizedQuery": "hi sorry this line keeps cutting bend lost id don remember supposed start say office name again slower missed middle part",
+      "voiceResponse": "Of course. The name I said was: **live 211 specialist**. I didn\u2019t give a specific office name yet. So the step is: call **2-1-1** and ask for **ID replacement help in Bend**. I can stay with you and repeat each step slowly.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreig6z2uokewunv4timqnoujzjwvprg7olg3bv3vrmcyvgd332hsoeq",
+        "service:ae356b36d8909474",
+        "service:00b89c80517a176a",
+        "page:bafkreicrrzi2npufkoneezgowu45w7g6gmhkuc6izp5iks2r4jidavt7jm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name I said was: **live 211 specialist**. I didn\u2019t give a specific office name yet. So the step is: call **2-1-1** and ask for **ID replacement help in Bend**. I can stay with you and repeat each step slowly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and we can take this one step at a time. For ID loss in Bend, the best next step is a live 211 specialist who can give the exact local replacement office and required papers. I don\u2019t have a strong ID-specific listing in front of me right now. If helpful, I can stay with you while we do this slowly, and repeat each step clearly."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000306#turn-4",
+      "scenarioId": "phone_dialog_0000306",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hello? You faded out there. What was the address in Bend one more time?",
+      "normalizedQuery": "hi sorry this line keeps cutting bend lost id don remember supposed start say office name again slower missed middle part wait did birth certificate was it something else writing down hello faded there address one more time",
+      "voiceResponse": "You\u2019re okay, the connection is rough. I haven\u2019t given a Bend address yet. The step to write down is: call **2-1-1**. Then say: \u201cI need **ID replacement help in Bend**. What office address should I go to?\u201d If you want, I can repeat that line one more time, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiemvimtczhcn3mohrl6plj6ad2xf6gz5h44iu7vmwspgqjujrxd54"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, the connection is rough. I haven\u2019t given a Bend address yet. The step to write down is: call **2-1-1**. Then say: \u201cI need **ID replacement help in Bend**. What office address should I go to?\u201d If you want, I can repeat that line one more time, slowly.",
+      "voiceResponseAlternatives": [
+        "No need to apologize. You\u2019re doing fine. The number is: **2\u2026 1\u2026 1**. Again, one digit at a time: **2\u2026 1\u2026 1**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000306#turn-5",
+      "scenarioId": "phone_dialog_0000306",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019m not great with this stuff anymore, sorry. Can you repeat the phone number and say it one digit at a time?",
+      "normalizedQuery": "say office name again slower missed middle part wait did birth certificate was it something else writing this down hello faded there address bend one more time great stuff anymore sorry repeat phone number digit at",
+      "voiceResponse": "No need to apologize. You\u2019re doing fine. The number is: **2\u2026 1\u2026 1**. Again, one digit at a time: **2\u2026 1\u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:a9b60d735dd34af5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No need to apologize. You\u2019re doing fine. The number is: **2\u2026 1\u2026 1**. Again, one digit at a time: **2\u2026 1\u2026 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, the connection is rough. I haven\u2019t given a Bend address yet. The step to write down is: call **2-1-1**. Then say: \u201cI need **ID replacement help in Bend**. What office address should I go to?\u201d If you want, I can repeat that line one more time, slowly."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000319#turn-5",
+      "scenarioId": "phone_dialog_0000319",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "calendar_event_support",
+      "user": "Also, can you send them a follow-up message for me that I\u2019m hard of hearing and I need written instructions?",
+      "normalizedQuery": "say again slower didn catch office name heard 'ben' bend sorry already went there last week they told bring proof still don understand phone battery low so please repeat number really slow one digit at time also send them follow up message hard hearing written instructions",
+      "voiceResponse": "Yes. I can help with that follow-up request for written instructions. What time should I set the reminder to send it?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that follow-up request for written instructions. What time should I set the reminder to send it?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000423#turn-5",
+      "scenarioId": "phone_dialog_0000423",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what was the office location again in Bend? I heard \u2018third\u2019 something but I\u2019m not sure.",
+      "normalizedQuery": "talked them kind missed part they said orientation times paperwork from repeat phone number slowly keep catching last digits then bus goes by also if message did call still interested would because we got disconnected before finished wait was office location again bend heard third something sure",
+      "voiceResponse": "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
+        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000423#turn-6",
+      "scenarioId": "phone_dialog_0000423",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, one more time, just the next step in order: who I call, what I bring, and when I show up.",
+      "normalizedQuery": "repeat phone number slowly keep catching last digits then bus goes by also if message them did call still interested would because we got disconnected before finished wait was office location again bend heard third something sure sorry one more time just next step order who bring when show up",
+      "voiceResponse": "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now.",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
+        "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000306#turn-1",
+      "to": "phone_dialog_0000306#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000306#turn-2",
+      "to": "phone_dialog_0000306#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000306#turn-4",
+      "to": "phone_dialog_0000306#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000306#turn-5",
+      "to": "phone_dialog_0000306#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000319#turn-5",
+      "to": "phone_dialog_0000319#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000423#turn-5",
+      "to": "phone_dialog_0000423#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    }
+  ]
+}

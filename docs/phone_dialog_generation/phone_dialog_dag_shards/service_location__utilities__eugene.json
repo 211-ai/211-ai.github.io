@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__utilities__eugene",
+  "kind": "service_location",
+  "key": "utilities__eugene",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000223#turn-1",
+      "scenarioId": "phone_dialog_0000223",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can\u2019t hear very well on this line. I\u2019m in Eugene and I need help paying my electric bill before they shut it off.",
+      "normalizedQuery": "hi sorry hear very well on this line eugene paying electric bill before they shut it off",
+      "voiceResponse": "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?",
+      "evidenceDocIds": [
+        "service:036851dd974a6eed",
+        "service:8a88f383dd183cef",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?",
+      "voiceResponseAlternatives": [
+        "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000223#turn-2",
+      "scenarioId": "phone_dialog_0000223",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that agency name again, slower? I heard something like Saint\u2026 Vinny?",
+      "normalizedQuery": "hi sorry hear very well on this line eugene paying electric bill before they shut it off say agency name again slower heard something like saint vinny",
+      "voiceResponse": "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:036851dd974a6eed",
+        "service:8a88f383dd183cef",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1341a8cba2a5d24e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It is **Blachly-Lane Electric Cooperative**. I\u2019ll say it slowly: **Blachly**\u2026 **Lane**\u2026 **Electric Cooperative**. Again: **Blachly-Lane Electric Cooperative**. Not Saint Vincent de Paul. Different agency.",
+      "voiceResponseAlternatives": [
+        "I hear you. I can help. For Eugene, I have Blachly-Lane Electric Cooperative. Call **541-688-8711**. That is **541, 688, 8711**. Toll-free is **800-446-8418**. That is **800, 446, 8418**. Tell them you need shutoff prevention and electric bill payment help right now. Their address is **90680 Highway 99 North, Eugene, 97402**. That is **90680 Highway 99 North**. Is Blachly-Lane your electric company?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000223#turn-3",
+      "scenarioId": "phone_dialog_0000223",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, you cut out. Is that on River Road in Eugene, or did I hear that wrong?",
+      "normalizedQuery": "hi sorry hear very well on this line eugene paying electric bill before they shut it off say agency name again slower heard something like saint vinny wait hold cut river road did wrong",
+      "voiceResponse": "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:036851dd974a6eed",
+        "service:8a88f383dd183cef",
+        "service:1341a8cba2a5d24e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**.",
+      "voiceResponseAlternatives": [
+        "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000223#turn-4",
+      "scenarioId": "phone_dialog_0000223",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number one digit at a time, please? I need to write it down.",
+      "normalizedQuery": "hi sorry hear very well on this line eugene paying electric bill before they shut it off say agency name again slower heard something like saint vinny wait hold cut river road did wrong repeat phone number one digit at time please write down",
+      "voiceResponse": "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:8a88f383dd183cef",
+        "service:036851dd974a6eed",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**.",
+      "voiceResponseAlternatives": [
+        "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000223#turn-1",
+      "to": "phone_dialog_0000223#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000223#turn-2",
+      "to": "phone_dialog_0000223#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000223#turn-3",
+      "to": "phone_dialog_0000223#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000223#turn-4",
+      "to": "phone_dialog_0000223#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    }
+  ]
+}

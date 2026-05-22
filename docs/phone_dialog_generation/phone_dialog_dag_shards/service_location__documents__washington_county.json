@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "id": "service_location__documents__washington_county",
+  "kind": "service_location",
+  "key": "documents__washington_county",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000333#turn-1",
+      "scenarioId": "phone_dialog_0000333",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I\u2019m not tracking great right now, I barely slept... I need help replacing my ID in Washington County.",
+      "normalizedQuery": "hi sorry tracking great right now barely slept replacing id washington county",
+      "voiceResponse": "You\u2019re okay. We can do this step by step. For Southwest Washington, WA 211 now handles local 211 help. WA 211 handles that now. If you feel unsafe right now, call 911. Call 911. One question: are you in Southwest Washington right now?",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "page:bafkreib4ozk6icnke7h2icegdhgp37wo6u6kbcoqxxyxj5lbglv3fed65u",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. We can do this step by step. For Southwest Washington, WA 211 now handles local 211 help. WA 211 handles that now. If you feel unsafe right now, call 911. Call 911. One question: are you in Southwest Washington right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000333#turn-2",
+      "scenarioId": "phone_dialog_0000333",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? I missed the office name, there\u2019s noise here and I keep losing it.",
+      "normalizedQuery": "hi sorry tracking great right now barely slept replacing id washington county say slower missed office name there noise here keep losing it",
+      "voiceResponse": "Yes. Slow version: the office is **W A two-one-one**. I\u2019ll repeat it: **W A two-one-one** handles local 211 help in Southwest Washington.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow version: the office is **W A two-one-one**. I\u2019ll repeat it: **W A two-one-one** handles local 211 help in Southwest Washington.",
+      "voiceResponseAlternatives": [
+        "Yes. Really slow: **W A two-one-one**. I\u2019ll repeat it once: **W A two-one-one**.",
+        "There isn\u2019t an address yet. I\u2019m connecting you to a live specialist now to find the nearest warm place. If you feel in immediate danger from the cold, call **9-1-1** now: that\u2019s **9, 1, 1**. Stay on the line with me."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000333#turn-3",
+      "scenarioId": "phone_dialog_0000333",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, sorry, repeat the phone number one more time, like really slow.",
+      "normalizedQuery": "hi sorry tracking great right now barely slept replacing id washington county say slower missed office name there noise here keep losing it wait repeat phone number one more time like really slow",
+      "voiceResponse": "Yes. Really slow: **W A two-one-one**. I\u2019ll repeat it once: **W A two-one-one**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Really slow: **W A two-one-one**. I\u2019ll repeat it once: **W A two-one-one**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow version: the office is **W A two-one-one**. I\u2019ll repeat it: **W A two-one-one** handles local 211 help in Southwest Washington.",
+        "There isn\u2019t an address yet. I\u2019m connecting you to a live specialist now to find the nearest warm place. If you feel in immediate danger from the cold, call **9-1-1** now: that\u2019s **9, 1, 1**. Stay on the line with me."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000489#turn-4",
+      "scenarioId": "phone_dialog_0000489",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, slow down please, I missed the address... can you do it in small parts?",
+      "normalizedQuery": "hi sorry been up all night really think straight washington county somewhere warm go now say again hard hearing on this phone line keeps cutting it okay if just show something like wallet app they paper id wait slow down please missed address small parts",
+      "voiceResponse": "There isn\u2019t an address yet. I\u2019m connecting you to a live specialist now to find the nearest warm place. If you feel in immediate danger from the cold, call **9-1-1** now: that\u2019s **9, 1, 1**. Stay on the line with me.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "There isn\u2019t an address yet. I\u2019m connecting you to a live specialist now to find the nearest warm place. If you feel in immediate danger from the cold, call **9-1-1** now: that\u2019s **9, 1, 1**. Stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow version: the office is **W A two-one-one**. I\u2019ll repeat it: **W A two-one-one** handles local 211 help in Southwest Washington.",
+        "Yes. Really slow: **W A two-one-one**. I\u2019ll repeat it once: **W A two-one-one**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000333#turn-1",
+      "to": "phone_dialog_0000333#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000333#turn-2",
+      "to": "phone_dialog_0000333#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000333#turn-3",
+      "to": "phone_dialog_0000333#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000489#turn-4",
+      "to": "phone_dialog_0000489#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    }
+  ]
+}
