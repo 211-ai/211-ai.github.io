@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__washington_county",
   "kind": "service_location",
   "key": "benefits__washington_county",
-  "nodeCount": 10,
+  "nodeCount": 16,
   "nodes": [
     {
       "id": "phone_dialog_0000255#turn-1",
@@ -141,7 +141,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Of course\u2014you\u2019re doing the right thing. Here it is slowly: **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll say it once more: **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, this is Abby. You\u2019re asking for a **regular medical clinic in Washington County**, **not the ER**. If you have immediate danger signs like chest pain, trouble breathing, severe bleeding, or thoughts of self-harm, call **911** now. Otherwise, we\u2019ll stay with non-emergency clinic options."
+      ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "compassionate_caseworker"
@@ -290,6 +292,183 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001200#turn-1",
+      "scenarioId": "phone_dialog_0001200",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I keep losing my train of thought, but I\u2019m in Washington County and I need, like, mental health help, I think.",
+      "normalizedQuery": "hi sorry keep losing train thought washington county like mental health think",
+      "voiceResponse": "You did the right thing calling. In Washington County, call **Washington County Behavioral Health referrals** at **503-846-4528**. That\u2019s **503\u2026 846\u2026 4528**. They can help you find mental health care. If this feels urgent or you might hurt yourself or someone else, call **988** right now, or **911** if there\u2019s immediate danger.",
+      "evidenceDocIds": [
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "service:5204246fd59d24b1",
+        "service:5cf9e6901cabeff9",
+        "service:9c3306bc88db0a03"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. In Washington County, call **Washington County Behavioral Health referrals** at **503-846-4528**. That\u2019s **503\u2026 846\u2026 4528**. They can help you find mental health care. If this feels urgent or you might hurt yourself or someone else, call **988** right now, or **911** if there\u2019s immediate danger.",
+      "voiceResponseAlternatives": [
+        "Next step: call 2-1-1 now and ask for \u201curgent dental clinic in Washington County.\u201d I don\u2019t have a grounded dental listing in the records in front of me right now. If you want, I can stay with you while you call and help you script exactly what to ask for.",
+        "Next step: call **2-1-1** right now and say, \u201cI need an **adult urgent dental visit in Washington County**, same day if possible.\u201d I can only confirm from my records that 211info has a **Mobile Dental Care** listing with multiple providers, but not a direct clinic number here. If you want, I\u2019ll help you with a one-sentence script before you dial.",
+        "I hear you, and I\u2019ll keep it quick. Call this clinic first: **5 4 1, 2 3 2, 8 5 4 6**. It\u2019s a monthly pop-up medical clinic, and the listing says it serves people experiencing homelessness, with no documents required. If your cough is getting worse fast or you\u2019re short of breath, call **9 1 1** now. If they can\u2019t see you today, call me back and I\u2019ll get the next closest low-cost option.",
+        "You did the right thing calling. First step: call Washington County Behavioral Health\u2019s mental health referral line now at **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. I\u2019ll repeat: **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. They provide information and referrals for mental health providers. If you want, I can help you plan exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001200#turn-3",
+      "scenarioId": "phone_dialog_0001200",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, I\u2019m not trying to hurt anyone, I just haven\u2019t slept in three days and I keep thinking the apartment vents are recording me.",
+      "normalizedQuery": "hi sorry keep losing train thought washington county like mental health think say again voices louder when on speaker said 'shelter' counseling right no trying hurt anyone just haven slept three days thinking apartment vents recording",
+      "voiceResponse": "Thank you for telling me. This sounds serious, even if you\u2019re not trying to hurt anyone. Please call **988** right now and say: \u201cI haven\u2019t slept in three days and I\u2019m hearing voices and feeling paranoid.\u201d They can stay with you and help immediately. You can also call Washington County Behavioral Health at **503\u2026 846\u2026 4528**. If you feel in immediate danger, call **911** now.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b9541cc92ab033f6",
+        "service:c686714d472302b2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This sounds serious, even if you\u2019re not trying to hurt anyone. Please call **988** right now and say: \u201cI haven\u2019t slept in three days and I\u2019m hearing voices and feeling paranoid.\u201d They can stay with you and help immediately. You can also call Washington County Behavioral Health at **503\u2026 846\u2026 4528**. If you feel in immediate danger, call **911** now.",
+      "voiceResponseAlternatives": [
+        "Next step: call 2-1-1 now and ask for \u201curgent dental clinic in Washington County.\u201d I don\u2019t have a grounded dental listing in the records in front of me right now. If you want, I can stay with you while you call and help you script exactly what to ask for.",
+        "Next step: call **2-1-1** right now and say, \u201cI need an **adult urgent dental visit in Washington County**, same day if possible.\u201d I can only confirm from my records that 211info has a **Mobile Dental Care** listing with multiple providers, but not a direct clinic number here. If you want, I\u2019ll help you with a one-sentence script before you dial.",
+        "I hear you, and I\u2019ll keep it quick. Call this clinic first: **5 4 1, 2 3 2, 8 5 4 6**. It\u2019s a monthly pop-up medical clinic, and the listing says it serves people experiencing homelessness, with no documents required. If your cough is getting worse fast or you\u2019re short of breath, call **9 1 1** now. If they can\u2019t see you today, call me back and I\u2019ll get the next closest low-cost option.",
+        "You did the right thing calling. First step: call Washington County Behavioral Health\u2019s mental health referral line now at **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. I\u2019ll repeat: **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. They provide information and referrals for mental health providers. If you want, I can help you plan exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001200#turn-4",
+      "scenarioId": "phone_dialog_0001200",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, what was your question, am I safe right this second? I locked the door but I\u2019m scared I\u2019ll do something stupid if this keeps going.",
+      "normalizedQuery": "hi sorry keep losing train thought washington county like mental health think say again voices louder when on speaker said 'shelter' counseling right no trying hurt anyone just haven slept three days thinking apartment vents recording wait was your question safe this second locked door scared ll something stupid if keeps going",
+      "voiceResponse": "I\u2019m really glad you said that. If you\u2019re scared you might do something unsafe, this is an urgent safety moment. Please call **988 right now** and say: \u201cI\u2019m scared I\u2019ll do something stupid.\u201d If you feel you might act on it right now, call **911** immediately. You don\u2019t have to handle this alone.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. If you\u2019re scared you might do something unsafe, this is an urgent safety moment. Please call **988 right now** and say: \u201cI\u2019m scared I\u2019ll do something stupid.\u201d If you feel you might act on it right now, call **911** immediately. You don\u2019t have to handle this alone.",
+      "voiceResponseAlternatives": [
+        "Next step: call 2-1-1 now and ask for \u201curgent dental clinic in Washington County.\u201d I don\u2019t have a grounded dental listing in the records in front of me right now. If you want, I can stay with you while you call and help you script exactly what to ask for.",
+        "Next step: call **2-1-1** right now and say, \u201cI need an **adult urgent dental visit in Washington County**, same day if possible.\u201d I can only confirm from my records that 211info has a **Mobile Dental Care** listing with multiple providers, but not a direct clinic number here. If you want, I\u2019ll help you with a one-sentence script before you dial.",
+        "I hear you, and I\u2019ll keep it quick. Call this clinic first: **5 4 1, 2 3 2, 8 5 4 6**. It\u2019s a monthly pop-up medical clinic, and the listing says it serves people experiencing homelessness, with no documents required. If your cough is getting worse fast or you\u2019re short of breath, call **9 1 1** now. If they can\u2019t see you today, call me back and I\u2019ll get the next closest low-cost option.",
+        "You did the right thing calling. First step: call Washington County Behavioral Health\u2019s mental health referral line now at **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. I\u2019ll repeat: **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. They provide information and referrals for mental health providers. If you want, I can help you plan exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001240#turn-2",
+      "scenarioId": "phone_dialog_0001240",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you hear me? I\u2019m in Washington County, and I was trying to find a medical clinic, but he\u2019s getting worse.",
+      "normalizedQuery": "hear washington county was trying medical clinic health he getting worse",
+      "voiceResponse": "Yeah, I hear you. You\u2019re doing the right thing calling. If he\u2019s getting worse, skip clinic and call **911 now** for an overdose emergency. Say: \u201cHe took pills and alcohol, and he keeps nodding out.\u201d Keep him on his side, watch his breathing, and don\u2019t let him take anything else. If he won\u2019t wake up or breathing slows, tell 911 right away. If you have naloxone, use it now.",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:c909216f9b778826",
+        "service:32563cb1c104dad6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. You\u2019re doing the right thing calling. If he\u2019s getting worse, skip clinic and call **911 now** for an overdose emergency. Say: \u201cHe took pills and alcohol, and he keeps nodding out.\u201d Keep him on his side, watch his breathing, and don\u2019t let him take anything else. If he won\u2019t wake up or breathing slows, tell 911 right away. If you have naloxone, use it now.",
+      "voiceResponseAlternatives": [
+        "Next step: call 2-1-1 now and ask for \u201curgent dental clinic in Washington County.\u201d I don\u2019t have a grounded dental listing in the records in front of me right now. If you want, I can stay with you while you call and help you script exactly what to ask for.",
+        "Next step: call **2-1-1** right now and say, \u201cI need an **adult urgent dental visit in Washington County**, same day if possible.\u201d I can only confirm from my records that 211info has a **Mobile Dental Care** listing with multiple providers, but not a direct clinic number here. If you want, I\u2019ll help you with a one-sentence script before you dial.",
+        "I hear you, and I\u2019ll keep it quick. Call this clinic first: **5 4 1, 2 3 2, 8 5 4 6**. It\u2019s a monthly pop-up medical clinic, and the listing says it serves people experiencing homelessness, with no documents required. If your cough is getting worse fast or you\u2019re short of breath, call **9 1 1** now. If they can\u2019t see you today, call me back and I\u2019ll get the next closest low-cost option.",
+        "You did the right thing calling. First step: call Washington County Behavioral Health\u2019s mental health referral line now at **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. I\u2019ll repeat: **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. They provide information and referrals for mental health providers. If you want, I can help you plan exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001252#turn-1",
+      "scenarioId": "phone_dialog_0001252",
+      "turnIndex": 0,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hi, sorry, you cut out for a second, are you Abby? I need a clinic, like a regular medical clinic, in Washington County, not the ER, unless this is already an emergency and nobody told me.",
+      "normalizedQuery": "hi sorry cut second abby clinic medical health like regular washington county er unless this already an emergency nobody told",
+      "voiceResponse": "Yes, this is Abby. You\u2019re asking for a **regular medical clinic in Washington County**, **not the ER**. If you have immediate danger signs like chest pain, trouble breathing, severe bleeding, or thoughts of self-harm, call **911** now. Otherwise, we\u2019ll stay with non-emergency clinic options.",
+      "evidenceDocIds": [
+        "service:8ce3cb945b6fc55c",
+        "service:4a5a0081811d7638",
+        "service:5b5c6914c8606691",
+        "service:f271a5c8d14f9de1",
+        "service:ce81b1612f2a5a7b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, this is Abby. You\u2019re asking for a **regular medical clinic in Washington County**, **not the ER**. If you have immediate danger signs like chest pain, trouble breathing, severe bleeding, or thoughts of self-harm, call **911** now. Otherwise, we\u2019ll stay with non-emergency clinic options.",
+      "voiceResponseAlternatives": [
+        "Of course\u2014you\u2019re doing the right thing. Here it is slowly: **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll say it once more: **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001252#turn-2",
+      "scenarioId": "phone_dialog_0001252",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I can explain it, it\u2019s just layered, because the neighbors keep signaling through the vent and now there\u2019s a man\u2019s voice saying don\u2019t trust phones, but I still need my blood pressure meds checked.",
+      "normalizedQuery": "hi sorry cut second abby clinic medical health like regular washington county er unless this already an emergency nobody told explain it just layered because neighbors keep signaling through vent now there man voice saying don trust phones still blood pressure meds checked",
+      "voiceResponse": "I\u2019m glad you told me. What you just described can be a mental health safety crisis. If you feel in immediate danger, call 911 now. If you can talk safely, call or text 988 right now for urgent support. After that, I\u2019ll help you get a regular Washington County clinic for your blood pressure medication check.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you told me. What you just described can be a mental health safety crisis. If you feel in immediate danger, call 911 now. If you can talk safely, call or text 988 right now for urgent support. After that, I\u2019ll help you get a regular Washington County clinic for your blood pressure medication check.",
+      "voiceResponseAlternatives": [
+        "Next step: call 2-1-1 now and ask for \u201curgent dental clinic in Washington County.\u201d I don\u2019t have a grounded dental listing in the records in front of me right now. If you want, I can stay with you while you call and help you script exactly what to ask for.",
+        "Next step: call **2-1-1** right now and say, \u201cI need an **adult urgent dental visit in Washington County**, same day if possible.\u201d I can only confirm from my records that 211info has a **Mobile Dental Care** listing with multiple providers, but not a direct clinic number here. If you want, I\u2019ll help you with a one-sentence script before you dial.",
+        "I hear you, and I\u2019ll keep it quick. Call this clinic first: **5 4 1, 2 3 2, 8 5 4 6**. It\u2019s a monthly pop-up medical clinic, and the listing says it serves people experiencing homelessness, with no documents required. If your cough is getting worse fast or you\u2019re short of breath, call **9 1 1** now. If they can\u2019t see you today, call me back and I\u2019ll get the next closest low-cost option.",
+        "You did the right thing calling. First step: call Washington County Behavioral Health\u2019s mental health referral line now at **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. I\u2019ll repeat: **5 0 3** \u2026 **8 4 6** \u2026 **4 5 2 8**. They provide information and referrals for mental health providers. If you want, I can help you plan exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -352,6 +531,42 @@
       "to": "phone_dialog_0000740#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001200#turn-1",
+      "to": "phone_dialog_0001200#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001200#turn-3",
+      "to": "phone_dialog_0001200#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001200#turn-4",
+      "to": "phone_dialog_0001200#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001240#turn-2",
+      "to": "phone_dialog_0001240#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001252#turn-1",
+      "to": "phone_dialog_0001252#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001252#turn-2",
+      "to": "phone_dialog_0001252#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

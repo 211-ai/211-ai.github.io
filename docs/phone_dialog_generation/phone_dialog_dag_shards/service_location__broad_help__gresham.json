@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
+  "id": "service_location__broad_help__gresham",
+  "kind": "service_location",
+  "key": "broad_help__gresham",
+  "nodeCount": 1,
+  "nodes": [
+    {
+      "id": "phone_dialog_0001209#turn-1",
+      "scenarioId": "phone_dialog_0001209",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "gresham",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Gresham, my phone\u2019s dying, can you help me fast?",
+      "normalizedQuery": "hi gresham phone dying fast",
+      "voiceResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:bb282e5eaf2a18e5",
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0001209#turn-1",
+      "to": "phone_dialog_0001209#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    }
+  ]
+}

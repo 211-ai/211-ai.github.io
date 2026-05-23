@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__hillsboro",
   "kind": "service_location",
   "key": "general__hillsboro",
-  "nodeCount": 25,
+  "nodeCount": 33,
   "nodes": [
     {
       "id": "phone_dialog_0000092#turn-1",
@@ -527,7 +527,8 @@
       "similarCases": [],
       "assistantResponse": "I hear you. Thank you. The line is still unclear on my end. I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d Do you want help with shelter tonight, or a child program in Hillsboro?",
       "voiceResponseAlternatives": [
-        "Yes. I will go slow. The line is unclear on my end. The line is unclear on my end. I heard: Hillsboro, and no sleep. Please say one word: \u201cshelter\u201d or \u201cchild program\u201d?"
+        "Yes. I will go slow. The line is unclear on my end. The line is unclear on my end. I heard: Hillsboro, and no sleep. Please say one word: \u201cshelter\u201d or \u201cchild program\u201d?",
+        "I\u2019m sorry, your audio was unclear. I heard you\u2019re in Hillsboro and can\u2019t go home tonight. If you think your partner may find you right now, call 911 now. Can you repeat just one thing: are you safe right this second, yes or no?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
@@ -554,7 +555,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. I will go slow. The line is unclear on my end. The line is unclear on my end. I heard: Hillsboro, and no sleep. Please say one word: \u201cshelter\u201d or \u201cchild program\u201d?",
       "voiceResponseAlternatives": [
-        "I hear you. Thank you. The line is still unclear on my end. I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d Do you want help with shelter tonight, or a child program in Hillsboro?"
+        "I hear you. Thank you. The line is still unclear on my end. I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d Do you want help with shelter tonight, or a child program in Hillsboro?",
+        "I\u2019m sorry, your audio was unclear. I heard you\u2019re in Hillsboro and can\u2019t go home tonight. If you think your partner may find you right now, call 911 now. Can you repeat just one thing: are you safe right this second, yes or no?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
@@ -739,6 +741,239 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001168#turn-1",
+      "scenarioId": "phone_dialog_0001168",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I can barely hear you out here at the bus stop... I\u2019m in Hillsboro and I can\u2019t go back home tonight, my partner said he\u2019d find me.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop hillsboro go back home tonight partner said he",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard you\u2019re in Hillsboro and can\u2019t go home tonight. If you think your partner may find you right now, call 911 now. Can you repeat just one thing: are you safe right this second, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:437ec64b59b0ac16",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard you\u2019re in Hillsboro and can\u2019t go home tonight. If you think your partner may find you right now, call 911 now. Can you repeat just one thing: are you safe right this second, yes or no?",
+      "voiceResponseAlternatives": [
+        "I hear you. Thank you. The line is still unclear on my end. I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d I heard \u201cHillsboro\u201d and \u201cno sleep.\u201d Do you want help with shelter tonight, or a child program in Hillsboro?",
+        "Yes. I will go slow. The line is unclear on my end. The line is unclear on my end. I heard: Hillsboro, and no sleep. Please say one word: \u201cshelter\u201d or \u201cchild program\u201d?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001168#turn-3",
+      "scenarioId": "phone_dialog_0001168",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Can we do this quietly? Please don\u2019t call my phone back if we disconnect, he checks my call log.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop hillsboro go back home tonight partner said he been following texting threats shoved earlier really scared nearby right now we this quietly please don call phone if disconnect checks log",
+      "voiceResponse": "Yes. We can stay quiet. I will not call you back if we disconnect. If he\u2019s nearby or you\u2019re in immediate danger, call 911 now, and whisper if needed. Move to the nearest busy indoor place and stay where staff can see you. I\u2019m keeping you connected to the live crisis agent now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can stay quiet. I will not call you back if we disconnect. If he\u2019s nearby or you\u2019re in immediate danger, call 911 now, and whisper if needed. Move to the nearest busy indoor place and stay where staff can see you. I\u2019m keeping you connected to the live crisis agent now.",
+      "voiceResponseAlternatives": [
+        "Most important step first: call **2-1-1** now and ask for a **live specialist for Hillsboro**. You can keep it general and share only what feels safe, like \u201cI\u2019m calling for my nephew and need local help options.\u201d If the line drops, just dial **2-1-1** again. If there\u2019s immediate danger, call **9-1-1**.",
+        "First step: call **Hillsboro Family Shelter** now at **503\u2026 640\u2026 3263**. If no answer, call **503\u2026 726\u2026 0812**. Address is **210 Southeast 12th Avenue, Hillsboro**. They shelter families with minor children and pregnant women. If you feel in immediate danger from weather or anything else, call **9-1-1** right now.",
+        "Yes. Quick next step: call **Hillsboro Family Shelter** now: **503\u2026 640\u2026 3263**. I\u2019ll repeat: **503\u2026 640\u2026 3263**. If they don\u2019t answer, call **503\u2026 726\u2026 0812**. Repeat backup: **503\u2026 726\u2026 0812**. Go to **210 Southeast 12th Avenue, Hillsboro**. If you feel in immediate danger from cold or anything else, call **9-1-1**.",
+        "You\u2019re doing the right thing calling. Let\u2019s take one step now: if you\u2019re in immediate danger, call 911 right now. I do have one shelter option to try tonight: SAFE SLEEP UNITED for women, no documents required. Call **5 0 3, 8 1 6, 3 4 0 9**. That\u2019s **5 0 3, 8 1 6, 3 4 0 9**. If they can\u2019t take you, stay on the line with me and I\u2019ll keep helping with next options."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001172#turn-2",
+      "scenarioId": "phone_dialog_0001172",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Hillsboro, outside since last night, and I\u2019m getting really cold and shaky.",
+      "normalizedQuery": "hi most important number first this borrowed phone it die hillsboro outside since last night getting really cold shaky",
+      "voiceResponse": "You did the right thing telling me. Most important number now: **9 1 1**. Again: **9 1 1**. You sound at risk for hypothermia. That can be serious fast. Call 911 now and say: \u201cI\u2019m outside in Hillsboro, I\u2019m very cold and shaky, and I need medical help now.\u201d Can you call **9 1 1** right now?",
+      "evidenceDocIds": [
+        "page:bafkreibgimm7n5onnnyvcflvv7c2ztkkw7zgn6nuoaav6q7gu4qaevnx4a",
+        "page:bafkreihtetflqauhq2niqthrnpmt4qsake4m24xywebzhy7niwwu6ssedu",
+        "service:7fc903dee857293d",
+        "service:17f85caae2094027",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing telling me. Most important number now: **9 1 1**. Again: **9 1 1**. You sound at risk for hypothermia. That can be serious fast. Call 911 now and say: \u201cI\u2019m outside in Hillsboro, I\u2019m very cold and shaky, and I need medical help now.\u201d Can you call **9 1 1** right now?",
+      "voiceResponseAlternatives": [
+        "Most important step first: call **2-1-1** now and ask for a **live specialist for Hillsboro**. You can keep it general and share only what feels safe, like \u201cI\u2019m calling for my nephew and need local help options.\u201d If the line drops, just dial **2-1-1** again. If there\u2019s immediate danger, call **9-1-1**.",
+        "First step: call **Hillsboro Family Shelter** now at **503\u2026 640\u2026 3263**. If no answer, call **503\u2026 726\u2026 0812**. Address is **210 Southeast 12th Avenue, Hillsboro**. They shelter families with minor children and pregnant women. If you feel in immediate danger from weather or anything else, call **9-1-1** right now.",
+        "Yes. Quick next step: call **Hillsboro Family Shelter** now: **503\u2026 640\u2026 3263**. I\u2019ll repeat: **503\u2026 640\u2026 3263**. If they don\u2019t answer, call **503\u2026 726\u2026 0812**. Repeat backup: **503\u2026 726\u2026 0812**. Go to **210 Southeast 12th Avenue, Hillsboro**. If you feel in immediate danger from cold or anything else, call **9-1-1**.",
+        "You\u2019re doing the right thing calling. Let\u2019s take one step now: if you\u2019re in immediate danger, call 911 right now. I do have one shelter option to try tonight: SAFE SLEEP UNITED for women, no documents required. Call **5 0 3, 8 1 6, 3 4 0 9**. That\u2019s **5 0 3, 8 1 6, 3 4 0 9**. If they can\u2019t take you, stay on the line with me and I\u2019ll keep helping with next options."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001172#turn-3",
+      "scenarioId": "phone_dialog_0001172",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel dizzy and weak, like I might pass out if I keep standing.",
+      "normalizedQuery": "hi most important number first this borrowed phone it die hillsboro outside since last night getting really cold shaky feel dizzy weak like might pass if keep standing",
+      "voiceResponse": "You need emergency help now. Call **9 1 1** now. Again: **9 1 1**. Say: \u201cI\u2019m in Hillsboro. I\u2019m dizzy, weak, very cold, and might pass out.\u201d If you can, sit or lie down right now so you do not fall. Can you call **9 1 1** right this second?",
+      "evidenceDocIds": [
+        "page:bafkreibgimm7n5onnnyvcflvv7c2ztkkw7zgn6nuoaav6q7gu4qaevnx4a",
+        "page:bafkreihtetflqauhq2niqthrnpmt4qsake4m24xywebzhy7niwwu6ssedu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You need emergency help now. Call **9 1 1** now. Again: **9 1 1**. Say: \u201cI\u2019m in Hillsboro. I\u2019m dizzy, weak, very cold, and might pass out.\u201d If you can, sit or lie down right now so you do not fall. Can you call **9 1 1** right this second?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001219#turn-1",
+      "scenarioId": "phone_dialog_0001219",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Hello? Can you hear me, you keep fading out. I\u2019m in Hillsboro, by the MAX stop I think, and the people in the hallway are talking about me through the vent.",
+      "normalizedQuery": "hello hear keep fading hillsboro by max stop think people hallway talking through vent",
+      "voiceResponse": "I hear you, and that sounds really unsettling. Let\u2019s keep this simple: are you physically safe right now where you are? If you can, step to a brighter, public spot near the MAX platform or a staffed area. If anyone is threatening you, or you feel in immediate danger, call 911 right now. Stay on the line with me and tell me what you can see around you in one short sentence.",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127",
+        "service:3ad36b571383e0bf",
+        "service:6157126cc568b343"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that sounds really unsettling. Let\u2019s keep this simple: are you physically safe right now where you are? If you can, step to a brighter, public spot near the MAX platform or a staffed area. If anyone is threatening you, or you feel in immediate danger, call 911 right now. Stay on the line with me and tell me what you can see around you in one short sentence.",
+      "voiceResponseAlternatives": [
+        "Most important step first: call **2-1-1** now and ask for a **live specialist for Hillsboro**. You can keep it general and share only what feels safe, like \u201cI\u2019m calling for my nephew and need local help options.\u201d If the line drops, just dial **2-1-1** again. If there\u2019s immediate danger, call **9-1-1**.",
+        "First step: call **Hillsboro Family Shelter** now at **503\u2026 640\u2026 3263**. If no answer, call **503\u2026 726\u2026 0812**. Address is **210 Southeast 12th Avenue, Hillsboro**. They shelter families with minor children and pregnant women. If you feel in immediate danger from weather or anything else, call **9-1-1** right now.",
+        "Yes. Quick next step: call **Hillsboro Family Shelter** now: **503\u2026 640\u2026 3263**. I\u2019ll repeat: **503\u2026 640\u2026 3263**. If they don\u2019t answer, call **503\u2026 726\u2026 0812**. Repeat backup: **503\u2026 726\u2026 0812**. Go to **210 Southeast 12th Avenue, Hillsboro**. If you feel in immediate danger from cold or anything else, call **9-1-1**.",
+        "You\u2019re doing the right thing calling. Let\u2019s take one step now: if you\u2019re in immediate danger, call 911 right now. I do have one shelter option to try tonight: SAFE SLEEP UNITED for women, no documents required. Call **5 0 3, 8 1 6, 3 4 0 9**. That\u2019s **5 0 3, 8 1 6, 3 4 0 9**. If they can\u2019t take you, stay on the line with me and I\u2019ll keep helping with next options."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001245#turn-2",
+      "scenarioId": "phone_dialog_0001245",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "No, no, I heard your question, I\u2019m in Hillsboro, near the MAX stop, I think, but they changed the map colors and now I can\u2019t tell what\u2019s real.",
+      "normalizedQuery": "yeah hi sorry know this sounds connected it's linear hallway vents carrying messages name them keep doubling back hear okay no heard your question hillsboro max stop think they changed map colors now tell real",
+      "voiceResponse": "Thank you for telling me. You sound disoriented, and your safety comes first. If you feel in immediate danger, call 911 now. I\u2019m connecting you to a live human counselor right now, so please stay on the line with me.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:ec82a10871f2b26f",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You sound disoriented, and your safety comes first. If you feel in immediate danger, call 911 now. I\u2019m connecting you to a live human counselor right now, so please stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "Most important step first: call **2-1-1** now and ask for a **live specialist for Hillsboro**. You can keep it general and share only what feels safe, like \u201cI\u2019m calling for my nephew and need local help options.\u201d If the line drops, just dial **2-1-1** again. If there\u2019s immediate danger, call **9-1-1**.",
+        "First step: call **Hillsboro Family Shelter** now at **503\u2026 640\u2026 3263**. If no answer, call **503\u2026 726\u2026 0812**. Address is **210 Southeast 12th Avenue, Hillsboro**. They shelter families with minor children and pregnant women. If you feel in immediate danger from weather or anything else, call **9-1-1** right now.",
+        "Yes. Quick next step: call **Hillsboro Family Shelter** now: **503\u2026 640\u2026 3263**. I\u2019ll repeat: **503\u2026 640\u2026 3263**. If they don\u2019t answer, call **503\u2026 726\u2026 0812**. Repeat backup: **503\u2026 726\u2026 0812**. Go to **210 Southeast 12th Avenue, Hillsboro**. If you feel in immediate danger from cold or anything else, call **9-1-1**.",
+        "You\u2019re doing the right thing calling. Let\u2019s take one step now: if you\u2019re in immediate danger, call 911 right now. I do have one shelter option to try tonight: SAFE SLEEP UNITED for women, no documents required. Call **5 0 3, 8 1 6, 3 4 0 9**. That\u2019s **5 0 3, 8 1 6, 3 4 0 9**. If they can\u2019t take you, stay on the line with me and I\u2019ll keep helping with next options."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001257#turn-1",
+      "scenarioId": "phone_dialog_0001257",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I need somewhere to sleep tonight, in Hillsboro, but don\u2019t send me to that place by the tracks, they listen through the vents.",
+      "normalizedQuery": "hi somewhere sleep tonight hillsboro don send place by tracks they listen through vents",
+      "voiceResponse": "I hear how stressed this feels, and we can avoid that location. For Hillsboro tonight, I have **Safe Place for Youth** at **454 Southeast Washington Street**. It\u2019s for ages **12 to 20**. You can call **503-542-2717** or **503-542-2389**. If you\u2019re not in that age range, I can connect you to a live specialist right now to find another safe bed option tonight.",
+      "evidenceDocIds": [
+        "service:a1e021534ee03771",
+        "service:2e6331f97ca5eacd",
+        "service:ac5079153805801e",
+        "service:11c8cb54e283cb73",
+        "service:ae7950a80cfa3f78"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how stressed this feels, and we can avoid that location. For Hillsboro tonight, I have **Safe Place for Youth** at **454 Southeast Washington Street**. It\u2019s for ages **12 to 20**. You can call **503-542-2717** or **503-542-2389**. If you\u2019re not in that age range, I can connect you to a live specialist right now to find another safe bed option tonight.",
+      "voiceResponseAlternatives": [
+        "Most important step first: call **2-1-1** now and ask for a **live specialist for Hillsboro**. You can keep it general and share only what feels safe, like \u201cI\u2019m calling for my nephew and need local help options.\u201d If the line drops, just dial **2-1-1** again. If there\u2019s immediate danger, call **9-1-1**.",
+        "First step: call **Hillsboro Family Shelter** now at **503\u2026 640\u2026 3263**. If no answer, call **503\u2026 726\u2026 0812**. Address is **210 Southeast 12th Avenue, Hillsboro**. They shelter families with minor children and pregnant women. If you feel in immediate danger from weather or anything else, call **9-1-1** right now.",
+        "Yes. Quick next step: call **Hillsboro Family Shelter** now: **503\u2026 640\u2026 3263**. I\u2019ll repeat: **503\u2026 640\u2026 3263**. If they don\u2019t answer, call **503\u2026 726\u2026 0812**. Repeat backup: **503\u2026 726\u2026 0812**. Go to **210 Southeast 12th Avenue, Hillsboro**. If you feel in immediate danger from cold or anything else, call **9-1-1**.",
+        "You\u2019re doing the right thing calling. Let\u2019s take one step now: if you\u2019re in immediate danger, call 911 right now. I do have one shelter option to try tonight: SAFE SLEEP UNITED for women, no documents required. Call **5 0 3, 8 1 6, 3 4 0 9**. That\u2019s **5 0 3, 8 1 6, 3 4 0 9**. If they can\u2019t take you, stay on the line with me and I\u2019ll keep helping with next options."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001257#turn-2",
+      "scenarioId": "phone_dialog_0001257",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? You cut out. I said I got my backpack and my meds are gone, and the voices keep saying don\u2019t go inside anywhere.",
+      "normalizedQuery": "hi somewhere sleep tonight hillsboro don send place by tracks they listen through vents sorry cut said got backpack meds gone voices keep saying go inside anywhere",
+      "voiceResponse": "I hear you, and I\u2019m glad you said that. Repeating the key details: the Hillsboro option I gave is **Safe Place for Youth**, at **454 Southeast Washington Street**. It\u2019s for ages **12 to 20**. The phone numbers are **503-542-2717** and **503-542-2389**. That\u2019s **503\u2026 542\u2026 2717**, or **503\u2026 542\u2026 2389**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:a1e021534ee03771",
+        "service:2e6331f97ca5eacd",
+        "service:8633bf7679779ba4",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you said that. Repeating the key details: the Hillsboro option I gave is **Safe Place for Youth**, at **454 Southeast Washington Street**. It\u2019s for ages **12 to 20**. The phone numbers are **503-542-2717** and **503-542-2389**. That\u2019s **503\u2026 542\u2026 2717**, or **503\u2026 542\u2026 2389**.",
+      "voiceResponseAlternatives": [
+        "Quick next step: call them now and ask if they\u2019re open tonight. I don\u2019t have confirmed hours in front of me. Main number: **503 \u2026 640 \u2026 3263**. Backup: **503 \u2026 726 \u2026 0812**.",
+        "Yes. The address is: **210 Southeast 12th Avenue, Hillsboro**. I\u2019ll say it slowly: **two-one-zero** \u2026 **Southeast** \u2026 **12th** \u2026 **Avenue** \u2026 **Hillsboro**.",
+        "I hear you. Let\u2019s go slow. Call this number: **5 0 3**\u2026 **8 1 6**\u2026 **3 4 0 9**. Again: **5 0 3**\u2026 **8 1 6**\u2026 **3 4 0 9**. It\u2019s SAFE SLEEP UNITED, and they said no documents are required.",
+        "Absolutely. I don\u2019t have an address to repeat yet. The only confirmed detail I have is the listing name: \u201cCongregate Meals and Nutrition Sites.\u201d If you want, I can connect you to 211 now so they can give the exact Hillsboro address and today\u2019s time slowly, number by number."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -867,6 +1102,54 @@
       "to": "phone_dialog_0000822#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001168#turn-1",
+      "to": "phone_dialog_0001168#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001168#turn-3",
+      "to": "phone_dialog_0001168#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001172#turn-2",
+      "to": "phone_dialog_0001172#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001172#turn-3",
+      "to": "phone_dialog_0001172#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001219#turn-1",
+      "to": "phone_dialog_0001219#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001245#turn-2",
+      "to": "phone_dialog_0001245#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001257#turn-1",
+      "to": "phone_dialog_0001257#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001257#turn-2",
+      "to": "phone_dialog_0001257#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__utilities__oregon_city",
   "kind": "service_location",
   "key": "utilities__oregon_city",
-  "nodeCount": 8,
+  "nodeCount": 9,
   "nodes": [
     {
       "id": "phone_dialog_0000331#turn-4",
@@ -27,7 +27,8 @@
       "similarCases": [],
       "assistantResponse": "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
       "voiceResponseAlternatives": [
-        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**."
+        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
+        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
@@ -112,7 +113,8 @@
       "similarCases": [],
       "assistantResponse": "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
       "voiceResponseAlternatives": [
-        "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**."
+        "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
+        "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?"
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
@@ -225,6 +227,34 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001249#turn-1",
+      "scenarioId": "phone_dialog_0001249",
+      "turnIndex": 0,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hi, sorry, can you slow down with me? I\u2019m in Oregon City and I\u2019ve been out in this heat too long, I\u2019m really dizzy.",
+      "normalizedQuery": "hi sorry slow down oregon city ve been this heat utility utilities electric too long really dizzy",
+      "voiceResponse": "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll go slow. You said: you\u2019re in Oregon City, and you feel very dizzy from heat. You\u2019re in Oregon City, and very dizzy from heat. Please move to shade if you can, and take small sips of cool water. Are you with someone right now?",
+      "voiceResponseAlternatives": [
+        "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
+        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -275,6 +305,12 @@
       "to": "phone_dialog_0000878#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001249#turn-1",
+      "to": "phone_dialog_0001249#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

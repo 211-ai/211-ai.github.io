@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "route__clarifying_prompt",
   "kind": "route",
   "key": "clarifying_prompt",
-  "nodeCount": 49,
+  "nodeCount": 52,
   "nodes": [
     {
       "id": "phone_dialog_0000018#turn-1",
@@ -54,7 +54,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you, and I\u2019m really glad you called. We can sort this out step by step and find warm clothing options near you. What part of Portland are you in right now, or what ZIP code are you closest to?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
@@ -1358,6 +1360,88 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001202#turn-1",
+      "scenarioId": "phone_dialog_0001202",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "portland",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, can you hear me? I\u2019m in Portland, my phone\u2019s at like three percent, and I really need help.",
+      "normalizedQuery": "hi hear portland phone at like three percent really",
+      "voiceResponse": "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:739b19b7f45258ce",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:fef46dc01f825fb3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you reached out. Let\u2019s do this fast so we save your battery. I can help you get to the right support in Portland right now. What do you need first: a safe place to sleep tonight, food, or medical help?",
+      "voiceResponseAlternatives": [
+        "I hear you, and I\u2019m really glad you called. We can sort this out step by step and find warm clothing options near you. What part of Portland are you in right now, or what ZIP code are you closest to?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001209#turn-1",
+      "scenarioId": "phone_dialog_0001209",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "gresham",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Gresham, my phone\u2019s dying, can you help me fast?",
+      "normalizedQuery": "hi gresham phone dying fast",
+      "voiceResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:bb282e5eaf2a18e5",
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we can do this fast. I can get you the quickest next step right now. Are you looking for a place to sleep tonight, or do you need emergency safety help right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-5",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 4,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "statewide",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Please don\u2019t send cops first, we\u2019re both 22, I just need help now.",
+      "normalizedQuery": "sorry your voice cut say again it just friend took pills lot drink now he on floor really waking up breathing weird like slow kinda gurgly freaking please don send cops first we re both 22",
+      "voiceResponse": "I hear you, and I\u2019m with you. Right now his slow, gurgly breathing means he needs emergency medical help immediately. Call **911** and say, \u201cMedical emergency, possible overdose, not waking up, please send EMS now.\u201d Keep him on his side, head slightly back, and stay with him. If naloxone is there, give it now. Are you able to call 911 now while I stay with you?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m with you. Right now his slow, gurgly breathing means he needs emergency medical help immediately. Call **911** and say, \u201cMedical emergency, possible overdose, not waking up, please send EMS now.\u201d Keep him on his side, head slightly back, and stay with him. If naloxone is there, give it now. Are you able to call 911 now while I stay with you?",
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. First, is your friend in immediate danger right now?",
+        "Yeah, I hear you. We can keep this minimal and only share what you choose. I can help with urgent power-bill options and contacts that usually don\u2019t need much info up front. What city are you in right now?",
+        "I\u2019m so sorry you\u2019re going through this. I\u2019m here with you. Are you having any thoughts of hurting yourself right now?",
+        "I hear you. I can help fast. What do you need most today: food, a place to stay, or school supplies?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1648,6 +1732,24 @@
       "to": "phone_dialog_0001023#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001202#turn-1",
+      "to": "phone_dialog_0001202#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001209#turn-1",
+      "to": "phone_dialog_0001209#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-5",
+      "to": "phone_dialog_0001222#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->live_agent"
     }
   ]
 }

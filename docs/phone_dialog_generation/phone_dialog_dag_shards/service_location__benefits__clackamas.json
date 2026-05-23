@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__clackamas",
   "kind": "service_location",
   "key": "benefits__clackamas",
-  "nodeCount": 47,
+  "nodeCount": 53,
   "nodes": [
     {
       "id": "phone_dialog_0000049#turn-1",
@@ -1399,6 +1399,186 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001215#turn-2",
+      "scenarioId": "phone_dialog_0001215",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I missed that... I\u2019m in Clackamas, like near Oregon City, and she\u2019s 78.",
+      "normalizedQuery": "hi um sorry really breathe right now grandma hasn eaten since yesterday don know slow down missed clackamas like oregon city she 78",
+      "voiceResponse": "Yes. Slow and clear: if you can\u2019t breathe right now, call **911** now. You\u2019re near Oregon City, and your grandma is 78 and hasn\u2019t eaten since yesterday, so she needs urgent medical care **today** too. Right now, do one breath with me: in through your nose for 4\u2026 out slowly for 6.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:07ca533531c908aa",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and clear: if you can\u2019t breathe right now, call **911** now. You\u2019re near Oregon City, and your grandma is 78 and hasn\u2019t eaten since yesterday, so she needs urgent medical care **today** too. Right now, do one breath with me: in through your nose for 4\u2026 out slowly for 6.",
+      "voiceResponseAlternatives": [
+        "Yes. The phone number is: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1. Again: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1.",
+        "Yes. The number is: **5, 0, 3** \u2026 **6, 5, 5** \u2026 **8, 4, 7, 1**. Again: **five zero three, six five five, eight four seven one**.",
+        "I don\u2019t have a confirmed address or cross street in front of me. Call them now and ask: **5, 0, 3 \u2026 6, 5, 5 \u2026 8, 4, 7, 1**.",
+        "You\u2019re doing great, and thanks for asking me to slow down. I said the power company names on your bill are: Pacific Power. Or Portland General Electric, also called P-G-E. Can you tell me which one you see?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001215#turn-3",
+      "scenarioId": "phone_dialog_0001215",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m trying not to freak out, but we got turned away before and I\u2019m scared it\u2019ll happen again.",
+      "normalizedQuery": "hi um sorry really breathe right now grandma hasn eaten since yesterday don know slow down missed clackamas like oregon city she 78 trying freak we got turned away before scared it ll happen again",
+      "voiceResponse": "I hear you, and you\u2019re not alone. If you feel like you can\u2019t breathe, call **911** right now. For your grandma, at 78 and not eating since yesterday, this is urgent and she needs same-day medical care. I\u2019m staying with you while we connect to a live person now so you don\u2019t have to do this alone. Take one slow breath with me: in for 4, out for 6.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not alone. If you feel like you can\u2019t breathe, call **911** right now. For your grandma, at 78 and not eating since yesterday, this is urgent and she needs same-day medical care. I\u2019m staying with you while we connect to a live person now so you don\u2019t have to do this alone. Take one slow breath with me: in for 4, out for 6.",
+      "voiceResponseAlternatives": [
+        "You\u2019re making a clear, practical ask, and that matters. Since you\u2019re not safe tonight, call **9 1 1** now if there\u2019s immediate danger. For local Clackamas County support near Oregon City, use **211info\u2019s Domestic Violence Hotlines** search and ask for a **nearby survivor advocacy program with emergency shelter and safety planning tonight**. If you want, I can stay with you while you make that call and help you script exactly what to say.",
+        "Call this now: **503-655-8471** \u2014 **five zero three, six five five, eight four seven one**. That\u2019s the Sandy Health Center dental clinic with emergency care. If you have fever, face swelling, or trouble breathing/swallowing, call **911** right now.",
+        "I can\u2019t confirm walk-ins from what I have here. Call them now and ask directly: **5, 0, 3 \u2026 6, 5, 5 \u2026 8, 4, 7, 1**. If the call drops, dial **2-1-1**. If you get face swelling, fever, or trouble breathing or swallowing, call **9-1-1** right away.",
+        "It\u2019s a statewide Oregon benefits line, not a direct Clackamas County office. Call **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. When they answer, say: \u201cI need disability benefits help in Clackamas County. Please connect me to the right local office.\u201d"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001215#turn-4",
+      "scenarioId": "phone_dialog_0001215",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what number was that? Say it again really slow, my phone\u2019s cutting out.",
+      "normalizedQuery": "hi um sorry really breathe right now grandma hasn eaten since yesterday don know slow down missed clackamas like oregon city she 78 trying freak we got turned away before scared it ll happen again wait number was say phone cutting",
+      "voiceResponse": "Yes. The number is **9-1-1**. I\u2019ll say it slowly again: **nine\u2026 one\u2026 one**. If you can\u2019t breathe, call **9-1-1 now**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. I\u2019ll say it slowly again: **nine\u2026 one\u2026 one**. If you can\u2019t breathe, call **9-1-1 now**.",
+      "voiceResponseAlternatives": [
+        "Yes. The phone number is: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1. Again: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1.",
+        "Yes. The number is: **5, 0, 3** \u2026 **6, 5, 5** \u2026 **8, 4, 7, 1**. Again: **five zero three, six five five, eight four seven one**.",
+        "I don\u2019t have a confirmed address or cross street in front of me. Call them now and ask: **5, 0, 3 \u2026 6, 5, 5 \u2026 8, 4, 7, 1**.",
+        "You\u2019re doing great, and thanks for asking me to slow down. I said the power company names on your bill are: Pacific Power. Or Portland General Electric, also called P-G-E. Can you tell me which one you see?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001242#turn-1",
+      "scenarioId": "phone_dialog_0001242",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I\u2019m in Clackamas, I need a clinic, like just a regular medical clinic, but the people in the next apartment keep sending messages through the vents.",
+      "normalizedQuery": "hi sorry hear clackamas clinic medical health like just regular people next apartment keep sending messages through vents",
+      "voiceResponse": "Yes, I can hear you. You\u2019re asking for a clinic in Clackamas, and I also hear a safety concern. If you feel in immediate danger, call 911 right now. For care in Clackamas, you can try Sunnyside Health Center, 9775 Southeast Sunnyside Road, Suite 200, Clackamas. Phone: 503, 655, 8471. If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:65875f4882427e4f",
+        "service:ad75ad49419633d5",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiafhfnpj2qr2ljz3s6wx6oe76c4vk32l6ovwrkn6e3s633ysecria"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. You\u2019re asking for a clinic in Clackamas, and I also hear a safety concern. If you feel in immediate danger, call 911 right now. For care in Clackamas, you can try Sunnyside Health Center, 9775 Southeast Sunnyside Road, Suite 200, Clackamas. Phone: 503, 655, 8471. If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. If you\u2019re having trouble breathing, severe pain, or feel like you might pass out, please hang up and call 9-1-1 right now. For benefits help, call OHP/SNAP enrollment assistance at **8-0-0, 6-3-8, 0-5-1-0**. They help adults with disabilities and can guide applications. Have proof of income and ID ready if you can.",
+        "I hear you. I can help. For counseling soon, try William Temple House. Phone: **503\u2026 226\u2026 3021**. Again: **503\u2026 226\u2026 3021**. Address: **2023 Northwest Hoyt Street, Portland**. Again: **2023 Northwest Hoyt Street, Portland**. They offer short-term counseling for depression, anxiety, family, and relationship support. If you want, I can stay with you while you get ready to call.",
+        "Neither one. It is on Northwest Hoyt Street in Portland. The address is: 2023 Northwest Hoyt Street, Portland. Again: 2023 Northwest Hoyt Street, Portland.",
+        "Next step: call the Sunnyside Oregon Reproductive Health Program Clinic in Clackamas and ask about low-cost options based on income. The number is **503\u2026 655\u2026 8471**. If privacy matters, you can ask what information they require before sharing details. Address, if needed: **9775 Southeast Sunnyside Road, Suite 200, Clackamas**. They list eligibility as income below **250% of the federal poverty level**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001242#turn-2",
+      "scenarioId": "phone_dialog_0001242",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "No, wait, not messages, it\u2019s more like voices, and they\u2019re arguing about me, and I know that sounds off, but can you repeat what you asked, there\u2019s a truck outside and I missed it.",
+      "normalizedQuery": "hi sorry hear clackamas clinic medical health like just regular people next apartment keep sending messages through vents no wait it more voices they re arguing know sounds off repeat asked there truck outside missed",
+      "voiceResponse": "I said: if you feel in immediate danger, call 911 right now. For a regular clinic: Sunnyside Health Center, 9775 Southeast Sunnyside Road, Suite 200, Clackamas. Phone number: 503, 655, 8471. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I said: if you feel in immediate danger, call 911 right now. For a regular clinic: Sunnyside Health Center, 9775 Southeast Sunnyside Road, Suite 200, Clackamas. Phone number: 503, 655, 8471. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Yes. The phone number is: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1. Again: 5\u2026 0\u2026 3\u2026 2\u2026 2\u2026 6\u2026 3\u2026 0\u2026 2\u2026 1.",
+        "Yes. The number is: **5, 0, 3** \u2026 **6, 5, 5** \u2026 **8, 4, 7, 1**. Again: **five zero three, six five five, eight four seven one**.",
+        "I don\u2019t have a confirmed address or cross street in front of me. Call them now and ask: **5, 0, 3 \u2026 6, 5, 5 \u2026 8, 4, 7, 1**.",
+        "You\u2019re doing great, and thanks for asking me to slow down. I said the power company names on your bill are: Pacific Power. Or Portland General Electric, also called P-G-E. Can you tell me which one you see?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001242#turn-4",
+      "scenarioId": "phone_dialog_0001242",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m safe this second, I think, I\u2019m inside, door locked, but I haven\u2019t slept and the voices get louder at night and then I forget what street I\u2019m even on.",
+      "normalizedQuery": "hi sorry hear clackamas clinic medical health like just regular people next apartment keep sending messages through vents no wait it more voices they re arguing know sounds off repeat asked there truck outside missed trying be dramatic line this up head right now someone check blood pressure meds unless phone part too safe second think inside door locked haven slept louder at night then forget street even on",
+      "voiceResponse": "Thank you for telling me. This is a safety concern. If you start feeling unsafe, confused about where you are, or might act on the voices, call **911** right away. Right now, let\u2019s get you to a human clinician: call **Sunnyside Health Center** at **503, 655, 8471** for a same-day meds and blood pressure check. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is a safety concern. If you start feeling unsafe, confused about where you are, or might act on the voices, call **911** right away. Right now, let\u2019s get you to a human clinician: call **Sunnyside Health Center** at **503, 655, 8471** for a same-day meds and blood pressure check. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re making a clear, practical ask, and that matters. Since you\u2019re not safe tonight, call **9 1 1** now if there\u2019s immediate danger. For local Clackamas County support near Oregon City, use **211info\u2019s Domestic Violence Hotlines** search and ask for a **nearby survivor advocacy program with emergency shelter and safety planning tonight**. If you want, I can stay with you while you make that call and help you script exactly what to say.",
+        "Call this now: **503-655-8471** \u2014 **five zero three, six five five, eight four seven one**. That\u2019s the Sandy Health Center dental clinic with emergency care. If you have fever, face swelling, or trouble breathing/swallowing, call **911** right now.",
+        "I can\u2019t confirm walk-ins from what I have here. Call them now and ask directly: **5, 0, 3 \u2026 6, 5, 5 \u2026 8, 4, 7, 1**. If the call drops, dial **2-1-1**. If you get face swelling, fever, or trouble breathing or swallowing, call **9-1-1** right away.",
+        "It\u2019s a statewide Oregon benefits line, not a direct Clackamas County office. Call **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. When they answer, say: \u201cI need disability benefits help in Clackamas County. Please connect me to the right local office.\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1677,6 +1857,42 @@
       "to": "phone_dialog_0001140#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001215#turn-2",
+      "to": "phone_dialog_0001215#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001215#turn-3",
+      "to": "phone_dialog_0001215#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001215#turn-4",
+      "to": "phone_dialog_0001215#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001242#turn-1",
+      "to": "phone_dialog_0001242#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001242#turn-2",
+      "to": "phone_dialog_0001242#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001242#turn-4",
+      "to": "phone_dialog_0001242#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

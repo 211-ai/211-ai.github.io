@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__shelter__medford",
   "kind": "service_location",
   "key": "shelter__medford",
-  "nodeCount": 55,
+  "nodeCount": 64,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-4",
@@ -327,7 +327,8 @@
       "similarCases": [],
       "assistantResponse": "Totally fair ask. I can\u2019t place the call myself, but I can give you a ready script right now. Say: \u201cHi, I\u2019m looking for weekday child care near Medford center starting around 7 a.m. Do you have openings? What are your weekly or monthly rates, and do you offer any sliding-scale or subsidy options? If no opening, what\u2019s your waitlist timeline and fee?\u201d Then ask them to text or email details so you can compare fast.",
       "voiceResponseAlternatives": [
-        "Yes\u2014use this voicemail now: \u201cHi, I\u2019m trying to find warming space for tonight in Medford. Can you tell me if you have space right now, what time check-in ends, and whether I can come in with little or no paperwork? My phone battery is low, so a quick call or text back is best. I can arrive by [time]. Thank you.\u201d"
+        "Yes\u2014use this voicemail now: \u201cHi, I\u2019m trying to find warming space for tonight in Medford. Can you tell me if you have space right now, what time check-in ends, and whether I can come in with little or no paperwork? My phone battery is low, so a quick call or text back is best. I can arrive by [time]. Thank you.\u201d",
+        "Yes. First: call **9-1-1** now if you\u2019re still shaky or dizzy. If you can send one text before the phone dies, send this exactly: \u201cUrgent: I\u2019m in Medford, shaky and dizzy, need help now and a warm indoor place tonight. Please call 9-1-1 for me and stay on the line.\u201d If you can, share your exact location in that text."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "bad_reception",
@@ -1029,7 +1030,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You don\u2019t need to apologize. You sound overwhelmed, and your safety matters first. If you or your son might be in immediate danger, call **911** right now. If you\u2019re both safe this minute, tell me your son\u2019s age, and I\u2019ll help find a same-day place in **Medford, Massachusetts**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I hear you. You said you\u2019re dizzy and weak. Dizzy and weak. First safety check: are you about to pass out, having chest pain, or trouble breathing? If yes, call 9-1-1 now. That is 9-1-1. If you can still talk and stay awake, I can help with a service line next: Outside In at 503-535-3800. That\u2019s 503, 535, 3800."
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
@@ -1505,7 +1508,8 @@
       "similarCases": [],
       "assistantResponse": "Yes\u2014use this voicemail now: \u201cHi, I\u2019m trying to find warming space for tonight in Medford. Can you tell me if you have space right now, what time check-in ends, and whether I can come in with little or no paperwork? My phone battery is low, so a quick call or text back is best. I can arrive by [time]. Thank you.\u201d",
       "voiceResponseAlternatives": [
-        "Totally fair ask. I can\u2019t place the call myself, but I can give you a ready script right now. Say: \u201cHi, I\u2019m looking for weekday child care near Medford center starting around 7 a.m. Do you have openings? What are your weekly or monthly rates, and do you offer any sliding-scale or subsidy options? If no opening, what\u2019s your waitlist timeline and fee?\u201d Then ask them to text or email details so you can compare fast."
+        "Totally fair ask. I can\u2019t place the call myself, but I can give you a ready script right now. Say: \u201cHi, I\u2019m looking for weekday child care near Medford center starting around 7 a.m. Do you have openings? What are your weekly or monthly rates, and do you offer any sliding-scale or subsidy options? If no opening, what\u2019s your waitlist timeline and fee?\u201d Then ask them to text or email details so you can compare fast.",
+        "Yes. First: call **9-1-1** now if you\u2019re still shaky or dizzy. If you can send one text before the phone dies, send this exactly: \u201cUrgent: I\u2019m in Medford, shaky and dizzy, need help now and a warm indoor place tonight. Please call 9-1-1 for me and stay on the line.\u201d If you can, share your exact location in that text."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -1630,6 +1634,271 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001177#turn-5",
+      "scenarioId": "phone_dialog_0001177",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I keep saying this backwards, sorry, I need a shelter bed, Medford, tonight, and my phone battery is at like two percent.",
+      "normalizedQuery": "keep saying this backwards sorry shelter shelters homeless overnight warming bed medford tonight phone battery at like two percent",
+      "voiceResponse": "You\u2019re doing great, and we can move fast. For Medford tonight, try **Overnight Winter Warming Shelter**, **332 West 6th Street, Medford**. Call now: **five four one, seven seven nine, six six nine one**. Backup: **four five eight, four eight eight, one two two zero**. They serve adults 18+ and require no documents. If your battery is at 2%, call first, then head there. If you feel in immediate danger at any point, call **911**.",
+      "evidenceDocIds": [
+        "service:be96f8a23ab9fa3c",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:b2642cda89edcc08"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great, and we can move fast. For Medford tonight, try **Overnight Winter Warming Shelter**, **332 West 6th Street, Medford**. Call now: **five four one, seven seven nine, six six nine one**. Backup: **four five eight, four eight eight, one two two zero**. They serve adults 18+ and require no documents. If your battery is at 2%, call first, then head there. If you feel in immediate danger at any point, call **911**.",
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you to a live 211 specialist now to confirm which site can still take you tonight. What I can give from the listing is: **501 3rd Street, La Grande** and **16430 3rd Street, La Pine**. I don\u2019t have verified intake cutoff times in this record. If you want to call while we connect, numbers are **5-4-1, 9-6-2, 7-9-9-4** and **5-4-1, 9-4-8, 6-6-4-9**. If you become unsafe from the cold, call 9-1-1.",
+        "Main number first: **5 4 1, 7 7 9, 6 6 9 1**. That\u2019s the Medford Overnight Winter Warming Shelter at **332 West 6th Street**. If no answer, try **4 5 8, 4 8 8, 1 2 2 0**. If you\u2019re in immediate danger right now, call **911**.",
+        "Thank you for telling me. You\u2019re doing the right thing. Since this is urgent and he\u2019s 16 in Medford, the fastest option is a live local agent who can find same-day teen day support right now. I can connect you now, and you only need to share what feels safe. If there\u2019s immediate danger, call **9-1-1**.",
+        "Yes, that makes sense. You can keep this private. You choose what to share, and you can ask the live agent to explain confidentiality before giving details. You can start with just your first name and your son\u2019s age. They should not contact school or his dad unless you say yes, except if there\u2019s an immediate safety emergency. If you want, I can connect you now and stay with you through the handoff."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001221#turn-5",
+      "scenarioId": "phone_dialog_0001221",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What was that address? Sorry, I didn\u2019t catch it, people are talking around me.",
+      "normalizedQuery": "give most important number first case this drops medford shaky dizzy be outside much longer warming center tonight somewhere sit down warm was address sorry didn catch it people talking around",
+      "voiceResponse": "No address was given yet. Most important number: **9-1-1**. If you\u2019re shaky and dizzy, call **9-1-1 now** and say your location first. For a warm place tonight, ask for **211info Extreme Cold Warming Centers** in Medford.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "service:9d8edf69bee13eb3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No address was given yet. Most important number: **9-1-1**. If you\u2019re shaky and dizzy, call **9-1-1 now** and say your location first. For a warm place tonight, ask for **211info Extreme Cold Warming Centers** in Medford.",
+      "voiceResponseAlternatives": [
+        "Yes. Main number: **5 4 1** \u2026 **7 7 9** \u2026 **6 6 9 1**. Again: **5 4 1** \u2026 **7 7 9** \u2026 **6 6 9 1**.",
+        "Of course. I\u2019ll say just the names, slowly. First: **Living Options for Teens**. Again: **Living Options for Teens**. Second: **Safe Place**. Again: **Safe Place**.",
+        "Yes. Safety first: call **911 now** for your breathing, or ask someone nearby to call for you. Then stay on the line with me while I connect a live specialist for emergency veteran housing tonight in Medford.",
+        "Of course. The place is **Right Track Resource Center Overnight Winter Warming Shelter**. The phone number is **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. If you are getting too cold right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001221#turn-6",
+      "scenarioId": "phone_dialog_0001221",
+      "turnIndex": 5,
+      "route": "provider_contact_support",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "provider_contact_support",
+      "user": "If you can, text it to this number too, I\u2019m scared this phone\u2019s about to die.",
+      "normalizedQuery": "medford shaky dizzy be outside much longer warming center tonight somewhere sit down warm was address sorry didn catch it people talking around if text this number too scared phone die",
+      "voiceResponse": "Yes. First: call **9-1-1** now if you\u2019re still shaky or dizzy. If you can send one text before the phone dies, send this exactly: \u201cUrgent: I\u2019m in Medford, shaky and dizzy, need help now and a warm indoor place tonight. Please call 9-1-1 for me and stay on the line.\u201d If you can, share your exact location in that text.",
+      "evidenceDocIds": [
+        "service:859090398e778b97",
+        "service:05c7957ff6407a1c",
+        "service:b03d63676006f929",
+        "service:e5c3b5bc56325eec",
+        "service:cb0a6741d9a0f6a1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First: call **9-1-1** now if you\u2019re still shaky or dizzy. If you can send one text before the phone dies, send this exactly: \u201cUrgent: I\u2019m in Medford, shaky and dizzy, need help now and a warm indoor place tonight. Please call 9-1-1 for me and stay on the line.\u201d If you can, share your exact location in that text.",
+      "voiceResponseAlternatives": [
+        "Totally fair ask. I can\u2019t place the call myself, but I can give you a ready script right now. Say: \u201cHi, I\u2019m looking for weekday child care near Medford center starting around 7 a.m. Do you have openings? What are your weekly or monthly rates, and do you offer any sliding-scale or subsidy options? If no opening, what\u2019s your waitlist timeline and fee?\u201d Then ask them to text or email details so you can compare fast.",
+        "Yes\u2014use this voicemail now: \u201cHi, I\u2019m trying to find warming space for tonight in Medford. Can you tell me if you have space right now, what time check-in ends, and whether I can come in with little or no paperwork? My phone battery is low, so a quick call or text back is best. I can arrive by [time]. Thank you.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-1",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m in Medford, I\u2019ve been outside all day and I\u2019m getting really dizzy and weak.",
+      "normalizedQuery": "hi medford ve been outside all day getting really dizzy weak",
+      "voiceResponse": "I hear you. You said you\u2019re dizzy and weak. Dizzy and weak. First safety check: are you about to pass out, having chest pain, or trouble breathing? If yes, call 9-1-1 now. That is 9-1-1. If you can still talk and stay awake, I can help with a service line next: Outside In at 503-535-3800. That\u2019s 503, 535, 3800.",
+      "evidenceDocIds": [
+        "service:8076a16efabc189a",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:06914f724518e3d4",
+        "service:09e2c739471ee2d0",
+        "service:310a1dcbf566a589"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You said you\u2019re dizzy and weak. Dizzy and weak. First safety check: are you about to pass out, having chest pain, or trouble breathing? If yes, call 9-1-1 now. That is 9-1-1. If you can still talk and stay awake, I can help with a service line next: Outside In at 503-535-3800. That\u2019s 503, 535, 3800.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize. You sound overwhelmed, and your safety matters first. If you or your son might be in immediate danger, call **911** right now. If you\u2019re both safe this minute, tell me your son\u2019s age, and I\u2019ll help find a same-day place in **Medford, Massachusetts**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-2",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, can you say that slower? I can\u2019t focus, my head feels weird and I might pass out.",
+      "normalizedQuery": "hi medford ve been outside all day getting really dizzy weak sorry say slower focus head feels weird might pass",
+      "voiceResponse": "I hear you. Your head feels weird, and you might pass out. You might pass out. Please call 9-1-1 right now. That is 9-1-1. If you cannot call, ask someone nearby to call 9-1-1 for you. Can you call 9-1-1 now?",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:3309400a4da9a7e6",
+        "service:900148af08bd3d1d",
+        "service:cb11afeba28b9ec0",
+        "service:f8ac5198064cba09"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your head feels weird, and you might pass out. You might pass out. Please call 9-1-1 right now. That is 9-1-1. If you cannot call, ask someone nearby to call 9-1-1 for you. Can you call 9-1-1 now?",
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you to a live 211 specialist now to confirm which site can still take you tonight. What I can give from the listing is: **501 3rd Street, La Grande** and **16430 3rd Street, La Pine**. I don\u2019t have verified intake cutoff times in this record. If you want to call while we connect, numbers are **5-4-1, 9-6-2, 7-9-9-4** and **5-4-1, 9-4-8, 6-6-4-9**. If you become unsafe from the cold, call 9-1-1.",
+        "Main number first: **5 4 1, 7 7 9, 6 6 9 1**. That\u2019s the Medford Overnight Winter Warming Shelter at **332 West 6th Street**. If no answer, try **4 5 8, 4 8 8, 1 2 2 0**. If you\u2019re in immediate danger right now, call **911**.",
+        "Thank you for telling me. You\u2019re doing the right thing. Since this is urgent and he\u2019s 16 in Medford, the fastest option is a live local agent who can find same-day teen day support right now. I can connect you now, and you only need to share what feels safe. If there\u2019s immediate danger, call **9-1-1**.",
+        "Yes, that makes sense. You can keep this private. You choose what to share, and you can ask the live agent to explain confidentiality before giving details. You can start with just your first name and your son\u2019s age. They should not contact school or his dad unless you say yes, except if there\u2019s an immediate safety emergency. If you want, I can connect you now and stay with you through the handoff."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-5",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Can you find me the nearest cooling center in Medford, and somewhere I can sit down now?",
+      "normalizedQuery": "nearest cooling center medford somewhere sit down now",
+      "voiceResponse": "I can help. I do not have exact cooling center addresses on this line yet. I do not have exact addresses yet. Right now, please get into shade or any air-conditioned place and sit down. If you feel close to passing out, call 9-1-1 now. That is 9-1-1. Do you want me to connect you to a live 211 specialist for the nearest Medford cooling center right now?",
+      "evidenceDocIds": [
+        "page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy",
+        "page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i",
+        "page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "page:bafkreiatjfdrlq7tk7qqnraubcxtplfjdmri5ogjb2ygiomx2oikn3ipzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can help. I do not have exact cooling center addresses on this line yet. I do not have exact addresses yet. Right now, please get into shade or any air-conditioned place and sit down. If you feel close to passing out, call 9-1-1 now. That is 9-1-1. Do you want me to connect you to a live 211 specialist for the nearest Medford cooling center right now?",
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you to a live 211 specialist now to confirm which site can still take you tonight. What I can give from the listing is: **501 3rd Street, La Grande** and **16430 3rd Street, La Pine**. I don\u2019t have verified intake cutoff times in this record. If you want to call while we connect, numbers are **5-4-1, 9-6-2, 7-9-9-4** and **5-4-1, 9-4-8, 6-6-4-9**. If you become unsafe from the cold, call 9-1-1.",
+        "Main number first: **5 4 1, 7 7 9, 6 6 9 1**. That\u2019s the Medford Overnight Winter Warming Shelter at **332 West 6th Street**. If no answer, try **4 5 8, 4 8 8, 1 2 2 0**. If you\u2019re in immediate danger right now, call **911**.",
+        "Thank you for telling me. You\u2019re doing the right thing. Since this is urgent and he\u2019s 16 in Medford, the fastest option is a live local agent who can find same-day teen day support right now. I can connect you now, and you only need to share what feels safe. If there\u2019s immediate danger, call **9-1-1**.",
+        "Yes, that makes sense. You can keep this private. You choose what to share, and you can ask the live agent to explain confidentiality before giving details. You can start with just your first name and your son\u2019s age. They should not contact school or his dad unless you say yes, except if there\u2019s an immediate safety emergency. If you want, I can connect you now and stay with you through the handoff."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001251#turn-4",
+      "scenarioId": "phone_dialog_0001251",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Medford, near downtown, and I need a warming center for tonight.",
+      "normalizedQuery": "medford downtown warming center tonight",
+      "voiceResponse": "You\u2019re doing the right thing telling me, and I\u2019m with you. Because you\u2019re dizzy, cold, and not thinking clearly, this could be an emergency, so please call **911 now** first. For warming centers, I only have listings in Eugene and Enterprise, not Medford. I can hand you to a live agent to find a Medford option tonight while you stay on the line. If someone is nearby, say: \u201cPlease call 911 for me now.\u201d",
+      "evidenceDocIds": [
+        "service:e629046ee4d2e382",
+        "service:0bd877900ad5d08d",
+        "service:9e7aba9bfb8fff16",
+        "service:1a6e464c5c032257",
+        "service:f58c5afd7f8308cf"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing telling me, and I\u2019m with you. Because you\u2019re dizzy, cold, and not thinking clearly, this could be an emergency, so please call **911 now** first. For warming centers, I only have listings in Eugene and Enterprise, not Medford. I can hand you to a live agent to find a Medford option tonight while you stay on the line. If someone is nearby, say: \u201cPlease call 911 for me now.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you to a live 211 specialist now to confirm which site can still take you tonight. What I can give from the listing is: **501 3rd Street, La Grande** and **16430 3rd Street, La Pine**. I don\u2019t have verified intake cutoff times in this record. If you want to call while we connect, numbers are **5-4-1, 9-6-2, 7-9-9-4** and **5-4-1, 9-4-8, 6-6-4-9**. If you become unsafe from the cold, call 9-1-1.",
+        "Main number first: **5 4 1, 7 7 9, 6 6 9 1**. That\u2019s the Medford Overnight Winter Warming Shelter at **332 West 6th Street**. If no answer, try **4 5 8, 4 8 8, 1 2 2 0**. If you\u2019re in immediate danger right now, call **911**.",
+        "Thank you for telling me. You\u2019re doing the right thing. Since this is urgent and he\u2019s 16 in Medford, the fastest option is a live local agent who can find same-day teen day support right now. I can connect you now, and you only need to share what feels safe. If there\u2019s immediate danger, call **9-1-1**.",
+        "Yes, that makes sense. You can keep this private. You choose what to share, and you can ask the live agent to explain confidentiality before giving details. You can start with just your first name and your son\u2019s age. They should not contact school or his dad unless you say yes, except if there\u2019s an immediate safety emergency. If you want, I can connect you now and stay with you through the handoff."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001251#turn-5",
+      "scenarioId": "phone_dialog_0001251",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone\u2019s at like two percent, so if there\u2019s an address can you repeat it twice?",
+      "normalizedQuery": "feel really dizzy cold think straight talk slower missed last part medford downtown warming center tonight phone at like two percent so if there an address repeat it twice",
+      "voiceResponse": "I hear you, and we\u2019ll keep this simple. I don\u2019t have a Medford warming center address to give you. I don\u2019t have a Medford address. Most important right now: call 911 now, because you\u2019re dizzy, cold, and confused. If anyone is near you, say: \u201cCall 911 for me right now.\u201d Keep me on speaker.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we\u2019ll keep this simple. I don\u2019t have a Medford warming center address to give you. I don\u2019t have a Medford address. Most important right now: call 911 now, because you\u2019re dizzy, cold, and confused. If anyone is near you, say: \u201cCall 911 for me right now.\u201d Keep me on speaker.",
+      "voiceResponseAlternatives": [
+        "Yes. Main number: **5 4 1** \u2026 **7 7 9** \u2026 **6 6 9 1**. Again: **5 4 1** \u2026 **7 7 9** \u2026 **6 6 9 1**.",
+        "Of course. I\u2019ll say just the names, slowly. First: **Living Options for Teens**. Again: **Living Options for Teens**. Second: **Safe Place**. Again: **Safe Place**.",
+        "Yes. Safety first: call **911 now** for your breathing, or ask someone nearby to call for you. Then stay on the line with me while I connect a live specialist for emergency veteran housing tonight in Medford.",
+        "Of course. The place is **Right Track Resource Center Overnight Winter Warming Shelter**. The phone number is **5 4 1** \u2026 **9 6 2** \u2026 **7 9 9 4**. If you are getting too cold right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001251#turn-6",
+      "scenarioId": "phone_dialog_0001251",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not trying to go to the hospital, I just need somewhere warm and safe to sit down.",
+      "normalizedQuery": "talk slower missed last part medford downtown warming center tonight phone at like two percent so if there an address repeat it twice trying go hospital just somewhere warm safe sit down",
+      "voiceResponse": "I hear you. You want warmth and safety, not a hospital. Right now, because you\u2019re dizzy, cold, and confused, I need you to call 911 so they can get you somewhere warm fast. You can say: \u201cI need a warm, safe place right now. I\u2019m in Medford near downtown.\u201d If someone is nearby, ask them to call for you. I\u2019m staying with you while we get a live agent to find a warming option tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:05c7957ff6407a1c",
+        "service:b03d63676006f929"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You want warmth and safety, not a hospital. Right now, because you\u2019re dizzy, cold, and confused, I need you to call 911 so they can get you somewhere warm fast. You can say: \u201cI need a warm, safe place right now. I\u2019m in Medford near downtown.\u201d If someone is nearby, ask them to call for you. I\u2019m staying with you while we get a live agent to find a warming option tonight.",
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you to a live 211 specialist now to confirm which site can still take you tonight. What I can give from the listing is: **501 3rd Street, La Grande** and **16430 3rd Street, La Pine**. I don\u2019t have verified intake cutoff times in this record. If you want to call while we connect, numbers are **5-4-1, 9-6-2, 7-9-9-4** and **5-4-1, 9-4-8, 6-6-4-9**. If you become unsafe from the cold, call 9-1-1.",
+        "Main number first: **5 4 1, 7 7 9, 6 6 9 1**. That\u2019s the Medford Overnight Winter Warming Shelter at **332 West 6th Street**. If no answer, try **4 5 8, 4 8 8, 1 2 2 0**. If you\u2019re in immediate danger right now, call **911**.",
+        "Thank you for telling me. You\u2019re doing the right thing. Since this is urgent and he\u2019s 16 in Medford, the fastest option is a live local agent who can find same-day teen day support right now. I can connect you now, and you only need to share what feels safe. If there\u2019s immediate danger, call **9-1-1**.",
+        "Yes, that makes sense. You can keep this private. You choose what to share, and you can ask the live agent to explain confidentiality before giving details. You can start with just your first name and your son\u2019s age. They should not contact school or his dad unless you say yes, except if there\u2019s an immediate safety emergency. If you want, I can connect you now and stay with you through the handoff."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1920,6 +2189,48 @@
       "to": "phone_dialog_0001117#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001177#turn-5",
+      "to": "phone_dialog_0001177#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001221#turn-5",
+      "to": "phone_dialog_0001221#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001241#turn-1",
+      "to": "phone_dialog_0001241#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001241#turn-2",
+      "to": "phone_dialog_0001241#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001241#turn-5",
+      "to": "phone_dialog_0001241#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001251#turn-4",
+      "to": "phone_dialog_0001251#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001251#turn-5",
+      "to": "phone_dialog_0001251#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

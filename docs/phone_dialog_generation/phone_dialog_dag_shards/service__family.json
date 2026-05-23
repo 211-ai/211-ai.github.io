@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service__family",
   "kind": "service",
   "key": "family",
-  "nodeCount": 317,
+  "nodeCount": 319,
   "nodes": [
     {
       "id": "phone_dialog_0000016#turn-1",
@@ -9321,6 +9321,66 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001194#turn-5",
+      "scenarioId": "phone_dialog_0001194",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I keep talking over you. I need a real person maybe, or urgent care, I don\u2019t know which one first.",
+      "normalizedQuery": "sorry keep talking over real person maybe urgent care don know which one first",
+      "voiceResponse": "You\u2019re making sense, and you did the right thing telling me. First: call **911** right now for chest symptoms and safety risk. That comes before urgent care. If you can, stay away from windows and keep your door locked. I can stay with you while you call, then connect you to a live 211 person after.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:9d8edf69bee13eb3",
+        "service:e8399a8259fb5c21",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making sense, and you did the right thing telling me. First: call **911** right now for chest symptoms and safety risk. That comes before urgent care. If you can, stay away from windows and keep your door locked. I can stay with you while you call, then connect you to a live 211 person after.",
+      "voiceResponseAlternatives": [
+        "You don\u2019t need to apologize, you\u2019re doing great. I heard you: size 4 diapers and wipes. Call this one now and say exactly that: **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**. If they can\u2019t fill it today, call the emergency closet at **5 4 1 \u2026 8 6 4 \u2026 0 7 7 6**. They can help with diapers, wipes, and formula. I can stay with you while you dial.",
+        "I can\u2019t place the call for you from here. Main step first: call **5-4-1, 2-2-1, 0-8-2-4** now. I\u2019ll repeat: **5-4-1, 2-2-1, 0-8-2-4**. Say: \u201cI need toddler diapers today. Do you have walk-in pickup today?\u201d If they ask location: **3-0-5-0 Game Farm Road, Springfield, Oregon, 9-7-4-7-8**. Do you want me to give you a 10-second voicemail script too?",
+        "First step: call now. Dial **5-4-1, 2-2-1, 0-8-2-4**. I\u2019ll repeat: **5-4-1, 2-2-1, 0-8-2-4**. Say: \u201cI need toddler diapers today. Do you have walk-in pickup today?\u201d If they ask location, say: **3-0-5-0 Game Farm Road, Springfield, Oregon, 9-7-4-7-8**.",
+        "I\u2019m really glad you said that out loud. If you\u2019re in immediate danger right now, call **9 1 1** first. If you can make one call safely, call Community Works now: **5 4 1, 7 7 9, 4 3 5 7**. Alternate: **5 4 1, 7 7 9, 2 3 9 3, extension 2 0 9**. Tell them: \u201cI\u2019m not safe where I am tonight and need emergency safety planning and shelter options right now.\u201d Stay on the line with them."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001194#turn-6",
+      "scenarioId": "phone_dialog_0001194",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the address slowly? My battery is at like two percent and I can\u2019t write fast.",
+      "normalizedQuery": "no making sense know chest feels weird head buzzing keep forgetting just asked say again asking if safe right now mean locked door thinking someone outside window sorry talking over real person maybe urgent care don which one first repeat address slowly battery at like two percent write fast",
+      "voiceResponse": "I don\u2019t have an address to repeat right now. The key detail is: call **911** now. Say, \u201cI have chest symptoms and I feel unsafe.\u201d If you can\u2019t place the call, tell me your exact location now, and I\u2019ll get help started.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have an address to repeat right now. The key detail is: call **911** now. Say, \u201cI have chest symptoms and I feel unsafe.\u201d If you can\u2019t place the call, tell me your exact location now, and I\u2019ll get help started.",
+      "voiceResponseAlternatives": [
+        "Of course. The private part is: she can start with only basics, first name, a safe callback number, city, and the kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she wants. If they ask for documents later, they should explain exactly what and why first. She does not have to give everything up front.",
+        "I didn\u2019t give a specific program name yet. I said a live 211 agent can check Clackamas County affordable child care programs, including early-hour options, and tell you exactly what fits.",
+        "Write this down now: **360** \u2026 **521** \u2026 **6527**. I\u2019ll repeat slowly: **3 6 0** \u2026 **5 2 1** \u2026 **6 5 2 7**.",
+        "Yes. Program name only: **Two Families Now**. Again, slowly: **Two Families Now**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -10991,6 +11051,12 @@
       "to": "phone_dialog_0001156#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "provider_contact_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001194#turn-5",
+      "to": "phone_dialog_0001194#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

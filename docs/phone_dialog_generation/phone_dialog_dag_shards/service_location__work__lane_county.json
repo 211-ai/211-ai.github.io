@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__work__lane_county",
   "kind": "service_location",
   "key": "work__lane_county",
-  "nodeCount": 12,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000207#turn-1",
@@ -315,7 +315,8 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re in Lane County, and you want job search or employment help. You\u2019re in Lane County, and you want job search or employment help. I can guide you to 211 programs like Job Search Assistance, Comprehensive Job Assistance Centers, and Veteran Employment Programs. There is also job-finding help linked to homelessness services. Which one fits best right now: general job help, veteran job help, or housing-related job help?",
       "voiceResponseAlternatives": [
-        "Thanks for telling me. I\u2019ll go slow. I did not give a phone number yet. I did not give a phone number yet. The choices were: General job help. Veteran job help. Housing-related job help. Which one do you want first?"
+        "Thanks for telling me. I\u2019ll go slow. I did not give a phone number yet. I did not give a phone number yet. The choices were: General job help. Veteran job help. Housing-related job help. Which one do you want first?",
+        "You\u2019re not overreacting. Most important step: call **5 4 1, 6 8 6, 7 8 7 8** now and say, \u201cHe\u2019s following me and waiting where I stay. I need safe shelter tonight and a safety plan.\u201d You can ask them not to leave voicemail and to call back only if you say it\u2019s safe. If he is nearby right now or you feel trapped, call **9 1 1**."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
@@ -342,11 +343,40 @@
       "similarCases": [],
       "assistantResponse": "Thanks for telling me. I\u2019ll go slow. I did not give a phone number yet. I did not give a phone number yet. The choices were: General job help. Veteran job help. Housing-related job help. Which one do you want first?",
       "voiceResponseAlternatives": [
-        "You\u2019re in Lane County, and you want job search or employment help. You\u2019re in Lane County, and you want job search or employment help. I can guide you to 211 programs like Job Search Assistance, Comprehensive Job Assistance Centers, and Veteran Employment Programs. There is also job-finding help linked to homelessness services. Which one fits best right now: general job help, veteran job help, or housing-related job help?"
+        "You\u2019re in Lane County, and you want job search or employment help. You\u2019re in Lane County, and you want job search or employment help. I can guide you to 211 programs like Job Search Assistance, Comprehensive Job Assistance Centers, and Veteran Employment Programs. There is also job-finding help linked to homelessness services. Which one fits best right now: general job help, veteran job help, or housing-related job help?",
+        "You\u2019re not overreacting. Most important step: call **5 4 1, 6 8 6, 7 8 7 8** now and say, \u201cHe\u2019s following me and waiting where I stay. I need safe shelter tonight and a safety plan.\u201d You can ask them not to leave voicemail and to call back only if you say it\u2019s safe. If he is nearby right now or you feel trapped, call **9 1 1**."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001228#turn-3",
+      "scenarioId": "phone_dialog_0001228",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "He\u2019s been following me to work and waiting outside my sister\u2019s place, and I keep seeing his car, I feel like I\u2019m being watched all the time.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first domestic violence lane county trying stay quiet because he checks calls said if leave ll so go back apartment tonight been following work waiting outside sister place keep seeing his car feel being watched all time",
+      "voiceResponse": "You\u2019re not overreacting. Most important step: call **5 4 1, 6 8 6, 7 8 7 8** now and say, \u201cHe\u2019s following me and waiting where I stay. I need safe shelter tonight and a safety plan.\u201d You can ask them not to leave voicemail and to call back only if you say it\u2019s safe. If he is nearby right now or you feel trapped, call **9 1 1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not overreacting. Most important step: call **5 4 1, 6 8 6, 7 8 7 8** now and say, \u201cHe\u2019s following me and waiting where I stay. I need safe shelter tonight and a safety plan.\u201d You can ask them not to leave voicemail and to call back only if you say it\u2019s safe. If he is nearby right now or you feel trapped, call **9 1 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in Lane County, and you want job search or employment help. You\u2019re in Lane County, and you want job search or employment help. I can guide you to 211 programs like Job Search Assistance, Comprehensive Job Assistance Centers, and Veteran Employment Programs. There is also job-finding help linked to homelessness services. Which one fits best right now: general job help, veteran job help, or housing-related job help?",
+        "Thanks for telling me. I\u2019ll go slow. I did not give a phone number yet. I did not give a phone number yet. The choices were: General job help. Veteran job help. Housing-related job help. Which one do you want first?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -421,6 +451,12 @@
       "to": "phone_dialog_0001092#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001228#turn-3",
+      "to": "phone_dialog_0001228#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__rent__statewide",
   "kind": "service_location",
   "key": "rent__statewide",
-  "nodeCount": 122,
+  "nodeCount": 127,
   "nodes": [
     {
       "id": "phone_dialog_0000006#turn-3",
@@ -3634,6 +3634,156 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001233#turn-3",
+      "scenarioId": "phone_dialog_0001233",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I have two kids and I\u2019m behind on rent, I\u2019m trying, I\u2019m trying, I just need eviction help, like today, please.",
+      "normalizedQuery": "have two kids behind on rent eviction assistance trying just like please",
+      "voiceResponse": "I hear how hard you\u2019re fighting for your kids. Let\u2019s do this right now: call Rent Assistance at **5 4 1, 5 4 8, 2 3 8 0**. They provide **short-term eviction prevention**. If one office can\u2019t take your case, ask to be screened for the next available office today. Offices listed are in Bend, La Pine, and Prineville. Keep your eviction paper with you for the call. If your breathing gets bad again, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "service:8a6c6604cd95e457",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6",
+        "service:66df89740da9485c",
+        "service:4bfb7e6eaea01bbd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how hard you\u2019re fighting for your kids. Let\u2019s do this right now: call Rent Assistance at **5 4 1, 5 4 8, 2 3 8 0**. They provide **short-term eviction prevention**. If one office can\u2019t take your case, ask to be screened for the next available office today. Offices listed are in Bend, La Pine, and Prineville. Keep your eviction paper with you for the call. If your breathing gets bad again, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "First step: let\u2019s get you to a live 211 specialist now to find rent help closest to Oregon City. If you want a rent-assistance line to try right now, call 5-4-1, 5-4-8, 2-3-8-0. I\u2019ll repeat: 5-4-1, 5-4-8, 2-3-8-0. They provide short-term rent help for eviction prevention, and documents vary by service.",
+        "First step: call Rent Assistance now at **5-4-1, 5-4-8, 2-3-8-0**. Yes, this program can help with short-term rent support for eviction prevention. I can repeat the number again slowly while you dial: **5-4-1, 5-4-8, 2-3-8-0**.",
+        "Yes. In the app, go to **Housing and Shelter**, then open **Section 8/Rental Assistance Program Rental Listings**. That\u2019s the local programs list. From there, choose Oregon City nearby providers and tap to call. If it feels easier, we can skip the app and I can connect you to a live agent now so they can look up the fastest rent-help options with you.",
+        "That\u2019s okay, partial details are enough to start. You can simply say: \u201cHe\u2019s in Oregon City, behind this month, and worried about next month too. He has a pay-or-vacate notice and needs urgent rent help.\u201d If you want, I can keep this with the live agent now and they can do the lookup step-by-step with you, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001233#turn-5",
+      "scenarioId": "phone_dialog_0001233",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Is there anyone that can help with back rent or talk to my landlord before court, I don\u2019t understand the notice dates.",
+      "normalizedQuery": "there anyone back rent eviction assistance talk landlord before court don understand notice dates",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Yes, there are people who can help with back rent and sometimes contact your landlord before court. Right now, call **2-1-1** and ask for **Eviction Prevention Assistance** plus **legal help to review your notice dates**. Say: \u201cI\u2019m in Oregon City, I have kids, and I need same-day help understanding my eviction notice.\u201d If you want, I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "service:6f7a5b8f93e42931"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Yes, there are people who can help with back rent and sometimes contact your landlord before court. Right now, call **2-1-1** and ask for **Eviction Prevention Assistance** plus **legal help to review your notice dates**. Say: \u201cI\u2019m in Oregon City, I have kids, and I need same-day help understanding my eviction notice.\u201d If you want, I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "First step: let\u2019s get you to a live 211 specialist now to find rent help closest to Oregon City. If you want a rent-assistance line to try right now, call 5-4-1, 5-4-8, 2-3-8-0. I\u2019ll repeat: 5-4-1, 5-4-8, 2-3-8-0. They provide short-term rent help for eviction prevention, and documents vary by service.",
+        "First step: call Rent Assistance now at **5-4-1, 5-4-8, 2-3-8-0**. Yes, this program can help with short-term rent support for eviction prevention. I can repeat the number again slowly while you dial: **5-4-1, 5-4-8, 2-3-8-0**.",
+        "Yes. In the app, go to **Housing and Shelter**, then open **Section 8/Rental Assistance Program Rental Listings**. That\u2019s the local programs list. From there, choose Oregon City nearby providers and tap to call. If it feels easier, we can skip the app and I can connect you to a live agent now so they can look up the fastest rent-help options with you.",
+        "That\u2019s okay, partial details are enough to start. You can simply say: \u201cHe\u2019s in Oregon City, behind this month, and worried about next month too. He has a pay-or-vacate notice and needs urgent rent help.\u201d If you want, I can keep this with the live agent now and they can do the lookup step-by-step with you, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001233#turn-6",
+      "scenarioId": "phone_dialog_0001233",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Hello? You there? I can hear people yelling in here, I\u2019m not ignoring you, I just can\u2019t hear all of it.",
+      "normalizedQuery": "have two kids behind on rent eviction assistance trying just like please sorry keep crying phone at three percent give number one more time there anyone back talk landlord before court don understand notice dates hello hear people yelling here ignoring all it",
+      "voiceResponse": "I\u2019m here with you. You\u2019re not ignoring me, and you\u2019re doing the right thing. Here\u2019s the key step again: call **2-1-1** now. Say: \u201cI need **Eviction Prevention Assistance** and **legal help reviewing my eviction notice dates**.\u201d If they ask, add: \u201cI have kids and need same-day help.\u201d If you want, I can repeat that one more time slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. You\u2019re not ignoring me, and you\u2019re doing the right thing. Here\u2019s the key step again: call **2-1-1** now. Say: \u201cI need **Eviction Prevention Assistance** and **legal help reviewing my eviction notice dates**.\u201d If they ask, add: \u201cI have kids and need same-day help.\u201d If you want, I can repeat that one more time slowly.",
+      "voiceResponseAlternatives": [
+        "First step: let\u2019s get you to a live 211 specialist now to find rent help closest to Oregon City. If you want a rent-assistance line to try right now, call 5-4-1, 5-4-8, 2-3-8-0. I\u2019ll repeat: 5-4-1, 5-4-8, 2-3-8-0. They provide short-term rent help for eviction prevention, and documents vary by service.",
+        "First step: call Rent Assistance now at **5-4-1, 5-4-8, 2-3-8-0**. Yes, this program can help with short-term rent support for eviction prevention. I can repeat the number again slowly while you dial: **5-4-1, 5-4-8, 2-3-8-0**.",
+        "Yes. In the app, go to **Housing and Shelter**, then open **Section 8/Rental Assistance Program Rental Listings**. That\u2019s the local programs list. From there, choose Oregon City nearby providers and tap to call. If it feels easier, we can skip the app and I can connect you to a live agent now so they can look up the fastest rent-help options with you.",
+        "That\u2019s okay, partial details are enough to start. You can simply say: \u201cHe\u2019s in Oregon City, behind this month, and worried about next month too. He has a pay-or-vacate notice and needs urgent rent help.\u201d If you want, I can keep this with the live agent now and they can do the lookup step-by-step with you, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001235#turn-2",
+      "scenarioId": "phone_dialog_0001235",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, say that again, slow please, my hearing's bad on this phone... I need... I need the rent thing, like help paying, not utilities.",
+      "normalizedQuery": "wait say again slow please hearing's bad on this phone rent eviction assistance like paying utilities utility heat electric",
+      "voiceResponse": "Yes. Slow and clear. You want rent help, not utility help. Rent help is available through **Utility and Rent Assistance** in Medford. Call: **five four one, seven seven two, three eight two eight**. Again: **five four one, seven seven two, three eight two eight**. Extension: **one**. Address: **two four two four North Pacific Highway, Medford, Oregon, nine seven five zero one**.",
+      "evidenceDocIds": [
+        "service:a14ff6275ba48883",
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:22f25b2759f09c8b",
+        "service:8e7393d9b82b6a0b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and clear. You want rent help, not utility help. Rent help is available through **Utility and Rent Assistance** in Medford. Call: **five four one, seven seven two, three eight two eight**. Again: **five four one, seven seven two, three eight two eight**. Extension: **one**. Address: **two four two four North Pacific Highway, Medford, Oregon, nine seven five zero one**.",
+      "voiceResponseAlternatives": [
+        "Yes. The office name is **2-1-1 info**. I\u2019ll repeat it: **2-1-1 info**.",
+        "Yes. The number is **5 0 3 \u2026 6 5 5 \u2026 8 5 7 5**. If that line is busy, the backup is **5 0 3 \u2026 6 5 5 \u2026 8 6 4 0**.",
+        "Yes. Call this one first: **5 0 3, 5 8 1, 5 2 6 5**. Again, **5 0 3, 5 8 1, 5 2 6 5**.",
+        "Yes. Main line: **five-zero-three \u2026 two-two-two \u2026 five-five-five-five**. Backup: **five-zero-three \u2026 two-two-six \u2026 three-zero-nine-nine**. When they answer, say: \u201cI need emergency rental assistance. Do you help with first-month rent, past-due rent, or both?\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001235#turn-5",
+      "scenarioId": "phone_dialog_0001235",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "And is there one that helps before eviction papers, or only after? I can't track all this right now.",
+      "normalizedQuery": "there one helps before eviction papers only after can't track all this right now",
+      "voiceResponse": "Yes. You can ask for help before eviction papers. Before eviction papers. Tell them you are behind now and need prevention help. Call **541 \u2026 548 \u2026 2380**. Again: **541 \u2026 548 \u2026 2380**. If that line cannot take you today, try Right Track for housing support: **541 \u2026 962 \u2026 7994**. Again: **541 \u2026 962 \u2026 7994**. Do you want me to stay with you while you make the first call?",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You can ask for help before eviction papers. Before eviction papers. Tell them you are behind now and need prevention help. Call **541 \u2026 548 \u2026 2380**. Again: **541 \u2026 548 \u2026 2380**. If that line cannot take you today, try Right Track for housing support: **541 \u2026 962 \u2026 7994**. Again: **541 \u2026 962 \u2026 7994**. Do you want me to stay with you while you make the first call?",
+      "voiceResponseAlternatives": [
+        "First step: let\u2019s get you to a live 211 specialist now to find rent help closest to Oregon City. If you want a rent-assistance line to try right now, call 5-4-1, 5-4-8, 2-3-8-0. I\u2019ll repeat: 5-4-1, 5-4-8, 2-3-8-0. They provide short-term rent help for eviction prevention, and documents vary by service.",
+        "First step: call Rent Assistance now at **5-4-1, 5-4-8, 2-3-8-0**. Yes, this program can help with short-term rent support for eviction prevention. I can repeat the number again slowly while you dial: **5-4-1, 5-4-8, 2-3-8-0**.",
+        "Yes. In the app, go to **Housing and Shelter**, then open **Section 8/Rental Assistance Program Rental Listings**. That\u2019s the local programs list. From there, choose Oregon City nearby providers and tap to call. If it feels easier, we can skip the app and I can connect you to a live agent now so they can look up the fastest rent-help options with you.",
+        "That\u2019s okay, partial details are enough to start. You can simply say: \u201cHe\u2019s in Oregon City, behind this month, and worried about next month too. He has a pay-or-vacate notice and needs urgent rent help.\u201d If you want, I can keep this with the live agent now and they can do the lookup step-by-step with you, slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -4164,6 +4314,30 @@
       "to": "phone_dialog_0001152#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001233#turn-3",
+      "to": "phone_dialog_0001233#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001233#turn-5",
+      "to": "phone_dialog_0001233#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001235#turn-2",
+      "to": "phone_dialog_0001235#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001235#turn-5",
+      "to": "phone_dialog_0001235#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__food__statewide",
   "kind": "service_location",
   "key": "food__statewide",
-  "nodeCount": 221,
+  "nodeCount": 224,
   "nodes": [
     {
       "id": "phone_dialog_0000001#turn-1",
@@ -6624,6 +6624,96 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001196#turn-2",
+      "scenarioId": "phone_dialog_0001196",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I need the, um, the wash place, shower thing, I said shower, sorry, what? [inaudible] not food, shower...",
+      "normalizedQuery": "um wash place shower said sorry inaudible food pantry meal meals groceries",
+      "voiceResponse": "I hear you. You said shower. I heard shower. Your audio is still unclear on my end. Please say one word only: `shower`, `laundry`, or `shelter`?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You said shower. I heard shower. Your audio is still unclear on my end. Please say one word only: `shower`, `laundry`, or `shelter`?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. You want help replacing your state ID at DMV. You want help replacing your state ID at DMV. The audio is still unclear. Please say one thing only: **Oregon state ID** or **driver license**?",
+        "Of course. I\u2019ll say it slowly. Two choices. First: crisis hotline number. Second: local service address. Crisis hotline number, or local service address?",
+        "I\u2019m sorry, your audio is still unclear. I heard \u201claundry.\u201d I heard \u201claundry.\u201d Please say one choice, slowly: **laundry help** or **food pantry help**?",
+        "I can hear you, and you\u2019re doing the right thing. The audio was unclear. Please say one short choice: **\u201cSE 80th\u201d** or **\u201cSW 11th.\u201d**"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001215#turn-5",
+      "scenarioId": "phone_dialog_0001215",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Is this for senior meals, like delivered or somewhere she can go today, because I don\u2019t have a car.",
+      "normalizedQuery": "this senior meals like delivered somewhere she go because don have car",
+      "voiceResponse": "Yes, this can include delivered meals or a place she can eat today. Since you\u2019re in Clackamas and don\u2019t have a car, I\u2019m connecting you to a live specialist now to find the closest same-day option. If she has trouble breathing or seems in immediate danger, call **9-1-1** right now: **nine\u2026 one\u2026 one**. Stay with me on the line.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:622ed24a25aa16de",
+        "page:bafkreid577hpozvvhwkgyx3sljhzpfexxyqfr54n5xwgdyhuowrc5ssbri",
+        "page:bafkreieg3v346n4fd4pg2vywbqocmektxjwpu7gbyzmg4b6lxo2beb5cui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, this can include delivered meals or a place she can eat today. Since you\u2019re in Clackamas and don\u2019t have a car, I\u2019m connecting you to a live specialist now to find the closest same-day option. If she has trouble breathing or seems in immediate danger, call **9-1-1** right now: **nine\u2026 one\u2026 one**. Stay with me on the line.",
+      "voiceResponseAlternatives": [
+        "Okay. Next step: call **Food Pantry and Meals** now and ask for **to-go meals or home-delivered food boxes**. The number is **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. They\u2019re at **8800 Southeast 80th Avenue, Portland**. If you get suddenly worse, like trouble breathing or severe pain, call **9-1-1** right away.",
+        "Next step: call **2-1-1** now and ask the specialist for the **closest church or community hot meal site near Tualatin Valley Highway in Hillsboro**, and tell them you\u2019re weak and need something close today. The number is **2-1-1**. If your breathing gets worse or pain becomes severe, call **9-1-1** right away.",
+        "You\u2019re okay, and you\u2019re right to double-check. I don\u2019t have a confirmed Riverside pantry address in front of me, and I don\u2019t want you sent to the wrong place. Let\u2019s get a live person on now to verify today\u2019s exact location in Medford. While I connect you, if you can, call **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** for size 4 diapers and wipes. I\u2019ll stay with you.",
+        "Thank you for telling me. This sounds urgent. If you feel faint, confused, or unsafe right now, call 9-1-1 immediately. I can connect you to a live 2-1-1 specialist now for senior meal help in Gresham. If needed, the number I gave is 5 4 1 \u2026 6 4 6 \u2026 7 3 8 5."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001215#turn-6",
+      "scenarioId": "phone_dialog_0001215",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Please don\u2019t hang up, my battery is at like two percent, I just need one place that will actually take us.",
+      "normalizedQuery": "trying freak we got turned away before scared it ll happen again wait number was say really slow phone cutting this senior meals like delivered somewhere she go because don have car please hang up battery at two percent just one place will actually take us",
+      "voiceResponse": "I\u2019m here, I won\u2019t hang up. We\u2019re already in live handoff, and I\u2019m getting you to one real same-day place that can take you. Keep your phone on low power and stay on this call. If your grandma has trouble breathing, chest pain, or seems in immediate danger, call **9-1-1** right away: **nine\u2026 one\u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here, I won\u2019t hang up. We\u2019re already in live handoff, and I\u2019m getting you to one real same-day place that can take you. Keep your phone on low power and stay on this call. If your grandma has trouble breathing, chest pain, or seems in immediate danger, call **9-1-1** right away: **nine\u2026 one\u2026 one**.",
+      "voiceResponseAlternatives": [
+        "Okay. Next step: call **Food Pantry and Meals** now and ask for **to-go meals or home-delivered food boxes**. The number is **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. They\u2019re at **8800 Southeast 80th Avenue, Portland**. If you get suddenly worse, like trouble breathing or severe pain, call **9-1-1** right away.",
+        "Next step: call **2-1-1** now and ask the specialist for the **closest church or community hot meal site near Tualatin Valley Highway in Hillsboro**, and tell them you\u2019re weak and need something close today. The number is **2-1-1**. If your breathing gets worse or pain becomes severe, call **9-1-1** right away.",
+        "You\u2019re okay, and you\u2019re right to double-check. I don\u2019t have a confirmed Riverside pantry address in front of me, and I don\u2019t want you sent to the wrong place. Let\u2019s get a live person on now to verify today\u2019s exact location in Medford. While I connect you, if you can, call **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4** for size 4 diapers and wipes. I\u2019ll stay with you.",
+        "Thank you for telling me. This sounds urgent. If you feel faint, confused, or unsafe right now, call 9-1-1 immediately. I can connect you to a live 2-1-1 specialist now for senior meal help in Gresham. If needed, the number I gave is 5 4 1 \u2026 6 4 6 \u2026 7 3 8 5."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -7580,6 +7670,18 @@
       "to": "phone_dialog_0001155#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001196#turn-2",
+      "to": "phone_dialog_0001196#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001215#turn-5",
+      "to": "phone_dialog_0001215#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

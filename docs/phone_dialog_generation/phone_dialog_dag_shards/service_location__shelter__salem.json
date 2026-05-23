@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__shelter__salem",
   "kind": "service_location",
   "key": "shelter__salem",
-  "nodeCount": 59,
+  "nodeCount": 64,
   "nodes": [
     {
       "id": "phone_dialog_0000102#turn-1",
@@ -1755,6 +1755,156 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001179#turn-4",
+      "scenarioId": "phone_dialog_0001179",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what? I couldn\u2019t hear you, a bus just went by.",
+      "normalizedQuery": "hi salem by union gospel mission stay here tonight guy keeps circling yelling at battery like one percent this isn phone tell safest next step first before anything else it still really hot getting dizzy cooling center on foot sorry couldn hear bus just went",
+      "voiceResponse": "You\u2019re okay, I\u2019ll keep it short. First: call **9-1-1** now if you\u2019re still dizzy or feel unsafe. Say: \u201cI\u2019m near Union Gospel Mission in Salem, I\u2019m overheated and dizzy, and I need help.\u201d If you can make one more call, Mission staff is **5-0-3, 3-6-2, 3-9-8-3**. Move to shade or a cool indoor spot while you call.",
+      "evidenceDocIds": [
+        "service:0a101fddb9d7862a",
+        "service:e8a466e479abed71",
+        "service:0f62cb5986e7ce0b",
+        "service:95e4707f31d18121",
+        "service:6b31bb2f6b12bacc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll keep it short. First: call **9-1-1** now if you\u2019re still dizzy or feel unsafe. Say: \u201cI\u2019m near Union Gospel Mission in Salem, I\u2019m overheated and dizzy, and I need help.\u201d If you can make one more call, Mission staff is **5-0-3, 3-6-2, 3-9-8-3**. Move to shade or a cool indoor spot while you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001179#turn-6",
+      "scenarioId": "phone_dialog_0001179",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "If that place is full, what\u2019s the next closest cooling center in Salem I can try right away?",
+      "normalizedQuery": "if place full next closest cooling center salem try right away",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Fastest next step: call **5-0-3 \u2026 3-6-2 \u2026 3-9-8-3** and ask, \u201cIf you\u2019re full, what\u2019s the nearest open cooling center I can walk to right now?\u201d I don\u2019t have a confirmed second address in front of me. If you feel dizzy, faint, or worse while waiting, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy",
+        "page:bafkreifq5ndsc7c7luidmjnvyyyclqci677ytxa4ztdgkent6o3b4kvwwe",
+        "page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Fastest next step: call **5-0-3 \u2026 3-6-2 \u2026 3-9-8-3** and ask, \u201cIf you\u2019re full, what\u2019s the nearest open cooling center I can walk to right now?\u201d I don\u2019t have a confirmed second address in front of me. If you feel dizzy, faint, or worse while waiting, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001248#turn-1",
+      "scenarioId": "phone_dialog_0001248",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can barely hear you out here by the bus stop, but I\u2019m in Salem and I need a warming center.",
+      "normalizedQuery": "hi sorry barely hear here by bus stop salem warming center",
+      "voiceResponse": "I hear you. I can help. I have a daytime winter warming center in Sweet Home. Address: 1101 13th Avenue, Sweet Home. I\u2019ll repeat: 1101 13th Avenue, Sweet Home. Phone: 5 4 1, 3 6 7, 5 0 0 7. Again: 5 4 1, 3 6 7, 5 0 0 7. Can you get to Sweet Home?",
+      "evidenceDocIds": [
+        "service:05c7957ff6407a1c",
+        "service:76dea112984fa350",
+        "service:34fc11d585652955",
+        "service:1f12b0b4d4ae54b9",
+        "service:b8b8a8019e422e3b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I can help. I have a daytime winter warming center in Sweet Home. Address: 1101 13th Avenue, Sweet Home. I\u2019ll repeat: 1101 13th Avenue, Sweet Home. Phone: 5 4 1, 3 6 7, 5 0 0 7. Again: 5 4 1, 3 6 7, 5 0 0 7. Can you get to Sweet Home?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. You did the right thing calling. I can find nearby cooling centers in Salem through 211info. I can find nearby cooling centers in Salem through 211info. What is your ZIP code right now, so I can give the closest one first?",
+        "I hear you. We\u2019ll keep it very close. We\u2019ll keep it very close. I can search 211info with a **5-mile radius**, so you do not have to walk far. Please tell me your ZIP code now.",
+        "Yes. I hear you. I will protect your privacy. I will protect your privacy. I can give place details first. I can start a Salem cooling-center search in a **5-mile** range, so it stays very close. The map points can be estimates, and we can open **More Details** for exact sites. Do you want me to start with that **5-mile Salem list** now?",
+        "I hear you. Your battery is at two percent. Fastest first step: call **2-1-1** now. That is **2-1-1**. Tell them: \u201cI\u2019m in Salem, near downtown, and I need the closest cooling center right now.\u201d One quick question: what cross street are you near?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001248#turn-2",
+      "scenarioId": "phone_dialog_0001248",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019ve been in the cold for hours, I\u2019m shaky and dizzy, and my hands are numb.",
+      "normalizedQuery": "hi sorry barely hear here by bus stop salem warming center ve been cold hours shaky dizzy hands numb",
+      "voiceResponse": "I\u2019m really glad you told me. I\u2019m worried about hypothermia. I\u2019m worried about hypothermia. Please call **9 1 1** now if you are dizzy, very shaky, or numb. Please call **9 1 1** now. If you can, go inside the nearest building right now. Are you able to call **9 1 1** now?",
+      "evidenceDocIds": [
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreibetunrx6vm3a2aixe6tb7wyw2ubta37dvobqs4q73aeouyxakhoi",
+        "page:bafkreidd76pmckxucedisme7v2swhgpamcfb6tmwv22kxhfx3ag7llzcja",
+        "service:05c7957ff6407a1c",
+        "service:76dea112984fa350"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. I\u2019m worried about hypothermia. I\u2019m worried about hypothermia. Please call **9 1 1** now if you are dizzy, very shaky, or numb. Please call **9 1 1** now. If you can, go inside the nearest building right now. Are you able to call **9 1 1** now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you. You did the right thing calling. I can find nearby cooling centers in Salem through 211info. I can find nearby cooling centers in Salem through 211info. What is your ZIP code right now, so I can give the closest one first?",
+        "I hear you. We\u2019ll keep it very close. We\u2019ll keep it very close. I can search 211info with a **5-mile radius**, so you do not have to walk far. Please tell me your ZIP code now.",
+        "Yes. I hear you. I will protect your privacy. I will protect your privacy. I can give place details first. I can start a Salem cooling-center search in a **5-mile** range, so it stays very close. The map points can be estimates, and we can open **More Details** for exact sites. Do you want me to start with that **5-mile Salem list** now?",
+        "I hear you. Your battery is at two percent. Fastest first step: call **2-1-1** now. That is **2-1-1**. Tell them: \u201cI\u2019m in Salem, near downtown, and I need the closest cooling center right now.\u201d One quick question: what cross street are you near?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001248#turn-3",
+      "scenarioId": "phone_dialog_0001248",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? A bus just went by and I missed the address.",
+      "normalizedQuery": "hi sorry barely hear here by bus stop salem warming center ve been cold hours shaky dizzy hands numb say again slower just went missed address",
+      "voiceResponse": "Yes. I\u2019ll say it slower. Address: 1 1 0 1, 13th Avenue, Sweet Home, Oregon, 9 7 3 8 6. Again: 1 1 0 1, 13th Avenue, Sweet Home, Oregon, 9 7 3 8 6.",
+      "evidenceDocIds": [
+        "service:05c7957ff6407a1c",
+        "service:34fc11d585652955",
+        "service:1f12b0b4d4ae54b9",
+        "service:2216206c6d8d586d",
+        "service:e5c3b5bc56325eec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. Address: 1 1 0 1, 13th Avenue, Sweet Home, Oregon, 9 7 3 8 6. Again: 1 1 0 1, 13th Avenue, Sweet Home, Oregon, 9 7 3 8 6.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **ARCHES Day Center**. I\u2019ll say it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**.",
+        "Of course. Slowly, the address I have is: **1 2 4 5** \u2026 **Fulton Avenue** \u2026 **Coos Bay, Oregon** \u2026 **9 7 4 2 0**. If you want, I can repeat it one more time at the same pace.",
+        "Yes. I\u2019ll go slow. I can find nearby cooling centers in Salem through 211info. I can find nearby cooling centers in Salem through 211info. Please tell me your ZIP code now, so I can give the closest place first.",
+        "I didn\u2019t give an address yet. The key part was: call **9-1-1** now for an immediate welfare check at your brother\u2019s exact location in Salem. Say, slowly: \u201cHe is outside, shaking, and dangerously cold.\u201d Then give dispatch his exact address."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -2063,6 +2213,30 @@
       "to": "phone_dialog_0001152#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "calendar_event_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001179#turn-4",
+      "to": "phone_dialog_0001179#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001248#turn-1",
+      "to": "phone_dialog_0001248#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001248#turn-2",
+      "to": "phone_dialog_0001248#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001248#turn-3",
+      "to": "phone_dialog_0001248#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

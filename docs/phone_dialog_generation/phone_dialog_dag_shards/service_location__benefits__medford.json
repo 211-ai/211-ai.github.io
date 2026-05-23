@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__medford",
   "kind": "service_location",
   "key": "benefits__medford",
-  "nodeCount": 32,
+  "nodeCount": 33,
   "nodes": [
     {
       "id": "phone_dialog_0000120#turn-4",
@@ -943,6 +943,36 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001226#turn-4",
+      "scenarioId": "phone_dialog_0001226",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you help me make a safe plan first, and then if it gets bad tonight, where I can go right away?",
+      "normalizedQuery": "hi sorry at bus stop medford it really loud here hear okay talk quiet please ex keeps showing up job texting threats scared go back apartment tonight no he right front this second yesterday grabbed arm said if leave ll make safe plan first then gets bad away",
+      "voiceResponse": "Absolutely. Let\u2019s keep it simple and quiet: Pick one safe public place for tonight, keep your phone charged, and share your location with one trusted person if you can. Save his messages, and if you need to leave fast, take keys, ID, meds, and charger in one bag now. If it gets bad right away, go to a busy public place or hospital lobby and call 911. For housing help tonight, call **503\u2026 802\u2026 8300** or **503\u2026 802\u2026 8469**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Let\u2019s keep it simple and quiet: Pick one safe public place for tonight, keep your phone charged, and share your location with one trusted person if you can. Save his messages, and if you need to leave fast, take keys, ID, meds, and charger in one bag now. If it gets bad right away, go to a busy public place or hospital lobby and call 911. For housing help tonight, call **503\u2026 802\u2026 8300** or **503\u2026 802\u2026 8469**.",
+      "voiceResponseAlternatives": [
+        "I hear you, and I can help right now. In Medford today, try **General Medical Care at La Clinica Women\u2019s Health Center**: phone **5-4-1, 6-1-8, 1-3-0-0**. I\u2019ll repeat: **5-4-1, 6-1-8, 1-3-0-0**. Address: **2-2-1 West Stewart Avenue, Suite 1-0-1, Medford**. Another number there is **5-4-1, 6-9-0, 3-5-0-0**. If you want, I can stay with you while you call.",
+        "I\u2019m really glad you called, and I hear how painful this is. I can see 211 has dental listings that may help today, including **Mobile Dental Care** and **Dental Hygiene** providers in your area. Let\u2019s move fast: I can help you contact the nearest options right now and focus on same-day care. If your swelling gets severe, you get a fever, or swallowing/breathing is hard, treat that as urgent and go to emergency care.",
+        "Yes, you have a couple low-cost options in Medford for this week. One is at **125 South Central Avenue, Suite 201**. Phone: **5 4 1, 3 4 4, 9 4 1 1**. Another is at **221 West Stewart Avenue, Suite 101**. Phone: **5 4 1, 5 3 5, 6 2 3 9**. Both are Oregon Reproductive Health Program clinics. If you want, you can call and ask for the first same-week opening and low-cost eligibility screening.",
+        "Yeah, I can hear you. You\u2019re not bothering me. I only have one verified Oregon benefits number right now: **8 5 5, 3 2 8, 6 7 1 5**. That line handles SNAP/EBT support and can usually route you to the right state benefits team, including disability-related next steps. If you want, I can repeat the number slowly again."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1119,6 +1149,12 @@
       "to": "phone_dialog_0000956#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001226#turn-4",
+      "to": "phone_dialog_0001226#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

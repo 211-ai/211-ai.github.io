@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__health__eugene",
   "kind": "service_location",
   "key": "health__eugene",
-  "nodeCount": 10,
+  "nodeCount": 14,
   "nodes": [
     {
       "id": "phone_dialog_0000041#turn-1",
@@ -87,7 +87,8 @@
       "similarCases": [],
       "assistantResponse": "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
       "voiceResponseAlternatives": [
-        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**."
+        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**.",
+        "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
@@ -253,7 +254,8 @@
       "similarCases": [],
       "assistantResponse": "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**.",
       "voiceResponseAlternatives": [
-        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**."
+        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
+        "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
@@ -287,6 +289,124 @@
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-1",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, uh, can you hear me? I\u2019m in Eugene and I need detox help, like tonight if possible.",
+      "normalizedQuery": "hi uh hear eugene detox like tonight if possible",
+      "voiceResponse": "Yeah, I hear you. I\u2019m really glad you called. For Eugene tonight, try Buckley Sobering and Detox first: **640 West 7th Avenue, Eugene**. Phone is **541\u2026 762\u2026 4575**. If they\u2019re full, call this detox line next: **541\u2026 406\u2026 4363**. If you want, I can stay with you while you make the first call and help with what to say so you don\u2019t get turned away.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c",
+        "service:507a859ca3a7d126",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. I\u2019m really glad you called. For Eugene tonight, try Buckley Sobering and Detox first: **640 West 7th Avenue, Eugene**. Phone is **541\u2026 762\u2026 4575**. If they\u2019re full, call this detox line next: **541\u2026 406\u2026 4363**. If you want, I can stay with you while you make the first call and help with what to say so you don\u2019t get turned away.",
+      "voiceResponseAlternatives": [
+        "I hear the urgency, and you\u2019re doing the right thing calling now. In Eugene, try **Buckley Sobering and Detox** first: **640 West 7th Avenue, Eugene**. Phone: **5-4-1, 7-6-2, 4-5-7-5**. If they\u2019re full, call this detox line next: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. When they answer, say: \u201cI\u2019m in Eugene and need detox admission today. Do you have a bed now?\u201d",
+        "Absolutely, I\u2019ll say it slowly. Buckley Sobering and Detox: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**. Again: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**.",
+        "Absolutely, and good on you for helping him take this step. In Eugene, you can start by calling 2-1-1 and asking for \u201cdetox intake options today,\u201d including same-day and medically supervised programs. If you want, you can also call providers for him and say, \u201cI\u2019m calling for my uncle\u2014what\u2019s the fastest way to get him assessed today?\u201d If he has severe withdrawal signs like confusion, seizures, or trouble breathing, call 9-1-1.",
+        "Thank you for telling me where you are. You\u2019re doing exactly the right thing for your son. If he\u2019s very drowsy, confused, or breathing slowly, call 911 now. If he\u2019s awake and stable, I can help you connect to 211 right now to find the closest same-day detox near downtown Eugene and check travel distance before you go. I can stay with you while we do that."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-2",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, your voice cut out, can you say that again?",
+      "normalizedQuery": "hi uh hear eugene detox like tonight if possible sorry your voice cut say again",
+      "voiceResponse": "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer.",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:09f0f9ede3cd2dda",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreidmvamtlfb4hntegcosgjot4ufype3foxat2tsucu5g2jqm4oxyqm",
+        "page:bafkreibtyps3eaduaspjm5xzrrq3kagwmueluhbgardiozbotzvmccurhm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ve got you. Here\u2019s the key number again for tonight: **5-4-1 \u2026 4-0-6 \u2026 4-3-6-3**. That\u2019s the detox line to call now. If you want, I can stay on with you and help you with exactly what to say when they answer.",
+      "voiceResponseAlternatives": [
+        "You got it. The last four digits are: **4-5 \u2026 7-5**. Again, slowly: **4-5 \u2026 7-5**.",
+        "Of course. You\u2019re okay. The number is **two-one-one**. I\u2019ll say it slowly: **two \u2026 one \u2026 one**. Just dial **211** from your phone, and tell them you need **same-day detox near downtown Eugene**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-3",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It\u2019s not just me, my friend took pills and a lot to drink, and now he\u2019s on the floor and not really waking up.",
+      "normalizedQuery": "hi uh hear eugene detox like tonight if possible sorry your voice cut say again it just friend took pills lot drink now he on floor really waking up",
+      "voiceResponse": "I\u2019m really glad you told me. This is an emergency. Call **911 right now** and say: \u201cPossible overdose, not waking up after pills and alcohol.\u201d While you call, put him on his side, keep his airway clear, and do **not** let him sleep it off. If you have naloxone, give it now. Are you with him this second?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This is an emergency. Call **911 right now** and say: \u201cPossible overdose, not waking up after pills and alcohol.\u201d While you call, put him on his side, keep his airway clear, and do **not** let him sleep it off. If you have naloxone, give it now. Are you with him this second?",
+      "voiceResponseAlternatives": [
+        "I hear the urgency, and you\u2019re doing the right thing calling now. In Eugene, try **Buckley Sobering and Detox** first: **640 West 7th Avenue, Eugene**. Phone: **5-4-1, 7-6-2, 4-5-7-5**. If they\u2019re full, call this detox line next: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. When they answer, say: \u201cI\u2019m in Eugene and need detox admission today. Do you have a bed now?\u201d",
+        "Absolutely, I\u2019ll say it slowly. Buckley Sobering and Detox: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**. Again: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**.",
+        "Absolutely, and good on you for helping him take this step. In Eugene, you can start by calling 2-1-1 and asking for \u201cdetox intake options today,\u201d including same-day and medically supervised programs. If you want, you can also call providers for him and say, \u201cI\u2019m calling for my uncle\u2014what\u2019s the fastest way to get him assessed today?\u201d If he has severe withdrawal signs like confusion, seizures, or trouble breathing, call 9-1-1.",
+        "Thank you for telling me where you are. You\u2019re doing exactly the right thing for your son. If he\u2019s very drowsy, confused, or breathing slowly, call 911 now. If he\u2019s awake and stable, I can help you connect to 211 right now to find the closest same-day detox near downtown Eugene and check travel distance before you go. I can stay with you while we do that."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001222#turn-4",
+      "scenarioId": "phone_dialog_0001222",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "He\u2019s breathing weird, like slow and kinda gurgly, and I\u2019m freaking out.",
+      "normalizedQuery": "hi uh hear eugene detox like tonight if possible sorry your voice cut say again it just friend took pills lot drink now he on floor really waking up breathing weird slow kinda gurgly freaking",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. This is life-threatening right now. Call **911** immediately and say: \u201cHe\u2019s barely waking, slow gurgling breaths after pills and alcohol.\u201d Put him on his side, tilt his head back a little to keep the airway open, and clear anything in his mouth you can see. If you have naloxone, give it now. Stay with him and count breaths. Are you calling 911 this second?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. This is life-threatening right now. Call **911** immediately and say: \u201cHe\u2019s barely waking, slow gurgling breaths after pills and alcohol.\u201d Put him on his side, tilt his head back a little to keep the airway open, and clear anything in his mouth you can see. If you have naloxone, give it now. Stay with him and count breaths. Are you calling 911 this second?",
+      "voiceResponseAlternatives": [
+        "I hear the urgency, and you\u2019re doing the right thing calling now. In Eugene, try **Buckley Sobering and Detox** first: **640 West 7th Avenue, Eugene**. Phone: **5-4-1, 7-6-2, 4-5-7-5**. If they\u2019re full, call this detox line next: **5-4-1, 5-2-3, 4-0-4-9**. Backup: **5-4-1, 4-0-6, 4-3-6-3**. When they answer, say: \u201cI\u2019m in Eugene and need detox admission today. Do you have a bed now?\u201d",
+        "Absolutely, I\u2019ll say it slowly. Buckley Sobering and Detox: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**. Again: **5-4-1** \u2026 **7-6-2** \u2026 **4-5-7-5**.",
+        "Absolutely, and good on you for helping him take this step. In Eugene, you can start by calling 2-1-1 and asking for \u201cdetox intake options today,\u201d including same-day and medically supervised programs. If you want, you can also call providers for him and say, \u201cI\u2019m calling for my uncle\u2014what\u2019s the fastest way to get him assessed today?\u201d If he has severe withdrawal signs like confusion, seizures, or trouble breathing, call 9-1-1.",
+        "Thank you for telling me where you are. You\u2019re doing exactly the right thing for your son. If he\u2019s very drowsy, confused, or breathing slowly, call 911 now. If he\u2019s awake and stable, I can help you connect to 211 right now to find the closest same-day detox near downtown Eugene and check travel distance before you go. I can stay with you while we do that."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
     }
   ],
@@ -338,6 +458,30 @@
       "to": "phone_dialog_0001108#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-1",
+      "to": "phone_dialog_0001222#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-2",
+      "to": "phone_dialog_0001222#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-3",
+      "to": "phone_dialog_0001222#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001222#turn-4",
+      "to": "phone_dialog_0001222#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->clarifying_prompt"
     }
   ]
 }

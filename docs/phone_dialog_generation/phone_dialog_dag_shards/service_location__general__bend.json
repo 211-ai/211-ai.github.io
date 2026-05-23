@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__bend",
   "kind": "service_location",
   "key": "general__bend",
-  "nodeCount": 36,
+  "nodeCount": 39,
   "nodes": [
     {
       "id": "phone_dialog_0000007#turn-5",
@@ -700,7 +700,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes, I hear you now. The audio was unclear for a moment. The audio was unclear. Please say one short thing you need most right now: parenting help, or lab testing?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio was unclear for a second. Can you say just one: \u201cimmediate danger\u201d or \u201csafe place tonight\u201d? If it\u2019s immediate danger, call **9-1-1** now. If it\u2019s a safe place tonight in Bend, I can connect you to a **211 live specialist** right now.",
+        "I hear you, and I\u2019ll keep this quiet. The audio was unclear, but I caught Bend and domestic violence support. You have options: we can do a phone call to the National Domestic Violence Hotline at **800-799-7233**, or a **TTY line 855-812-1001**. Which is safer for you right now: **phone support** or **local shelter options**?"
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
@@ -1064,6 +1067,92 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001181#turn-2",
+      "scenarioId": "phone_dialog_0001181",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Bend... my ex keeps showing up and texting threats, and I\u2019m scared to go back to my apartment tonight.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first bend ex keeps showing up texting threats scared go back apartment tonight",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear for a second. Can you say just one: \u201cimmediate danger\u201d or \u201csafe place tonight\u201d? If it\u2019s immediate danger, call **9-1-1** now. If it\u2019s a safe place tonight in Bend, I can connect you to a **211 live specialist** right now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:675e8d8ba442bfca"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear for a second. Can you say just one: \u201cimmediate danger\u201d or \u201csafe place tonight\u201d? If it\u2019s immediate danger, call **9-1-1** now. If it\u2019s a safe place tonight in Bend, I can connect you to a **211 live specialist** right now.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you now. The audio was unclear for a moment. The audio was unclear. Please say one short thing you need most right now: parenting help, or lab testing?",
+        "I hear you, and I\u2019ll keep this quiet. The audio was unclear, but I caught Bend and domestic violence support. You have options: we can do a phone call to the National Domestic Violence Hotline at **800-799-7233**, or a **TTY line 855-812-1001**. Which is safer for you right now: **phone support** or **local shelter options**?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001181#turn-3",
+      "scenarioId": "phone_dialog_0001181",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you say that again slower? There\u2019s traffic noise and I missed the middle part.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first bend ex keeps showing up texting threats scared go back apartment tonight say again slower there traffic noise missed middle part",
+      "voiceResponse": "Of course. Slow version: if it\u2019s **immediate danger**, call **9-1-1** now. If you need a **safe place tonight in Bend**, I can connect you to a **211 live specialist** right now. If the phone dies, call back and just say: **\u201clive agent.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slow version: if it\u2019s **immediate danger**, call **9-1-1** now. If you need a **safe place tonight in Bend**, I can connect you to a **211 live specialist** right now. If the phone dies, call back and just say: **\u201clive agent.\u201d**",
+      "voiceResponseAlternatives": [
+        "Next step: write this exactly as **2-1-1**. Digit by digit, slowly: **two \u2026 one \u2026 one**. That\u2019s the number I have here.",
+        "Yes. Slower now. Call **8-8-8, 2-2-1, 7-0-7-0**. Again: **8-8-8, 2-2-1, 7-0-7-0**. Say: \u201cMy shutoff is tonight. I can\u2019t pay the full amount. I need a same-day payment plan to stop disconnection.\u201d Backup number: **8-8-8, 2-2-5, 2-6-1-1**. Again: **8-8-8, 2-2-5, 2-6-1-1**.",
+        "Absolutely. The number is **11** \u2014 one, one \u2014 veteran temporary housing or shelter programs in Bend. And the other number, if you want it later, is **3** veteran mental health evaluation services. If it helps, we can stay with just the **11 housing options** right now.",
+        "Sure. After Bend, I said: if he is in immediate danger, call **9-1-1** now. If he is in immediate danger, call **9-1-1** now. Is he safe right now?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001237#turn-1",
+      "scenarioId": "phone_dialog_0001237",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, sorry, I can barely hear with these buses going by... I\u2019m in Bend, and I need domestic violence help, but I need to keep this quiet.",
+      "normalizedQuery": "hi sorry barely hear these buses going by bend domestic violence keep this quiet",
+      "voiceResponse": "I hear you, and I\u2019ll keep this quiet. The audio was unclear, but I caught Bend and domestic violence support. You have options: we can do a phone call to the National Domestic Violence Hotline at **800-799-7233**, or a **TTY line 855-812-1001**. Which is safer for you right now: **phone support** or **local shelter options**?",
+      "evidenceDocIds": [
+        "page:bafkreiaqwjxtglsomnvurcuurlub5sp4iuhivtnlbrbefbtuqx3ot7aczm",
+        "service:2b32d7191207ca8c",
+        "page:bafkreiemk6zu2qsxl6lyfzodla6jhjftxs45gjmokcmw2gi3ivse5du464",
+        "service:baae178363b1c104",
+        "service:ee0eedb7ecfb8991"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019ll keep this quiet. The audio was unclear, but I caught Bend and domestic violence support. You have options: we can do a phone call to the National Domestic Violence Hotline at **800-799-7233**, or a **TTY line 855-812-1001**. Which is safer for you right now: **phone support** or **local shelter options**?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you now. The audio was unclear for a moment. The audio was unclear. Please say one short thing you need most right now: parenting help, or lab testing?",
+        "I\u2019m sorry, your audio was unclear for a second. Can you say just one: \u201cimmediate danger\u201d or \u201csafe place tonight\u201d? If it\u2019s immediate danger, call **9-1-1** now. If it\u2019s a safe place tonight in Bend, I can connect you to a **211 live specialist** right now."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1234,6 +1323,24 @@
       "to": "phone_dialog_0001135#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001181#turn-2",
+      "to": "phone_dialog_0001181#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001181#turn-3",
+      "to": "phone_dialog_0001181#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001237#turn-1",
+      "to": "phone_dialog_0001237#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
     }
   ]
 }

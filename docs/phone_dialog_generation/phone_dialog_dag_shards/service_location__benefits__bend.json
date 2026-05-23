@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__bend",
   "kind": "service_location",
   "key": "benefits__bend",
-  "nodeCount": 34,
+  "nodeCount": 37,
   "nodes": [
     {
       "id": "phone_dialog_0000202#turn-1",
@@ -1004,6 +1004,96 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001216#turn-1",
+      "scenarioId": "phone_dialog_0001216",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, are you there? I need a clinic in Bend, like today, but I can\u2019t do the one by the bus station because they already know my name before I say it.",
+      "normalizedQuery": "hi sorry there clinic medical health bend like one by bus station because they already know name before say it",
+      "voiceResponse": "I hear you, and that sounds really uncomfortable. Let\u2019s get you a different clinic in Bend today, not the one by the bus station. I can help you find options that protect your privacy. What kind of care do you need right now: urgent care, primary care, mental health, or sexual health?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that sounds really uncomfortable. Let\u2019s get you a different clinic in Bend today, not the one by the bus station. I can help you find options that protect your privacy. What kind of care do you need right now: urgent care, primary care, mental health, or sexual health?",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called. Chest symptoms can be serious, so safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. If you can talk and want a Bend clinic today, contact **Volunteers in Medicine Clinic of the Cascades** at **5 4 1, 3 3 0, 9 0 0 1**. Address: **2300 Northeast Neff Road, Bend**. You can ask to share only the minimum information needed.",
+        "Yes, I hear you. Since your chest feels weird, safety first: if you have chest pain, trouble breathing, or feel faint, call **911 now**. For Bend walk-in care today, I don\u2019t have a confirmed local walk-in listing on my screen right now. I can connect you to a **211 specialist** immediately to find the closest open clinic.",
+        "You\u2019re doing the right thing by calling. Because your chest feels weird and you\u2019re scared, this could be urgent. If you have chest pain, trouble breathing, or feel faint, call **911 right now**. If you can keep talking, I can connect you to a **211 specialist now** to find the closest place in Bend that can see you today.",
+        "Absolutely, you don\u2019t have to share your full address. Cross streets are enough to start, and you can share only the minimum. Your safety comes first: if you have chest pain, trouble breathing, or feel faint, call 911 now. If you can keep talking, I can connect you to a 211 specialist right now to find a place in Bend that can see you today."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001216#turn-4",
+      "scenarioId": "phone_dialog_0001216",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I can get to the east side if it\u2019s not crowded, I just need blood pressure and meds checked, and maybe someone who won\u2019t write things down where they can see.",
+      "normalizedQuery": "hi sorry there clinic medical health bend like one by bus station because they already know name before say it no er said regular chest feels weird haven slept voices keep saying don trust front desk people wait did ask if safe right now mean locked door mostly somebody keeps tapping window maybe just pipes again east side crowded blood pressure meds checked someone who won write things down see",
+      "voiceResponse": "You\u2019re being very clear, and that helps. Let\u2019s do this step by step: we\u2019ll find a same-day east-side clinic for blood pressure and medication check, and ask for privacy at check-in. If you feel in immediate danger or your chest symptoms get severe, call 911 now. Otherwise, I can connect you to a live 211 specialist right now to locate the least-crowded option and help you with exactly what to say at the front desk.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re being very clear, and that helps. Let\u2019s do this step by step: we\u2019ll find a same-day east-side clinic for blood pressure and medication check, and ask for privacy at check-in. If you feel in immediate danger or your chest symptoms get severe, call 911 now. Otherwise, I can connect you to a live 211 specialist right now to locate the least-crowded option and help you with exactly what to say at the front desk.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001216#turn-6",
+      "scenarioId": "phone_dialog_0001216",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "And if they ask, don\u2019t say I\u2019m crazy, just say I need a medical clinic in Bend and I need to be seen today, please.",
+      "normalizedQuery": "if they ask don say crazy just medical clinic health bend be seen please",
+      "voiceResponse": "Absolutely\u2014I hear you. Here\u2019s exactly what to say: \u201cI need a medical clinic in Bend. I need to be seen today for blood pressure and medication check. Please note I\u2019m requesting privacy.\u201d If you want, I can connect you now and they can stay on the line. Call **3 6 0, 5 2 1, 6 5 2 7**. Backup: **9 7 1, 3 1 9, 9 7 9 3**. If you feel in immediate danger, call **9 1 1**.",
+      "evidenceDocIds": [
+        "service:6d8268878ab43742",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:fa597809b842c38b",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:c43eb0c241f7667f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely\u2014I hear you. Here\u2019s exactly what to say: \u201cI need a medical clinic in Bend. I need to be seen today for blood pressure and medication check. Please note I\u2019m requesting privacy.\u201d If you want, I can connect you now and they can stay on the line. Call **3 6 0, 5 2 1, 6 5 2 7**. Backup: **9 7 1, 3 1 9, 9 7 9 3**. If you feel in immediate danger, call **9 1 1**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1190,6 +1280,18 @@
     {
       "from": "phone_dialog_0001158#turn-3",
       "to": "phone_dialog_0001158#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001216#turn-1",
+      "to": "phone_dialog_0001216#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001216#turn-4",
+      "to": "phone_dialog_0001216#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

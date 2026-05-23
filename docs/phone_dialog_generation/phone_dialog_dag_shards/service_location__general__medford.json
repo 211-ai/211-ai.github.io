@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__medford",
   "kind": "service_location",
   "key": "general__medford",
-  "nodeCount": 49,
+  "nodeCount": 56,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-2",
@@ -807,7 +807,10 @@
       "similarCases": [],
       "assistantResponse": "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?",
       "voiceResponseAlternatives": [
-        "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?"
+        "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?",
+        "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+        "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence.",
+        "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "bad_reception",
@@ -834,7 +837,10 @@
       "similarCases": [],
       "assistantResponse": "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?",
       "voiceResponseAlternatives": [
-        "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?"
+        "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?",
+        "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+        "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence.",
+        "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "bad_reception",
@@ -1459,6 +1465,210 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001177#turn-1",
+      "scenarioId": "phone_dialog_0001177",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, is this 211? I keep getting rerouted, sorry, I need somewhere to sleep tonight in Medford, I think people are following me.",
+      "normalizedQuery": "hi um this 211 keep getting rerouted sorry somewhere sleep tonight medford think people following",
+      "voiceResponse": "Yes, you reached 211. I\u2019m really glad you called, and I hear how stressful this is. Let\u2019s focus on getting you safe shelter tonight in Medford. If you feel in immediate danger right now, call 911. If you can stay on with me, I can help you get to a local 211 housing specialist now for emergency shelter options and next steps. Are you somewhere safe enough to keep talking for a minute?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:a1e021534ee03771",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you reached 211. I\u2019m really glad you called, and I hear how stressful this is. Let\u2019s focus on getting you safe shelter tonight in Medford. If you feel in immediate danger right now, call 911. If you can stay on with me, I can help you get to a local 211 housing specialist now for emergency shelter options and next steps. Are you somewhere safe enough to keep talking for a minute?",
+      "voiceResponseAlternatives": [
+        "I\u2019m here with you, and I\u2019m not hanging up. That sounds really scary, and we can take this one step at a time. First, let\u2019s get you to a safer spot right now if you can, like a lit public place nearby. If you feel in immediate danger, call 911. Then I\u2019ll help connect you to local 211 housing support for a place to sleep tonight in Medford. Can you tell me where you are right now?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001177#turn-2",
+      "scenarioId": "phone_dialog_0001177",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, wait, don\u2019t hang up, I can hear them talking through the vent again, maybe it\u2019s not real but it feels real, and I don\u2019t have a place tonight.",
+      "normalizedQuery": "hi um this 211 keep getting rerouted sorry somewhere sleep tonight medford think people following no wait don hang up hear them talking through vent again maybe it real feels have place",
+      "voiceResponse": "I\u2019m here with you, and I\u2019m not hanging up. That sounds really scary, and we can take this one step at a time. First, let\u2019s get you to a safer spot right now if you can, like a lit public place nearby. If you feel in immediate danger, call 911. Then I\u2019ll help connect you to local 211 housing support for a place to sleep tonight in Medford. Can you tell me where you are right now?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and I\u2019m not hanging up. That sounds really scary, and we can take this one step at a time. First, let\u2019s get you to a safer spot right now if you can, like a lit public place nearby. If you feel in immediate danger, call 911. Then I\u2019ll help connect you to local 211 housing support for a place to sleep tonight in Medford. Can you tell me where you are right now?",
+      "voiceResponseAlternatives": [
+        "Yes, you reached 211. I\u2019m really glad you called, and I hear how stressful this is. Let\u2019s focus on getting you safe shelter tonight in Medford. If you feel in immediate danger right now, call 911. If you can stay on with me, I can help you get to a local 211 housing specialist now for emergency shelter options and next steps. Are you somewhere safe enough to keep talking for a minute?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001177#turn-4",
+      "scenarioId": "phone_dialog_0001177",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m not hurt, no, just scared and mixed up... I had an address written down but I lost my wallet and all my papers.",
+      "normalizedQuery": "hi um this 211 keep getting rerouted sorry somewhere sleep tonight medford think people following no wait don hang up hear them talking through vent again maybe it real feels have place bus loud repeat part if safe right now hurt just scared mixed had an address written down lost wallet all papers",
+      "voiceResponse": "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?",
+        "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?",
+        "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence.",
+        "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001188#turn-2",
+      "scenarioId": "phone_dialog_0001188",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "No, I'm in Medford, I think, yeah Medford, but don't send police, please don't, they twist what I say.",
+      "normalizedQuery": "hi wait hear people hallway keep saying name through vent can't tell if it's real no i'm medford think yeah don't send police please they twist say",
+      "voiceResponse": "I hear you. I won\u2019t send police from this call. You\u2019re not alone, and I\u2019m connecting you to a live crisis counselor right now. If you are in immediate danger or someone is trying to get in, call 9-1-1 now. While we connect, go to the safest room you can and lock the door if possible.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibmn6xyxpuhpashuiyqx6q2yq4q752hhxd55cguurzjmnldm2qvcq",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I won\u2019t send police from this call. You\u2019re not alone, and I\u2019m connecting you to a live crisis counselor right now. If you are in immediate danger or someone is trying to get in, call 9-1-1 now. While we connect, go to the safest room you can and lock the door if possible.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001188#turn-4",
+      "scenarioId": "phone_dialog_0001188",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I keep losing the question, I'm trying, my phone's at three percent and my charger's missing and I can't think straight.",
+      "normalizedQuery": "hi wait hear people hallway keep saying name through vent can't tell if it's real no i'm medford think yeah don't send police please they twist say sorry did ask safe right now locked door voices louder haven't slept like two days losing question trying phone's at three percent charger's missing straight",
+      "voiceResponse": "You\u2019re doing your best, and I\u2019m with you. This is urgent. If you feel you might hurt yourself, or someone is trying to get in, call 9-1-1 now. Put your phone on low power, dim the screen, and plug in any charger you can find right now, then stay in the locked room. I\u2019m keeping the live crisis counselor handoff active.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing your best, and I\u2019m with you. This is urgent. If you feel you might hurt yourself, or someone is trying to get in, call 9-1-1 now. Put your phone on low power, dim the screen, and plug in any charger you can find right now, then stay in the locked room. I\u2019m keeping the live crisis counselor handoff active.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line with me right now while I connect you to a live 211info specialist for tonight\u2019s indoor shelter options in Medford. If you feel in immediate danger while we do that, call 911 right away.",
+        "I hear you. Since transport is the barrier, call or text **988** right now and say: \u201cWe\u2019re in Medford, no car, need the nearest walk-in crisis place on a bus line.\u201d They can give the closest option fast, and you can speak for him. If he might hurt himself right now, call **911** now.",
+        "You\u2019re okay, and you don\u2019t need to share anything you don\u2019t want to. I can connect you to a live specialist now to find clothing help in Medford that may be open today. You can keep it minimal, like just your city and what you need. If you want, I can stay with you while we make that handoff.",
+        "That\u2019s a fair question. You can keep this very minimal. For clothing help, you can share only your city and what you need today, and skip anything you\u2019re not comfortable giving. If you want, I can hand you to a live specialist and you can start with, \u201cI want to stay private and share the least possible.\u201d We can do it that way."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001221#turn-3",
+      "scenarioId": "phone_dialog_0001221",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Medford... I\u2019m shaky and dizzy and I can\u2019t be outside much longer.",
+      "normalizedQuery": "hi sorry don feel good this isn even phone battery almost gone give most important number first case drops medford shaky dizzy be outside much longer",
+      "voiceResponse": "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?",
+        "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?",
+        "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+        "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001226#turn-1",
+      "scenarioId": "phone_dialog_0001226",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, I\u2019m sorry, I\u2019m at the bus stop in Medford and it\u2019s really loud here... can you hear me okay?",
+      "normalizedQuery": "hi sorry at bus stop medford it really loud here hear okay",
+      "voiceResponse": "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you a little, but the audio is breaking up. You\u2019re doing okay. Could you say just one short thing: do you want **emotional support**, **housing/shelter help**, or **something else**?",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you now. The audio is still a little unclear. Please say just one thing: do you want parenting help, or a phone number to call?",
+        "Sorry, your audio was unclear. I heard: you lost your state I.D. I heard: you lost your state I.D. Please say one thing only: do you want help replacing it, yes or no?",
+        "I hear how scared and overwhelmed you feel, and you\u2019re doing the right thing staying on the line. The bus audio is a little unclear on my end. Quick choice so I can help fast: do you want to focus first on `1) a safe place to sleep tonight` or `2) replacing your wallet and papers`?",
+        "Your audio was a little unclear. I heard \u201cMedford,\u201d \u201cshaky,\u201d and \u201cdizzy,\u201d and this sounds urgent. Call **9-1-1** now and ask for an ambulance. Say your location first. Please repeat your exact address in one short sentence."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1707,6 +1917,48 @@
       "to": "phone_dialog_0001124#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001177#turn-1",
+      "to": "phone_dialog_0001177#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001177#turn-2",
+      "to": "phone_dialog_0001177#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001177#turn-4",
+      "to": "phone_dialog_0001177#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001188#turn-2",
+      "to": "phone_dialog_0001188#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001188#turn-4",
+      "to": "phone_dialog_0001188#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001221#turn-3",
+      "to": "phone_dialog_0001221#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001226#turn-1",
+      "to": "phone_dialog_0001226#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
     }
   ]
 }

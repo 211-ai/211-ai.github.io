@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__utilities__statewide",
   "kind": "service_location",
   "key": "utilities__statewide",
-  "nodeCount": 38,
+  "nodeCount": 41,
   "nodes": [
     {
       "id": "phone_dialog_0000142#turn-6",
@@ -878,7 +878,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?"
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -1111,6 +1113,93 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001171#turn-2",
+      "scenarioId": "phone_dialog_0001171",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not in immediate danger, I just feel weak and panicky, and the heat is making it worse.",
+      "normalizedQuery": "immediate danger just feel weak panicky heat utility utilities electric making it worse",
+      "voiceResponse": "You\u2019re doing the right thing telling me. Let\u2019s cool you down first: move to shade or indoors now, sit with your back supported, loosen clothing, sip water slowly, and take slow breaths with me. If you get more weak, confused, chest pain, trouble breathing, or feel close to passing out, call 9-1-1 right away. If you want help with safer cooling options, call Emergency Heat Assistance at **5 4 1, 4 8 8, 6 0 0 4**.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing telling me. Let\u2019s cool you down first: move to shade or indoors now, sit with your back supported, loosen clothing, sip water slowly, and take slow breaths with me. If you get more weak, confused, chest pain, trouble breathing, or feel close to passing out, call 9-1-1 right away. If you want help with safer cooling options, call Emergency Heat Assistance at **5 4 1, 4 8 8, 6 0 0 4**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-3",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not bleeding or anything, just shaky and confused from the heat, and I haven\u2019t had much water.",
+      "normalizedQuery": "bleeding anything just shaky confused from heat utility utilities electric haven had much water",
+      "voiceResponse": "Thank you for telling me. You are shaky and confused from heat. Shaky and confused. Please call 9-1-1 now. That is 9-1-1. If you cannot call, wave to someone nearby and ask them to call 9-1-1 for you. If you can, move to shade and take small sips of water while you wait. Can you call 9-1-1 right now?",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:7c2d095e978b531f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You are shaky and confused from heat. Shaky and confused. Please call 9-1-1 now. That is 9-1-1. If you cannot call, wave to someone nearby and ask them to call 9-1-1 for you. If you can, move to shade and take small sips of water while you wait. Can you call 9-1-1 right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019m not here to report you to your landlord. I\u2019m here to help you get utility support and options, with as little runaround as possible. Since you\u2019re near Eugene, you can try Lane Electric at **5 4 1, 4 8 4, 1 1 5 1**. If your utility is PGE, call **8 0 0, 5 4 2, 8 8 1 8**. If you need to go in person, a live 211 specialist can also look for ride options with you by phone.",
+        "I can\u2019t open the app from here. Most important first: if you feel unsafe, very weak, or short of breath, call **9-1-1** now and say your address first. If the call drops and you can make one call after that, dial **8-8-8 \u2026 2-2-1 \u2026 7-0-7-0** for urgent utility shutoff help.",
+        "I\u2019m so sorry you\u2019re carrying this right now. Let\u2019s do one step at a time: call Portland General Electric\u2019s income-qualified discount program now and ask for urgent bill help and disconnection protection. The number is **503, 228, 6322**. I can repeat: **5-0-3, 2-2-8, 6-3-2-2**. If needed, there\u2019s also **541, 488, 6004**. They offer ongoing bill discounts, and you may qualify if your household income is at or below 200% of the federal poverty level.",
+        "Next step: call **Emergency Heat Assistance** now and say you have a shutoff notice for tonight and need same-day utility help. Number: **5 4 1** \u2026 **4 8 8** \u2026 **6 0 0 4**. Backup: **5 4 1** \u2026 **4 8 8** \u2026 **5 3 5 7**. They may ask for your disconnect notice and proof of income, and your utility can\u2019t be over $100 past due. If you feel unsafe tonight without power, call **9 1 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001260#turn-2",
+      "scenarioId": "phone_dialog_0001260",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019ve been outside since yesterday and I\u2019m getting really dizzy and weak from the heat.",
+      "normalizedQuery": "ve been outside since yesterday getting really dizzy weak from heat utility utilities electric",
+      "voiceResponse": "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. If you feel faint, confused, or might pass out, call **9 1 1** now. I\u2019ll repeat: call **9 1 1** now. While we\u2019re on, get into shade, sip water slowly, and loosen tight clothing. If you can, wet your neck and shirt to cool down. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1275,6 +1364,24 @@
       "to": "phone_dialog_0001116#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001171#turn-2",
+      "to": "phone_dialog_0001171#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001241#turn-3",
+      "to": "phone_dialog_0001241#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001260#turn-2",
+      "to": "phone_dialog_0001260#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

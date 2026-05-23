@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__health__gresham",
   "kind": "service_location",
   "key": "health__gresham",
-  "nodeCount": 12,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000230#turn-1",
@@ -354,6 +354,36 @@
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001178#turn-6",
+      "scenarioId": "phone_dialog_0001178",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "If he makes it, I still need detox help nearby in Gresham for tonight, no car.",
+      "normalizedQuery": "if he makes it still detox nearby gresham tonight no car",
+      "voiceResponse": "You\u2019re doing the right thing. First priority: call **9-1-1 now** for him and stay with him. After that, I can help with detox tonight and no-car transport options through a live 211 specialist. I only have one detox contact in my notes right now: **5-4-1, 5-2-3, 4-0-4-9** backup: **5-4-1, 4-0-6, 4-3-6-3**. Call 911 first. I\u2019ll stay with you.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. First priority: call **9-1-1 now** for him and stay with him. After that, I can help with detox tonight and no-car transport options through a live 211 specialist. I only have one detox contact in my notes right now: **5-4-1, 5-2-3, 4-0-4-9** backup: **5-4-1, 4-0-6, 4-3-6-3**. Call 911 first. I\u2019ll stay with you.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
     }
   ],

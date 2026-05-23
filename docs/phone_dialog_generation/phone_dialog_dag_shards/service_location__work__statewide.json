@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__work__statewide",
   "kind": "service_location",
   "key": "work__statewide",
-  "nodeCount": 66,
+  "nodeCount": 68,
   "nodes": [
     {
       "id": "phone_dialog_0000009#turn-2",
@@ -1959,6 +1959,66 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001226#turn-2",
+      "scenarioId": "phone_dialog_0001226",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I need to talk quiet, please. My ex keeps showing up at my job and texting threats, and I\u2019m scared to go back to my apartment tonight.",
+      "normalizedQuery": "talk quiet please ex keeps showing up at job texting threats scared go back apartment tonight",
+      "voiceResponse": "I\u2019m really glad you said that. You don\u2019t need to explain more than you want. Right now, options: stay in a public place, ask someone nearby to stay with you, or if you feel in immediate danger, call 911. For housing help, you can call Home Forward at **503\u2026 802\u2026 8300**. I can repeat it: **503\u2026 802\u2026 8300**. Another line is **503\u2026 802\u2026 8469**.",
+      "evidenceDocIds": [
+        "service:0ace06937c39cb61",
+        "service:40aa5dece0a62b6a",
+        "service:17f1a06c8dc9a480",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:484b4523643f9b5f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. You don\u2019t need to explain more than you want. Right now, options: stay in a public place, ask someone nearby to stay with you, or if you feel in immediate danger, call 911. For housing help, you can call Home Forward at **503\u2026 802\u2026 8300**. I can repeat it: **503\u2026 802\u2026 8300**. Another line is **503\u2026 802\u2026 8469**.",
+      "voiceResponseAlternatives": [
+        "One step right now: contact **211info** now and say, \u201cMy wallet and ID were lost, and I need the fastest replacement options for work.\u201d If you want, I can help you practice that sentence once so it\u2019s easier to say when they answer.",
+        "No, not DMV first. One step right now: call **211info** and say, \u201cMy wallet and ID were lost, and I need the fastest replacement options for work.\u201d They\u2019re the local contact team for Oregon and Southwest Washington, and they can help you with next steps.",
+        "Yes. Next step: call that same number now and ask, \u201cDo you have employment referrals, or who should I call for job help?\u201d The number is **503 \u2026 722 \u2026 9780**. Again: **5 0 3 \u2026 7 2 2 \u2026 9 7 8 0**.",
+        "I can\u2019t confirm that part from here, and I don\u2019t want to guess. Please call **2-1-1** and ask: \u201cDo you help with job applications, not just listings?\u201d If you feel unsafe or might hurt yourself, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001232#turn-5",
+      "scenarioId": "phone_dialog_0001232",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Wait\u2014he just texted that he\u2019s outside my work parking lot now. If this is immediate danger, tell me exactly what to do first.",
+      "normalizedQuery": "wait he just texted outside work parking lot now if this immediate danger tell exactly first",
+      "voiceResponse": "First: call 911 right now and say, \u201cHe threatened me and is outside my work parking lot in Clackamas. I\u2019m in immediate danger.\u201d If you can, go back inside your workplace now and ask someone to stay with you while you call. Do not go to your car alone. If speaking feels hard, you can hand your phone to a coworker or security and have them talk to 911 for you. I can stay with you while you do this.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge",
+        "page:bafkreiewrcan5xmbqdxyz7d756hv2ekyoxnqqufb6oticmbviucpnf2ndi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First: call 911 right now and say, \u201cHe threatened me and is outside my work parking lot in Clackamas. I\u2019m in immediate danger.\u201d If you can, go back inside your workplace now and ask someone to stay with you while you call. Do not go to your car alone. If speaking feels hard, you can hand your phone to a coworker or security and have them talk to 911 for you. I can stay with you while you do this.",
+      "voiceResponseAlternatives": [
+        "I hear how high-stakes this is, and we can act right now. Call **St. Vincent de Paul Service Station** at **5 4 1, 6 8 9, 6 7 4 7**. Ask: \u201cI have a job interview this afternoon. Do you have a shower available now, and a place I can change clothes?\u201d Address is **450 Highway 99 North, Eugene**. If they can\u2019t take you, I can get you to a live specialist immediately for the next closest option.",
+        "I hear you. Call this first, right now: **5 4 1**\u2026 **6 8 9**\u2026 **6 7 4 7**. Again: **5 4 1**\u2026 **6 8 9**\u2026 **6 7 4 7**. That\u2019s St. Vincent de Paul Service Station. If they answer, say: \u201cI need a shower now and a place to change before a job interview this afternoon.\u201d",
+        "You\u2019re doing great, and I hear you: job leads hiring now, not unemployment. Let\u2019s keep it simple and get you to a live specialist for immediate openings in Bend. I can connect you right now, and they can focus on same-day or near-term work. If your phone dies, call 211 back and say, \u201cBend, immediate job leads.\u201d",
+        "You\u2019re okay, and you\u2019re not doing this wrong. Let\u2019s keep it simple: I\u2019m connecting you to a **live 211 specialist** right now for fast-hire job leads in Hillsboro this week. Stay on the line with me. If you can, keep your ZIP code ready and say \u201cquick hire jobs\u201d first so they can move fast."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -2231,6 +2291,18 @@
       "to": "phone_dialog_0001101#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001226#turn-2",
+      "to": "phone_dialog_0001226#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001232#turn-5",
+      "to": "phone_dialog_0001232#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

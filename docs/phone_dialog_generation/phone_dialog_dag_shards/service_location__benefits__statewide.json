@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__statewide",
   "kind": "service_location",
   "key": "benefits__statewide",
-  "nodeCount": 219,
+  "nodeCount": 241,
   "nodes": [
     {
       "id": "phone_dialog_0000011#turn-5",
@@ -3806,7 +3806,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Most important first: if you might pass out or have chest tightness again, call **9-1-1 now**. If you can still talk and want a same-day clinic line next, call **5-4-1, 4-7-9, 6-3-9-3** (Siskiyou Community Health Center) and say, \u201cI need an urgent same-day medical visit; I feel faint and scared I may pass out.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. If your chest feels bad now or you can\u2019t tell what\u2019s real, call **9-1-1** right now. That\u2019s: **nine \u2026 one \u2026 one**. Say it back once: **nine-one-one**.",
+        "I can repeat it. First, are you and your son safe right now, yes or no? The number is: **5-0-3, 6-1-7, 7-3-2-3**. If either of you is in immediate danger, call **9-1-1** now."
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -6570,6 +6573,662 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001166#turn-2",
+      "scenarioId": "phone_dialog_0001166",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No, not police, no, I said clinic, like medical, my chest is weird and I haven\u2019t slept in... two days? maybe three, I don\u2019t know.",
+      "normalizedQuery": "no police said clinic medical health like chest weird haven slept two days maybe three don know",
+      "voiceResponse": "Your audio was unclear, but I heard chest pain and no sleep for days, and that can be an emergency. If your chest feels bad right now, call 911 now. Please repeat one word so I can help: \u201cemergency\u201d or \u201cclinic.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreic3kg46z7y5efxnwkyrrjuecmehzde65srltfigsjbmreubcudftq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio was unclear, but I heard chest pain and no sleep for days, and that can be an emergency. If your chest feels bad right now, call 911 now. Please repeat one word so I can help: \u201cemergency\u201d or \u201cclinic.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. You said it already. A dental clinic. A dental clinic. I\u2019m sorry, the audio was a little unclear. One short question: do you want a clinic near Oregon City, or are Woodburn or Albany okay?",
+        "I hear you need disability benefits help. I hear you need disability benefits help. Your audio is a little unclear. Please say one word: SSI, SSDI, or both?",
+        "I hear you. Thanks for saying that. Your audio was a little unclear. Do you want `mobile dental care`, or `dental hygiene`?",
+        "I hear how overwhelmed you are, and I\u2019m with you. Your audio was a little unclear just now. Please repeat one short phrase: \u201ccan\u2019t breathe\u201d or \u201cmental health crisis help.\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001166#turn-5",
+      "scenarioId": "phone_dialog_0001166",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "What was that number, say it again slower, I wrote the first part wrong and my hand is shaking.",
+      "normalizedQuery": "no police said clinic medical health like chest weird haven slept two days maybe three don know voices loud right now they keep saying go inside anywhere so if ask questions one at time sorry trying hurt anyone just tell real phone on four percent stay was number say it again slower wrote first part wrong hand shaking",
+      "voiceResponse": "I\u2019m with you. If your chest feels bad now or you can\u2019t tell what\u2019s real, call **9-1-1** right now. That\u2019s: **nine \u2026 one \u2026 one**. Say it back once: **nine-one-one**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. If your chest feels bad now or you can\u2019t tell what\u2019s real, call **9-1-1** right now. That\u2019s: **nine \u2026 one \u2026 one**. Say it back once: **nine-one-one**.",
+      "voiceResponseAlternatives": [
+        "Most important first: if you might pass out or have chest tightness again, call **9-1-1 now**. If you can still talk and want a same-day clinic line next, call **5-4-1, 4-7-9, 6-3-9-3** (Siskiyou Community Health Center) and say, \u201cI need an urgent same-day medical visit; I feel faint and scared I may pass out.\u201d",
+        "I can repeat it. First, are you and your son safe right now, yes or no? The number is: **5-0-3, 6-1-7, 7-3-2-3**. If either of you is in immediate danger, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001169#turn-4",
+      "scenarioId": "phone_dialog_0001169",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "I need mental health help, like tonight, but I don\u2019t trust the clinic because they said my file is flagged, or maybe that was the radio.",
+      "normalizedQuery": "mental health like tonight don trust clinic medical because they said file flagged maybe was radio",
+      "voiceResponse": "I hear you. First, safety: if you feel you might act on the voices or can\u2019t stay safe, call **9-1-1** now. About the file: I can\u2019t see or share your clinic record here, and a \u201cflagged file\u201d can be checked directly with staff. For tonight, I can connect you right now to a live mental health crisis counselor through **2-1-1** and stay with you on the line.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c43eb0c241f7667f",
+        "service:8bc8a12ba507fb1c",
+        "service:e5b6a505efa2ce86",
+        "service:d2973183bf1d5689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. First, safety: if you feel you might act on the voices or can\u2019t stay safe, call **9-1-1** now. About the file: I can\u2019t see or share your clinic record here, and a \u201cflagged file\u201d can be checked directly with staff. For tonight, I can connect you right now to a live mental health crisis counselor through **2-1-1** and stay with you on the line.",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001169#turn-5",
+      "scenarioId": "phone_dialog_0001169",
+      "turnIndex": 4,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m not trying to hurt anybody, I just... I keep thinking I should run into traffic so they stop following me.",
+      "normalizedQuery": "no wait don hang up haven slept like two days voices getting louder when cars pass repeat part dropped tell if this 211 someone rerouted mental health tonight trust clinic medical because they said file flagged maybe was radio trying hurt anybody just keep thinking should run into traffic so stop following",
+      "voiceResponse": "Your audio cut out, but I heard \u201crun into traffic.\u201d That is an emergency safety risk. If you might act on that, call **9-1-1** right now. One quick answer so I can help: are you in immediate danger right now, **yes or no**?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio cut out, but I heard \u201crun into traffic.\u201d That is an emergency safety risk. If you might act on that, call **9-1-1** right now. One quick answer so I can help: are you in immediate danger right now, **yes or no**?",
+      "voiceResponseAlternatives": [
+        "Yes. You said it already. A dental clinic. A dental clinic. I\u2019m sorry, the audio was a little unclear. One short question: do you want a clinic near Oregon City, or are Woodburn or Albany okay?",
+        "I hear you need disability benefits help. I hear you need disability benefits help. Your audio is a little unclear. Please say one word: SSI, SSDI, or both?",
+        "I hear you. Thanks for saying that. Your audio was a little unclear. Do you want `mobile dental care`, or `dental hygiene`?",
+        "I hear how overwhelmed you are, and I\u2019m with you. Your audio was a little unclear just now. Please repeat one short phrase: \u201ccan\u2019t breathe\u201d or \u201cmental health crisis help.\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001173#turn-6",
+      "scenarioId": "phone_dialog_0001173",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Please repeat the clinic name and the number one more time, just in case I get cut off.",
+      "normalizedQuery": "please repeat clinic medical health name number one more time just case cut off",
+      "voiceResponse": "Yes. Clinic name: Recovery Village Center Medical Detox. Number: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**. Again: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**.",
+      "evidenceDocIds": [
+        "page:bafkreiasuf6urzajbi5rhfunmkfs34yxyq3nbjtlahequdomiupulnh3gm",
+        "page:bafkreihbedr4rlgjpx3k5yjapgfnzo2fel2vuylwb6nhqnl4uenepp47ba",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreidctuyk7f72otl734xz5f6cvt3ivcie4eo2gka22rybfu7aet2nya",
+        "page:bafkreibuiqy6uk46k4de5fykkitkxwtcyomqv7bj5t3grlr7lekhaesqea"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Clinic name: Recovery Village Center Medical Detox. Number: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**. Again: **5 4 1** \u2026 **5 2 3** \u2026 **4 0 4 9**.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001181#turn-4",
+      "scenarioId": "phone_dialog_0001181",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not bleeding right now, but he shoved me last week and said if I leave he\u2019ll find me, so I need to plan this quietly.",
+      "normalizedQuery": "bleeding right now he shoved last week said if leave ll so plan this quietly",
+      "voiceResponse": "You\u2019re doing the right thing. Most important numbers: **9-1-1** if he shows up or you feel in danger now. For quiet planning tonight, call **2-1-1** and ask for a **live agent** for domestic violence safety planning in Bend. You can say, \u201cI need a confidential plan and a safe place tonight.\u201d If this phone dies, borrow any phone and just say: **\u201clive agent.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:2ef319d5e12550a7",
+        "service:ba024a031f6ac689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Most important numbers: **9-1-1** if he shows up or you feel in danger now. For quiet planning tonight, call **2-1-1** and ask for a **live agent** for domestic violence safety planning in Bend. You can say, \u201cI need a confidential plan and a safe place tonight.\u201d If this phone dies, borrow any phone and just say: **\u201clive agent.\u201d**",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001183#turn-2",
+      "scenarioId": "phone_dialog_0001183",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m really dizzy and shaky, and my legs feel weak like I might just drop, but I wanted a clinic, not an ambulance.",
+      "normalizedQuery": "really dizzy shaky legs feel weak like might just drop wanted clinic medical health an ambulance",
+      "voiceResponse": "I hear you. You want a clinic, not an ambulance. You want a clinic, not an ambulance. Because you\u2019re dizzy, shaky, and may collapse, this is urgent. Please call **9-1-1** now. That is **9-1-1**. If you can, sit down in shade, sip water, and keep your legs up. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiba5xvv5btcsteheaefjhuyknpgdzqzgxvf3qtpfbg66aszw5ckha",
+        "page:bafkreidzaatfly4esr44mom7ox3bf2drvle5mhnwb5do37i5xkw3uruxum",
+        "service:f271a5c8d14f9de1",
+        "service:c909216f9b778826"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You want a clinic, not an ambulance. You want a clinic, not an ambulance. Because you\u2019re dizzy, shaky, and may collapse, this is urgent. Please call **9-1-1** now. That is **9-1-1**. If you can, sit down in shade, sip water, and keep your legs up. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001183#turn-5",
+      "scenarioId": "phone_dialog_0001183",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I haven\u2019t had water since this morning and I\u2019m getting more lightheaded, my vision is going blurry.",
+      "normalizedQuery": "really dizzy shaky legs feel weak like might just drop wanted clinic medical health an ambulance quick safety check first tell if this bad still urgent care wait was number didn catch it there traffic noise kinda confused right now haven had water since morning getting more lightheaded vision going blurry",
+      "voiceResponse": "I hear you. This is emergency-level now. Getting more lightheaded and blurry vision is bad-bad. Please call **9-1-1** right now. That is **9-1-1**. If you can, lie down in shade, legs up, and take small sips of water while you call. Can you call **9-1-1** now while I stay with you?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is emergency-level now. Getting more lightheaded and blurry vision is bad-bad. Please call **9-1-1** right now. That is **9-1-1**. If you can, lie down in shade, legs up, and take small sips of water while you call. Can you call **9-1-1** now while I stay with you?",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001184#turn-2",
+      "scenarioId": "phone_dialog_0001184",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "No, sorry, you're cutting out... disability... disabili- [static] ...I can't track what you said.",
+      "normalizedQuery": "no sorry you're cutting disability disabili static can't track said",
+      "voiceResponse": "I hear you. Your audio was unclear. Your audio was unclear. One short choice: do you want help with disability benefits, yes or no?",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your audio was unclear. Your audio was unclear. One short choice: do you want help with disability benefits, yes or no?",
+      "voiceResponseAlternatives": [
+        "Yes. You said it already. A dental clinic. A dental clinic. I\u2019m sorry, the audio was a little unclear. One short question: do you want a clinic near Oregon City, or are Woodburn or Albany okay?",
+        "I hear you need disability benefits help. I hear you need disability benefits help. Your audio is a little unclear. Please say one word: SSI, SSDI, or both?",
+        "I hear you. Thanks for saying that. Your audio was a little unclear. Do you want `mobile dental care`, or `dental hygiene`?",
+        "I hear how overwhelmed you are, and I\u2019m with you. Your audio was a little unclear just now. Please repeat one short phrase: \u201ccan\u2019t breathe\u201d or \u201cmental health crisis help.\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001185#turn-4",
+      "scenarioId": "phone_dialog_0001185",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m freaking out, I need mental health or crisis help, substance stuff, whatever gets someone here now.",
+      "normalizedQuery": "freaking mental health crisis substance stuff whatever gets someone here now",
+      "voiceResponse": "I hear you. This is an emergency right now: call **911** now and say, \u201cHe won\u2019t wake up and his breathing is slow.\u201d While you call, keep him on his side and stay with him. For crisis and substance support right after, call **988** (or **800, 273, 8255**). If you\u2019re in Clackamas area, mobile crisis is **503, 655, 8585**.",
+      "evidenceDocIds": [
+        "service:6355a9aeaf555886",
+        "service:b3d750db08bfc35f",
+        "service:afe5dce291e752b0",
+        "service:daa4c642e9fb0291",
+        "service:9c7b6b28cfc2b7b2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is an emergency right now: call **911** now and say, \u201cHe won\u2019t wake up and his breathing is slow.\u201d While you call, keep him on his side and stay with him. For crisis and substance support right after, call **988** (or **800, 273, 8255**). If you\u2019re in Clackamas area, mobile crisis is **503, 655, 8585**.",
+      "voiceResponseAlternatives": [
+        "First step: call 211info and ask for a same-day walk-in infection clinic in Salem. The only clinic address I can read back from my notes is: **1218 3rd Street, Lafayette, Oregon, 97127**. Phone is **(503) 714-4148** \u2014 that\u2019s **5-0-3**, **7-1-4**, **4-1-4-8**. I can\u2019t verify walk-in status from what I have, so please confirm that before you go.",
+        "Yes. Slow version. The clinic is **Monthly Pop-Up Medical Clinic**. Again: **Monthly Pop-Up Medical Clinic**. I do not have a street address for that one on my screen. The phone is **541-232-8546**. That is **541**, **232**, **8546**. Do you want me to give you a clinic that has a full street address?",
+        "First step: call Outside In now and ask two things: next same-day opening, and exactly what ID or paperwork to bring. The number is **five-zero-three, five-three-five, three-eight-six-zero**. I don\u2019t have verified document requirements in front of me, so asking them directly will be the fastest way before you head over.",
+        "You\u2019re okay, I know it\u2019s noisy. There wasn\u2019t a clinic name yet. What I said was: I can connect you to a live **2-1-1 specialist** to find urgent dental care in Hillsboro right now. That\u2019s **2-1-1**. Would you like me to connect you now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001185#turn-5",
+      "scenarioId": "phone_dialog_0001185",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hold on\u2014battery is at like two percent\u2014please don\u2019t hang up, I can\u2019t tell if he\u2019s overdosing.",
+      "normalizedQuery": "sorry re breaking up say again he won really wake breathing weird like slow shook him yelled nothing kind groans goes limp freaking mental health crisis substance stuff whatever gets someone here now hold on battery at two percent please don hang tell if overdosing",
+      "voiceResponse": "I\u2019m here. This sounds like an overdose emergency. Call **911 now** before your phone dies and say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put the phone on speaker, keep him on his side, and stay with him. If you have naloxone, give it now. If he stops breathing, tell 911 and start CPR.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:98249e32a262b454",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here. This sounds like an overdose emergency. Call **911 now** before your phone dies and say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put the phone on speaker, keep him on his side, and stay with him. If you have naloxone, give it now. If he stops breathing, tell 911 and start CPR.",
+      "voiceResponseAlternatives": [
+        "First step: call 211info and ask for a same-day walk-in infection clinic in Salem. The only clinic address I can read back from my notes is: **1218 3rd Street, Lafayette, Oregon, 97127**. Phone is **(503) 714-4148** \u2014 that\u2019s **5-0-3**, **7-1-4**, **4-1-4-8**. I can\u2019t verify walk-in status from what I have, so please confirm that before you go.",
+        "Yes. Slow version. The clinic is **Monthly Pop-Up Medical Clinic**. Again: **Monthly Pop-Up Medical Clinic**. I do not have a street address for that one on my screen. The phone is **541-232-8546**. That is **541**, **232**, **8546**. Do you want me to give you a clinic that has a full street address?",
+        "First step: call Outside In now and ask two things: next same-day opening, and exactly what ID or paperwork to bring. The number is **five-zero-three, five-three-five, three-eight-six-zero**. I don\u2019t have verified document requirements in front of me, so asking them directly will be the fastest way before you head over.",
+        "You\u2019re okay, I know it\u2019s noisy. There wasn\u2019t a clinic name yet. What I said was: I can connect you to a live **2-1-1 specialist** to find urgent dental care in Hillsboro right now. That\u2019s **2-1-1**. Would you like me to connect you now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001188#turn-5",
+      "scenarioId": "phone_dialog_0001188",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I need mental health help, like tonight, not next month, and I can't do a crowded waiting room.",
+      "normalizedQuery": "mental health like tonight next month can't crowded waiting room",
+      "voiceResponse": "I hear you. You need help tonight, and we can do this by phone, not a crowded waiting room. I\u2019m keeping your live crisis counselor handoff active right now. If you feel you might hurt yourself or someone is trying to get in, call 9-1-1 now. Keep your door locked, put your phone on low power, and stay on the line with me.",
+      "evidenceDocIds": [
+        "service:1ec415117097a550",
+        "service:da16461c432cbcc8",
+        "service:8bb46c31226f20ac",
+        "service:0cc013bf03ea7a40",
+        "service:ac324e34fa143c0e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need help tonight, and we can do this by phone, not a crowded waiting room. I\u2019m keeping your live crisis counselor handoff active right now. If you feel you might hurt yourself or someone is trying to get in, call 9-1-1 now. Keep your door locked, put your phone on low power, and stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001204#turn-6",
+      "scenarioId": "phone_dialog_0001204",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "After this, can you help me find a medical clinic too? I don\u2019t have a regular doctor.",
+      "normalizedQuery": "after this medical clinic health too don have regular doctor",
+      "voiceResponse": "Yes, I can help with that, and I\u2019m glad you asked. Right now, stay focused on **911 first** while he\u2019s breathing like this. After that, a good option is **Outside In Medical Clinic** in Portland. Address: **11-32 Southwest 13th Avenue, Portland**. Phone: **5-0-3, 5-3-5, 3-8-6-0**. They see all ages, with focus on youth, and can use sliding-scale fees. Once 911 is handled, I can help you plan the call script.",
+      "evidenceDocIds": [
+        "service:f271a5c8d14f9de1",
+        "service:ad75ad49419633d5",
+        "service:51e37f6187a1922a",
+        "service:9fa9218ec67d4993",
+        "service:c909216f9b778826"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can help with that, and I\u2019m glad you asked. Right now, stay focused on **911 first** while he\u2019s breathing like this. After that, a good option is **Outside In Medical Clinic** in Portland. Address: **11-32 Southwest 13th Avenue, Portland**. Phone: **5-0-3, 5-3-5, 3-8-6-0**. They see all ages, with focus on youth, and can use sliding-scale fees. Once 911 is handled, I can help you plan the call script.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001212#turn-5",
+      "scenarioId": "phone_dialog_0001212",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you repeat that number one more time? I wrote it wrong, my hands are shaking.",
+      "normalizedQuery": "sorry slow down trying listen head racing keep missing said he 15 we got kicked were staying haven slept two days saying have plan anything thinking everyone would be better off if just disappeared repeat number one more time wrote it wrong hands shaking",
+      "voiceResponse": "I can repeat it. First, are you and your son safe right now, yes or no? The number is: **5-0-3, 6-1-7, 7-3-2-3**. If either of you is in immediate danger, call **9-1-1** now.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can repeat it. First, are you and your son safe right now, yes or no? The number is: **5-0-3, 6-1-7, 7-3-2-3**. If either of you is in immediate danger, call **9-1-1** now.",
+      "voiceResponseAlternatives": [
+        "Most important first: if you might pass out or have chest tightness again, call **9-1-1 now**. If you can still talk and want a same-day clinic line next, call **5-4-1, 4-7-9, 6-3-9-3** (Siskiyou Community Health Center) and say, \u201cI need an urgent same-day medical visit; I feel faint and scared I may pass out.\u201d",
+        "I\u2019m with you. If your chest feels bad now or you can\u2019t tell what\u2019s real, call **9-1-1** right now. That\u2019s: **nine \u2026 one \u2026 one**. Say it back once: **nine-one-one**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001214#turn-5",
+      "scenarioId": "phone_dialog_0001214",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I started calling for counseling, I think, or maybe a crisis clinic, I\u2019m sorry, I keep jumping topics, can you tell me the first step again?",
+      "normalizedQuery": "started calling counseling think maybe crisis clinic medical health sorry keep jumping topics tell first step again",
+      "voiceResponse": "You\u2019re doing the right thing. First step: stop walking, sit somewhere safe, and call the Crisis Counseling Hotline now at **5-4-1, 6-8-7, 4-0-0-0**. They do phone crisis counseling right away. If you start to feel unsafe or in immediate danger, call **911**. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:9b821e7b86d50335",
+        "service:f271a5c8d14f9de1",
+        "service:ce3da821623c1082",
+        "service:69bbcbe045e0a664",
+        "page:bafkreifnocx2dj2f4crmci5woy5g4w5dmhhof6vo4za7hlk6vp452t3cxa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. First step: stop walking, sit somewhere safe, and call the Crisis Counseling Hotline now at **5-4-1, 6-8-7, 4-0-0-0**. They do phone crisis counseling right away. If you start to feel unsafe or in immediate danger, call **911**. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [
+        "First step: call 211info and ask for a same-day walk-in infection clinic in Salem. The only clinic address I can read back from my notes is: **1218 3rd Street, Lafayette, Oregon, 97127**. Phone is **(503) 714-4148** \u2014 that\u2019s **5-0-3**, **7-1-4**, **4-1-4-8**. I can\u2019t verify walk-in status from what I have, so please confirm that before you go.",
+        "Yes. Slow version. The clinic is **Monthly Pop-Up Medical Clinic**. Again: **Monthly Pop-Up Medical Clinic**. I do not have a street address for that one on my screen. The phone is **541-232-8546**. That is **541**, **232**, **8546**. Do you want me to give you a clinic that has a full street address?",
+        "First step: call Outside In now and ask two things: next same-day opening, and exactly what ID or paperwork to bring. The number is **five-zero-three, five-three-five, three-eight-six-zero**. I don\u2019t have verified document requirements in front of me, so asking them directly will be the fastest way before you head over.",
+        "You\u2019re okay, I know it\u2019s noisy. There wasn\u2019t a clinic name yet. What I said was: I can connect you to a live **2-1-1 specialist** to find urgent dental care in Hillsboro right now. That\u2019s **2-1-1**. Would you like me to connect you now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001216#turn-2",
+      "scenarioId": "phone_dialog_0001216",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, not ER, I said clinic, regular clinic, my chest feels weird and I haven\u2019t slept, and the voices keep saying don\u2019t trust the front desk people.",
+      "normalizedQuery": "no er said clinic medical health regular chest feels weird haven slept voices keep saying don trust front desk people",
+      "voiceResponse": "I hear you, and that sounds scary. Let\u2019s keep this simple: with chest symptoms plus voices, you need same-day care now. If chest pain gets severe, you\u2019re short of breath, or feel faint, call 911 right away. For immediate support and help finding a safer clinic option, call HAVEN\u2019s crisis line: 5 4 1, 2 9 6, 1 6 6 2. They can safety-plan with you and help with next steps.",
+      "evidenceDocIds": [
+        "service:e232f8e870bdd119",
+        "service:bc6bf15066f03220",
+        "service:ad75ad49419633d5",
+        "service:51e37f6187a1922a",
+        "service:9fa9218ec67d4993"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that sounds scary. Let\u2019s keep this simple: with chest symptoms plus voices, you need same-day care now. If chest pain gets severe, you\u2019re short of breath, or feel faint, call 911 right away. For immediate support and help finding a safer clinic option, call HAVEN\u2019s crisis line: 5 4 1, 2 9 6, 1 6 6 2. They can safety-plan with you and help with next steps.",
+      "voiceResponseAlternatives": [
+        "First step: call 211info and ask for a same-day walk-in infection clinic in Salem. The only clinic address I can read back from my notes is: **1218 3rd Street, Lafayette, Oregon, 97127**. Phone is **(503) 714-4148** \u2014 that\u2019s **5-0-3**, **7-1-4**, **4-1-4-8**. I can\u2019t verify walk-in status from what I have, so please confirm that before you go.",
+        "Yes. Slow version. The clinic is **Monthly Pop-Up Medical Clinic**. Again: **Monthly Pop-Up Medical Clinic**. I do not have a street address for that one on my screen. The phone is **541-232-8546**. That is **541**, **232**, **8546**. Do you want me to give you a clinic that has a full street address?",
+        "First step: call Outside In now and ask two things: next same-day opening, and exactly what ID or paperwork to bring. The number is **five-zero-three, five-three-five, three-eight-six-zero**. I don\u2019t have verified document requirements in front of me, so asking them directly will be the fastest way before you head over.",
+        "You\u2019re okay, I know it\u2019s noisy. There wasn\u2019t a clinic name yet. What I said was: I can connect you to a live **2-1-1 specialist** to find urgent dental care in Hillsboro right now. That\u2019s **2-1-1**. Would you like me to connect you now?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001219#turn-2",
+      "scenarioId": "phone_dialog_0001219",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "No, wait, I didn\u2019t sleep for like two nights, maybe three, and now the voices are louder when the fridge clicks on, so I need mental health help, not cops, okay?",
+      "normalizedQuery": "no wait didn sleep like two nights maybe three now voices louder when fridge clicks on so mental health cops okay",
+      "voiceResponse": "I hear you, and I\u2019m glad you said that. We can focus on mental health support, not police. Right now, let\u2019s lower the intensity: step a little away from the fridge noise, put both feet on the ground, and take one slow breath with me. I\u2019m getting a live agent for you now to stay with you and find the right help nearby in Hillsboro. If you feel you might hurt yourself or someone else, call 911 immediately.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:98249e32a262b454",
+        "service:16c906930c61dd47",
+        "service:c998893811d5bb0f",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you said that. We can focus on mental health support, not police. Right now, let\u2019s lower the intensity: step a little away from the fridge noise, put both feet on the ground, and take one slow breath with me. I\u2019m getting a live agent for you now to stay with you and find the right help nearby in Hillsboro. If you feel you might hurt yourself or someone else, call 911 immediately.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001231#turn-6",
+      "scenarioId": "phone_dialog_0001231",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "And after this I need mental health help too, I haven't slept and I'm not doing good.",
+      "normalizedQuery": "after this mental health too haven't slept i'm doing good",
+      "voiceResponse": "I hear you. Right now, call 911 first, immediately, for the overdose. Tell them: \u201cPossible overdose, hard to wake, slow breathing,\u201d and give your Gresham apartment address first. Then say, \u201cI also need urgent mental health help; I haven\u2019t slept and I\u2019m not doing well.\u201d Stay on the line with 911 so they can help with both.",
+      "evidenceDocIds": [
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:06444d1cd7707c2e",
+        "service:15e0c0b3b5523ffd",
+        "service:fbda49ee1c28a8a3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Right now, call 911 first, immediately, for the overdose. Tell them: \u201cPossible overdose, hard to wake, slow breathing,\u201d and give your Gresham apartment address first. Then say, \u201cI also need urgent mental health help; I haven\u2019t slept and I\u2019m not doing well.\u201d Stay on the line with 911 so they can help with both.",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001246#turn-3",
+      "scenarioId": "phone_dialog_0001246",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? You cut out... I need mental health help, like right now, not next week.",
+      "normalizedQuery": "say again cut mental health like right now next week",
+      "voiceResponse": "I hear you, and we\u2019ll keep this simple. Right now, if you might not stay safe, call **9-1-1**. For immediate mental health help and referrals in your area, call **5-0-3, 8-4-6, 4-5-2-8**. Backup line: **5-0-3, 2-9-1, 9-1-1-1**. You can call either right now.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e382b46e83ce8dd1",
+        "service:00d3833af5b34949",
+        "service:a1618e11842606ec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and we\u2019ll keep this simple. Right now, if you might not stay safe, call **9-1-1**. For immediate mental health help and referrals in your area, call **5-0-3, 8-4-6, 4-5-2-8**. Backup line: **5-0-3, 2-9-1, 9-1-1-1**. You can call either right now.",
+      "voiceResponseAlternatives": [
+        "Of course. The clinic name is **Multnomah County Health Department, North East Health Center and Dental Clinic**.",
+        "Of course. I\u2019ll go slowly. You can choose one step at a time. If you\u2019re in immediate danger, call **9-1-1**. If not, I can stay with you and connect you to a **live crisis specialist right now**. No pressure, we can move at your pace.",
+        "Yes. The callback number is: `5 4 1` `5 2 3` `4 0 4 9`. Again: `5 4 1` `5 2 3` `4 0 4 9`.",
+        "Sure. Clinic name: **Yakima Valley Farm Workers Clinic, Salud Medical Center Community Health Services**. Main number: **5-0-3, 9-8-2, 2-0-0-0**. I\u2019ll say it once more: **503, 982, 2000**. Alternate: **5-0-3, 2-5-6, 4-0-0-0**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001252#turn-5",
+      "scenarioId": "phone_dialog_0001252",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "Sorry, I interrupted you, go again slower with the clinic name, and if they need insurance cards I lost my wallet, so I don\u2019t know what proof they\u2019ll ask for.",
+      "normalizedQuery": "sorry interrupted go again slower clinic medical health name if they insurance cards lost wallet so don know proof ll ask",
+      "voiceResponse": "Okay, slowly: call **5-0-3, 8-4-8, 5-8-6-1**. Address: **1-0-6-9-0 Northeast Cornell Road, Suite 2-2-0, Hillsboro**. Tell them: \u201cI lost my wallet and insurance card. What proof can you accept today?\u201d They can tell you their exact document options. If you start feeling unsafe or can\u2019t tell what\u2019s real, call **9-1-1**. You can also call or text **9-8-8** right now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:28acd183a54cc8a5",
+        "service:f525d65d4bd89731",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay, slowly: call **5-0-3, 8-4-8, 5-8-6-1**. Address: **1-0-6-9-0 Northeast Cornell Road, Suite 2-2-0, Hillsboro**. Tell them: \u201cI lost my wallet and insurance card. What proof can you accept today?\u201d They can tell you their exact document options. If you start feeling unsafe or can\u2019t tell what\u2019s real, call **9-1-1**. You can also call or text **9-8-8** right now.",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001254#turn-5",
+      "scenarioId": "phone_dialog_0001254",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have a plan or anything, I just don\u2019t trust myself to be alone right now.",
+      "normalizedQuery": "don have plan anything just trust myself be alone right now",
+      "voiceResponse": "Thank you for telling me that. Since you don\u2019t trust yourself to be alone, the most important step is **call 9-1-1 now**: **9\u20261\u20261**. If this call drops or your battery dies, call **2-1-1** right away: **2\u20261\u20261**, and say, \u201cI don\u2019t trust myself to be alone and need a live agent now.\u201d Can you move toward other people right now while you make that call?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:3bf79b1da127b257",
+        "service:a558e2f5ba96f584",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. Since you don\u2019t trust yourself to be alone, the most important step is **call 9-1-1 now**: **9\u20261\u20261**. If this call drops or your battery dies, call **2-1-1** right away: **2\u20261\u20261**, and say, \u201cI don\u2019t trust myself to be alone and need a live agent now.\u201d Can you move toward other people right now while you make that call?",
+      "voiceResponseAlternatives": [
+        "Next step: please write this down now. The clinic name is **Black Thistle Street Aid Monthly Pop-Up Medical Clinic**. Their number is **5 4 1** \u2026 **2 3 2** \u2026 **8 5 4 6**. I\u2019ll keep you connected to the live 211 specialist for same-day low-cost dental options near Eugene.",
+        "You\u2019re not alone, and I\u2019m glad you called. We can get you same-day mental health support right now. If you feel in immediate danger, call **9-1-1** now. If you want, I can stay with you and connect you to a live crisis specialist right away. We can go one step at a time, at your pace.",
+        "That is okay. \u201cNot sure\u201d is okay. Not sure is okay. Tell the specialist: \u201cHe may have Oregon Health Plan, but I need to verify.\u201d That is enough to move forward. Do you want me to connect you to the live 2-1-1 specialist now?",
+        "Most important step: call **2-1-1** now and say, \u201cI need a **same-day or urgent medical clinic in Hillsboro** for my nephew.\u201d It\u2019s okay if you only have partial info; they can still give options first, then tell you the minimum details needed. If easier, ask them to stay with you while you pick one clinic and get the clinic number. If his condition becomes severe or life-threatening, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001254#turn-6",
+      "scenarioId": "phone_dialog_0001254",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Please text the number if you can, or repeat it one more time before this phone dies.",
+      "normalizedQuery": "say again slower outside traffic loud missed middle part trying keep it together thinking maybe people would be better off if just wasn here tonight don have plan anything trust myself alone right now please text number repeat one more time before this phone dies",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. Here it is again, slowly: call **9-1-1** now: **9\u20261\u20261**. If this phone dies or the call drops, call **2-1-1**: **2\u20261\u20261**. Say: \u201cI don\u2019t trust myself to be alone and need a live agent now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. Here it is again, slowly: call **9-1-1** now: **9\u20261\u20261**. If this phone dies or the call drops, call **2-1-1**: **2\u20261\u20261**. Say: \u201cI don\u2019t trust myself to be alone and need a live agent now.\u201d",
+      "voiceResponseAlternatives": [
+        "Of course. The clinic name is **Multnomah County Health Department, North East Health Center and Dental Clinic**.",
+        "Of course. I\u2019ll go slowly. You can choose one step at a time. If you\u2019re in immediate danger, call **9-1-1**. If not, I can stay with you and connect you to a **live crisis specialist right now**. No pressure, we can move at your pace.",
+        "Yes. The callback number is: `5 4 1` `5 2 3` `4 0 4 9`. Again: `5 4 1` `5 2 3` `4 0 4 9`.",
+        "Sure. Clinic name: **Yakima Valley Farm Workers Clinic, Salud Medical Center Community Health Services**. Main number: **5-0-3, 9-8-2, 2-0-0-0**. I\u2019ll say it once more: **503, 982, 2000**. Alternate: **5-0-3, 2-5-6, 4-0-0-0**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -7490,6 +8149,114 @@
       "to": "phone_dialog_0001164#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001166#turn-2",
+      "to": "phone_dialog_0001166#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001166#turn-5",
+      "to": "phone_dialog_0001166#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001169#turn-4",
+      "to": "phone_dialog_0001169#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001169#turn-5",
+      "to": "phone_dialog_0001169#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001181#turn-4",
+      "to": "phone_dialog_0001181#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001183#turn-2",
+      "to": "phone_dialog_0001183#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001183#turn-5",
+      "to": "phone_dialog_0001183#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001184#turn-2",
+      "to": "phone_dialog_0001184#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001185#turn-4",
+      "to": "phone_dialog_0001185#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001185#turn-5",
+      "to": "phone_dialog_0001185#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001188#turn-5",
+      "to": "phone_dialog_0001188#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001212#turn-5",
+      "to": "phone_dialog_0001212#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001214#turn-5",
+      "to": "phone_dialog_0001214#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001216#turn-2",
+      "to": "phone_dialog_0001216#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001219#turn-2",
+      "to": "phone_dialog_0001219#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001246#turn-3",
+      "to": "phone_dialog_0001246#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001252#turn-5",
+      "to": "phone_dialog_0001252#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001254#turn-5",
+      "to": "phone_dialog_0001254#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

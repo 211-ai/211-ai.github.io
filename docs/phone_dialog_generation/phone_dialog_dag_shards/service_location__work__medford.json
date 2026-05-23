@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__work__medford",
   "kind": "service_location",
   "key": "work__medford",
-  "nodeCount": 10,
+  "nodeCount": 11,
   "nodes": [
     {
       "id": "phone_dialog_0000107#turn-4",
@@ -105,7 +105,8 @@
       "assistantResponse": "Next step: I\u2019ll connect you with a 211info specialist now to confirm which Medford job programs are active today and target night-shift shipping or warehouse openings. I\u2019ll also have them prioritize resume help first so your application is ready fast. If you want, I can stay with you and help you script a 30-second summary of your experience before the handoff.",
       "voiceResponseAlternatives": [
         "Next step: write this down as I say it: **Two-one-one info**. That\u2019s **211info**. I\u2019ll say it once more slowly: **two-one-one \u2026 info**.",
-        "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number."
+        "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number.",
+        "Thank you for telling me. What happened yesterday is serious, and you deserve to feel safe. Since he\u2019s not there right now, you could stay somewhere public tonight or with someone you trust, and we can focus on safe housing next. If danger becomes immediate, call 911. I can repeat the housing numbers slowly: **503\u2026 802\u2026 8300** and **503\u2026 802\u2026 8469**. If you want, I can stay with you while you make one call."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
@@ -133,7 +134,8 @@
       "assistantResponse": "Next step: write this down as I say it: **Two-one-one info**. That\u2019s **211info**. I\u2019ll say it once more slowly: **two-one-one \u2026 info**.",
       "voiceResponseAlternatives": [
         "Next step: I\u2019ll connect you with a 211info specialist now to confirm which Medford job programs are active today and target night-shift shipping or warehouse openings. I\u2019ll also have them prioritize resume help first so your application is ready fast. If you want, I can stay with you and help you script a 30-second summary of your experience before the handoff.",
-        "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number."
+        "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number.",
+        "Thank you for telling me. What happened yesterday is serious, and you deserve to feel safe. Since he\u2019s not there right now, you could stay somewhere public tonight or with someone you trust, and we can focus on safe housing next. If danger becomes immediate, call 911. I can repeat the housing numbers slowly: **503\u2026 802\u2026 8300** and **503\u2026 802\u2026 8469**. If you want, I can stay with you while you make one call."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
@@ -161,7 +163,8 @@
       "assistantResponse": "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number.",
       "voiceResponseAlternatives": [
         "Next step: I\u2019ll connect you with a 211info specialist now to confirm which Medford job programs are active today and target night-shift shipping or warehouse openings. I\u2019ll also have them prioritize resume help first so your application is ready fast. If you want, I can stay with you and help you script a 30-second summary of your experience before the handoff.",
-        "Next step: write this down as I say it: **Two-one-one info**. That\u2019s **211info**. I\u2019ll say it once more slowly: **two-one-one \u2026 info**."
+        "Next step: write this down as I say it: **Two-one-one info**. That\u2019s **211info**. I\u2019ll say it once more slowly: **two-one-one \u2026 info**.",
+        "Thank you for telling me. What happened yesterday is serious, and you deserve to feel safe. Since he\u2019s not there right now, you could stay somewhere public tonight or with someone you trust, and we can focus on safe housing next. If danger becomes immediate, call 911. I can repeat the housing numbers slowly: **503\u2026 802\u2026 8300** and **503\u2026 802\u2026 8469**. If you want, I can stay with you while you make one call."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
@@ -272,6 +275,35 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001226#turn-3",
+      "scenarioId": "phone_dialog_0001226",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, he\u2019s not right in front of me this second, but yesterday he grabbed my arm and said if I leave he\u2019ll find me.",
+      "normalizedQuery": "hi sorry at bus stop medford it really loud here hear okay talk quiet please ex keeps showing up job texting threats scared go back apartment tonight no he right front this second yesterday grabbed arm said if leave ll",
+      "voiceResponse": "Thank you for telling me. What happened yesterday is serious, and you deserve to feel safe. Since he\u2019s not there right now, you could stay somewhere public tonight or with someone you trust, and we can focus on safe housing next. If danger becomes immediate, call 911. I can repeat the housing numbers slowly: **503\u2026 802\u2026 8300** and **503\u2026 802\u2026 8469**. If you want, I can stay with you while you make one call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. What happened yesterday is serious, and you deserve to feel safe. Since he\u2019s not there right now, you could stay somewhere public tonight or with someone you trust, and we can focus on safe housing next. If danger becomes immediate, call 911. I can repeat the housing numbers slowly: **503\u2026 802\u2026 8300** and **503\u2026 802\u2026 8469**. If you want, I can stay with you while you make one call.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019ll connect you with a 211info specialist now to confirm which Medford job programs are active today and target night-shift shipping or warehouse openings. I\u2019ll also have them prioritize resume help first so your application is ready fast. If you want, I can stay with you and help you script a 30-second summary of your experience before the handoff.",
+        "Next step: write this down as I say it: **Two-one-one info**. That\u2019s **211info**. I\u2019ll say it once more slowly: **two-one-one \u2026 info**.",
+        "Next step: don\u2019t use **781**. I can\u2019t verify a phone number from the information I have right now. Use the agency name exactly as: **two-one-one info** \u2014 **211info**. If you want, I can stay with you while you pull up their official contact page so you get the correct number."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -334,6 +366,12 @@
       "to": "phone_dialog_0001136#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001226#turn-3",
+      "to": "phone_dialog_0001226#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

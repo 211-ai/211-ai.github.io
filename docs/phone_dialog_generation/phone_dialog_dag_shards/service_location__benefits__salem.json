@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__salem",
   "kind": "service_location",
   "key": "benefits__salem",
-  "nodeCount": 36,
+  "nodeCount": 40,
   "nodes": [
     {
       "id": "phone_dialog_0000011#turn-1",
@@ -1058,6 +1058,126 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001214#turn-1",
+      "scenarioId": "phone_dialog_0001214",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know this sounds strange, I\u2019m in Salem and I need mental health help, but the neighbors are sending messages through the vents and I can\u2019t keep my thoughts lined up.",
+      "normalizedQuery": "hi sorry know this sounds strange salem mental health neighbors sending messages through vents keep thoughts lined up",
+      "voiceResponse": "I\u2019m really glad you called. What you\u2019re describing sounds like a mental health crisis, and you deserve immediate live support right now. Stay on the line with me, and I can connect you to a local mental health crisis line in your Salem area. If you might hurt yourself or anyone else, call 911 right now.",
+      "evidenceDocIds": [
+        "service:bcfe168519274472",
+        "service:5738cc1cdf700a78",
+        "page:bafkreifkwmbhm5hjeafmiigszeynq7amvccp37glkdkw4f4mctjg6bm6eu",
+        "page:bafkreialvjobxv25yef5tk47vuf2uip2frkiq2b22ekv243anm7o2qefta",
+        "service:0804026f5736e839"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. What you\u2019re describing sounds like a mental health crisis, and you deserve immediate live support right now. Stay on the line with me, and I can connect you to a local mental health crisis line in your Salem area. If you might hurt yourself or anyone else, call 911 right now.",
+      "voiceResponseAlternatives": [
+        "First step: call Lancaster Family Health Center at Beverly in Salem now at **five-zero-three, five-eight-eight, zero-zero-seven-six**. They provide general medical care, including acute and chronic care, immunizations, prenatal care, and family planning, and eligibility is unrestricted. Address is **3896 Beverly Avenue Northeast, Suite 40, Salem**. If privacy is a concern, you can ask what information they require before you share details.",
+        "First step: when you call the clinic, ask this before sharing anything: \u201cWhat\u2019s the minimum information you need, and who can access it?\u201d I can\u2019t confirm a full-name requirement from what I have here, so it\u2019s okay to ask privacy questions first and only share what you\u2019re comfortable sharing.",
+        "First step: ask, before sharing details, \u201cWhat information do you record, and who can access it?\u201d From what I have here, I can\u2019t verify their recording or data-sharing policy. You can pause the call and only give the minimum information once they answer your privacy questions.",
+        "First step: contact 211info now and ask for a same-day low-cost infection check clinic in Salem, and say you have little money and no insurance. You can also say, \u201cBefore I share details, what information do you record, and who can access it?\u201d I don\u2019t have verified clinic hours or costs in the information in front of me, so 211info can give the most current options."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001214#turn-2",
+      "scenarioId": "phone_dialog_0001214",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "No, wait, not neighbors exactly, voices, like three of them, and they keep saying don\u2019t trust this call, so if I stop talking that\u2019s why.",
+      "normalizedQuery": "hi sorry know this sounds strange salem mental health neighbors sending messages through vents keep thoughts lined up no wait exactly voices like three them they saying don trust call so if stop talking why",
+      "voiceResponse": "Thank you for telling me. This is a safety concern right now. If you feel at risk of hurting yourself or anyone else, call **911** now. If you can, stay with me on this call and focus on my voice. Are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:f525d65d4bd89731",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is a safety concern right now. If you feel at risk of hurting yourself or anyone else, call **911** now. If you can, stay with me on this call and focus on my voice. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "First step: call Lancaster Family Health Center at Beverly in Salem now at **five-zero-three, five-eight-eight, zero-zero-seven-six**. They provide general medical care, including acute and chronic care, immunizations, prenatal care, and family planning, and eligibility is unrestricted. Address is **3896 Beverly Avenue Northeast, Suite 40, Salem**. If privacy is a concern, you can ask what information they require before you share details.",
+        "First step: when you call the clinic, ask this before sharing anything: \u201cWhat\u2019s the minimum information you need, and who can access it?\u201d I can\u2019t confirm a full-name requirement from what I have here, so it\u2019s okay to ask privacy questions first and only share what you\u2019re comfortable sharing.",
+        "First step: ask, before sharing details, \u201cWhat information do you record, and who can access it?\u201d From what I have here, I can\u2019t verify their recording or data-sharing policy. You can pause the call and only give the minimum information once they answer your privacy questions.",
+        "First step: contact 211info now and ask for a same-day low-cost infection check clinic in Salem, and say you have little money and no insurance. You can also say, \u201cBefore I share details, what information do you record, and who can access it?\u201d I don\u2019t have verified clinic hours or costs in the information in front of me, so 211info can give the most current options."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001214#turn-3",
+      "scenarioId": "phone_dialog_0001214",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat what you asked? I heard \u2018are you safe\u2019 and then it cut out, my phone is at like two percent and there\u2019s traffic noise here.",
+      "normalizedQuery": "hi sorry know this sounds strange salem mental health neighbors sending messages through vents keep thoughts lined up no wait exactly voices like three them they saying don trust call so if stop talking why repeat asked heard safe then it cut phone at two percent there traffic noise here",
+      "voiceResponse": "Yes \u2014 I asked: **are you alone right now?** If you\u2019re in immediate danger or might hurt yourself or someone else, call **911** now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes \u2014 I asked: **are you alone right now?** If you\u2019re in immediate danger or might hurt yourself or someone else, call **911** now.",
+      "voiceResponseAlternatives": [
+        "Of course\u2014you\u2019re doing okay. I\u2019ll say the office name slowly: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**. Again: **Oregon State Department of Human Services** \u2026 **Self-Sufficiency Administrative Office**.",
+        "Next step: write the name down as I say it: **KEEP**. That\u2019s **K \u2014 E \u2014 E \u2014 P**. It\u2019s said like the word \u201ckeep.\u201d",
+        "You\u2019re right, repeating slowly: I didn\u2019t confirm walk-in hours. I said you can call for **same-day options** and ask for the **closest opening to Salem**. The number is: **503 \u2026 714 \u2026 4148**. And because you said chest pain, emergency care is the safer choice right now. If you feel in danger, call **911**.",
+        "Absolutely. I haven\u2019t shared office hours yet, and I don\u2019t want to give you the wrong time. The number I gave is: **five \u2026 four \u2026 one \u2026 nine \u2026 nine \u2026 four \u2026 four \u2026 nine \u2026 six \u2026 eight**. If you want, I can repeat it again even slower."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001214#turn-4",
+      "scenarioId": "phone_dialog_0001214",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to hurt anyone, I just haven\u2019t slept in two nights and I keep walking in circles because I forget where I was going.",
+      "normalizedQuery": "hi sorry know this sounds strange salem mental health neighbors sending messages through vents keep thoughts lined up no wait exactly voices like three them they saying don trust call so if stop talking why repeat asked heard safe then it cut phone at two percent there traffic noise here trying hurt anyone just haven slept nights walking circles because forget was going",
+      "voiceResponse": "Thank you for telling me. This is still a mental health crisis, and you need live support now. Please call **988** right away for immediate crisis counseling, and if you start feeling unsafe or might get hurt, call **911**. If you can, stop walking, sit down somewhere safe, and stay with me on the line while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is still a mental health crisis, and you need live support now. Please call **988** right away for immediate crisis counseling, and if you start feeling unsafe or might get hurt, call **911**. If you can, stop walking, sit down somewhere safe, and stay with me on the line while you make that call.",
+      "voiceResponseAlternatives": [
+        "First step: call Lancaster Family Health Center at Beverly in Salem now at **five-zero-three, five-eight-eight, zero-zero-seven-six**. They provide general medical care, including acute and chronic care, immunizations, prenatal care, and family planning, and eligibility is unrestricted. Address is **3896 Beverly Avenue Northeast, Suite 40, Salem**. If privacy is a concern, you can ask what information they require before you share details.",
+        "First step: when you call the clinic, ask this before sharing anything: \u201cWhat\u2019s the minimum information you need, and who can access it?\u201d I can\u2019t confirm a full-name requirement from what I have here, so it\u2019s okay to ask privacy questions first and only share what you\u2019re comfortable sharing.",
+        "First step: ask, before sharing details, \u201cWhat information do you record, and who can access it?\u201d From what I have here, I can\u2019t verify their recording or data-sharing policy. You can pause the call and only give the minimum information once they answer your privacy questions.",
+        "First step: contact 211info now and ask for a same-day low-cost infection check clinic in Salem, and say you have little money and no insurance. You can also say, \u201cBefore I share details, what information do you record, and who can access it?\u201d I don\u2019t have verified clinic hours or costs in the information in front of me, so 211info can give the most current options."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1252,6 +1372,30 @@
       "to": "phone_dialog_0001075#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001214#turn-1",
+      "to": "phone_dialog_0001214#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001214#turn-2",
+      "to": "phone_dialog_0001214#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001214#turn-3",
+      "to": "phone_dialog_0001214#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001214#turn-4",
+      "to": "phone_dialog_0001214#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

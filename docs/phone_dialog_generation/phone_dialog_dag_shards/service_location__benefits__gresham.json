@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__benefits__gresham",
   "kind": "service_location",
   "key": "benefits__gresham",
-  "nodeCount": 43,
+  "nodeCount": 48,
   "nodes": [
     {
       "id": "phone_dialog_0000022#turn-2",
@@ -1095,7 +1095,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Of course. I\u2019ll go slow. The number I said is **9-1-1**: **nine\u2026 one\u2026 one**. If you feel in immediate danger right now, calling **9-1-1** is the fastest help. If not, we can keep planning quietly, one small step at a time."
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
@@ -1210,7 +1212,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, and thank you for telling me that. I want to get this right, but your audio cut out for a second. Could you repeat just one short thing: are you looking in Gresham for counseling/mental health support, or a different kind of help?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I can hear you, but your audio cut out. If you\u2019re in immediate danger right now, call 911. Please say one word: \u201cclinic\u201d or \u201csafe place.\u201d",
+        "I\u2019m here with you. Your audio is unclear. I heard you can\u2019t tell what\u2019s real, and that can be an emergency. If your chest feels bad right now, call 911 now. Say one word so I can act fast: **\u201c911\u201d** or **\u201ccrisis.\u201d**"
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
@@ -1274,6 +1279,149 @@
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001166#turn-1",
+      "scenarioId": "phone_dialog_0001166",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Wait, can you hear me, it keeps cutting out... I\u2019m in Gresham, by the MAX stop I think, and I need a clinic but people are watching me.",
+      "normalizedQuery": "hello wait hear it keeps cutting gresham by max stop think clinic medical health people watching",
+      "voiceResponse": "I can hear you, but your audio cut out. If you\u2019re in immediate danger right now, call 911. Please say one word: \u201cclinic\u201d or \u201csafe place.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey",
+        "page:bafkreihqdih5hb3qfoh7fp2soi6tbjxrnkp5lnw2j64chqumtvjoh6mfkm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:ad75ad49419633d5",
+        "service:51e37f6187a1922a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, but your audio cut out. If you\u2019re in immediate danger right now, call 911. Please say one word: \u201cclinic\u201d or \u201csafe place.\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely, and thank you for telling me that. I want to get this right, but your audio cut out for a second. Could you repeat just one short thing: are you looking in Gresham for counseling/mental health support, or a different kind of help?",
+        "I\u2019m here with you. Your audio is unclear. I heard you can\u2019t tell what\u2019s real, and that can be an emergency. If your chest feels bad right now, call 911 now. Say one word so I can act fast: **\u201c911\u201d** or **\u201ccrisis.\u201d**"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001166#turn-4",
+      "scenarioId": "phone_dialog_0001166",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m not trying to hurt anyone, I just... I can\u2019t tell what\u2019s real, and my phone is on like four percent, can you stay with me?",
+      "normalizedQuery": "hello wait hear it keeps cutting gresham by max stop think clinic medical health people watching no police said like chest weird haven slept two days maybe three don know voices loud right now they keep saying go inside anywhere so if ask questions one at time sorry trying hurt anyone just tell real phone on four percent stay",
+      "voiceResponse": "I\u2019m here with you. Your audio is unclear. I heard you can\u2019t tell what\u2019s real, and that can be an emergency. If your chest feels bad right now, call 911 now. Say one word so I can act fast: **\u201c911\u201d** or **\u201ccrisis.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Your audio is unclear. I heard you can\u2019t tell what\u2019s real, and that can be an emergency. If your chest feels bad right now, call 911 now. Say one word so I can act fast: **\u201c911\u201d** or **\u201ccrisis.\u201d**",
+      "voiceResponseAlternatives": [
+        "Absolutely, and thank you for telling me that. I want to get this right, but your audio cut out for a second. Could you repeat just one short thing: are you looking in Gresham for counseling/mental health support, or a different kind of help?",
+        "I can hear you, but your audio cut out. If you\u2019re in immediate danger right now, call 911. Please say one word: \u201cclinic\u201d or \u201csafe place.\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001239#turn-2",
+      "scenarioId": "phone_dialog_0001239",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Gresham, near Powell, and he said if I leave again he'll find me, so I need to plan this really quietly.",
+      "normalizedQuery": "hi um keep this private think he checks phone can't have traced back i'm gresham powell said if leave again he'll so plan really quietly",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing by planning quietly. We can keep this general and private. A low-risk next step is to make a simple exit plan: one safe place, one backup place, and one small bag hidden where he won\u2019t look. If it feels safer, use a borrowed phone or clear call history after help calls. If you\u2019re in immediate danger at any point, call 911 right away. I can stay with you and do this one step at a time.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:d2b6b55e0a9c7cfb",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing by planning quietly. We can keep this general and private. A low-risk next step is to make a simple exit plan: one safe place, one backup place, and one small bag hidden where he won\u2019t look. If it feels safer, use a borrowed phone or clear call history after help calls. If you\u2019re in immediate danger at any point, call 911 right away. I can stay with you and do this one step at a time.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001239#turn-3",
+      "scenarioId": "phone_dialog_0001239",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, can you say that slower? I'm shaking and I missed the number you said.",
+      "normalizedQuery": "hi um keep this private think he checks phone can't have traced back i'm gresham powell said if leave again he'll so plan really quietly sorry say slower shaking missed number",
+      "voiceResponse": "Of course. I\u2019ll go slow. The number I said is **9-1-1**: **nine\u2026 one\u2026 one**. If you feel in immediate danger right now, calling **9-1-1** is the fastest help. If not, we can keep planning quietly, one small step at a time.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slow. The number I said is **9-1-1**: **nine\u2026 one\u2026 one**. If you feel in immediate danger right now, calling **9-1-1** is the fastest help. If not, we can keep planning quietly, one small step at a time.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001239#turn-4",
+      "scenarioId": "phone_dialog_0001239",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "He just texted that he's outside my building now, so this might be immediate, I don't feel safe going back in.",
+      "normalizedQuery": "hi um keep this private think he checks phone can't have traced back i'm gresham powell said if leave again he'll so plan really quietly sorry say slower shaking missed number just texted he's outside building now might be immediate don't feel safe going",
+      "voiceResponse": "I\u2019m with you. This sounds immediate. If you can, call **9-1-1** now: **nine\u2026 one\u2026 one** and say, \u201cI\u2019m not safe, he\u2019s outside my building now.\u201d If speaking feels risky, you can stay quiet and leave the line open. If you can move, go to a public place with people nearby and lock a door behind you. You don\u2019t need to share more with me right now. Your safety comes first.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. This sounds immediate. If you can, call **9-1-1** now: **nine\u2026 one\u2026 one** and say, \u201cI\u2019m not safe, he\u2019s outside my building now.\u201d If speaking feels risky, you can stay quiet and leave the line open. If you can move, go to a public place with people nearby and lock a door behind you. You don\u2019t need to share more with me right now. Your safety comes first.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1492,6 +1640,36 @@
       "to": "phone_dialog_0001111#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001166#turn-1",
+      "to": "phone_dialog_0001166#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001166#turn-4",
+      "to": "phone_dialog_0001166#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001239#turn-2",
+      "to": "phone_dialog_0001239#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001239#turn-3",
+      "to": "phone_dialog_0001239#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001239#turn-4",
+      "to": "phone_dialog_0001239#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

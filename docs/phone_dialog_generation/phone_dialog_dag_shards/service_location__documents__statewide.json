@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__documents__statewide",
   "kind": "service_location",
   "key": "documents__statewide",
-  "nodeCount": 355,
+  "nodeCount": 357,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-5",
@@ -6267,7 +6267,8 @@
       "similarCases": [],
       "assistantResponse": "I hear you. The line cut out a little. I\u2019m sorry you lost your ID. Please say one short thing: Do you want help with `replacing ID`, `getting documents`, or `what services you can use now`?",
       "voiceResponseAlternatives": [
-        "I hear you, and you\u2019re not overreacting. Your audio cut a little on my end. Quick choice so I can keep this simple: do you want help with **privacy questions first**, or **applying with the least information possible**?"
+        "I hear you, and you\u2019re not overreacting. Your audio cut a little on my end. Quick choice so I can keep this simple: do you want help with **privacy questions first**, or **applying with the least information possible**?",
+        "I\u2019m sorry, your audio was unclear on my end. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. Please say one short choice: \u201cID question,\u201d or \u201crepeat number.\u201d"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -9684,7 +9685,8 @@
       "similarCases": [],
       "assistantResponse": "I hear you, and you\u2019re not overreacting. Your audio cut a little on my end. Quick choice so I can keep this simple: do you want help with **privacy questions first**, or **applying with the least information possible**?",
       "voiceResponseAlternatives": [
-        "I hear you. The line cut out a little. I\u2019m sorry you lost your ID. Please say one short thing: Do you want help with `replacing ID`, `getting documents`, or `what services you can use now`?"
+        "I hear you. The line cut out a little. I\u2019m sorry you lost your ID. Please say one short thing: Do you want help with `replacing ID`, `getting documents`, or `what services you can use now`?",
+        "I\u2019m sorry, your audio was unclear on my end. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. Please say one short choice: \u201cID question,\u201d or \u201crepeat number.\u201d"
       ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
@@ -10649,6 +10651,64 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001196#turn-6",
+      "scenarioId": "phone_dialog_0001196",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "If they need ID I got worried, mine's gone, so... can I still go just for a shower?",
+      "normalizedQuery": "if they id got worried mine's gone so still go just shower",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear on my end. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. Please say one short choice: \u201cID question,\u201d or \u201crepeat number.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:0f54d8a0521f759c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear on my end. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. I heard \u201cID\u201d and \u201cshower,\u201d but I missed the rest. Please say one short choice: \u201cID question,\u201d or \u201crepeat number.\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. The line cut out a little. I\u2019m sorry you lost your ID. Please say one short thing: Do you want help with `replacing ID`, `getting documents`, or `what services you can use now`?",
+        "I hear you, and you\u2019re not overreacting. Your audio cut a little on my end. Quick choice so I can keep this simple: do you want help with **privacy questions first**, or **applying with the least information possible**?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001259#turn-6",
+      "scenarioId": "phone_dialog_0001259",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If they need ID I only have my state card, no other papers, is that okay?",
+      "normalizedQuery": "if they id only have state card no other papers okay",
+      "voiceResponse": "Yes, your state card is okay to bring. Don\u2019t wait for other papers tonight. Because you\u2019re in immediate weather danger and your battery is at 3%, call **911 now** and say: \u201cI need urgent transport to a warm safe place near Clackamas Town Center.\u201d Stay at the lit entrance near other people while you call.",
+      "evidenceDocIds": [
+        "page:bafkreiemvimtczhcn3mohrl6plj6ad2xf6gz5h44iu7vmwspgqjujrxd54",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:ea585d467287a4d5",
+        "page:bafkreigecvz7zurvbyqbc374ty2wgbymmjfpajkse2h33bizpy3rgtxt2q",
+        "service:02b582c05d666cd2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, your state card is okay to bring. Don\u2019t wait for other papers tonight. Because you\u2019re in immediate weather danger and your battery is at 3%, call **911 now** and say: \u201cI need urgent transport to a warm safe place near Clackamas Town Center.\u201d Stay at the lit entrance near other people while you call.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line and I\u2019ll connect you now to the live 211 specialist to verify ID requirements before you travel. I don\u2019t have a reliable record here for warming-center ID rules tonight in Medford, and I don\u2019t want to guess. If the cold becomes immediately unsafe while we connect, call 9-1-1.",
+        "You didn\u2019t miss it, I haven\u2019t named a part of town yet. I was offering to connect you to a live 211 person, and they can give the closest same-day mail options for where you are right now. If you want, we can do that now, and I can stay with you while it connects.",
+        "Yes. Quick steps: open **Mail Services**, tap **Get Help Now** or **Connect to 211**, then tap **Save** on that page (or take a screenshot) so you can find it fast later. If your phone dies, that\u2019s okay, you can reopen the app and go straight to **Mail Services** again. I\u2019m here with you.",
+        "I hear you. You\u2019re 19, no car, and worried about ID or being turned away. You\u2019re 19, no car, and worried about ID or being turned away. A live 211info person can screen for places close enough without a car, and tell you ID rules before you go. If you feel faint, confused, or might pass out, call 9-1-1 now. Call 9-1-1 now. Do you want me to help you with the exact words to say on that call?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [

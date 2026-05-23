@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__lane_county",
   "kind": "service_location",
   "key": "general__lane_county",
-  "nodeCount": 24,
+  "nodeCount": 26,
   "nodes": [
     {
       "id": "phone_dialog_0000012#turn-1",
@@ -720,6 +720,60 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001228#turn-1",
+      "scenarioId": "phone_dialog_0001228",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m sorry, this isn\u2019t my phone and it\u2019s at like two percent, can you give me the most important number first for domestic violence help in Lane County?",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first domestic violence lane county",
+      "voiceResponse": "Yes. The fastest local number I have for Lane County is **5 4 1, 6 8 6, 7 8 7 8**. I\u2019ll repeat: **5 4 1, 6 8 6, 7 8 7 8**. If texting feels safer, I can give you a short script next. If you\u2019re in immediate danger, call **9 1 1**.",
+      "evidenceDocIds": [
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "service:de79113abf2cae4b",
+        "service:fd5de844e523fa13",
+        "service:c522a4498bacb96d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The fastest local number I have for Lane County is **5 4 1, 6 8 6, 7 8 7 8**. I\u2019ll repeat: **5 4 1, 6 8 6, 7 8 7 8**. If texting feels safer, I can give you a short script next. If you\u2019re in immediate danger, call **9 1 1**.",
+      "voiceResponseAlternatives": [
+        "I hear you. You can keep this brief and give no name. Call **5 4 1, 6 8 6, 7 8 7 8** and say: \u201cI need a safe place tonight in Lane County and a safety plan. I can\u2019t return home.\u201d I\u2019ll repeat the number: **5 4 1, 6 8 6, 7 8 7 8**. If you\u2019re in immediate danger right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001228#turn-2",
+      "scenarioId": "phone_dialog_0001228",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m trying to stay quiet because he checks my calls, and he said if I leave he\u2019ll find me, so I can\u2019t go back to the apartment tonight.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first domestic violence lane county trying stay quiet because he checks calls said if leave ll so go back apartment tonight",
+      "voiceResponse": "I hear you. You can keep this brief and give no name. Call **5 4 1, 6 8 6, 7 8 7 8** and say: \u201cI need a safe place tonight in Lane County and a safety plan. I can\u2019t return home.\u201d I\u2019ll repeat the number: **5 4 1, 6 8 6, 7 8 7 8**. If you\u2019re in immediate danger right now, call **9 1 1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:2a8dfbe44adb059e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You can keep this brief and give no name. Call **5 4 1, 6 8 6, 7 8 7 8** and say: \u201cI need a safe place tonight in Lane County and a safety plan. I can\u2019t return home.\u201d I\u2019ll repeat the number: **5 4 1, 6 8 6, 7 8 7 8**. If you\u2019re in immediate danger right now, call **9 1 1**.",
+      "voiceResponseAlternatives": [
+        "Yes. The fastest local number I have for Lane County is **5 4 1, 6 8 6, 7 8 7 8**. I\u2019ll repeat: **5 4 1, 6 8 6, 7 8 7 8**. If texting feels safer, I can give you a short script next. If you\u2019re in immediate danger, call **9 1 1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -860,6 +914,18 @@
       "to": "phone_dialog_0001074#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001228#turn-1",
+      "to": "phone_dialog_0001228#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001228#turn-2",
+      "to": "phone_dialog_0001228#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

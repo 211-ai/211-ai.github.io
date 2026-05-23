@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__transportation__portland",
   "kind": "service_location",
   "key": "transportation__portland",
-  "nodeCount": 3,
+  "nodeCount": 4,
   "nodes": [
     {
       "id": "phone_dialog_0000442#turn-1",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?"
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
@@ -80,6 +82,33 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001224#turn-1",
+      "scenarioId": "phone_dialog_0001224",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Can you hear me? I'm in Portland, Multnomah County, and I really need help getting a ride somewhere safe tonight.",
+      "normalizedQuery": "hello hear i'm portland multnomah county really getting ride somewhere safe tonight",
+      "voiceResponse": "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?",
+      "evidenceDocIds": [
+        "service:df6f05609bb7717a",
+        "page:bafkreig27lb2rhd5nvrrsxzzfvxrg5ryzsnvhiuvz3qjijoqyhb4fnaa4q",
+        "service:410fe197c6ccd912",
+        "service:435cf768920ea60f",
+        "service:e4488b03bff9c85e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?",
+      "voiceResponseAlternatives": [
+        "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -100,6 +129,12 @@
       "to": "phone_dialog_0000442#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001224#turn-1",
+      "to": "phone_dialog_0001224#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__health__statewide",
   "kind": "service_location",
   "key": "health__statewide",
-  "nodeCount": 52,
+  "nodeCount": 54,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-1",
@@ -1240,7 +1240,8 @@
       "assistantResponse": "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
       "voiceResponseAlternatives": [
         "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
-        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "rambling_and_interrupting",
@@ -1298,7 +1299,8 @@
       "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
-        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
@@ -1326,7 +1328,8 @@
       "assistantResponse": "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
       "voiceResponseAlternatives": [
         "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
-        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?"
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?"
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "emotionally_overloaded",
@@ -1530,6 +1533,65 @@
       ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001190#turn-5",
+      "scenarioId": "phone_dialog_0001190",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Also I need detox help for myself after this, but he comes first, please don\u2019t hang up on me.",
+      "normalizedQuery": "also detox myself after this he comes first please don hang up on",
+      "voiceResponse": "I won\u2019t hang up. You\u2019re doing the right thing, and I\u2019m staying with you. Right now, call **9-1-1** on speaker and say: \u201cUnresponsive after pills and alcohol, slow breathing, pale lips.\u201d Keep him on his side and his airway clear. If he stops breathing, tell 9-1-1 immediately and start CPR if you can. After help is on the way, I will help you get detox support for you next.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I won\u2019t hang up. You\u2019re doing the right thing, and I\u2019m staying with you. Right now, call **9-1-1** on speaker and say: \u201cUnresponsive after pills and alcohol, slow breathing, pale lips.\u201d Keep him on his side and his airway clear. If he stops breathing, tell 9-1-1 immediately and start CPR if you can. After help is on the way, I will help you get detox support for you next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001243#turn-6",
+      "scenarioId": "phone_dialog_0001243",
+      "turnIndex": 5,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "If he\u2019s okay, I need detox help too... I\u2019ve been using and I\u2019m starting to feel sick from not taking anything.",
+      "normalizedQuery": "if he okay detox too ve been using starting feel sick from taking anything",
+      "voiceResponse": "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio cut out. I heard you might be feeling withdrawal. First, are you on with 9-1-1 for him right now, yes or no?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
       "assistantStyleId": "crisis_triage"
     }
   ],
@@ -1753,6 +1815,12 @@
     {
       "from": "phone_dialog_0001147#turn-3",
       "to": "phone_dialog_0001147#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001190#turn-5",
+      "to": "phone_dialog_0001190#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

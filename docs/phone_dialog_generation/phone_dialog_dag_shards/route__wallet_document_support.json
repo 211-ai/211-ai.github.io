@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "route__wallet_document_support",
   "kind": "route",
   "key": "wallet_document_support",
-  "nodeCount": 210,
+  "nodeCount": 212,
   "nodes": [
     {
       "id": "phone_dialog_0000027#turn-3",
@@ -6012,6 +6012,66 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001169#turn-4",
+      "scenarioId": "phone_dialog_0001169",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "I need mental health help, like tonight, but I don\u2019t trust the clinic because they said my file is flagged, or maybe that was the radio.",
+      "normalizedQuery": "mental health like tonight don trust clinic medical because they said file flagged maybe was radio",
+      "voiceResponse": "I hear you. First, safety: if you feel you might act on the voices or can\u2019t stay safe, call **9-1-1** now. About the file: I can\u2019t see or share your clinic record here, and a \u201cflagged file\u201d can be checked directly with staff. For tonight, I can connect you right now to a live mental health crisis counselor through **2-1-1** and stay with you on the line.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c43eb0c241f7667f",
+        "service:8bc8a12ba507fb1c",
+        "service:e5b6a505efa2ce86",
+        "service:d2973183bf1d5689"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. First, safety: if you feel you might act on the voices or can\u2019t stay safe, call **9-1-1** now. About the file: I can\u2019t see or share your clinic record here, and a \u201cflagged file\u201d can be checked directly with staff. For tonight, I can connect you right now to a live mental health crisis counselor through **2-1-1** and stay with you on the line.",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001252#turn-5",
+      "scenarioId": "phone_dialog_0001252",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "Sorry, I interrupted you, go again slower with the clinic name, and if they need insurance cards I lost my wallet, so I don\u2019t know what proof they\u2019ll ask for.",
+      "normalizedQuery": "sorry interrupted go again slower clinic medical health name if they insurance cards lost wallet so don know proof ll ask",
+      "voiceResponse": "Okay, slowly: call **5-0-3, 8-4-8, 5-8-6-1**. Address: **1-0-6-9-0 Northeast Cornell Road, Suite 2-2-0, Hillsboro**. Tell them: \u201cI lost my wallet and insurance card. What proof can you accept today?\u201d They can tell you their exact document options. If you start feeling unsafe or can\u2019t tell what\u2019s real, call **9-1-1**. You can also call or text **9-8-8** right now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:28acd183a54cc8a5",
+        "service:f525d65d4bd89731",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay, slowly: call **5-0-3, 8-4-8, 5-8-6-1**. Address: **1-0-6-9-0 Northeast Cornell Road, Suite 2-2-0, Hillsboro**. Tell them: \u201cI lost my wallet and insurance card. What proof can you accept today?\u201d They can tell you their exact document options. If you start feeling unsafe or can\u2019t tell what\u2019s real, call **9-1-1**. You can also call or text **9-8-8** right now.",
+      "voiceResponseAlternatives": [
+        "Yes. Upload these first from your phone: **photo ID**, **income proof**, and any **medical letter or note**. If one is missing, upload what you have now and ask them to mark the rest as **pending upload** so intake can continue. Ask for their **secure upload link** and accepted file type (photo or PDF). If your breathing worsens, chest pain starts, or you feel faint, call **9-1-1** now.",
+        "First step: gather your photo ID and any papers you already have into one folder now. I don\u2019t have a verified proof checklist in my notes, so call first and ask for their exact document list before you travel. Number, slowly: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**. Again: **5 0 3** \u2026 **2 2 8** \u2026 **5 2 2 2**.",
+        "You\u2019re okay. Keep it simple: for Winding Waters, they ask for an insurance card if you have one, and proof of income only if you\u2019re applying for sliding-scale fees. For the Medical and Pharmacy Clinic, they may ask for photo ID or birth certificate, Social Security card, insurance cards, and tribal verification; if uninsured, proof of income, and sometimes a utility bill or rental receipt for residency. If papers are missing, you can still call first and ask what can wait.",
+        "Yes, you can usually help upload proof of income later. He typically does not need to be on the call if you have his permission and the right file ready. Keep it privacy-safe: upload only what they ask for, and use his application or case portal, not text. If you want, I can walk you through exactly what file types to prepare and the safest way to submit them."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -6998,6 +7058,18 @@
       "to": "phone_dialog_0001157#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001169#turn-4",
+      "to": "phone_dialog_0001169#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001252#turn-5",
+      "to": "phone_dialog_0001252#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
     }
   ]
 }

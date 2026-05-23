@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service__transportation",
   "kind": "service",
   "key": "transportation",
-  "nodeCount": 116,
+  "nodeCount": 129,
   "nodes": [
     {
       "id": "phone_dialog_0000010#turn-1",
@@ -1170,7 +1170,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?"
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
@@ -2196,7 +2198,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. First, quick safety check: if you feel like you might pass out or get hurt, call **911** right now. If you can stay on your feet, call **2-1-1** and say: \u201cI\u2019m young, I feel unsafe, and I need same-day detox that won\u2019t turn me away, with bus-accessible intake.\u201d For medical ride help if you have OHP, call Cascades West Ride Line: **5-4-1, 9-2-4, 8-7-3-8**. You\u2019re not asking for too much.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Stay seated now. Stay seated now. If you pass out, call **9 1 1** right away. Call **9 1 1** right away. If you are in Pendleton, I have **CARE-RIDE**. Address: **5 0 0 Southwest Dorion Avenue, Pendleton, 9 7 8 0 1**. They can do non-emergency rides to urgent care or the ER. Call **5 4 1, 2 7 6, 8 2 9 4**. Again: **5 4 1, 2 7 6, 8 2 9 4**. Are you in Pendleton?"
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
       "assistantStyleId": "compassionate_caseworker"
@@ -3317,6 +3321,390 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001174#turn-6",
+      "scenarioId": "phone_dialog_0001174",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at like four percent, so can you tell me the fastest way to get transport somewhere safe without calling him or alerting him?",
+      "normalizedQuery": "battery at like four percent so tell fastest way transport ride transportation bus somewhere safe without calling him alerting",
+      "voiceResponse": "Yes. Fastest, lowest\u2011exposure plan: don\u2019t call or text him, go now to the nearest open, well\u2011lit place with people, and ask staff to help you get a ride to a safe location. If he appears, call **9-1-1** right away: **nine\u2026 one\u2026 one**. With 4% battery, switch to low power and keep this line for essentials only. I can connect you to a live domestic violence advocate now to arrange transport and shelter quietly.",
+      "evidenceDocIds": [
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:156176ac73be0658",
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Fastest, lowest\u2011exposure plan: don\u2019t call or text him, go now to the nearest open, well\u2011lit place with people, and ask staff to help you get a ride to a safe location. If he appears, call **9-1-1** right away: **nine\u2026 one\u2026 one**. With 4% battery, switch to low power and keep this line for essentials only. I can connect you to a live domestic violence advocate now to arrange transport and shelter quietly.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001175#turn-5",
+      "scenarioId": "phone_dialog_0001175",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My phone\u2019s on like four percent, so I need this quick. Is there any ride help or bus voucher to get me somewhere safer tonight?",
+      "normalizedQuery": "phone on like four percent so this quick there any ride bus voucher somewhere safer tonight",
+      "voiceResponse": "Yes, quick option: FISH in Roseburg may offer emergency gas vouchers or local bus tickets tonight, if funding is available. Call **5 4 1, 6 7 2, 5 2 4 2**. If you\u2019re in immediate danger while you wait, call **911** now. I can stay brief and connect you to the live 211 agent next.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e3f844bfd172d4eb",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, quick option: FISH in Roseburg may offer emergency gas vouchers or local bus tickets tonight, if funding is available. Call **5 4 1, 6 7 2, 5 2 4 2**. If you\u2019re in immediate danger while you wait, call **911** now. I can stay brief and connect you to the live 211 agent next.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-4",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My phone\u2019s at like three percent, I just need a ride or bus help to get somewhere safer tonight.",
+      "normalizedQuery": "phone at like three percent just ride bus somewhere safer tonight",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing by asking now. With 3% battery, ask the front desk to place the call for you. The ride numbers I can confirm are: CARE-RIDE, **5-4-1, 2-7-6, 8-2-9-4** (Pendleton), and Dial-A-Ride, **5-4-1, 4-7-4, 5-4-5-2** (Grants Pass). Tell them: \u201cI\u2019m stranded tonight, unsafe in rain, and need transport to a safe shelter option now.\u201d If you want, I can repeat one number slowly.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "service:06227c05cc4eea25",
+        "service:c11da83204b4dafc",
+        "service:b3d7aa7d9150b9d1",
+        "service:a558e2f5ba96f584"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing by asking now. With 3% battery, ask the front desk to place the call for you. The ride numbers I can confirm are: CARE-RIDE, **5-4-1, 2-7-6, 8-2-9-4** (Pendleton), and Dial-A-Ride, **5-4-1, 4-7-4, 5-4-5-2** (Grants Pass). Tell them: \u201cI\u2019m stranded tonight, unsafe in rain, and need transport to a safe shelter option now.\u201d If you want, I can repeat one number slowly.",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you can keep it minimal. Share only what\u2019s needed to set up the ride, and ask this up front: \u201cWhat\u2019s the minimum you need, and who can see it?\u201d You can also say, \u201cPlease use my info only for scheduling this ride.\u201d If they ask for more than you\u2019re comfortable with, you can pause and decide what to share next.",
+        "I\u2019m with you. Take one slow breath with me. If you might hurt yourself or are in immediate danger, call **911** now. For ride help, call **CARE-RIDE**. I\u2019ll say it one digit at a time: **5\u2026 4\u2026 1\u2026 2\u2026 7\u2026 6\u2026 8\u2026 2\u2026 9\u2026 4**. That\u2019s **541-276-8294**.",
+        "Okay. Most important number first: CARE-RIDE. Call **541-276-8294**. I\u2019ll repeat: **541-276-8294**. That is **5 4 1, 2 7 6, 8 2 9 4**. They do non-emergency rides, including urgent care or ER rides, 7 days, 5 AM to 10 PM. Backup number is **541-966-0201**. Backup again: **541-966-0201**.",
+        "You\u2019re doing the right thing, and I\u2019ll keep it simple. The service name I have is **Ready to Rent**. What you need ready is **nothing** for documents \u2014 it says **required documents: none**. If you want to call them before your battery dies: **5 0 3, 8 8 3, 4 3 0 8**. Alternate line: **5 0 3, 8 8 3, 4 3 0 0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-5",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have money for a cab, and I\u2019m so tired I can barely think straight.",
+      "normalizedQuery": "guy there threatened bag got stolen scared go back outside this rain sorry signal bad say again safe minute by front desk people around phone at like three percent just ride bus somewhere safer tonight don have money cab so tired barely think straight",
+      "voiceResponse": "I hear you. You\u2019re exhausted, and no-money transport is exactly why we use ride programs, not cabs. Stay by that front desk and ask them to call now for you: CARE-RIDE, **5-4-1, 2-7-6, 8-2-9-4**, or Dial-A-Ride, **5-4-1, 4-7-4, 5-4-5-2**. Say: \u201cI\u2019m stranded tonight, unsafe in rain, no money for cab, and need a ride to a safe shelter now.\u201d If you want, I can repeat just one number slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re exhausted, and no-money transport is exactly why we use ride programs, not cabs. Stay by that front desk and ask them to call now for you: CARE-RIDE, **5-4-1, 2-7-6, 8-2-9-4**, or Dial-A-Ride, **5-4-1, 4-7-4, 5-4-5-2**. Say: \u201cI\u2019m stranded tonight, unsafe in rain, no money for cab, and need a ride to a safe shelter now.\u201d If you want, I can repeat just one number slowly.",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you can keep it minimal. Share only what\u2019s needed to set up the ride, and ask this up front: \u201cWhat\u2019s the minimum you need, and who can see it?\u201d You can also say, \u201cPlease use my info only for scheduling this ride.\u201d If they ask for more than you\u2019re comfortable with, you can pause and decide what to share next.",
+        "I\u2019m with you. Take one slow breath with me. If you might hurt yourself or are in immediate danger, call **911** now. For ride help, call **CARE-RIDE**. I\u2019ll say it one digit at a time: **5\u2026 4\u2026 1\u2026 2\u2026 7\u2026 6\u2026 8\u2026 2\u2026 9\u2026 4**. That\u2019s **541-276-8294**.",
+        "Okay. Most important number first: CARE-RIDE. Call **541-276-8294**. I\u2019ll repeat: **541-276-8294**. That is **5 4 1, 2 7 6, 8 2 9 4**. They do non-emergency rides, including urgent care or ER rides, 7 days, 5 AM to 10 PM. Backup number is **541-966-0201**. Backup again: **541-966-0201**.",
+        "You\u2019re doing the right thing, and I\u2019ll keep it simple. The service name I have is **Ready to Rent**. What you need ready is **nothing** for documents \u2014 it says **required documents: none**. If you want to call them before your battery dies: **5 0 3, 8 8 3, 4 3 0 8**. Alternate line: **5 0 3, 8 8 3, 4 3 0 0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-6",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there\u2019s a place in Springfield or anywhere close with a safe bed, I can go now if you can help with transportation.",
+      "normalizedQuery": "if there place springfield anywhere close safe bed go now transportation transport ride bus",
+      "voiceResponse": "You\u2019re doing the right thing, and I hear how worn out you are. For transportation help now, ask the front desk to call **Cascades West Ride Line** and request the nearest safe shelter bed in Springfield/Eugene tonight. Numbers are: **5-4-1, 9-2-4, 8-7-3-8** and **5-4-1, 9-6-7, 8-6-3-0**. Say: \u201cI can travel now, I need a safe bed tonight, and I need ride help.\u201d",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:80bb5c1077a6fe59",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I hear how worn out you are. For transportation help now, ask the front desk to call **Cascades West Ride Line** and request the nearest safe shelter bed in Springfield/Eugene tonight. Numbers are: **5-4-1, 9-2-4, 8-7-3-8** and **5-4-1, 9-6-7, 8-6-3-0**. Say: \u201cI can travel now, I need a safe bed tonight, and I need ride help.\u201d",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you can keep it minimal. Share only what\u2019s needed to set up the ride, and ask this up front: \u201cWhat\u2019s the minimum you need, and who can see it?\u201d You can also say, \u201cPlease use my info only for scheduling this ride.\u201d If they ask for more than you\u2019re comfortable with, you can pause and decide what to share next.",
+        "I\u2019m with you. Take one slow breath with me. If you might hurt yourself or are in immediate danger, call **911** now. For ride help, call **CARE-RIDE**. I\u2019ll say it one digit at a time: **5\u2026 4\u2026 1\u2026 2\u2026 7\u2026 6\u2026 8\u2026 2\u2026 9\u2026 4**. That\u2019s **541-276-8294**.",
+        "Okay. Most important number first: CARE-RIDE. Call **541-276-8294**. I\u2019ll repeat: **541-276-8294**. That is **5 4 1, 2 7 6, 8 2 9 4**. They do non-emergency rides, including urgent care or ER rides, 7 days, 5 AM to 10 PM. Backup number is **541-966-0201**. Backup again: **541-966-0201**.",
+        "You\u2019re doing the right thing, and I\u2019ll keep it simple. The service name I have is **Ready to Rent**. What you need ready is **nothing** for documents \u2014 it says **required documents: none**. If you want to call them before your battery dies: **5 0 3, 8 8 3, 4 3 0 8**. Alternate line: **5 0 3, 8 8 3, 4 3 0 0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001224#turn-1",
+      "scenarioId": "phone_dialog_0001224",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "transportation",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hello? Can you hear me? I'm in Portland, Multnomah County, and I really need help getting a ride somewhere safe tonight.",
+      "normalizedQuery": "hello hear i'm portland multnomah county really getting ride somewhere safe tonight",
+      "voiceResponse": "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?",
+      "evidenceDocIds": [
+        "service:df6f05609bb7717a",
+        "page:bafkreig27lb2rhd5nvrrsxzzfvxrg5ryzsnvhiuvz3qjijoqyhb4fnaa4q",
+        "service:410fe197c6ccd912",
+        "service:435cf768920ea60f",
+        "service:e4488b03bff9c85e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. I\u2019m really glad you reached out. Tonight in Multnomah County, the **emergency severe weather shelters are not open**, but **year-round and overnight shelters are open**. Let\u2019s get you somewhere safer now. What part of Portland are you in right now\u2014nearest cross street or landmark?",
+      "voiceResponseAlternatives": [
+        "Most important number first: **Ride Connection** in Portland, **503-226-0700**. I\u2019ll repeat it: **503\u2026 226\u2026 0700**. If they don\u2019t pick up, call **2-1-1** right after for a fast ride referral. You can just say, \u201cI\u2019m in Portland and need a ride today.\u201d"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001226#turn-6",
+      "scenarioId": "phone_dialog_0001226",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have a car, so I need transport help too, and please don\u2019t call me back unless I say it\u2019s safe.",
+      "normalizedQuery": "don have car so transport ride transportation bus too please call back unless say it safe",
+      "voiceResponse": "Absolutely. We can keep this on your terms. I won\u2019t call you back unless you say it\u2019s safe. For rides, we can use 211 transportation help, and for urgent housing/safety tonight you can still call **5 0 3 \u2026 8 0 2 \u2026 8 3 0 0** or **5 0 3 \u2026 8 0 2 \u2026 8 4 6 9**. If you want medical transport, Cascades West Ride Line is **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. If danger becomes immediate, call 911.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:b7ba0209781ffa75"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. We can keep this on your terms. I won\u2019t call you back unless you say it\u2019s safe. For rides, we can use 211 transportation help, and for urgent housing/safety tonight you can still call **5 0 3 \u2026 8 0 2 \u2026 8 3 0 0** or **5 0 3 \u2026 8 0 2 \u2026 8 4 6 9**. If you want medical transport, Cascades West Ride Line is **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. If danger becomes immediate, call 911.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001232#turn-6",
+      "scenarioId": "phone_dialog_0001232",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at three percent, so if we get cut off, can you give me the fastest option for a safe ride and who to contact right now?",
+      "normalizedQuery": "battery at three percent so if we cut off give fastest option safe ride who contact right now",
+      "voiceResponse": "Yes. Fastest option right now: call **911** immediately and ask for police escort and a safe transport from your workplace. Say: \u201cI\u2019m in immediate danger. He is outside my work parking lot now.\u201d Stay inside with a coworker or security, and do not go to your car alone. If your phone dies, ask the nearest person to call 911 for you right away. After you\u2019re secure, ask 911 to connect you to on-call domestic violence advocacy.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:e25fd4aa967fb6a0",
+        "page:bafkreihn4jp4sjavlti2ebqgirm37xffkqbdjosfytesq35i2z2abnfqtu",
+        "service:102c674f1762c2df",
+        "service:474dbd2a1b00636e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Fastest option right now: call **911** immediately and ask for police escort and a safe transport from your workplace. Say: \u201cI\u2019m in immediate danger. He is outside my work parking lot now.\u201d Stay inside with a coworker or security, and do not go to your car alone. If your phone dies, ask the nearest person to call 911 for you right away. After you\u2019re secure, ask 911 to connect you to on-call domestic violence advocacy.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001234#turn-5",
+      "scenarioId": "phone_dialog_0001234",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s a way to get a ride or bus voucher to somewhere safer, that\u2019s what I need.",
+      "normalizedQuery": "if there way ride bus voucher somewhere safer",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. If that person is still near you, call **911 now** and ask for help getting to a safe place. For ride options, call **5 4 1 \u2026 2 7 6 \u2026 8 2 9 4** (CARE-RIDE, 5am to 10pm, any caller). Backup: **5 4 1 \u2026 9 6 6 \u2026 0 2 0 1**. The bus pass program usually doesn\u2019t give passes directly to individuals.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "service:06227c05cc4eea25",
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9",
+        "service:e3f844bfd172d4eb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. If that person is still near you, call **911 now** and ask for help getting to a safe place. For ride options, call **5 4 1 \u2026 2 7 6 \u2026 8 2 9 4** (CARE-RIDE, 5am to 10pm, any caller). Backup: **5 4 1 \u2026 9 6 6 \u2026 0 2 0 1**. The bus pass program usually doesn\u2019t give passes directly to individuals.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001234#turn-6",
+      "scenarioId": "phone_dialog_0001234",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I can get to the 7-Eleven on SE Tualatin Valley Highway if that helps for pickup.",
+      "normalizedQuery": "guy keeps circling somebody grabbed backpack earlier it freezing stay outside all night before anything else tell right now so danger if there way ride bus voucher somewhere safer eleven on se tualatin valley highway helps pickup",
+      "voiceResponse": "Yes, that helps. Go straight to that 7-Eleven, get inside if you can, and tell the clerk: \u201cI\u2019m being followed and need to wait somewhere safe while I call for help.\u201d Stay in bright view near people. If the person is still circling or comes near you, call **911** now and say your location: \u201c7-Eleven on SE Tualatin Valley Highway.\u201d Keep your phone charging if possible and stay on the line until help is on the way.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that helps. Go straight to that 7-Eleven, get inside if you can, and tell the clerk: \u201cI\u2019m being followed and need to wait somewhere safe while I call for help.\u201d Stay in bright view near people. If the person is still circling or comes near you, call **911** now and say your location: \u201c7-Eleven on SE Tualatin Valley Highway.\u201d Keep your phone charging if possible and stay on the line until help is on the way.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001237#turn-6",
+      "scenarioId": "phone_dialog_0001237",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Also, is there a way to get safe transport so he doesn\u2019t see where I go?",
+      "normalizedQuery": "also there way safe transport ride transportation bus so he doesn see go",
+      "voiceResponse": "Yes. You have options. You can ask for pickup from a neutral public spot, and ask them not to say your destination out loud. For transportation programs, 211 lists community ride options. For medical rides, Cascades West Ride Line is: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8** or **5 4 1 \u2026 9 6 7 \u2026 8 6 3 0**. If he\u2019s nearby right now, call **9 1 1** first.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:156176ac73be0658",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. You have options. You can ask for pickup from a neutral public spot, and ask them not to say your destination out loud. For transportation programs, 211 lists community ride options. For medical rides, Cascades West Ride Line is: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8** or **5 4 1 \u2026 9 6 7 \u2026 8 6 3 0**. If he\u2019s nearby right now, call **9 1 1** first.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001241#turn-6",
+      "scenarioId": "phone_dialog_0001241",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone battery is at like three percent, so please repeat the address and if there\u2019s a ride I can take.",
+      "normalizedQuery": "phone battery at like three percent so please repeat address if there ride take",
+      "voiceResponse": "Yes. Here it is, slowly. Ride option: Dial-A-Ride and ADA Paratransit. Phone: 5 4 1, 4 7 4, 5 4 5 2. Again: 5 4 1, 4 7 4, 5 4 5 2. Address: 300 Northwest 5th Street, Grants Pass, Oregon, 9 7 5 2 6. Again: 300 Northwest 5th Street, Grants Pass, Oregon, 9 7 5 2 6.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "service:e7f69e9f7d66f5f6",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:0f54d8a0521f759c",
+        "service:a0c55b936798deea"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Here it is, slowly. Ride option: Dial-A-Ride and ADA Paratransit. Phone: 5 4 1, 4 7 4, 5 4 5 2. Again: 5 4 1, 4 7 4, 5 4 5 2. Address: 300 Northwest 5th Street, Grants Pass, Oregon, 9 7 5 2 6. Again: 300 Northwest 5th Street, Grants Pass, Oregon, 9 7 5 2 6.",
+      "voiceResponseAlternatives": [
+        "Yep. The number is **2\u2026 1\u2026 1**. Just those three digits: **2\u2026 1\u2026 1**. If you want, I can repeat it one more time before your battery dies.",
+        "You\u2019re right, let me slow down. I did not name a specific ride program. The part to repeat is: I can connect you to a live 211 specialist right now to check tonight\u2019s transportation options in Multnomah County and what documents are needed before you go.",
+        "You\u2019re okay, I hear you. You need **non-emergency transportation** across town, not an ambulance. One quick detail I still need: are you in **Washington state** or **Oregon**?",
+        "Of course. There wasn\u2019t a phone number in that part, so I\u2019ll repeat the steps slowly: open **Wallet**, then **Files**. Open your ride proof item. Look for **\u201cQR\u201d** or **\u201cShow code.\u201d** If you want to send it to your daughter, tap **Share** or **Export**, and send only that QR image or file."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001248#turn-6",
+      "scenarioId": "phone_dialog_0001248",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "My battery is at two percent, so if I stop answering, please tell me the closest place and if they can help with a ride.",
+      "normalizedQuery": "battery at two percent so if stop answering please tell closest place they ride",
+      "voiceResponse": "Stay seated now. Stay seated now. If you pass out, call **9 1 1** right away. Call **9 1 1** right away. If you are in Pendleton, I have **CARE-RIDE**. Address: **5 0 0 Southwest Dorion Avenue, Pendleton, 9 7 8 0 1**. They can do non-emergency rides to urgent care or the ER. Call **5 4 1, 2 7 6, 8 2 9 4**. Again: **5 4 1, 2 7 6, 8 2 9 4**. Are you in Pendleton?",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:06227c05cc4eea25",
+        "service:150f0f2cc852aa6d",
+        "service:a52e78bc8469df64",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Stay seated now. Stay seated now. If you pass out, call **9 1 1** right away. Call **9 1 1** right away. If you are in Pendleton, I have **CARE-RIDE**. Address: **5 0 0 Southwest Dorion Avenue, Pendleton, 9 7 8 0 1**. They can do non-emergency rides to urgent care or the ER. Call **5 4 1, 2 7 6, 8 2 9 4**. Again: **5 4 1, 2 7 6, 8 2 9 4**. Are you in Pendleton?",
+      "voiceResponseAlternatives": [
+        "I hear you. First, quick safety check: if you feel like you might pass out or get hurt, call **911** right now. If you can stay on your feet, call **2-1-1** and say: \u201cI\u2019m young, I feel unsafe, and I need same-day detox that won\u2019t turn me away, with bus-accessible intake.\u201d For medical ride help if you have OHP, call Cascades West Ride Line: **5-4-1, 9-2-4, 8-7-3-8**. You\u2019re not asking for too much."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -3857,6 +4245,36 @@
     {
       "from": "phone_dialog_0001159#turn-5",
       "to": "phone_dialog_0001159#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001175#turn-5",
+      "to": "phone_dialog_0001175#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001193#turn-4",
+      "to": "phone_dialog_0001193#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001193#turn-5",
+      "to": "phone_dialog_0001193#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001224#turn-1",
+      "to": "phone_dialog_0001224#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001234#turn-5",
+      "to": "phone_dialog_0001234#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

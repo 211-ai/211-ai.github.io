@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__gresham",
   "kind": "service_location",
   "key": "general__gresham",
-  "nodeCount": 42,
+  "nodeCount": 53,
   "nodes": [
     {
       "id": "phone_dialog_0000017#turn-5",
@@ -1243,6 +1243,330 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001178#turn-1",
+      "scenarioId": "phone_dialog_0001178",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, my signal is trash - can you hear me? I'm in Gresham and my friend took pills and a bunch of booze.",
+      "normalizedQuery": "hi sorry signal trash hear i'm gresham friend took pills bunch booze",
+      "voiceResponse": "I hear you. This is an emergency. Call `9-1-1` right now for your friend. If they\u2019re hard to wake, breathing slow, or passed out, put them on their side and stay with them. Don\u2019t let them \u201csleep it off.\u201d If you can, tell 911: pills plus alcohol, your location in Gresham, and your friend\u2019s age. If the call drops, call 911 first.",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:9800cfa31b9bccb1",
+        "service:9d59c2284716e036",
+        "service:bb282e5eaf2a18e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is an emergency. Call `9-1-1` right now for your friend. If they\u2019re hard to wake, breathing slow, or passed out, put them on their side and stay with them. Don\u2019t let them \u201csleep it off.\u201d If you can, tell 911: pills plus alcohol, your location in Gresham, and your friend\u2019s age. If the call drops, call 911 first.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001178#turn-2",
+      "scenarioId": "phone_dialog_0001178",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "He keeps nodding off and I can't really wake him up... wait, what did you say, can you repeat that?",
+      "normalizedQuery": "hi sorry signal trash hear i'm gresham friend took pills bunch booze he keeps nodding off can't really wake him up wait did say repeat",
+      "voiceResponse": "Yes. Repeat: call **9-1-1 right now**. Tell them: \u201cHe took pills and alcohol, and he keeps nodding off and won\u2019t wake up.\u201d Put him on his side, stay with him, and do **not** let him sleep it off. If this call drops, call 911 first.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:30391c8a6f37b770"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Repeat: call **9-1-1 right now**. Tell them: \u201cHe took pills and alcohol, and he keeps nodding off and won\u2019t wake up.\u201d Put him on his side, stay with him, and do **not** let him sleep it off. If this call drops, call 911 first.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at **888 \u2026 221 \u2026 7070**. Backup number is **888 \u2026 225 \u2026 2611**. I can stay on the line while you make that call.",
+        "I\u2019ve got you. I\u2019ll say it slowly: **eight-eight-eight \u2026 two-two-one \u2026 seven-zero-seven-zero**. That\u2019s **888 \u2026 221 \u2026 7070**. Backup is **eight-eight-eight \u2026 two-two-five \u2026 two-six-one-one**. That\u2019s **888 \u2026 225 \u2026 2611**.",
+        "Yes. The name is a **live 2-1-1 specialist**. Next step: stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s a **24-hour crisis line**. The number is: **8-0-0, 8-3-3, 1-1-6-1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001178#turn-3",
+      "scenarioId": "phone_dialog_0001178",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "His breathing is weird, like slow and snoring, and his lips look kinda gray.",
+      "normalizedQuery": "hi sorry signal trash hear i'm gresham friend took pills bunch booze he keeps nodding off can't really wake him up wait did say repeat his breathing weird like slow snoring lips look kinda gray",
+      "voiceResponse": "That is life-threatening. Call **9-1-1 right now**. Say: \u201cPossible overdose, slow snoring breaths, gray lips, hard to wake.\u201d Put him on his side, keep his airway clear, and stay with him. If he stops breathing, tell 911 immediately and follow their instructions. If this call drops, call 911 first.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That is life-threatening. Call **9-1-1 right now**. Say: \u201cPossible overdose, slow snoring breaths, gray lips, hard to wake.\u201d Put him on his side, keep his airway clear, and stay with him. If he stops breathing, tell 911 immediately and follow their instructions. If this call drops, call 911 first.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001185#turn-1",
+      "scenarioId": "phone_dialog_0001185",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? Can you hear me? Signal keeps cutting out... I\u2019m in Gresham, and my friend took something, I don\u2019t know what.",
+      "normalizedQuery": "hello hear signal keeps cutting gresham friend took something don know",
+      "voiceResponse": "I can hear you, but the audio is cutting out. If your friend is not awake, not breathing, or having a seizure, call 911 right now. Please repeat in a few words: are they awake and breathing?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e8399a8259fb5c21",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:d968ced621aea83d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, but the audio is cutting out. If your friend is not awake, not breathing, or having a seizure, call 911 right now. Please repeat in a few words: are they awake and breathing?",
+      "voiceResponseAlternatives": [
+        "Your audio cut out. This is an emergency, call 911 right now. Say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put him on his side and keep his airway clear. Are you on the phone with 911, yes or no?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001185#turn-2",
+      "scenarioId": "phone_dialog_0001185",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what? You\u2019re breaking up, can you say that again? He won\u2019t really wake up and he\u2019s breathing weird, like slow.",
+      "normalizedQuery": "hello hear signal keeps cutting gresham friend took something don know sorry re breaking up say again he won really wake breathing weird like slow",
+      "voiceResponse": "I\u2019m repeating: call 911 now. Say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put him on his side, keep his airway clear, and stay with him. If he stops breathing, tell 911 immediately and start CPR if you can.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:28acd183a54cc8a5",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m repeating: call 911 now. Say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put him on his side, keep his airway clear, and stay with him. If he stops breathing, tell 911 immediately and start CPR if you can.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at **888 \u2026 221 \u2026 7070**. Backup number is **888 \u2026 225 \u2026 2611**. I can stay on the line while you make that call.",
+        "I\u2019ve got you. I\u2019ll say it slowly: **eight-eight-eight \u2026 two-two-one \u2026 seven-zero-seven-zero**. That\u2019s **888 \u2026 221 \u2026 7070**. Backup is **eight-eight-eight \u2026 two-two-five \u2026 two-six-one-one**. That\u2019s **888 \u2026 225 \u2026 2611**.",
+        "Yes. The name is a **live 2-1-1 specialist**. Next step: stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s a **24-hour crisis line**. The number is: **8-0-0, 8-3-3, 1-1-6-1**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001185#turn-3",
+      "scenarioId": "phone_dialog_0001185",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I shook him and yelled, nothing... he kind of groans and goes limp again.",
+      "normalizedQuery": "hello hear signal keeps cutting gresham friend took something don know sorry re breaking up say again he won really wake breathing weird like slow shook him yelled nothing kind groans goes limp",
+      "voiceResponse": "Your audio cut out. This is an emergency, call 911 right now. Say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put him on his side and keep his airway clear. Are you on the phone with 911, yes or no?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your audio cut out. This is an emergency, call 911 right now. Say: \u201cHe won\u2019t wake up and his breathing is slow.\u201d Put him on his side and keep his airway clear. Are you on the phone with 911, yes or no?",
+      "voiceResponseAlternatives": [
+        "I can hear you, but the audio is cutting out. If your friend is not awake, not breathing, or having a seizure, call 911 right now. Please repeat in a few words: are they awake and breathing?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001220#turn-2",
+      "scenarioId": "phone_dialog_0001220",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Gresham, at my buddy\u2019s apartment, and I think he took too much fentanyl or something.",
+      "normalizedQuery": "hello hear okay sorry signal keeps cutting gresham at buddy apartment think he took too much fentanyl something",
+      "voiceResponse": "I\u2019m really glad you said this. Act now: call 911 right now and say, \u201cpossible fentanyl overdose in Gresham.\u201d If he won\u2019t wake, is breathing very slow, or has blue lips, start rescue breathing if you can and keep him on his side. If naloxone is there, give it now. Stay with him until help arrives. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said this. Act now: call 911 right now and say, \u201cpossible fentanyl overdose in Gresham.\u201d If he won\u2019t wake, is breathing very slow, or has blue lips, start rescue breathing if you can and keep him on his side. If naloxone is there, give it now. Stay with him until help arrives. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001220#turn-3",
+      "scenarioId": "phone_dialog_0001220",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s not really waking up, like I shake him and he just kinda groans, then nothing.",
+      "normalizedQuery": "hello hear okay sorry signal keeps cutting gresham at buddy apartment think he took too much fentanyl something really waking up like shake him just kinda groans then nothing",
+      "voiceResponse": "You\u2019re doing the right thing, and this is an emergency. Call **911 now** and say: \u201cHe\u2019s barely responsive, possible fentanyl overdose, in Gresham.\u201d Put him on his side, check if he\u2019s breathing, and if you have naloxone, give it now. If he\u2019s not breathing or breathing is very slow, start rescue breaths. Stay with him. I can stay on with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and this is an emergency. Call **911 now** and say: \u201cHe\u2019s barely responsive, possible fentanyl overdose, in Gresham.\u201d Put him on his side, check if he\u2019s breathing, and if you have naloxone, give it now. If he\u2019s not breathing or breathing is very slow, start rescue breaths. Stay with him. I can stay on with you while you call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001220#turn-4",
+      "scenarioId": "phone_dialog_0001220",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what? You cut out, can you say that again slower? I can\u2019t hear every word.",
+      "normalizedQuery": "hello hear okay sorry signal keeps cutting gresham at buddy apartment think he took too much fentanyl something really waking up like shake him just kinda groans then nothing wait cut say again slower every word",
+      "voiceResponse": "You\u2019re doing great staying with this. Slow version: call **911 now**. Say: \u201cPossible fentanyl overdose in Gresham. He\u2019s barely responsive.\u201d Then: put him on his side, check breathing, give naloxone if you have it. If breathing is very slow or stopped, start rescue breaths. Stay with him until help arrives.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great staying with this. Slow version: call **911 now**. Say: \u201cPossible fentanyl overdose in Gresham. He\u2019s barely responsive.\u201d Then: put him on his side, check breathing, give naloxone if you have it. If breathing is very slow or stopped, start rescue breaths. Stay with him until help arrives.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, I\u2019ve got you. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at **888 \u2026 221 \u2026 7070**. Backup number is **888 \u2026 225 \u2026 2611**. I can stay on the line while you make that call.",
+        "I\u2019ve got you. I\u2019ll say it slowly: **eight-eight-eight \u2026 two-two-one \u2026 seven-zero-seven-zero**. That\u2019s **888 \u2026 221 \u2026 7070**. Backup is **eight-eight-eight \u2026 two-two-five \u2026 two-six-one-one**. That\u2019s **888 \u2026 225 \u2026 2611**.",
+        "Yes. The name is a **live 2-1-1 specialist**. Next step: stay on the line, and I\u2019ll connect you now.",
+        "Yes. It\u2019s a **24-hour crisis line**. The number is: **8-0-0, 8-3-3, 1-1-6-1**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001231#turn-4",
+      "scenarioId": "phone_dialog_0001231",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "We're in Gresham, in my apartment, and I'm kinda freaking out here.",
+      "normalizedQuery": "hello hear okay signal keeps cutting friend took pills booze can't really wake him up he's breathing weird like slow sorry broke say again we're gresham apartment i'm kinda freaking here",
+      "voiceResponse": "You\u2019re doing the right thing. Call 911 right now and say: \u201cPossible overdose. Hard to wake. Slow breathing.\u201d Give your apartment address in Gresham first. Keep him on his side and keep his airway clear. Stay with him. If he stops breathing, start CPR if you can.",
+      "evidenceDocIds": [
+        "service:30391c8a6f37b770",
+        "service:33be4e4323a0b9fe",
+        "service:0ace06937c39cb61",
+        "service:40aa5dece0a62b6a",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Call 911 right now and say: \u201cPossible overdose. Hard to wake. Slow breathing.\u201d Give your apartment address in Gresham first. Keep him on his side and keep his airway clear. Stay with him. If he stops breathing, start CPR if you can.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001260#turn-1",
+      "scenarioId": "phone_dialog_0001260",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Gresham on a borrowed phone and it\u2019s about to die, can you give me the most important number first?",
+      "normalizedQuery": "hi gresham on borrowed phone it die give most important number first",
+      "voiceResponse": "Okay. Most important number first: **9 7 1, 6 7 3, 8 5 0 0**. I\u2019ll repeat it: **9 7 1, 6 7 3, 8 5 0 0**. That is for Summer EBT in Gresham. If you can, call now before the phone dies. Do you want the address too?",
+      "evidenceDocIds": [
+        "page:bafkreif5z6frzc2qnroluofhpy7bljvghzpceqn3dtuu5vyzydbnvaoks4",
+        "service:64fe9bf00e37cab6",
+        "service:909eff6d9751b0f1",
+        "page:bafkreifoku5qrv6dgv6bqkrqt5bam35cvg3sfhh6uh7m25whtt2usha4wi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Most important number first: **9 7 1, 6 7 3, 8 5 0 0**. I\u2019ll repeat it: **9 7 1, 6 7 3, 8 5 0 0**. That is for Summer EBT in Gresham. If you can, call now before the phone dies. Do you want the address too?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. Your breathing comes first: if you\u2019re struggling to get air right now, call 911 immediately, or have someone with you call. For the shutoff notice in Gresham, call Public Safety Power Shutoffs at 888 \u2026 221 \u2026 7070. Backup number: 888 \u2026 225 \u2026 2611. If you want, I can stay with you while you make the call.",
+        "I hear you, and you\u2019re doing the right thing by saying it out loud. Because you\u2019re short of breath and depend on oxygen, this is urgent: please call **911 now**, or have someone near you call. For the shutoff, call Public Safety Power Shutoffs: **888 \u2026 221 \u2026 7070**. Backup: **888 \u2026 225 \u2026 2611**. If you want, I\u2019ll stay with you while you make the call.",
+        "Yes. I\u2019ll say the address very slowly: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**. I\u2019ll repeat it: **1 0 2 3 0** \u2026 **Southeast** \u2026 **Cherry** \u2026 **Blossom** \u2026 **Drive** \u2026 **Portland**.",
+        "Okay. For a second option in Gresham tonight, call the City of Gresham line now: **5-0-3, 6-1-8, 3-0-0-0**. If it\u2019s after hours, call **5-0-3, 8-2-3, 3-3-3-3**. If you feel unsafe or in immediate danger, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1437,6 +1761,72 @@
       "to": "phone_dialog_0001071#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001178#turn-1",
+      "to": "phone_dialog_0001178#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001178#turn-2",
+      "to": "phone_dialog_0001178#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001178#turn-3",
+      "to": "phone_dialog_0001178#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001185#turn-1",
+      "to": "phone_dialog_0001185#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001185#turn-2",
+      "to": "phone_dialog_0001185#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001185#turn-3",
+      "to": "phone_dialog_0001185#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001220#turn-2",
+      "to": "phone_dialog_0001220#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001220#turn-3",
+      "to": "phone_dialog_0001220#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001220#turn-4",
+      "to": "phone_dialog_0001220#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001231#turn-4",
+      "to": "phone_dialog_0001231#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001260#turn-1",
+      "to": "phone_dialog_0001260#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
     }
   ]
 }

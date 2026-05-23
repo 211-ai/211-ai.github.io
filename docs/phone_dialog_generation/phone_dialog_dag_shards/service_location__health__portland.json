@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__health__portland",
   "kind": "service_location",
   "key": "health__portland",
-  "nodeCount": 8,
+  "nodeCount": 10,
   "nodes": [
     {
       "id": "phone_dialog_0000338#turn-1",
@@ -234,6 +234,56 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001225#turn-4",
+      "scenarioId": "phone_dialog_0001225",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Portland, on the east side, and I was calling for detox help but right now I don\u2019t know if this is an overdose.",
+      "normalizedQuery": "portland on east side was calling detox right now don know if this an overdose",
+      "voiceResponse": "You\u2019re on the east side of Portland, and this sounds like an overdose emergency right now. Call **911 now**. Say: \u201cPossible overdose. Pills and alcohol. Slow, irregular breathing. Hard to wake.\u201d Keep him on his side, keep his airway clear, and watch every breath. Do not give food or drink. If his breathing stops or he turns blue, tell 911 immediately.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:bf0682fd9fa9809c",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re on the east side of Portland, and this sounds like an overdose emergency right now. Call **911 now**. Say: \u201cPossible overdose. Pills and alcohol. Slow, irregular breathing. Hard to wake.\u201d Keep him on his side, keep his airway clear, and watch every breath. Do not give food or drink. If his breathing stops or he turns blue, tell 911 immediately.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001225#turn-5",
+      "scenarioId": "phone_dialog_0001225",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "portland",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Wait, can you repeat that number again? I\u2019m panicking and there\u2019s so much noise in here.",
+      "normalizedQuery": "slow down following barely slept keep missing said he breathing it like really weird when shake him just kind groans portland on east side was calling detox right now don know if this an overdose wait repeat number again panicking there so much noise here",
+      "voiceResponse": "Yes. The number is **9-1-1**. Call **9-1-1 now** and say: \u201cPossible overdose. Slow, irregular breathing. Hard to wake.\u201d Keep him on his side and watch every breath. If he stops breathing or turns blue, tell **9-1-1** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. Call **9-1-1 now** and say: \u201cPossible overdose. Slow, irregular breathing. Hard to wake.\u201d Keep him on his side and watch every breath. If he stops breathing or turns blue, tell **9-1-1** immediately.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -284,6 +334,18 @@
       "to": "phone_dialog_0000793#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001225#turn-4",
+      "to": "phone_dialog_0001225#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001225#turn-5",
+      "to": "phone_dialog_0001225#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

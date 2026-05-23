@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__shelter__gresham",
   "kind": "service_location",
   "key": "shelter__gresham",
-  "nodeCount": 69,
+  "nodeCount": 71,
   "nodes": [
     {
       "id": "phone_dialog_0000035#turn-1",
@@ -2054,6 +2054,66 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001209#turn-3",
+      "scenarioId": "phone_dialog_0001209",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out, can you say that again? If you\u2019re asking, no one\u2019s right next to me this second.",
+      "normalizedQuery": "hi gresham phone dying fast got pushed shelter shelters homeless overnight warming line some guys keep circling sitting don feel safe here sorry cut say again if re asking no one right next this second",
+      "voiceResponse": "Thank you for saying that. Quick repeat: move now to a bright, public spot with people nearby, and keep moving if anyone starts following you. If they circle back or you feel immediate danger, call 911 right away. If you can stay on with me, we\u2019ll do the next step for shelter right after you\u2019re in that safer spot.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for saying that. Quick repeat: move now to a bright, public spot with people nearby, and keep moving if anyone starts following you. If they circle back or you feel immediate danger, call 911 right away. If you can stay on with me, we\u2019ll do the next step for shelter right after you\u2019re in that safer spot.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001209#turn-4",
+      "scenarioId": "phone_dialog_0001209",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It\u2019s really cold and wet and I can\u2019t sleep outside again tonight.",
+      "normalizedQuery": "hi gresham phone dying fast got pushed shelter shelters homeless overnight warming line some guys keep circling sitting don feel safe here sorry cut say again if re asking no one right next this second it really cold wet sleep outside tonight",
+      "voiceResponse": "I hear you, that sounds brutal. Fast next step: call the Winter Warming Shelter now at **5 4 1, 9 6 2, 7 9 9 4**. Address is **5 0 1 3rd Street, La Grande**. They offer overnight shelter, meals, and showers. They take adults and families, and no documents are required. If you have a pet, keep them leashed or crated. If that line doesn\u2019t answer, try **5 4 1, 9 4 8, 6 6 4 9**.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, that sounds brutal. Fast next step: call the Winter Warming Shelter now at **5 4 1, 9 6 2, 7 9 9 4**. Address is **5 0 1 3rd Street, La Grande**. They offer overnight shelter, meals, and showers. They take adults and families, and no documents are required. If you have a pet, keep them leashed or crated. If that line doesn\u2019t answer, try **5 4 1, 9 4 8, 6 6 4 9**.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -2422,6 +2482,18 @@
       "to": "phone_dialog_0001059#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001209#turn-3",
+      "to": "phone_dialog_0001209#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001209#turn-4",
+      "to": "phone_dialog_0001209#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

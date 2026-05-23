@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "route__calendar_event_support",
   "kind": "route",
   "key": "calendar_event_support",
-  "nodeCount": 260,
+  "nodeCount": 261,
   "nodes": [
     {
       "id": "phone_dialog_0000020#turn-5",
@@ -923,7 +923,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Next step: create a reminder for **tomorrow at 8:30 a.m.** with the title **\u201cShelter follow-up in Oregon City.\u201d** After you save it, do you want it to **repeat daily** until you reach them?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. Let\u2019s keep it simple and quiet. Tonight: go to **603\u2026 12th Street\u2026 Oregon City\u2026 97045**, or call **503\u2026 722\u2026 9780** and say, \u201cI need a safe shelter bed tonight and an advocate in Oregon City. No callback unless I say it\u2019s safe.\u201d Tomorrow: we can set one check-in reminder so you don\u2019t have to explain everything again. What time tomorrow should I set that reminder for?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
@@ -7383,6 +7385,33 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001195#turn-6",
+      "scenarioId": "phone_dialog_0001195",
+      "turnIndex": 5,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "calendar_event_support",
+      "user": "My battery is at like four percent\u2014can you help me make a plan for tonight and tomorrow, and connect me with an advocate in Oregon City?",
+      "normalizedQuery": "wait bus just went by missed repeat go right now if he nearby front this second said leave him ll make pay done it before we quietly don want call back unless say safe shelter shelters homeless overnight warming bed maybe ride battery at like four percent plan tonight tomorrow connect an advocate oregon city",
+      "voiceResponse": "Yes. Let\u2019s keep it simple and quiet. Tonight: go to **603\u2026 12th Street\u2026 Oregon City\u2026 97045**, or call **503\u2026 722\u2026 9780** and say, \u201cI need a safe shelter bed tonight and an advocate in Oregon City. No callback unless I say it\u2019s safe.\u201d Tomorrow: we can set one check-in reminder so you don\u2019t have to explain everything again. What time tomorrow should I set that reminder for?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:32f8d8103ea16592",
+        "service:a110aba06fd372f6",
+        "service:bab9f596e07026df",
+        "service:57c4c63dcadba358"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Let\u2019s keep it simple and quiet. Tonight: go to **603\u2026 12th Street\u2026 Oregon City\u2026 97045**, or call **503\u2026 722\u2026 9780** and say, \u201cI need a safe shelter bed tonight and an advocate in Oregon City. No callback unless I say it\u2019s safe.\u201d Tomorrow: we can set one check-in reminder so you don\u2019t have to explain everything again. What time tomorrow should I set that reminder for?",
+      "voiceResponseAlternatives": [
+        "Next step: create a reminder for **tomorrow at 8:30 a.m.** with the title **\u201cShelter follow-up in Oregon City.\u201d** After you save it, do you want it to **repeat daily** until you reach them?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [

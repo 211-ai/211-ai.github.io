@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__food__multnomah",
   "kind": "service_location",
   "key": "food__multnomah",
-  "nodeCount": 19,
+  "nodeCount": 21,
   "nodes": [
     {
       "id": "phone_dialog_0000082#turn-2",
@@ -564,6 +564,66 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001196#turn-4",
+      "scenarioId": "phone_dialog_0001196",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say it slow? I don't hear good on this phone, please repeat the name again.",
+      "normalizedQuery": "hello static can't hear this keeps cutting um wash place shower said sorry inaudible food pantry meal meals groceries head's all over been outside two nights i'm multnomah county portland side just somewhere say it slow don't good on phone please repeat name again",
+      "voiceResponse": "Yes. I will say it slow. The name is **two-one-one info**. I\u2019ll repeat: **two-one-one info**. That is **211info**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slow. The name is **two-one-one info**. I\u2019ll repeat: **two-one-one info**. That is **211info**.",
+      "voiceResponseAlternatives": [
+        "Of course. It\u2019s **DHS Gresham**: **6 3 5 S E 2 2 3 r d Avenue, Suite 1 0 2**. Main number: **5 0 3 \u2014 6 7 3 \u2014 8 5 0 0**. Backup: **5 4 1 \u2014 8 8 7 \u2014 8 4 9 5**. If he feels medically unsafe right now, call **9 1 1**.",
+        "Yes. Slow version. First name: **Clackamas Service Center**. Again: **Clackamas Service Center**. Second name: **First Baptist Church Portland**. Again: **First Baptist Church Portland**.",
+        "Yes. The food pantry address is **8800 Southeast 80th Avenue, Portland, Oregon, 97206**. Again: **8800 Southeast 80th Avenue, Portland, Oregon, 97206**.",
+        "Absolutely. Here\u2019s one place in Portland you can go today: Food Pantry and Meals, at **8800 Southeast 80th Avenue, Portland, 97206**. Phone number is **503, 771, 7914**. They serve food and to-go meals, and eligibility is unrestricted."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001196#turn-5",
+      "scenarioId": "phone_dialog_0001196",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the address too, in small parts, like number then street, I miss chunks when you talk fast.",
+      "normalizedQuery": "um wash place shower said sorry inaudible food pantry meal meals groceries head's all over been outside two nights i'm multnomah county portland side just somewhere say it slow don't hear good on this phone please repeat name again address too small parts like number then street miss chunks when talk fast",
+      "voiceResponse": "Yes. Slow, in small parts. I have one address here: a food pantry site. Number: **8 8 0 0**. Street: **S E 8 0th Avenue**. City: **Portland**. State: **Oregon**. Zip: **9 7 2 0 6**. I\u2019ll repeat it. **8 8 0 0, S E 8 0th Avenue, Portland, Oregon, 9 7 2 0 6.** Do you want the phone number again, slowly?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow, in small parts. I have one address here: a food pantry site. Number: **8 8 0 0**. Street: **S E 8 0th Avenue**. City: **Portland**. State: **Oregon**. Zip: **9 7 2 0 6**. I\u2019ll repeat it. **8 8 0 0, S E 8 0th Avenue, Portland, Oregon, 9 7 2 0 6.** Do you want the phone number again, slowly?",
+      "voiceResponseAlternatives": [
+        "You got it. Two places in Multnomah County today. First: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503-771-7914**. Again: **503-771-7914**. Second: First Baptist Church, **909 Southwest 11th Avenue, Portland, 97205**. Phone: **503-228-7465**. Again: **503-228-7465**. Both say unrestricted, and no documents listed.",
+        "You\u2019re not talking in circles, and I\u2019m glad you said that. Let\u2019s do one simple next step: go to Food Pantry and Meals, at 8800 Southeast 80th Avenue, Portland, 97206. Their number is 503, 771, 7914. They can give food today, and there are no eligibility requirements. If you feel unsafe or might hurt yourself, call 911 right now.",
+        "You\u2019re doing okay, and I\u2019m glad you told me that. Here are two Portland options today: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland 97206**. Phone: **503\u2026771\u20267914**. Also First Baptist Church pantry, **909 Southwest 11th Avenue, Portland 97205**. Phone: **503\u2026228\u20267465**. Both list unrestricted eligibility, and no documents required. If you want, I can stay with you while you call one now.",
+        "Absolutely. I can help with that today. Option one: Clackamas Service Center, 8800 Southeast 80th Avenue, Portland, 97206. That is 8-8-0-0, Southeast 8-0th Avenue. Phone: 503, 771, 7914. Again: 503, 771, 7914. Option two: First Baptist Church, 909 Southwest 11th Avenue, Portland, 97205. Phone: 503, 228, 7465. Do you want me to repeat just one address slowly?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -674,6 +734,18 @@
       "to": "phone_dialog_0001126#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001196#turn-4",
+      "to": "phone_dialog_0001196#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001196#turn-5",
+      "to": "phone_dialog_0001196#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
     }
   ]
 }

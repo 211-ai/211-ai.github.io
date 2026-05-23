@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__shelter__eugene",
   "kind": "service_location",
   "key": "shelter__eugene",
-  "nodeCount": 70,
+  "nodeCount": 83,
   "nodes": [
     {
       "id": "phone_dialog_0000002#turn-4",
@@ -2088,6 +2088,391 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001165#turn-1",
+      "scenarioId": "phone_dialog_0001165",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Eugene and I\u2019ve been out in the heat all day, I feel really dizzy and shaky.",
+      "normalizedQuery": "hi eugene ve been heat utility utilities electric all day feel really dizzy shaky",
+      "voiceResponse": "I\u2019m really glad you called. Dizziness and shaking in this heat can be dangerous. Please call 911 now, especially if you feel faint, confused, or might pass out. While you do that, get into shade or AC, sip cool water slowly, and loosen tight clothing. If someone is nearby, ask them to stay with you. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:7c2d095e978b531f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. Dizziness and shaking in this heat can be dangerous. Please call 911 now, especially if you feel faint, confused, or might pass out. While you do that, get into shade or AC, sip cool water slowly, and loosen tight clothing. If someone is nearby, ask them to stay with you. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Oasis Drop-In Day Center is in **Springfield**: **1025 G Street**. I can only confirm Springfield from what I have right now.",
+        "I\u2019m really sorry you\u2019re carrying this right now. Let\u2019s get you connected now. Call **Veterans Housing Project** in Eugene: **4-5-8, 2-2-1, 0-7-1-8**. I\u2019ll repeat: **4-5-8, 2-2-1, 0-7-1-8**. Backup number: **5-4-1, 7-4-3, 7-1-7-0**. Address: **1-8-7-0 West 11th Avenue, Eugene, 9-7-4-0-2**. If your breathing gets worse, call **9-1-1** right now.",
+        "Yes, absolutely. Let\u2019s do the fastest step now: call Lane County Coordinated Entry first. Number: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. I\u2019ll repeat: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. If it doesn\u2019t connect, use backup: **5-4-1 \u2026 7-4-3 \u2026 7-1-7-0**. Tell them: \u201cI\u2019m a homeless veteran in Eugene, medically fragile, and need immediate housing help.\u201d",
+        "First step: call **Kids Zone After School** and ask if they know a Eugene after-school day center. The number is **(541) 765-8990** \u2014 slowly: **5 4 1** \u2026 **7 6 5** \u2026 **8 9 9 0**. I also have two other Oregon programs: Bandon at **(541) 347-8336** and Coos Bay at **(541) 888-7737**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001165#turn-2",
+      "scenarioId": "phone_dialog_0001165",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you slow down? My head\u2019s foggy and I\u2019m not tracking everything you said.",
+      "normalizedQuery": "hi eugene ve been heat utility utilities electric all day feel really dizzy shaky sorry slow down head foggy tracking everything said",
+      "voiceResponse": "Yes. Slow version: this is urgent. Please call **911** now. Then do three things: 1) Get into **shade or AC**. 2) Sip **cool water slowly**. 3) Loosen tight clothing. If someone is nearby, ask them to stay with you. I can stay on the line while you call 911.",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:7c2d095e978b531f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow version: this is urgent. Please call **911** now. Then do three things: 1) Get into **shade or AC**. 2) Sip **cool water slowly**. 3) Loosen tight clothing. If someone is nearby, ask them to stay with you. I can stay on the line while you call 911.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001165#turn-4",
+      "scenarioId": "phone_dialog_0001165",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone\u2019s on like two percent, can you repeat the address and if there\u2019s a bus I can take?",
+      "normalizedQuery": "hi eugene ve been heat utility utilities electric all day feel really dizzy shaky sorry slow down head foggy tracking everything said cooling center tonight sleeping outside don think stay this phone on like two percent repeat address if there bus take",
+      "voiceResponse": "I don\u2019t have a cooling center address yet. Call **2-1-1** now and say: \u201cI\u2019m in Eugene, I need the nearest open cooling center tonight, and the bus route to get there.\u201d If your dizziness gets worse or you might pass out, call **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "service:9c4a0ab059aed565"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a cooling center address yet. Call **2-1-1** now and say: \u201cI\u2019m in Eugene, I need the nearest open cooling center tonight, and the bus route to get there.\u201d If your dizziness gets worse or you might pass out, call **9-1-1**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001173#turn-2",
+      "scenarioId": "phone_dialog_0001173",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019ve been in the sun all day and didn\u2019t drink much. My legs feel weak and I\u2019m kinda confused, like I might black out.",
+      "normalizedQuery": "hi sorry hear great here at bus station eugene really dizzy shaky medical clinic health ve been sun all day didn drink much legs feel weak kinda confused like might black",
+      "voiceResponse": "I hear you. This sounds serious. If you feel like you might black out, call 9-1-1 now. Call 9-1-1 now. Sit in shade. Sip water slowly. Stay seated. If you can travel, go to Eugene Service Station: 450 Highway 99 North, Eugene. Again: 450 Highway 99 North, Eugene. Phone: 541-689-6747. Again: 541-689-6747. Are you alone right now?",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:fbd5bccefe3a07a8",
+        "service:cdae73e665cd7e51",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This sounds serious. If you feel like you might black out, call 9-1-1 now. Call 9-1-1 now. Sit in shade. Sip water slowly. Stay seated. If you can travel, go to Eugene Service Station: 450 Highway 99 North, Eugene. Again: 450 Highway 99 North, Eugene. Phone: 541-689-6747. Again: 541-689-6747. Are you alone right now?",
+      "voiceResponseAlternatives": [
+        "Oasis Drop-In Day Center is in **Springfield**: **1025 G Street**. I can only confirm Springfield from what I have right now.",
+        "I\u2019m really sorry you\u2019re carrying this right now. Let\u2019s get you connected now. Call **Veterans Housing Project** in Eugene: **4-5-8, 2-2-1, 0-7-1-8**. I\u2019ll repeat: **4-5-8, 2-2-1, 0-7-1-8**. Backup number: **5-4-1, 7-4-3, 7-1-7-0**. Address: **1-8-7-0 West 11th Avenue, Eugene, 9-7-4-0-2**. If your breathing gets worse, call **9-1-1** right now.",
+        "Yes, absolutely. Let\u2019s do the fastest step now: call Lane County Coordinated Entry first. Number: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. I\u2019ll repeat: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. If it doesn\u2019t connect, use backup: **5-4-1 \u2026 7-4-3 \u2026 7-1-7-0**. Tell them: \u201cI\u2019m a homeless veteran in Eugene, medically fragile, and need immediate housing help.\u201d",
+        "First step: call **Kids Zone After School** and ask if they know a Eugene after-school day center. The number is **(541) 765-8990** \u2014 slowly: **5 4 1** \u2026 **7 6 5** \u2026 **8 9 9 0**. I also have two other Oregon programs: Bandon at **(541) 347-8336** and Coos Bay at **(541) 888-7737**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001173#turn-3",
+      "scenarioId": "phone_dialog_0001173",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that slower? There\u2019s buses pulling in and I missed the address.",
+      "normalizedQuery": "hi sorry hear great here at bus station eugene really dizzy shaky medical clinic health ve been sun all day didn drink much legs feel weak kinda confused like might black say slower there buses pulling missed address",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. Eugene Service Station. Address: **450 Highway 99 North, Eugene, Oregon, 97402**. Again, slowly: **450**. **Highway 99 North**. **Eugene, Oregon**. **97402**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:fbd5bccefe3a07a8",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:cdae73e665cd7e51",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. Eugene Service Station. Address: **450 Highway 99 North, Eugene, Oregon, 97402**. Again, slowly: **450**. **Highway 99 North**. **Eugene, Oregon**. **97402**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-1",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, can you hear me? I\u2019m in Eugene, Lane County, and I can\u2019t stay at this shelter tonight.",
+      "normalizedQuery": "hi hear eugene lane county stay at this shelter shelters homeless overnight warming tonight",
+      "voiceResponse": "I hear you, and I\u2019m sorry tonight is this hard. I only have three warming shelters listed, and they\u2019re outside Eugene. Closest I can read is The River Center, 3000 South Santiam Highway, Lebanon. Phone: 5-4-1, 4-5-1, 1-2-7-1. Another is La Grande: 5-4-1, 9-6-2, 7-9-9-4. If you want, I can repeat just the Lebanon one slowly.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd",
+        "service:57c4c63dcadba358"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m sorry tonight is this hard. I only have three warming shelters listed, and they\u2019re outside Eugene. Closest I can read is The River Center, 3000 South Santiam Highway, Lebanon. Phone: 5-4-1, 4-5-1, 1-2-7-1. Another is La Grande: 5-4-1, 9-6-2, 7-9-9-4. If you want, I can repeat just the Lebanon one slowly.",
+      "voiceResponseAlternatives": [
+        "Oasis Drop-In Day Center is in **Springfield**: **1025 G Street**. I can only confirm Springfield from what I have right now.",
+        "I\u2019m really sorry you\u2019re carrying this right now. Let\u2019s get you connected now. Call **Veterans Housing Project** in Eugene: **4-5-8, 2-2-1, 0-7-1-8**. I\u2019ll repeat: **4-5-8, 2-2-1, 0-7-1-8**. Backup number: **5-4-1, 7-4-3, 7-1-7-0**. Address: **1-8-7-0 West 11th Avenue, Eugene, 9-7-4-0-2**. If your breathing gets worse, call **9-1-1** right now.",
+        "Yes, absolutely. Let\u2019s do the fastest step now: call Lane County Coordinated Entry first. Number: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. I\u2019ll repeat: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. If it doesn\u2019t connect, use backup: **5-4-1 \u2026 7-4-3 \u2026 7-1-7-0**. Tell them: \u201cI\u2019m a homeless veteran in Eugene, medically fragile, and need immediate housing help.\u201d",
+        "First step: call **Kids Zone After School** and ask if they know a Eugene after-school day center. The number is **(541) 765-8990** \u2014 slowly: **5 4 1** \u2026 **7 6 5** \u2026 **8 9 9 0**. I also have two other Oregon programs: Bandon at **(541) 347-8336** and Coos Bay at **(541) 888-7737**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-2",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "A guy there threatened me and my bag got stolen, and I\u2019m scared to go back outside in this rain.",
+      "normalizedQuery": "hi hear eugene lane county stay at this shelter shelters homeless overnight warming tonight guy there threatened bag got stolen scared go back outside rain",
+      "voiceResponse": "I\u2019m really sorry that happened. You did the right thing calling. First, get under any lit, public cover spot and stay where people can see you. If the person is nearby or you feel in immediate danger, call 911 now. For a place tonight, closest one I have is The River Center, 3000 South Santiam Highway, Lebanon. Phone: 5-4-1, 4-5-1, 1-2-7-1. La Grande is 5-4-1, 9-6-2, 7-9-9-4.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:18555484ba4abb9a",
+        "service:29e0bbc8d3b0ad80",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry that happened. You did the right thing calling. First, get under any lit, public cover spot and stay where people can see you. If the person is nearby or you feel in immediate danger, call 911 now. For a place tonight, closest one I have is The River Center, 3000 South Santiam Highway, Lebanon. Phone: 5-4-1, 4-5-1, 1-2-7-1. La Grande is 5-4-1, 9-6-2, 7-9-9-4.",
+      "voiceResponseAlternatives": [
+        "Oasis Drop-In Day Center is in **Springfield**: **1025 G Street**. I can only confirm Springfield from what I have right now.",
+        "I\u2019m really sorry you\u2019re carrying this right now. Let\u2019s get you connected now. Call **Veterans Housing Project** in Eugene: **4-5-8, 2-2-1, 0-7-1-8**. I\u2019ll repeat: **4-5-8, 2-2-1, 0-7-1-8**. Backup number: **5-4-1, 7-4-3, 7-1-7-0**. Address: **1-8-7-0 West 11th Avenue, Eugene, 9-7-4-0-2**. If your breathing gets worse, call **9-1-1** right now.",
+        "Yes, absolutely. Let\u2019s do the fastest step now: call Lane County Coordinated Entry first. Number: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. I\u2019ll repeat: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. If it doesn\u2019t connect, use backup: **5-4-1 \u2026 7-4-3 \u2026 7-1-7-0**. Tell them: \u201cI\u2019m a homeless veteran in Eugene, medically fragile, and need immediate housing help.\u201d",
+        "First step: call **Kids Zone After School** and ask if they know a Eugene after-school day center. The number is **(541) 765-8990** \u2014 slowly: **5 4 1** \u2026 **7 6 5** \u2026 **8 9 9 0**. I also have two other Oregon programs: Bandon at **(541) 347-8336** and Coos Bay at **(541) 888-7737**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001193#turn-3",
+      "scenarioId": "phone_dialog_0001193",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, the signal\u2019s bad, can you say that again? I\u2019m safe for this minute, I\u2019m by the front desk with people around.",
+      "normalizedQuery": "hi hear eugene lane county stay at this shelter shelters homeless overnight warming tonight guy there threatened bag got stolen scared go back outside rain sorry signal bad say again safe minute by front desk people around",
+      "voiceResponse": "I\u2019m glad you\u2019re with people right now. Repeating the one I can confirm: **La Grande warming shelter**, **501 3rd Street, La Grande**. Phone is **5-4-1, 9-6-2, 7-9-9-4**. Again: **5-4-1, 9-6-2, 7-9-9-4**.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:29e0bbc8d3b0ad80",
+        "service:18555484ba4abb9a",
+        "service:b4ef6dca3c3f73bd",
+        "service:da479dd20eb5563d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you\u2019re with people right now. Repeating the one I can confirm: **La Grande warming shelter**, **501 3rd Street, La Grande**. Phone is **5-4-1, 9-6-2, 7-9-9-4**. Again: **5-4-1, 9-6-2, 7-9-9-4**.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001213#turn-1",
+      "scenarioId": "phone_dialog_0001213",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, can you hear me? I'm outside in Eugene by the shelter line and it's loud out here.",
+      "normalizedQuery": "hi hear i'm outside eugene by shelter shelters homeless overnight warming line it's loud here",
+      "voiceResponse": "Yeah, I hear you. I\u2019m glad you reached out. Right now I only have winter shelter contacts for **La Pine, Redmond, and La Grande**. If one of those helps, I can read the number slowly right now.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I hear you. I\u2019m glad you reached out. Right now I only have winter shelter contacts for **La Pine, Redmond, and La Grande**. If one of those helps, I can read the number slowly right now.",
+      "voiceResponseAlternatives": [
+        "Oasis Drop-In Day Center is in **Springfield**: **1025 G Street**. I can only confirm Springfield from what I have right now.",
+        "I\u2019m really sorry you\u2019re carrying this right now. Let\u2019s get you connected now. Call **Veterans Housing Project** in Eugene: **4-5-8, 2-2-1, 0-7-1-8**. I\u2019ll repeat: **4-5-8, 2-2-1, 0-7-1-8**. Backup number: **5-4-1, 7-4-3, 7-1-7-0**. Address: **1-8-7-0 West 11th Avenue, Eugene, 9-7-4-0-2**. If your breathing gets worse, call **9-1-1** right now.",
+        "Yes, absolutely. Let\u2019s do the fastest step now: call Lane County Coordinated Entry first. Number: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. I\u2019ll repeat: **5-4-1 \u2026 3-4-4 \u2026 0-4-6-5**. If it doesn\u2019t connect, use backup: **5-4-1 \u2026 7-4-3 \u2026 7-1-7-0**. Tell them: \u201cI\u2019m a homeless veteran in Eugene, medically fragile, and need immediate housing help.\u201d",
+        "First step: call **Kids Zone After School** and ask if they know a Eugene after-school day center. The number is **(541) 765-8990** \u2014 slowly: **5 4 1** \u2026 **7 6 5** \u2026 **8 9 9 0**. I also have two other Oregon programs: Bandon at **(541) 347-8336** and Coos Bay at **(541) 888-7737**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001213#turn-4",
+      "scenarioId": "phone_dialog_0001213",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that? A bus just went by. My battery is at like two percent.",
+      "normalizedQuery": "hi hear i'm outside eugene by shelter shelters homeless overnight warming line it's loud here don't feel safe right now guy keeps circling somebody grabbed bag earlier crazy hot yeah immediate danger maybe know he's still nearby bus station side entrance sorry was just went battery at like two percent",
+      "voiceResponse": "You\u2019re doing the right thing. Quick repeat: call **9-1-1 now**. Say, slowly: \u201cI\u2019m at the Eugene bus station side entrance. A man is circling me. I don\u2019t feel safe.\u201d Then move to the brightest, most staffed spot, and ask a worker or driver: \u201cPlease stay with me.\u201d Keep your phone in your hand and stay where other people are.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Quick repeat: call **9-1-1 now**. Say, slowly: \u201cI\u2019m at the Eugene bus station side entrance. A man is circling me. I don\u2019t feel safe.\u201d Then move to the brightest, most staffed spot, and ask a worker or driver: \u201cPlease stay with me.\u201d Keep your phone in your hand and stay where other people are.",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001254#turn-2",
+      "scenarioId": "phone_dialog_0001254",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Eugene, near downtown... I need a youth day center, somewhere I can go today and just be around people.",
+      "normalizedQuery": "eugene downtown youth day center somewhere go just be around people",
+      "voiceResponse": "I hear you, and I\u2019m glad you called. Your audio got a little unclear for a second. Quick choice so I can give you the right number first: do you want a **youth drop-in/day center**, or **any same-day place downtown where you can be around people**?",
+      "evidenceDocIds": [
+        "service:66d4e31f739226a1",
+        "service:d059b67b35f33508",
+        "page:bafkreie2eovg4j7nd73rlqlogbjbwdujjypzi2bf7q7bmiafribocwm3ie",
+        "page:bafkreigf3qdgysbxhu7fxjwbc3nel2kitoq35hvv46hr63xhood52koxm4",
+        "service:0bd877900ad5d08d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m glad you called. Your audio got a little unclear for a second. Quick choice so I can give you the right number first: do you want a **youth drop-in/day center**, or **any same-day place downtown where you can be around people**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001254#turn-3",
+      "scenarioId": "phone_dialog_0001254",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I\u2019m outside and traffic\u2019s loud, I missed the middle part.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first eugene downtown youth day center somewhere go just be around people say again slower outside traffic loud missed middle part",
+      "voiceResponse": "You\u2019re okay, I\u2019ll say just that part slowly. Quick choice: do you want, first, a youth drop-in or day center? Or, second, any same-day place downtown where you can be around people? Just say \u201cfirst\u201d or \u201csecond.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll say just that part slowly. Quick choice: do you want, first, a youth drop-in or day center? Or, second, any same-day place downtown where you can be around people? Just say \u201cfirst\u201d or \u201csecond.\u201d",
+      "voiceResponseAlternatives": [
+        "Yes. The number is **9-1-1**. One digit at a time: **nine \u2026 one \u2026 one**. Again: **nine \u2026 one \u2026 one**.",
+        "Next step: write this number down now: **541 \u2026 271 \u2026 6309**. I\u2019ll repeat it slowly: **5 4 1 \u2026 2 7 1 \u2026 6 3 0 9**.",
+        "Yes. I\u2019ll say it slowly, one digit at a time: **5\u2026 4\u2026 1\u2026 3\u2026 4\u2026 5\u2026 3\u2026 6\u2026 2\u2026 8**.",
+        "I hear you. Let\u2019s do it slowly in small parts. Main number: **5-4-1** \u2026 **3-4-4** \u2026 **0-4-6-5**. The middle part is: **3-4-4**. Backup number: **5-4-1** \u2026 **7-4-3** \u2026 **7-1-7-0**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001254#turn-4",
+      "scenarioId": "phone_dialog_0001254",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m trying to keep it together, but I keep thinking maybe people would be better off if I just wasn\u2019t here tonight.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first eugene downtown youth day center somewhere go just be around people say again slower outside traffic loud missed middle part trying keep together thinking maybe would better off if wasn here tonight",
+      "voiceResponse": "I\u2019m really glad you told me that. You matter, and we need live help with you right now. If you might act on those thoughts tonight, call **9-1-1** now: **9\u20261\u20261**. If you can stay on this line, do that; if it drops, call **2-1-1** right away: **2\u20261\u20261**, and say, \u201cI\u2019m having thoughts of not wanting to be here and need a live agent now.\u201d Can you say \u201cI can stay safe for the next few minutes\u201d?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me that. You matter, and we need live help with you right now. If you might act on those thoughts tonight, call **9-1-1** now: **9\u20261\u20261**. If you can stay on this line, do that; if it drops, call **2-1-1** right away: **2\u20261\u20261**, and say, \u201cI\u2019m having thoughts of not wanting to be here and need a live agent now.\u201d Can you say \u201cI can stay safe for the next few minutes\u201d?",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. Next step: stay on the line with me right now while I finish getting you to the live 211 specialist for a same-night shelter bed search. If you want one backup number while we connect, try **five four one, nine six two, seven nine nine four**. Another is **five four one, nine four eight, six six four nine**. If you feel in immediate danger while walking, call **9-1-1** now.",
+        "Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. If that line doesn\u2019t pick up, call **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3, extension 2 0 9**. They provide safety planning, resource navigation, emotional support, and systems advocacy for survivors, including stalking.",
+        "Stay on the line with me now while I connect you to a live 211 specialist. I want to be accurate, and I don\u2019t have a verified Eugene domestic violence advocacy number in the evidence I can safely repeat right now. If you\u2019re in immediate danger, call 9-1-1.",
+        "Next step: stay with me right now so I can connect you to a live 211 specialist for safety planning and court advocacy. I don\u2019t have a verified Eugene advocacy number in the evidence I can safely read out at this moment. If you\u2019re in immediate danger right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -2442,6 +2827,84 @@
     {
       "from": "phone_dialog_0001159#turn-4",
       "to": "phone_dialog_0001159#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001165#turn-1",
+      "to": "phone_dialog_0001165#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001165#turn-2",
+      "to": "phone_dialog_0001165#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001165#turn-4",
+      "to": "phone_dialog_0001165#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001173#turn-2",
+      "to": "phone_dialog_0001173#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001173#turn-3",
+      "to": "phone_dialog_0001173#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001193#turn-1",
+      "to": "phone_dialog_0001193#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001193#turn-2",
+      "to": "phone_dialog_0001193#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001193#turn-3",
+      "to": "phone_dialog_0001193#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001213#turn-1",
+      "to": "phone_dialog_0001213#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001213#turn-4",
+      "to": "phone_dialog_0001213#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001254#turn-2",
+      "to": "phone_dialog_0001254#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001254#turn-3",
+      "to": "phone_dialog_0001254#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001254#turn-4",
+      "to": "phone_dialog_0001254#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

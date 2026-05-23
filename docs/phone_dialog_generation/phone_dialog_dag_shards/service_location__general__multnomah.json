@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__multnomah",
   "kind": "service_location",
   "key": "general__multnomah",
-  "nodeCount": 34,
+  "nodeCount": 35,
   "nodes": [
     {
       "id": "phone_dialog_0000004#turn-2",
@@ -1014,6 +1014,36 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001246#turn-2",
+      "scenarioId": "phone_dialog_0001246",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "multnomah",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Multnomah County, near Portland, and my head is not right tonight, I can\u2019t keep my thoughts straight.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first multnomah county portland head right tonight keep thoughts straight",
+      "voiceResponse": "I hear you, and I\u2019m really glad you said that out loud. First step: if you might hurt yourself or can\u2019t stay safe, call **9-1-1** now. If you can stay with me for a moment, I\u2019ll get you to a live 211 specialist right away before this phone dies. If moving helps, step somewhere with people or lights while we do this. You\u2019re not alone right now.",
+      "evidenceDocIds": [
+        "service:df6f05609bb7717a",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bcfe168519274472",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreig27lb2rhd5nvrrsxzzfvxrg5ryzsnvhiuvz3qjijoqyhb4fnaa4q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I\u2019m really glad you said that out loud. First step: if you might hurt yourself or can\u2019t stay safe, call **9-1-1** now. If you can stay with me for a moment, I\u2019ll get you to a live 211 specialist right away before this phone dies. If moving helps, step somewhere with people or lights while we do this. You\u2019re not alone right now.",
+      "voiceResponseAlternatives": [
+        "Right now, I\u2019m connecting you to a live 211 specialist for the fastest local options today. In Multnomah County, the latest update says cooling centers are not open at this time (updated May 1, 2026). Stay in the coolest place you can while I connect you. If your breathing gets worse or you feel unsafe, call **9-1-1** right away.",
+        "First step: I can connect you to a live 211 specialist right now to find an open place for tonight in Multnomah County. From the latest county update, emergency severe weather shelters are **not** open tonight, but year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you feel in immediate danger from the cold, call **911** now.",
+        "Next step: let me connect you to a live 211 specialist right now to find an open shelter tonight in Multnomah County. I don\u2019t have a specific Burnside church name in this update. What we do have is: severe weather shelters are not open tonight, and year-round shelters, overnight-only shelters, and daytime drop-in centers are open. If you\u2019re in immediate danger from the cold, call 911 now.",
+        "First step: let me connect you to a live 211 specialist now to give you the exact address for a place open tonight. I\u2019m sorry, I don\u2019t have a street address in this update. What I do have is this: severe weather shelters are not open tonight, and year-round, overnight-only, and daytime drop-in shelters are open in Multnomah County."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -1202,6 +1232,12 @@
       "to": "phone_dialog_0001138#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001246#turn-2",
+      "to": "phone_dialog_0001246#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

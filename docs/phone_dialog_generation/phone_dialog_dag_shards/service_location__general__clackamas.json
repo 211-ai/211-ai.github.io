@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
+  "generatedAt": "2026-05-23T06:16:16.125796+00:00",
   "id": "service_location__general__clackamas",
   "kind": "service_location",
   "key": "general__clackamas",
-  "nodeCount": 30,
+  "nodeCount": 32,
   "nodes": [
     {
       "id": "phone_dialog_0000036#turn-2",
@@ -890,6 +890,66 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001192#turn-1",
+      "scenarioId": "phone_dialog_0001192",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I already said this, I think, but I can\u2019t stay where I am tonight, I\u2019m in Clackamas and they keep watching the windows.",
+      "normalizedQuery": "hi sorry already said this think stay tonight clackamas they keep watching windows",
+      "voiceResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 now. If you can, move to a safer public place nearby while we connect you to a live 211 specialist who can help with tonight\u2019s safe shelter options in Clackamas.",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:5738cc1cdf700a78",
+        "service:bcfe168519274472",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 now. If you can, move to a safer public place nearby while we connect you to a live 211 specialist who can help with tonight\u2019s safe shelter options in Clackamas.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001232#turn-2",
+      "scenarioId": "phone_dialog_0001232",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Clackamas, and I can\u2019t go back to the apartment tonight. He said if I leave again he\u2019ll find me, and I believe him.",
+      "normalizedQuery": "hi whisper he tracks phone checks calls so please don say anything loud sounds obvious clackamas go back apartment tonight said if leave again ll believe him",
+      "voiceResponse": "I\u2019m really glad you told me. You deserve to be safe tonight. If you\u2019re in immediate danger, call 911 now. If it feels safer, I can connect you to a live person right away who can help with a safe place in Clackamas and a quiet plan for tonight. You can keep speaking in short words, and we can go at your pace.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:0ace06937c39cb61",
+        "page:bafkreiacnkk6y5xktut4slueqa2koudbk44wznzryxk5ofu6pkjpcbzkju"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. You deserve to be safe tonight. If you\u2019re in immediate danger, call 911 now. If it feels safer, I can connect you to a live person right away who can help with a safe place in Clackamas and a quiet plan for tonight. You can keep speaking in short words, and we can go at your pace.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a lot right now, and we can keep this simple. First, call **2-1-1** again and say: \u201cI\u2019m in Clackamas, sleeping in my car, battery is dying, I need same-day help and ID replacement.\u201d Ask them for the **closest open place tonight**. If you can drive now, one option is **999 North Thunderbird Way, Portland, 97227**. If you feel in danger at any point, call **9-1-1**.",
+        "You\u2019re not alone. This is urgent, and we should get you to a housing specialist now. Please call **Clackamas County Coordinated Housing Access** at **503\u2026 655\u2026 8575**. I\u2019ll repeat: **503\u2026 655\u2026 8575**. If that line is busy, call **503\u2026 655\u2026 8640**. If you feel in immediate danger right now, call **911**.",
+        "Of course. The agency is **Clackamas County Coordinated Housing Access**. I\u2019ll say it again slowly: **Clackamas County\u2026 Coordinated Housing Access**.",
+        "Take your time. I\u2019ll wait right here. When you\u2019re ready, I can repeat the phone number slowly again: **503 \u2026 771 \u2026 7914**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1042,6 +1102,18 @@
       "to": "phone_dialog_0000875#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001192#turn-1",
+      "to": "phone_dialog_0001192#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001232#turn-2",
+      "to": "phone_dialog_0001232#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }
