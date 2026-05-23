@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "route__service_interaction_support",
   "kind": "route",
   "key": "service_interaction_support",
-  "nodeCount": 35,
+  "nodeCount": 79,
   "nodes": [
     {
       "id": "phone_dialog_0000027#turn-6",
@@ -218,7 +218,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "For the program details I can verify here, intake says **no documents are required**. Next step: call before you go and confirm they can still see you today. If you want, I can repeat the phone number again slowly.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014I\u2019ve got it noted: you already completed the screening call, and now you\u2019re waiting for their callback. Next step is just keep your ID and proof of address ready so you can respond right away when they call."
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
@@ -329,7 +331,9 @@
       "similarCases": [],
       "assistantResponse": "Good question, and you\u2019re smart to confirm first. I don\u2019t have confirmed walk-in hours in front of me, so do this now: call **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9** and ask, \u201cDo you take walk-ins tonight, or phone intake only?\u201d If no answer, call **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
       "voiceResponseAlternatives": [
-        "Logged. You already called Fora Health Detox, and they asked you to check bed status again in one hour. Next step: set a one-hour reminder, then call **503 \u2026 535 \u2026 1151** and say, \u201cHi, I\u2019m following up on bed status for detox tonight. Is intake open now, and is a bed available?\u201d"
+        "Logged. You already called Fora Health Detox, and they asked you to check bed status again in one hour. Next step: set a one-hour reminder, then call **503 \u2026 535 \u2026 1151** and say, \u201cHi, I\u2019m following up on bed status for detox tonight. Is intake open now, and is a bed available?\u201d",
+        "Yes, that does sound right, and you\u2019re remembering important details. It sounds like you already completed one screening where they asked about income and cooking ability. Next step: when the 211 specialist answers, say this first, slowly: \u201cI already did one screening, and they asked about my income and whether I can cook.\u201d Then add: \u201cI missed the intake callback because my phone died, and I wasn\u2019t ignoring them.\u201d",
+        "Next step: call 211 again now and say, \u201cI had a cooling-center intake yesterday in Multnomah County, and I got mixed up. Please repeat the exact site name and address slowly.\u201d What happened is: you already did the intake and they gave you one location. The follow-up now is just to get that same location repeated clearly so you can get there."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -356,7 +360,8 @@
       "similarCases": [],
       "assistantResponse": "Good catch. I don\u2019t have a confirmed cutoff time, and I don\u2019t want to guess and risk you getting turned away. Best next step: call **2-1-1** now and ask, \u201cWhat\u2019s the intake cutoff tonight for the closest warming center near McLoughlin?\u201d If 2-1-1 doesn\u2019t connect, call **503\u2026 222\u2026 5555** and ask the same thing. If you\u2019re too cold or unsafe to wait, call **9-1-1**.",
       "voiceResponseAlternatives": [
-        "Thanks for the update. You went to the address, and they told you intake was full. Next step is to stay on the line while I connect you to a live agent now to find another open bed tonight and make the follow-up calls with you. If you feel unsafe right now, call 9-1-1 immediately."
+        "Thanks for the update. You went to the address, and they told you intake was full. Next step is to stay on the line while I connect you to a live agent now to find another open bed tonight and make the follow-up calls with you. If you feel unsafe right now, call 9-1-1 immediately.",
+        "Fast version: I can only verify one solid option right now. Call **211info at 503, 657, 8269** and ask: \u201cnearest daytime youth drop-in, walk-ins accepted today, and current hours.\u201d Possible backup is **Daytime Winter Warming Center, 606 John Adams Street, Oregon City**, but I can\u2019t confirm hours or same-day intake from the records I have. If you want, I can give you a 10-second script to read verbatim."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
@@ -493,7 +498,9 @@
       "similarCases": [],
       "assistantResponse": "Logged. You already called Fora Health Detox, and they asked you to check bed status again in one hour. Next step: set a one-hour reminder, then call **503 \u2026 535 \u2026 1151** and say, \u201cHi, I\u2019m following up on bed status for detox tonight. Is intake open now, and is a bed available?\u201d",
       "voiceResponseAlternatives": [
-        "Good question, and you\u2019re smart to confirm first. I don\u2019t have confirmed walk-in hours in front of me, so do this now: call **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9** and ask, \u201cDo you take walk-ins tonight, or phone intake only?\u201d If no answer, call **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**."
+        "Good question, and you\u2019re smart to confirm first. I don\u2019t have confirmed walk-in hours in front of me, so do this now: call **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9** and ask, \u201cDo you take walk-ins tonight, or phone intake only?\u201d If no answer, call **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Yes, that does sound right, and you\u2019re remembering important details. It sounds like you already completed one screening where they asked about income and cooking ability. Next step: when the 211 specialist answers, say this first, slowly: \u201cI already did one screening, and they asked about my income and whether I can cook.\u201d Then add: \u201cI missed the intake callback because my phone died, and I wasn\u2019t ignoring them.\u201d",
+        "Next step: call 211 again now and say, \u201cI had a cooling-center intake yesterday in Multnomah County, and I got mixed up. Please repeat the exact site name and address slowly.\u201d What happened is: you already did the intake and they gave you one location. The follow-up now is just to get that same location repeated clearly so you can get there."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "bad_reception",
@@ -579,7 +586,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you, and we can keep this quick. I can give you the nearest one, but I need your city first. What I do have: these warming shelters show **no documents required**, and I don\u2019t have a verified intake cutoff time listed. If you\u2019re near Cottage Grove, the shelter is at **1 4 4 0 Birch Avenue**, and you can call **5 4 1 \u2026 9 4 2 \u2026 2 1 7 6** right now to confirm intake hours.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re asking exactly the right thing. Most important number first: **541-962-7994** \u2014 that\u2019s **541 \u2026 962 \u2026 7994**. That listing is an overnight winter warming shelter for adults 18+ and says no documents required. Next step: call now and ask, \u201cDo you have same-day check-in for one adult tonight, and what bus stop is closest?\u201d Address if they confirm: **501 3rd Street, La Grande**."
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
@@ -664,7 +673,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You did the hard part by calling, and it makes sense that it felt circular. Next step: call back and ask for a **case-status update** and the **exact next document they need** for eviction-prevention review before court. If that office can\u2019t move it forward, ask to be transferred to another rent-assistance office: Bend or La Pine at **5 4 1, 5 4 8, 2 3 8 0**, or Prineville at **5 4 1, 3 2 3, 0 3 9 4**. Ask them to note your court date as urgent.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Absolutely, I can note that. You called the rent office on Monday, they said you\u2019re short for June, and your landlord posted a warning on your door. Next step: when you call for intake follow-up, say those exact updates first, then ask to be connected to your assigned worker right away. Keep your lease, past-due notice, and the door warning notice in front of you."
+      ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
@@ -875,7 +886,8 @@
       "similarCases": [],
       "assistantResponse": "Thanks for the update. You went to the address, and they told you intake was full. Next step is to stay on the line while I connect you to a live agent now to find another open bed tonight and make the follow-up calls with you. If you feel unsafe right now, call 9-1-1 immediately.",
       "voiceResponseAlternatives": [
-        "Good catch. I don\u2019t have a confirmed cutoff time, and I don\u2019t want to guess and risk you getting turned away. Best next step: call **2-1-1** now and ask, \u201cWhat\u2019s the intake cutoff tonight for the closest warming center near McLoughlin?\u201d If 2-1-1 doesn\u2019t connect, call **503\u2026 222\u2026 5555** and ask the same thing. If you\u2019re too cold or unsafe to wait, call **9-1-1**."
+        "Good catch. I don\u2019t have a confirmed cutoff time, and I don\u2019t want to guess and risk you getting turned away. Best next step: call **2-1-1** now and ask, \u201cWhat\u2019s the intake cutoff tonight for the closest warming center near McLoughlin?\u201d If 2-1-1 doesn\u2019t connect, call **503\u2026 222\u2026 5555** and ask the same thing. If you\u2019re too cold or unsafe to wait, call **9-1-1**.",
+        "Fast version: I can only verify one solid option right now. Call **211info at 503, 657, 8269** and ask: \u201cnearest daytime youth drop-in, walk-ins accepted today, and current hours.\u201d Possible backup is **Daytime Winter Warming Center, 606 John Adams Street, Oregon City**, but I can\u2019t confirm hours or same-day intake from the records I have. If you want, I can give you a 10-second script to read verbatim."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "rambling_and_interrupting",
@@ -957,6 +969,1177 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000669#turn-2",
+      "scenarioId": "phone_dialog_0000669",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "I don\u2019t just mean any shelter, I mean a veteran-only place with private rooms, on-site legal help, and same-day intake tonight\u2014wait, sorry, did you say east county or Portland?",
+      "normalizedQuery": "don just mean any shelter shelters homeless overnight warming veteran veterans va only place private rooms on site legal aid attorney advocacy same day intake tonight wait sorry did say east county portland",
+      "voiceResponse": "East County first, since you\u2019re in Gresham, and we can add Portland as a backup. You were clear: veteran-only, private room, on-site legal help, and same-day intake tonight. Next step is a direct placement call where we use exactly those four requirements and ask only programs that can confirm tonight availability. If you want, I can give you a tight one-sentence script to use on that call.",
+      "evidenceDocIds": [
+        "service:b4ef6dca3c3f73bd",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d",
+        "page:bafkreify3kfm2wsfbpd2zehw2vqekf6sdwfyczc5rcxs2oqn4xrvo3wo54",
+        "service:dc93c9592519c012"
+      ],
+      "similarCases": [],
+      "assistantResponse": "East County first, since you\u2019re in Gresham, and we can add Portland as a backup. You were clear: veteran-only, private room, on-site legal help, and same-day intake tonight. Next step is a direct placement call where we use exactly those four requirements and ask only programs that can confirm tonight availability. If you want, I can give you a tight one-sentence script to use on that call.",
+      "voiceResponseAlternatives": [
+        "You did an intake with the shelter line yesterday morning, around 10. Next step: call that same line now and say, \u201cI completed intake yesterday morning. Please check my status, tell me if I\u2019m on the list for tonight, and give me check-in time and location.\u201d If they don\u2019t find it, ask them to redo intake while you\u2019re on the phone.",
+        "Next step: call the same shelter line **today after 4:00 p.m.** You were told no bed last night and to call back after 4 today. Say: \u201cI did intake yesterday around 10 a.m. I\u2019m calling back after 4 like you told me. Please check my bed status for tonight and my check-in time and location.\u201d If they still can\u2019t place you, ask them to redo intake while you stay on the line."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-1",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, um, I called last week about getting help so I don\u2019t get evicted, in Salem, and I can\u2019t remember who I talked to.",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked",
+      "voiceResponse": "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:0f54d8a0521f759c",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+        "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-2",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Sorry, can you hold on\u2014there\u2019s noise here\u2014okay, they told me to do an intake, and I did one on Tuesday, I think.",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked sorry hold on there noise here okay they told an intake did one tuesday think",
+      "voiceResponse": "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+        "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-4",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you write down that I already did the screening call so I don\u2019t have to start over again?",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked sorry hold on there noise here okay they told an intake did one tuesday think asked lease shutoff notice no pay quit paper from landlord write down already screening call have start over again",
+      "voiceResponse": "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+        "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000715#turn-5",
+      "scenarioId": "phone_dialog_0000715",
+      "turnIndex": 4,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "Also I did one screening already, I think, and they asked about my income and if I can cook, does that sound right?",
+      "normalizedQuery": "they did call back an intake missed it because phone died then forgot lady name write down notes try wasn ignoring them wait sorry number say please slow don hear great this ear also one screening already think asked income if cook does sound right",
+      "voiceResponse": "Yes, that does sound right, and you\u2019re remembering important details. It sounds like you already completed one screening where they asked about income and cooking ability. Next step: when the 211 specialist answers, say this first, slowly: \u201cI already did one screening, and they asked about my income and whether I can cook.\u201d Then add: \u201cI missed the intake callback because my phone died, and I wasn\u2019t ignoring them.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that does sound right, and you\u2019re remembering important details. It sounds like you already completed one screening where they asked about income and cooking ability. Next step: when the 211 specialist answers, say this first, slowly: \u201cI already did one screening, and they asked about my income and whether I can cook.\u201d Then add: \u201cI missed the intake callback because my phone died, and I wasn\u2019t ignoring them.\u201d",
+      "voiceResponseAlternatives": [
+        "Good question, and you\u2019re smart to confirm first. I don\u2019t have confirmed walk-in hours in front of me, so do this now: call **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9** and ask, \u201cDo you take walk-ins tonight, or phone intake only?\u201d If no answer, call **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Logged. You already called Fora Health Detox, and they asked you to check bed status again in one hour. Next step: set a one-hour reminder, then call **503 \u2026 535 \u2026 1151** and say, \u201cHi, I\u2019m following up on bed status for detox tonight. Is intake open now, and is a bed available?\u201d",
+        "Next step: call 211 again now and say, \u201cI had a cooling-center intake yesterday in Multnomah County, and I got mixed up. Please repeat the exact site name and address slowly.\u201d What happened is: you already did the intake and they gave you one location. The follow-up now is just to get that same location repeated clearly so you can get there."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000718#turn-1",
+      "scenarioId": "phone_dialog_0000718",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "food",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, I\u2019m in Portland, and I went to that food pantry you gave me yesterday.",
+      "normalizedQuery": "hi portland went food pantry meal meals groceries gave yesterday",
+      "voiceResponse": "Great, thanks for the update. You went to the pantry at 8800 Southeast 80th Avenue yesterday. Next step: call them now to confirm your next visit or any limits on how often you can get food. The number is **503\u2026 771\u2026 7914**. If you want, I can help you script a 20-second call message.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "service:c01f119ad70632fe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great, thanks for the update. You went to the pantry at 8800 Southeast 80th Avenue yesterday. Next step: call them now to confirm your next visit or any limits on how often you can get food. The number is **503\u2026 771\u2026 7914**. If you want, I can help you script a 20-second call message.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000729#turn-2",
+      "scenarioId": "phone_dialog_0000729",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "eugene",
+      "promptTemplate": "service_interaction_support",
+      "user": "We did a phone screening last week with someone you referred us to, wait, sorry, can you still hear me? My signal keeps cutting.",
+      "normalizedQuery": "hi sorry calling brother keep mixing this up we re eugene he needs disability benefits snap assistance did phone screening last week someone referred us wait still hear signal keeps cutting",
+      "voiceResponse": "I can hear you, and you\u2019re doing a lot to keep this moving for your brother. So far, you completed the phone screening last week with the referral team. The next step is to follow up with that same provider and ask for the case status, expected timeline, and any documents they still need. If they haven\u2019t responded, reconnect with 211 and say, \u201cWe completed screening last week and need the next action step.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, and you\u2019re doing a lot to keep this moving for your brother. So far, you completed the phone screening last week with the referral team. The next step is to follow up with that same provider and ask for the case status, expected timeline, and any documents they still need. If they haven\u2019t responded, reconnect with 211 and say, \u201cWe completed screening last week and need the next action step.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000733#turn-2",
+      "scenarioId": "phone_dialog_0000733",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "service_interaction_support",
+      "user": "I keep getting bounced around, and what I actually need is interview clothes, plus larger sizes, and ideally same-day pickup, and\u2014sorry, I\u2019m talking fast\u2014also no church intake if possible.",
+      "normalizedQuery": "hi sorry hear okay beaverton clothing trying something very specific just general closet keep getting bounced around actually interview clothes plus larger sizes ideally same day pickup talking fast also no church intake if possible",
+      "voiceResponse": "You\u2019re not asking for too much. So far, the only unrestricted listing I can confirm is Community Clothing Closet, and it is church-based: 783 Southwest Church Street, Dallas. Phone: 503, 623, 3778. Best next step is a quick call to ask three things first: interview clothing, larger sizes, and same-day pickup. If you want, I can give you a 20-second call script so you don\u2019t get bounced again.",
+      "evidenceDocIds": [
+        "service:bbea7883a5477e64",
+        "service:a206f5d2276849fd",
+        "service:bb6aea3f778df0b5",
+        "service:1a1916cf1f6f8f5c",
+        "service:cf5193af90938dcc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not asking for too much. So far, the only unrestricted listing I can confirm is Community Clothing Closet, and it is church-based: 783 Southwest Church Street, Dallas. Phone: 503, 623, 3778. Best next step is a quick call to ask three things first: interview clothing, larger sizes, and same-day pickup. If you want, I can give you a 20-second call script so you don\u2019t get bounced again.",
+      "voiceResponseAlternatives": [
+        "Yes, clear answer: the toughest filter is **no intake/no church connection**. After that, the hard combo is **larger sizes plus same-day pickup**. What we know so far is one unrestricted option, but it\u2019s church-based, so it misses your preference. Smart widening order: 1) keep larger sizes, 2) keep same-day if possible, 3) relax the no-intake rule last. That gives you the best chance without oversharing personal info."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000733#turn-5",
+      "scenarioId": "phone_dialog_0000733",
+      "turnIndex": 4,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "beaverton",
+      "promptTemplate": "service_interaction_support",
+      "user": "And if there isn\u2019t a real match in Beaverton for all that, can you just tell me clearly what part is the hard one\u2014sizes, same-day, or the no-intake rule\u2014so we can widen the search the smart way?",
+      "normalizedQuery": "keep getting bounced around actually interview clothes plus larger sizes ideally same day pickup sorry talking fast also no church intake if possible wait was part eligibility cut second there traffic noise here referral letter needed don have printer so know exactly which places accept phone proof digital documents isn real match beaverton all just tell clearly hard one rule we widen search smart way",
+      "voiceResponse": "Yes, clear answer: the toughest filter is **no intake/no church connection**. After that, the hard combo is **larger sizes plus same-day pickup**. What we know so far is one unrestricted option, but it\u2019s church-based, so it misses your preference. Smart widening order: 1) keep larger sizes, 2) keep same-day if possible, 3) relax the no-intake rule last. That gives you the best chance without oversharing personal info.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, clear answer: the toughest filter is **no intake/no church connection**. After that, the hard combo is **larger sizes plus same-day pickup**. What we know so far is one unrestricted option, but it\u2019s church-based, so it misses your preference. Smart widening order: 1) keep larger sizes, 2) keep same-day if possible, 3) relax the no-intake rule last. That gives you the best chance without oversharing personal info.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not asking for too much. So far, the only unrestricted listing I can confirm is Community Clothing Closet, and it is church-based: 783 Southwest Church Street, Dallas. Phone: 503, 623, 3778. Best next step is a quick call to ask three things first: interview clothing, larger sizes, and same-day pickup. If you want, I can give you a 20-second call script so you don\u2019t get bounced again."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000767#turn-1",
+      "scenarioId": "phone_dialog_0000767",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, I\u2019m in Salem and I need rent help, but I already did an intake yesterday with Community Action.",
+      "normalizedQuery": "hi salem rent eviction assistance already did an intake yesterday community action",
+      "voiceResponse": "Next step: call Salvation Army Rent Payment Assistance now and ask for the soonest rent-help appointment, and tell them you already completed an intake yesterday. Their number is **503\u2026 585\u2026 6688**. If funding is full there, ask to be screened by DEVNW for eviction-prevention support at **503\u2026 779\u2026 2680**.",
+      "evidenceDocIds": [
+        "service:8e7393d9b82b6a0b",
+        "service:b1c486f2b438c521",
+        "service:c2911a3756f858bb",
+        "service:8a6c6604cd95e457",
+        "service:3655daf83f45f8e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Salvation Army Rent Payment Assistance now and ask for the soonest rent-help appointment, and tell them you already completed an intake yesterday. Their number is **503\u2026 585\u2026 6688**. If funding is full there, ask to be screened by DEVNW for eviction-prevention support at **503\u2026 779\u2026 2680**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000803#turn-2",
+      "scenarioId": "phone_dialog_0000803",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "service_interaction_support",
+      "user": "They asked me some intake questions on Tuesday, I think, and said someone would call back, but I get mixed up, so maybe I missed it.",
+      "normalizedQuery": "hi sorry already called meal delivery seniors eugene remember who talked was your office they asked some intake questions on tuesday think said someone would call back mixed up so maybe missed it",
+      "voiceResponse": "That makes sense, and you\u2019re doing the right thing by checking. What I\u2019m hearing is: you completed intake on Tuesday, and they said someone would call you back, but you\u2019re not sure if you missed it. Next step is to follow up with 211info and say exactly that, so they can check your case and re-send the callback. If you want, I can help you with a short message to leave when you call.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re doing the right thing by checking. What I\u2019m hearing is: you completed intake on Tuesday, and they said someone would call you back, but you\u2019re not sure if you missed it. Next step is to follow up with 211info and say exactly that, so they can check your case and re-send the callback. If you want, I can help you with a short message to leave when you call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and yes, I can note it clearly. You **finished the screening** on Tuesday, meaning the intake questions were completed. I did mean **screening/intake**, not a full application. Next step: call back and say, \u201cI completed screening on Tuesday and was told to expect a callback. I may have missed it. Please check my case and call me again.\u201d"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000803#turn-3",
+      "scenarioId": "phone_dialog_0000803",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "food",
+      "locationTag": "eugene",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you write down that I did finish the screening? Wait, sorry, did you say screening or application?",
+      "normalizedQuery": "hi sorry already called meal delivery seniors eugene remember who talked was your office they asked some intake questions on tuesday think said someone would call back mixed up so maybe missed it write down did finish screening wait say application",
+      "voiceResponse": "You\u2019re okay, and yes, I can note it clearly. You **finished the screening** on Tuesday, meaning the intake questions were completed. I did mean **screening/intake**, not a full application. Next step: call back and say, \u201cI completed screening on Tuesday and was told to expect a callback. I may have missed it. Please check my case and call me again.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and yes, I can note it clearly. You **finished the screening** on Tuesday, meaning the intake questions were completed. I did mean **screening/intake**, not a full application. Next step: call back and say, \u201cI completed screening on Tuesday and was told to expect a callback. I may have missed it. Please check my case and call me again.\u201d",
+      "voiceResponseAlternatives": [
+        "That makes sense, and you\u2019re doing the right thing by checking. What I\u2019m hearing is: you completed intake on Tuesday, and they said someone would call you back, but you\u2019re not sure if you missed it. Next step is to follow up with 211info and say exactly that, so they can check your case and re-send the callback. If you want, I can help you with a short message to leave when you call."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000816#turn-6",
+      "scenarioId": "phone_dialog_0000816",
+      "turnIndex": 5,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "clackamas",
+      "promptTemplate": "service_interaction_support",
+      "user": "My battery\u2019s at like 4%, so can you give me the top one or two options first, with hours and whether they take same-day intake?",
+      "normalizedQuery": "wait did say after clackamas cut second repeat name if they re actually oregon city already checked two places were either full basically school clubs which same asking there isn real local match just tell straight closest place true day center evidence using so don waste another battery at like give top one options first hours whether take intake",
+      "voiceResponse": "Fast version: I can only verify one solid option right now. Call **211info at 503, 657, 8269** and ask: \u201cnearest daytime youth drop-in, walk-ins accepted today, and current hours.\u201d Possible backup is **Daytime Winter Warming Center, 606 John Adams Street, Oregon City**, but I can\u2019t confirm hours or same-day intake from the records I have. If you want, I can give you a 10-second script to read verbatim.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Fast version: I can only verify one solid option right now. Call **211info at 503, 657, 8269** and ask: \u201cnearest daytime youth drop-in, walk-ins accepted today, and current hours.\u201d Possible backup is **Daytime Winter Warming Center, 606 John Adams Street, Oregon City**, but I can\u2019t confirm hours or same-day intake from the records I have. If you want, I can give you a 10-second script to read verbatim.",
+      "voiceResponseAlternatives": [
+        "Good catch. I don\u2019t have a confirmed cutoff time, and I don\u2019t want to guess and risk you getting turned away. Best next step: call **2-1-1** now and ask, \u201cWhat\u2019s the intake cutoff tonight for the closest warming center near McLoughlin?\u201d If 2-1-1 doesn\u2019t connect, call **503\u2026 222\u2026 5555** and ask the same thing. If you\u2019re too cold or unsafe to wait, call **9-1-1**.",
+        "Thanks for the update. You went to the address, and they told you intake was full. Next step is to stay on the line while I connect you to a live agent now to find another open bed tonight and make the follow-up calls with you. If you feel unsafe right now, call 9-1-1 immediately."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000836#turn-1",
+      "scenarioId": "phone_dialog_0000836",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "multnomah",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m in Multnomah County, and I already did an intake last week for eviction help, but I can\u2019t remember the worker\u2019s name.",
+      "normalizedQuery": "hi sorry hear okay multnomah county already did an intake last week eviction remember worker name",
+      "voiceResponse": "Yes, I can hear you. You\u2019re doing the right thing, and it\u2019s okay not to remember the worker\u2019s name. You already completed intake last week for Multnomah County eviction help, so the next step is to call and ask for an intake follow-up and your assigned worker. Try: **5-0-3, 2-2-2, 5-5-5-5**. If needed, also: **5-0-3, 2-2-6, 3-0-9-9**. Have your eviction notice ready when you call.",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "service:e6afcae43fb9094a",
+        "service:77f8f0383c0cce2b",
+        "page:bafkreidvlohevfa3hypn533wgtzd2mnxorfphy2cuidbfsgvoy3nrg4tyy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. You\u2019re doing the right thing, and it\u2019s okay not to remember the worker\u2019s name. You already completed intake last week for Multnomah County eviction help, so the next step is to call and ask for an intake follow-up and your assigned worker. Try: **5-0-3, 2-2-2, 5-5-5-5**. If needed, also: **5-0-3, 2-2-6, 3-0-9-9**. Have your eviction notice ready when you call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000836#turn-3",
+      "scenarioId": "phone_dialog_0000836",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you put a note that I called the rent office Monday and they said I\u2019m short for June, and the landlord posted a warning on my door?",
+      "normalizedQuery": "put note called rent eviction assistance office monday they said short june landlord posted warning on door",
+      "voiceResponse": "Absolutely, I can note that. You called the rent office on Monday, they said you\u2019re short for June, and your landlord posted a warning on your door. Next step: when you call for intake follow-up, say those exact updates first, then ask to be connected to your assigned worker right away. Keep your lease, past-due notice, and the door warning notice in front of you.",
+      "evidenceDocIds": [
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny",
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "service:8a6c6604cd95e457"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I can note that. You called the rent office on Monday, they said you\u2019re short for June, and your landlord posted a warning on your door. Next step: when you call for intake follow-up, say those exact updates first, then ask to be connected to your assigned worker right away. Keep your lease, past-due notice, and the door warning notice in front of you.",
+      "voiceResponseAlternatives": [
+        "You did the hard part by calling, and it makes sense that it felt circular. Next step: call back and ask for a **case-status update** and the **exact next document they need** for eviction-prevention review before court. If that office can\u2019t move it forward, ask to be transferred to another rent-assistance office: Bend or La Pine at **5 4 1, 5 4 8, 2 3 8 0**, or Prineville at **5 4 1, 3 2 3, 0 3 9 4**. Ask them to note your court date as urgent."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000843#turn-4",
+      "scenarioId": "phone_dialog_0000843",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "I went there last month and they told me to come back in two weeks, but I forgot the date.",
+      "normalizedQuery": "hi sorry this borrowed phone it might die tell main clinic medical health number first portland low cost just checkup blood pressure wait missed say name again slower time went there last month they told come back two weeks forgot date",
+      "voiceResponse": "Okay. Main next step first. Call the clinic now and ask for a follow-up date from your last visit. Outside In Medical Clinic: **5 0 3, 5 3 5, 3 8 6 0**. Again: **5 0 3, 5 3 5, 3 8 6 0**. Say: \u201cI was seen last month and told to return in two weeks. I forgot the date. Can you check my chart and schedule me?\u201d Was it Outside In, or a different clinic?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibxhfltoz4bje5v3p5x6ouebgogzr5nsvflar5brqijnvwqjb72ve",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Main next step first. Call the clinic now and ask for a follow-up date from your last visit. Outside In Medical Clinic: **5 0 3, 5 3 5, 3 8 6 0**. Again: **5 0 3, 5 3 5, 3 8 6 0**. Say: \u201cI was seen last month and told to return in two weeks. I forgot the date. Can you check my chart and schedule me?\u201d Was it Outside In, or a different clinic?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000845#turn-1",
+      "scenarioId": "phone_dialog_0000845",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "lane_county",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, sorry, I already did a phone screening last week for rent help, in Lane County, Eugene, and I can't remember who I talked to.",
+      "normalizedQuery": "hi sorry already did phone screening last week rent eviction assistance lane county eugene can't remember who talked",
+      "voiceResponse": "Next step: call the Eviction Prevention Program and ask them to look up your screening from last week using your full name and phone number. The numbers I have are **503 222 5555** and **503 226 3099**. You said Lane County in Eugene, and I only see a Multnomah listing here, so tell them that first and ask to confirm the right county program or transfer you.",
+      "evidenceDocIds": [
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call the Eviction Prevention Program and ask them to look up your screening from last week using your full name and phone number. The numbers I have are **503 222 5555** and **503 226 3099**. You said Lane County in Eugene, and I only see a Multnomah listing here, so tell them that first and ask to confirm the right county program or transfer you.",
+      "voiceResponseAlternatives": [
+        "Next step: when you call again, ask them for the date funds may reopen and whether they can place you on a callback list. I\u2019ve noted this in our conversation: yesterday you called St. Vincent de Paul in Eugene, and they said funds were paused. If you want to follow up now, call **541 \u2026 689 \u2026 6747**. Alternate number: **541 \u2026 942 \u2026 2176**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000845#turn-4",
+      "scenarioId": "phone_dialog_0000845",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "lane_county",
+      "promptTemplate": "service_interaction_support",
+      "user": "Could you please make a note that I called St. Vincent de Paul yesterday and they told me funds were paused, because I don't want to explain this all over again.",
+      "normalizedQuery": "hi sorry already did phone screening last week rent eviction assistance lane county eugene can't remember who talked they said something 72 hour notice documents wrote it down misplaced paper repeat slowly wait hold on hearing aid buzzing missed part was id lease just could please make note called st vincent de paul yesterday told funds were paused because don't want explain this all over again",
+      "voiceResponse": "Next step: when you call again, ask them for the date funds may reopen and whether they can place you on a callback list. I\u2019ve noted this in our conversation: yesterday you called St. Vincent de Paul in Eugene, and they said funds were paused. If you want to follow up now, call **541 \u2026 689 \u2026 6747**. Alternate number: **541 \u2026 942 \u2026 2176**.",
+      "evidenceDocIds": [
+        "service:8f84270f81db184e",
+        "service:cac7c3dd2002e4d9",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29",
+        "service:46feca979124b4ad"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: when you call again, ask them for the date funds may reopen and whether they can place you on a callback list. I\u2019ve noted this in our conversation: yesterday you called St. Vincent de Paul in Eugene, and they said funds were paused. If you want to follow up now, call **541 \u2026 689 \u2026 6747**. Alternate number: **541 \u2026 942 \u2026 2176**.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Eviction Prevention Program and ask them to look up your screening from last week using your full name and phone number. The numbers I have are **503 222 5555** and **503 226 3099**. You said Lane County in Eugene, and I only see a Multnomah listing here, so tell them that first and ask to confirm the right county program or transfer you."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000847#turn-4",
+      "scenarioId": "phone_dialog_0000847",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I did a little intake paper there, just my name and meds, and they told me to bring ID next time.",
+      "normalizedQuery": "did little intake paper there just name meds they told bring id next time",
+      "voiceResponse": "That\u2019s really helpful, thank you. I\u2019ll note this clearly: they did a brief intake with your name and medications, and they asked you to bring ID next time. Your next step is to go earlier tomorrow and bring your ID with you. If it helps, keep the ID by the door tonight so it\u2019s ready to grab.",
+      "evidenceDocIds": [
+        "service:34d9e92d3ede5e98",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s really helpful, thank you. I\u2019ll note this clearly: they did a brief intake with your name and medications, and they asked you to bring ID next time. Your next step is to go earlier tomorrow and bring your ID with you. If it helps, keep the ID by the door tonight so it\u2019s ready to grab.",
+      "voiceResponseAlternatives": [
+        "Next step: make one quick note now: \u201cCalled today; got conflicting info; requested after-4:30 arrival confirmation and required documents list.\u201d What happened: you already called, and we still do not have a verified document list from the pantry. Follow-up: send that same line as a text to the pantry and wait for their written reply before driving, so you have proof on your phone if you\u2019re turned away.",
+        "Good question. On this line, I do not have a confirmed document list for that clinic. I do not have a confirmed document list. Best next step: call the clinic and ask, \u201cWhat should I bring to a first visit for a new patient with low income and possible no insurance?\u201d If you want, I can give you a short call script next.",
+        "You did the hard part. You called. Then they asked for documents, and you panicked and hung up. That happens. You are not alone. Next step: call back and say, \u201cI got disconnected. Please repeat where to send my documents.\u201d Ask them to spell it slowly. We can script it first, then you call. Do you want a one-sentence script you can read out loud?",
+        "Good question. I do not have an intake or ID rule listed for that site. Next step: call them and ask if they can take him without ID tonight. Use this: **5 0 3, 2 6 3, 3 1 8 2**. Again: **5 0 3, 2 6 3, 3 1 8 2**. Site: **1 3 6 9 Southeast 1st Avenue, Canby**. Again: **1 3 6 9 Southeast 1st Avenue, Canby**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000853#turn-4",
+      "scenarioId": "phone_dialog_0000853",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "food",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Anyway, could you write down that I already did the intake and nobody has called yet?",
+      "normalizedQuery": "hi sorry might repeat myself memory great salem trying meals seniors did phone screening yesterday maybe day before program they said someone would call back wait say number again slower missed middle part this keeps cutting anyway could write down already intake nobody has called yet",
+      "voiceResponse": "Yes, I\u2019ve noted it: you already completed the intake, and you have not received a callback yet. Next step: stay on the line, and I\u2019ll connect you now to a live 211 specialist for follow-up support.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:0371faf23a9ac44e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019ve noted it: you already completed the intake, and you have not received a callback yet. Next step: stay on the line, and I\u2019ll connect you now to a live 211 specialist for follow-up support.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000857#turn-3",
+      "scenarioId": "phone_dialog_0000857",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "legal",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "I know that sounds super specific, I just don\u2019t want to get bounced around again; I\u2019ve done intake loops before and it gets dangerous when people keep retelling my situation.",
+      "normalizedQuery": "hi sorry portland domestic violence survivor advocacy specifically someone who go every court date also coordinate safety planning kid school real time wait repeat last part cut there traffic noise here trying one program does all it legal aid attorney plus coordination trauma counseling team know sounds super specific just don want bounced around again ve done intake loops before gets dangerous when people keep retelling situation",
+      "voiceResponse": "Next step: when you call Community Works, start with one sentence and ask for a single point person. Say: \u201cI\u2019ve already done multiple intakes; for safety, I need one advocate to coordinate court accompaniment, school safety planning, and trauma counseling without repeating my full story each time.\u201d What happened so far is you\u2019ve been looped through intake, and that increased risk. This follow-up asks them to stop the handoffs and keep your case with one team.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreienlugsyfq2ximthab6ol46hzz7eampw5b6add5nsf2fckf7bk5ze",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreifobj7dii4ftnmjbulmimj5gtanaahukkpu5rodpv7rdv6npvya34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: when you call Community Works, start with one sentence and ask for a single point person. Say: \u201cI\u2019ve already done multiple intakes; for safety, I need one advocate to coordinate court accompaniment, school safety planning, and trauma counseling without repeating my full story each time.\u201d What happened so far is you\u2019ve been looped through intake, and that increased risk. This follow-up asks them to stop the handoffs and keep your case with one team.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000862#turn-1",
+      "scenarioId": "phone_dialog_0000862",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, sorry, I\u2019m in Salem and I need help replacing my ID still. I went in yesterday for intake at the outreach office.",
+      "normalizedQuery": "hi sorry salem replacing id still went yesterday intake at outreach office",
+      "voiceResponse": "You did the right thing going in yesterday, and I know it\u2019s frustrating to still be stuck. Here\u2019s the next step: call the Homeless Outreach and Advocacy Project and ask for ID-replacement follow-up from your intake. The main numbers are **503-588-5827** or **503-581-5535**. If needed, go back to **694 Church Street NE, Salem**. At intake they list no required documents, so ask what they need now to move your ID request forward today.",
+      "evidenceDocIds": [
+        "service:ec50085821d5c90f",
+        "service:df6fd9793d8c7cd0",
+        "service:d8228ae4e001ae0a",
+        "service:03d30d05c6832d89",
+        "service:dae095847c2f2497"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing going in yesterday, and I know it\u2019s frustrating to still be stuck. Here\u2019s the next step: call the Homeless Outreach and Advocacy Project and ask for ID-replacement follow-up from your intake. The main numbers are **503-588-5827** or **503-581-5535**. If needed, go back to **694 Church Street NE, Salem**. At intake they list no required documents, so ask what they need now to move your ID request forward today.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000865#turn-3",
+      "scenarioId": "phone_dialog_0000865",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "legal",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I can do intake, I just don\u2019t want my info all over the place. Do these places share my name with police or immigration?",
+      "normalizedQuery": "intake just don want info all over place these places share name police immigration",
+      "voiceResponse": "That worry makes a lot of sense. Quick recap: you\u2019re calling for a same-day shower, and next step is to ask privacy rules before giving your name. You can say, \u201cBefore intake, do you share my information with police or immigration, and can I stay anonymous for referral?\u201d If they don\u2019t answer clearly, end the call and ask 2-1-1 for another location. You can keep details minimal until you feel safe.",
+      "evidenceDocIds": [
+        "service:07b702b8ba249a9b",
+        "page:bafkreibpyqjdcyzvhoty3q6kphulgao6ljoom4owwmtoff3i2ttupccguu",
+        "page:bafkreibtjclwq5xkxqmomxyztbjmzot2fabb3zu6vglptjnzxg7ujggf24",
+        "page:bafkreicnq75xpzte4cwpmim7765vqgrxlh66eyuf67o2xf4ilxsn2dz7eu",
+        "page:bafkreihktahkyv7yntabmrprpe64gykr37sw5ikqlslv6ph3fbn6edmdfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That worry makes a lot of sense. Quick recap: you\u2019re calling for a same-day shower, and next step is to ask privacy rules before giving your name. You can say, \u201cBefore intake, do you share my information with police or immigration, and can I stay anonymous for referral?\u201d If they don\u2019t answer clearly, end the call and ask 2-1-1 for another location. You can keep details minimal until you feel safe.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000878#turn-2",
+      "scenarioId": "phone_dialog_0000878",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "service_interaction_support",
+      "user": "I did an intake on Tuesday, I think, but I can\u2019t remember the agency name now.",
+      "normalizedQuery": "hi oregon city called utility utilities heat electric last week because power bill got too high did an intake on tuesday think remember agency name now",
+      "voiceResponse": "Next step: call Pacific Power now and ask them to look up your intake from Tuesday under your name and address. The number is **888\u2026 225\u2026 2611**. You can also try **888\u2026 221\u2026 7070**. What happened so far is you completed an intake, but the agency name was forgotten. When they answer, say: \u201cI did an intake on Tuesday for bill help. Can you confirm my case and next step?\u201d",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:dbea764a4f6362d4",
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua",
+        "service:b30d1ccbf8ca9924"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Pacific Power now and ask them to look up your intake from Tuesday under your name and address. The number is **888\u2026 225\u2026 2611**. You can also try **888\u2026 221\u2026 7070**. What happened so far is you completed an intake, but the agency name was forgotten. When they answer, say: \u201cI did an intake on Tuesday for bill help. Can you confirm my case and next step?\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000882#turn-3",
+      "scenarioId": "phone_dialog_0000882",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "health",
+      "locationTag": "washington_county",
+      "promptTemplate": "service_interaction_support",
+      "user": "They told me I might qualify for non-emergency rides, but nobody called me back yet, so I\u2019m not sure if I\u2019m approved.",
+      "normalizedQuery": "hi washington county called last week transportation transport ride bus medical appointments sorry say again signal cut second did intake already think on tuesday they told might qualify non emergency rides nobody back yet so sure if approved",
+      "voiceResponse": "You did the intake and are still waiting on a callback, so the next step is to call and ask for your approval status and whether they need anything else from you. If your OHP is through Health Share or CareOregon, call Ride to Care at **five zero three, four one six, three nine five five**. Toll-free is **eight five five, three two one, four eight nine nine**. Have your OHP card ready.",
+      "evidenceDocIds": [
+        "service:517517cd769a1595",
+        "service:ce81b1612f2a5a7b",
+        "service:d2af61a74896f704",
+        "service:70487046f58f974e",
+        "service:9b7e34fd43be4c2c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the intake and are still waiting on a callback, so the next step is to call and ask for your approval status and whether they need anything else from you. If your OHP is through Health Share or CareOregon, call Ride to Care at **five zero three, four one six, three nine five five**. Toll-free is **eight five five, three two one, four eight nine nine**. Have your OHP card ready.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000911#turn-3",
+      "scenarioId": "phone_dialog_0000911",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "service_interaction_support",
+      "user": "Wait, sorry, what I mean is they did the screening and took my resume, then told me to watch for a call in two business days.",
+      "normalizedQuery": "hi sorry on speaker it noisy here oregon city getting work already did an intake at workforce office tuesday they said someone would call job training haven heard anything yet wait mean screening took resume then told watch two business days",
+      "voiceResponse": "Thanks for clarifying, that helps. So they completed your screening, took your resume, and said to expect a call within two business days. Since that window passed, your next step is to call that same office now and ask for a status update on your training callback. If you reach voicemail, say: your name, callback number, screening date, and \u201cI was told two business days, I\u2019m following up on training.\u201d If you want, I can give you a 20-second script.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e4dfc7713767ac2a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for clarifying, that helps. So they completed your screening, took your resume, and said to expect a call within two business days. Since that window passed, your next step is to call that same office now and ask for a status update on your training callback. If you reach voicemail, say: your name, callback number, screening date, and \u201cI was told two business days, I\u2019m following up on training.\u201d If you want, I can give you a 20-second script.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000915#turn-2",
+      "scenarioId": "phone_dialog_0000915",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "food",
+      "locationTag": "clackamas",
+      "promptTemplate": "service_interaction_support",
+      "user": "They did my intake and gave me one box, and I think they said I can come back every two weeks, but I forgot the exact date they told me.",
+      "normalizedQuery": "hi sorry hear okay clackamas already went food pantry meal meals groceries place on tuesday morning church one hold truck going by they did intake gave box think said come back every two weeks forgot exact date told",
+      "voiceResponse": "Next step: call the pantry that did your intake and ask, \u201cCan you confirm my next eligible pickup date?\u201d You got intake completed and one box, and they told you return is about every two weeks. If this was **Clackamas Service Center Food Pantry and Meals**, the number is **503 \u2026 771 \u2026 7914**. Would you like a short script for what to say when they answer?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:d8559ced93d0f936",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0420159846f1dd26"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call the pantry that did your intake and ask, \u201cCan you confirm my next eligible pickup date?\u201d You got intake completed and one box, and they told you return is about every two weeks. If this was **Clackamas Service Center Food Pantry and Meals**, the number is **503 \u2026 771 \u2026 7914**. Would you like a short script for what to say when they answer?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000943#turn-2",
+      "scenarioId": "phone_dialog_0000943",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I already called yesterday and someone did an intake with me, I think through 211, and they gave me one place but I got mixed up.",
+      "normalizedQuery": "already called yesterday someone did an intake think through 211 they gave one place got mixed up",
+      "voiceResponse": "Next step: call 211 again now and say, \u201cI had a cooling-center intake yesterday in Multnomah County, and I got mixed up. Please repeat the exact site name and address slowly.\u201d What happened is: you already did the intake and they gave you one location. The follow-up now is just to get that same location repeated clearly so you can get there.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call 211 again now and say, \u201cI had a cooling-center intake yesterday in Multnomah County, and I got mixed up. Please repeat the exact site name and address slowly.\u201d What happened is: you already did the intake and they gave you one location. The follow-up now is just to get that same location repeated clearly so you can get there.",
+      "voiceResponseAlternatives": [
+        "Good question, and you\u2019re smart to confirm first. I don\u2019t have confirmed walk-in hours in front of me, so do this now: call **5 4 1 \u2014 5 2 3 \u2014 4 0 4 9** and ask, \u201cDo you take walk-ins tonight, or phone intake only?\u201d If no answer, call **5 4 1 \u2014 4 0 6 \u2014 4 3 6 3**.",
+        "Logged. You already called Fora Health Detox, and they asked you to check bed status again in one hour. Next step: set a one-hour reminder, then call **503 \u2026 535 \u2026 1151** and say, \u201cHi, I\u2019m following up on bed status for detox tonight. Is intake open now, and is a bed available?\u201d",
+        "Yes, that does sound right, and you\u2019re remembering important details. It sounds like you already completed one screening where they asked about income and cooking ability. Next step: when the 211 specialist answers, say this first, slowly: \u201cI already did one screening, and they asked about my income and whether I can cook.\u201d Then add: \u201cI missed the intake callback because my phone died, and I wasn\u2019t ignoring them.\u201d"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000970#turn-1",
+      "scenarioId": "phone_dialog_0000970",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, I\u2019m in Portland, and I called that shelter line yesterday morning, I think around ten, and they did an intake with me.",
+      "normalizedQuery": "hi portland called shelter shelters homeless overnight warming line yesterday morning think around ten they did an intake",
+      "voiceResponse": "You did an intake with the shelter line yesterday morning, around 10. Next step: call that same line now and say, \u201cI completed intake yesterday morning. Please check my status, tell me if I\u2019m on the list for tonight, and give me check-in time and location.\u201d If they don\u2019t find it, ask them to redo intake while you\u2019re on the phone.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:5ded755b33454184",
+        "service:a110aba06fd372f6",
+        "service:b2642cda89edcc08",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did an intake with the shelter line yesterday morning, around 10. Next step: call that same line now and say, \u201cI completed intake yesterday morning. Please check my status, tell me if I\u2019m on the list for tonight, and give me check-in time and location.\u201d If they don\u2019t find it, ask them to redo intake while you\u2019re on the phone.",
+      "voiceResponseAlternatives": [
+        "East County first, since you\u2019re in Gresham, and we can add Portland as a backup. You were clear: veteran-only, private room, on-site legal help, and same-day intake tonight. Next step is a direct placement call where we use exactly those four requirements and ask only programs that can confirm tonight availability. If you want, I can give you a tight one-sentence script to use on that call.",
+        "Next step: call the same shelter line **today after 4:00 p.m.** You were told no bed last night and to call back after 4 today. Say: \u201cI did intake yesterday around 10 a.m. I\u2019m calling back after 4 like you told me. Please check my bed status for tonight and my check-in time and location.\u201d If they still can\u2019t place you, ask them to redo intake while you stay on the line."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000970#turn-3",
+      "scenarioId": "phone_dialog_0000970",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "service_interaction_support",
+      "user": "They told me no bed last night, but to call back today after 4, and I keep mixing up the time.",
+      "normalizedQuery": "hi portland called shelter shelters homeless overnight warming line yesterday morning think around ten they did an intake sorry say slower forget names quick it was city team place on burnside there told no bed last night call back after keep mixing up time",
+      "voiceResponse": "Next step: call the same shelter line **today after 4:00 p.m.** You were told no bed last night and to call back after 4 today. Say: \u201cI did intake yesterday around 10 a.m. I\u2019m calling back after 4 like you told me. Please check my bed status for tonight and my check-in time and location.\u201d If they still can\u2019t place you, ask them to redo intake while you stay on the line.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:57c4c63dcadba358",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call the same shelter line **today after 4:00 p.m.** You were told no bed last night and to call back after 4 today. Say: \u201cI did intake yesterday around 10 a.m. I\u2019m calling back after 4 like you told me. Please check my bed status for tonight and my check-in time and location.\u201d If they still can\u2019t place you, ask them to redo intake while you stay on the line.",
+      "voiceResponseAlternatives": [
+        "East County first, since you\u2019re in Gresham, and we can add Portland as a backup. You were clear: veteran-only, private room, on-site legal help, and same-day intake tonight. Next step is a direct placement call where we use exactly those four requirements and ask only programs that can confirm tonight availability. If you want, I can give you a tight one-sentence script to use on that call.",
+        "You did an intake with the shelter line yesterday morning, around 10. Next step: call that same line now and say, \u201cI completed intake yesterday morning. Please check my status, tell me if I\u2019m on the list for tonight, and give me check-in time and location.\u201d If they don\u2019t find it, ask them to redo intake while you\u2019re on the phone."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000970#turn-4",
+      "scenarioId": "phone_dialog_0000970",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you make a note that I already did the screening and they said bring my ID and my pill bottles?",
+      "normalizedQuery": "make note already did screening they said bring id pill bottles",
+      "voiceResponse": "Yes, I\u2019ve noted it: you already completed screening, and they told you to bring your ID and your pill bottles. Next step: call after 4:00 p.m. and say, \u201cI already completed screening. I was told to call after 4. Please check my bed status for tonight and confirm check-in time and location.\u201d Keep your ID and pill bottles ready to bring.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreihz5wh4pp6shplhbvchdhqfmbkzll5ahnwxggxrvywvzozrnkh2wm",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "service:354980161ba297e3",
+        "service:a9b60d735dd34af5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019ve noted it: you already completed screening, and they told you to bring your ID and your pill bottles. Next step: call after 4:00 p.m. and say, \u201cI already completed screening. I was told to call after 4. Please check my bed status for tonight and confirm check-in time and location.\u201d Keep your ID and pill bottles ready to bring.",
+      "voiceResponseAlternatives": [
+        "Next step: make one quick note now: \u201cCalled today; got conflicting info; requested after-4:30 arrival confirmation and required documents list.\u201d What happened: you already called, and we still do not have a verified document list from the pantry. Follow-up: send that same line as a text to the pantry and wait for their written reply before driving, so you have proof on your phone if you\u2019re turned away.",
+        "Good question. On this line, I do not have a confirmed document list for that clinic. I do not have a confirmed document list. Best next step: call the clinic and ask, \u201cWhat should I bring to a first visit for a new patient with low income and possible no insurance?\u201d If you want, I can give you a short call script next.",
+        "You did the hard part. You called. Then they asked for documents, and you panicked and hung up. That happens. You are not alone. Next step: call back and say, \u201cI got disconnected. Please repeat where to send my documents.\u201d Ask them to spell it slowly. We can script it first, then you call. Do you want a one-sentence script you can read out loud?",
+        "Good question. I do not have an intake or ID rule listed for that site. Next step: call them and ask if they can take him without ID tonight. Use this: **5 0 3, 2 6 3, 3 1 8 2**. Again: **5 0 3, 2 6 3, 3 1 8 2**. Site: **1 3 6 9 Southeast 1st Avenue, Canby**. Again: **1 3 6 9 Southeast 1st Avenue, Canby**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000975#turn-1",
+      "scenarioId": "phone_dialog_0000975",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "beaverton",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, I\u2019m in Beaverton, and I had an intake at a counseling place yesterday for my anxiety and depression, but I can\u2019t remember the clinic name now.",
+      "normalizedQuery": "hi beaverton had an intake at counseling place yesterday anxiety depression remember clinic medical health name now",
+      "voiceResponse": "Next step: call **Multicultural Counseling Services** and ask if they have your intake from yesterday for anxiety and depression. Their number is **5 0 3** \u2026 **7 3 1** \u2026 **9 5 8 9**. Address: **3800 Southwest Cedar Hills Boulevard, Suite 288, Beaverton**. It sounds like you already did the intake; this call is just to confirm the clinic name and your follow-up appointment.",
+      "evidenceDocIds": [
+        "service:ad8146a84abd0b66",
+        "service:391554d70c7586af",
+        "service:93d7f1151802070f",
+        "service:db673826d6e1bd8a",
+        "service:5dd0583efca9b751"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **Multicultural Counseling Services** and ask if they have your intake from yesterday for anxiety and depression. Their number is **5 0 3** \u2026 **7 3 1** \u2026 **9 5 8 9**. Address: **3800 Southwest Cedar Hills Boulevard, Suite 288, Beaverton**. It sounds like you already did the intake; this call is just to confirm the clinic name and your follow-up appointment.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000993#turn-4",
+      "scenarioId": "phone_dialog_0000993",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "hillsboro",
+      "promptTemplate": "service_interaction_support",
+      "user": "I can get there by bus, so I need the one that takes adults and does same-day check-in.",
+      "normalizedQuery": "hi hillsboro shelter shelters homeless overnight warming bed tonight phone almost dead this borrowed so give most important number first sorry bad signal repeat slowly there by bus one takes adults does same day check",
+      "voiceResponse": "You\u2019re asking exactly the right thing. Most important number first: **541-962-7994** \u2014 that\u2019s **541 \u2026 962 \u2026 7994**. That listing is an overnight winter warming shelter for adults 18+ and says no documents required. Next step: call now and ask, \u201cDo you have same-day check-in for one adult tonight, and what bus stop is closest?\u201d Address if they confirm: **501 3rd Street, La Grande**.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:dc93c9592519c012"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re asking exactly the right thing. Most important number first: **541-962-7994** \u2014 that\u2019s **541 \u2026 962 \u2026 7994**. That listing is an overnight winter warming shelter for adults 18+ and says no documents required. Next step: call now and ask, \u201cDo you have same-day check-in for one adult tonight, and what bus stop is closest?\u201d Address if they confirm: **501 3rd Street, La Grande**.",
+      "voiceResponseAlternatives": [
+        "I hear you, and we can keep this quick. I can give you the nearest one, but I need your city first. What I do have: these warming shelters show **no documents required**, and I don\u2019t have a verified intake cutoff time listed. If you\u2019re near Cottage Grove, the shelter is at **1 4 4 0 Birch Avenue**, and you can call **5 4 1 \u2026 9 4 2 \u2026 2 1 7 6** right now to confirm intake hours."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001015#turn-2",
+      "scenarioId": "phone_dialog_0001015",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "I did an intake yesterday with someone from that day center, but I can\u2019t remember her name now.",
+      "normalizedQuery": "did an intake yesterday someone from day center remember her name now",
+      "voiceResponse": "Next step: call the day center back and say you completed intake yesterday, then ask them to check your record by your full name and date of birth. The number is **503, 362, 3983**. Again, **503, 362, 3983**. You can also mention the Salem shower site at **777 Commercial Street Northeast** if that helps them find your note.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:2decbb81d8297a4f",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call the day center back and say you completed intake yesterday, then ask them to check your record by your full name and date of birth. The number is **503, 362, 3983**. Again, **503, 362, 3983**. You can also mention the Salem shower site at **777 Commercial Street Northeast** if that helps them find your note.",
+      "voiceResponseAlternatives": [
+        "Absolutely, that\u2019s a smart note to add. I\u2019ll include: \u201cBring insurance card, if found.\u201d So far, we\u2019ve got your follow-up plan: call **2-1-1** to get the dental visit set, then we\u2019ll place two reminders for you. Next step: once they give you the appointment date and time, tell me and I\u2019ll set both reminders right away.",
+        "Good question. We don\u2019t have that intake office\u2019s ID rules here, so the next step is to call **2-1-1** and ask the office directly before you go. Say: \u201cHe has limited papers today. Can he start intake now and bring the rest later?\u201d Number again: **two \u2026 one \u2026 one**.",
+        "Got it. I logged: you contacted one place on 82nd today, and they had no same-day openings. Next step: call **2-1-1** again now and ask for another same-day laundry option nearby. If your brother is not safe right now, call **9-1-1** immediately.",
+        "Yes. I can log that now. I\u2019m noting: yesterday, you tried Rose Haven Day Center, and they were full. Again: yesterday, Rose Haven was full. Next step on your next call: ask if they have space right now, and ask the intake cutoff time before you go."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001035#turn-3",
+      "scenarioId": "phone_dialog_0001035",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "transportation",
+      "locationTag": "washington_county",
+      "promptTemplate": "service_interaction_support",
+      "user": "What I specifically need is door-through-door, like they walk me from my porch to check-in, and I need to know which program guarantees that, not maybe.",
+      "normalizedQuery": "hi sorry talking fast washington county ride setup just bus list dialysis at 30 three days week wait repeat system said cut second there lot noise specifically door through like they walk from porch check know which program guarantees maybe",
+      "voiceResponse": "Next step: call **Cascades West Ride Line** now and ask, \u201cDo you provide **guaranteed door-through-door escort from porch to clinic check-in** for recurring 5:30 a.m. dialysis rides?\u201d I can\u2019t confirm a guarantee from what we have so far, so get a yes/no and the program name from them directly. Call **5 4 1, 9 2 4, 8 7 3 8**. Backup: **5 4 1, 9 6 7, 8 6 3 0**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:a558e2f5ba96f584",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibmn6xyxpuhpashuiyqx6q2yq4q752hhxd55cguurzjmnldm2qvcq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **Cascades West Ride Line** now and ask, \u201cDo you provide **guaranteed door-through-door escort from porch to clinic check-in** for recurring 5:30 a.m. dialysis rides?\u201d I can\u2019t confirm a guarantee from what we have so far, so get a yes/no and the program name from them directly. Call **5 4 1, 9 2 4, 8 7 3 8**. Backup: **5 4 1, 9 6 7, 8 6 3 0**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001040#turn-3",
+      "scenarioId": "phone_dialog_0001040",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "service_interaction_support",
+      "user": "They told me I should come back in two weeks after this visit, and I don\u2019t want to miss it.",
+      "normalizedQuery": "hi bend low cost dental dentist clinic medical health sorry forget names pretty fast gave one before remember which place it was could say name slowly again they told should come back two weeks after this visit don want miss",
+      "voiceResponse": "You did the right thing by checking now. After this visit, they asked you to come back in two weeks. I will repeat that: come back in two weeks. Let\u2019s set a reminder so you do not miss it. What day was your visit?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing by checking now. After this visit, they asked you to come back in two weeks. I will repeat that: come back in two weeks. Let\u2019s set a reminder so you do not miss it. What day was your visit?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001077#turn-5",
+      "scenarioId": "phone_dialog_0001077",
+      "turnIndex": 4,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "Also if there\u2019s one that doesn\u2019t require ID at intake, or can hold a backpack safely while I shower, that\u2019s the one I need.",
+      "normalizedQuery": "also if there one doesn require id at intake hold backpack safely while shower",
+      "voiceResponse": "Totally fair. You\u2019re asking for confirmed details before you go: daily hours, towels, private stalls, plus no-ID intake and safe backpack storage. I can\u2019t verify those live from here. Best next step is a live 211 navigator to call sites in real time and confirm each point. You can say: \u201cI need a shower in Eugene today with confirmed hours, towel availability, private stalls, no ID required, and secure backpack storage.\u201d Share only what you want.",
+      "evidenceDocIds": [
+        "service:a57556cec82ec770",
+        "service:40cacfffe4ac2556",
+        "page:bafkreic4a2biijrw5hogq5caqvp7kwrw3usxgumfuma43fclnpm3yc3d44",
+        "page:bafkreihmh3pfyyw4o5lyyxsiasbhtlkox3vvzponxitzymleubawbawf2y",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair. You\u2019re asking for confirmed details before you go: daily hours, towels, private stalls, plus no-ID intake and safe backpack storage. I can\u2019t verify those live from here. Best next step is a live 211 navigator to call sites in real time and confirm each point. You can say: \u201cI need a shower in Eugene today with confirmed hours, towel availability, private stalls, no ID required, and secure backpack storage.\u201d Share only what you want.",
+      "voiceResponseAlternatives": [
+        "Next step: make one quick note now: \u201cCalled today; got conflicting info; requested after-4:30 arrival confirmation and required documents list.\u201d What happened: you already called, and we still do not have a verified document list from the pantry. Follow-up: send that same line as a text to the pantry and wait for their written reply before driving, so you have proof on your phone if you\u2019re turned away.",
+        "Good question. On this line, I do not have a confirmed document list for that clinic. I do not have a confirmed document list. Best next step: call the clinic and ask, \u201cWhat should I bring to a first visit for a new patient with low income and possible no insurance?\u201d If you want, I can give you a short call script next.",
+        "You did the hard part. You called. Then they asked for documents, and you panicked and hung up. That happens. You are not alone. Next step: call back and say, \u201cI got disconnected. Please repeat where to send my documents.\u201d Ask them to spell it slowly. We can script it first, then you call. Do you want a one-sentence script you can read out loud?",
+        "Good question. I do not have an intake or ID rule listed for that site. Next step: call them and ask if they can take him without ID tonight. Use this: **5 0 3, 2 6 3, 3 1 8 2**. Again: **5 0 3, 2 6 3, 3 1 8 2**. Site: **1 3 6 9 Southeast 1st Avenue, Canby**. Again: **1 3 6 9 Southeast 1st Avenue, Canby**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001100#turn-2",
+      "scenarioId": "phone_dialog_0001100",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "statewide",
+      "promptTemplate": "service_interaction_support",
+      "user": "Sorry, I\u2019m repeating myself, but I did the intake call yesterday with St. Vincent de Paul laundry assistance, and they said I\u2019m on a waitlist.",
+      "normalizedQuery": "sorry repeating myself did intake call yesterday st vincent de paul laundry assistance they said on waitlist",
+      "voiceResponse": "You\u2019re not repeating too much, you\u2019re being clear, and that helps. Here\u2019s what I heard: you completed intake yesterday with St. Vincent de Paul and you\u2019re now on their laundry waitlist. Next step is a quick status check call tomorrow to confirm your place and timing. In Eugene, you can also ask St. Vincent de Paul Lane County First Place Family Center about laundry access at **4060 West Amazon Drive**; their number is **(541) 342-7728**.",
+      "evidenceDocIds": [
+        "service:46feca979124b4ad",
+        "service:9c8576fc2a6ee02d",
+        "service:5e64f6fc61237a11",
+        "service:5f9599e779c2d695",
+        "service:000f383b02383270"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not repeating too much, you\u2019re being clear, and that helps. Here\u2019s what I heard: you completed intake yesterday with St. Vincent de Paul and you\u2019re now on their laundry waitlist. Next step is a quick status check call tomorrow to confirm your place and timing. In Eugene, you can also ask St. Vincent de Paul Lane County First Place Family Center about laundry access at **4060 West Amazon Drive**; their number is **(541) 342-7728**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001100#turn-4",
+      "scenarioId": "phone_dialog_0001100",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "eugene",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you note that I completed the screening call already and that I\u2019m waiting for their callback?",
+      "normalizedQuery": "hi eugene keeping track laundry services stuff already started sorry repeating myself did intake call yesterday st vincent de paul assistance they said on waitlist asked bring id proof address when back don want lose detail note completed screening waiting their callback",
+      "voiceResponse": "Absolutely\u2014I\u2019ve got it noted: you already completed the screening call, and now you\u2019re waiting for their callback. Next step is just keep your ID and proof of address ready so you can respond right away when they call.",
+      "evidenceDocIds": [
+        "service:46feca979124b4ad",
+        "service:8f84270f81db184e",
+        "service:cac7c3dd2002e4d9",
+        "service:9c8576fc2a6ee02d",
+        "service:9f407eef6a970ffa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely\u2014I\u2019ve got it noted: you already completed the screening call, and now you\u2019re waiting for their callback. Next step is just keep your ID and proof of address ready so you can respond right away when they call.",
+      "voiceResponseAlternatives": [
+        "For the program details I can verify here, intake says **no documents are required**. Next step: call before you go and confirm they can still see you today. If you want, I can repeat the phone number again slowly."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001128#turn-1",
+      "scenarioId": "phone_dialog_0001128",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "family",
+      "locationTag": "bend",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, I\u2019m in Bend, and I need child care help. I already did an intake call yesterday with NeighborImpact, around 2 p.m.",
+      "normalizedQuery": "hi bend child care already did an intake call yesterday neighborimpact around",
+      "voiceResponse": "Next step: call ERDC now and ask for a status check, saying you completed your NeighborImpact intake yesterday around 2 p.m. The Bend Self-Sufficiency Office numbers are **5 4 1, 3 8 8, 6 0 1 0** and **5 4 1, 3 8 8, 2 6 3 5**. If they ask for verification, the required documents depend on your family situation.",
+      "evidenceDocIds": [
+        "service:604454602aa57dcf",
+        "service:1a380c54e711a994",
+        "page:bafkreievi2bqmxgvvmf46lwqqw2xzr3ff6amq5on2qapk7e3mtaw3to6cq",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "service:979fa28c3d54348e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call ERDC now and ask for a status check, saying you completed your NeighborImpact intake yesterday around 2 p.m. The Bend Self-Sufficiency Office numbers are **5 4 1, 3 8 8, 6 0 1 0** and **5 4 1, 3 8 8, 2 6 3 5**. If they ask for verification, the required documents depend on your family situation.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001129#turn-3",
+      "scenarioId": "phone_dialog_0001129",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "rent",
+      "locationTag": "gresham",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you put a note that I finished that screening yesterday, so I don\u2019t lose track again?",
+      "normalizedQuery": "hi sorry hear okay gresham called rent eviction assistance place yesterday think around noon they did intake asked income landlord name said somebody would call back two business days wait was it already forgot put note finished screening so don lose track again",
+      "voiceResponse": "Absolutely, I\u2019ve got it noted: you completed the screening yesterday. Next step is to wait for their callback, and if you don\u2019t hear back by the end of the second business day, call them again and say, \u201cI completed intake yesterday and I\u2019m following up on my case status.\u201d If you want, I can repeat that follow-up line once more, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019ve got it noted: you completed the screening yesterday. Next step is to wait for their callback, and if you don\u2019t hear back by the end of the second business day, call them again and say, \u201cI completed intake yesterday and I\u2019m following up on my case status.\u201d If you want, I can repeat that follow-up line once more, slowly.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001136#turn-2",
+      "scenarioId": "phone_dialog_0001136",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "service_interaction_support",
+      "user": "I already had an intake at the workforce office on Tuesday morning, and they asked about my resume and past jobs.",
+      "normalizedQuery": "hi medford trying back work mixing things up little already had an intake at workforce office on tuesday morning they asked resume past jobs",
+      "voiceResponse": "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:ff1fa660f44a6130"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?",
+      "voiceResponseAlternatives": [
+        "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001136#turn-3",
+      "scenarioId": "phone_dialog_0001136",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "service_interaction_support",
+      "user": "Could you note that down for me, that I finished the intake and gave them my paperwork?",
+      "normalizedQuery": "hi medford trying back work mixing things up little already had an intake at workforce office on tuesday morning they asked resume past jobs could note down finished gave them paperwork",
+      "voiceResponse": "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call.",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001149#turn-3",
+      "scenarioId": "phone_dialog_0001149",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "benefits",
+      "locationTag": "hillsboro",
+      "promptTemplate": "service_interaction_support",
+      "user": "And not a huge hospital system if possible, more community-based, but still licensed, and if they do same-week intake that\u2019d be ideal.",
+      "normalizedQuery": "hi sorry talk fast when stressed hillsboro mental health just basic counseling trying like trauma informed plus autism competent care evening slots maybe someone who coordinate meds too did catch huge hospital system if possible more community based still licensed they same week intake be ideal",
+      "voiceResponse": "Absolutely. Quick recap: the strongest community-based option we found is Trauma Recovery Services at Juliette\u2019s House, not a hospital system. One important limit: they\u2019re for children and non-offending caregivers impacted by trauma. Best next step is a short screening call and ask, \u201cAre you licensed, do you have same-week intake, evening appointments, autism-competent trauma care, and med-coordination support?\u201d Their numbers are 503, 883, 9866 and 503, 435, 1550.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e5a54bc27f172b08",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Quick recap: the strongest community-based option we found is Trauma Recovery Services at Juliette\u2019s House, not a hospital system. One important limit: they\u2019re for children and non-offending caregivers impacted by trauma. Best next step is a short screening call and ask, \u201cAre you licensed, do you have same-week intake, evening appointments, autism-competent trauma care, and med-coordination support?\u201d Their numbers are 503, 883, 9866 and 503, 435, 1550.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -1089,6 +2272,264 @@
     {
       "from": "phone_dialog_0000576#turn-1",
       "to": "phone_dialog_0000576#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000669#turn-2",
+      "to": "phone_dialog_0000669#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-1",
+      "to": "phone_dialog_0000704#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-2",
+      "to": "phone_dialog_0000704#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-4",
+      "to": "phone_dialog_0000704#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000715#turn-5",
+      "to": "phone_dialog_0000715#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000718#turn-1",
+      "to": "phone_dialog_0000718#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000729#turn-2",
+      "to": "phone_dialog_0000729#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000733#turn-2",
+      "to": "phone_dialog_0000733#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000733#turn-5",
+      "to": "phone_dialog_0000733#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000767#turn-1",
+      "to": "phone_dialog_0000767#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000803#turn-2",
+      "to": "phone_dialog_0000803#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000803#turn-3",
+      "to": "phone_dialog_0000803#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000836#turn-1",
+      "to": "phone_dialog_0000836#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000836#turn-3",
+      "to": "phone_dialog_0000836#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000843#turn-4",
+      "to": "phone_dialog_0000843#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000845#turn-1",
+      "to": "phone_dialog_0000845#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000845#turn-4",
+      "to": "phone_dialog_0000845#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000847#turn-4",
+      "to": "phone_dialog_0000847#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000853#turn-4",
+      "to": "phone_dialog_0000853#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000857#turn-3",
+      "to": "phone_dialog_0000857#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000862#turn-1",
+      "to": "phone_dialog_0000862#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000865#turn-3",
+      "to": "phone_dialog_0000865#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000878#turn-2",
+      "to": "phone_dialog_0000878#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000882#turn-3",
+      "to": "phone_dialog_0000882#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000911#turn-3",
+      "to": "phone_dialog_0000911#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000915#turn-2",
+      "to": "phone_dialog_0000915#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000943#turn-2",
+      "to": "phone_dialog_0000943#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000970#turn-1",
+      "to": "phone_dialog_0000970#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000970#turn-3",
+      "to": "phone_dialog_0000970#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000970#turn-4",
+      "to": "phone_dialog_0000970#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000975#turn-1",
+      "to": "phone_dialog_0000975#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000993#turn-4",
+      "to": "phone_dialog_0000993#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001015#turn-2",
+      "to": "phone_dialog_0001015#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001035#turn-3",
+      "to": "phone_dialog_0001035#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001040#turn-3",
+      "to": "phone_dialog_0001040#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001077#turn-5",
+      "to": "phone_dialog_0001077#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001100#turn-2",
+      "to": "phone_dialog_0001100#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001100#turn-4",
+      "to": "phone_dialog_0001100#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001128#turn-1",
+      "to": "phone_dialog_0001128#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001129#turn-3",
+      "to": "phone_dialog_0001129#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001136#turn-2",
+      "to": "phone_dialog_0001136#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0001136#turn-3",
+      "to": "phone_dialog_0001136#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001149#turn-3",
+      "to": "phone_dialog_0001149#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->repeat_or_restate"
     }

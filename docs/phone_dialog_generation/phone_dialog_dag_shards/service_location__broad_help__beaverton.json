@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__broad_help__beaverton",
   "kind": "service_location",
   "key": "broad_help__beaverton",
-  "nodeCount": 1,
+  "nodeCount": 12,
   "nodes": [
     {
       "id": "phone_dialog_0000226#turn-1",
@@ -26,10 +26,311 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?"
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000804#turn-1",
+      "scenarioId": "phone_dialog_0000804",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I can barely hear you... I\u2019m in Beaverton, sleeping in my car, and I need help for domestic violence stuff tonight.",
+      "normalizedQuery": "hi sorry barely hear beaverton sleeping car domestic violence stuff tonight",
+      "voiceResponse": "I hear you. I\u2019m with you. If you are in immediate danger right now, call 9-1-1. Call 9-1-1 now. For domestic violence crisis help tonight, call: 5 4 1, 9 9 7, 4 4 4 4. I\u2019ll repeat: 5 4 1, 9 9 7, 4 4 4 4. Backup line: 5 4 1, 9 9 7, 2 8 1 6. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:29e33c4115645e64",
+        "service:baae178363b1c104",
+        "service:eec5f9e1e439a0d0",
+        "service:fd5de844e523fa13",
+        "service:4d55efde415ecce2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019m with you. If you are in immediate danger right now, call 9-1-1. Call 9-1-1 now. For domestic violence crisis help tonight, call: 5 4 1, 9 9 7, 4 4 4 4. I\u2019ll repeat: 5 4 1, 9 9 7, 4 4 4 4. Backup line: 5 4 1, 9 9 7, 2 8 1 6. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Yes. Quick steps now. If you are in danger, call 9-1-1. Call 9-1-1 now. For Oregon domestic violence assistance, call: 5 4 1, 6 8 6, 7 8 7 8. I\u2019ll repeat: 5 4 1, 6 8 6, 7 8 7 8. Can you call that now?",
+        "Yes. I\u2019ll say it slowly. 5 4 1\u2026 6 8 6\u2026 7 8 7 8. I\u2019ll repeat it: 5 4 1\u2026 6 8 6\u2026 7 8 7 8."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000804#turn-2",
+      "scenarioId": "phone_dialog_0000804",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "My battery is at like three percent, so can we do this quick?",
+      "normalizedQuery": "hi sorry barely hear beaverton sleeping car domestic violence stuff tonight battery at like three percent so we this quick",
+      "voiceResponse": "Yes. Quick steps now. If you are in danger, call 9-1-1. Call 9-1-1 now. For Oregon domestic violence assistance, call: 5 4 1, 6 8 6, 7 8 7 8. I\u2019ll repeat: 5 4 1, 6 8 6, 7 8 7 8. Can you call that now?",
+      "evidenceDocIds": [
+        "service:2a8dfbe44adb059e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:8825e8162fecb883",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Quick steps now. If you are in danger, call 9-1-1. Call 9-1-1 now. For Oregon domestic violence assistance, call: 5 4 1, 6 8 6, 7 8 7 8. I\u2019ll repeat: 5 4 1, 6 8 6, 7 8 7 8. Can you call that now?",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m with you. If you are in immediate danger right now, call 9-1-1. Call 9-1-1 now. For domestic violence crisis help tonight, call: 5 4 1, 9 9 7, 4 4 4 4. I\u2019ll repeat: 5 4 1, 9 9 7, 4 4 4 4. Backup line: 5 4 1, 9 9 7, 2 8 1 6. Are you in immediate danger right now?",
+        "Yes. I\u2019ll say it slowly. 5 4 1\u2026 6 8 6\u2026 7 8 7 8. I\u2019ll repeat it: 5 4 1\u2026 6 8 6\u2026 7 8 7 8."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000804#turn-3",
+      "scenarioId": "phone_dialog_0000804",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that advocate place called? I missed the name.",
+      "normalizedQuery": "hi sorry barely hear beaverton sleeping car domestic violence stuff tonight battery at like three percent so we this quick wait was advocate place called missed name",
+      "voiceResponse": "Yes. The advocate place is **Temporary Assistance to Domestic Violence Survivors**. I\u2019ll say it again: **Temporary Assistance to Domestic Violence Survivors**. The number is 5 4 1, 6 8 6, 7 8 7 8. Again: 5 4 1, 6 8 6, 7 8 7 8.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "page:bafkreibm6ikg6mphycubmvcn5nvxrytnxyq377k53nel7jmae6icpapili"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The advocate place is **Temporary Assistance to Domestic Violence Survivors**. I\u2019ll say it again: **Temporary Assistance to Domestic Violence Survivors**. The number is 5 4 1, 6 8 6, 7 8 7 8. Again: 5 4 1, 6 8 6, 7 8 7 8.",
+      "voiceResponseAlternatives": [
+        "Of course. The name is **Medical Rides**. Slowly: **Med-i-cal** ... **Rides**. If helpful, I can also repeat the phone number slowly next.",
+        "Of course. I\u2019ll say it slowly in small chunks. First number: **541** \u2026 **779** \u2026 **4357**. Again: **541** \u2026 **779** \u2026 **4357**. Second number: **541** \u2026 **779** \u2026 **2393**, extension **209**. Again: **541** \u2026 **779** \u2026 **2393**, extension **209**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000804#turn-4",
+      "scenarioId": "phone_dialog_0000804",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Can you say the phone number slower, like in chunks? I only got the first part.",
+      "normalizedQuery": "hi sorry barely hear beaverton sleeping car domestic violence stuff tonight battery at like three percent so we this quick wait was advocate place called missed name say phone number slower chunks only got first part",
+      "voiceResponse": "Yes. I\u2019ll say it slowly. 5 4 1\u2026 6 8 6\u2026 7 8 7 8. I\u2019ll repeat it: 5 4 1\u2026 6 8 6\u2026 7 8 7 8.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slowly. 5 4 1\u2026 6 8 6\u2026 7 8 7 8. I\u2019ll repeat it: 5 4 1\u2026 6 8 6\u2026 7 8 7 8.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019m with you. If you are in immediate danger right now, call 9-1-1. Call 9-1-1 now. For domestic violence crisis help tonight, call: 5 4 1, 9 9 7, 4 4 4 4. I\u2019ll repeat: 5 4 1, 9 9 7, 4 4 4 4. Backup line: 5 4 1, 9 9 7, 2 8 1 6. Are you in immediate danger right now?",
+        "Yes. Quick steps now. If you are in danger, call 9-1-1. Call 9-1-1 now. For Oregon domestic violence assistance, call: 5 4 1, 6 8 6, 7 8 7 8. I\u2019ll repeat: 5 4 1, 6 8 6, 7 8 7 8. Can you call that now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000976#turn-1",
+      "scenarioId": "phone_dialog_0000976",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m in Beaverton and I need help getting rides to my appointments.",
+      "normalizedQuery": "hi sorry hear okay beaverton getting rides appointments",
+      "voiceResponse": "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
+      "evidenceDocIds": [
+        "service:c628bf14ff381928",
+        "service:7a5cca37934277c2",
+        "service:fd3b16d707204ad2",
+        "service:2f3cf97bfe9b7f9f",
+        "page:bafkreidae32aw7iwgkvx22njyg2espy4uvgexgi3epmvxbt7bbs7kdwmna"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. I can help with that. I found a medical ride program for appointments, and I can give you the number slowly. One quick question so I point you right: are you age 55 or older?",
+      "voiceResponseAlternatives": [
+        "Yeah, I can hear you. You\u2019re doing the right thing calling for your friend, especially with all that noise around you. I can help quickly once I know the main need: is your friend looking for mental health support, medical care, shelter, or something else right now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000976#turn-2",
+      "scenarioId": "phone_dialog_0000976",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I didn\u2019t catch that name, could you say it again slower? My hearing is not great on this phone.",
+      "normalizedQuery": "hi sorry hear okay beaverton getting rides appointments didn catch name could say it again slower hearing great on this phone",
+      "voiceResponse": "Of course. The name is **Medical Rides**. Slowly: **Med-i-cal** ... **Rides**. If helpful, I can also repeat the phone number slowly next.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:c628bf14ff381928",
+        "service:2f3cf97bfe9b7f9f",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Medical Rides**. Slowly: **Med-i-cal** ... **Rides**. If helpful, I can also repeat the phone number slowly next.",
+      "voiceResponseAlternatives": [
+        "Yes. The advocate place is **Temporary Assistance to Domestic Violence Survivors**. I\u2019ll say it again: **Temporary Assistance to Domestic Violence Survivors**. The number is 5 4 1, 6 8 6, 7 8 7 8. Again: 5 4 1, 6 8 6, 7 8 7 8.",
+        "Of course. I\u2019ll say it slowly in small chunks. First number: **541** \u2026 **779** \u2026 **4357**. Again: **541** \u2026 **779** \u2026 **4357**. Second number: **541** \u2026 **779** \u2026 **2393**, extension **209**. Again: **541** \u2026 **779** \u2026 **2393**, extension **209**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000976#turn-3",
+      "scenarioId": "phone_dialog_0000976",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "wallet_document_support",
+      "user": "Before I send anything, can you check what files are already in my wallet? I don\u2019t want extra personal stuff saved if I don\u2019t need it.",
+      "normalizedQuery": "hi sorry hear okay beaverton getting rides appointments didn catch name could say it again slower hearing great on this phone before send anything check files already wallet don want extra personal stuff saved if",
+      "voiceResponse": "Absolutely, that makes sense. We can keep this minimal. I can help you review only what\u2019s already in your wallet, then remove anything extra before you send. No need to add new documents right now. If you want, we can do it step by step: open Wallet, then Files, then I\u2019ll help you check each item one at a time and keep only what you choose.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:c628bf14ff381928"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, that makes sense. We can keep this minimal. I can help you review only what\u2019s already in your wallet, then remove anything extra before you send. No need to add new documents right now. If you want, we can do it step by step: open Wallet, then Files, then I\u2019ll help you check each item one at a time and keep only what you choose.",
+      "voiceResponseAlternatives": [
+        "Absolutely. You can check that before sending anything. Open your **Wallet** and tap **Documents** or **Saved files**. You should see everything already stored there. You can open each file to review it, then choose **Remove** or **Delete** for anything old. If you want, I can walk you through it slowly, one tap at a time."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001120#turn-1",
+      "scenarioId": "phone_dialog_0001120",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, I\u2019m in Beaverton, and I need help finding domestic violence survivor advocacy... sorry, can you say things a little slower for me?",
+      "normalizedQuery": "hi beaverton finding domestic violence survivor advocacy sorry say things little slower",
+      "voiceResponse": "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreienlugsyfq2ximthab6ol46hzz7eampw5b6add5nsf2fckf7bk5ze",
+        "service:a704a02c64a5a445",
+        "page:bafkreifobj7dii4ftnmjbulmimj5gtanaahukkpu5rodpv7rdv6npvya34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001120#turn-2",
+      "scenarioId": "phone_dialog_0001120",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I missed that number, my hearing\u2019s not great on this phone. Could you repeat it in small chunks?",
+      "normalizedQuery": "hi beaverton finding domestic violence survivor advocacy sorry say things little slower missed number hearing great on this phone could repeat it small chunks",
+      "voiceResponse": "Of course. I\u2019ll say it slowly in small chunks. First number: **541** \u2026 **779** \u2026 **4357**. Again: **541** \u2026 **779** \u2026 **4357**. Second number: **541** \u2026 **779** \u2026 **2393**, extension **209**. Again: **541** \u2026 **779** \u2026 **2393**, extension **209**.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "service:de79113abf2cae4b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll say it slowly in small chunks. First number: **541** \u2026 **779** \u2026 **4357**. Again: **541** \u2026 **779** \u2026 **4357**. Second number: **541** \u2026 **779** \u2026 **2393**, extension **209**. Again: **541** \u2026 **779** \u2026 **2393**, extension **209**.",
+      "voiceResponseAlternatives": [
+        "Yes. The advocate place is **Temporary Assistance to Domestic Violence Survivors**. I\u2019ll say it again: **Temporary Assistance to Domestic Violence Survivors**. The number is 5 4 1, 6 8 6, 7 8 7 8. Again: 5 4 1, 6 8 6, 7 8 7 8.",
+        "Of course. The name is **Medical Rides**. Slowly: **Med-i-cal** ... **Rides**. If helpful, I can also repeat the phone number slowly next."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001120#turn-3",
+      "scenarioId": "phone_dialog_0001120",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "wallet_document_support",
+      "user": "Before I send anything, can you check what files are already saved in my wallet? I don\u2019t want old papers sitting in there if I forgot about them.",
+      "normalizedQuery": "hi beaverton finding domestic violence survivor advocacy sorry say things little slower missed number hearing great on this phone could repeat it small chunks before send anything check files already saved wallet don want old papers sitting there if forgot them",
+      "voiceResponse": "Absolutely. You can check that before sending anything. Open your **Wallet** and tap **Documents** or **Saved files**. You should see everything already stored there. You can open each file to review it, then choose **Remove** or **Delete** for anything old. If you want, I can walk you through it slowly, one tap at a time.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You can check that before sending anything. Open your **Wallet** and tap **Documents** or **Saved files**. You should see everything already stored there. You can open each file to review it, then choose **Remove** or **Delete** for anything old. If you want, I can walk you through it slowly, one tap at a time.",
+      "voiceResponseAlternatives": [
+        "Absolutely, that makes sense. We can keep this minimal. I can help you review only what\u2019s already in your wallet, then remove anything extra before you send. No need to add new documents right now. If you want, we can do it step by step: open Wallet, then Files, then I\u2019ll help you check each item one at a time and keep only what you choose."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001120#turn-4",
+      "scenarioId": "phone_dialog_0001120",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "app_surface_navigation",
+      "user": "Do I upload my protection order as a file, or is there a QR code I\u2019m supposed to show at the appointment?",
+      "normalizedQuery": "hi beaverton finding domestic violence survivor advocacy sorry say things little slower missed number hearing great on this phone could repeat it small chunks before send anything check files already saved wallet don want old papers sitting there if forgot them upload protection order as file qr code supposed show at appointment",
+      "voiceResponse": "Good question. In the **Appointment details** screen, you can do either option: upload a file in **Documents/Attachments**, or just keep it with you to show in person. For this advocacy program, the listing says **required documents: none**, so you should not be blocked if you do not upload first. If you want, open **Calendar**, tap your appointment, then tap **Attachments** to check whether upload is available there.",
+      "evidenceDocIds": [
+        "service:5365a85b387044f7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "service:de79113abf2cae4b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Good question. In the **Appointment details** screen, you can do either option: upload a file in **Documents/Attachments**, or just keep it with you to show in person. For this advocacy program, the listing says **required documents: none**, so you should not be blocked if you do not upload first. If you want, open **Calendar**, tap your appointment, then tap **Attachments** to check whether upload is available there.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -38,6 +339,72 @@
       "to": "phone_dialog_0000226#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "clarifying_prompt->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000804#turn-1",
+      "to": "phone_dialog_0000804#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000804#turn-2",
+      "to": "phone_dialog_0000804#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000804#turn-3",
+      "to": "phone_dialog_0000804#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000804#turn-4",
+      "to": "phone_dialog_0000804#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000976#turn-1",
+      "to": "phone_dialog_0000976#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000976#turn-2",
+      "to": "phone_dialog_0000976#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000976#turn-3",
+      "to": "phone_dialog_0000976#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001120#turn-1",
+      "to": "phone_dialog_0001120#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001120#turn-2",
+      "to": "phone_dialog_0001120#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001120#turn-3",
+      "to": "phone_dialog_0001120#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001120#turn-4",
+      "to": "phone_dialog_0001120#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->wallet_document_support"
     }
   ]
 }

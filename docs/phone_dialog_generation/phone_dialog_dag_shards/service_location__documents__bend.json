@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__bend",
   "kind": "service_location",
   "key": "documents__bend",
-  "nodeCount": 8,
+  "nodeCount": 10,
   "nodes": [
     {
       "id": "phone_dialog_0000111#turn-6",
@@ -28,7 +28,8 @@
       "assistantResponse": "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
       "voiceResponseAlternatives": [
         "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
-        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now."
+        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now.",
+        "Yes, they can help with safety planning, and they can usually guide you through protective order paperwork and court steps. If he is nearby right now or you feel in immediate danger, call **9-1-1** first. If not, call the advocate line now at **541-686-7878** and tell them you need safety planning and protective order help."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "hard_of_hearing",
@@ -189,7 +190,8 @@
       "assistantResponse": "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
       "voiceResponseAlternatives": [
         "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
-        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now."
+        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now.",
+        "Yes, they can help with safety planning, and they can usually guide you through protective order paperwork and court steps. If he is nearby right now or you feel in immediate danger, call **9-1-1** first. If not, call the advocate line now at **541-686-7878** and tell them you need safety planning and protective order help."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "background_noise",
@@ -217,11 +219,66 @@
       "assistantResponse": "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now.",
       "voiceResponseAlternatives": [
         "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
-        "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?"
+        "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
+        "Yes, they can help with safety planning, and they can usually guide you through protective order paperwork and court steps. If he is nearby right now or you feel in immediate danger, call **9-1-1** first. If not, call the advocate line now at **541-686-7878** and tell them you need safety planning and protective order help."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "background_noise",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000777#turn-6",
+      "scenarioId": "phone_dialog_0000777",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "And do they help with safety planning and maybe court stuff too, like protective order paperwork?",
+      "normalizedQuery": "he keeps texting showing up scared go back apartment tonight sorry crying wait was name again repeat number really slowly one digit at time phone like two percent if we cut off tell fastest place bend right now an advocate they safety planning maybe court stuff too protective order paperwork",
+      "voiceResponse": "Yes, they can help with safety planning, and they can usually guide you through protective order paperwork and court steps. If he is nearby right now or you feel in immediate danger, call **9-1-1** first. If not, call the advocate line now at **541-686-7878** and tell them you need safety planning and protective order help.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, they can help with safety planning, and they can usually guide you through protective order paperwork and court steps. If he is nearby right now or you feel in immediate danger, call **9-1-1** first. If not, call the advocate line now at **541-686-7878** and tell them you need safety planning and protective order help.",
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you\u2019re planning this exactly right. I don\u2019t have verified listings on my screen to safely rank Bend locations by closest and backup. The fastest next step is a live 211 specialist who can check real-time availability and give you closest first, then a backup if full. I can connect you now and stay with you through the handoff.",
+        "I hear you. I do not have a confirmed Bend office address in my notes right now. I do not have a confirmed Bend office address right now. I can connect you to a live agent to verify the exact location and orientation details. Do you want me to do that now?",
+        "Yes. In order. First, call **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Again: **5 4 1** \u2026 **3 8 9** \u2026 **1 7 1 8**. Second, ask what paperwork to bring. Third, ask the next orientation time, and when to arrive. I do not have a confirmed Bend office address in my notes. A live agent can confirm location, documents, and exact time now."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000998#turn-4",
+      "scenarioId": "phone_dialog_0000998",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "bend",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I have to send proof, where does it go? Is it stored somewhere people can look it up?",
+      "normalizedQuery": "hi sorry barely hear here at bus stop i'm bend finding domestic violence survivor advocacy before we go further this private really don't want ex called wait repeat name just went by missed it if have send proof does stored somewhere people look up",
+      "voiceResponse": "That\u2019s a really important question. For this service listing, documents are **not required**, so you can ask for help without sending proof first. If they later request anything, you can ask exactly where it\u2019s uploaded, who can view it, and how long it\u2019s kept before you share. Keep it minimal: no extra details, and use first name only or no name. If you want, I can help you script that question for Community Works.",
+      "evidenceDocIds": [
+        "page:bafkreic6nu6qu24tvolxmf5wtd3ad5jm6a63vimixhqccz6fvswg6asxfa",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a really important question. For this service listing, documents are **not required**, so you can ask for help without sending proof first. If they later request anything, you can ask exactly where it\u2019s uploaded, who can view it, and how long it\u2019s kept before you share. Keep it minimal: no extra details, and use first name only or no name. If you want, I can help you script that question for Community Works.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -260,6 +317,12 @@
       "to": "phone_dialog_0000423#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000998#turn-4",
+      "to": "phone_dialog_0000998#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
     }
   ]
 }

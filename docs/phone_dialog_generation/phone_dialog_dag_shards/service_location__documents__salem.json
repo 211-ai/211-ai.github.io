@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__salem",
   "kind": "service_location",
   "key": "documents__salem",
-  "nodeCount": 8,
+  "nodeCount": 16,
   "nodes": [
     {
       "id": "phone_dialog_0000063#turn-2",
@@ -80,7 +80,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. One digit at a time. **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.** Again: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.**",
       "voiceResponseAlternatives": [
-        "Yes. It\u2019s called **2-1-1** \u2014 **two, one, one**. Just dial **2-1-1** for local Salem ID replacement help."
+        "Yes. It\u2019s called **2-1-1** \u2014 **two, one, one**. Just dial **2-1-1** for local Salem ID replacement help.",
+        "Of course. The key part was: I don\u2019t have a confirmed Salem walk-in ID replacement site tonight after 6 in my current data. So next step is simple: we set a reminder for when you want to start calling places to ask two things only, \u201cwalk-ins\u201d and \u201cno police report required.\u201d If you want, pick a time and I\u2019ll keep it to short steps."
       ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -190,7 +191,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. It\u2019s called **2-1-1** \u2014 **two, one, one**. Just dial **2-1-1** for local Salem ID replacement help.",
       "voiceResponseAlternatives": [
-        "Yes. One digit at a time. **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.** Again: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.**"
+        "Yes. One digit at a time. **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.** Again: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.**",
+        "Of course. The key part was: I don\u2019t have a confirmed Salem walk-in ID replacement site tonight after 6 in my current data. So next step is simple: we set a reminder for when you want to start calling places to ask two things only, \u201cwalk-ins\u201d and \u201cno police report required.\u201d If you want, pick a time and I\u2019ll keep it to short steps."
       ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -222,6 +224,222 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000838#turn-5",
+      "scenarioId": "phone_dialog_0000838",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Can you say the place name and phone number one more time, slower, so I can write it down for him?",
+      "normalizedQuery": "he salem right now needs somewhere mail like real mailing address don know all his details hello cut on part repeat documents bring think has state id sure anything else doesn always keep phone say place name number one more time slower so write it down him",
+      "voiceResponse": "Absolutely, and I\u2019m glad you asked. The place is **211**, a live **211 specialist** for Salem resources. I don\u2019t have a verified local program name or direct phone number in front of me, so I don\u2019t want to give you a wrong one. If there\u2019s immediate danger, call **911**. Otherwise, I can connect you to **211** now while you stay the contact person for him.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and I\u2019m glad you asked. The place is **211**, a live **211 specialist** for Salem resources. I don\u2019t have a verified local program name or direct phone number in front of me, so I don\u2019t want to give you a wrong one. If there\u2019s immediate danger, call **911**. Otherwise, I can connect you to **211** now while you stay the contact person for him.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000862#turn-1",
+      "scenarioId": "phone_dialog_0000862",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, sorry, I\u2019m in Salem and I need help replacing my ID still. I went in yesterday for intake at the outreach office.",
+      "normalizedQuery": "hi sorry salem replacing id still went yesterday intake at outreach office",
+      "voiceResponse": "You did the right thing going in yesterday, and I know it\u2019s frustrating to still be stuck. Here\u2019s the next step: call the Homeless Outreach and Advocacy Project and ask for ID-replacement follow-up from your intake. The main numbers are **503-588-5827** or **503-581-5535**. If needed, go back to **694 Church Street NE, Salem**. At intake they list no required documents, so ask what they need now to move your ID request forward today.",
+      "evidenceDocIds": [
+        "service:ec50085821d5c90f",
+        "service:df6fd9793d8c7cd0",
+        "service:d8228ae4e001ae0a",
+        "service:03d30d05c6832d89",
+        "service:dae095847c2f2497"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing going in yesterday, and I know it\u2019s frustrating to still be stuck. Here\u2019s the next step: call the Homeless Outreach and Advocacy Project and ask for ID-replacement follow-up from your intake. The main numbers are **503-588-5827** or **503-581-5535**. If needed, go back to **694 Church Street NE, Salem**. At intake they list no required documents, so ask what they need now to move your ID request forward today.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000862#turn-2",
+      "scenarioId": "phone_dialog_0000862",
+      "turnIndex": 1,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "wallet_document_support",
+      "user": "Can you note that they said I\u2019m missing one proof of address, um, and they told me to come back Monday morning?",
+      "normalizedQuery": "hi sorry salem replacing id still went yesterday intake at outreach office note they said missing one proof address um told come back monday morning",
+      "voiceResponse": "Absolutely, I\u2019ve got that noted: they said you\u2019re missing one proof of address, and to return Monday morning. Next step is simple: bring that proof with you Monday, and if you can, call first to confirm exactly which proof they\u2019ll accept so you don\u2019t make an extra trip. If you want, I can help you draft a one-sentence script for that call.",
+      "evidenceDocIds": [
+        "service:86e7b60ca17fd674",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "service:2df605d5503d1f52",
+        "service:97fd6b13a5399d5a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019ve got that noted: they said you\u2019re missing one proof of address, and to return Monday morning. Next step is simple: bring that proof with you Monday, and if you can, call first to confirm exactly which proof they\u2019ll accept so you don\u2019t make an extra trip. If you want, I can help you draft a one-sentence script for that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can keep this simple and private. If you have any wallet documents saved, pull them into one folder now: photo of ID, insurance card, bank card info, or a bill with your name and address. That becomes your proof packet for replacement requests. If you have nothing saved, there\u2019s still a low-info path: freeze cards first, then start ID replacement with alternate proof. I can walk you through each call in short, 30-second steps.",
+        "Next step: please have your uncle gather any income-related document he already has in his wallet or files, and keep photos of them ready to upload if asked. I can\u2019t confirm an exact proof list from what I have here. Once you share his 5-digit Salem ZIP, I can narrow options and connect you to a live 211 specialist to verify the exact documents."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000862#turn-3",
+      "scenarioId": "phone_dialog_0000862",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Wait, sorry, say that address list part again? The bus is loud and I missed you.",
+      "normalizedQuery": "hi sorry salem replacing id still went yesterday intake at outreach office note they said missing one proof address um told come back monday morning wait say list part again bus loud missed",
+      "voiceResponse": "Totally understandable, bus noise makes this hard. I don\u2019t have a strong local match for that outreach-office address in my records right now. I can give the address I do have: 4263 Commercial Street S E, Suite 300, Salem, Oregon, 97301. If that\u2019s not the one you need, I can get you to a live specialist to confirm the exact office address. Do you want that transfer?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:86e7b60ca17fd674",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:97fd6b13a5399d5a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally understandable, bus noise makes this hard. I don\u2019t have a strong local match for that outreach-office address in my records right now. I can give the address I do have: 4263 Commercial Street S E, Suite 300, Salem, Oregon, 97301. If that\u2019s not the one you need, I can get you to a live specialist to confirm the exact office address. Do you want that transfer?",
+      "voiceResponseAlternatives": [
+        "Next step: please share your uncle\u2019s 5-digit Salem ZIP code so I can narrow this to nearby options. I don\u2019t have a strong local match yet from what I can see, and the ZIP is the key missing detail. If it\u2019s easier, I can also connect you to a live 211 specialist after that."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001000#turn-1",
+      "scenarioId": "phone_dialog_0001000",
+      "turnIndex": 0,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "wallet_document_support",
+      "user": "Hi, sorry, I\u2019m talking fast, I know, but I\u2019m in Salem and I lost my wallet on the bus and I need to replace my ID, like urgently.",
+      "normalizedQuery": "hi sorry talking fast know salem lost wallet on bus replace id like urgently",
+      "voiceResponse": "You\u2019re okay, we can keep this simple and private. If you have any wallet documents saved, pull them into one folder now: photo of ID, insurance card, bank card info, or a bill with your name and address. That becomes your proof packet for replacement requests. If you have nothing saved, there\u2019s still a low-info path: freeze cards first, then start ID replacement with alternate proof. I can walk you through each call in short, 30-second steps.",
+      "evidenceDocIds": [
+        "service:9d8edf69bee13eb3",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127",
+        "service:9f02d53fbb3e9c6a",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, we can keep this simple and private. If you have any wallet documents saved, pull them into one folder now: photo of ID, insurance card, bank card info, or a bill with your name and address. That becomes your proof packet for replacement requests. If you have nothing saved, there\u2019s still a low-info path: freeze cards first, then start ID replacement with alternate proof. I can walk you through each call in short, 30-second steps.",
+      "voiceResponseAlternatives": [
+        "Absolutely, I\u2019ve got that noted: they said you\u2019re missing one proof of address, and to return Monday morning. Next step is simple: bring that proof with you Monday, and if you can, call first to confirm exactly which proof they\u2019ll accept so you don\u2019t make an extra trip. If you want, I can help you draft a one-sentence script for that call.",
+        "Next step: please have your uncle gather any income-related document he already has in his wallet or files, and keep photos of them ready to upload if asked. I can\u2019t confirm an exact proof list from what I have here. Once you share his 5-digit Salem ZIP, I can narrow options and connect you to a live 211 specialist to verify the exact documents."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001000#turn-3",
+      "scenarioId": "phone_dialog_0001000",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat that last part? You cut out for a second and there\u2019s a leaf blower right outside.",
+      "normalizedQuery": "hi sorry talking fast know salem lost wallet on bus replace id like urgently specifically place open tonight after does walk ins no appointment won require police report first exist wait repeat last part cut second there leaf blower right outside",
+      "voiceResponse": "Of course. The key part was: I don\u2019t have a confirmed Salem walk-in ID replacement site tonight after 6 in my current data. So next step is simple: we set a reminder for when you want to start calling places to ask two things only, \u201cwalk-ins\u201d and \u201cno police report required.\u201d If you want, pick a time and I\u2019ll keep it to short steps.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:7adac1965bc9230a",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The key part was: I don\u2019t have a confirmed Salem walk-in ID replacement site tonight after 6 in my current data. So next step is simple: we set a reminder for when you want to start calling places to ask two things only, \u201cwalk-ins\u201d and \u201cno police report required.\u201d If you want, pick a time and I\u2019ll keep it to short steps.",
+      "voiceResponseAlternatives": [
+        "Yes. One digit at a time. **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.** Again: **5 \u2026 0 \u2026 3 \u2026 7 \u2026 3 \u2026 9 \u2026 0 \u2026 1 \u2026 5 \u2026 8.**",
+        "Yes. It\u2019s called **2-1-1** \u2014 **two, one, one**. Just dial **2-1-1** for local Salem ID replacement help."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001131#turn-3",
+      "scenarioId": "phone_dialog_0001131",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "template_guided_fallback",
+      "user": "He\u2019s older and his back is bad, so getting to a laundromat is hard, but I don\u2019t know all his paperwork stuff.",
+      "normalizedQuery": "hi sorry if cut calling uncle he needs laundry salem say again broke up after part who qualifies older his back bad so getting laundromat hard don know all paperwork stuff",
+      "voiceResponse": "Next step: please share your uncle\u2019s 5-digit Salem ZIP code so I can narrow this to nearby options. I don\u2019t have a strong local match yet from what I can see, and the ZIP is the key missing detail. If it\u2019s easier, I can also connect you to a live 211 specialist after that.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please share your uncle\u2019s 5-digit Salem ZIP code so I can narrow this to nearby options. I don\u2019t have a strong local match yet from what I can see, and the ZIP is the key missing detail. If it\u2019s easier, I can also connect you to a live 211 specialist after that.",
+      "voiceResponseAlternatives": [
+        "Totally understandable, bus noise makes this hard. I don\u2019t have a strong local match for that outreach-office address in my records right now. I can give the address I do have: 4263 Commercial Street S E, Suite 300, Salem, Oregon, 97301. If that\u2019s not the one you need, I can get you to a live specialist to confirm the exact office address. Do you want that transfer?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001131#turn-4",
+      "scenarioId": "phone_dialog_0001131",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "salem",
+      "promptTemplate": "wallet_document_support",
+      "user": "I think he\u2019s on a fixed income, maybe Social Security, but I\u2019m not totally sure what proof they\u2019ll ask for.",
+      "normalizedQuery": "hi sorry if cut calling uncle he needs laundry salem say again broke up after part who qualifies older his back bad so getting laundromat hard don know all paperwork stuff think on fixed income maybe social security totally sure proof they ll ask",
+      "voiceResponse": "Next step: please have your uncle gather any income-related document he already has in his wallet or files, and keep photos of them ready to upload if asked. I can\u2019t confirm an exact proof list from what I have here. Once you share his 5-digit Salem ZIP, I can narrow options and connect you to a live 211 specialist to verify the exact documents.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please have your uncle gather any income-related document he already has in his wallet or files, and keep photos of them ready to upload if asked. I can\u2019t confirm an exact proof list from what I have here. Once you share his 5-digit Salem ZIP, I can narrow options and connect you to a live 211 specialist to verify the exact documents.",
+      "voiceResponseAlternatives": [
+        "Absolutely, I\u2019ve got that noted: they said you\u2019re missing one proof of address, and to return Monday morning. Next step is simple: bring that proof with you Monday, and if you can, call first to confirm exactly which proof they\u2019ll accept so you don\u2019t make an extra trip. If you want, I can help you draft a one-sentence script for that call.",
+        "You\u2019re okay, we can keep this simple and private. If you have any wallet documents saved, pull them into one folder now: photo of ID, insurance card, bank card info, or a bill with your name and address. That becomes your proof packet for replacement requests. If you have nothing saved, there\u2019s still a low-info path: freeze cards first, then start ID replacement with alternate proof. I can walk you through each call in short, 30-second steps."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -260,6 +478,48 @@
       "to": "phone_dialog_0000414#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000862#turn-1",
+      "to": "phone_dialog_0000862#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000862#turn-2",
+      "to": "phone_dialog_0000862#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000862#turn-3",
+      "to": "phone_dialog_0000862#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001000#turn-1",
+      "to": "phone_dialog_0001000#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001000#turn-3",
+      "to": "phone_dialog_0001000#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001131#turn-3",
+      "to": "phone_dialog_0001131#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001131#turn-4",
+      "to": "phone_dialog_0001131#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->speech_unclear_clarification"
     }
   ]
 }

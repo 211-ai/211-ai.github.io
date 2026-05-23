@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__gresham",
   "kind": "service_location",
   "key": "documents__gresham",
-  "nodeCount": 5,
+  "nodeCount": 12,
   "nodes": [
     {
       "id": "phone_dialog_0000360#turn-1",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "First step: call Greyhound now and ask what they accept if your ID was lost, so you can still travel while replacing it. The number is **800 \u2026 231 \u2026 2222**. Backup number: **800 \u2026 531 \u2026 5332**. I only have bus-service listings in front of me right now, not an ID-replacement office listing.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. The office is **211info**. I\u2019ll say it slowly: **two-one-one info**. Again: **two-one-one info**."
+      ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "grounded_operator"
@@ -52,7 +54,8 @@
       "similarCases": [],
       "assistantResponse": "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**.",
       "voiceResponseAlternatives": [
-        "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**."
+        "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**.",
+        "Yes. The number is **9-1-1**. Again, slowly: **nine\u2026 one\u2026 one**. If you feel unsafe or think you might use and overdose, call **9-1-1 now**."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
@@ -78,7 +81,11 @@
       ],
       "similarCases": [],
       "assistantResponse": "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "That makes total sense, and you\u2019re doing a great job helping her get ready. Since document requirements vary by program, have her gather the basics first: photo ID, proof of address, proof of income, work schedule or employer letter, and the kids\u2019 names and birthdates. Also have her note the daycare waitlist outcome and what she can afford monthly. When she calls, she can ask, \u201cWhat exact documents do each referral and subsidy program require?\u201d",
+        "You\u2019re okay, stay with me. You didn\u2019t miss it, I haven\u2019t given a place yet because I don\u2019t have a confirmed one that won\u2019t turn you away. Go straight to a live 211 person now and say: \u201cI\u2019m 19, no ID, no money, need same-day laundry in Gresham.\u201d If you feel unsafe right now, call 911 right now.",
+        "I hear you. Your safety comes first. If you feel in danger right now, call **9-1-1** immediately: **nine\u2026 one\u2026 one**. If you can, move toward a public place with other people while I connect you to a live agent now to find a same-night place you can get to from Gresham and avoid getting turned away. Stay with me."
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
@@ -103,7 +110,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re doing the right thing asking now. For the **Gresham Police Department**, the listing says **required documents: none**. So for a stolen wallet report, you should be able to call or go in without proof first. If they ask later, bring any ID or paper with your name when you can. Number is: **503-618-3000**. Again: **503\u2026 618\u2026 3000**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry that happened. We can do this step by step. For replacing a state ID, you usually need proof of identity and proof of address. For wallet recovery, we can make a simple document checklist first. Please do not share full ID numbers on this call. One question: do you want to start with the ID document checklist, or with replacing cards from your wallet first?"
+      ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
@@ -129,11 +138,206 @@
       "similarCases": [],
       "assistantResponse": "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**.",
       "voiceResponseAlternatives": [
-        "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**."
+        "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**.",
+        "Yes. The number is **9-1-1**. Again, slowly: **nine\u2026 one\u2026 one**. If you feel unsafe or think you might use and overdose, call **9-1-1 now**."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000899#turn-5",
+      "scenarioId": "phone_dialog_0000899",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t have all her paperwork with me, so what should I ask her to gather before she calls you herself?",
+      "normalizedQuery": "only know some it she got two little kids think ages three six works early shifts told tried one daycare they said there waitlist couldn afford full price tell programs might qualify gresham like vouchers sliding scale places don have all her paperwork so should ask gather before calls herself",
+      "voiceResponse": "That makes total sense, and you\u2019re doing a great job helping her get ready. Since document requirements vary by program, have her gather the basics first: photo ID, proof of address, proof of income, work schedule or employer letter, and the kids\u2019 names and birthdates. Also have her note the daycare waitlist outcome and what she can afford monthly. When she calls, she can ask, \u201cWhat exact documents do each referral and subsidy program require?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re doing a great job helping her get ready. Since document requirements vary by program, have her gather the basics first: photo ID, proof of address, proof of income, work schedule or employer letter, and the kids\u2019 names and birthdates. Also have her note the daycare waitlist outcome and what she can afford monthly. When she calls, she can ask, \u201cWhat exact documents do each referral and subsidy program require?\u201d",
+      "voiceResponseAlternatives": [
+        "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
+        "You\u2019re okay, stay with me. You didn\u2019t miss it, I haven\u2019t given a place yet because I don\u2019t have a confirmed one that won\u2019t turn you away. Go straight to a live 211 person now and say: \u201cI\u2019m 19, no ID, no money, need same-day laundry in Gresham.\u201d If you feel unsafe right now, call 911 right now.",
+        "I hear you. Your safety comes first. If you feel in danger right now, call **9-1-1** immediately: **nine\u2026 one\u2026 one**. If you can, move toward a public place with other people while I connect you to a live agent now to find a same-night place you can get to from Gresham and avoid getting turned away. Stay with me."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000959#turn-5",
+      "scenarioId": "phone_dialog_0000959",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, sorry, I\u2019m crying, I haven\u2019t slept and my phone\u2019s at like two percent, can you give me the first place one more time?",
+      "normalizedQuery": "just somewhere laundry like right now stuff soaked don't have money gresham wait say again slower missed street name i'm 19 an id on they gonna turn away if show up sorry crying haven slept phone at two percent give first place one more time",
+      "voiceResponse": "You\u2019re okay, stay with me. You didn\u2019t miss it, I haven\u2019t given a place yet because I don\u2019t have a confirmed one that won\u2019t turn you away. Go straight to a live 211 person now and say: \u201cI\u2019m 19, no ID, no money, need same-day laundry in Gresham.\u201d If you feel unsafe right now, call 911 right now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiajlnxzecauir5bmy2itwygfmfygfoeo6zmzqzeaiud22i652v3ya"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, stay with me. You didn\u2019t miss it, I haven\u2019t given a place yet because I don\u2019t have a confirmed one that won\u2019t turn you away. Go straight to a live 211 person now and say: \u201cI\u2019m 19, no ID, no money, need same-day laundry in Gresham.\u201d If you feel unsafe right now, call 911 right now.",
+      "voiceResponseAlternatives": [
+        "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
+        "That makes total sense, and you\u2019re doing a great job helping her get ready. Since document requirements vary by program, have her gather the basics first: photo ID, proof of address, proof of income, work schedule or employer letter, and the kids\u2019 names and birthdates. Also have her note the daycare waitlist outcome and what she can afford monthly. When she calls, she can ask, \u201cWhat exact documents do each referral and subsidy program require?\u201d",
+        "I hear you. Your safety comes first. If you feel in danger right now, call **9-1-1** immediately: **nine\u2026 one\u2026 one**. If you can, move toward a public place with other people while I connect you to a live agent now to find a same-night place you can get to from Gresham and avoid getting turned away. Stay with me."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001059#turn-1",
+      "scenarioId": "phone_dialog_0001059",
+      "turnIndex": 0,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "wallet_document_support",
+      "user": "Hi, I\u2019m in Gresham, and I need help replacing my state ID. I lost my wallet and I\u2019m not sure where to start.",
+      "normalizedQuery": "hi gresham replacing state id lost wallet sure start",
+      "voiceResponse": "I\u2019m sorry that happened. We can do this step by step. For replacing a state ID, you usually need proof of identity and proof of address. For wallet recovery, we can make a simple document checklist first. Please do not share full ID numbers on this call. One question: do you want to start with the ID document checklist, or with replacing cards from your wallet first?",
+      "evidenceDocIds": [
+        "service:a7e869c19c920b1a",
+        "page:bafkreieqx32ihqxwox7n5g2scr2vrkfiho4nmwplhrnago22qzeqewuroa",
+        "page:bafkreigicyrubibladzwk2qh3wcnhpfb4n6u57syrzbgirffpxkjnaw45y",
+        "page:bafkreic7nqmibinv36grlhtbbluvahzujlfflyier4qpmincpjjfei2tdu",
+        "page:bafkreietr72vghmjmxtvddwwmffprh2pxxicjwglkqgp6jcdb64toxgkgu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry that happened. We can do this step by step. For replacing a state ID, you usually need proof of identity and proof of address. For wallet recovery, we can make a simple document checklist first. Please do not share full ID numbers on this call. One question: do you want to start with the ID document checklist, or with replacing cards from your wallet first?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing asking now. For the **Gresham Police Department**, the listing says **required documents: none**. So for a stolen wallet report, you should be able to call or go in without proof first. If they ask later, bring any ID or paper with your name when you can. Number is: **503-618-3000**. Again: **503\u2026 618\u2026 3000**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001059#turn-2",
+      "scenarioId": "phone_dialog_0001059",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Could you say that office name again, slowly? I forget things if it\u2019s too fast.",
+      "normalizedQuery": "hi gresham replacing state id lost wallet sure start could say office name again slowly forget things if it too fast",
+      "voiceResponse": "Yes. The office is **211info**. I\u2019ll say it slowly: **two-one-one info**. Again: **two-one-one info**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8cff3ea3d8ce0793",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The office is **211info**. I\u2019ll say it slowly: **two-one-one info**. Again: **two-one-one info**.",
+      "voiceResponseAlternatives": [
+        "First step: call Greyhound now and ask what they accept if your ID was lost, so you can still travel while replacing it. The number is **800 \u2026 231 \u2026 2222**. Backup number: **800 \u2026 531 \u2026 5332**. I only have bus-service listings in front of me right now, not an ID-replacement office listing."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001059#turn-3",
+      "scenarioId": "phone_dialog_0001059",
+      "turnIndex": 2,
+      "route": "calendar_event_support",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "calendar_event_support",
+      "user": "I can go on Tuesday morning, I think, but I don\u2019t want to miss it. Can you help me set a reminder for that appointment?",
+      "normalizedQuery": "hi gresham replacing state id lost wallet sure start could say office name again slowly forget things if it too fast go on tuesday morning think don want miss set reminder appointment",
+      "voiceResponse": "Yes. I can help with that reminder. You said **Tuesday morning**. I\u2019ll repeat it: **Tuesday morning**. What time should I set it for?",
+      "evidenceDocIds": [
+        "service:a8985ec91c7fc1f1",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that reminder. You said **Tuesday morning**. I\u2019ll repeat it: **Tuesday morning**. What time should I set it for?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001071#turn-5",
+      "scenarioId": "phone_dialog_0001071",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that number again? Say it one more time, slower, my phone's at like two percent.",
+      "normalizedQuery": "sorry hold on people yelling background i'm gresham don't have car can't keep using tonight slow down missed head's all over place crying they gonna turn away if money like paperwork wait was number again say it one more time slower phone's at two percent",
+      "voiceResponse": "Yes. The number is **9-1-1**. Again, slowly: **nine\u2026 one\u2026 one**. If you feel unsafe or think you might use and overdose, call **9-1-1 now**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. Again, slowly: **nine\u2026 one\u2026 one**. If you feel unsafe or think you might use and overdose, call **9-1-1 now**.",
+      "voiceResponseAlternatives": [
+        "Yes, the place name was **Greyhound**. Next step: call them now and ask what they accept if your ID was lost. Number: **800 \u2026 231 \u2026 2222**. Backup: **800 \u2026 531 \u2026 5332**.",
+        "I hear you. The number is **503-618-3000**. Again, slowly: **503 \u2026 618 \u2026 3000**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001071#turn-6",
+      "scenarioId": "phone_dialog_0001071",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I don't feel safe where I'm at, I just need somewhere I can get to from Gresham and not get bounced.",
+      "normalizedQuery": "slow down missed head's all over place keep crying they gonna turn away if don't have money like paperwork wait was number again say it one more time slower phone's at two percent feel safe i'm just somewhere from gresham bounced",
+      "voiceResponse": "I hear you. Your safety comes first. If you feel in danger right now, call **9-1-1** immediately: **nine\u2026 one\u2026 one**. If you can, move toward a public place with other people while I connect you to a live agent now to find a same-night place you can get to from Gresham and avoid getting turned away. Stay with me.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your safety comes first. If you feel in danger right now, call **9-1-1** immediately: **nine\u2026 one\u2026 one**. If you can, move toward a public place with other people while I connect you to a live agent now to find a same-night place you can get to from Gresham and avoid getting turned away. Stay with me.",
+      "voiceResponseAlternatives": [
+        "Before pickup, bring only what you already have with you. For that place, **no documents are required at intake**. If you feel worse while waiting, especially trouble breathing, severe pain, or feeling unsafe, call **9 1 1** right away.",
+        "That makes total sense, and you\u2019re doing a great job helping her get ready. Since document requirements vary by program, have her gather the basics first: photo ID, proof of address, proof of income, work schedule or employer letter, and the kids\u2019 names and birthdates. Also have her note the daycare waitlist outcome and what she can afford monthly. When she calls, she can ask, \u201cWhat exact documents do each referral and subsidy program require?\u201d",
+        "You\u2019re okay, stay with me. You didn\u2019t miss it, I haven\u2019t given a place yet because I don\u2019t have a confirmed one that won\u2019t turn you away. Go straight to a live 211 person now and say: \u201cI\u2019m 19, no ID, no money, need same-day laundry in Gresham.\u201d If you feel unsafe right now, call 911 right now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -154,6 +358,30 @@
       "to": "phone_dialog_0000576#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "wallet_document_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001059#turn-1",
+      "to": "phone_dialog_0001059#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001059#turn-2",
+      "to": "phone_dialog_0001059#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001059#turn-3",
+      "to": "phone_dialog_0001059#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001071#turn-5",
+      "to": "phone_dialog_0001071#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

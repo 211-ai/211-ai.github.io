@@ -1,0 +1,1242 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "id": "route__safety_guardrail_support",
+  "kind": "route",
+  "key": "safety_guardrail_support",
+  "nodeCount": 39,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000636#turn-4",
+      "scenarioId": "phone_dialog_0000636",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "washington_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I used fentanyl earlier and benzos yesterday, and now my chest feels tight and I\u2019m scared to pass out.",
+      "normalizedQuery": "hi sorry this isn phone it die give most important number first detox washington county feel really sick shaky stop throwing up kinda freaking right now cut repeat slower used fentanyl earlier benzos yesterday chest feels tight scared pass",
+      "voiceResponse": "This is an emergency. Call **911** right now: **9-1-1**. Chest tightness after fentanyl and benzos can be life-threatening. If you can, unlock the door, sit or lie on your side, and keep the phone on speaker. If someone is nearby, hand them the phone and have them call **911** now.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is an emergency. Call **911** right now: **9-1-1**. Chest tightness after fentanyl and benzos can be life-threatening. If you can, unlock the door, sit or lie on your side, and keep the phone on speaker. If someone is nearby, hand them the phone and have them call **911** now.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000641#turn-6",
+      "scenarioId": "phone_dialog_0000641",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you stay with me while I write it down? I keep mixing up the numbers when I\u2019m panicking.",
+      "normalizedQuery": "wait say again slower outside traffic loud missed middle part kind all over place right now food pantry meal meals groceries tonight next week if there live person line please give one first case this call drops stay while write it down keep mixing up numbers when panicking",
+      "voiceResponse": "I\u2019m with you. Quick safety check first: are you and your child physically safe right now? Write this one first, slowly: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. I\u2019ll repeat: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. That\u2019s the food pantry at **8-8-0-0 Southeast 80th Avenue, Portland**. You can call now; eligibility is unrestricted and no documents are required.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. Quick safety check first: are you and your child physically safe right now? Write this one first, slowly: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. I\u2019ll repeat: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. That\u2019s the food pantry at **8-8-0-0 Southeast 80th Avenue, Portland**. You can call now; eligibility is unrestricted and no documents are required.",
+      "voiceResponseAlternatives": [
+        "I hear you. This is an emergency right now. Please tell shelter staff: \u201cI might pass out, I can\u2019t keep food down, and I\u2019m having trouble breathing.\u201d Ask them to call **911** now and stay with you. Do not go outside alone. Sit down, lean forward, and stay where people can see you. After 911 is on the way, I can help with food support next."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000646#turn-4",
+      "scenarioId": "phone_dialog_0000646",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "lane_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, I missed that, my head is spinning. Can you say the address again slower?",
+      "normalizedQuery": "hi sorry doing good shaking really bad warm lane county eugene outside right now feel kind faint warming center tonight don think stay here much longer missed head spinning say address again slower",
+      "voiceResponse": "Yes. First, quick safety check: are you able to call **911** now? Here is the address, slowly: **56 East 15th Avenue, Eugene, Oregon, 97401**. That is: **five six** East **one five**th Avenue. If you want, I can repeat it again.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e33e68c0ac49bec1",
+        "service:932dd03e182ee14d",
+        "service:f60c129ae57d458b",
+        "service:3b3d1bfab5c8a6c2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First, quick safety check: are you able to call **911** now? Here is the address, slowly: **56 East 15th Avenue, Eugene, Oregon, 97401**. That is: **five six** East **one five**th Avenue. If you want, I can repeat it again.",
+      "voiceResponseAlternatives": [
+        "I hear you. Slow and clear: **5 4 1, 6 8 9, 3 1 1 1**. That\u2019s Station 7 Youth Daytime Center in Eugene. If your breathing gets hard again, call **9-1-1** right now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000650#turn-2",
+      "scenarioId": "phone_dialog_0000650",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel really sick and shaky and my chest feels tight, I can\u2019t tell if I\u2019m panicking or if something is wrong-wrong.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first case dies feel really sick shaky chest feels tight tell if panicking something wrong",
+      "voiceResponse": "Your most important number is **9-1-1**. Chest tightness and feeling very sick can be an emergency, even if it might be panic. Please hang up and call **9-1-1 now** from this phone, and unlock the door if you can. If you can\u2019t call, put someone nearby on the line with me right now so I can help you take the next step.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your most important number is **9-1-1**. Chest tightness and feeling very sick can be an emergency, even if it might be panic. Please hang up and call **9-1-1 now** from this phone, and unlock the door if you can. If you can\u2019t call, put someone nearby on the line with me right now so I can help you take the next step.",
+      "voiceResponseAlternatives": [
+        "You may be in immediate danger from cold and dizziness. Call **9-1-1 now**. If you can, sit or lie down, get out of the wind, and keep talking in short breaths. I can stay with you while you dial, but **911 is the most important next step right now**.",
+        "I hear you. Your safety comes first: if you might faint, have chest pain, trouble breathing, or symptoms are getting worse, call **9-1-1** now. If you can, sit down, put your head between your knees, and take slow breaths with me: in for 4, out for 6. If this feels like panic and not getting worse, stay on the line and I\u2019ll give you one next safe step.",
+        "I\u2019m with you. This sounds urgent. If your heart is racing and you feel faint, call 911 right now. If you can, sit or lie down on your side and keep your phone with you. If someone is nearby, say, \u201cI need help now.\u201d Tell me: are you able to call 911 this moment?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000652#turn-3",
+      "scenarioId": "phone_dialog_0000652",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I don\u2019t really trust hospitals, I just need somewhere I won\u2019t get judged or turned away.",
+      "normalizedQuery": "hi give most important number first this isn phone it at like two percent salem okay right now head racing keep feeling might something dumb don really trust hospitals just somewhere won judged turned away",
+      "voiceResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2ef319d5e12550a7",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000673#turn-2",
+      "scenarioId": "phone_dialog_0000673",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you say that slower? I can\u2019t focus, I feel like I might pass out if I stand up.",
+      "normalizedQuery": "hi sorry really okay right now dizzy shaking somewhere safe sleep tonight beaverton say slower focus feel like might pass if stand up",
+      "voiceResponse": "Okay. Stay seated or lie down right now. If you feel like you might pass out, call **911** now. I can connect you to a live **211** specialist for shelter tonight in Beaverton. If we disconnect, call **SAFE SLEEP UNITED** at **503\u2026 816\u2026 3409**.",
+      "evidenceDocIds": [
+        "service:a1e021534ee03771",
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9",
+        "service:2e6331f97ca5eacd",
+        "page:bafkreiaivop5s26hcgcpstok2unp3jdsfec2wne2pd4macooorcwmvszka"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Stay seated or lie down right now. If you feel like you might pass out, call **911** now. I can connect you to a live **211** specialist for shelter tonight in Beaverton. If we disconnect, call **SAFE SLEEP UNITED** at **503\u2026 816\u2026 3409**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000681#turn-1",
+      "scenarioId": "phone_dialog_0000681",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I\u2019m sorry, I\u2019m not okay... I need detox help in Beaverton, like today, I can\u2019t do this anymore.",
+      "normalizedQuery": "hi sorry okay detox beaverton like this anymore",
+      "voiceResponse": "I\u2019m really glad you called. First, if you might pass out, can\u2019t breathe, or feel in immediate danger, call 9-1-1 right now. For same-day detox near Beaverton, call FORA Health: **5 0 3, 5 3 5, 1 1 5 1**. They do adult detox and are in Portland. If you want, I can repeat that number slowly.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. First, if you might pass out, can\u2019t breathe, or feel in immediate danger, call 9-1-1 right now. For same-day detox near Beaverton, call FORA Health: **5 0 3, 5 3 5, 1 1 5 1**. They do adult detox and are in Portland. If you want, I can repeat that number slowly.",
+      "voiceResponseAlternatives": [
+        "Quick safety check: with chest tightness and dizziness, this is an emergency, so call **9-1-1** now. If the call drops and you can travel safely, the detox intake I have is **Medical Detox**, **3321 Harold Drive, Salem, Oregon 97305**. Phone: **5-0-3, 3-9-9, 5-5-9-7**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000685#turn-5",
+      "scenarioId": "phone_dialog_0000685",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "bend",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "If there\u2019s a place to wait inside while I get there, tell me that first, I\u2019m kinda panicking and I feel sick.",
+      "normalizedQuery": "bend downtown ve been outside too long shaking don feel safe warming center will actually take tonight 19 turned away again sorry cut repeat slower like step one two if there place wait inside while tell first kinda panicking sick",
+      "voiceResponse": "First, get inside the nearest open public place right now, store, lobby, or anywhere with people and warmth. Then call **9 1 1** now and say: \u201cI\u2019m in downtown Bend, I feel sick, I\u2019m shaking, and I don\u2019t feel safe.\u201d If 911 doesn\u2019t connect, call **5 4 1 \u2014 3 2 2 \u2014 8 7 6 8** for a warming place tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0",
+        "service:9d8134994edb4433"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, get inside the nearest open public place right now, store, lobby, or anywhere with people and warmth. Then call **9 1 1** now and say: \u201cI\u2019m in downtown Bend, I feel sick, I\u2019m shaking, and I don\u2019t feel safe.\u201d If 911 doesn\u2019t connect, call **5 4 1 \u2014 3 2 2 \u2014 8 7 6 8** for a warming place tonight.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000697#turn-3",
+      "scenarioId": "phone_dialog_0000697",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Wait, sorry, what did you say? I can\u2019t focus, my chest feels tight and I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry don feel right at all shaky keep throwing up detox medford main street please tell somewhere go wait did say focus chest feels tight kind panicking",
+      "voiceResponse": "I\u2019m with you. Chest tightness plus shaking and vomiting can be dangerous. Please call **9 1 1** right now, especially if breathing feels hard. If you can, unlock your door and sit upright while you wait. If you\u2019re able after that, for detox help call **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can repeat any part slowly.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:a80fc4c7b16e0d53"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. Chest tightness plus shaking and vomiting can be dangerous. Please call **9 1 1** right now, especially if breathing feels hard. If you can, unlock your door and sit upright while you wait. If you\u2019re able after that, for detox help call **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can repeat any part slowly.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000708#turn-4",
+      "scenarioId": "phone_dialog_0000708",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I need a medical clinic, like today, not next week, I\u2019m scared I might pass out again.",
+      "normalizedQuery": "medical clinic health like next week scared might pass again",
+      "voiceResponse": "Most important first: if you might pass out or have chest tightness again, call **9-1-1 now**. If you can still talk and want a same-day clinic line next, call **5-4-1, 4-7-9, 6-3-9-3** (Siskiyou Community Health Center) and say, \u201cI need an urgent same-day medical visit; I feel faint and scared I may pass out.\u201d",
+      "evidenceDocIds": [
+        "service:37dff1ca34910b97",
+        "service:6c131e2e60505455",
+        "service:a8f9b8c329bb62bf",
+        "service:38b7d2664b9ec642",
+        "service:1a2047875eb85db2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important first: if you might pass out or have chest tightness again, call **9-1-1 now**. If you can still talk and want a same-day clinic line next, call **5-4-1, 4-7-9, 6-3-9-3** (Siskiyou Community Health Center) and say, \u201cI need an urgent same-day medical visit; I feel faint and scared I may pass out.\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000714#turn-3",
+      "scenarioId": "phone_dialog_0000714",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down? I\u2019m trying to listen but I keep missing words, I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry doing good shaking warm chest feels really tight oregon city downtown warming center tonight because stay outside slow down trying listen keep missing words kind panicking",
+      "voiceResponse": "Yes. I\u2019ll go slowly. First, safety check: if your chest tightness or breathing gets worse, call **911** now. For tonight, go to: **606 John Adams Street, Oregon City**. Phone number: **503 \u2026 657 \u2026 8269**. You can say \u201crepeat address\u201d or \u201crepeat phone,\u201d and I\u2019ll repeat just that part.",
+      "evidenceDocIds": [
+        "service:b8b8a8019e422e3b",
+        "service:0bd877900ad5d08d",
+        "service:9e7aba9bfb8fff16",
+        "service:1a6e464c5c032257",
+        "service:8238e7b7a38b001a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll go slowly. First, safety check: if your chest tightness or breathing gets worse, call **911** now. For tonight, go to: **606 John Adams Street, Oregon City**. Phone number: **503 \u2026 657 \u2026 8269**. You can say \u201crepeat address\u201d or \u201crepeat phone,\u201d and I\u2019ll repeat just that part.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000721#turn-2",
+      "scenarioId": "phone_dialog_0000721",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "family",
+      "locationTag": "hillsboro",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Hillsboro, near TV Highway, and I have to get to urgent care now, I can\u2019t miss this, I\u2019m kind of panicking.",
+      "normalizedQuery": "hi borrowed this phone it at like two percent give most important number first please hillsboro tv highway have urgent care now miss kind panicking",
+      "voiceResponse": "I hear the panic, and I\u2019m with you. Quick safety check: if you have chest pain, trouble breathing, heavy bleeding, or feel faint, call **9-1-1** now. If you can travel safely, call **2-1-1** right now and say: \u201cI\u2019m in Hillsboro near TV Highway and need the closest urgent care immediately.\u201d Repeating the key number: **2-1-1**.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:d0f6bca8c0a87513",
+        "service:ed88848aae7354c5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear the panic, and I\u2019m with you. Quick safety check: if you have chest pain, trouble breathing, heavy bleeding, or feel faint, call **9-1-1** now. If you can travel safely, call **2-1-1** right now and say: \u201cI\u2019m in Hillsboro near TV Highway and need the closest urgent care immediately.\u201d Repeating the key number: **2-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000751#turn-4",
+      "scenarioId": "phone_dialog_0000751",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m sorry, I keep repeating myself, I haven\u2019t slept and I\u2019m panicking.",
+      "normalizedQuery": "hi sorry really trying talk stop crying son be home alone anymore youth day center medford if possible slow down missed part people talking background here think straight wait was milford massachusetts just somewhere safe him during keep repeating myself haven slept panicking",
+      "voiceResponse": "You don\u2019t need to apologize. You sound overwhelmed, and your safety matters first. If you or your son might be in immediate danger, call **911** right now. If you\u2019re both safe this minute, tell me your son\u2019s age, and I\u2019ll help find a same-day place in **Medford, Massachusetts**.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:27e274f68ae6936d",
+        "service:c9d3b98528449e94",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreif2sibw7v542da36v5yfazjaa7na2qvht3qt3swj3bu5hh3iga47i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize. You sound overwhelmed, and your safety matters first. If you or your son might be in immediate danger, call **911** right now. If you\u2019re both safe this minute, tell me your son\u2019s age, and I\u2019ll help find a same-day place in **Medford, Massachusetts**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000757#turn-6",
+      "scenarioId": "phone_dialog_0000757",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you text me the address too in case this call drops?",
+      "normalizedQuery": "there warming center open right now like somewhere immediately wait say again slower dizzy traffic noise missed street name trying call 911 unless have just feel might pass if keep standing here text address too case this drops",
+      "voiceResponse": "I can\u2019t text from this line, and I don\u2019t have a confirmed address to give you. Quick safety check: if you feel like you might pass out, call **9-1-1 now**. If you can make one more call after that, use the warming shelter line: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. If that fails, call **2-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:07b702b8ba249a9b",
+        "service:2fd156bff382e1dc",
+        "service:09cc947e2f5bccd2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can\u2019t text from this line, and I don\u2019t have a confirmed address to give you. Quick safety check: if you feel like you might pass out, call **9-1-1 now**. If you can make one more call after that, use the warming shelter line: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. If that fails, call **2-1-1**.",
+      "voiceResponseAlternatives": [
+        "If you start feeling like you might pass out, call **911** immediately. Sit or lie down right now, on your side if you can, and keep your phone unlocked. When 911 answers, say your location first, then: \u201cI\u2019m dizzy and might pass out.\u201d If your breathing gets worse or you do pass out, it\u2019s an emergency.",
+        "If this drops, call **9-1-1** right away: **nine, one, one**. Your chest pain and hard breathing are an emergency. Say: \u201cI\u2019m in Portland, chest pain, dizzy, trouble breathing, might pass out. Send medics to [your exact address].\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000759#turn-5",
+      "scenarioId": "phone_dialog_0000759",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I don\u2019t trust hospitals much, I just need somewhere that won\u2019t turn me away because I\u2019m young and don\u2019t have a ride.",
+      "normalizedQuery": "don trust hospitals much just somewhere won turn away because young have ride",
+      "voiceResponse": "I hear you. First, quick safety check: if you feel like you might pass out or get hurt, call **911** right now. If you can stay on your feet, call **2-1-1** and say: \u201cI\u2019m young, I feel unsafe, and I need same-day detox that won\u2019t turn me away, with bus-accessible intake.\u201d For medical ride help if you have OHP, call Cascades West Ride Line: **5-4-1, 9-2-4, 8-7-3-8**. You\u2019re not asking for too much.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:a52e78bc8469df64",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:a558e2f5ba96f584"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. First, quick safety check: if you feel like you might pass out or get hurt, call **911** right now. If you can stay on your feet, call **2-1-1** and say: \u201cI\u2019m young, I feel unsafe, and I need same-day detox that won\u2019t turn me away, with bus-accessible intake.\u201d For medical ride help if you have OHP, call Cascades West Ride Line: **5-4-1, 9-2-4, 8-7-3-8**. You\u2019re not asking for too much.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000775#turn-6",
+      "scenarioId": "phone_dialog_0000775",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Before we do anything else, can you just tell me what to do if I start passing out while I\u2019m waiting?",
+      "normalizedQuery": "trying call 911 right now just feel really sick dizzy don want be outside again there an emergency shelter shelters homeless overnight warming ll still take this late like tonight wait say number slower please phone at three percent wrote it down wrong before we anything else tell if start passing while waiting",
+      "voiceResponse": "If you start feeling like you might pass out, call **911** immediately. Sit or lie down right now, on your side if you can, and keep your phone unlocked. When 911 answers, say your location first, then: \u201cI\u2019m dizzy and might pass out.\u201d If your breathing gets worse or you do pass out, it\u2019s an emergency.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:da479dd20eb5563d",
+        "service:bd5c5bd198f76c8b",
+        "service:07b702b8ba249a9b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If you start feeling like you might pass out, call **911** immediately. Sit or lie down right now, on your side if you can, and keep your phone unlocked. When 911 answers, say your location first, then: \u201cI\u2019m dizzy and might pass out.\u201d If your breathing gets worse or you do pass out, it\u2019s an emergency.",
+      "voiceResponseAlternatives": [
+        "I can\u2019t text from this line, and I don\u2019t have a confirmed address to give you. Quick safety check: if you feel like you might pass out, call **9-1-1 now**. If you can make one more call after that, use the warming shelter line: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. If that fails, call **2-1-1**.",
+        "If this drops, call **9-1-1** right away: **nine, one, one**. Your chest pain and hard breathing are an emergency. Say: \u201cI\u2019m in Portland, chest pain, dizzy, trouble breathing, might pass out. Send medics to [your exact address].\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000778#turn-5",
+      "scenarioId": "phone_dialog_0000778",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m near Oregon City, can\u2019t drive, and I might pass out if I stand up too long.",
+      "normalizedQuery": "sorry breathing hard chest feels weird talk long drank this morning took pills last night shaky don feel safe being alone right now repeat number slower missed middle part oregon city drive might pass if stand up too",
+      "voiceResponse": "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you need help right now. First step: call **9-1-1** now. Say, \u201cI\u2019m near Oregon City, chest feels weird, hard to breathe, I drank this morning, took pills last night, and I might pass out.\u201d Quick safety check: are you alone right now? If not, hand them the phone. If you are, sit or lie down where you are and unlock the door if you can while calling 911.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000784#turn-4",
+      "scenarioId": "phone_dialog_0000784",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel like I might pass out, I haven\u2019t kept food down since yesterday, I\u2019m scared to go outside alone.",
+      "normalizedQuery": "feel like might pass haven kept food pantry meal meals groceries down since yesterday scared go outside alone",
+      "voiceResponse": "I hear you. This is an emergency right now. Please tell shelter staff: \u201cI might pass out, I can\u2019t keep food down, and I\u2019m having trouble breathing.\u201d Ask them to call **911** now and stay with you. Do not go outside alone. Sit down, lean forward, and stay where people can see you. After 911 is on the way, I can help with food support next.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:2c8dd8b7005b202f",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreignxlkjd53hfj72drnwi5m6eqmjdhoz6e37vv2hh6or4xlyhztp5q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. This is an emergency right now. Please tell shelter staff: \u201cI might pass out, I can\u2019t keep food down, and I\u2019m having trouble breathing.\u201d Ask them to call **911** now and stay with you. Do not go outside alone. Sit down, lean forward, and stay where people can see you. After 911 is on the way, I can help with food support next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. Quick safety check first: are you and your child physically safe right now? Write this one first, slowly: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. I\u2019ll repeat: **5-0-3 \u2026 7-7-1 \u2026 7-9-1-4**. That\u2019s the food pantry at **8-8-0-0 Southeast 80th Avenue, Portland**. You can call now; eligibility is unrestricted and no documents are required."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000786#turn-3",
+      "scenarioId": "phone_dialog_0000786",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "food",
+      "locationTag": "bend",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down? I missed that... there\u2019s a lot of noise here and I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry crying really think straight right now dad 78 he bend keep up getting food pantry meal meals groceries him every day slow down missed there lot noise here kind panicking",
+      "voiceResponse": "You\u2019re okay, I\u2019ll go slowly. First, quick safety check: are you and your dad safe right now? If anyone is in immediate danger, call 9-1-1. If you\u2019re safe, here\u2019s the one step: use the Oregon Food Bank Food Pantry and Meal Locator to find Bend pantries and meal sites. Eligibility is unrestricted. If you want, I can stay with you and walk through it one step at a time.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:0d4be1a249bfe7ab",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll go slowly. First, quick safety check: are you and your dad safe right now? If anyone is in immediate danger, call 9-1-1. If you\u2019re safe, here\u2019s the one step: use the Oregon Food Bank Food Pantry and Meal Locator to find Bend pantries and meal sites. Eligibility is unrestricted. If you want, I can stay with you and walk through it one step at a time.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000794#turn-5",
+      "scenarioId": "phone_dialog_0000794",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "portland",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "My phone's at like three percent and I'm kind of freaking out, I haven't eaten and I feel like I'm gonna pass out.",
+      "normalizedQuery": "shelter shelters homeless overnight warming tonight portland like right now don't feel safe i'm at 19 have car keep getting told no places so know go wait was name cut when bus went by say it again slower phone's three percent kind freaking haven't eaten gonna pass",
+      "voiceResponse": "You\u2019re not alone. Quick safety check: are you about to pass out right now? If yes, call **911** now and tell the nearest staff person, \u201cI feel faint and need help now.\u201d Sit down, keep your head low, and sip water if you have it. If you can stay awake, ask the front desk for food or juice immediately while I keep your shelter connection moving.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone. Quick safety check: are you about to pass out right now? If yes, call **911** now and tell the nearest staff person, \u201cI feel faint and need help now.\u201d Sit down, keep your head low, and sip water if you have it. If you can stay awake, ask the front desk for food or juice immediately while I keep your shelter connection moving.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000806#turn-2",
+      "scenarioId": "phone_dialog_0000806",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "My chest feels tight and I\u2019m shaky, and I might pass out if I stand too long.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop clackamas feel really sick chest feels tight shaky might pass if stand too long",
+      "voiceResponse": "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now.",
+      "evidenceDocIds": [
+        "service:e190a725e5e28ea8",
+        "service:baf3c4af97ec2d46",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now.",
+      "voiceResponseAlternatives": [
+        "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000811#turn-3",
+      "scenarioId": "phone_dialog_0000811",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Wait, what did you say? Sorry, people are yelling in here, can you repeat that part?",
+      "normalizedQuery": "hi barely hear there bus pulling up right now okay 22 salem by transit center head spiraling bad like don feel safe myself tonight wait did say sorry people yelling here repeat part",
+      "voiceResponse": "I said this is an emergency, and you deserve help right now. If you might hurt yourself tonight, call **9-1-1** now. If you can\u2019t call, go to the nearest driver, transit staff, or security and say: **\u201cI don\u2019t feel safe with myself. I need emergency help now.\u201d**",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I said this is an emergency, and you deserve help right now. If you might hurt yourself tonight, call **9-1-1** now. If you can\u2019t call, go to the nearest driver, transit staff, or security and say: **\u201cI don\u2019t feel safe with myself. I need emergency help now.\u201d**",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000812#turn-6",
+      "scenarioId": "phone_dialog_0000812",
+      "turnIndex": 5,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "If this call drops, what exact number do I call back right away?",
+      "normalizedQuery": "sorry say again slower breathing hard cooling center right now like somewhere fast feel might pass please connect real person scared chest hurts if this call drops exact number back away",
+      "voiceResponse": "If this drops, call **9-1-1** right away: **nine, one, one**. Your chest pain and hard breathing are an emergency. Say: \u201cI\u2019m in Portland, chest pain, dizzy, trouble breathing, might pass out. Send medics to [your exact address].\u201d",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreialu5ak2tauj23x4thfmerioihd4sxwfscsj3pp76usadcfkowvga",
+        "page:bafkreiayizk3cbjsu7anvvefmy4fe7vsmutqnzcz7t4gro5vngsuvp5wxi",
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreif4og5zucxk34jijkz3jef7rhndut2hzlnasqrzckxudqu23dd6wi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If this drops, call **9-1-1** right away: **nine, one, one**. Your chest pain and hard breathing are an emergency. Say: \u201cI\u2019m in Portland, chest pain, dizzy, trouble breathing, might pass out. Send medics to [your exact address].\u201d",
+      "voiceResponseAlternatives": [
+        "I can\u2019t text from this line, and I don\u2019t have a confirmed address to give you. Quick safety check: if you feel like you might pass out, call **9-1-1 now**. If you can make one more call after that, use the warming shelter line: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**. If that fails, call **2-1-1**.",
+        "If you start feeling like you might pass out, call **911** immediately. Sit or lie down right now, on your side if you can, and keep your phone unlocked. When 911 answers, say your location first, then: \u201cI\u2019m dizzy and might pass out.\u201d If your breathing gets worse or you do pass out, it\u2019s an emergency."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000830#turn-3",
+      "scenarioId": "phone_dialog_0000830",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down? I missed that\u2014there\u2019s traffic noise and I\u2019m kind of crying, I can\u2019t hear everything.",
+      "normalizedQuery": "hi sorry think straight right now it so hot feel like gonna pass eugene downtown just somewhere cool later slow down missed there traffic noise kind crying hear everything",
+      "voiceResponse": "Yes. Slow and clear: call **9-1-1 now**. Say: \u201cI\u2019m near downtown Eugene. I\u2019m overheating and might pass out. I need help now.\u201d Then go into the nearest air-conditioned place, sit down, and sip cool water. Can you say \u201cI\u2019m calling 9-1-1 now\u201d?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and clear: call **9-1-1 now**. Say: \u201cI\u2019m near downtown Eugene. I\u2019m overheating and might pass out. I need help now.\u201d Then go into the nearest air-conditioned place, sit down, and sip cool water. Can you say \u201cI\u2019m calling 9-1-1 now\u201d?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000875#turn-2",
+      "scenarioId": "phone_dialog_0000875",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Clackamas, I can\u2019t calm down and I feel really sick, like I might pass out if this keeps going.",
+      "normalizedQuery": "hi sorry this isn phone it at like two percent give most important number first clackamas calm down feel really sick might pass if keeps going",
+      "voiceResponse": "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You might pass out, so this is an emergency. Call **911** now, immediately. Tell them: \u201cI\u2019m in Clackamas, I feel very sick, I might pass out, and this phone is at 2% battery.\u201d If you can, sit or lie down on your side, unlock the door, and stay on the line. If you can\u2019t speak much, say your location first, then \u201cI might pass out.\u201d",
+      "voiceResponseAlternatives": [
+        "That sounds urgent. Chest tightness and feeling like you might pass out can be an emergency. Call **911 now** and say: \u201cI have chest tightness, I\u2019m shaky, and I may pass out at a bus stop in Clackamas.\u201d If you can, sit down right away and stay on the line with 911. If someone is nearby, ask them to call for you now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000877#turn-5",
+      "scenarioId": "phone_dialog_0000877",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "health",
+      "locationTag": "beaverton",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "If the call drops, what\u2019s the first place I should go right now in Beaverton for detox intake?",
+      "normalizedQuery": "if call drops first place should go right now beaverton detox intake",
+      "voiceResponse": "Quick safety check: with chest tightness and dizziness, this is an emergency, so call **9-1-1** now. If the call drops and you can travel safely, the detox intake I have is **Medical Detox**, **3321 Harold Drive, Salem, Oregon 97305**. Phone: **5-0-3, 3-9-9, 5-5-9-7**.",
+      "evidenceDocIds": [
+        "service:3bf79b1da127b257",
+        "service:078087b57125137d",
+        "service:7a13b77aa237b2eb",
+        "service:5859932a69e4e47a",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quick safety check: with chest tightness and dizziness, this is an emergency, so call **9-1-1** now. If the call drops and you can travel safely, the detox intake I have is **Medical Detox**, **3321 Harold Drive, Salem, Oregon 97305**. Phone: **5-0-3, 3-9-9, 5-5-9-7**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. First, if you might pass out, can\u2019t breathe, or feel in immediate danger, call 9-1-1 right now. For same-day detox near Beaverton, call FORA Health: **5 0 3, 5 3 5, 1 1 5 1**. They do adult detox and are in Portland. If you want, I can repeat that number slowly."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000884#turn-4",
+      "scenarioId": "phone_dialog_0000884",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m panicking because my hands shake and I can\u2019t fill these forms out right, and I\u2019m scared I\u2019ll lose everything.",
+      "normalizedQuery": "hi sorry really trying stop crying disability don even know start slow down little salem keep getting letters understand wait office was line cut missed it panicking because hands shake fill these forms right scared ll lose everything",
+      "voiceResponse": "I hear how scary this feels, and you\u2019re not alone right now. Before we keep going, I need a quick safety check: are you safe in this moment, and are you having any thoughts of hurting yourself? If you\u2019re safe, we\u2019ll do this one tiny step at a time. You do not need to fill forms perfectly today. Just say one word now: **\u201capply\u201d** or **\u201cappeal.\u201d** I\u2019ll guide you slowly from there.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how scary this feels, and you\u2019re not alone right now. Before we keep going, I need a quick safety check: are you safe in this moment, and are you having any thoughts of hurting yourself? If you\u2019re safe, we\u2019ll do this one tiny step at a time. You do not need to fill forms perfectly today. Just say one word now: **\u201capply\u201d** or **\u201cappeal.\u201d** I\u2019ll guide you slowly from there.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing. Quick safety check: if you have chest pain, trouble breathing, new confusion, or feel like you might pass out, call 9-1-1 now. The clinic name is: **Yakima Valley Farm Workers Clinic**, in Woodburn."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000962#turn-2",
+      "scenarioId": "phone_dialog_0000962",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel really shaky and dizzy and I\u2019m kind of panicking, I can\u2019t stay out in this heat much longer.",
+      "normalizedQuery": "feel really shaky dizzy kind panicking stay this heat utility utilities electric much longer",
+      "voiceResponse": "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:76268562d32f66da"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **911 now** and ask for an ambulance. You\u2019re dizzy, shaky, and overheating, and that can be dangerous. While you call, move to shade or indoors right now, sit down, and sip cool water if you can. If the call drops, dial **9-1-1** immediately.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000963#turn-2",
+      "scenarioId": "phone_dialog_0000963",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel really shaky and dizzy, I\u2019m outside and getting colder, and I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry on someone else phone it at like two percent give most important number first feel really shaky dizzy outside getting colder kind panicking",
+      "voiceResponse": "You may be in immediate danger from cold and dizziness. Call **9-1-1 now**. If you can, sit or lie down, get out of the wind, and keep talking in short breaths. I can stay with you while you dial, but **911 is the most important next step right now**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You may be in immediate danger from cold and dizziness. Call **9-1-1 now**. If you can, sit or lie down, get out of the wind, and keep talking in short breaths. I can stay with you while you dial, but **911 is the most important next step right now**.",
+      "voiceResponseAlternatives": [
+        "Your most important number is **9-1-1**. Chest tightness and feeling very sick can be an emergency, even if it might be panic. Please hang up and call **9-1-1 now** from this phone, and unlock the door if you can. If you can\u2019t call, put someone nearby on the line with me right now so I can help you take the next step.",
+        "I hear you. Your safety comes first: if you might faint, have chest pain, trouble breathing, or symptoms are getting worse, call **9-1-1** now. If you can, sit down, put your head between your knees, and take slow breaths with me: in for 4, out for 6. If this feels like panic and not getting worse, stay on the line and I\u2019ll give you one next safe step.",
+        "I\u2019m with you. This sounds urgent. If your heart is racing and you feel faint, call 911 right now. If you can, sit or lie down on your side and keep your phone with you. If someone is nearby, say, \u201cI need help now.\u201d Tell me: are you able to call 911 this moment?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000974#turn-2",
+      "scenarioId": "phone_dialog_0000974",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I feel really shaky and dizzy and my heart\u2019s racing a little, I\u2019m trying to stay calm but I\u2019m kinda panicking.",
+      "normalizedQuery": "hi sorry this isn even phone it at like two percent just give main number first case we cut off feel really shaky dizzy heart racing little trying stay calm kinda panicking",
+      "voiceResponse": "I hear you. Your safety comes first: if you might faint, have chest pain, trouble breathing, or symptoms are getting worse, call **9-1-1** now. If you can, sit down, put your head between your knees, and take slow breaths with me: in for 4, out for 6. If this feels like panic and not getting worse, stay on the line and I\u2019ll give you one next safe step.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:a558e2f5ba96f584",
+        "service:dcad641da4a8e9cb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Your safety comes first: if you might faint, have chest pain, trouble breathing, or symptoms are getting worse, call **9-1-1** now. If you can, sit down, put your head between your knees, and take slow breaths with me: in for 4, out for 6. If this feels like panic and not getting worse, stay on the line and I\u2019ll give you one next safe step.",
+      "voiceResponseAlternatives": [
+        "Your most important number is **9-1-1**. Chest tightness and feeling very sick can be an emergency, even if it might be panic. Please hang up and call **9-1-1 now** from this phone, and unlock the door if you can. If you can\u2019t call, put someone nearby on the line with me right now so I can help you take the next step.",
+        "You may be in immediate danger from cold and dizziness. Call **9-1-1 now**. If you can, sit or lie down, get out of the wind, and keep talking in short breaths. I can stay with you while you dial, but **911 is the most important next step right now**.",
+        "I\u2019m with you. This sounds urgent. If your heart is racing and you feel faint, call 911 right now. If you can, sit or lie down on your side and keep your phone with you. If someone is nearby, say, \u201cI need help now.\u201d Tell me: are you able to call 911 this moment?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000977#turn-4",
+      "scenarioId": "phone_dialog_0000977",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "rent",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I have my kids with me and I\u2019m panicking, I don\u2019t have first month, last month, nothing, I need emergency rent help like today.",
+      "normalizedQuery": "have kids panicking don first month last nothing emergency rent eviction assistance like",
+      "voiceResponse": "You\u2019re not alone. First, are you and your kids safe right now? If anyone is in immediate danger, call 911 now. For emergency rent help today in Portland, call **503-234-2048**. I\u2019ll repeat: **5-0-3, 2-3-4, 2-0-4-8**. If busy, call **503-235-9396**. Have your eviction notice, photo ID, Social Security cards, and 30 days of income proof ready.",
+      "evidenceDocIds": [
+        "service:1b6e1c18557fb6a5",
+        "service:085fe55781b79fcb",
+        "page:bafkreiadhps5mxrj65cxid5ywf5owzukbgqrgk4p7wmmucxrsq6hpvjhmu",
+        "page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y",
+        "service:2281747e76c4abb0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone. First, are you and your kids safe right now? If anyone is in immediate danger, call 911 now. For emergency rent help today in Portland, call **503-234-2048**. I\u2019ll repeat: **5-0-3, 2-3-4, 2-0-4-8**. If busy, call **503-235-9396**. Have your eviction notice, photo ID, Social Security cards, and 30 days of income proof ready.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000999#turn-2",
+      "scenarioId": "phone_dialog_0000999",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, I'm trying to focus, my heart's racing and I feel kind of faint.",
+      "normalizedQuery": "hi um don't feel right i'm really shaky dizzy stay second sorry trying focus heart's racing kind faint",
+      "voiceResponse": "I\u2019m with you. This sounds urgent. If your heart is racing and you feel faint, call 911 right now. If you can, sit or lie down on your side and keep your phone with you. If someone is nearby, say, \u201cI need help now.\u201d Tell me: are you able to call 911 this moment?",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "page:bafkreibtuh6l7kqt6hvblyemmydjls7ztbvhcs6xl2jxxwkcjthh5houjm",
+        "service:14af91703121303f",
+        "service:389bf51d415c6467",
+        "service:57fcd59e218a59f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m with you. This sounds urgent. If your heart is racing and you feel faint, call 911 right now. If you can, sit or lie down on your side and keep your phone with you. If someone is nearby, say, \u201cI need help now.\u201d Tell me: are you able to call 911 this moment?",
+      "voiceResponseAlternatives": [
+        "Your most important number is **9-1-1**. Chest tightness and feeling very sick can be an emergency, even if it might be panic. Please hang up and call **9-1-1 now** from this phone, and unlock the door if you can. If you can\u2019t call, put someone nearby on the line with me right now so I can help you take the next step.",
+        "You may be in immediate danger from cold and dizziness. Call **9-1-1 now**. If you can, sit or lie down, get out of the wind, and keep talking in short breaths. I can stay with you while you dial, but **911 is the most important next step right now**.",
+        "I hear you. Your safety comes first: if you might faint, have chest pain, trouble breathing, or symptoms are getting worse, call **9-1-1** now. If you can, sit down, put your head between your knees, and take slow breaths with me: in for 4, out for 6. If this feels like panic and not getting worse, stay on the line and I\u2019ll give you one next safe step."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001014#turn-5",
+      "scenarioId": "phone_dialog_0001014",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "rent",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "If I pass out or this dies, what\u2019s the exact next step I do first?",
+      "normalizedQuery": "eugene landlord posted notice might be put sorry missed there noise here on borrowed phone repeat number slower really breathe well enough call five places one live person now who stop eviction if pass this dies exact next step first",
+      "voiceResponse": "First step: call **9-1-1** now. Slowly: **nine\u2026 one\u2026 one**. Say: \u201cI\u2019m struggling to breathe, I may pass out, send an ambulance. I\u2019m in Eugene and at risk of eviction today.\u201d If this phone dies or you pass out, call **9-1-1** again as soon as you can on any phone.",
+      "evidenceDocIds": [
+        "page:bafkreiceewdfgiic6hfsvi4vnkjsfa3i267746j2s2i52ntrqbn67bb6eu",
+        "page:bafkreietu6dnwqtcvjuqztmslpotvt4l7sowazpgi5ik5emaqk6vwozduq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidftbi5g6waz75jneyaykfzbw7itocrwlxttflxe6rg3tf4adzz5i",
+        "page:bafkreidqszjsdv645f7pguicwnn3pj4fpl3s4bmbu7lf4pxgedmpkqcxny"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **9-1-1** now. Slowly: **nine\u2026 one\u2026 one**. Say: \u201cI\u2019m struggling to breathe, I may pass out, send an ambulance. I\u2019m in Eugene and at risk of eviction today.\u201d If this phone dies or you pass out, call **9-1-1** again as soon as you can on any phone.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001019#turn-1",
+      "scenarioId": "phone_dialog_0001019",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, I don\u2019t have much battery, this is not my phone. I\u2019m in Medford and I\u2019m freezing and really sick.",
+      "normalizedQuery": "hi don have much battery this phone medford freezing really sick",
+      "voiceResponse": "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+      "evidenceDocIds": [
+        "service:ba31c8280a41b0ff",
+        "service:4583b1dd2fe086cc",
+        "service:b8e98634e94cf362",
+        "service:7883be6b23d37a0e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First, if you\u2019re struggling to breathe, confused, or too weak to stand, call **911** right now. If you can, get indoors immediately. If you want local help in Medford, call **(541) 774-2400** \u2014 that\u2019s **5-4-1, 7-7-4, 2-4-0-0**. Are you inside right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001038#turn-5",
+      "scenarioId": "phone_dialog_0001038",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m not trying to be difficult, I just keep zoning out and then panicking again.",
+      "normalizedQuery": "gresham mental health like feel falling apart slow down missed head all over place right now wait repeat number again wrote it wrong hands shaking trying be difficult just keep zoning then panicking",
+      "voiceResponse": "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001072#turn-2",
+      "scenarioId": "phone_dialog_0001072",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "clackamas",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you stay with me a second? I\u2019m in Clackamas and I need mental health help, like today if possible.",
+      "normalizedQuery": "stay second clackamas mental health like if possible",
+      "voiceResponse": "I\u2019m here with you. Quick safety check: if you feel like you might pass out, have chest pain, or trouble breathing, call **911 now**. If you can keep going, for same-day mental health help in Clackamas, call **Mental Health Therapies** at **(503) 371-5146**. That\u2019s **5-0-3, 3-7-1, 5-1-4-6**. If they don\u2019t answer, try **(503) 372-5417**. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:03f0d7f3a93aaddb",
+        "service:40087f84f2e0d13b",
+        "service:f438f7202ec5d278",
+        "service:5ae7c2e32761207c",
+        "service:d4ed0b8d9caa6515"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. Quick safety check: if you feel like you might pass out, have chest pain, or trouble breathing, call **911 now**. If you can keep going, for same-day mental health help in Clackamas, call **Mental Health Therapies** at **(503) 371-5146**. That\u2019s **5-0-3, 3-7-1, 5-1-4-6**. If they don\u2019t answer, try **(503) 372-5417**. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001075#turn-4",
+      "scenarioId": "phone_dialog_0001075",
+      "turnIndex": 3,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, I\u2019m panicking a little, can you repeat that name again?",
+      "normalizedQuery": "hi sorry really feeling right shaky kinda dizzy head feels weird talk slower trying focus keep losing said salem medical clinic health see panicking little repeat name again",
+      "voiceResponse": "You\u2019re doing the right thing. Quick safety check: if you have chest pain, trouble breathing, new confusion, or feel like you might pass out, call 9-1-1 now. The clinic name is: **Yakima Valley Farm Workers Clinic**, in Woodburn.",
+      "evidenceDocIds": [
+        "service:f7f1a44948506f7a",
+        "service:51e37f6187a1922a",
+        "service:9fa9218ec67d4993",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreia7otbvsirluucg6xwcncrgqolplepzz6ou3dtub6gxynrxelroby"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. Quick safety check: if you have chest pain, trouble breathing, new confusion, or feel like you might pass out, call 9-1-1 now. The clinic name is: **Yakima Valley Farm Workers Clinic**, in Woodburn.",
+      "voiceResponseAlternatives": [
+        "I hear how scary this feels, and you\u2019re not alone right now. Before we keep going, I need a quick safety check: are you safe in this moment, and are you having any thoughts of hurting yourself? If you\u2019re safe, we\u2019ll do this one tiny step at a time. You do not need to fill forms perfectly today. Just say one word now: **\u201capply\u201d** or **\u201cappeal.\u201d** I\u2019ll guide you slowly from there."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001080#turn-2",
+      "scenarioId": "phone_dialog_0001080",
+      "turnIndex": 1,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m in Eugene, near downtown I think, I just need somewhere cool to go, like a cooling center, please.",
+      "normalizedQuery": "eugene downtown think just somewhere cool go like cooling center please",
+      "voiceResponse": "You\u2019re doing the right thing. First, quick safety check: are you about to pass out right now? If yes, call 911 immediately. If you can still move, go into the nearest air-conditioned place right now, like a library, mall, or store, and sit down with cool water. For a confirmed nearby cooling center in Eugene, contact 211info now and ask for the closest open site near downtown Eugene.",
+      "evidenceDocIds": [
+        "page:bafkreicnwl7z75gfauxai2esujlpuwrew7o4p3l7pv3tuhlqt76gospq3i",
+        "page:bafkreialu5ak2tauj23x4thfmerioihd4sxwfscsj3pp76usadcfkowvga",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreicvv6hycs5lzlygatxbc5qx2mx72w4bifuhi4baq4x46m2fpqe6vy",
+        "service:a0b164f878ef1022"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing. First, quick safety check: are you about to pass out right now? If yes, call 911 immediately. If you can still move, go into the nearest air-conditioned place right now, like a library, mall, or store, and sit down with cool water. For a confirmed nearby cooling center in Eugene, contact 211info now and ask for the closest open site near downtown Eugene.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001125#turn-5",
+      "scenarioId": "phone_dialog_0001125",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "lane_county",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Sorry, I\u2019m crying, my phone\u2019s at like three percent and I\u2019m panicking\u2014can you repeat the number one more time?",
+      "normalizedQuery": "wait hold on there people talking hallway missed say it slower lane county eugene keep calling places tell who takes teens during day like youth center overnight just somewhere safe daytime if possible sorry crying phone at three percent panicking repeat number one more time",
+      "voiceResponse": "I hear you. Slow and clear: **5 4 1, 6 8 9, 3 1 1 1**. That\u2019s Station 7 Youth Daytime Center in Eugene. If your breathing gets hard again, call **9-1-1** right now.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:814126c4cd9bbb45",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Slow and clear: **5 4 1, 6 8 9, 3 1 1 1**. That\u2019s Station 7 Youth Daytime Center in Eugene. If your breathing gets hard again, call **9-1-1** right now.",
+      "voiceResponseAlternatives": [
+        "Yes. First, quick safety check: are you able to call **911** now? Here is the address, slowly: **56 East 15th Avenue, Eugene, Oregon, 97401**. That is: **five six** East **one five**th Avenue. If you want, I can repeat it again."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000636#turn-4",
+      "to": "phone_dialog_0000636#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000646#turn-4",
+      "to": "phone_dialog_0000646#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000650#turn-2",
+      "to": "phone_dialog_0000650#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000652#turn-3",
+      "to": "phone_dialog_0000652#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000673#turn-2",
+      "to": "phone_dialog_0000673#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000681#turn-1",
+      "to": "phone_dialog_0000681#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000685#turn-5",
+      "to": "phone_dialog_0000685#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000697#turn-3",
+      "to": "phone_dialog_0000697#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000708#turn-4",
+      "to": "phone_dialog_0000708#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000714#turn-3",
+      "to": "phone_dialog_0000714#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000721#turn-2",
+      "to": "phone_dialog_0000721#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000751#turn-4",
+      "to": "phone_dialog_0000751#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000759#turn-5",
+      "to": "phone_dialog_0000759#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000778#turn-5",
+      "to": "phone_dialog_0000778#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000784#turn-4",
+      "to": "phone_dialog_0000784#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000786#turn-3",
+      "to": "phone_dialog_0000786#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000794#turn-5",
+      "to": "phone_dialog_0000794#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000806#turn-2",
+      "to": "phone_dialog_0000806#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000811#turn-3",
+      "to": "phone_dialog_0000811#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000830#turn-3",
+      "to": "phone_dialog_0000830#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000875#turn-2",
+      "to": "phone_dialog_0000875#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000877#turn-5",
+      "to": "phone_dialog_0000877#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000884#turn-4",
+      "to": "phone_dialog_0000884#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000962#turn-2",
+      "to": "phone_dialog_0000962#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000963#turn-2",
+      "to": "phone_dialog_0000963#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000974#turn-2",
+      "to": "phone_dialog_0000974#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000977#turn-4",
+      "to": "phone_dialog_0000977#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000999#turn-2",
+      "to": "phone_dialog_0000999#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001014#turn-5",
+      "to": "phone_dialog_0001014#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001019#turn-1",
+      "to": "phone_dialog_0001019#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001038#turn-5",
+      "to": "phone_dialog_0001038#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001072#turn-2",
+      "to": "phone_dialog_0001072#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001075#turn-4",
+      "to": "phone_dialog_0001075#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001080#turn-2",
+      "to": "phone_dialog_0001080#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001125#turn-5",
+      "to": "phone_dialog_0001125#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    }
+  ]
+}

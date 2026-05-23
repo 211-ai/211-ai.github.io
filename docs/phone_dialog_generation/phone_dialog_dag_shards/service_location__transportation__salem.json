@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__transportation__salem",
   "kind": "service_location",
   "key": "transportation__salem",
-  "nodeCount": 6,
+  "nodeCount": 9,
   "nodes": [
     {
       "id": "phone_dialog_0000037#turn-5",
@@ -131,7 +131,9 @@
       "similarCases": [],
       "assistantResponse": "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
       "voiceResponseAlternatives": [
-        "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**."
+        "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
+        "Yes. The two words were: live specialist. Live specialist. I can connect you now for ride help in Salem. Do you want me to connect you now?",
+        "You\u2019re asking for ride help for appointments and groceries in Salem. Ride help for appointments and groceries in Salem. That is okay. A live specialist can find the right program name with you. I can connect you now. Do you want me to connect you now?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "background_noise",
@@ -158,10 +160,95 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
       "voiceResponseAlternatives": [
-        "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**."
+        "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
+        "Yes. The two words were: live specialist. Live specialist. I can connect you now for ride help in Salem. Do you want me to connect you now?",
+        "You\u2019re asking for ride help for appointments and groceries in Salem. Ride help for appointments and groceries in Salem. That is okay. A live specialist can find the right program name with you. I can connect you now. Do you want me to connect you now?"
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000741#turn-2",
+      "scenarioId": "phone_dialog_0000741",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I, uh, I need... ride stuff, I think, in Salem, yeah Salem, sorry hold on.",
+      "normalizedQuery": "uh ride stuff think salem yeah sorry hold on",
+      "voiceResponse": "I\u2019m here. Your audio was unclear just now. I heard \u201cride\u201d and \u201cSalem.\u201d I heard \u201cride\u201d and \u201cSalem.\u201d Please say one choice only: ride help, or school supplies help?",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "service:a52e78bc8469df64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here. Your audio was unclear just now. I heard \u201cride\u201d and \u201cSalem.\u201d I heard \u201cride\u201d and \u201cSalem.\u201d Please say one choice only: ride help, or school supplies help?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000741#turn-4",
+      "scenarioId": "phone_dialog_0000741",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "What did you say, can you say the choices again? I heard, like, two words.",
+      "normalizedQuery": "hello there sorry phone keeps cutting uh ride stuff think salem yeah hold on like ambulance no just keep doing bus right now so tired missed it again did say choices heard two words",
+      "voiceResponse": "Yes. The two words were: live specialist. Live specialist. I can connect you now for ride help in Salem. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:9c7b6b28cfc2b7b2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The two words were: live specialist. Live specialist. I can connect you now for ride help in Salem. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
+        "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
+        "You\u2019re asking for ride help for appointments and groceries in Salem. Ride help for appointments and groceries in Salem. That is okay. A live specialist can find the right program name with you. I can connect you now. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000741#turn-5",
+      "scenarioId": "phone_dialog_0000741",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I need to get to appointments, and maybe grocery too, I don\u2019t know what program that is called.",
+      "normalizedQuery": "uh ride stuff think salem yeah sorry hold on like ambulance no just keep doing bus right now so tired missed it again did say choices heard two words appointments maybe grocery too don know program called",
+      "voiceResponse": "You\u2019re asking for ride help for appointments and groceries in Salem. Ride help for appointments and groceries in Salem. That is okay. A live specialist can find the right program name with you. I can connect you now. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re asking for ride help for appointments and groceries in Salem. Ride help for appointments and groceries in Salem. That is okay. A live specialist can find the right program name with you. I can connect you now. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "From Salem, call **Cascades West Ride Line** first. Number: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If that line is busy, try **5-4-1, 9-2-4, 8-7-3-8**. Again: **5-4-1, 9-2-4, 8-7-3-8**.",
+        "You\u2019re doing a good job. Let\u2019s take one step at a time. From Salem, call **Cascades West Ride Line** first: **8-6-6, 7-2-4, 2-9-7-5**. Again: **8-6-6, 7-2-4, 2-9-7-5**. If you feel physically unsafe right now, call **9-1-1**. Again: **9-1-1**.",
+        "Yes. The two words were: live specialist. Live specialist. I can connect you now for ride help in Salem. Do you want me to connect you now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "slow_clear_repetition"
     }
   ],
@@ -189,6 +276,24 @@
       "to": "phone_dialog_0000388#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000741#turn-2",
+      "to": "phone_dialog_0000741#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000741#turn-4",
+      "to": "phone_dialog_0000741#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000741#turn-5",
+      "to": "phone_dialog_0000741#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

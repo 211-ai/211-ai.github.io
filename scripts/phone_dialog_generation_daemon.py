@@ -412,12 +412,12 @@ TARGET_MODE_PROFILES: list[dict[str, Any]] = [
     },
     {
         "id": "safety_guardrail_check",
-        "desired_routes": ("safety_guardrail_support", "live_agent"),
+        "desired_routes": ("safety_guardrail_support",),
         "preferred_callers": ("sick_or_dying", "grieving_emotional", "youth_in_crisis", "disorganized_distressed"),
         "preferred_channels": ("emotionally_overloaded", "background_noise", "borrowed_phone_low_battery"),
         "preferred_styles": ("crisis_triage", "compassionate_caseworker"),
-        "service_needs": ("mental health services", "detox help", "medical clinic", "shelter", "warming center"),
-        "instruction": "Make the caller sound sick, panicked, at risk, or unsafe enough that Abby should do a short safety check before continuing, without always turning it into a confirmed 911 emergency.",
+        "service_needs": ("medical clinic", "mental health services", "shelter", "warming center", "cooling center"),
+        "instruction": "Make the caller sound weak, dizzy, panicky, overwhelmed, or vulnerable enough that Abby should do a short safety check before continuing, but avoid explicit emergency phrases like suicide, overdose, cannot breathe, or immediate danger unless you want a true live-agent emergency escalation.",
     },
     {
         "id": "spotty_voice_clarification",
@@ -430,6 +430,45 @@ TARGET_MODE_PROFILES: list[dict[str, Any]] = [
 ]
 
 TARGET_MODE_PROFILE_BY_ID = {profile["id"]: profile for profile in TARGET_MODE_PROFILES}
+
+TARGET_MODE_REQUIRED_BEATS = {
+    "surface_navigation_request": [
+        "The caller must explicitly ask Abby to open, show, switch to, or bring up a named app surface.",
+        "Use a concrete surface name like calendar, messages, uploads, proof center, interactions, audit, security, or wallet.",
+        "At least one of the last two caller turns must be about navigation rather than only service search.",
+    ],
+    "service_interaction_followup": [
+        "The caller must describe a prior visit, intake, appointment, call, or provider interaction that already happened.",
+        "The caller should ask Abby to note what happened, keep track of it, or help with the next follow-up step.",
+        "Include at least one turn that clearly sounds like interaction-history or follow-up logging.",
+    ],
+    "wallet_document_question": [
+        "The caller must ask about wallet files, uploads, proof bundles, QR codes, exports, recovery, or what is stored in the wallet.",
+        "At least one turn should sound privacy-aware or mention wanting to check what is already saved.",
+    ],
+    "provider_contact_request": [
+        "The caller must ask Abby to help prepare a text, message, email, voicemail, or call-back plan to a provider.",
+        "At least one turn should focus on what to say or how to contact the provider, not just search for services.",
+    ],
+    "calendar_follow_up": [
+        "The caller must ask for a reminder, follow-up, appointment time, or calendar event.",
+        "At least one turn should clearly reference when to remember or revisit something.",
+    ],
+    "fallback_gap_request": [
+        "Make the caller ask for details that are likely to have limited or ambiguous local matches.",
+        "The call should naturally create a situation where Abby may need to explain an evidence gap or ask for a narrower search.",
+    ],
+    "spotty_voice_clarification": [
+        "The first one or two caller turns should be partial, garbled, noisy, incoherent, or broken up enough that Abby cannot safely infer the full need.",
+        "Use realistic partial transcripts like false starts, repeated fragments, [static], [inaudible], or interrupted phrases, but keep them readable JSON strings.",
+        "After a repair turn, the caller can become more understandable.",
+    ],
+    "safety_guardrail_check": [
+        "The caller should sound sick, fragile, panicky, or vulnerable enough for Abby to do a safety check before searching.",
+        "Avoid explicit 911-level emergency phrases unless you intentionally want a hard emergency escalation.",
+        "Let the caller still have a concrete service need after the safety check.",
+    ],
+}
 
 
 @dataclass(frozen=True)
@@ -582,15 +621,17 @@ def target_mode_weight(profile: dict[str, Any], route_counts: Counter[str], targ
     if not desired_routes:
         return 1.0
     weight = 0.0
+    observed_max = max([int(route_counts.get(route, 0)) for route in TARGET_ROUTE_MIN_COUNTS] or [1, 1])
     for route in desired_routes:
         target = TARGET_ROUTE_MIN_COUNTS.get(route, 120)
         current = int(route_counts.get(route, 0))
         deficit = max(target - current, 0)
-        weight += 1.0 + (deficit / max(target, 1))
+        scarcity = min(4.0, observed_max / max(current, 1))
+        weight += 1.0 + (deficit / max(target, 1)) + (0.35 * scarcity)
         if current == 0:
             weight += 1.5
     seen = int(target_mode_counts.get(str(profile.get("id") or ""), 0))
-    return max(0.05, weight / (1.0 + (0.08 * seen)))
+    return max(0.05, weight / (1.0 + (0.12 * seen)))
 
 
 def choose_balanced_option(
@@ -681,6 +722,7 @@ def build_seed(counter: int, rng: random.Random, coverage: dict[str, Counter[str
 
 def scenario_blueprint_prompt(seed: ScenarioSeed, *, max_turns: int) -> str:
     profile = TARGET_MODE_PROFILE_BY_ID.get(seed.target_mode, {})
+    required_beats = TARGET_MODE_REQUIRED_BEATS.get(seed.target_mode, [])
     payload = {
         "service_need": seed.service_need,
         "location": seed.location,
@@ -704,6 +746,7 @@ def scenario_blueprint_prompt(seed: ScenarioSeed, *, max_turns: int) -> str:
             "Make the service need and location come out naturally over the course of the call.",
             "If the target mode implies a wallet/app action, make the caller ask for that action naturally without dropping the service context.",
             f"Target-mode instruction: {profile.get('instruction') or 'Balance realism, safety, and useful route coverage.'}",
+            *[f"Required beat: {beat}" for beat in required_beats],
             json.dumps(payload, ensure_ascii=True, sort_keys=True),
         ]
     )

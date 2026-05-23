@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__family__portland",
   "kind": "service_location",
   "key": "family__portland",
-  "nodeCount": 12,
+  "nodeCount": 20,
   "nodes": [
     {
       "id": "phone_dialog_0000260#turn-1",
@@ -82,7 +82,8 @@
       "similarCases": [],
       "assistantResponse": "Start with **360**. Call **3 6 0\u2026 5 2 1\u2026 6 5 2 7** now. I\u2019ll repeat: **3 6 0\u2026 5 2 1\u2026 6 5 2 7**.",
       "voiceResponseAlternatives": [
-        "Next step: I\u2019ll connect you to a live 211 specialist right now so they can find this week\u2019s child care and possible subsidy options for your sister. Tell them: she works early shifts, needs care for a 4-year-old this week, and you only have partial paperwork right now. If this call drops, call back and ask for a live agent immediately."
+        "Next step: I\u2019ll connect you to a live 211 specialist right now so they can find this week\u2019s child care and possible subsidy options for your sister. Tell them: she works early shifts, needs care for a 4-year-old this week, and you only have partial paperwork right now. If this call drops, call back and ask for a live agent immediately.",
+        "Best next option in Portland tonight is still **Clackamas Service Center**. Call now: **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. Say: \u201cBattery is low. Do you have diapers today, what sizes, and pickup cutoff time tonight?\u201d If they\u2019re out, ask: \u201cWho has same-day diapers in Portland right now?\u201d If your safety feels at risk at any point, call **9 1 1** first."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -109,7 +110,8 @@
       "similarCases": [],
       "assistantResponse": "Next step: I\u2019ll connect you to a live 211 specialist right now so they can find this week\u2019s child care and possible subsidy options for your sister. Tell them: she works early shifts, needs care for a 4-year-old this week, and you only have partial paperwork right now. If this call drops, call back and ask for a live agent immediately.",
       "voiceResponseAlternatives": [
-        "Start with **360**. Call **3 6 0\u2026 5 2 1\u2026 6 5 2 7** now. I\u2019ll repeat: **3 6 0\u2026 5 2 1\u2026 6 5 2 7**."
+        "Start with **360**. Call **3 6 0\u2026 5 2 1\u2026 6 5 2 7** now. I\u2019ll repeat: **3 6 0\u2026 5 2 1\u2026 6 5 2 7**.",
+        "Best next option in Portland tonight is still **Clackamas Service Center**. Call now: **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. Say: \u201cBattery is low. Do you have diapers today, what sizes, and pickup cutoff time tonight?\u201d If they\u2019re out, ask: \u201cWho has same-day diapers in Portland right now?\u201d If your safety feels at risk at any point, call **9 1 1** first."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -225,7 +227,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Of course. The address is: **125 Southeast Cowls Street, McMinnville**. I\u2019ll repeat it slowly: **1-2-5\u2026 Southeast\u2026 Cowls Street\u2026 McMinnville**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Southeast, not Northeast. It\u2019s **Clackamas Service Center** at **8800 Southeast 80th Avenue, Portland**. Phone number is **503\u2026 771\u2026 7914**."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "compassionate_caseworker"
@@ -349,6 +353,236 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000687#turn-2",
+      "scenarioId": "phone_dialog_0000687",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Sorry, my phone keeps cutting, I\u2019m in Portland, like east side maybe, and I need... child, child place help.",
+      "normalizedQuery": "hello hear think got wrong earlier uh wait 211 right sorry phone keeps cutting portland like east side maybe child place",
+      "voiceResponse": "I heard Portland, east side, and child help. I heard Portland, east side, and child help. Your audio is still unclear. Please say one word so I can route you: childcare, child care costs, or child safety?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiayt425ov6boahci27cac2xu3llwwgpvgf5j5y2ez5mcxc4zewbky"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I heard Portland, east side, and child help. I heard Portland, east side, and child help. Your audio is still unclear. Please say one word so I can route you: childcare, child care costs, or child safety?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000687#turn-3",
+      "scenarioId": "phone_dialog_0000687",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Not school-school, she\u2019s four, I work mornings\u2014hold on, what did you ask? I can\u2019t hear good.",
+      "normalizedQuery": "hello hear think got wrong earlier uh wait 211 right sorry phone keeps cutting portland like east side maybe child place school she four work mornings hold on did ask good",
+      "voiceResponse": "I hear you. You need childcare for a 4-year-old while you work mornings. You need childcare for a 4-year-old while you work mornings. Yes, I can help. One question: do you want help paying for childcare, or finding an open childcare spot?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need childcare for a 4-year-old while you work mornings. You need childcare for a 4-year-old while you work mornings. Yes, I can help. One question: do you want help paying for childcare, or finding an open childcare spot?",
+      "voiceResponseAlternatives": [
+        "First step: call **Community Child Care Initiative** at **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. I\u2019ll repeat: **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. If that line doesn\u2019t connect, backup is **5 0 3\u2026 4 9 1\u2026 6 9 3 0**.",
+        "I hear you, and you\u2019re doing the right thing calling. For Portland today, try **Clackamas Service Center** for diapers: **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503\u2026 771\u2026 7914**. I\u2019ll repeat: **503\u2026 771\u2026 7914**. Eligibility is **unrestricted**, and **no documents are required**. If they\u2019re out, call me back and I\u2019ll help with the next closest option right away.",
+        "Absolutely. The name is **A Family Place, Clothing and Diaper Bank** in **McMinnville**. I\u2019ll say it again, slowly: **A Family Place\u2026 Clothing and Diaper Bank**. Address: **125 S-E Cowls Street, McMinnville**. Phone: **5-0-3\u2026 4-7-2\u2026 4-0-2-0**. Second number: **9-7-1\u2026 2-4-1\u2026 9-2-5-8**. If you want, I can repeat just the name one more time.",
+        "I hear you, and that fear makes sense. Let\u2019s lower the risk: call first and ask them to hold diapers and confirm you can come without papers. The number is **5-4-1\u2026 2-2-1\u2026 0-8-2-4**. They list **no documents required at intake**. Eligibility is **OHP, WIC, or SNAP**. If they answer, you can say: \u201cI don\u2019t have a car. Can you help me plan the safest way to get there and confirm I won\u2019t be turned away?\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000687#turn-4",
+      "scenarioId": "phone_dialog_0000687",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I keep saying this weird, I didn\u2019t sleep, but I need somebody to watch my kid, cheap or voucher or whatever that thing is.",
+      "normalizedQuery": "hello hear think got wrong earlier uh wait 211 right sorry phone keeps cutting portland like east side maybe child place school she four work mornings hold on did ask good keep saying this weird didn sleep somebody watch kid cheap voucher whatever",
+      "voiceResponse": "You\u2019re doing okay. You need low-cost childcare, or a childcare voucher, for your four-year-old. You need low-cost childcare, or a childcare voucher, for your four-year-old. I can help with that through 2-1-1. One question: are you in Portland, Oregon right now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay. You need low-cost childcare, or a childcare voucher, for your four-year-old. You need low-cost childcare, or a childcare voucher, for your four-year-old. I can help with that through 2-1-1. One question: are you in Portland, Oregon right now?",
+      "voiceResponseAlternatives": [
+        "First step: call **Community Child Care Initiative** at **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. I\u2019ll repeat: **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. If that line doesn\u2019t connect, backup is **5 0 3\u2026 4 9 1\u2026 6 9 3 0**.",
+        "I hear you, and you\u2019re doing the right thing calling. For Portland today, try **Clackamas Service Center** for diapers: **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503\u2026 771\u2026 7914**. I\u2019ll repeat: **503\u2026 771\u2026 7914**. Eligibility is **unrestricted**, and **no documents are required**. If they\u2019re out, call me back and I\u2019ll help with the next closest option right away.",
+        "Absolutely. The name is **A Family Place, Clothing and Diaper Bank** in **McMinnville**. I\u2019ll say it again, slowly: **A Family Place\u2026 Clothing and Diaper Bank**. Address: **125 S-E Cowls Street, McMinnville**. Phone: **5-0-3\u2026 4-7-2\u2026 4-0-2-0**. Second number: **9-7-1\u2026 2-4-1\u2026 9-2-5-8**. If you want, I can repeat just the name one more time.",
+        "I hear you, and that fear makes sense. Let\u2019s lower the risk: call first and ask them to hold diapers and confirm you can come without papers. The number is **5-4-1\u2026 2-2-1\u2026 0-8-2-4**. They list **no documents required at intake**. Eligibility is **OHP, WIC, or SNAP**. If they answer, you can say: \u201cI don\u2019t have a car. Can you help me plan the safest way to get there and confirm I won\u2019t be turned away?\u201d"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000893#turn-1",
+      "scenarioId": "phone_dialog_0000893",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m walking by traffic so if I cut out, I\u2019m in Portland and I need diapers today, like actual pickup today, not just a website list.",
+      "normalizedQuery": "hi sorry walking by traffic so if cut portland diapers diaper baby like actual pickup just website list",
+      "voiceResponse": "Absolutely. Fastest Portland pickup option I have is **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone is **503, 771, 7914**. Diapers are listed there, with no eligibility restrictions and no documents required. Second option is Lane County Diaper Bank in Springfield: **541, 221, 0824**. If you want, I can help you with a 10-second call script to confirm same-day pickup before you head over.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:ccee9f29bf549402",
+        "service:25f3554514a1b499",
+        "service:c196660a779416f8",
+        "service:5aff9bfd95858e47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Fastest Portland pickup option I have is **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone is **503, 771, 7914**. Diapers are listed there, with no eligibility restrictions and no documents required. Second option is Lane County Diaper Bank in Springfield: **541, 221, 0824**. If you want, I can help you with a 10-second call script to confirm same-day pickup before you head over.",
+      "voiceResponseAlternatives": [
+        "First step: call **Community Child Care Initiative** at **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. I\u2019ll repeat: **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. If that line doesn\u2019t connect, backup is **5 0 3\u2026 4 9 1\u2026 6 9 3 0**.",
+        "I hear you, and you\u2019re doing the right thing calling. For Portland today, try **Clackamas Service Center** for diapers: **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503\u2026 771\u2026 7914**. I\u2019ll repeat: **503\u2026 771\u2026 7914**. Eligibility is **unrestricted**, and **no documents are required**. If they\u2019re out, call me back and I\u2019ll help with the next closest option right away.",
+        "Absolutely. The name is **A Family Place, Clothing and Diaper Bank** in **McMinnville**. I\u2019ll say it again, slowly: **A Family Place\u2026 Clothing and Diaper Bank**. Address: **125 S-E Cowls Street, McMinnville**. Phone: **5-0-3\u2026 4-7-2\u2026 4-0-2-0**. Second number: **9-7-1\u2026 2-4-1\u2026 9-2-5-8**. If you want, I can repeat just the name one more time.",
+        "I hear you, and that fear makes sense. Let\u2019s lower the risk: call first and ask them to hold diapers and confirm you can come without papers. The number is **5-4-1\u2026 2-2-1\u2026 0-8-2-4**. They list **no documents required at intake**. Eligibility is **OHP, WIC, or SNAP**. If they answer, you can say: \u201cI don\u2019t have a car. Can you help me plan the safest way to get there and confirm I won\u2019t be turned away?\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000893#turn-2",
+      "scenarioId": "phone_dialog_0000893",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And I know people say \u2018call churches\u2019 but I need specifics, sizes, how many, hours, whether they run out by noon, that kind of thing.",
+      "normalizedQuery": "hi sorry walking by traffic so if cut portland diapers diaper baby like actual pickup just website list know people say call churches specifics sizes how many hours whether they run noon kind",
+      "voiceResponse": "You\u2019re right to want exact details before you go. I only have confirmed basics right now: **Clackamas Service Center, 8800 Southeast 80th Avenue, Portland, 503, 771, 7914**, with diapers listed and no documents required. For sizes, quantity, today\u2019s hours, and stock by noon, the safest move is a quick direct call. If you want, here\u2019s a 10-second script: \u201cHi, do you have diapers today, what sizes, how many, and until what time for pickup?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:72a4239cdad3e299"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to want exact details before you go. I only have confirmed basics right now: **Clackamas Service Center, 8800 Southeast 80th Avenue, Portland, 503, 771, 7914**, with diapers listed and no documents required. For sizes, quantity, today\u2019s hours, and stock by noon, the safest move is a quick direct call. If you want, here\u2019s a 10-second script: \u201cHi, do you have diapers today, what sizes, how many, and until what time for pickup?\u201d",
+      "voiceResponseAlternatives": [
+        "First step: call **Community Child Care Initiative** at **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. I\u2019ll repeat: **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. If that line doesn\u2019t connect, backup is **5 0 3\u2026 4 9 1\u2026 6 9 3 0**.",
+        "I hear you, and you\u2019re doing the right thing calling. For Portland today, try **Clackamas Service Center** for diapers: **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503\u2026 771\u2026 7914**. I\u2019ll repeat: **503\u2026 771\u2026 7914**. Eligibility is **unrestricted**, and **no documents are required**. If they\u2019re out, call me back and I\u2019ll help with the next closest option right away.",
+        "Absolutely. The name is **A Family Place, Clothing and Diaper Bank** in **McMinnville**. I\u2019ll say it again, slowly: **A Family Place\u2026 Clothing and Diaper Bank**. Address: **125 S-E Cowls Street, McMinnville**. Phone: **5-0-3\u2026 4-7-2\u2026 4-0-2-0**. Second number: **9-7-1\u2026 2-4-1\u2026 9-2-5-8**. If you want, I can repeat just the name one more time.",
+        "I hear you, and that fear makes sense. Let\u2019s lower the risk: call first and ask them to hold diapers and confirm you can come without papers. The number is **5-4-1\u2026 2-2-1\u2026 0-8-2-4**. They list **no documents required at intake**. Eligibility is **OHP, WIC, or SNAP**. If they answer, you can say: \u201cI don\u2019t have a car. Can you help me plan the safest way to get there and confirm I won\u2019t be turned away?\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000893#turn-3",
+      "scenarioId": "phone_dialog_0000893",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, you said Northeast or Southeast? I missed that part, can you repeat the name and number slower?",
+      "normalizedQuery": "hi sorry walking by traffic so if cut portland diapers diaper baby like actual pickup just website list know people say call churches specifics sizes how many hours whether they run noon kind wait hold on said northeast southeast missed part repeat name number slower",
+      "voiceResponse": "Southeast, not Northeast. It\u2019s **Clackamas Service Center** at **8800 Southeast 80th Avenue, Portland**. Phone number is **503\u2026 771\u2026 7914**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Southeast, not Northeast. It\u2019s **Clackamas Service Center** at **8800 Southeast 80th Avenue, Portland**. Phone number is **503\u2026 771\u2026 7914**.",
+      "voiceResponseAlternatives": [
+        "Of course. The address is: **125 Southeast Cowls Street, McMinnville**. I\u2019ll repeat it slowly: **1-2-5\u2026 Southeast\u2026 Cowls Street\u2026 McMinnville**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000893#turn-4",
+      "scenarioId": "phone_dialog_0000893",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to be difficult, I just keep getting vague referrals and then they tell me they only do wipes or only once a month.",
+      "normalizedQuery": "hi sorry walking by traffic so if cut portland diapers diaper baby like actual pickup just website list know people say call churches specifics sizes how many hours whether they run noon kind wait hold on said northeast southeast missed part repeat name number slower trying be difficult keep getting vague referrals then tell only wipes once month",
+      "voiceResponse": "You\u2019re not being difficult, you\u2019re being smart. Let\u2019s keep it concrete: call **Clackamas Service Center** at **503\u2026771\u20267914** and ask only this: \u201cDo you have diapers **today**, what **sizes**, how many per family, and what time does pickup end?\u201d If they say wipes-only or monthly-only, ask: \u201cWho has same-day diapers right now in Portland?\u201d You can share zero extra personal details on that first call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult, you\u2019re being smart. Let\u2019s keep it concrete: call **Clackamas Service Center** at **503\u2026771\u20267914** and ask only this: \u201cDo you have diapers **today**, what **sizes**, how many per family, and what time does pickup end?\u201d If they say wipes-only or monthly-only, ask: \u201cWho has same-day diapers right now in Portland?\u201d You can share zero extra personal details on that first call.",
+      "voiceResponseAlternatives": [
+        "First step: call **Community Child Care Initiative** at **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. I\u2019ll repeat: **5 0 3\u2026 4 9 1\u2026 6 2 0 5**. If that line doesn\u2019t connect, backup is **5 0 3\u2026 4 9 1\u2026 6 9 3 0**.",
+        "I hear you, and you\u2019re doing the right thing calling. For Portland today, try **Clackamas Service Center** for diapers: **8800 Southeast 80th Avenue, Portland, 97206**. Phone: **503\u2026 771\u2026 7914**. I\u2019ll repeat: **503\u2026 771\u2026 7914**. Eligibility is **unrestricted**, and **no documents are required**. If they\u2019re out, call me back and I\u2019ll help with the next closest option right away.",
+        "Absolutely. The name is **A Family Place, Clothing and Diaper Bank** in **McMinnville**. I\u2019ll say it again, slowly: **A Family Place\u2026 Clothing and Diaper Bank**. Address: **125 S-E Cowls Street, McMinnville**. Phone: **5-0-3\u2026 4-7-2\u2026 4-0-2-0**. Second number: **9-7-1\u2026 2-4-1\u2026 9-2-5-8**. If you want, I can repeat just the name one more time.",
+        "I hear you, and that fear makes sense. Let\u2019s lower the risk: call first and ask them to hold diapers and confirm you can come without papers. The number is **5-4-1\u2026 2-2-1\u2026 0-8-2-4**. They list **no documents required at intake**. Eligibility is **OHP, WIC, or SNAP**. If they answer, you can say: \u201cI don\u2019t have a car. Can you help me plan the safest way to get there and confirm I won\u2019t be turned away?\u201d"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000893#turn-6",
+      "scenarioId": "phone_dialog_0000893",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Also my battery\u2019s at 4 percent, so if there\u2019s a best next option in Portland for diapers tonight, give me that first.",
+      "normalizedQuery": "also battery at percent so if there best next option portland diapers diaper baby tonight give first",
+      "voiceResponse": "Best next option in Portland tonight is still **Clackamas Service Center**. Call now: **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. Say: \u201cBattery is low. Do you have diapers today, what sizes, and pickup cutoff time tonight?\u201d If they\u2019re out, ask: \u201cWho has same-day diapers in Portland right now?\u201d If your safety feels at risk at any point, call **9 1 1** first.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:c196660a779416f8",
+        "service:0de8e3b5ff9b859a",
+        "service:520f23161df4c87a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Best next option in Portland tonight is still **Clackamas Service Center**. Call now: **5 0 3 \u2026 7 7 1 \u2026 7 9 1 4**. Say: \u201cBattery is low. Do you have diapers today, what sizes, and pickup cutoff time tonight?\u201d If they\u2019re out, ask: \u201cWho has same-day diapers in Portland right now?\u201d If your safety feels at risk at any point, call **9 1 1** first.",
+      "voiceResponseAlternatives": [
+        "Start with **360**. Call **3 6 0\u2026 5 2 1\u2026 6 5 2 7** now. I\u2019ll repeat: **3 6 0\u2026 5 2 1\u2026 6 5 2 7**.",
+        "Next step: I\u2019ll connect you to a live 211 specialist right now so they can find this week\u2019s child care and possible subsidy options for your sister. Tell them: she works early shifts, needs care for a 4-year-old this week, and you only have partial paperwork right now. If this call drops, call back and ask for a live agent immediately."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -423,6 +657,48 @@
       "to": "phone_dialog_0000611#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000687#turn-2",
+      "to": "phone_dialog_0000687#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000687#turn-3",
+      "to": "phone_dialog_0000687#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000687#turn-4",
+      "to": "phone_dialog_0000687#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000893#turn-1",
+      "to": "phone_dialog_0000893#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000893#turn-2",
+      "to": "phone_dialog_0000893#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000893#turn-3",
+      "to": "phone_dialog_0000893#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000893#turn-4",
+      "to": "phone_dialog_0000893#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
     }
   ]
 }

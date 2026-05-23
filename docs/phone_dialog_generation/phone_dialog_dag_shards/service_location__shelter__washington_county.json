@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__shelter__washington_county",
   "kind": "service_location",
   "key": "shelter__washington_county",
-  "nodeCount": 27,
+  "nodeCount": 49,
   "nodes": [
     {
       "id": "phone_dialog_0000021#turn-1",
@@ -799,6 +799,661 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000657#turn-1",
+      "scenarioId": "phone_dialog_0000657",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I know I\u2019m talking fast, it\u2019s really hot and I need a cooling center in Washington County, like today, not just a library lobby with no seating.",
+      "normalizedQuery": "hi sorry know talking fast it really hot cooling center washington county like just library lobby no seating",
+      "voiceResponse": "You\u2019re making sense, and we can keep this simple. I found 211info\u2019s **Extreme Heat Cooling Centers** list for Washington County, with multiple same-day locations. The map pins can be rough, so use **\u201cMore Details\u201d** on each site to confirm exact location, seating, and accessibility before you go. If you want, I can stay with you while we narrow it to places that are set up for sitting and cooling safely today.",
+      "evidenceDocIds": [
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a",
+        "service:9d8edf69bee13eb3",
+        "service:b343c89117b06e05",
+        "service:da65d6f2fc8b2127"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making sense, and we can keep this simple. I found 211info\u2019s **Extreme Heat Cooling Centers** list for Washington County, with multiple same-day locations. The map pins can be rough, so use **\u201cMore Details\u201d** on each site to confirm exact location, seating, and accessibility before you go. If you want, I can stay with you while we narrow it to places that are set up for sitting and cooling safely today.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a clear youth day center listing in Washington County right here, but I do have one youth-related shelter option to try now: Night Shelter Annex, 4060 West Amazon Drive, Eugene. Phone is **541\u2026 342\u2026 7728**. They serve families with minors and pregnant women, and no documents are needed at intake. If you want, I can help you call and ask for the nearest youth day center to Washington County.",
+        "That makes total sense. You\u2019re 22, and it\u2019s okay to protect your information. From what I can see, this shelter says **no documents are required** to get in, so you can ask questions first. When they answer, say: \u201cBefore I share anything, what do you keep private, and who do you share it with?\u201d Call: **541 \u2026 948 \u2026 6649**. If they won\u2019t answer clearly, don\u2019t give extra details yet.",
+        "You\u2019re doing the right thing by calling. In Washington County, there are veteran housing programs through **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. I can help you contact 211 now and ask for a **homeless veteran housing assessment** for your dad. If there\u2019s any immediate danger tonight, call 911 right away.",
+        "Call **2-1-1** now. I\u2019ll repeat it: **2-1-1**. Say: \u201cI\u2019m in Washington County, near Hillsboro. I need an open Extreme Heat Cooling Center right now.\u201d They can give the closest open site fast. If the call drops, dial **2-1-1** again. What is your ZIP code?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000657#turn-2",
+      "scenarioId": "phone_dialog_0000657",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you hear me? You cut out for a second. I need one that\u2019s actually open late, has outlets for medical devices, and ideally lets people bring a small dog in a carrier.",
+      "normalizedQuery": "hi sorry know talking fast it really hot cooling center washington county like just library lobby no seating wait hear cut second one actually open late has outlets medical devices ideally lets people bring small dog carrier",
+      "voiceResponse": "I hear you. Quick restate: the 211info **Extreme Heat Cooling Centers** page has same-day Washington County options, and the map pin can be off. For your needs, open each site\u2019s **More Details** to confirm three things: **late hours**, **power/outlets for medical devices**, and **pet rules** for a small dog in a carrier. If you want, we can go one listing at a time and check just those three items.",
+      "evidenceDocIds": [
+        "page:bafkreibsex22bwruaokh6y3uzdpzq57nv4ob4nhzs24q66y267xg5zshdq",
+        "page:bafkreigripy52argoshygkackn5yiywcdnaphhyngglplio4bgc73lpj4a",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:9d8edf69bee13eb3",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Quick restate: the 211info **Extreme Heat Cooling Centers** page has same-day Washington County options, and the map pin can be off. For your needs, open each site\u2019s **More Details** to confirm three things: **late hours**, **power/outlets for medical devices**, and **pet rules** for a small dog in a carrier. If you want, we can go one listing at a time and check just those three items.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000670#turn-4",
+      "scenarioId": "phone_dialog_0000670",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Washington County, near the transit center, I can't remember the street name right now.",
+      "normalizedQuery": "i'm washington county transit center can't remember street name right now",
+      "voiceResponse": "You\u2019re doing okay, and thanks for hanging in. Since you\u2019re in Washington County near the transit center, the best next step is a live WA 211 specialist for hot-meal locations tonight. If you feel in immediate danger or unsafe right now, call 911. If not, stay with me and I\u2019ll connect you to a live agent now.",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and thanks for hanging in. Since you\u2019re in Washington County near the transit center, the best next step is a live WA 211 specialist for hot-meal locations tonight. If you feel in immediate danger or unsafe right now, call 911. If not, stay with me and I\u2019ll connect you to a live agent now.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000759#turn-2",
+      "scenarioId": "phone_dialog_0000759",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m in Washington County, near the shelter lobby by the bus stop, and I feel really sick and shaky.",
+      "normalizedQuery": "washington county shelter shelters homeless overnight warming lobby by bus stop feel really sick shaky",
+      "voiceResponse": "I\u2019m really glad you told me. Feeling shaky and sick is serious, and you did the right thing calling. If you might pass out, have chest pain, or can\u2019t stay standing, call **911 now**. If you can speak right now, call **211** and say: \u201cI\u2019m in Washington County, I need same-day detox, and I need bus-accessible intake.\u201d If the line drops, repeat just that sentence. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:2f8232cc7f33ac9d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. Feeling shaky and sick is serious, and you did the right thing calling. If you might pass out, have chest pain, or can\u2019t stay standing, call **911 now**. If you can speak right now, call **211** and say: \u201cI\u2019m in Washington County, I need same-day detox, and I need bus-accessible intake.\u201d If the line drops, repeat just that sentence. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a clear youth day center listing in Washington County right here, but I do have one youth-related shelter option to try now: Night Shelter Annex, 4060 West Amazon Drive, Eugene. Phone is **541\u2026 342\u2026 7728**. They serve families with minors and pregnant women, and no documents are needed at intake. If you want, I can help you call and ask for the nearest youth day center to Washington County.",
+        "That makes total sense. You\u2019re 22, and it\u2019s okay to protect your information. From what I can see, this shelter says **no documents are required** to get in, so you can ask questions first. When they answer, say: \u201cBefore I share anything, what do you keep private, and who do you share it with?\u201d Call: **541 \u2026 948 \u2026 6649**. If they won\u2019t answer clearly, don\u2019t give extra details yet.",
+        "You\u2019re doing the right thing by calling. In Washington County, there are veteran housing programs through **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. I can help you contact 211 now and ask for a **homeless veteran housing assessment** for your dad. If there\u2019s any immediate danger tonight, call 911 right away.",
+        "Call **2-1-1** now. I\u2019ll repeat it: **2-1-1**. Say: \u201cI\u2019m in Washington County, near Hillsboro. I need an open Extreme Heat Cooling Center right now.\u201d They can give the closest open site fast. If the call drops, dial **2-1-1** again. What is your ZIP code?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000759#turn-3",
+      "scenarioId": "phone_dialog_0000759",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? I missed the name... people are yelling behind me.",
+      "normalizedQuery": "hi sorry barely hear here there lot going on detox like washington county shelter shelters homeless overnight warming lobby by bus stop feel really sick shaky say again missed name people yelling behind",
+      "voiceResponse": "Yeah, of course. The name is **211info**. You can dial **2-1-1** and ask for **same-day detox**. If it helps, say: \u201cI need detox today, nearest opening, and bus-accessible intake.\u201d",
+      "evidenceDocIds": [
+        "service:b4ef6dca3c3f73bd",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:b739229de4536559",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, of course. The name is **211info**. You can dial **2-1-1** and ask for **same-day detox**. If it helps, say: \u201cI need detox today, nearest opening, and bus-accessible intake.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000785#turn-3",
+      "scenarioId": "phone_dialog_0000785",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat what you said after Washington County? I missed it, there\u2019s a lot of noise where I am.",
+      "normalizedQuery": "hi sorry talk fast when stressed beaverton veteran veterans va housing like just shelter shelters homeless overnight warming bed tonight trying something trauma informed accepts dog preferably transit route which know narrow filter wait repeat said after washington county missed it there lot noise",
+      "voiceResponse": "Absolutely. After Washington County, I said: I can connect you to a live 211 specialist for **veteran transitional housing in Beaverton**, not just a bed for tonight. I can pass your filters exactly: **trauma-informed, dog-friendly, and near transit to the VA route**. You can share only what feels safe. If you want, we can do that handoff now.",
+      "evidenceDocIds": [
+        "page:bafkreiekc5coret46eepgjkrdmccp4tf7oorp6vdziq4mpamleikrrgx4q",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreify3kfm2wsfbpd2zehw2vqekf6sdwfyczc5rcxs2oqn4xrvo3wo54"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. After Washington County, I said: I can connect you to a live 211 specialist for **veteran transitional housing in Beaverton**, not just a bed for tonight. I can pass your filters exactly: **trauma-informed, dog-friendly, and near transit to the VA route**. You can share only what feels safe. If you want, we can do that handoff now.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000981#turn-2",
+      "scenarioId": "phone_dialog_0000981",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Washington County, I think near the transit center, and my hands are numb, I can't stop shaking.",
+      "normalizedQuery": "hi hello can't really hear there's buses people yelling i'm sorry just somewhere warm right now washington county think transit center hands numb stop shaking",
+      "voiceResponse": "I\u2019m really glad you said that. Numb hands and shaking can be serious. If you feel faint, confused, or can\u2019t get warmer right now, call 911 now for immediate medical help. I\u2019m keeping your live 211 handoff active to find the nearest warm indoor place in Washington County. Stay on the line with me, and if you can, step inside any open building right now.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you said that. Numb hands and shaking can be serious. If you feel faint, confused, or can\u2019t get warmer right now, call 911 now for immediate medical help. I\u2019m keeping your live 211 handoff active to find the nearest warm indoor place in Washington County. Stay on the line with me, and if you can, step inside any open building right now.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000981#turn-3",
+      "scenarioId": "phone_dialog_0000981",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? The name, I missed it, my phone keeps cutting out and I'm crying, I'm sorry.",
+      "normalizedQuery": "hi hello can't really hear there's buses people yelling i'm sorry just somewhere warm right now washington county think transit center hands numb stop shaking say again name missed it phone keeps cutting crying",
+      "voiceResponse": "Of course. The name is a **live 211 specialist** \u2014 that\u2019s **two-one-one**. I\u2019m keeping that connection active now to get you to a warm indoor place.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is a **live 211 specialist** \u2014 that\u2019s **two-one-one**. I\u2019m keeping that connection active now to get you to a warm indoor place.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000981#turn-4",
+      "scenarioId": "phone_dialog_0000981",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I don't have cash, and my battery is at like two percent, do they let you in late if you just walk in?",
+      "normalizedQuery": "hi hello can't really hear there's buses people yelling i'm sorry just somewhere warm right now washington county think transit center hands numb stop shaking say again name missed it phone keeps cutting crying don't have cash battery at like two percent they let late if walk",
+      "voiceResponse": "Yes, many warming shelters and severe-weather sites do **not** require cash, and some allow late walk-ins. Rules can vary by site. Because your hands are numb and you\u2019re shaking, if you feel worse, call **911** now. Stay on this line for the live 211 specialist\u2014they\u2019ll give the nearest place that can take you right now. Put your phone on low power, and step inside any open building while we connect you.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, many warming shelters and severe-weather sites do **not** require cash, and some allow late walk-ins. Rules can vary by site. Because your hands are numb and you\u2019re shaking, if you feel worse, call **911** now. Stay on this line for the live 211 specialist\u2014they\u2019ll give the nearest place that can take you right now. Put your phone on low power, and step inside any open building while we connect you.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000981#turn-5",
+      "scenarioId": "phone_dialog_0000981",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, what street was that? Please repeat the address slower, I can't think straight.",
+      "normalizedQuery": "i'm washington county think transit center hands numb can't stop shaking say again name missed it phone keeps cutting crying sorry don't have cash battery at like two percent they let late if just walk wait hold on street was please repeat address slower straight",
+      "voiceResponse": "I don\u2019t have a street address yet. I\u2019m still connecting you to the live **2-1-1** specialist, and they\u2019ll give the exact nearest address. If your shaking or numbness gets worse right now, call **9-1-1** immediately. Stay with me.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a street address yet. I\u2019m still connecting you to the live **2-1-1** specialist, and they\u2019ll give the exact nearest address. If your shaking or numbness gets worse right now, call **9-1-1** immediately. Stay with me.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001008#turn-3",
+      "scenarioId": "phone_dialog_0001008",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, there\u2019s a train going by and I missed part of what you said, can you repeat the county options again?",
+      "normalizedQuery": "hi sorry talking fast because battery at like three percent washington county replace id after it got lost on bus already read state site something very specific place open tonight waive every fee print same day require birth certificate up front wait hold there train going by missed part said repeat options again",
+      "voiceResponse": "Absolutely. Quick repeat: For **Washington County**, do two tracks now: 1. Call the **bus lost-and-found** where you think the ID was lost. 2. Start an **Oregon DMV replacement ID** request so you\u2019re not waiting on just one path. If your battery dies, call **2-1-1** later and say: **\u201cWashington County ID replacement help.\u201d** They can walk you through local options.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Quick repeat: For **Washington County**, do two tracks now: 1. Call the **bus lost-and-found** where you think the ID was lost. 2. Start an **Oregon DMV replacement ID** request so you\u2019re not waiting on just one path. If your battery dies, call **2-1-1** later and say: **\u201cWashington County ID replacement help.\u201d** They can walk you through local options.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001008#turn-4",
+      "scenarioId": "phone_dialog_0001008",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "And I know this sounds oddly precise, but do you have anywhere that also has on-site notary plus multilingual staff for Amharic, not just Spanish?",
+      "normalizedQuery": "hi sorry talking fast because battery at like three percent washington county replace id after it got lost on bus already read state site something very specific place open tonight waive every fee print same day require birth certificate up front wait hold there train going by missed part said repeat options again know this sounds oddly precise have anywhere also has notary plus multilingual staff amharic just spanish",
+      "voiceResponse": "That makes sense, and you\u2019re being very clear. I don\u2019t have a verified listing right now for a site that has both on-site notary and Amharic staff. Best next step is a live 211 specialist who can check current providers in real time and narrow by tonight hours. If you want, ask for: \u201cWashington County ID replacement, on-site notary, Amharic language support.\u201d I can keep this brief so you can move fast.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re being very clear. I don\u2019t have a verified listing right now for a site that has both on-site notary and Amharic staff. Best next step is a live 211 specialist who can check current providers in real time and narrow by tonight hours. If you want, ask for: \u201cWashington County ID replacement, on-site notary, Amharic language support.\u201d I can keep this brief so you can move fast.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001021#turn-4",
+      "scenarioId": "phone_dialog_0001021",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Can you say that number again slower? I missed the middle part, there\u2019s traffic noise here.",
+      "normalizedQuery": "hi sorry this isn phone it on like two percent give most important number first case we cut washington county feel really shaky dizzy think straight right now shelter shelters homeless overnight warming tonight stay was just somewhere safe go say again slower missed middle part there traffic noise here",
+      "voiceResponse": "Of course. The shelter number is **five four one**\u2026 **nine six two**\u2026 **seven nine nine four**. I\u2019ll say it once more: **(541) 962-7994**. If your dizziness or confusion gets worse, call **9-1-1** right away.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The shelter number is **five four one**\u2026 **nine six two**\u2026 **seven nine nine four**. I\u2019ll say it once more: **(541) 962-7994**. If your dizziness or confusion gets worse, call **9-1-1** right away.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001021#turn-5",
+      "scenarioId": "phone_dialog_0001021",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "If this phone dies, what\u2019s the very next step I should do first when I get to a charger?",
+      "normalizedQuery": "washington county feel really shaky dizzy think straight right now shelter shelters homeless overnight warming tonight stay was just somewhere safe go say number again slower missed middle part there traffic noise here if this phone dies very next step should first when charger",
+      "voiceResponse": "First step when it charges: if you still feel dizzy, shaky, or confused, call **9-1-1** immediately. If you\u2019re stable, call the shelter at **five four one\u2026 nine six two\u2026 seven nine nine four**. That\u2019s **(541) 962-7994**.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step when it charges: if you still feel dizzy, shaky, or confused, call **9-1-1** immediately. If you\u2019re stable, call the shelter at **five four one\u2026 nine six two\u2026 seven nine nine four**. That\u2019s **(541) 962-7994**.",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001048#turn-6",
+      "scenarioId": "phone_dialog_0001048",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the phone number one more time? My battery\u2019s at two percent, I\u2019m writing it on my hand.",
+      "normalizedQuery": "yeah okay washington county don got mailbox right now somewhere mail go background noise hold on sir move sorry missed name was shelter shelters homeless overnight warming post office place running no sleep keep losing track like mailing address benefits snap assistance letters id stuff repeat phone number one more time battery at two percent writing it hand",
+      "voiceResponse": "Absolutely, you\u2019re doing great. The number is **541, 962, 7994**. I\u2019ll say it once more: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, you\u2019re doing great. The number is **541, 962, 7994**. I\u2019ll say it once more: **5-4-1 \u2026 9-6-2 \u2026 7-9-9-4**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001069#turn-1",
+      "scenarioId": "phone_dialog_0001069",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my uncle, not for me. He\u2019s a veteran and he needs housing help in Washington County.",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing washington county",
+      "voiceResponse": "Yes, thanks for calling for him. Next step: ask 211 for **\u201cHousing Related Coordinated Entry for Homeless Veterans\u201d** in Washington County. Tell them you\u2019re calling on your uncle\u2019s behalf and only have partial details, so they can still start screening and connect him to the right local provider. If you want, I can help you with a short script to say when they answer.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, thanks for calling for him. Next step: ask 211 for **\u201cHousing Related Coordinated Entry for Homeless Veterans\u201d** in Washington County. Tell them you\u2019re calling on your uncle\u2019s behalf and only have partial details, so they can still start screening and connect him to the right local provider. If you want, I can help you with a short script to say when they answer.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a clear youth day center listing in Washington County right here, but I do have one youth-related shelter option to try now: Night Shelter Annex, 4060 West Amazon Drive, Eugene. Phone is **541\u2026 342\u2026 7728**. They serve families with minors and pregnant women, and no documents are needed at intake. If you want, I can help you call and ask for the nearest youth day center to Washington County.",
+        "That makes total sense. You\u2019re 22, and it\u2019s okay to protect your information. From what I can see, this shelter says **no documents are required** to get in, so you can ask questions first. When they answer, say: \u201cBefore I share anything, what do you keep private, and who do you share it with?\u201d Call: **541 \u2026 948 \u2026 6649**. If they won\u2019t answer clearly, don\u2019t give extra details yet.",
+        "You\u2019re doing the right thing by calling. In Washington County, there are veteran housing programs through **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. I can help you contact 211 now and ask for a **homeless veteran housing assessment** for your dad. If there\u2019s any immediate danger tonight, call 911 right away.",
+        "Call **2-1-1** now. I\u2019ll repeat it: **2-1-1**. Say: \u201cI\u2019m in Washington County, near Hillsboro. I need an open Extreme Heat Cooling Center right now.\u201d They can give the closest open site fast. If the call drops, dial **2-1-1** again. What is your ZIP code?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001069#turn-2",
+      "scenarioId": "phone_dialog_0001069",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out for a second, can you say that part again?",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing washington county sorry cut second say part again",
+      "voiceResponse": "Yes\u2014next step: ask 211 for **\u201cHousing Related Coordinated Entry for Homeless Veterans\u201d** in **Washington County**. Then say: \u201cI\u2019m calling for my uncle, and I only have partial details.\u201d That\u2019s enough for them to start screening and connect him to the right local provider.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes\u2014next step: ask 211 for **\u201cHousing Related Coordinated Entry for Homeless Veterans\u201d** in **Washington County**. Then say: \u201cI\u2019m calling for my uncle, and I only have partial details.\u201d That\u2019s enough for them to start screening and connect him to the right local provider.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001069#turn-3",
+      "scenarioId": "phone_dialog_0001069",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have all his info with me, I just know he\u2019s been sleeping in his truck the last few nights.",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing washington county sorry cut second say part again don have all his info just know been sleeping truck last few nights",
+      "voiceResponse": "Next step: call 211 now and say, \u201cI\u2019m calling for my uncle, a veteran in Washington County. He\u2019s been sleeping in his truck, and I only have partial details.\u201d Ask them to connect him to **\u201cMental Health Evaluation for Veterans\u201d** and to the right local housing screening path. Not having all his information is okay\u2014they can still start with what you know.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call 211 now and say, \u201cI\u2019m calling for my uncle, a veteran in Washington County. He\u2019s been sleeping in his truck, and I only have partial details.\u201d Ask them to connect him to **\u201cMental Health Evaluation for Veterans\u201d** and to the right local housing screening path. Not having all his information is okay\u2014they can still start with what you know.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a clear youth day center listing in Washington County right here, but I do have one youth-related shelter option to try now: Night Shelter Annex, 4060 West Amazon Drive, Eugene. Phone is **541\u2026 342\u2026 7728**. They serve families with minors and pregnant women, and no documents are needed at intake. If you want, I can help you call and ask for the nearest youth day center to Washington County.",
+        "That makes total sense. You\u2019re 22, and it\u2019s okay to protect your information. From what I can see, this shelter says **no documents are required** to get in, so you can ask questions first. When they answer, say: \u201cBefore I share anything, what do you keep private, and who do you share it with?\u201d Call: **541 \u2026 948 \u2026 6649**. If they won\u2019t answer clearly, don\u2019t give extra details yet.",
+        "You\u2019re doing the right thing by calling. In Washington County, there are veteran housing programs through **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. I can help you contact 211 now and ask for a **homeless veteran housing assessment** for your dad. If there\u2019s any immediate danger tonight, call 911 right away.",
+        "Call **2-1-1** now. I\u2019ll repeat it: **2-1-1**. Say: \u201cI\u2019m in Washington County, near Hillsboro. I need an open Extreme Heat Cooling Center right now.\u201d They can give the closest open site fast. If the call drops, dial **2-1-1** again. What is your ZIP code?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001097#turn-5",
+      "scenarioId": "phone_dialog_0001097",
+      "turnIndex": 4,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, I\u2019m talking fast, my battery is at like 3 percent, but do you have exact places that definitely do all that, or is it kind of uncertain?",
+      "normalizedQuery": "keep getting bounced around so place will hold legal aid attorney advocacy looking mail take packages let pick up after maybe saturdays too because work hours chaos wait say county part again washington yeah travel little if it on bus line also this important don have stable housing paperwork right now somewhere won reject missing standard proof docs sorry talking fast battery at like percent exact places definitely all kind uncertain",
+      "voiceResponse": "Short answer: it\u2019s still uncertain. I don\u2019t have a strong local record that confirms all three at once right now. Fastest option with your battery low: I can connect you to a 211 specialist who can verify live and give you only places that match your hours and document limits, so you don\u2019t have to retell everything.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Short answer: it\u2019s still uncertain. I don\u2019t have a strong local record that confirms all three at once right now. Fastest option with your battery low: I can connect you to a 211 specialist who can verify live and give you only places that match your hours and document limits, so you don\u2019t have to retell everything.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001097#turn-6",
+      "scenarioId": "phone_dialog_0001097",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s no perfect match, can you tell me the closest options and what requirement I should relax first?",
+      "normalizedQuery": "wait say county part again washington yeah travel little if it on bus line also this important don have stable housing paperwork right now so somewhere won reject missing standard proof docs sorry talking fast battery at like percent exact places definitely all kind uncertain there no perfect match tell closest options requirement should relax first",
+      "voiceResponse": "Totally fair question. Based on what I can confirm right now, the closest path is to **relax \u201cdefinite guarantee\u201d first** and keep your no-doc need firm. Then ask for \u201clikely fit, pending intake\u201d options. Fastest with your battery: call 211 and ask for a live specialist to filter for Washington County plus bus line access and no standard proof docs. If you want, use: \u201cI need likely no-doc options first; I can verify details by phone.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair question. Based on what I can confirm right now, the closest path is to **relax \u201cdefinite guarantee\u201d first** and keep your no-doc need firm. Then ask for \u201clikely fit, pending intake\u201d options. Fastest with your battery: call 211 and ask for a live specialist to filter for Washington County plus bus line access and no standard proof docs. If you want, use: \u201cI need likely no-doc options first; I can verify details by phone.\u201d",
+      "voiceResponseAlternatives": [
+        "Of course. The place name is **Night Shelter Annex**. I\u2019ll say it again: **Night Shelter Annex**.",
+        "Yes, absolutely. I\u2019ll connect you now, and I\u2019ll ask the 211 person to give each address slowly, one line at a time, and repeat it back with you so it\u2019s clear. You don\u2019t have to rush. If at any point you feel faint, confused, or like you might pass out, call 911 right away.",
+        "I\u2019m sorry, I don\u2019t have the door-open time in front of me. I can connect you to a live 211 agent now to confirm hours. I can connect you now. If you are in immediate danger from the cold, call 9-1-1 now.",
+        "Yes, that makes sense. Call **Safe Sleep United** and tell them: \u201cShe is older, uses a cane, and needs a staffed overnight bed.\u201d The number is **503, 816, 3409**. Again: **503, 816, 3409**. If she is in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001153#turn-3",
+      "scenarioId": "phone_dialog_0001153",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat what county you heard me say? People keep hearing Washington state, and I mean Washington County where I am now.",
+      "normalizedQuery": "hi sorry talking fast because battery at like two percent mail service washington county just po box list trying somewhere regular plus maybe package receiving ideally tied shelter shelters homeless overnight warming system does make sense wait repeat heard say people keep hearing state mean now",
+      "voiceResponse": "Yes \u2014 I heard **Washington County** where you are now, **not Washington state**. If it helps, you can say: \u201cI need mail service in Washington County, local county, not the state of Washington.\u201d",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:a110aba06fd372f6",
+        "service:b2642cda89edcc08"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes \u2014 I heard **Washington County** where you are now, **not Washington state**. If it helps, you can say: \u201cI need mail service in Washington County, local county, not the state of Washington.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great, take your time. The address is: **4 0 6 0, West Amazon Drive, Eugene**. I\u2019ll repeat it once more: **4 0 6 0, West Amazon Drive, Eugene**.",
+        "Yes, dear. I\u2019ll say it slow. The name is **Warm Springs Senior Wellness Center**. Again: **Warm Springs Senior Wellness Center**. The address is **2331 High Lookee**. That is **2-3-3-1 High Lookee**. In **Warm Springs, Oregon, 9-7-7-6-1**. Again: **Warm Springs, Oregon, 9-7-7-6-1**.",
+        "I hear you. Here\u2019s the key part again: for that shelter, **no paperwork is required** to get in. If you need to call, the number is: **541 \u2026 948 \u2026 6649**. Address is: **16430 3rd Street, La Pine**. When staff answers, say: \u201cI need disability application help, and I want to share only the minimum information needed.\u201d",
+        "Of course. Here it is slowly: call **2-1-1** and say, \u201cI need a **homeless veteran housing assessment** for my dad in Washington County.\u201d I\u2019ll repeat the key programs: **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. If there is immediate danger tonight, call **9-1-1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001153#turn-6",
+      "scenarioId": "phone_dialog_0001153",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there\u2019s not a clear match, can you tell me exactly what details are missing and what to narrow first so we can search again without wasting time?",
+      "normalizedQuery": "wait repeat county heard say people keep hearing washington state mean now also have details on places allow same day pickup windows maybe discreet name handling like privacy minded staff just an address rental rent eviction assistance sorry circling key somewhere legit mail this week specifically accept government letters small parcels if there clear match tell exactly missing narrow first so we search again without wasting time",
+      "voiceResponse": "Great question. We\u2019re missing four filters: exact city in Washington County, mail type needed this week (government letters only, or letters plus small parcels), pickup timing (same-day or next-day), and privacy preference (legal name only, or discreet handling request). Fastest narrow: start with city + mail type first, then add timing and privacy as tie-breakers. You can say: \u201cWashington County, [city], accepts government mail and small parcels this week, not shelter-based, discreet handling preferred.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreicwpxxuxhgv7kw7xllhcwib2azyddq62pdnny5iwbeoknjuc2st5y"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great question. We\u2019re missing four filters: exact city in Washington County, mail type needed this week (government letters only, or letters plus small parcels), pickup timing (same-day or next-day), and privacy preference (legal name only, or discreet handling request). Fastest narrow: start with city + mail type first, then add timing and privacy as tie-breakers. You can say: \u201cWashington County, [city], accepts government mail and small parcels this week, not shelter-based, discreet handling preferred.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, and I\u2019m glad you called. I don\u2019t have a clear youth day center listing in Washington County right here, but I do have one youth-related shelter option to try now: Night Shelter Annex, 4060 West Amazon Drive, Eugene. Phone is **541\u2026 342\u2026 7728**. They serve families with minors and pregnant women, and no documents are needed at intake. If you want, I can help you call and ask for the nearest youth day center to Washington County.",
+        "That makes total sense. You\u2019re 22, and it\u2019s okay to protect your information. From what I can see, this shelter says **no documents are required** to get in, so you can ask questions first. When they answer, say: \u201cBefore I share anything, what do you keep private, and who do you share it with?\u201d Call: **541 \u2026 948 \u2026 6649**. If they won\u2019t answer clearly, don\u2019t give extra details yet.",
+        "You\u2019re doing the right thing by calling. In Washington County, there are veteran housing programs through **Housing Related Coordinated Entry** and **Transitional Housing/Shelter for homeless veterans**. I can help you contact 211 now and ask for a **homeless veteran housing assessment** for your dad. If there\u2019s any immediate danger tonight, call 911 right away.",
+        "Call **2-1-1** now. I\u2019ll repeat it: **2-1-1**. Say: \u201cI\u2019m in Washington County, near Hillsboro. I need an open Extreme Heat Cooling Center right now.\u201d They can give the closest open site fast. If the call drops, dial **2-1-1** again. What is your ZIP code?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -951,6 +1606,108 @@
       "to": "phone_dialog_0000515#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000657#turn-1",
+      "to": "phone_dialog_0000657#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000657#turn-2",
+      "to": "phone_dialog_0000657#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000670#turn-4",
+      "to": "phone_dialog_0000670#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000759#turn-2",
+      "to": "phone_dialog_0000759#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000759#turn-3",
+      "to": "phone_dialog_0000759#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000785#turn-3",
+      "to": "phone_dialog_0000785#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000981#turn-2",
+      "to": "phone_dialog_0000981#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000981#turn-3",
+      "to": "phone_dialog_0000981#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000981#turn-4",
+      "to": "phone_dialog_0000981#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001008#turn-3",
+      "to": "phone_dialog_0001008#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001008#turn-4",
+      "to": "phone_dialog_0001008#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001021#turn-4",
+      "to": "phone_dialog_0001021#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001069#turn-1",
+      "to": "phone_dialog_0001069#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001069#turn-2",
+      "to": "phone_dialog_0001069#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001069#turn-3",
+      "to": "phone_dialog_0001069#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001097#turn-5",
+      "to": "phone_dialog_0001097#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001153#turn-3",
+      "to": "phone_dialog_0001153#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

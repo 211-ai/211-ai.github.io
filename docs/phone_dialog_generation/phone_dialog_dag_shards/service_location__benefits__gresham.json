@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__benefits__gresham",
   "kind": "service_location",
   "key": "benefits__gresham",
-  "nodeCount": 24,
+  "nodeCount": 43,
   "nodes": [
     {
       "id": "phone_dialog_0000022#turn-2",
@@ -714,6 +714,566 @@
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000661#turn-1",
+      "scenarioId": "phone_dialog_0000661",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Gresham, and I need help applying for disability benefits. I just need the next steps.",
+      "normalizedQuery": "hi gresham applying disability benefits snap assistance just next steps",
+      "voiceResponse": "Okay. Fastest next step: call the benefits line at **8-5-5, 3-2-8, 6-7-1-5**. I\u2019ll repeat: **8-5-5, 3-2-8, 6-7-1-5**. Tell them: \u201cI\u2019m in Gresham. I need help applying for disability benefits. What forms and documents do I need, and where do I apply?\u201d Do you want the Portland office address too?",
+      "evidenceDocIds": [
+        "service:1a2047875eb85db2",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:02b582c05d666cd2",
+        "service:ea585d467287a4d5",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Fastest next step: call the benefits line at **8-5-5, 3-2-8, 6-7-1-5**. I\u2019ll repeat: **8-5-5, 3-2-8, 6-7-1-5**. Tell them: \u201cI\u2019m in Gresham. I need help applying for disability benefits. What forms and documents do I need, and where do I apply?\u201d Do you want the Portland office address too?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can do this one step at a time. I do see 211info has dental listings for your area, including **Mobile Dental Care** and **Dental Hygiene (Native American Community)** options. Since your tooth is really hurting, the fastest option is to call **2-1-1** now and ask for an **urgent dental clinic in Gresham**. You can share only what you\u2019re comfortable sharing. If pain becomes severe with swelling or fever, urgent care is a good backup.",
+        "That\u2019s a fair question. We can keep this very private. You only need to share what helps them find care, and you can keep it brief. If you call 2-1-1, you can say, \u201cI need an urgent dental clinic in Gresham,\u201d and stop there unless you want to add more. We can go at your pace.",
+        "You heard right to check. For your request, we\u2019re focused on **Gresham, Oregon**. I don\u2019t have a confirmed street here yet, and I don\u2019t want to guess. Best next step: call **2-1-1** and say, slowly, \u201c**Urgent dental clinic in Gresham, Oregon.**\u201d That keeps it simple and private.",
+        "You\u2019re okay. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000661#turn-2",
+      "scenarioId": "phone_dialog_0000661",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing on this line, can you say that slower and one step at a time?",
+      "normalizedQuery": "hi gresham applying disability benefits snap assistance just next steps sorry hard hearing on this line say slower one step at time",
+      "voiceResponse": "Yes. One step at a time. Step one: Call **8-5-5, 3-2-8, 6-7-1-5**. I\u2019ll repeat: **8-5-5, 3-2-8, 6-7-1-5**. Step two: Say, \u201cI\u2019m in Gresham. I need help applying for disability benefits. What forms do I need, what documents do I need, and where do I apply?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:ea585d467287a4d5",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One step at a time. Step one: Call **8-5-5, 3-2-8, 6-7-1-5**. I\u2019ll repeat: **8-5-5, 3-2-8, 6-7-1-5**. Step two: Say, \u201cI\u2019m in Gresham. I need help applying for disability benefits. What forms do I need, what documents do I need, and where do I apply?\u201d",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000815#turn-1",
+      "scenarioId": "phone_dialog_0000815",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m calling for my cousin, not for me, and we need a dental clinic in Gresham.",
+      "normalizedQuery": "hi sorry hear okay calling cousin we dental dentist clinic medical health gresham",
+      "voiceResponse": "Yes, I can hear you. Next step: call Salud Medical Center Dental Care and ask for the closest opening to Gresham. The number is **503\u2026 982\u2026 2000**. If that line drops, try **541\u2026 666\u2026 7165**. I only have locations in Woodburn and Albany from my listing, so ask if they can schedule near Gresham or refer your cousin locally.",
+      "evidenceDocIds": [
+        "service:7af467e377cb9ae5",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreibikn76mh6j2j76n7jcydzm75ymrkhcavyfoh3s5cyuy7aifghdte",
+        "page:bafkreien3hs6at6ghlqjwnm7pcbjiq7hin5gg2h6lwgq2lyih2g5ytwqxa",
+        "service:99027a09c8f5f04d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. Next step: call Salud Medical Center Dental Care and ask for the closest opening to Gresham. The number is **503\u2026 982\u2026 2000**. If that line drops, try **541\u2026 666\u2026 7165**. I only have locations in Woodburn and Albany from my listing, so ask if they can schedule near Gresham or refer your cousin locally.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can do this one step at a time. I do see 211info has dental listings for your area, including **Mobile Dental Care** and **Dental Hygiene (Native American Community)** options. Since your tooth is really hurting, the fastest option is to call **2-1-1** now and ask for an **urgent dental clinic in Gresham**. You can share only what you\u2019re comfortable sharing. If pain becomes severe with swelling or fever, urgent care is a good backup.",
+        "That\u2019s a fair question. We can keep this very private. You only need to share what helps them find care, and you can keep it brief. If you call 2-1-1, you can say, \u201cI need an urgent dental clinic in Gresham,\u201d and stop there unless you want to add more. We can go at your pace.",
+        "You heard right to check. For your request, we\u2019re focused on **Gresham, Oregon**. I don\u2019t have a confirmed street here yet, and I don\u2019t want to guess. Best next step: call **2-1-1** and say, slowly, \u201c**Urgent dental clinic in Gresham, Oregon.**\u201d That keeps it simple and private.",
+        "You\u2019re okay. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000815#turn-4",
+      "scenarioId": "phone_dialog_0000815",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I think he can do mornings, maybe Mondays, but I\u2019m guessing a little, he works odd jobs.",
+      "normalizedQuery": "hi sorry hear okay calling cousin we dental dentist clinic medical health gresham he got bad tooth cheek swelling don know if has insurance right now only have part his info hello cut on say name again slower think mornings maybe mondays guessing little works odd jobs",
+      "voiceResponse": "Next step: I\u2019ll connect you to a live 211 specialist now so they can find a clinic near Gresham and check morning or Monday openings with partial information. Tell them exactly what you said: \u201cbad tooth, cheek swelling, unknown insurance, works odd jobs.\u201d If he develops trouble breathing, trouble swallowing, fever, or fast-worsening swelling, call 9-1-1 right away.",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:e8399a8259fb5c21",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I\u2019ll connect you to a live 211 specialist now so they can find a clinic near Gresham and check morning or Monday openings with partial information. Tell them exactly what you said: \u201cbad tooth, cheek swelling, unknown insurance, works odd jobs.\u201d If he develops trouble breathing, trouble swallowing, fever, or fast-worsening swelling, call 9-1-1 right away.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000938#turn-3",
+      "scenarioId": "phone_dialog_0000938",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I'm in Gresham, on the east side. I don't know if I need counseling or crisis support, I just need someone to talk to soon.",
+      "normalizedQuery": "hi sorry don't really know ask i'm just doing okay some kind yeah um it's mental health lost brother last month keep breaking down gresham on east side if counseling crisis support someone talk soon",
+      "voiceResponse": "First step: call **Phoenix Counseling Center** now and ask for the soonest same-day support. The number is **(541) 535-4133** \u2014 that\u2019s **541\u2026 535\u2026 4133**. You can say: \u201cI\u2019m in Gresham, I lost my brother last month, and I need someone to talk to as soon as possible.\u201d If you want, I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b9541cc92ab033f6",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5421e9839245b23d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call **Phoenix Counseling Center** now and ask for the soonest same-day support. The number is **(541) 535-4133** \u2014 that\u2019s **541\u2026 535\u2026 4133**. You can say: \u201cI\u2019m in Gresham, I lost my brother last month, and I need someone to talk to as soon as possible.\u201d If you want, I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can do this one step at a time. I do see 211info has dental listings for your area, including **Mobile Dental Care** and **Dental Hygiene (Native American Community)** options. Since your tooth is really hurting, the fastest option is to call **2-1-1** now and ask for an **urgent dental clinic in Gresham**. You can share only what you\u2019re comfortable sharing. If pain becomes severe with swelling or fever, urgent care is a good backup.",
+        "That\u2019s a fair question. We can keep this very private. You only need to share what helps them find care, and you can keep it brief. If you call 2-1-1, you can say, \u201cI need an urgent dental clinic in Gresham,\u201d and stop there unless you want to add more. We can go at your pace.",
+        "You heard right to check. For your request, we\u2019re focused on **Gresham, Oregon**. I don\u2019t have a confirmed street here yet, and I don\u2019t want to guess. Best next step: call **2-1-1** and say, slowly, \u201c**Urgent dental clinic in Gresham, Oregon.**\u201d That keeps it simple and private.",
+        "You\u2019re okay. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000938#turn-4",
+      "scenarioId": "phone_dialog_0000938",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down a little? I'm trying to write this, and I missed the name of that place.",
+      "normalizedQuery": "hi sorry don't really know ask i'm just doing okay some kind yeah um it's mental health lost brother last month keep breaking down gresham on east side if counseling crisis support someone talk soon slow little trying write this missed name place",
+      "voiceResponse": "Of course. Write this first: **Phoenix Counseling Center**. I\u2019ll say it slowly: **Phoenix** \u2026 **Counseling** \u2026 **Center**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b9541cc92ab033f6",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Write this first: **Phoenix Counseling Center**. I\u2019ll say it slowly: **Phoenix** \u2026 **Counseling** \u2026 **Center**.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000938#turn-5",
+      "scenarioId": "phone_dialog_0000938",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I'm crying again\u2014could you repeat the number one more time?",
+      "normalizedQuery": "yeah um it's mental health lost brother last month keep breaking down i'm gresham on east side don't know if counseling crisis support just someone talk soon slow little trying write this missed name place sorry crying again could repeat number one more time",
+      "voiceResponse": "Yes. The number is **541\u2026 535\u2026 4133**. I\u2019ll repeat it: **541\u2026 535\u2026 4133**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:b9541cc92ab033f6",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **541\u2026 535\u2026 4133**. I\u2019ll repeat it: **541\u2026 535\u2026 4133**.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000974#turn-3",
+      "scenarioId": "phone_dialog_0000974",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Gresham, and I need a medical clinic today, like low-cost, and somewhere that won\u2019t just turn me away.",
+      "normalizedQuery": "gresham medical clinic health like low cost somewhere won just turn away",
+      "voiceResponse": "If your dizziness, racing heart, chest pain, or breathing gets worse, call **9-1-1** now. For a low-cost clinic in Gresham today, call **5-0-3, 9-8-8, 5-4-8-8**. Address: **3505 Southeast 182nd Avenue, Gresham**. Say: \u201cI need a same-day low-cost visit and I\u2019m worried about being turned away.\u201d They list no documents required at intake.",
+      "evidenceDocIds": [
+        "page:bafkreiami56m62hue6oxuosjgy6lqtowqnzeuue4ppdc6kceqda6clwajm",
+        "page:bafkreigzcf4f33vx4cmfalu3ljox2omvwvq6yklkn4rakjqd2gbmtge57u",
+        "service:38030d3e45dfbe6f",
+        "service:9279038d9f436625",
+        "service:babfb1ac3ac28a54"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If your dizziness, racing heart, chest pain, or breathing gets worse, call **9-1-1** now. For a low-cost clinic in Gresham today, call **5-0-3, 9-8-8, 5-4-8-8**. Address: **3505 Southeast 182nd Avenue, Gresham**. Say: \u201cI need a same-day low-cost visit and I\u2019m worried about being turned away.\u201d They list no documents required at intake.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000974#turn-4",
+      "scenarioId": "phone_dialog_0000974",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Wait, sorry, there\u2019s traffic here and I missed that part, can you repeat the number slower?",
+      "normalizedQuery": "hi sorry this isn even phone it at like two percent just give main number first case we cut off feel really shaky dizzy heart racing little trying stay calm kinda panicking gresham medical clinic health low cost somewhere won turn away wait there traffic here missed part repeat slower",
+      "voiceResponse": "Yes. The clinic number is **5-0-3 \u2026 9-8-8 \u2026 5-4-8-8**. If your dizziness, breathing, or chest symptoms get worse, call **9-1-1** right now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The clinic number is **5-0-3 \u2026 9-8-8 \u2026 5-4-8-8**. If your dizziness, breathing, or chest symptoms get worse, call **9-1-1** right now.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000974#turn-5",
+      "scenarioId": "phone_dialog_0000974",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m 22 and I don\u2019t have much money, and I don\u2019t really trust places that ask a ton of questions, I just need to be seen.",
+      "normalizedQuery": "feel really shaky dizzy heart racing little trying stay calm kinda panicking gresham medical clinic health like low cost somewhere won just turn away wait sorry there traffic here missed part repeat number slower 22 don have much money trust places ask ton questions be seen",
+      "voiceResponse": "You\u2019re not doing anything wrong. First: if the dizziness, chest pain, breathing trouble, or feeling faint gets worse, call **9-1-1** now. If you\u2019re stable, call this clinic now: **5-0-3 \u2026 9-8-8 \u2026 5-4-8-8**. Say: \u201cI need a same-day low-cost visit. I\u2019m 22 and worried about being turned away.\u201d Ask for the fewest intake questions.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:bb282e5eaf2a18e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not doing anything wrong. First: if the dizziness, chest pain, breathing trouble, or feeling faint gets worse, call **9-1-1** now. If you\u2019re stable, call this clinic now: **5-0-3 \u2026 9-8-8 \u2026 5-4-8-8**. Say: \u201cI need a same-day low-cost visit. I\u2019m 22 and worried about being turned away.\u201d Ask for the fewest intake questions.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001038#turn-2",
+      "scenarioId": "phone_dialog_0001038",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m in Gresham, and I need mental health help, like today, I feel like I\u2019m falling apart.",
+      "normalizedQuery": "gresham mental health like feel falling apart",
+      "voiceResponse": "I\u2019m really glad you called. You deserve support today. If you might hurt yourself or feel unsafe right now, call 911 now. For Gresham mental health help, contact NARA Child and Family Services at **5 0 3, 9 5 3, 6 5 9 8**. Address: **620 Northeast 2nd Street, Gresham**. They provide mental health assessment, counseling, and case management. If you want, I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "service:3009b3dc46953c2a",
+        "service:a83142ab9bffc6d5",
+        "service:ae2dd2b1264b73a7",
+        "service:bc262b0ceb000a33",
+        "service:d33c329fbe8c48d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called. You deserve support today. If you might hurt yourself or feel unsafe right now, call 911 now. For Gresham mental health help, contact NARA Child and Family Services at **5 0 3, 9 5 3, 6 5 9 8**. Address: **620 Northeast 2nd Street, Gresham**. They provide mental health assessment, counseling, and case management. If you want, I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can do this one step at a time. I do see 211info has dental listings for your area, including **Mobile Dental Care** and **Dental Hygiene (Native American Community)** options. Since your tooth is really hurting, the fastest option is to call **2-1-1** now and ask for an **urgent dental clinic in Gresham**. You can share only what you\u2019re comfortable sharing. If pain becomes severe with swelling or fever, urgent care is a good backup.",
+        "That\u2019s a fair question. We can keep this very private. You only need to share what helps them find care, and you can keep it brief. If you call 2-1-1, you can say, \u201cI need an urgent dental clinic in Gresham,\u201d and stop there unless you want to add more. We can go at your pace.",
+        "You heard right to check. For your request, we\u2019re focused on **Gresham, Oregon**. I don\u2019t have a confirmed street here yet, and I don\u2019t want to guess. Best next step: call **2-1-1** and say, slowly, \u201c**Urgent dental clinic in Gresham, Oregon.**\u201d That keeps it simple and private.",
+        "You\u2019re okay. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001038#turn-4",
+      "scenarioId": "phone_dialog_0001038",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, can you repeat the number again? I wrote it wrong, my hands are shaking.",
+      "normalizedQuery": "hi sorry stop crying don even know start gresham mental health like feel falling apart slow down missed head all over place right now wait repeat number again wrote it wrong hands shaking",
+      "voiceResponse": "Yes. The number is: **5 0 3** \u2026 **9 5 3** \u2026 **6 5 9 8**. I\u2019ll say it again: **5 0 3** \u2026 **9 5 3** \u2026 **6 5 9 8**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is: **5 0 3** \u2026 **9 5 3** \u2026 **6 5 9 8**. I\u2019ll say it again: **5 0 3** \u2026 **9 5 3** \u2026 **6 5 9 8**.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001038#turn-5",
+      "scenarioId": "phone_dialog_0001038",
+      "turnIndex": 4,
+      "route": "safety_guardrail_support",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I\u2019m not trying to be difficult, I just keep zoning out and then panicking again.",
+      "normalizedQuery": "gresham mental health like feel falling apart slow down missed head all over place right now wait repeat number again wrote it wrong hands shaking trying be difficult just keep zoning then panicking",
+      "voiceResponse": "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult. You\u2019re doing the right thing by staying on the line. Quick safety check: are you in immediate danger or thinking of hurting yourself right now? If yes, call **9-1-1** now. If not, let\u2019s do one step together: call **NARA** at **5 0 3 \u2026 9 5 3 \u2026 6 5 9 8**. I can stay with you while you dial.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001096#turn-3",
+      "scenarioId": "phone_dialog_0001096",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Gresham, and I need a medical clinic today, like not the ER, just somewhere that will actually see me.",
+      "normalizedQuery": "i'm gresham medical clinic health like er just somewhere will actually see",
+      "voiceResponse": "I hear you. Since you\u2019re still shaky and dizzy, if it gets worse or you feel unsafe, call **9-1-1** now. For same-day clinic care, call Salud Medical Center first: **(503) 256-4000** \u2014 that\u2019s **5-0-3, 2-5-6, 4-0-0-0**. If they can\u2019t take you, call **(503) 982-2000** \u2014 **5-0-3, 9-8-2, 2-0-0-0**. I can stay with you while you make the call.",
+      "evidenceDocIds": [
+        "service:31a22008e2b10cbf",
+        "service:5d7b69e27cf0f47a",
+        "service:bb282e5eaf2a18e5",
+        "service:38030d3e45dfbe6f",
+        "service:9279038d9f436625"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Since you\u2019re still shaky and dizzy, if it gets worse or you feel unsafe, call **9-1-1** now. For same-day clinic care, call Salud Medical Center first: **(503) 256-4000** \u2014 that\u2019s **5-0-3, 2-5-6, 4-0-0-0**. If they can\u2019t take you, call **(503) 982-2000** \u2014 **5-0-3, 9-8-2, 2-0-0-0**. I can stay with you while you make the call.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001096#turn-4",
+      "scenarioId": "phone_dialog_0001096",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm 22 and I don't really trust this stuff, I just don't want to get turned away again.",
+      "normalizedQuery": "hi um stay sec feel really shaky dizzy head spinning sorry there's noise here missed part say it slower i'm gresham medical clinic health like er just somewhere will actually see 22 don't trust this stuff want turned away again",
+      "voiceResponse": "I hear you, and you\u2019re not wrong to worry about that. Your safety comes first right now: if the dizziness or shakiness gets worse, call **9-1-1** immediately. Since you asked for real help without getting turned away, I\u2019m connecting you to a live agent now to stay with you and help you get a same-day clinic plan that works.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not wrong to worry about that. Your safety comes first right now: if the dizziness or shakiness gets worse, call **9-1-1** immediately. Since you asked for real help without getting turned away, I\u2019m connecting you to a live agent now to stay with you and help you get a same-day clinic plan that works.",
+      "voiceResponseAlternatives": [
+        "Thanks for saying that. Fastest next step: call **(855) 328-6715** \u2014 that\u2019s **8 5 5, 3 2 8, 6 7 1 5** \u2014 and ask for a **disability benefits document checklist** before you go in. If you get sent away again, you can say: \u201cPlease tell me exactly what\u2019s missing, in writing, so I can come back once.\u201d If you feel unsafe right now, call **9-1-1**.",
+        "Short answer: they don\u2019t call your family or school just because you reached out. You can keep it private and share only what you want. If your phone dies, your next step is still: **(855) 328-6715** That\u2019s **8 5 5 \u2026 3 2 8 \u2026 6 7 1 5**. Ask for: \u201cA disability benefits document checklist before I come in.\u201d",
+        "You don\u2019t have to hold this all alone right now. Let\u2019s take one small step together: call the Crisis Counseling Hotline at **five-four-one, six-eight-seven, four-zero-zero-zero**. They can give immediate crisis support and connect you to help near Gresham. If you feel like you might hurt yourself or aren\u2019t safe, call **911** now. If you want, stay with me and we\u2019ll go one step at a time while you dial.",
+        "You never need to apologize. You\u2019re overwhelmed, and you\u2019re still taking a brave step right now. I don\u2019t want to guess about insurance, but the **Crisis Counseling Hotline** can tell you right away and help you either way. Call **five-four-one, six-eight-seven, four-zero-zero-zero**. That\u2019s **(541) 687-4000**. If you want, we can do it together now, one breath at a time. If you feel unsafe at any point, call **911** immediately."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001096#turn-5",
+      "scenarioId": "phone_dialog_0001096",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone's at like five percent, so if there's a number can you repeat it twice?",
+      "normalizedQuery": "sorry there's noise here missed part say it slower i'm gresham medical clinic health like er just somewhere will actually see 22 don't really trust this stuff want turned away again phone's at five percent so if number repeat twice",
+      "voiceResponse": "Yes. Main clinic number: **(503) 256-4000**. That\u2019s **5-0-3, 2-5-6, 4-0-0-0**. Again: **(503) 256-4000**. **5-0-3, 2-5-6, 4-0-0-0**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Main clinic number: **(503) 256-4000**. That\u2019s **5-0-3, 2-5-6, 4-0-0-0**. Again: **(503) 256-4000**. **5-0-3, 2-5-6, 4-0-0-0**.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001111#turn-3",
+      "scenarioId": "phone_dialog_0001111",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I'm in Gresham... can you look there first?",
+      "normalizedQuery": "hi um don't really know start just like can't keep doing this by myself sorry i'm crying little think someone talk maybe counseling mental health gresham look there first",
+      "voiceResponse": "Absolutely, and thank you for telling me that. I want to get this right, but your audio cut out for a second. Could you repeat just one short thing: are you looking in Gresham for counseling/mental health support, or a different kind of help?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and thank you for telling me that. I want to get this right, but your audio cut out for a second. Could you repeat just one short thing: are you looking in Gresham for counseling/mental health support, or a different kind of help?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001111#turn-4",
+      "scenarioId": "phone_dialog_0001111",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down and say that again? I missed the name when you said it.",
+      "normalizedQuery": "hi um don't really know start just like can't keep doing this by myself sorry i'm crying little think someone talk maybe counseling mental health gresham look there first slow down say again missed name when said it",
+      "voiceResponse": "Of course. You\u2019re doing great, and I\u2019ll go slowly. The name is **T F P Therapeutic Services**. And the number is **5 4 1 \u2026 8 8 9 \u2026 1 0 5 0**. If you want, I can repeat it one more time while you write it down.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. You\u2019re doing great, and I\u2019ll go slowly. The name is **T F P Therapeutic Services**. And the number is **5 4 1 \u2026 8 8 9 \u2026 1 0 5 0**. If you want, I can repeat it one more time while you write it down.",
+      "voiceResponseAlternatives": [
+        "Yep. Slow version: Call **(855) 328-6715**. That\u2019s **8 5 5**\u2026 **3 2 8**\u2026 **6 7 1 5**. Ask for: **\u201cA disability benefits document checklist before I come in.\u201d** If they still turn you away, say: **\u201cPlease tell me exactly what\u2019s missing, in writing.\u201d**",
+        "Of course. The name is **Crisis Counseling Hotline**. I\u2019ll say it again slowly: **Crisis\u2026 Counseling\u2026 Hotline**.",
+        "You\u2019re doing great. The number is **five-four-one\u2026 six-eight-seven\u2026 four-zero-zero-zero**. That\u2019s **(541) 687-4000**.",
+        "Yes. Slow and clear. Phone number: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Again: **5 4 1** \u2026 **3 6 8** \u2026 **7 1 0 0**. Address: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**. Again: **777 Northwest 9th Street** \u2026 **Suite 202 C** \u2026 **Corvallis**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001111#turn-5",
+      "scenarioId": "phone_dialog_0001111",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If they take new people, I can try today, I just need somewhere safe to start.",
+      "normalizedQuery": "sorry i'm crying little think someone talk maybe counseling mental health gresham look there first slow down say again missed name when said it if they take new people try just somewhere safe start",
+      "voiceResponse": "You\u2019re doing the right thing by reaching out, especially when it feels this heavy. A safe place to start is **211info**. They can check which counseling and mental health providers in **Gresham** are taking new clients **today** and help you with next steps. If you want, we can do this slowly together right now, one step at a time.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by reaching out, especially when it feels this heavy. A safe place to start is **211info**. They can check which counseling and mental health providers in **Gresham** are taking new clients **today** and help you with next steps. If you want, we can do this slowly together right now, one step at a time.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can do this one step at a time. I do see 211info has dental listings for your area, including **Mobile Dental Care** and **Dental Hygiene (Native American Community)** options. Since your tooth is really hurting, the fastest option is to call **2-1-1** now and ask for an **urgent dental clinic in Gresham**. You can share only what you\u2019re comfortable sharing. If pain becomes severe with swelling or fever, urgent care is a good backup.",
+        "That\u2019s a fair question. We can keep this very private. You only need to share what helps them find care, and you can keep it brief. If you call 2-1-1, you can say, \u201cI need an urgent dental clinic in Gresham,\u201d and stop there unless you want to add more. We can go at your pace.",
+        "You heard right to check. For your request, we\u2019re focused on **Gresham, Oregon**. I don\u2019t have a confirmed street here yet, and I don\u2019t want to guess. Best next step: call **2-1-1** and say, slowly, \u201c**Urgent dental clinic in Gresham, Oregon.**\u201d That keeps it simple and private.",
+        "You\u2019re okay. The number is **2-1-1**. Slowly: **two \u2026 one \u2026 one**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -836,6 +1396,102 @@
       "to": "phone_dialog_0000607#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000661#turn-1",
+      "to": "phone_dialog_0000661#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000661#turn-2",
+      "to": "phone_dialog_0000661#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000815#turn-1",
+      "to": "phone_dialog_0000815#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000815#turn-4",
+      "to": "phone_dialog_0000815#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000938#turn-3",
+      "to": "phone_dialog_0000938#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000938#turn-4",
+      "to": "phone_dialog_0000938#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000974#turn-3",
+      "to": "phone_dialog_0000974#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000974#turn-4",
+      "to": "phone_dialog_0000974#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001038#turn-2",
+      "to": "phone_dialog_0001038#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001038#turn-4",
+      "to": "phone_dialog_0001038#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001038#turn-5",
+      "to": "phone_dialog_0001038#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001096#turn-3",
+      "to": "phone_dialog_0001096#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001096#turn-4",
+      "to": "phone_dialog_0001096#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001096#turn-5",
+      "to": "phone_dialog_0001096#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001111#turn-3",
+      "to": "phone_dialog_0001111#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001111#turn-4",
+      "to": "phone_dialog_0001111#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__family__gresham",
   "kind": "service_location",
   "key": "family__gresham",
-  "nodeCount": 14,
+  "nodeCount": 31,
   "nodes": [
     {
       "id": "phone_dialog_0000017#turn-3",
@@ -146,7 +146,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely. We can keep this simple and fast: call NARA NW first for urgent child care options and ask about subsidy or low-cost openings for next week. She can share only basics at first. What time should I set a reminder for you to call them?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "That\u2019s not too much at all, and we can narrow this without sharing anything extra. For your rotating hospital schedule, what exact care window should I target first, like earliest drop-off time and latest pickup time?"
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "privacy_trust_builder"
@@ -171,7 +173,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Totally fair. I don\u2019t have confirmed open-slot numbers in Gresham on my screen right now, and I don\u2019t want to give you bad info. Best next step is a live 211 specialist who can check real-time openings and subsidy options while you\u2019re on the line. You can share only basics first, and ask for the minimum needed. If you want, I can connect you now.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re right, directories alone aren\u2019t enough. Since you\u2019re already on the live-agent path, the quickest move is real-time verification on just three points: current hours, subsidy acceptance, and sensory-needs support. You can say: \u201cCan you confirm today\u2019s hours, which subsidies you accept, and how you support a child with sensory needs?\u201d If you want, we can keep it to that exact script and rule options in or out fast.",
+        "Yes. If there\u2019s no strong match in Gresham, I\u2019ll say that plainly. Next closest search I\u2019d run is East Portland first, then county-wide, so you widen options without losing time. Use the same three checks each call: today\u2019s hours, subsidy acceptance, and sensory-needs support. If you want the fastest path, do East Portland now, then expand county-wide right after."
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "privacy_trust_builder"
@@ -406,10 +411,514 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. The place is **Lane County Diaper Bank**. The phone number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Next step: call this diaper bank and ask if they know a closer diaper site near Gresham. The phone number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. That is Lane County Diaper Bank, **3050 Game Farm Road, Springfield**. They provide diapers and wipes. Eligibility listed is **OHP, WIC, or SNAP**. Hours listed are **Monday through Friday, 8 a.m. to 5 p.m.**",
+        "Of course, and you\u2019re doing great. The place name is: **Lane County Diaper Bank**. I\u2019ll say it slower: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**.",
+        "Absolutely. The number is **541\u2026 221\u2026 0824**. I\u2019ll repeat it in chunks: **541** \u2026 **221** \u2026 **0824**."
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000643#turn-1",
+      "scenarioId": "phone_dialog_0000643",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m on speaker and there\u2019s traffic noise, can you hear me? I\u2019m in Gresham and I need child care help, but not just any opening.",
+      "normalizedQuery": "hi sorry on speaker there traffic noise hear gresham child care just any opening",
+      "voiceResponse": "Yes, I can hear you. In Gresham, one option is NARA NW Child and Family Services at **620 Northeast 2nd Street, Gresham, 97030**. Their number is **503\u2026953\u20266598**. They offer family support and wraparound services, including for Native youth ages 9 to 21. If you want, I can help you script exactly what to ask so you can screen for the right fit, not just first availability.",
+      "evidenceDocIds": [
+        "service:1d05e0685d691178",
+        "service:f51ce494bfa8b02c",
+        "service:20336ce596a3b9f8",
+        "service:31d6d1dce100220e",
+        "service:41e0bd0ca78c3706"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. In Gresham, one option is NARA NW Child and Family Services at **620 Northeast 2nd Street, Gresham, 97030**. Their number is **503\u2026953\u20266598**. They offer family support and wraparound services, including for Native youth ages 9 to 21. If you want, I can help you script exactly what to ask so you can screen for the right fit, not just first availability.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000643#turn-2",
+      "scenarioId": "phone_dialog_0000643",
+      "turnIndex": 1,
+      "route": "calendar_event_support",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "calendar_event_support",
+      "user": "I\u2019m trying to find a place that does overnight plus early drop-off, and ideally bilingual staff, and I know that\u2019s a lot, but this is for a rotating hospital schedule.",
+      "normalizedQuery": "hi sorry on speaker there traffic noise hear gresham child care just any opening trying place does overnight plus early drop off ideally bilingual staff know lot this rotating hospital schedule",
+      "voiceResponse": "That\u2019s not too much at all, and we can narrow this without sharing anything extra. For your rotating hospital schedule, what exact care window should I target first, like earliest drop-off time and latest pickup time?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiety6n5l4fzjhbpiky6ac4s3xxmnmk6yhmtkjh27q7rh3uijjxegy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s not too much at all, and we can narrow this without sharing anything extra. For your rotating hospital schedule, what exact care window should I target first, like earliest drop-off time and latest pickup time?",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep this simple and fast: call NARA NW first for urgent child care options and ask about subsidy or low-cost openings for next week. She can share only basics at first. What time should I set a reminder for you to call them?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000643#turn-4",
+      "scenarioId": "phone_dialog_0000643",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Because I keep getting referred to directories, and I need the real details like current hours, subsidy acceptance, and whether they take a child with sensory needs.",
+      "normalizedQuery": "hi sorry on speaker there traffic noise hear gresham child care just any opening trying place does overnight plus early drop off ideally bilingual staff know lot this rotating hospital schedule wait hold said options those actually confirmed right now listings might be outdated because keep getting referred directories real details like current hours subsidy acceptance whether they take sensory needs",
+      "voiceResponse": "You\u2019re right, directories alone aren\u2019t enough. Since you\u2019re already on the live-agent path, the quickest move is real-time verification on just three points: current hours, subsidy acceptance, and sensory-needs support. You can say: \u201cCan you confirm today\u2019s hours, which subsidies you accept, and how you support a child with sensory needs?\u201d If you want, we can keep it to that exact script and rule options in or out fast.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right, directories alone aren\u2019t enough. Since you\u2019re already on the live-agent path, the quickest move is real-time verification on just three points: current hours, subsidy acceptance, and sensory-needs support. You can say: \u201cCan you confirm today\u2019s hours, which subsidies you accept, and how you support a child with sensory needs?\u201d If you want, we can keep it to that exact script and rule options in or out fast.",
+      "voiceResponseAlternatives": [
+        "Totally fair. I don\u2019t have confirmed open-slot numbers in Gresham on my screen right now, and I don\u2019t want to give you bad info. Best next step is a live 211 specialist who can check real-time openings and subsidy options while you\u2019re on the line. You can share only basics first, and ask for the minimum needed. If you want, I can connect you now.",
+        "Yes. If there\u2019s no strong match in Gresham, I\u2019ll say that plainly. Next closest search I\u2019d run is East Portland first, then county-wide, so you widen options without losing time. Use the same three checks each call: today\u2019s hours, subsidy acceptance, and sensory-needs support. If you want the fastest path, do East Portland now, then expand county-wide right after."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000643#turn-6",
+      "scenarioId": "phone_dialog_0000643",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "And if there\u2019s no strong match in Gresham, please say that plainly and tell me the next closest search you\u2019d run, maybe East Portland or county-wide.",
+      "normalizedQuery": "wait hold on said there options those actually confirmed right now just listings might be outdated because keep getting referred directories real details like current hours subsidy acceptance whether they take child sensory needs sorry talking fast battery at percent give know sure then basically best guess so call first if no strong match gresham please say plainly tell next closest search run maybe east portland county wide",
+      "voiceResponse": "Yes. If there\u2019s no strong match in Gresham, I\u2019ll say that plainly. Next closest search I\u2019d run is East Portland first, then county-wide, so you widen options without losing time. Use the same three checks each call: today\u2019s hours, subsidy acceptance, and sensory-needs support. If you want the fastest path, do East Portland now, then expand county-wide right after.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. If there\u2019s no strong match in Gresham, I\u2019ll say that plainly. Next closest search I\u2019d run is East Portland first, then county-wide, so you widen options without losing time. Use the same three checks each call: today\u2019s hours, subsidy acceptance, and sensory-needs support. If you want the fastest path, do East Portland now, then expand county-wide right after.",
+      "voiceResponseAlternatives": [
+        "Totally fair. I don\u2019t have confirmed open-slot numbers in Gresham on my screen right now, and I don\u2019t want to give you bad info. Best next step is a live 211 specialist who can check real-time openings and subsidy options while you\u2019re on the line. You can share only basics first, and ask for the minimum needed. If you want, I can connect you now.",
+        "You\u2019re right, directories alone aren\u2019t enough. Since you\u2019re already on the live-agent path, the quickest move is real-time verification on just three points: current hours, subsidy acceptance, and sensory-needs support. You can say: \u201cCan you confirm today\u2019s hours, which subsidies you accept, and how you support a child with sensory needs?\u201d If you want, we can keep it to that exact script and rule options in or out fast."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000762#turn-1",
+      "scenarioId": "phone_dialog_0000762",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m calling for my sister, she needs diapers for her baby and I\u2019m trying to help her find somewhere in Gresham.",
+      "normalizedQuery": "hi sorry hear okay calling sister she needs diapers diaper baby her trying somewhere gresham",
+      "voiceResponse": "Yes, I can hear you. Next step: call this diaper program and ask if they know a closer diaper site near Gresham. The number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. I only have this listing: Lane County Diaper Bank, 3050 Game Farm Road, Springfield. They provide diapers and wipes, and list eligibility as OHP, WIC, or SNAP. Hours shown are Monday to Friday, 8 to 5.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:c196660a779416f8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. Next step: call this diaper program and ask if they know a closer diaper site near Gresham. The number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. I only have this listing: Lane County Diaper Bank, 3050 Game Farm Road, Springfield. They provide diapers and wipes, and list eligibility as OHP, WIC, or SNAP. Hours shown are Monday to Friday, 8 to 5.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000762#turn-2",
+      "scenarioId": "phone_dialog_0000762",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You cut out for a second, can you say that again slower?",
+      "normalizedQuery": "hi sorry hear okay calling sister she needs diapers diaper baby her trying somewhere gresham cut second say again slower",
+      "voiceResponse": "Next step: call this diaper bank and ask if they know a closer diaper site near Gresham. The phone number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. That is Lane County Diaper Bank, **3050 Game Farm Road, Springfield**. They provide diapers and wipes. Eligibility listed is **OHP, WIC, or SNAP**. Hours listed are **Monday through Friday, 8 a.m. to 5 p.m.**",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call this diaper bank and ask if they know a closer diaper site near Gresham. The phone number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. That is Lane County Diaper Bank, **3050 Game Farm Road, Springfield**. They provide diapers and wipes. Eligibility listed is **OHP, WIC, or SNAP**. Hours listed are **Monday through Friday, 8 a.m. to 5 p.m.**",
+      "voiceResponseAlternatives": [
+        "Yes. The place is **Lane County Diaper Bank**. The phone number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**.",
+        "Of course, and you\u2019re doing great. The place name is: **Lane County Diaper Bank**. I\u2019ll say it slower: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**.",
+        "Absolutely. The number is **541\u2026 221\u2026 0824**. I\u2019ll repeat it in chunks: **541** \u2026 **221** \u2026 **0824**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000762#turn-3",
+      "scenarioId": "phone_dialog_0000762",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have all her info, I just know she\u2019s near East Powell and she said she\u2019s almost out today.",
+      "normalizedQuery": "hi sorry hear okay calling sister she needs diapers diaper baby her trying somewhere gresham cut second say again slower don have all info just know east powell said almost",
+      "voiceResponse": "Next step: call **2-1-1** right now and ask for a **same-day diaper pickup site near East Powell in Gresham**. If you want, say: \u201cI\u2019m calling for my sister, she\u2019s almost out today, and I only have partial info.\u201d If the call drops, call back and repeat just that line first.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **2-1-1** right now and ask for a **same-day diaper pickup site near East Powell in Gresham**. If you want, say: \u201cI\u2019m calling for my sister, she\u2019s almost out today, and I only have partial info.\u201d If the call drops, call back and repeat just that line first.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000762#turn-4",
+      "scenarioId": "phone_dialog_0000762",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She doesn\u2019t drive, so if there\u2019s a place on a bus line that would help a lot.",
+      "normalizedQuery": "hi sorry hear okay calling sister she needs diapers diaper baby her trying somewhere gresham cut second say again slower don have all info just know east powell said almost doesn drive so if there place on bus line would lot",
+      "voiceResponse": "Next step: call **2-1-1** now and ask for a **same-day diaper site near East Powell in Gresham that\u2019s on a bus line**. Number is **2 \u2026 1 \u2026 1**. You can say: \u201cI\u2019m calling for my sister, she doesn\u2019t drive, and she\u2019s almost out today. We need a bus-accessible diaper pickup.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call **2-1-1** now and ask for a **same-day diaper site near East Powell in Gresham that\u2019s on a bus line**. Number is **2 \u2026 1 \u2026 1**. You can say: \u201cI\u2019m calling for my sister, she doesn\u2019t drive, and she\u2019s almost out today. We need a bus-accessible diaper pickup.\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000899#turn-1",
+      "scenarioId": "phone_dialog_0000899",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my niece, not for me. She lives in Gresham and needs help finding child care so she can keep her job.",
+      "normalizedQuery": "hi calling niece she lives gresham needs finding child care so keep her job",
+      "voiceResponse": "You\u2019re doing a kind thing by helping her with this. A solid next step is to contact 211info and ask for child care referrals in Gresham, including options tied to work schedules and any subsidy programs she may qualify for. If you want, I can help you script exactly what to say so you can get the most useful referrals quickly.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:1d05e0685d691178"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a kind thing by helping her with this. A solid next step is to contact 211info and ask for child care referrals in Gresham, including options tied to work schedules and any subsidy programs she may qualify for. If you want, I can help you script exactly what to say so you can get the most useful referrals quickly.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000899#turn-2",
+      "scenarioId": "phone_dialog_0000899",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I only know some of it, but she\u2019s got two little kids, I think ages three and six, and she works early shifts.",
+      "normalizedQuery": "hi calling niece she lives gresham needs finding child care so keep her job only know some it got two little kids think ages three six works early shifts",
+      "voiceResponse": "That\u2019s really helpful, and you\u2019re giving them exactly what they need to match her faster. When you call 211info, say: \u201cI\u2019m helping my niece in Gresham. She has two kids, ages three and six, and works early shifts. She needs child care that opens early and any subsidy options.\u201d Then ask for three referrals, current openings, hours, and what documents she should have ready. If you want, I can give you a quick callback script for each provider.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:604454602aa57dcf",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s really helpful, and you\u2019re giving them exactly what they need to match her faster. When you call 211info, say: \u201cI\u2019m helping my niece in Gresham. She has two kids, ages three and six, and works early shifts. She needs child care that opens early and any subsidy options.\u201d Then ask for three referrals, current openings, hours, and what documents she should have ready. If you want, I can give you a quick callback script for each provider.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000899#turn-3",
+      "scenarioId": "phone_dialog_0000899",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She told me she tried one daycare and they said there\u2019s a waitlist and she couldn\u2019t afford the full price.",
+      "normalizedQuery": "hi calling niece she lives gresham needs finding child care so keep her job only know some it got two little kids think ages three six works early shifts told tried one daycare they said there waitlist couldn afford full price",
+      "voiceResponse": "That\u2019s really hard, and she\u2019s not alone in hitting waitlists and high costs. Next step: call 211info again and ask specifically for child care with early hours, current openings, and reduced-cost options. You can say, \u201cShe was waitlisted and can\u2019t afford full price, so we need lower-cost care now.\u201d Then ask them to prioritize subsidy-linked providers and backup options while she waits. If you want, I can give you a 20-second script for calling each referral.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s really hard, and she\u2019s not alone in hitting waitlists and high costs. Next step: call 211info again and ask specifically for child care with early hours, current openings, and reduced-cost options. You can say, \u201cShe was waitlisted and can\u2019t afford full price, so we need lower-cost care now.\u201d Then ask them to prioritize subsidy-linked providers and backup options while she waits. If you want, I can give you a 20-second script for calling each referral.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000899#turn-4",
+      "scenarioId": "phone_dialog_0000899",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you tell me what programs she might qualify for in Gresham, like vouchers or sliding scale places?",
+      "normalizedQuery": "hi calling niece she lives gresham needs finding child care so keep her job only know some it got two little kids think ages three six works early shifts told tried one daycare they said there waitlist couldn afford full price tell programs might qualify like vouchers sliding scale places",
+      "voiceResponse": "That\u2019s a great question, and you\u2019re looking out for her in a real way. The safest next step is to ask 211info to screen her for child-care subsidies, voucher-style help, and sliding-scale programs in Gresham, since they can check current openings and eligibility in real time. You can say: \u201cShe has two kids, works early shifts, was waitlisted, and can\u2019t afford full price. Please check subsidy-linked and sliding-scale options first.\u201d If you want, I can give you a 15-second call script.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a great question, and you\u2019re looking out for her in a real way. The safest next step is to ask 211info to screen her for child-care subsidies, voucher-style help, and sliding-scale programs in Gresham, since they can check current openings and eligibility in real time. You can say: \u201cShe has two kids, works early shifts, was waitlisted, and can\u2019t afford full price. Please check subsidy-linked and sliding-scale options first.\u201d If you want, I can give you a 15-second call script.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001042#turn-1",
+      "scenarioId": "phone_dialog_0001042",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I\u2019m calling for my cousin, she needs diapers for her baby, and she\u2019s in Gresham.",
+      "normalizedQuery": "hi sorry hear calling cousin she needs diapers diaper baby her gresham",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing for her. I have one confirmed diaper program: Lane County Diaper Bank, 3050 Game Farm Road in Springfield. Phone is **541\u2026 221\u2026 0824**. They provide diapers and wipes, open Monday to Friday, 8 to 5. Eligibility says OHP, WIC, or SNAP, and no documents needed at intake. Since she\u2019s in Gresham, call that number and ask for the closest partner site.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:c196660a779416f8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing for her. I have one confirmed diaper program: Lane County Diaper Bank, 3050 Game Farm Road in Springfield. Phone is **541\u2026 221\u2026 0824**. They provide diapers and wipes, open Monday to Friday, 8 to 5. Eligibility says OHP, WIC, or SNAP, and no documents needed at intake. Since she\u2019s in Gresham, call that number and ask for the closest partner site.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001042#turn-2",
+      "scenarioId": "phone_dialog_0001042",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t have everything, I just know the baby is about ten months and they ran out this week.",
+      "normalizedQuery": "hi sorry hear calling cousin she needs diapers diaper baby her gresham don have everything just know ten months they ran this week",
+      "voiceResponse": "That\u2019s okay, you gave me enough to start. Since they ran out this week, call now: **541\u2026 221\u2026 0824**. Ask for the **closest diaper pickup site in or near Gresham** and say the baby is **10 months old** and needs diapers right away. If they ask about eligibility, mention OHP, WIC, or SNAP. If you want, I can stay with you and help script exactly what to say.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s okay, you gave me enough to start. Since they ran out this week, call now: **541\u2026 221\u2026 0824**. Ask for the **closest diaper pickup site in or near Gresham** and say the baby is **10 months old** and needs diapers right away. If they ask about eligibility, mention OHP, WIC, or SNAP. If you want, I can stay with you and help script exactly what to say.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001042#turn-3",
+      "scenarioId": "phone_dialog_0001042",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You cut out right there, can you say that place name again slower?",
+      "normalizedQuery": "hi sorry hear calling cousin she needs diapers diaper baby her gresham don have everything just know ten months they ran this week cut right there say place name again slower",
+      "voiceResponse": "Of course, and you\u2019re doing great. The place name is: **Lane County Diaper Bank**. I\u2019ll say it slower: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and you\u2019re doing great. The place name is: **Lane County Diaper Bank**. I\u2019ll say it slower: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**.",
+      "voiceResponseAlternatives": [
+        "Yes. The place is **Lane County Diaper Bank**. The phone number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**.",
+        "Next step: call this diaper bank and ask if they know a closer diaper site near Gresham. The phone number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. That is Lane County Diaper Bank, **3050 Game Farm Road, Springfield**. They provide diapers and wipes. Eligibility listed is **OHP, WIC, or SNAP**. Hours listed are **Monday through Friday, 8 a.m. to 5 p.m.**",
+        "Absolutely. The number is **541\u2026 221\u2026 0824**. I\u2019ll repeat it in chunks: **541** \u2026 **221** \u2026 **0824**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001042#turn-4",
+      "scenarioId": "phone_dialog_0001042",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She doesn\u2019t have a car, so do you know anywhere near east Gresham or on a bus line?",
+      "normalizedQuery": "hi sorry hear calling cousin she needs diapers diaper baby her gresham don have everything just know ten months they ran this week cut right there say place name again slower doesn car so anywhere east on bus line",
+      "voiceResponse": "I hear the urgency, and you\u2019re doing the right thing. I don\u2019t have a confirmed east Gresham bus-line diaper site in front of me right now. Fastest next step is to call **2-1-1** and ask: \u201cI need diaper help near **east Gresham**, on a **bus line**, for a **10-month-old**, and we have **no car**.\u201d If you want, I can help you practice that exact script now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear the urgency, and you\u2019re doing the right thing. I don\u2019t have a confirmed east Gresham bus-line diaper site in front of me right now. Fastest next step is to call **2-1-1** and ask: \u201cI need diaper help near **east Gresham**, on a **bus line**, for a **10-month-old**, and we have **no car**.\u201d If you want, I can help you practice that exact script now.",
+      "voiceResponseAlternatives": [
+        "Absolutely. Call **2-1-1** and ask for the child care team. They do **free, customized referrals**, and you can ask them to filter for **low-cost options** near **Gresham** or on **TriMet lines** since you don\u2019t have a car. If 2-1-1 doesn\u2019t connect, call **5-0-3, 2-2-2, 5-5-5-5**. You can say: \u201cI need affordable child care near Gresham or transit-accessible options so I can keep work hours.\u201d",
+        "Absolutely, and thanks for helping her. One local option is NARA NW Child and Family Services in Gresham. Phone: **503\u2026953\u20266598**. Address: **620 Northeast 2nd Street, Gresham, 97030**. You can call and ask about child care support and family services. If it helps, she can share only basic details first and decide later what else to provide.",
+        "Yes, I hear you. No problem. I\u2019ll keep it short and clear. The number is: **503\u2026 953\u2026 6598**. Address: **620 Northeast 2nd Street, Gresham**. If the call drops, you can call them and start with basic details only.",
+        "Great question. She can usually start with just basics: first name, a safe callback number, city, and what kind of child care help she needs. She can ask, \u201cWhat\u2019s the minimum you need to check options?\u201d and share more only if she\u2019s comfortable. If they request documents later, they should explain exactly what and why first. She does not have to give everything up front."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001042#turn-5",
+      "scenarioId": "phone_dialog_0001042",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, my signal\u2019s bad, can you repeat the phone number one more time so I can text it to her?",
+      "normalizedQuery": "don have everything just know baby ten months they ran this week cut right there say place name again slower she doesn car so anywhere east gresham on bus line wait signal bad repeat phone number one more time text it her",
+      "voiceResponse": "Absolutely. The number is **541\u2026 221\u2026 0824**. I\u2019ll repeat it in chunks: **541** \u2026 **221** \u2026 **0824**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. The number is **541\u2026 221\u2026 0824**. I\u2019ll repeat it in chunks: **541** \u2026 **221** \u2026 **0824**.",
+      "voiceResponseAlternatives": [
+        "Yes. The place is **Lane County Diaper Bank**. The phone number is **5 4 1 \u2026 2 2 1 \u2026 0 8 2 4**.",
+        "Next step: call this diaper bank and ask if they know a closer diaper site near Gresham. The phone number is **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. That is Lane County Diaper Bank, **3050 Game Farm Road, Springfield**. They provide diapers and wipes. Eligibility listed is **OHP, WIC, or SNAP**. Hours listed are **Monday through Friday, 8 a.m. to 5 p.m.**",
+        "Of course, and you\u2019re doing great. The place name is: **Lane County Diaper Bank**. I\u2019ll say it slower: **Lane\u2026 County\u2026 Diaper\u2026 Bank**. It\u2019s in **Springfield**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -490,6 +999,96 @@
       "to": "phone_dialog_0000529#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000643#turn-1",
+      "to": "phone_dialog_0000643#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000643#turn-2",
+      "to": "phone_dialog_0000643#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000643#turn-4",
+      "to": "phone_dialog_0000643#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000762#turn-1",
+      "to": "phone_dialog_0000762#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000762#turn-2",
+      "to": "phone_dialog_0000762#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000762#turn-3",
+      "to": "phone_dialog_0000762#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000762#turn-4",
+      "to": "phone_dialog_0000762#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000899#turn-1",
+      "to": "phone_dialog_0000899#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000899#turn-2",
+      "to": "phone_dialog_0000899#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000899#turn-3",
+      "to": "phone_dialog_0000899#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000899#turn-4",
+      "to": "phone_dialog_0000899#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001042#turn-1",
+      "to": "phone_dialog_0001042#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001042#turn-2",
+      "to": "phone_dialog_0001042#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001042#turn-3",
+      "to": "phone_dialog_0001042#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001042#turn-4",
+      "to": "phone_dialog_0001042#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

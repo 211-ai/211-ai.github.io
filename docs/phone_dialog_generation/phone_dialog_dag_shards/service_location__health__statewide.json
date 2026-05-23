@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__health__statewide",
   "kind": "service_location",
   "key": "health__statewide",
-  "nodeCount": 26,
+  "nodeCount": 52,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-1",
@@ -86,7 +86,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. I can help you with the exact words. Say this: \u201cHi, I\u2019m calling for my cousin. He needs medical detox today in Medford. Please call him directly at [his number]. I only have his first name right now.\u201d Call these numbers: `5 4 1` `5 2 3` `4 0 4 9`. Repeat: `5 4 1` `5 2 3` `4 0 4 9`. Backup: `5 4 1` `4 0 6` `4 3 6 3`. Repeat: `5 4 1` `4 0 6` `4 3 6 3`. Do you want a one-line text version too?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Absolutely. You can send: \u201cHi, I\u2019m helping my aunt set up rides to medical appointments. She\u2019s 55+ and may need ADA-accessible rides. Can you tell me how to start regular rides, what info you need, and how far ahead to schedule? Thank you.\u201d If you want to send it now, use **503 \u2026 538 \u2026 3104**.",
+        "Fast backup: if they don\u2019t text back, call and leave this voicemail: \u201cHi, this is [first name]. I have a medical appointment this week and need transportation help. Can your office schedule a ride, or tell me the exact number to call today? Please call or text me back at [your number]. Thank you.\u201d If they still don\u2019t reply, call Cascades West Ride Line: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. Backup: **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**."
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
@@ -780,6 +783,754 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000645#turn-4",
+      "scenarioId": "phone_dialog_0000645",
+      "turnIndex": 3,
+      "route": "provider_contact_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "Can you help me draft a short text I can send the ride provider asking how to set up regular medical rides for her?",
+      "normalizedQuery": "draft short text send ride provider asking how set up regular medical rides her",
+      "voiceResponse": "Absolutely. You can send: \u201cHi, I\u2019m helping my aunt set up rides to medical appointments. She\u2019s 55+ and may need ADA-accessible rides. Can you tell me how to start regular rides, what info you need, and how far ahead to schedule? Thank you.\u201d If you want to send it now, use **503 \u2026 538 \u2026 3104**.",
+      "evidenceDocIds": [
+        "service:c628bf14ff381928",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreid4bn6ts24kebwb4xk6ga7ejd66okwbgii5ahhypivrggvjqrm4sm",
+        "service:24605f847b7d4bc4",
+        "page:bafkreicrqibpedz6mpkcr5bfh27ijcrkcuwqgs3s64wrncsv3ydeglntnm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You can send: \u201cHi, I\u2019m helping my aunt set up rides to medical appointments. She\u2019s 55+ and may need ADA-accessible rides. Can you tell me how to start regular rides, what info you need, and how far ahead to schedule? Thank you.\u201d If you want to send it now, use **503 \u2026 538 \u2026 3104**.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help you with the exact words. Say this: \u201cHi, I\u2019m calling for my cousin. He needs medical detox today in Medford. Please call him directly at [his number]. I only have his first name right now.\u201d Call these numbers: `5 4 1` `5 2 3` `4 0 4 9`. Repeat: `5 4 1` `5 2 3` `4 0 4 9`. Backup: `5 4 1` `4 0 6` `4 3 6 3`. Repeat: `5 4 1` `4 0 6` `4 3 6 3`. Do you want a one-line text version too?",
+        "Fast backup: if they don\u2019t text back, call and leave this voicemail: \u201cHi, this is [first name]. I have a medical appointment this week and need transportation help. Can your office schedule a ride, or tell me the exact number to call today? Please call or text me back at [your number]. Thank you.\u201d If they still don\u2019t reply, call Cascades West Ride Line: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. Backup: **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000657#turn-5",
+      "scenarioId": "phone_dialog_0000657",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the name and hours slowly when you find one, and whether staff confirmed pet policy or if that part is just unverified?",
+      "normalizedQuery": "wait hear cut second one actually open late has outlets medical devices ideally lets people bring small dog carrier keep getting lists online they re vague useless right now so tell know sure versus nobody confirmed yet sorry interrupting myself transportation transport ride bus matters too like line if there isn an exact match then say straight we widen search repeat name hours slowly when whether staff pet policy part just unverified",
+      "voiceResponse": "Absolutely. Slow version: **name** of a specific cooling center is **not confirmed yet**. **Hours** are also **not confirmed yet**. For each listing, I\u2019ll read it as: \u201cName\u2026 Hours\u2026 Pet policy status.\u201d And for pet policy I\u2019ll say either: **\u201cstaff confirmed\u201d** or **\u201cunverified.\u201d** Right now, pet policy is **unverified** until a center or 211 operator confirms it directly.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:f525d65d4bd89731"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Slow version: **name** of a specific cooling center is **not confirmed yet**. **Hours** are also **not confirmed yet**. For each listing, I\u2019ll read it as: \u201cName\u2026 Hours\u2026 Pet policy status.\u201d And for pet policy I\u2019ll say either: **\u201cstaff confirmed\u201d** or **\u201cunverified.\u201d** Right now, pet policy is **unverified** until a center or 211 operator confirms it directly.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**: **two \u2026 one \u2026 one**. If he is in immediate danger, call **9-1-1**: **nine \u2026 one \u2026 one**.",
+        "Yes. Write this down now: **541 \u2026 924 \u2026 8738**. I\u2019ll say it once more: **five four one \u2026 nine two four \u2026 eight seven three eight**.",
+        "You\u2019re right to check. I did **not** say you must bring ID and medical papers. For that clinic, the listed documents are: Insurance info, if you have it. And proof of income, only if you want sliding-scale fees. That\u2019s it.",
+        "Of course. The next step is: call first to confirm what papers they need for your case. Call Oregon Vital Records at **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**. Again: **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000660#turn-3",
+      "scenarioId": "phone_dialog_0000660",
+      "turnIndex": 2,
+      "route": "calendar_event_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "calendar_event_support",
+      "user": "I need transportation to a medical appointment this week, and I just need the quickest next step.",
+      "normalizedQuery": "transportation transport ride bus medical appointment this week just quickest next step",
+      "voiceResponse": "Quickest next step: call **Cascades West Ride Line** now at **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. If that line is busy, try **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**. Say: \u201cI need a ride to a medical appointment this week.\u201d What day is your appointment?",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:98ac0349caf0cda6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quickest next step: call **Cascades West Ride Line** now at **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. If that line is busy, try **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**. Say: \u201cI need a ride to a medical appointment this week.\u201d What day is your appointment?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000660#turn-5",
+      "scenarioId": "phone_dialog_0000660",
+      "turnIndex": 4,
+      "route": "provider_contact_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "provider_contact_support",
+      "user": "Also give me a backup voicemail script in case they don\u2019t text back, and keep it brief in case this phone dies.",
+      "normalizedQuery": "sorry say number one more time slower writing it down transportation transport ride bus medical appointment this week just quickest next step draft short text send provider asking if they schedule tell who call also give backup voicemail script case don back keep brief phone dies",
+      "voiceResponse": "Fast backup: if they don\u2019t text back, call and leave this voicemail: \u201cHi, this is [first name]. I have a medical appointment this week and need transportation help. Can your office schedule a ride, or tell me the exact number to call today? Please call or text me back at [your number]. Thank you.\u201d If they still don\u2019t reply, call Cascades West Ride Line: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. Backup: **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:a52e78bc8469df64",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:06227c05cc4eea25"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Fast backup: if they don\u2019t text back, call and leave this voicemail: \u201cHi, this is [first name]. I have a medical appointment this week and need transportation help. Can your office schedule a ride, or tell me the exact number to call today? Please call or text me back at [your number]. Thank you.\u201d If they still don\u2019t reply, call Cascades West Ride Line: **5 4 1 \u2026 9 2 4 \u2026 8 7 3 8**. Backup: **8 6 6 \u2026 7 2 4 \u2026 2 9 7 5**.",
+      "voiceResponseAlternatives": [
+        "Yes. I can help you with the exact words. Say this: \u201cHi, I\u2019m calling for my cousin. He needs medical detox today in Medford. Please call him directly at [his number]. I only have his first name right now.\u201d Call these numbers: `5 4 1` `5 2 3` `4 0 4 9`. Repeat: `5 4 1` `5 2 3` `4 0 4 9`. Backup: `5 4 1` `4 0 6` `4 3 6 3`. Repeat: `5 4 1` `4 0 6` `4 3 6 3`. Do you want a one-line text version too?",
+        "Absolutely. You can send: \u201cHi, I\u2019m helping my aunt set up rides to medical appointments. She\u2019s 55+ and may need ADA-accessible rides. Can you tell me how to start regular rides, what info you need, and how far ahead to schedule? Thank you.\u201d If you want to send it now, use **503 \u2026 538 \u2026 3104**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000664#turn-6",
+      "scenarioId": "phone_dialog_0000664",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I just need somewhere that takes people with no money right now, for dental.",
+      "normalizedQuery": "just somewhere takes people no money right now dental dentist clinic",
+      "voiceResponse": "I hear you. You need low-cost dental now. Low-cost dental now. I can connect you to a live 211 specialist in Lane County right now. They can look for same-day free or sliding-scale dental near Eugene. Before I connect you: is this for a child, age zero to nineteen, with Medicaid?",
+      "evidenceDocIds": [
+        "service:c0c0d3a6df8547ba",
+        "page:bafkreig3ymoexyqu5iz5eveabbqgxaqb5ka7rxl4okqsaccpu5ga4zqxby",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreifnq23pttczumyutgdcgexeulxsclsonucleswxqlwk7beg6d5cdm",
+        "page:bafkreibrllj3twtpjsw6u6wwkjqt54o5ipxk52xw75bkwb7ifhh2s6rara"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need low-cost dental now. Low-cost dental now. I can connect you to a live 211 specialist in Lane County right now. They can look for same-day free or sliding-scale dental near Eugene. Before I connect you: is this for a child, age zero to nineteen, with Medicaid?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000697#turn-1",
+      "scenarioId": "phone_dialog_0000697",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m sorry, I don\u2019t feel right at all, I\u2019m shaky and I keep throwing up, and I need detox help.",
+      "normalizedQuery": "hi sorry don feel right at all shaky keep throwing up detox",
+      "voiceResponse": "I\u2019m really glad you called, and I hear how rough this is. Let\u2019s get you help now. For detox in Portland, call FORA Health at **5 0 3, 5 3 5, 1 1 5 1**. Address is **1 0 2 3 0 Southeast Cherry Blossom Drive, Portland, 9 7 2 1 6**. They serve adults 18 and older for alcohol or drug withdrawal. If you feel faint, confused, or can\u2019t keep breathing steady, call **9 1 1** now.",
+      "evidenceDocIds": [
+        "service:8633bf7679779ba4",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "service:7a13b77aa237b2eb",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you called, and I hear how rough this is. Let\u2019s get you help now. For detox in Portland, call FORA Health at **5 0 3, 5 3 5, 1 1 5 1**. Address is **1 0 2 3 0 Southeast Cherry Blossom Drive, Portland, 9 7 2 1 6**. They serve adults 18 and older for alcohol or drug withdrawal. If you feel faint, confused, or can\u2019t keep breathing steady, call **9 1 1** now.",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000697#turn-4",
+      "scenarioId": "phone_dialog_0000697",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m not trying to call 911 right now, I just need to know if I\u2019m safe enough to get to detox first.",
+      "normalizedQuery": "trying call 911 right now just know if safe enough detox first",
+      "voiceResponse": "I hear you, and I know you want detox first. With **chest tightness, shaking, and vomiting**, I can\u2019t say that\u2019s safe to travel on your own right now. Please call **9 1 1** now so medics can check you first. If they clear you, then go straight to detox. If you still want detox contacts ready: **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "service:07b702b8ba249a9b",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e",
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I know you want detox first. With **chest tightness, shaking, and vomiting**, I can\u2019t say that\u2019s safe to travel on your own right now. Please call **9 1 1** now so medics can check you first. If they clear you, then go straight to detox. If you still want detox contacts ready: **FORA Health: 5 0 3, 5 3 5, 1 1 5 1**. I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000725#turn-5",
+      "scenarioId": "phone_dialog_0000725",
+      "turnIndex": 4,
+      "route": "app_surface_navigation",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "app_surface_navigation",
+      "user": "If there\u2019s a proof file for the dental visit, can I get a QR code or export it so my daughter can print it?",
+      "normalizedQuery": "if there proof file dental dentist clinic visit qr code export it so daughter print",
+      "voiceResponse": "Yes, you can. Go to the **Proof Center** in your wallet, then open the dental visit proof file. From there, you usually have two choices: **Show QR code** or **Export/Share**. If you want your daughter to print it, choose **Export** and send the PDF to her. If the clinic wants to scan, choose **Show QR code**. I can walk you tap-by-tap, slowly, if you\u2019d like.",
+      "evidenceDocIds": [
+        "service:d7626a4f121f2858",
+        "service:d6fa0b22a76c236a",
+        "service:176623b9d4cfda18",
+        "service:9ec0f5096970bbfd",
+        "service:6f74b963d98a87b9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you can. Go to the **Proof Center** in your wallet, then open the dental visit proof file. From there, you usually have two choices: **Show QR code** or **Export/Share**. If you want your daughter to print it, choose **Export** and send the PDF to her. If the clinic wants to scan, choose **Show QR code**. I can walk you tap-by-tap, slowly, if you\u2019d like.",
+      "voiceResponseAlternatives": [
+        "Yes. Go to the **Document Upload** screen in the secure portal. From there, you can add your ID and medical proof files, review each file before sending, and submit only what\u2019s required. If you want extra privacy, upload one file first and confirm it shows as received before sending the rest. We can do it step by step, and you can stop anytime."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000725#turn-6",
+      "scenarioId": "phone_dialog_0000725",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out there. Please repeat that last number in smaller chunks, my battery\u2019s low and I don\u2019t want to lose this.",
+      "normalizedQuery": "address too please one part at time forget it right after hear think already uploaded some papers before maybe id insurance card wallet check stored if there proof file dental dentist clinic visit qr code export so daughter print sorry cut repeat last number smaller chunks battery low don want lose this",
+      "voiceResponse": "Of course. The last number is the ZIP code: **9 \u2026 7 \u2026 2 \u2026 1 \u2026 1**. I\u2019ll say it once more, slowly: **nine, seven, two, one, one**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The last number is the ZIP code: **9 \u2026 7 \u2026 2 \u2026 1 \u2026 1**. I\u2019ll say it once more, slowly: **nine, seven, two, one, one**.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**: **two \u2026 one \u2026 one**. If he is in immediate danger, call **9-1-1**: **nine \u2026 one \u2026 one**.",
+        "Yes. Write this down now: **541 \u2026 924 \u2026 8738**. I\u2019ll say it once more: **five four one \u2026 nine two four \u2026 eight seven three eight**.",
+        "You\u2019re right to check. I did **not** say you must bring ID and medical papers. For that clinic, the listed documents are: Insurance info, if you have it. And proof of income, only if you want sliding-scale fees. That\u2019s it.",
+        "Of course. The next step is: call first to confirm what papers they need for your case. Call Oregon Vital Records at **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**. Again: **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000759#turn-1",
+      "scenarioId": "phone_dialog_0000759",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can barely hear in here, there\u2019s a lot going on. I need detox help, like today.",
+      "normalizedQuery": "hi sorry barely hear here there lot going on detox like",
+      "voiceResponse": "I\u2019m really glad you reached out right now. You deserve help today. Fastest step: contact **211info** and ask for **same-day detoxification** options near you; they show multiple detox providers and can help with next available intake. If it helps with the noise, say: \u201cI need detox today, nearest opening, and how to get there.\u201d If you want, I can help you script exactly what to say in one short sentence.",
+      "evidenceDocIds": [
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you reached out right now. You deserve help today. Fastest step: contact **211info** and ask for **same-day detoxification** options near you; they show multiple detox providers and can help with next available intake. If it helps with the noise, say: \u201cI need detox today, nearest opening, and how to get there.\u201d If you want, I can help you script exactly what to say in one short sentence.",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000774#turn-4",
+      "scenarioId": "phone_dialog_0000774",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I upload my ID or medical papers, who can actually see those files?",
+      "normalizedQuery": "if upload id medical papers who actually see those files",
+      "voiceResponse": "Good question. In general, uploaded ID or medical files are usually visible to the agency handling your application and any staff or contractor they use to process it. If that feels risky, you can ask first: \u201cWho can view my documents, where are they stored, and can I apply with fewer files?\u201d You can also share only what\u2019s required, redact non-required details, or ask about paper or in-person options instead of uploading.",
+      "evidenceDocIds": [
+        "service:1efb2c3319525645",
+        "page:bafkreighg25anqnic6h4xstnbb3kivkni7w7diysqiwmi2j57i3evqsg3i",
+        "page:bafkreibwg7d7c642hajacjgkpy6y2lpmipyfk3pbq5ugufhrfrgxro2vfm",
+        "page:bafkreihgzzfdnddpilinsiqs53aksaetzp5vxopovkee3ni2og2qeasori",
+        "service:1e3a17fe90036d09"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Good question. In general, uploaded ID or medical files are usually visible to the agency handling your application and any staff or contractor they use to process it. If that feels risky, you can ask first: \u201cWho can view my documents, where are they stored, and can I apply with fewer files?\u201d You can also share only what\u2019s required, redact non-required details, or ask about paper or in-person options instead of uploading.",
+      "voiceResponseAlternatives": [
+        "Totally fair concern. I can\u2019t verify their file-sharing rules from here, so safest move is to ask before you upload anything. You can say: \u201cBefore I send files, who can access them, how long are they stored, and are they shared with immigration, police, or other agencies?\u201d You can also ask for a no-upload option first, or give only the minimum pages needed. If you want, we can keep this at info-only steps until you feel comfortable.",
+        "Smart to pause first. I can\u2019t confirm a universal privacy rule for every upload system, so safest is to share the minimum: only required pages, crop extra details, and use secure portal upload instead of text or email when possible. Before uploading, you can ask: \u201cWho can view these files, how long are they kept, and can I delete them later?\u201d If you want, I can help you make a short checklist of exactly which proof files to send first."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000774#turn-6",
+      "scenarioId": "phone_dialog_0000774",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the number slower? My phone\u2019s at like two percent and I\u2019m trying to write it down.",
+      "normalizedQuery": "wait was office name bus just went by missed it if upload id medical papers who actually see those files don want this shared landlord anyone else like private repeat number slower phone at two percent trying write down",
+      "voiceResponse": "Absolutely. I can go slow. I don\u2019t have the number visible in front of me right now, so I don\u2019t want to risk giving you a wrong one. If you read me what you wrote, I can confirm it digit by digit. Or I can repeat the office name again: OHP and SNAP Enrollment Assistance.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I can go slow. I don\u2019t have the number visible in front of me right now, so I don\u2019t want to risk giving you a wrong one. If you read me what you wrote, I can confirm it digit by digit. Or I can repeat the office name again: OHP and SNAP Enrollment Assistance.",
+      "voiceResponseAlternatives": [
+        "Sure. The number is **2-1-1**: **two \u2026 one \u2026 one**. If he is in immediate danger, call **9-1-1**: **nine \u2026 one \u2026 one**.",
+        "Yes. Write this down now: **541 \u2026 924 \u2026 8738**. I\u2019ll say it once more: **five four one \u2026 nine two four \u2026 eight seven three eight**.",
+        "You\u2019re right to check. I did **not** say you must bring ID and medical papers. For that clinic, the listed documents are: Insurance info, if you have it. And proof of income, only if you want sliding-scale fees. That\u2019s it.",
+        "Of course. The next step is: call first to confirm what papers they need for your case. Call Oregon Vital Records at **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**. Again: **8 8 8** \u2026 **8 9 6** \u2026 **4 9 8 8**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000851#turn-5",
+      "scenarioId": "phone_dialog_0000851",
+      "turnIndex": 4,
+      "route": "wallet_document_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I have to upload my medical papers or ID, are those files actually secure, or can other agencies pull them?",
+      "normalizedQuery": "if have upload medical papers id those files actually secure other agencies pull them",
+      "voiceResponse": "Totally fair concern. I can\u2019t verify their file-sharing rules from here, so safest move is to ask before you upload anything. You can say: \u201cBefore I send files, who can access them, how long are they stored, and are they shared with immigration, police, or other agencies?\u201d You can also ask for a no-upload option first, or give only the minimum pages needed. If you want, we can keep this at info-only steps until you feel comfortable.",
+      "evidenceDocIds": [
+        "page:bafkreidho2kwo4zgbmkhbgbka6a3nypzzd7pqzm3dypcwc77oksdklccke",
+        "page:bafkreie3cumldae7tr3oyvvadptqvjyrprsvdsve63vrtdq7f5uhoz2lvy",
+        "page:bafkreic262jiskqd3uyhfnp6cl52c7i33alva6dnt4xil4wdamwr35sxf4",
+        "page:bafkreicygkiisr3ol4sekt3jkfbuoytj2x3ywllbaojllqone4mvzt6aqu",
+        "page:bafkreiassslo3pxzb6wtse6i5fr35ca3wmhiribq3mu4dqr5qf4fqxfm5a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair concern. I can\u2019t verify their file-sharing rules from here, so safest move is to ask before you upload anything. You can say: \u201cBefore I send files, who can access them, how long are they stored, and are they shared with immigration, police, or other agencies?\u201d You can also ask for a no-upload option first, or give only the minimum pages needed. If you want, we can keep this at info-only steps until you feel comfortable.",
+      "voiceResponseAlternatives": [
+        "Good question. In general, uploaded ID or medical files are usually visible to the agency handling your application and any staff or contractor they use to process it. If that feels risky, you can ask first: \u201cWho can view my documents, where are they stored, and can I apply with fewer files?\u201d You can also share only what\u2019s required, redact non-required details, or ask about paper or in-person options instead of uploading.",
+        "Smart to pause first. I can\u2019t confirm a universal privacy rule for every upload system, so safest is to share the minimum: only required pages, crop extra details, and use secure portal upload instead of text or email when possible. Before uploading, you can ask: \u201cWho can view these files, how long are they kept, and can I delete them later?\u201d If you want, I can help you make a short checklist of exactly which proof files to send first."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000852#turn-5",
+      "scenarioId": "phone_dialog_0000852",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you just tell me which bucket this is, like bus pass or medical ride or whatever, and I\u2019ll pick one?",
+      "normalizedQuery": "just tell which bucket this like bus pass medical ride whatever ll pick one",
+      "voiceResponse": "You\u2019re not messy at all, you\u2019re doing great. Quick bucket guide: if this is for a **clinic or health visit**, pick **medical ride**. If it\u2019s for **work or general across-town travel**, pick **regular transit/paratransit**. From what I have: **CARE-RIDE** is non-emergency medical transport, and **Dial-A-Ride/ADA Paratransit** is door-to-door for older adults or people with disabilities. Tell me which one you want, and I\u2019ll give the exact contact.",
+      "evidenceDocIds": [
+        "service:a52e78bc8469df64",
+        "page:bafkreigxuoloiiiifcm7sq3utxkqk667kou6vcvndbvqpvicwurr3cel4a",
+        "service:06227c05cc4eea25",
+        "service:98ac0349caf0cda6",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not messy at all, you\u2019re doing great. Quick bucket guide: if this is for a **clinic or health visit**, pick **medical ride**. If it\u2019s for **work or general across-town travel**, pick **regular transit/paratransit**. From what I have: **CARE-RIDE** is non-emergency medical transport, and **Dial-A-Ride/ADA Paratransit** is door-to-door for older adults or people with disabilities. Tell me which one you want, and I\u2019ll give the exact contact.",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000892#turn-5",
+      "scenarioId": "phone_dialog_0000892",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I threw up again this morning and my chest feels tight, I just need the next step so I can get into detox today.",
+      "normalizedQuery": "threw up again this morning chest feels tight just next step so into detox",
+      "voiceResponse": "Your next step is **call 9-1-1 now** for chest tightness and vomiting. That can be life-threatening, and you need emergency medical care first. If you can still speak after calling 911, detox line is **5-4-1, 7-6-2, 4-5-7-5** (Buckley Center). If this phone dies, ask anyone nearby right now to call **9-1-1** for you.",
+      "evidenceDocIds": [
+        "service:5859932a69e4e47a",
+        "service:3e4063037c39ae4c",
+        "service:507a859ca3a7d126",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "service:7a13b77aa237b2eb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Your next step is **call 9-1-1 now** for chest tightness and vomiting. That can be life-threatening, and you need emergency medical care first. If you can still speak after calling 911, detox line is **5-4-1, 7-6-2, 4-5-7-5** (Buckley Center). If this phone dies, ask anyone nearby right now to call **9-1-1** for you.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000965#turn-2",
+      "scenarioId": "phone_dialog_0000965",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Sorry, sorry, I keep losing it... I need the place, the detox place, I said detox, uh...",
+      "normalizedQuery": "sorry keep losing it place detox said uh",
+      "voiceResponse": "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:8633bf7679779ba4",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "service:e25fd4aa967fb6a0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001013#turn-4",
+      "scenarioId": "phone_dialog_0001013",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Also I don\u2019t have dental insurance right now, and I need somewhere that won\u2019t ask for a big deposit up front, like under a hundred today if possible.",
+      "normalizedQuery": "also don have dental dentist clinic insurance right now somewhere won ask big deposit up front like under hundred if possible",
+      "voiceResponse": "That makes sense. You can keep it simple and ask for low upfront cost before booking. One clinic I can confirm is **Sandy Health Center Dental Clinic**, **39740 Pleasant Street, Sandy**. Phone: **503\u2026655\u20268471**. You can say: \u201cI have a cracked molar, no insurance, and can pay under $100 today. Do you offer sliding scale or a payment plan for urgent care?\u201d If swelling, fever, or trouble breathing/swallowing starts, call **911**.",
+      "evidenceDocIds": [
+        "page:bafkreibrllj3twtpjsw6u6wwkjqt54o5ipxk52xw75bkwb7ifhh2s6rara",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "service:326611485112f09e",
+        "page:bafkreidc6skebkc54co5zho222zelnr3warf6hwielrdx7xm2inwhjzkoe",
+        "service:c0c0d3a6df8547ba"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense. You can keep it simple and ask for low upfront cost before booking. One clinic I can confirm is **Sandy Health Center Dental Clinic**, **39740 Pleasant Street, Sandy**. Phone: **503\u2026655\u20268471**. You can say: \u201cI have a cracked molar, no insurance, and can pay under $100 today. Do you offer sliding scale or a payment plan for urgent care?\u201d If swelling, fever, or trouble breathing/swallowing starts, call **911**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001026#turn-2",
+      "scenarioId": "phone_dialog_0001026",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I need detox, like today, not next week... I can't keep doing this, I'm shaking.",
+      "normalizedQuery": "detox like next week can't keep doing this i'm shaking",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001071#turn-1",
+      "scenarioId": "phone_dialog_0001071",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, I, um... I can't do this anymore, I'm freaking out, I need detox like now, please.",
+      "normalizedQuery": "hi um can't this anymore i'm freaking detox like now please",
+      "voiceResponse": "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:2ef319d5e12550a7",
+        "service:45707f0c70045863",
+        "service:bf0682fd9fa9809c",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and this sounds like a crisis. Your safety comes first. If you might hurt yourself or someone else, call 911 right now. Your audio was unclear for a moment, so please repeat one thing: do you want the fastest detox phone number right now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing okay, and I hear you asking for detox. The audio was unclear for a second. Do you want me to repeat the **medical detox phone numbers** now?",
+        "I\u2019m sorry, your audio was unclear. I heard: you need detox today, and you\u2019re shaking. If you might pass out, have a seizure, or feel in immediate danger, call 9-1-1 right now. Quick yes/no: do you want me to stay with you while you call detox now?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001108#turn-2",
+      "scenarioId": "phone_dialog_0001108",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I'm crying. It's alcohol and pills, and I think he needs detox, like today if possible.",
+      "normalizedQuery": "sorry i'm crying it's alcohol pills think he needs detox like if possible",
+      "voiceResponse": "You\u2019re doing the right thing calling, and I\u2019m really glad you told me. Let\u2019s do this one step at a time. If he\u2019s hard to wake, confused, having trouble breathing, or may have overdosed, call 911 now. If he\u2019s awake and stable, I can help you get connected to same-day detox options through 211 right now. I can stay with you while we do it.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:437ec64b59b0ac16",
+        "service:a80fc4c7b16e0d53",
+        "service:01fa99fed3711557"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling, and I\u2019m really glad you told me. Let\u2019s do this one step at a time. If he\u2019s hard to wake, confused, having trouble breathing, or may have overdosed, call 911 now. If he\u2019s awake and stable, I can help you get connected to same-day detox options through 211 right now. I can stay with you while we do it.",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001117#turn-5",
+      "scenarioId": "phone_dialog_0001117",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not trying to be difficult, I just got burned before and I need transportation this week for medical visits.",
+      "normalizedQuery": "trying be difficult just got burned before transportation transport ride bus this week medical visits",
+      "voiceResponse": "You\u2019re not being difficult at all. We can keep this simple and private. For medical rides this week, Cascades West Ride Line can help, and their listing says no documents are required to start. You can call and share only what feels safe. Number is **541, 924, 8738**. Backup line: **866, 724, 2975**. If you want, ask first: \u201cBefore I share details, who can access my information?\u201d",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:98ac0349caf0cda6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult at all. We can keep this simple and private. For medical rides this week, Cascades West Ride Line can help, and their listing says no documents are required to start. You can call and share only what feels safe. Number is **541, 924, 8738**. Backup line: **866, 724, 2975**. If you want, ask first: \u201cBefore I share details, who can access my information?\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: please call that agency now and ask, \u201cDo you offer hold mail or forwarding, or only pickup?\u201d From what I can see here, I can\u2019t confirm hold-mail or forwarding details. I only see pickup/donation-related information, not mail management services. If you want, I can stay with you and help you write the exact one-sentence question to ask when they answer.",
+        "You\u2019re in the right place. 211info has a **Detoxification** list with multiple providers, including same-day options in some areas. We can keep this simple: you can contact **2-1-1** and ask for \u201cdetoxification, today,\u201d or I can help you make a short script to use when you call. You only need to share what feels safe. If you want, I can also help you ask about transport and wait times in that first call.",
+        "Absolutely. Open the **Dental Clinic results** screen in your app. Tap **Search**, type **dental clinic**, then tap the result list. From there, you can tap a clinic card to see details like: - **NARA NW Dental Clinic** \u2014 **12750 SE Stark Street, Portland** - **Cornelius Dental Clinic** \u2014 **44 North 11th Avenue, Cornelius** If it helps, I can repeat those one at a time, slowly.",
+        "Understood. First available place I can read is an urgent care clinic in Longview, Washington. Phone: **360** \u2026 **442 4165**. Again: **360** \u2026 **442 4165**. Address: **945 Washington Way, Suite 141, Longview, Washington, 98632**. They serve uninsured adults, age 18 and older. Uninsured adults, 18 and older. Do you want a short script for what to say when you call?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001134#turn-4",
+      "scenarioId": "phone_dialog_0001134",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "wallet_document_support",
+      "user": "I have medical papers and ID on my phone, but I\u2019m nervous about uploading them. Are those proof files private?",
+      "normalizedQuery": "have medical papers id on phone nervous uploading them those proof files private",
+      "voiceResponse": "Smart to pause first. I can\u2019t confirm a universal privacy rule for every upload system, so safest is to share the minimum: only required pages, crop extra details, and use secure portal upload instead of text or email when possible. Before uploading, you can ask: \u201cWho can view these files, how long are they kept, and can I delete them later?\u201d If you want, I can help you make a short checklist of exactly which proof files to send first.",
+      "evidenceDocIds": [
+        "service:1e3a17fe90036d09",
+        "service:51e37f6187a1922a",
+        "page:bafkreihgzzfdnddpilinsiqs53aksaetzp5vxopovkee3ni2og2qeasori",
+        "page:bafkreic262jiskqd3uyhfnp6cl52c7i33alva6dnt4xil4wdamwr35sxf4",
+        "service:9fa9218ec67d4993"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Smart to pause first. I can\u2019t confirm a universal privacy rule for every upload system, so safest is to share the minimum: only required pages, crop extra details, and use secure portal upload instead of text or email when possible. Before uploading, you can ask: \u201cWho can view these files, how long are they kept, and can I delete them later?\u201d If you want, I can help you make a short checklist of exactly which proof files to send first.",
+      "voiceResponseAlternatives": [
+        "Good question. In general, uploaded ID or medical files are usually visible to the agency handling your application and any staff or contractor they use to process it. If that feels risky, you can ask first: \u201cWho can view my documents, where are they stored, and can I apply with fewer files?\u201d You can also share only what\u2019s required, redact non-required details, or ask about paper or in-person options instead of uploading.",
+        "Totally fair concern. I can\u2019t verify their file-sharing rules from here, so safest move is to ask before you upload anything. You can say: \u201cBefore I send files, who can access them, how long are they stored, and are they shared with immigration, police, or other agencies?\u201d You can also ask for a no-upload option first, or give only the minimum pages needed. If you want, we can keep this at info-only steps until you feel comfortable."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001134#turn-5",
+      "scenarioId": "phone_dialog_0001134",
+      "turnIndex": 4,
+      "route": "app_surface_navigation",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "app_surface_navigation",
+      "user": "If it\u2019s secure, can you open the document upload part for me? I just need to get this done right.",
+      "normalizedQuery": "say again bus just went by missed half it before give info who actually see this call don want details shared around have medical papers id on phone nervous uploading them those proof files private if secure open document upload part done right",
+      "voiceResponse": "Yes. Go to the **Document Upload** screen in the secure portal. From there, you can add your ID and medical proof files, review each file before sending, and submit only what\u2019s required. If you want extra privacy, upload one file first and confirm it shows as received before sending the rest. We can do it step by step, and you can stop anytime.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Go to the **Document Upload** screen in the secure portal. From there, you can add your ID and medical proof files, review each file before sending, and submit only what\u2019s required. If you want extra privacy, upload one file first and confirm it shows as received before sending the rest. We can do it step by step, and you can stop anytime.",
+      "voiceResponseAlternatives": [
+        "Yes, you can. Go to the **Proof Center** in your wallet, then open the dental visit proof file. From there, you usually have two choices: **Show QR code** or **Export/Share**. If you want your daughter to print it, choose **Export** and send the PDF to her. If the clinic wants to scan, choose **Show QR code**. I can walk you tap-by-tap, slowly, if you\u2019d like."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001134#turn-6",
+      "scenarioId": "phone_dialog_0001134",
+      "turnIndex": 5,
+      "route": "template_guided_fallback",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "template_guided_fallback",
+      "user": "Sorry, one more time on what I should send first\u2014my battery is at like 6%.",
+      "normalizedQuery": "before give info who actually see this call don want details shared around have medical papers id on phone nervous uploading them those proof files private if it secure open document upload part just done right sorry one more time should send first battery at like",
+      "voiceResponse": "Totally fair. I don\u2019t have a reliable local match for the exact required documents yet, so I don\u2019t want to guess. Fast safest order: send one clear photo of your ID first, then one medical proof file. If you want, I can connect you to a human now so they can confirm the exact list before you upload more.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair. I don\u2019t have a reliable local match for the exact required documents yet, so I don\u2019t want to guess. Fast safest order: send one clear photo of your ID first, then one medical proof file. If you want, I can connect you to a human now so they can confirm the exact list before you upload more.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001147#turn-2",
+      "scenarioId": "phone_dialog_0001147",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "I'm crying, I'm sorry, I'm not trying to be dramatic, I just need help to detox before I use again tonight.",
+      "normalizedQuery": "i'm crying sorry trying be dramatic just detox before use again tonight",
+      "voiceResponse": "You\u2019re not being dramatic. I\u2019m glad you called. If you might use or hurt yourself right now, call 911 now, or ask someone nearby to call for you. For detox tonight, call **(503) 535-1151** now. I can stay with you while you dial. If they don\u2019t answer, call **(503) 399-5597** next.",
+      "evidenceDocIds": [
+        "service:a80fc4c7b16e0d53",
+        "service:45707f0c70045863",
+        "service:7a13b77aa237b2eb",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being dramatic. I\u2019m glad you called. If you might use or hurt yourself right now, call 911 now, or ask someone nearby to call for you. For detox tonight, call **(503) 535-1151** now. I can stay with you while you dial. If they don\u2019t answer, call **(503) 399-5597** next.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001147#turn-3",
+      "scenarioId": "phone_dialog_0001147",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "What? Can you say that part again, slower? I missed the name, my phone keeps cutting out.",
+      "normalizedQuery": "hi can't really hear there's buses people yelling sorry just this anymore i'm crying trying be dramatic detox before use again tonight say part slower missed name phone keeps cutting",
+      "voiceResponse": "Yes. The name is **Fora Health Detox Services**. Call **503\u2026 535\u2026 1151**. I\u2019ll repeat: **503\u2026 535\u2026 1151**. If you feel unsafe or might use right now, call **911** right now.",
+      "evidenceDocIds": [
+        "service:45707f0c70045863",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:7a13b77aa237b2eb",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:5859932a69e4e47a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **Fora Health Detox Services**. Call **503\u2026 535\u2026 1151**. I\u2019ll repeat: **503\u2026 535\u2026 1151**. If you feel unsafe or might use right now, call **911** right now.",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you called. If you might hurt yourself or you\u2019re in immediate danger, call 911 right now. For detox tonight, call Recovery Village Center at **5 4 1, 5 2 3, 4 0 4 9**. If they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay on the line with me while you make the call.",
+        "I\u2019m glad you said that. If your brother might hurt himself or isn\u2019t safe right now, call **9-1-1** \u2014 **nine, one, one** \u2014 right away and ask for a mental health crisis response. If he is safe this moment, call **2-1-1** \u2014 **two, one, one** \u2014 now for urgent laundry help and same-day support in Portland.",
+        "Yes. Next step: call Cascades West Ride Line now and ask about a non-emergency medical ride, and whether they can serve Eugene and your coverage. Number: **five four one** \u2026 **nine two four** \u2026 **eight seven three eight**. I\u2019ll repeat: **541** \u2026 **924** \u2026 **8738**. If you\u2019re too weak to wait or your breathing worsens, call **9-1-1** now.",
+        "I can\u2019t place calls for you, but I\u2019ll keep this fast. If the first one can\u2019t take you, immediately call the next detox line: **5 4 1, 4 0 6, 4 3 6 3**. Say: \u201cI need an open detox bed tonight. I can come now from Oregon City and I have a ride.\u201d If your shaking worsens or you feel unsafe, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -884,6 +1635,126 @@
       "to": "phone_dialog_0000606#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000645#turn-4",
+      "to": "phone_dialog_0000645#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "provider_contact_support->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000657#turn-5",
+      "to": "phone_dialog_0000657#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000660#turn-3",
+      "to": "phone_dialog_0000660#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000697#turn-1",
+      "to": "phone_dialog_0000697#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000697#turn-4",
+      "to": "phone_dialog_0000697#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000725#turn-5",
+      "to": "phone_dialog_0000725#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000759#turn-1",
+      "to": "phone_dialog_0000759#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000774#turn-4",
+      "to": "phone_dialog_0000774#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000851#turn-5",
+      "to": "phone_dialog_0000851#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000892#turn-5",
+      "to": "phone_dialog_0000892#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000965#turn-2",
+      "to": "phone_dialog_0000965#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001013#turn-4",
+      "to": "phone_dialog_0001013#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001026#turn-2",
+      "to": "phone_dialog_0001026#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001071#turn-1",
+      "to": "phone_dialog_0001071#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001108#turn-2",
+      "to": "phone_dialog_0001108#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001117#turn-5",
+      "to": "phone_dialog_0001117#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001134#turn-4",
+      "to": "phone_dialog_0001134#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001134#turn-5",
+      "to": "phone_dialog_0001134#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0001147#turn-2",
+      "to": "phone_dialog_0001147#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001147#turn-3",
+      "to": "phone_dialog_0001147#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

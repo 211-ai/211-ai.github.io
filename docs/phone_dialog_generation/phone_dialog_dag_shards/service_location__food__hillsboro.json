@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__food__hillsboro",
   "kind": "service_location",
   "key": "food__hillsboro",
-  "nodeCount": 17,
+  "nodeCount": 26,
   "nodes": [
     {
       "id": "phone_dialog_0000001#turn-3",
@@ -171,7 +171,10 @@
       "similarCases": [],
       "assistantResponse": "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**.",
       "voiceResponseAlternatives": [
-        "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**."
+        "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+        "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
@@ -228,7 +231,10 @@
       "similarCases": [],
       "assistantResponse": "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
       "voiceResponseAlternatives": [
-        "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**."
+        "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**.",
+        "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+        "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
@@ -498,6 +504,266 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000635#turn-1",
+      "scenarioId": "phone_dialog_0000635",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Hillsboro and I need senior meal options for my mom, like home-delivered or nearby lunch sites.",
+      "normalizedQuery": "hi hillsboro senior meal options mom like home delivered nearby lunch sites",
+      "voiceResponse": "Absolutely. You have two good options in Hillsboro: home-delivered senior meals, and nearby congregate lunch sites. I can connect you to 211 now to get the closest programs and current availability. Just dial **2-1-1**. If you prefer, I can also help you prepare a short call script so you can ask for both delivery and lunch-site options in one call.",
+      "evidenceDocIds": [
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreieg3v346n4fd4pg2vywbqocmektxjwpu7gbyzmg4b6lxo2beb5cui",
+        "service:59169fe563af08b7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. You have two good options in Hillsboro: home-delivered senior meals, and nearby congregate lunch sites. I can connect you to 211 now to get the closest programs and current availability. Just dial **2-1-1**. If you prefer, I can also help you prepare a short call script so you can ask for both delivery and lunch-site options in one call.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great. Here are two pantry options you can call now: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland**. Phone: **503, 771, 7914**. First Baptist community pantry, **909 Southwest 11th Avenue, Portland**. Phone: **503, 228, 7465**. Both list unrestricted eligibility and no documents required. If bus access is the priority, Oregon Food Bank\u2019s pantry locator can filter by location and nearby sites for today.",
+        "Absolutely. I\u2019ll go slow and keep it short. Option one: Clackamas Service Center. Address: 8800\u2026 Southeast 80th Avenue\u2026 Portland\u2026 97206. Phone: 503\u2026 771\u2026 7914. Option two: First Baptist pantry. Address: 909\u2026 Southwest 11th Avenue\u2026 Portland\u2026 97205. Phone: 503\u2026 228\u2026 7465. Both say: unrestricted eligibility, and no documents required.",
+        "Yes. For Hillsboro, 211 shows senior meal help including **home-delivered meals** and **congregate lunch sites**, with listings for Native American community programs. Please call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and ask: \u201cSenior meal programs in Hillsboro, home-delivered meals and lunch sites for my mom.\u201d If you want, I can stay with you and give you a short script to use when they answer.",
+        "Yes, you can ask for **Hillsboro proper** first. You do not have to start in Beaverton. Call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and say: \u201cSenior meals for my mom, Hillsboro only, home-delivered or closest lunch site.\u201d If Hillsboro has a waitlist, ask for the **nearest backup** location."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000635#turn-2",
+      "scenarioId": "phone_dialog_0000635",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing on this line, can you repeat that slowly and do the phone number in small chunks?",
+      "normalizedQuery": "hi hillsboro senior meal options mom like home delivered nearby lunch sites sorry hard hearing on this line repeat slowly phone number small chunks",
+      "voiceResponse": "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+      "evidenceDocIds": [
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:b78e7b24a3855fc4",
+        "page:bafkreie6s22rm54esp6idw3f3mhhqxm46j7kht6jqmzcblgwk4pvkajooy",
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**.",
+        "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+        "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000850#turn-1",
+      "scenarioId": "phone_dialog_0000850",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I don\u2019t hear great on the phone. I\u2019m in Hillsboro and I need places doing community meals this week.",
+      "normalizedQuery": "hi sorry don hear great on phone hillsboro places doing community meals this week",
+      "voiceResponse": "Yes. I can help. In Hillsboro, I found **Hillsboro Family Shelter**. They list **food boxes**. Phone: **503, 640, 3263**. Again: **503, 640, 3263**. Second phone: **503, 726, 0812**. Again: **503, 726, 0812**. Address: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Do you want me to help with what to say when you call and ask about meal days this week?",
+      "evidenceDocIds": [
+        "service:a927abbe60497dda",
+        "service:3ad36b571383e0bf",
+        "service:312a08c27734b645",
+        "service:b8c762144d937988",
+        "service:6ea6d48d57ae7d68"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help. In Hillsboro, I found **Hillsboro Family Shelter**. They list **food boxes**. Phone: **503, 640, 3263**. Again: **503, 640, 3263**. Second phone: **503, 726, 0812**. Again: **503, 726, 0812**. Address: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Do you want me to help with what to say when you call and ask about meal days this week?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great. Here are two pantry options you can call now: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland**. Phone: **503, 771, 7914**. First Baptist community pantry, **909 Southwest 11th Avenue, Portland**. Phone: **503, 228, 7465**. Both list unrestricted eligibility and no documents required. If bus access is the priority, Oregon Food Bank\u2019s pantry locator can filter by location and nearby sites for today.",
+        "Absolutely. I\u2019ll go slow and keep it short. Option one: Clackamas Service Center. Address: 8800\u2026 Southeast 80th Avenue\u2026 Portland\u2026 97206. Phone: 503\u2026 771\u2026 7914. Option two: First Baptist pantry. Address: 909\u2026 Southwest 11th Avenue\u2026 Portland\u2026 97205. Phone: 503\u2026 228\u2026 7465. Both say: unrestricted eligibility, and no documents required.",
+        "Yes. For Hillsboro, 211 shows senior meal help including **home-delivered meals** and **congregate lunch sites**, with listings for Native American community programs. Please call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and ask: \u201cSenior meal programs in Hillsboro, home-delivered meals and lunch sites for my mom.\u201d If you want, I can stay with you and give you a short script to use when they answer.",
+        "Yes, you can ask for **Hillsboro proper** first. You do not have to start in Beaverton. Call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and say: \u201cSenior meals for my mom, Hillsboro only, home-delivered or closest lunch site.\u201d If Hillsboro has a waitlist, ask for the **nearest backup** location."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000850#turn-2",
+      "scenarioId": "phone_dialog_0000850",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say that provider name again? I heard \"Harbor\" something, I missed it.",
+      "normalizedQuery": "hi sorry don hear great on phone hillsboro places doing community meals this week say provider name again heard harbor something missed it",
+      "voiceResponse": "Yes. The provider name is **The Harbor**. I\u2019ll repeat that: **The Harbor**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:83a353b62cff5183",
+        "service:412e4f87a6854144",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The provider name is **The Harbor**. I\u2019ll repeat that: **The Harbor**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great. Here are two pantry options you can call now: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland**. Phone: **503, 771, 7914**. First Baptist community pantry, **909 Southwest 11th Avenue, Portland**. Phone: **503, 228, 7465**. Both list unrestricted eligibility and no documents required. If bus access is the priority, Oregon Food Bank\u2019s pantry locator can filter by location and nearby sites for today.",
+        "Absolutely. I\u2019ll go slow and keep it short. Option one: Clackamas Service Center. Address: 8800\u2026 Southeast 80th Avenue\u2026 Portland\u2026 97206. Phone: 503\u2026 771\u2026 7914. Option two: First Baptist pantry. Address: 909\u2026 Southwest 11th Avenue\u2026 Portland\u2026 97205. Phone: 503\u2026 228\u2026 7465. Both say: unrestricted eligibility, and no documents required.",
+        "Yes. For Hillsboro, 211 shows senior meal help including **home-delivered meals** and **congregate lunch sites**, with listings for Native American community programs. Please call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and ask: \u201cSenior meal programs in Hillsboro, home-delivered meals and lunch sites for my mom.\u201d If you want, I can stay with you and give you a short script to use when they answer.",
+        "Yes, you can ask for **Hillsboro proper** first. You do not have to start in Beaverton. Call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and say: \u201cSenior meals for my mom, Hillsboro only, home-delivered or closest lunch site.\u201d If Hillsboro has a waitlist, ask for the **nearest backup** location."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000850#turn-3",
+      "scenarioId": "phone_dialog_0000850",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Wait, was the address 215 Oak, or 250 Oak? Please say it slow.",
+      "normalizedQuery": "hi sorry don hear great on phone hillsboro places doing community meals this week say provider name again heard harbor something missed it wait was address 215 oak 250 please slow",
+      "voiceResponse": "Neither one. It is not Oak. The address is: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Neither one. It is not Oak. The address is: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**. Slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing great. Here are two pantry options you can call now: Clackamas Service Center, **8800 Southeast 80th Avenue, Portland**. Phone: **503, 771, 7914**. First Baptist community pantry, **909 Southwest 11th Avenue, Portland**. Phone: **503, 228, 7465**. Both list unrestricted eligibility and no documents required. If bus access is the priority, Oregon Food Bank\u2019s pantry locator can filter by location and nearby sites for today.",
+        "Absolutely. I\u2019ll go slow and keep it short. Option one: Clackamas Service Center. Address: 8800\u2026 Southeast 80th Avenue\u2026 Portland\u2026 97206. Phone: 503\u2026 771\u2026 7914. Option two: First Baptist pantry. Address: 909\u2026 Southwest 11th Avenue\u2026 Portland\u2026 97205. Phone: 503\u2026 228\u2026 7465. Both say: unrestricted eligibility, and no documents required.",
+        "Yes. For Hillsboro, 211 shows senior meal help including **home-delivered meals** and **congregate lunch sites**, with listings for Native American community programs. Please call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and ask: \u201cSenior meal programs in Hillsboro, home-delivered meals and lunch sites for my mom.\u201d If you want, I can stay with you and give you a short script to use when they answer.",
+        "Yes, you can ask for **Hillsboro proper** first. You do not have to start in Beaverton. Call **2-1-1** \u2014 that is **2, 1, 1** \u2014 and say: \u201cSenior meals for my mom, Hillsboro only, home-delivered or closest lunch site.\u201d If Hillsboro has a waitlist, ask for the **nearest backup** location."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000850#turn-4",
+      "scenarioId": "phone_dialog_0000850",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I\u2019ve got traffic noise here, one sec... okay, can you repeat the cross street too?",
+      "normalizedQuery": "hi sorry don hear great on phone hillsboro places doing community meals this week say provider name again heard harbor something missed it wait was address 215 oak 250 please slow ve got traffic noise here one sec okay repeat cross street too",
+      "voiceResponse": "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**.",
+        "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001078#turn-1",
+      "scenarioId": "phone_dialog_0001078",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, I\u2019m in Hillsboro and I need a food pantry today... sorry, can you speak a little slower for me?",
+      "normalizedQuery": "hi hillsboro food pantry meal meals groceries sorry speak little slower",
+      "voiceResponse": "I\u2019m here with you, and I\u2019ll go slowly. Your audio was a little unclear. Do you want: A) one pantry you can call now, or B) help finding the closest pantry in Hillsboro today?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:d8559ced93d0f936",
+        "service:edd660b46aff2c3f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and I\u2019ll go slowly. Your audio was a little unclear. Do you want: A) one pantry you can call now, or B) help finding the closest pantry in Hillsboro today?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001078#turn-2",
+      "scenarioId": "phone_dialog_0001078",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I missed that name, could you repeat it again, and the phone number in small chunks?",
+      "normalizedQuery": "hi hillsboro food pantry meal meals groceries sorry speak little slower missed name could repeat it again phone number small chunks",
+      "voiceResponse": "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:f7f1a44948506f7a",
+        "service:edd660b46aff2c3f",
+        "service:0d4be1a249bfe7ab"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Food Pantry and Meals**. The phone number is **503** \u2026 **771** \u2026 **7914**. I can repeat that again slowly: **503** \u2026 **771** \u2026 **7914**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly: in **Hillsboro**, 211 has senior meal help, including **home-delivered meals** and **congregate lunch sites**. They also list some **Native American community meal programs**.",
+        "Yes. The number is **2-1-1**: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "Of course. Slowly: you have **two options** in Hillsboro for your mom: **home-delivered senior meals** and **nearby lunch sites**. To get the closest programs and current openings, call **2-1-1**. That\u2019s **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**.",
+        "I don\u2019t have a cross street listed for that location. I\u2019ll repeat the address slowly: **210** \u2026 **Southeast 12th Avenue** \u2026 **Hillsboro, Oregon** \u2026 **97123**. Again: **210 Southeast 12th Avenue, Hillsboro, Oregon, 97123**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001078#turn-3",
+      "scenarioId": "phone_dialog_0001078",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "food",
+      "locationTag": "hillsboro",
+      "promptTemplate": "wallet_document_support",
+      "user": "Also, before I upload anything, can you check what I already have saved in my wallet?",
+      "normalizedQuery": "hi hillsboro food pantry meal meals groceries sorry speak little slower missed name could repeat it again phone number small chunks also before upload anything check already have saved wallet",
+      "voiceResponse": "Absolutely. I can help you check first. I can\u2019t see your wallet unless you choose to share it, so your files stay private. Open your wallet, then tap **Files** or **Documents** and look for **Saved**, **Proofs**, or **Uploads**. If you want, we can do it step by step before you upload anything. Say what you see on that screen, and I\u2019ll guide you slowly.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "service:1a1916cf1f6f8f5c",
+        "service:cbb641cc5af6e9d6",
+        "page:bafkreia6p6btxhmwazlyigs5u7dhdes56hedv3kexfe4i2s3ca7jr6wlkq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I can help you check first. I can\u2019t see your wallet unless you choose to share it, so your files stay private. Open your wallet, then tap **Files** or **Documents** and look for **Saved**, **Proofs**, or **Uploads**. If you want, we can do it step by step before you upload anything. Say what you see on that screen, and I\u2019ll guide you slowly.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -596,6 +862,60 @@
       "to": "phone_dialog_0000560#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "template_guided_fallback->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000635#turn-1",
+      "to": "phone_dialog_0000635#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000635#turn-2",
+      "to": "phone_dialog_0000635#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000850#turn-1",
+      "to": "phone_dialog_0000850#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000850#turn-2",
+      "to": "phone_dialog_0000850#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000850#turn-3",
+      "to": "phone_dialog_0000850#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000850#turn-4",
+      "to": "phone_dialog_0000850#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001078#turn-1",
+      "to": "phone_dialog_0001078#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001078#turn-2",
+      "to": "phone_dialog_0001078#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001078#turn-3",
+      "to": "phone_dialog_0001078#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->wallet_document_support"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__hillsboro",
   "kind": "service_location",
   "key": "documents__hillsboro",
-  "nodeCount": 9,
+  "nodeCount": 15,
   "nodes": [
     {
       "id": "phone_dialog_0000144#turn-1",
@@ -236,7 +236,11 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. The office name is **Hillsboro Family Shelter**. What they asked for is a **photo ID**. Next step: call them and say, \u201cI lost my ID and need to know what alternate paperwork you can accept right now.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. It is **Centro**, not Century. The office name is: **Centro Cultural of Washington County**. Again, slowly: **Centro Cultural of Washington County**.",
+        "Yes. The street number is **2, 6, 5**. Again, slowly: **2, 6, 5**. The address starts: **2, 6, 5 Southeast Oak Street, Suite A, Hillsboro**.",
+        "Of course. Office name: **Bridges to Change**. Number, slowly: **nine seven one** \u2026 **three eight six** \u2026 **three four four three**. That\u2019s **971-386-3443**."
+      ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
@@ -270,6 +274,172 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000906#turn-1",
+      "scenarioId": "phone_dialog_0000906",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Hillsboro and I need to replace my state ID, but I\u2019m having trouble hearing you on this line.",
+      "normalizedQuery": "hi hillsboro replace state id having trouble hearing on this line",
+      "voiceResponse": "I can help. I will speak slowly. For state ID help, I have **ID Project** in Portland. It helps with name or gender changes through the courts or DMV. Phone: **5 0 3, 5 3 5, 3 8 2 8**. Again: **5 0 3, 5 3 5, 3 8 2 8**. Address: **1 1 3 2 Southwest 13th Avenue, Portland**. Again: **1 1 3 2 Southwest 13th Avenue, Portland**. Do you want me to repeat the phone number one more time?",
+      "evidenceDocIds": [
+        "service:a927abbe60497dda",
+        "service:3ad36b571383e0bf",
+        "service:354980161ba297e3",
+        "page:bafkreia2pcbaz5ekqst22hli67wn46rdspjvujs5fvosahlbtl5hq7jy7i",
+        "page:bafkreicdparddbvbfaanvys5bef2pslf3w5uwguzuixqd6otr6zghqi7km"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can help. I will speak slowly. For state ID help, I have **ID Project** in Portland. It helps with name or gender changes through the courts or DMV. Phone: **5 0 3, 5 3 5, 3 8 2 8**. Again: **5 0 3, 5 3 5, 3 8 2 8**. Address: **1 1 3 2 Southwest 13th Avenue, Portland**. Again: **1 1 3 2 Southwest 13th Avenue, Portland**. Do you want me to repeat the phone number one more time?",
+      "voiceResponseAlternatives": [
+        "Most important number first: **nine seven one, three eight six, three four four three**. That\u2019s Bridges to Change in Hillsboro, and they can help connect you to local ID-replacement support. If the call drops, their office is at **1049 Southwest Baseline Street, Suite D480, Hillsboro**. If you want, I can give you a one-sentence script to say when they answer."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000906#turn-2",
+      "scenarioId": "phone_dialog_0000906",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that office name? Did you say Centro or Century? Can you say it again slowly?",
+      "normalizedQuery": "hi hillsboro replace state id having trouble hearing on this line sorry was office name did say centro century it again slowly",
+      "voiceResponse": "Yes. It is **Centro**, not Century. The office name is: **Centro Cultural of Washington County**. Again, slowly: **Centro Cultural of Washington County**.",
+      "evidenceDocIds": [
+        "service:0e338c8acc220d5d",
+        "service:f6c4ca7854cd94ff",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. It is **Centro**, not Century. The office name is: **Centro Cultural of Washington County**. Again, slowly: **Centro Cultural of Washington County**.",
+      "voiceResponseAlternatives": [
+        "Yes. The office name is **Hillsboro Family Shelter**. What they asked for is a **photo ID**. Next step: call them and say, \u201cI lost my ID and need to know what alternate paperwork you can accept right now.\u201d",
+        "Yes. The street number is **2, 6, 5**. Again, slowly: **2, 6, 5**. The address starts: **2, 6, 5 Southeast Oak Street, Suite A, Hillsboro**.",
+        "Of course. Office name: **Bridges to Change**. Number, slowly: **nine seven one** \u2026 **three eight six** \u2026 **three four four three**. That\u2019s **971-386-3443**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000906#turn-3",
+      "scenarioId": "phone_dialog_0000906",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "I missed the address too, I heard maybe 'fifty-nine' something on Oak? Please repeat the street number one digit at a time.",
+      "normalizedQuery": "hi hillsboro replace state id having trouble hearing on this line sorry was office name did say centro century it again slowly missed address too heard maybe 'fifty nine' something oak please repeat street number one digit at time",
+      "voiceResponse": "Yes. The street number is **2, 6, 5**. Again, slowly: **2, 6, 5**. The address starts: **2, 6, 5 Southeast Oak Street, Suite A, Hillsboro**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:0e338c8acc220d5d",
+        "service:f6c4ca7854cd94ff",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The street number is **2, 6, 5**. Again, slowly: **2, 6, 5**. The address starts: **2, 6, 5 Southeast Oak Street, Suite A, Hillsboro**.",
+      "voiceResponseAlternatives": [
+        "Yes. The office name is **Hillsboro Family Shelter**. What they asked for is a **photo ID**. Next step: call them and say, \u201cI lost my ID and need to know what alternate paperwork you can accept right now.\u201d",
+        "Yes. It is **Centro**, not Century. The office name is: **Centro Cultural of Washington County**. Again, slowly: **Centro Cultural of Washington County**.",
+        "Of course. Office name: **Bridges to Change**. Number, slowly: **nine seven one** \u2026 **three eight six** \u2026 **three four four three**. That\u2019s **971-386-3443**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000906#turn-4",
+      "scenarioId": "phone_dialog_0000906",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "And the phone number, I got 503-6... I didn\u2019t catch the rest. Can you do it in chunks?",
+      "normalizedQuery": "hi hillsboro replace state id having trouble hearing on this line sorry was office name did say centro century it again slowly missed address too heard maybe 'fifty nine' something oak please repeat street number one digit at time phone got 503 didn catch rest chunks",
+      "voiceResponse": "I\u2019m sorry, the line is unclear. I heard \u201c5 0 3, 6\u2026\u201d and there are two numbers for Centro. Do you want the first number or the second number?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:0e338c8acc220d5d",
+        "service:f6c4ca7854cd94ff",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the line is unclear. I heard \u201c5 0 3, 6\u2026\u201d and there are two numbers for Centro. Do you want the first number or the second number?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000968#turn-1",
+      "scenarioId": "phone_dialog_0000968",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Hillsboro and this is a borrowed phone, battery\u2019s almost dead, so can you give me the most important number first? I need help replacing my ID.",
+      "normalizedQuery": "hi hillsboro this borrowed phone battery almost dead so give most important number first replacing id",
+      "voiceResponse": "Most important number first: **nine seven one, three eight six, three four four three**. That\u2019s Bridges to Change in Hillsboro, and they can help connect you to local ID-replacement support. If the call drops, their office is at **1049 Southwest Baseline Street, Suite D480, Hillsboro**. If you want, I can give you a one-sentence script to say when they answer.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:639d26d0f9aa94ac",
+        "service:04da35b76e09e9a2",
+        "page:bafkreibgimm7n5onnnyvcflvv7c2ztkkw7zgn6nuoaav6q7gu4qaevnx4a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number first: **nine seven one, three eight six, three four four three**. That\u2019s Bridges to Change in Hillsboro, and they can help connect you to local ID-replacement support. If the call drops, their office is at **1049 Southwest Baseline Street, Suite D480, Hillsboro**. If you want, I can give you a one-sentence script to say when they answer.",
+      "voiceResponseAlternatives": [
+        "I can help. I will speak slowly. For state ID help, I have **ID Project** in Portland. It helps with name or gender changes through the courts or DMV. Phone: **5 0 3, 5 3 5, 3 8 2 8**. Again: **5 0 3, 5 3 5, 3 8 2 8**. Address: **1 1 3 2 Southwest 13th Avenue, Portland**. Again: **1 1 3 2 Southwest 13th Avenue, Portland**. Do you want me to repeat the phone number one more time?"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000968#turn-2",
+      "scenarioId": "phone_dialog_0000968",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "hillsboro",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, you cut out for a second with traffic noise here, can you repeat that office name and number slower?",
+      "normalizedQuery": "hi hillsboro this borrowed phone battery almost dead so give most important number first replacing id sorry cut second traffic noise here repeat office name slower",
+      "voiceResponse": "Of course. Office name: **Bridges to Change**. Number, slowly: **nine seven one** \u2026 **three eight six** \u2026 **three four four three**. That\u2019s **971-386-3443**.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:639d26d0f9aa94ac",
+        "service:04da35b76e09e9a2",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Office name: **Bridges to Change**. Number, slowly: **nine seven one** \u2026 **three eight six** \u2026 **three four four three**. That\u2019s **971-386-3443**.",
+      "voiceResponseAlternatives": [
+        "Yes. The office name is **Hillsboro Family Shelter**. What they asked for is a **photo ID**. Next step: call them and say, \u201cI lost my ID and need to know what alternate paperwork you can accept right now.\u201d",
+        "Yes. It is **Centro**, not Century. The office name is: **Centro Cultural of Washington County**. Again, slowly: **Centro Cultural of Washington County**.",
+        "Yes. The street number is **2, 6, 5**. Again, slowly: **2, 6, 5**. The address starts: **2, 6, 5 Southeast Oak Street, Suite A, Hillsboro**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -314,6 +484,42 @@
       "to": "phone_dialog_0000495#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000906#turn-1",
+      "to": "phone_dialog_0000906#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000906#turn-2",
+      "to": "phone_dialog_0000906#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000906#turn-3",
+      "to": "phone_dialog_0000906#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000906#turn-4",
+      "to": "phone_dialog_0000906#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000968#turn-1",
+      "to": "phone_dialog_0000968#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000968#turn-2",
+      "to": "phone_dialog_0000968#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->calendar_event_support"
     }
   ]
 }

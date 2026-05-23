@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__utilities__eugene",
   "kind": "service_location",
   "key": "utilities__eugene",
-  "nodeCount": 4,
+  "nodeCount": 6,
   "nodes": [
     {
       "id": "phone_dialog_0000223#turn-1",
@@ -81,7 +81,8 @@
       "similarCases": [],
       "assistantResponse": "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**.",
       "voiceResponseAlternatives": [
-        "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**."
+        "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**.",
+        "Yes. Next step: call this number now for power shutoff support. It\u2019s **5-4-1, 6-8-8, 8-7-1-1**. Again: **5-4-1, 6-8-8, 8-7-1-1**."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -108,11 +109,65 @@
       "similarCases": [],
       "assistantResponse": "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**.",
       "voiceResponseAlternatives": [
-        "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**."
+        "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**.",
+        "Yes. Next step: call this number now for power shutoff support. It\u2019s **5-4-1, 6-8-8, 8-7-1-1**. Again: **5-4-1, 6-8-8, 8-7-1-1**."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000916#turn-4",
+      "scenarioId": "phone_dialog_0000916",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Eugene, and I don't know who helps with utility payments around here.",
+      "normalizedQuery": "i'm eugene don't know who helps utility utilities heat electric payments around here",
+      "voiceResponse": "Next step: call Eugene Water and Electric Board now and ask for utility bill help, a payment plan, and the Customer Care Program. Their number is **5-4-1**, **6-8-5**, **7-0-0-0**. That\u2019s **5-4-1, 6-8-5, 7-0-0-0**. You\u2019re doing the right thing calling today.",
+      "evidenceDocIds": [
+        "service:076561fd7941361f",
+        "service:79b69b74b5da1479",
+        "service:b145395232162ffd",
+        "service:f39f67447bad69ba",
+        "service:b0fd90b106c6a4ef"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Eugene Water and Electric Board now and ask for utility bill help, a payment plan, and the Customer Care Program. Their number is **5-4-1**, **6-8-5**, **7-0-0-0**. That\u2019s **5-4-1, 6-8-5, 7-0-0-0**. You\u2019re doing the right thing calling today.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000916#turn-5",
+      "scenarioId": "phone_dialog_0000916",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you find something, can you repeat the phone number twice? My brain is not tracking today.",
+      "normalizedQuery": "sorry say again slower missed part it there's noise apartment it's power bill i'm behind since mom passed got shutoff notice eugene don't know who helps utility utilities heat electric payments around here if something repeat phone number twice brain tracking",
+      "voiceResponse": "Yes. Next step: call this number now for power shutoff support. It\u2019s **5-4-1, 6-8-8, 8-7-1-1**. Again: **5-4-1, 6-8-8, 8-7-1-1**.",
+      "evidenceDocIds": [
+        "service:8a88f383dd183cef",
+        "service:036851dd974a6eed",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:d429a1a4c44352b1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Next step: call this number now for power shutoff support. It\u2019s **5-4-1, 6-8-8, 8-7-1-1**. Again: **5-4-1, 6-8-8, 8-7-1-1**.",
+      "voiceResponseAlternatives": [
+        "You heard that wrong. It is **not** River Road. The address is: **90680 Highway 99 North, Eugene, Oregon, 97402**. I\u2019ll repeat that: **90680** \u2026 **Highway 99 North** \u2026 **Eugene** \u2026 **97402**.",
+        "Yes. Here it is, one digit at a time. Main number: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**. Again: **5\u2026 4\u2026 1\u2026 6\u2026 8\u2026 8\u2026 8\u2026 7\u2026 1\u2026 1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -139,6 +194,12 @@
       "to": "phone_dialog_0000223#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000916#turn-4",
+      "to": "phone_dialog_0000916#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

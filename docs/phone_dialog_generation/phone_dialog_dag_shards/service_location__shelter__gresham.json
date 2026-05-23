@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__shelter__gresham",
   "kind": "service_location",
   "key": "shelter__gresham",
-  "nodeCount": 40,
+  "nodeCount": 69,
   "nodes": [
     {
       "id": "phone_dialog_0000035#turn-1",
@@ -327,7 +327,9 @@
       "similarCases": [],
       "assistantResponse": "Yes, we can do that, and keep it simple. We can set follow-up reminders so cutoff times don\u2019t sneak up on you while you\u2019re moving around. What time of day do you want one daily reminder?",
       "voiceResponseAlternatives": [
-        "Absolutely. I\u2019ll add the note: \u201cCooling center in Gresham.\u201d What exact time should I set it for tonight?"
+        "Absolutely. I\u2019ll add the note: \u201cCooling center in Gresham.\u201d What exact time should I set it for tonight?",
+        "That makes sense, and you\u2019re doing a lot to keep track of him. Let\u2019s set a flexible check-in reminder so you can adjust if he\u2019s in Gresham or elsewhere tomorrow. What time should I put for your reminder to call 211 and ask for a youth day center in Multnomah County?",
+        "You\u2019re clear: steel-toe boots and plain black pants by Monday, with same-day voucher approval if possible. I only have **Clothes That Work** on hand: **503-364-9936**. They don\u2019t require documents, and you can ask directly about same-day vouchers and no-appointment options. If you want, I can help you set a quick call reminder so this doesn\u2019t slip. What time on Monday do you need the boots and pants by?"
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "background_noise",
@@ -621,7 +623,9 @@
       "similarCases": [],
       "assistantResponse": "Absolutely. I\u2019ll add the note: \u201cCooling center in Gresham.\u201d What exact time should I set it for tonight?",
       "voiceResponseAlternatives": [
-        "Yes, we can do that, and keep it simple. We can set follow-up reminders so cutoff times don\u2019t sneak up on you while you\u2019re moving around. What time of day do you want one daily reminder?"
+        "Yes, we can do that, and keep it simple. We can set follow-up reminders so cutoff times don\u2019t sneak up on you while you\u2019re moving around. What time of day do you want one daily reminder?",
+        "That makes sense, and you\u2019re doing a lot to keep track of him. Let\u2019s set a flexible check-in reminder so you can adjust if he\u2019s in Gresham or elsewhere tomorrow. What time should I put for your reminder to call 211 and ask for a youth day center in Multnomah County?",
+        "You\u2019re clear: steel-toe boots and plain black pants by Monday, with same-day voucher approval if possible. I only have **Clothes That Work** on hand: **503-364-9936**. They don\u2019t require documents, and you can ask directly about same-day vouchers and no-appointment options. If you want, I can help you set a quick call reminder so this doesn\u2019t slip. What time on Monday do you need the boots and pants by?"
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "hard_of_hearing",
@@ -1188,6 +1192,868 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000631#turn-1",
+      "scenarioId": "phone_dialog_0000631",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I can barely hear over this bus stop, but I\u2019m in Gresham and I need housing help for veterans.",
+      "normalizedQuery": "hi sorry barely hear over this bus stop gresham housing veterans",
+      "voiceResponse": "Absolutely. Two options you can use right now, and you can share only what you want. In Gresham, call City of Gresham: **503\u2026 618\u2026 3000** and ask for a **veteran housing referral**. If you can travel or want a veteran-specific program, try Veterans Housing Project in Eugene: **458\u2026 221\u2026 0718**. If it helps, keep it simple: \u201cI\u2019m a veteran in Gresham and need housing help today.\u201d You don\u2019t need to give extra details until you\u2019re ready.",
+      "evidenceDocIds": [
+        "service:d968ced621aea83d",
+        "service:d7abe58ca7495460",
+        "service:79470abe687085dd",
+        "service:6ff0290432469e78",
+        "service:0d6802a5d41ae53f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Two options you can use right now, and you can share only what you want. In Gresham, call City of Gresham: **503\u2026 618\u2026 3000** and ask for a **veteran housing referral**. If you can travel or want a veteran-specific program, try Veterans Housing Project in Eugene: **458\u2026 221\u2026 0718**. If it helps, keep it simple: \u201cI\u2019m a veteran in Gresham and need housing help today.\u201d You don\u2019t need to give extra details until you\u2019re ready.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000631#turn-2",
+      "scenarioId": "phone_dialog_0000631",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we go too far, who can see what I tell you? I don\u2019t want this shared all over.",
+      "normalizedQuery": "hi sorry barely hear over this bus stop gresham housing veterans before we go too far who see tell don want shared all",
+      "voiceResponse": "That\u2019s a fair question. You can keep this minimal. I can give you options without your full name, ID number, or extra personal details. Share only what feels safe. If you want, we can stick to general veteran housing resources through 211info and you can decide later what to share with any agency. Your control, your pace.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a fair question. You can keep this minimal. I can give you options without your full name, ID number, or extra personal details. Share only what feels safe. If you want, we can stick to general veteran housing resources through 211info and you can decide later what to share with any agency. Your control, your pace.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000631#turn-3",
+      "scenarioId": "phone_dialog_0000631",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A truck just went by. I missed the part about where my info goes.",
+      "normalizedQuery": "hi sorry barely hear over this bus stop gresham housing veterans before we go too far who see tell don want shared all say again truck just went by missed part info goes",
+      "voiceResponse": "Of course. Short version: keep it minimal. I can share general housing options without your full name, ID, or extra details. You choose what to share, and only when you\u2019re ready. We can stay with broad 211info resources first, then you decide later what to tell any agency.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Short version: keep it minimal. I can share general housing options without your full name, ID, or extra details. You choose what to share, and only when you\u2019re ready. We can stay with broad 211info resources first, then you decide later what to tell any agency.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000661#turn-4",
+      "scenarioId": "phone_dialog_0000661",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "app_surface_navigation",
+      "user": "Can you open the Proof Center for me so I can see what to upload while we\u2019re talking?",
+      "normalizedQuery": "hi gresham applying disability benefits snap assistance just next steps sorry hard hearing on this line say slower one step at time think said proof income id right repeat exactly which documents open center so see upload while we re talking",
+      "voiceResponse": "Yes. Let\u2019s go to the **Proof Center** now. I can\u2019t open it from my side, but I can walk you step by step. Open your benefits app. Tap **Proof Center**. Tap **Upload**. In Proof Center, you can upload your **photo ID** and **proof of income**. I\u2019ll repeat: upload **photo ID** and **proof of income**. Tell me when you see the Upload button.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Let\u2019s go to the **Proof Center** now. I can\u2019t open it from my side, but I can walk you step by step. Open your benefits app. Tap **Proof Center**. Tap **Upload**. In Proof Center, you can upload your **photo ID** and **proof of income**. I\u2019ll repeat: upload **photo ID** and **proof of income**. Tell me when you see the Upload button.",
+      "voiceResponseAlternatives": [
+        "Yes\u2014usually it shows right away in the **Uploads** surface. After you upload, open **Wallet \u2192 Uploads** to confirm the file is listed, then you can share it during check-in. If you want extra certainty, you can wait a minute and refresh once before you call or arrive."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000669#turn-1",
+      "scenarioId": "phone_dialog_0000669",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m in Gresham and I\u2019m a veteran, and I need housing help fast, but I\u2019m trying to find something very specific.",
+      "normalizedQuery": "hi sorry hear okay gresham veteran veterans va housing fast trying something very specific",
+      "voiceResponse": "Yes, I hear you clearly. You\u2019re in the right place. For veterans in Gresham, I can help with fast housing options, including transitional housing and shelter programs for homeless veterans. We can also add veteran mental health support if that helps your housing path. We can keep this simple and private. Tell me the one specific housing feature you need first, and we\u2019ll start there.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreiekc5coret46eepgjkrdmccp4tf7oorp6vdziq4mpamleikrrgx4q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you clearly. You\u2019re in the right place. For veterans in Gresham, I can help with fast housing options, including transitional housing and shelter programs for homeless veterans. We can also add veteran mental health support if that helps your housing path. We can keep this simple and private. Tell me the one specific housing feature you need first, and we\u2019ll start there.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000669#turn-4",
+      "scenarioId": "phone_dialog_0000669",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Can you check if there\u2019s an actual local program that matches all that exactly, and if not, tell me what\u2019s closest and what evidence you\u2019re using?",
+      "normalizedQuery": "hi sorry hear okay gresham veteran veterans va housing fast trying something very specific don just mean any shelter shelters homeless overnight warming only place private rooms on site legal aid attorney advocacy same day intake tonight wait did say east county portland because process paperwork crowded dorm setup right now keep getting bounced around generic lists check if there an actual local program matches all exactly tell closest evidence re using",
+      "voiceResponse": "Short answer: I can\u2019t confirm an exact match from what I can see right now. The evidence I have is a 211info listing for **\u201cHousing Related Coordinated Entry \u2013 Homeless Veterans\u201d** showing **4 matching service providers** in the area, but it does not show private-room status, on-site legal help, or same-day intake in that snippet. Closest path is those 4 veteran coordinated-entry providers. If you want, we can do the live-agent handoff now and have them verify those three requirements before you\u2019re transferred again.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreih6yv4lxtxhx77luhaq3wjrnmj5rqileyqgzvw4m2xchwnbt44jgq",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Short answer: I can\u2019t confirm an exact match from what I can see right now. The evidence I have is a 211info listing for **\u201cHousing Related Coordinated Entry \u2013 Homeless Veterans\u201d** showing **4 matching service providers** in the area, but it does not show private-room status, on-site legal help, or same-day intake in that snippet. Closest path is those 4 veteran coordinated-entry providers. If you want, we can do the live-agent handoff now and have them verify those three requirements before you\u2019re transferred again.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000669#turn-6",
+      "scenarioId": "phone_dialog_0000669",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "And if the exact match isn\u2019t real in Gresham, I still want the next best veteran housing route today, not a dead end.",
+      "normalizedQuery": "if exact match isn real gresham still want next best veteran veterans va housing route dead end",
+      "voiceResponse": "You\u2019re right to want a real path today. If an exact Gresham match isn\u2019t available, the strongest next-best route is **Housing Related Coordinated Entry \u2014 Homeless Veterans** with **4 local providers** in 211info. That\u2019s the evidence I have, and it\u2019s the most direct veteran housing channel instead of general lists. We can move straight to a live agent now and have them verify, before transfer, three filters: **same-day intake, private room only, and on-site legal help**.",
+      "evidenceDocIds": [
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreigphzqbjatlhxsrpxhpiofe747mqkryui4nroaoc4afuktkujk3ue",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re right to want a real path today. If an exact Gresham match isn\u2019t available, the strongest next-best route is **Housing Related Coordinated Entry \u2014 Homeless Veterans** with **4 local providers** in 211info. That\u2019s the evidence I have, and it\u2019s the most direct veteran housing channel instead of general lists. We can move straight to a live agent now and have them verify, before transfer, three filters: **same-day intake, private room only, and on-site legal help**.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000688#turn-1",
+      "scenarioId": "phone_dialog_0000688",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Gresham and I\u2019m trying to find a youth day center for my 15-year-old after school.",
+      "normalizedQuery": "hi gresham trying youth day center 15 year old after school",
+      "voiceResponse": "Thanks for calling. I found one youth after-school option that fits a 15-year-old: **Kids Zone After School** (ages 3 to 18). Phone: **5 4 1, 7 6 5, 8 9 9 0**. Address: **6 3 4 S E Highway 1 0 1, Depoe Bay**. That\u2019s outside Gresham, so if you want, you can still call them directly, or I can help you connect to a 211 specialist for closer options in Gresham.",
+      "evidenceDocIds": [
+        "service:1c848a1c068f1961",
+        "service:9f25c81a513fcf55",
+        "page:bafkreifibmpidnjqxjej6gaqeiujhmdtr4cz3c476gmms3e26gwcvgv4a4",
+        "page:bafkreigq34r5hjjs7ixdb4myi77k4wfzzljt4pvbx442bk5zgv7cpkim5i",
+        "service:b8503f69881b565a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks for calling. I found one youth after-school option that fits a 15-year-old: **Kids Zone After School** (ages 3 to 18). Phone: **5 4 1, 7 6 5, 8 9 9 0**. Address: **6 3 4 S E Highway 1 0 1, Depoe Bay**. That\u2019s outside Gresham, so if you want, you can still call them directly, or I can help you connect to a 211 specialist for closer options in Gresham.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000688#turn-4",
+      "scenarioId": "phone_dialog_0000688",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "app_surface_navigation",
+      "user": "If I upload something now, will it show right away when a center checks us in?",
+      "normalizedQuery": "hi gresham trying youth day center 15 year old after school before call around tell documents already have saved wallet him upload id address proof enough on file if something now will it show right away when checks us",
+      "voiceResponse": "Yes\u2014usually it shows right away in the **Uploads** surface. After you upload, open **Wallet \u2192 Uploads** to confirm the file is listed, then you can share it during check-in. If you want extra certainty, you can wait a minute and refresh once before you call or arrive.",
+      "evidenceDocIds": [
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes\u2014usually it shows right away in the **Uploads** surface. After you upload, open **Wallet \u2192 Uploads** to confirm the file is listed, then you can share it during check-in. If you want extra certainty, you can wait a minute and refresh once before you call or arrive.",
+      "voiceResponseAlternatives": [
+        "Yes. Let\u2019s go to the **Proof Center** now. I can\u2019t open it from my side, but I can walk you step by step. Open your benefits app. Tap **Proof Center**. Tap **Upload**. In Proof Center, you can upload your **photo ID** and **proof of income**. I\u2019ll repeat: upload **photo ID** and **proof of income**. Tell me when you see the Upload button."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000724#turn-1",
+      "scenarioId": "phone_dialog_0000724",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s loud in here at the shelter lobby, can you help me find somewhere in Gresham where I can shower today?",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby somewhere gresham shower",
+      "voiceResponse": "Absolutely, and you don\u2019t need to share personal details. I\u2019m not seeing a solid Gresham shower listing in what I have right now. I can still help two ways: we can call 2-1-1 together and ask for \u201cday-use shower access in Gresham, open today,\u201d or I can connect you to a live specialist now. Whatever feels safest for you.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and you don\u2019t need to share personal details. I\u2019m not seeing a solid Gresham shower listing in what I have right now. I can still help two ways: we can call 2-1-1 together and ask for \u201cday-use shower access in Gresham, open today,\u201d or I can connect you to a live specialist now. Whatever feels safest for you.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000724#turn-2",
+      "scenarioId": "phone_dialog_0000724",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before I give anything, who sees my info from this call? I really don\u2019t want my name passed around.",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby somewhere gresham shower before give anything who sees info from this call really don want name passed around",
+      "voiceResponse": "Totally fair question. You can keep this private. I can help without your name, and you only share what you choose. For a basic 2-1-1 search, we can ask by location and service only, no personal story. If you want, we can also do a live transfer and you can say up front, \u201cI want to stay anonymous.\u201d It\u2019s your call, and we can keep it minimal.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally fair question. You can keep this private. I can help without your name, and you only share what you choose. For a basic 2-1-1 search, we can ask by location and service only, no personal story. If you want, we can also do a live transfer and you can say up front, \u201cI want to stay anonymous.\u201d It\u2019s your call, and we can keep it minimal.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000724#turn-3",
+      "scenarioId": "phone_dialog_0000724",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? I missed that, a bus just pulled up, can you repeat the place name and hours?",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby somewhere gresham shower before give anything who sees info from this call really don want name passed around missed bus just pulled up repeat place hours",
+      "voiceResponse": "I don\u2019t have a confirmed **Gresham shower site or hours** in front of me right now. What I can repeat is this: we can ask **2-1-1** for \u201cday-use shower access in Gresham, open today,\u201d or I can connect you to a live specialist. You can stay anonymous and share only location plus service type.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:bd5c5bd198f76c8b",
+        "service:da479dd20eb5563d",
+        "service:bab9f596e07026df",
+        "service:57c4c63dcadba358"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a confirmed **Gresham shower site or hours** in front of me right now. What I can repeat is this: we can ask **2-1-1** for \u201cday-use shower access in Gresham, open today,\u201d or I can connect you to a live specialist. You can stay anonymous and share only location plus service type.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000747#turn-5",
+      "scenarioId": "phone_dialog_0000747",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My phone\u2019s at like two percent, so if we get cut off, can you repeat the address first?",
+      "normalizedQuery": "gresham burnside go back was staying it safe slow down little crying catching everything re saying wait shelter shelters homeless overnight warming name again missed people yelling background here phone at like two percent so if we cut off repeat address first",
+      "voiceResponse": "I don\u2019t have a confirmed address for SAFE SLEEP UNITED here. The number is **503\u2026 816\u2026 3409**. Again: **503\u2026 816\u2026 3409**. If you\u2019re in immediate danger right now, call **911**.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:b4ef6dca3c3f73bd",
+        "service:5ded755b33454184",
+        "service:dc93c9592519c012",
+        "service:18555484ba4abb9a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a confirmed address for SAFE SLEEP UNITED here. The number is **503\u2026 816\u2026 3409**. Again: **503\u2026 816\u2026 3409**. If you\u2019re in immediate danger right now, call **911**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000772#turn-4",
+      "scenarioId": "phone_dialog_0000772",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "calendar_event_support",
+      "user": "I think he\u2019s near Gresham this week, but he moves around, so I\u2019m not totally sure where he\u2019ll be tomorrow.",
+      "normalizedQuery": "hi sorry signal keeps cutting calling nephew trying youth day center multnomah county he 16 kind couch surfing right now don have all his paperwork info say part again broke up second think gresham this week moves around so totally sure ll be tomorrow",
+      "voiceResponse": "That makes sense, and you\u2019re doing a lot to keep track of him. Let\u2019s set a flexible check-in reminder so you can adjust if he\u2019s in Gresham or elsewhere tomorrow. What time should I put for your reminder to call 211 and ask for a youth day center in Multnomah County?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re doing a lot to keep track of him. Let\u2019s set a flexible check-in reminder so you can adjust if he\u2019s in Gresham or elsewhere tomorrow. What time should I put for your reminder to call 211 and ask for a youth day center in Multnomah County?",
+      "voiceResponseAlternatives": [
+        "Yes, we can do that, and keep it simple. We can set follow-up reminders so cutoff times don\u2019t sneak up on you while you\u2019re moving around. What time of day do you want one daily reminder?",
+        "Absolutely. I\u2019ll add the note: \u201cCooling center in Gresham.\u201d What exact time should I set it for tonight?",
+        "You\u2019re clear: steel-toe boots and plain black pants by Monday, with same-day voucher approval if possible. I only have **Clothes That Work** on hand: **503-364-9936**. They don\u2019t require documents, and you can ask directly about same-day vouchers and no-appointment options. If you want, I can help you set a quick call reminder so this doesn\u2019t slip. What time on Monday do you need the boots and pants by?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000783#turn-3",
+      "scenarioId": "phone_dialog_0000783",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You\u2019re breaking up a little, could you repeat that last part slower?",
+      "normalizedQuery": "hi sorry if cut calling aunt she gresham her apartment way too hot cooling center doesn drive so it has be close on bus line re breaking up little could repeat last part slower",
+      "voiceResponse": "Of course, and I\u2019m glad you asked. Here\u2019s the key part, slowly: I don\u2019t have a verified cooling center list in front of me right now. So the fastest next step is to connect you to a live 211 specialist who can check Gresham locations and bus-line options in real time. Please stay on the line for that handoff. And if your aunt gets confused, faints, or has trouble breathing, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and I\u2019m glad you asked. Here\u2019s the key part, slowly: I don\u2019t have a verified cooling center list in front of me right now. So the fastest next step is to connect you to a live 211 specialist who can check Gresham locations and bus-line options in real time. Please stay on the line for that handoff. And if your aunt gets confused, faints, or has trouble breathing, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000783#turn-4",
+      "scenarioId": "phone_dialog_0000783",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I don\u2019t know her exact address, just that she\u2019s near downtown Gresham, and she uses a walker.",
+      "normalizedQuery": "hi sorry if cut calling aunt she gresham her apartment way too hot cooling center doesn drive so it has be close on bus line re breaking up little could repeat last part slower don know exact address just downtown uses walker",
+      "voiceResponse": "That\u2019s okay, you gave me enough to keep this moving. I\u2019ll pass along: near downtown Gresham, no car, and she uses a walker, so they should look for an accessible cooling site on a bus line. Please stay on the line for the live 211 specialist. While you wait, have her sip water and stay in the coolest room possible. If she gets confused, faints, or has trouble breathing, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s okay, you gave me enough to keep this moving. I\u2019ll pass along: near downtown Gresham, no car, and she uses a walker, so they should look for an accessible cooling site on a bus line. Please stay on the line for the live 211 specialist. While you wait, have her sip water and stay in the coolest room possible. If she gets confused, faints, or has trouble breathing, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000837#turn-1",
+      "scenarioId": "phone_dialog_0000837",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m at the bus stop in Gresham and it\u2019s loud out here. I need housing help for veterans, like emergency or transitional, do you know what\u2019s open?",
+      "normalizedQuery": "hi sorry at bus stop gresham it loud here housing veterans like emergency transitional know open",
+      "voiceResponse": "Yeah, I can give you a direct veteran housing option right now. Veterans Housing Project offers transitional housing and case-managed support. You can call: **458, 221, 0718**. Backup number: **541, 743, 7170**. You can keep it simple on the call, like: \u201cI\u2019m a veteran in need of emergency or transitional housing options.\u201d If you want, I can stay with you and help script exactly what to say next.",
+      "evidenceDocIds": [
+        "service:79470abe687085dd",
+        "page:bafkreidvlhyqglop7jklzza7zjalqcpg7oe5v6mwz2wuyfpfua3c6ssswm",
+        "page:bafkreig5ophdeolwrct6uluvj6jtgxllv5vnpuifa7n2masmafbe7vv7ni",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibw2skd7qw5p57ql3qsbahfnzroe6oqpmfqmltoj5m3nrylpkcc54"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I can give you a direct veteran housing option right now. Veterans Housing Project offers transitional housing and case-managed support. You can call: **458, 221, 0718**. Backup number: **541, 743, 7170**. You can keep it simple on the call, like: \u201cI\u2019m a veteran in need of emergency or transitional housing options.\u201d If you want, I can stay with you and help script exactly what to say next.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000837#turn-2",
+      "scenarioId": "phone_dialog_0000837",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A truck just went by and I missed the name.",
+      "normalizedQuery": "hi sorry at bus stop gresham it loud here housing veterans like emergency transitional know open say again truck just went by missed name",
+      "voiceResponse": "Of course. The name is **Veterans Housing Project**. Number one: **458, 221, 0718**. Backup: **541, 743, 7170**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreiekc5coret46eepgjkrdmccp4tf7oorp6vdziq4mpamleikrrgx4q",
+        "page:bafkreidvlhyqglop7jklzza7zjalqcpg7oe5v6mwz2wuyfpfua3c6ssswm",
+        "page:bafkreig5ophdeolwrct6uluvj6jtgxllv5vnpuifa7n2masmafbe7vv7ni"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is **Veterans Housing Project**. Number one: **458, 221, 0718**. Backup: **541, 743, 7170**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000837#turn-3",
+      "scenarioId": "phone_dialog_0000837",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before I give details, who can see this call info? I don\u2019t want my stuff shared all over.",
+      "normalizedQuery": "hi sorry at bus stop gresham it loud here housing veterans like emergency transitional know open say again truck just went by missed name before give details who see this call info don want stuff shared all over",
+      "voiceResponse": "That\u2019s a fair question. You can keep this very limited. We can look at options without giving your full story, and you can share only what feels necessary, like first name or callback number. I won\u2019t ask for extra details unless it helps with a referral you want. If you prefer, I can just give phone numbers so you contact programs directly and stay in control of what you share.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreiekc5coret46eepgjkrdmccp4tf7oorp6vdziq4mpamleikrrgx4q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a fair question. You can keep this very limited. We can look at options without giving your full story, and you can share only what feels necessary, like first name or callback number. I won\u2019t ask for extra details unless it helps with a referral you want. If you prefer, I can just give phone numbers so you contact programs directly and stay in control of what you share.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000858#turn-3",
+      "scenarioId": "phone_dialog_0000858",
+      "turnIndex": 2,
+      "route": "calendar_event_support",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "calendar_event_support",
+      "user": "What I\u2019m actually trying to solve is this: I need steel-toe boots and plain black pants by Monday, and I was hoping for a place that can do same-day voucher approval without an appointment.",
+      "normalizedQuery": "hi sorry talking fast because battery at like three percent gresham clothing specifically work clothes just random donations wait repeat asked bus loud missed half actually trying solve this steel toe boots plain black pants by monday was hoping place same day voucher approval without an appointment",
+      "voiceResponse": "You\u2019re clear: steel-toe boots and plain black pants by Monday, with same-day voucher approval if possible. I only have **Clothes That Work** on hand: **503-364-9936**. They don\u2019t require documents, and you can ask directly about same-day vouchers and no-appointment options. If you want, I can help you set a quick call reminder so this doesn\u2019t slip. What time on Monday do you need the boots and pants by?",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:8149fdd1582fa7a0",
+        "page:bafkreidrfqevqh6pxnnaot472yywzq2iruq2dgveqkiv34qplytymrduvu",
+        "page:bafkreihrax4vlyumpstv5dnn4dbuqpgemgftkurp32chxkgr3wjhzd2k3e",
+        "page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re clear: steel-toe boots and plain black pants by Monday, with same-day voucher approval if possible. I only have **Clothes That Work** on hand: **503-364-9936**. They don\u2019t require documents, and you can ask directly about same-day vouchers and no-appointment options. If you want, I can help you set a quick call reminder so this doesn\u2019t slip. What time on Monday do you need the boots and pants by?",
+      "voiceResponseAlternatives": [
+        "Yes, we can do that, and keep it simple. We can set follow-up reminders so cutoff times don\u2019t sneak up on you while you\u2019re moving around. What time of day do you want one daily reminder?",
+        "Absolutely. I\u2019ll add the note: \u201cCooling center in Gresham.\u201d What exact time should I set it for tonight?",
+        "That makes sense, and you\u2019re doing a lot to keep track of him. Let\u2019s set a flexible check-in reminder so you can adjust if he\u2019s in Gresham or elsewhere tomorrow. What time should I put for your reminder to call 211 and ask for a youth day center in Multnomah County?"
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000858#turn-4",
+      "scenarioId": "phone_dialog_0000858",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And sorry, one sec, I know I\u2019m jumping around, but I also need sizes that run tall and maybe sensory-friendly fabric because I can\u2019t do stiff seams.",
+      "normalizedQuery": "hi sorry talking fast because battery at like three percent gresham clothing specifically work clothes just random donations wait repeat asked bus loud missed half actually trying solve this steel toe boots plain black pants by monday was hoping place same day voucher approval without an appointment one sec know jumping around also sizes run tall maybe sensory friendly fabric stiff seams",
+      "voiceResponse": "That makes sense, and you can keep this simple on the call. Try: \u201cI need work clothes by Monday, including steel-toe boots and black pants, in tall sizes, and I need soft or sensory-friendly fabric with minimal seams.\u201d Call **5-0-3, 3-6-4, 9-9-3-6** for **Clothes That Work** and ask for same-day, no-appointment options. You don\u2019t need to share extra personal details beyond sizes and clothing needs.",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidrfqevqh6pxnnaot472yywzq2iruq2dgveqkiv34qplytymrduvu",
+        "page:bafkreihrax4vlyumpstv5dnn4dbuqpgemgftkurp32chxkgr3wjhzd2k3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you can keep this simple on the call. Try: \u201cI need work clothes by Monday, including steel-toe boots and black pants, in tall sizes, and I need soft or sensory-friendly fabric with minimal seams.\u201d Call **5-0-3, 3-6-4, 9-9-3-6** for **Clothes That Work** and ask for same-day, no-appointment options. You don\u2019t need to share extra personal details beyond sizes and clothing needs.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000858#turn-5",
+      "scenarioId": "phone_dialog_0000858",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "If there isn\u2019t an exact match in Gresham, can you tell me what you do have evidence for nearby, like Portland or Troutdale, and what details are confirmed versus just word-of-mouth?",
+      "normalizedQuery": "wait repeat asked bus loud missed half actually trying solve this steel toe boots plain black pants by monday was hoping place same day voucher approval without an appointment sorry one sec know jumping around also sizes run tall maybe sensory friendly fabric because stiff seams if there isn exact match gresham tell have evidence nearby like portland troutdale details confirmed versus just word mouth",
+      "voiceResponse": "Great question. Confirmed, not word-of-mouth: I only have **Clothes That Work** in Salem, phone **5-0-3, 3-6-4, 9-9-3-6**, address **1-7-5-5, 13th Street S-E, Salem**, and they report no document requirement. I don\u2019t have verified Portland or Troutdale options in front of me right now. If you want, I can connect you to a live agent to check closest same-day voucher programs near Gresham.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great question. Confirmed, not word-of-mouth: I only have **Clothes That Work** in Salem, phone **5-0-3, 3-6-4, 9-9-3-6**, address **1-7-5-5, 13th Street S-E, Salem**, and they report no document requirement. I don\u2019t have verified Portland or Troutdale options in front of me right now. If you want, I can connect you to a live agent to check closest same-day voucher programs near Gresham.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000858#turn-6",
+      "scenarioId": "phone_dialog_0000858",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Also please repeat any phone numbers slowly, I keep mishearing digits when there\u2019s traffic noise.",
+      "normalizedQuery": "actually trying solve this steel toe boots plain black pants by monday was hoping place same day voucher approval without an appointment sorry one sec know jumping around also sizes run tall maybe sensory friendly fabric because stiff seams if there isn exact match gresham tell have evidence nearby like portland troutdale details confirmed versus just word mouth please repeat any phone numbers slowly keep mishearing digits when traffic noise",
+      "voiceResponse": "Absolutely. The number I have is: **5-0-3** \u2026 **3-6-4** \u2026 **9-9-3-6**. I\u2019ll repeat it once more the same way: **5-0-3** \u2026 **3-6-4** \u2026 **9-9-3-6**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. The number I have is: **5-0-3** \u2026 **3-6-4** \u2026 **9-9-3-6**. I\u2019ll repeat it once more the same way: **5-0-3** \u2026 **3-6-4** \u2026 **9-9-3-6**.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000923#turn-1",
+      "scenarioId": "phone_dialog_0000923",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s loud in here at the shelter lobby in Gresham. I lost my ID and I need to replace it, but I\u2019m nervous about giving out my information.",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby gresham lost id replace nervous giving information",
+      "voiceResponse": "You\u2019re okay to be cautious. You don\u2019t have to share more than needed. For ID replacement, you can ask for help with just first name and callback only, or stay on the line without giving extra details while we look at options. If you need a safe place tonight, I do have shelter listings, and those say no documents required. If you want, I can connect you to a 211 specialist now to find the nearest ID-replacement steps in Gresham.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:bd5c5bd198f76c8b",
+        "service:57c4c63dcadba358",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay to be cautious. You don\u2019t have to share more than needed. For ID replacement, you can ask for help with just first name and callback only, or stay on the line without giving extra details while we look at options. If you need a safe place tonight, I do have shelter listings, and those say no documents required. If you want, I can connect you to a 211 specialist now to find the nearest ID-replacement steps in Gresham.",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000923#turn-2",
+      "scenarioId": "phone_dialog_0000923",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just pulled up and I missed half of it.",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby gresham lost id replace nervous giving information say again bus just pulled up missed half",
+      "voiceResponse": "Of course. Quick repeat: you can stay cautious and share very little. For ID replacement, you can give only your first name and a callback number, or no extra details while we look at options. And if you need shelter tonight, the listings I have say documents are not required. If you want, I can connect you to a 211 specialist for nearest Gresham ID-replacement steps.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Quick repeat: you can stay cautious and share very little. For ID replacement, you can give only your first name and a callback number, or no extra details while we look at options. And if you need shelter tonight, the listings I have say documents are not required. If you want, I can connect you to a 211 specialist for nearest Gresham ID-replacement steps.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001026#turn-3",
+      "scenarioId": "phone_dialog_0001026",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Gresham, by the shelter lobby, and I don't have a ride so I don't know what I'm supposed to do.",
+      "normalizedQuery": "i'm gresham by shelter shelters homeless overnight warming lobby don't have ride so know supposed",
+      "voiceResponse": "You\u2019re doing the right thing calling. If you feel like you might pass out, have a seizure, or you\u2019re not safe, call 9-1-1 now. Since you\u2019re at the shelter lobby with no ride, go to the front desk right now and say: \u201cI need detox today and I need transport help now.\u201d I\u2019m getting a live agent on the line to help with the next step. Stay where staff can see you.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling. If you feel like you might pass out, have a seizure, or you\u2019re not safe, call 9-1-1 now. Since you\u2019re at the shelter lobby with no ride, go to the front desk right now and say: \u201cI need detox today and I need transport help now.\u201d I\u2019m getting a live agent on the line to help with the next step. Stay where staff can see you.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001026#turn-4",
+      "scenarioId": "phone_dialog_0001026",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that place called? Can you say it again slower? I missed half of it.",
+      "normalizedQuery": "hi sorry can't really hear there's people yelling here i'm freaking right now detox like next week keep doing this shaking gresham by shelter shelters homeless overnight warming lobby don't have ride so know supposed wait was place called say it again slower missed half",
+      "voiceResponse": "Yeah. The place is your **current shelter\u2019s front desk**. Say it slowly like this: \u201cI need detox today. I need transport help now.\u201d Stay right by staff while you say it.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah. The place is your **current shelter\u2019s front desk**. Say it slowly like this: \u201cI need detox today. I need transport help now.\u201d Stay right by staff while you say it.",
+      "voiceResponseAlternatives": [
+        "Yes. Slow and clear. The name is: **SUN Youth Advocacy Program**. I\u2019ll repeat it: **SUN**. **Youth**. **Advocacy Program**.",
+        "Yes. The number is **971, 506, 2609**. I\u2019ll repeat it: **971, 506, 2609**.",
+        "You said **Gresham**. I\u2019ll repeat it slowly: **Gresham** \u2014 **G-R-E-S-H-A-M**.",
+        "Yes. First number: **5-0-3**, **6-2-3**, **0-1-7-5**. Second number: **5-0-3**, **6-2-3**, **0-7-1-5**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001026#turn-5",
+      "scenarioId": "phone_dialog_0001026",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Please don't send me somewhere that just turns me away, that keeps happening and I can't do that again.",
+      "normalizedQuery": "detox like next week can't keep doing this i'm shaking gresham by shelter shelters homeless overnight warming lobby don't have ride so know supposed wait was place called say it again slower missed half please send somewhere just turns away keeps happening",
+      "voiceResponse": "I hear you, and I won\u2019t bounce you around. Stay at the shelter front desk with staff in sight and say: \u201cI\u2019m in withdrawal, I need detox today, and I need transport help now.\u201d Ask them to call with you so you\u2019re not doing this alone. If you feel faint, seizure-like, or unsafe right now, call 9-1-1 immediately. I\u2019m staying with you for the live agent handoff.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d",
+        "service:57a62ba0bbb88f44"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and I won\u2019t bounce you around. Stay at the shelter front desk with staff in sight and say: \u201cI\u2019m in withdrawal, I need detox today, and I need transport help now.\u201d Ask them to call with you so you\u2019re not doing this alone. If you feel faint, seizure-like, or unsafe right now, call 9-1-1 immediately. I\u2019m staying with you for the live agent handoff.",
+      "voiceResponseAlternatives": [
+        "Next step: I\u2019m transferring you to a live 211 specialist now for veteran housing help near Gresham. I\u2019ll tell them he needs homeless veteran shelter options and coordinated entry in that area, so you don\u2019t have to repeat everything. You\u2019re doing the right thing by calling for him. Stay on the line with me, and if you can, keep his ZIP code handy for the specialist.",
+        "Next step: stay on the line while I transfer you now. The program names are: **Transitional Housing/Shelter for Homeless Veterans** and **Housing Related Coordinated Entry for Homeless Veterans**. I\u2019ll pass both to the live 211 specialist so you don\u2019t have to repeat it.",
+        "Next step: stay with me while I connect you to the live 211 specialist now. You are doing exactly what your brother would want, and you don\u2019t have to carry this alone. I\u2019ll tell the specialist this is for a veteran friend near Gresham who needs housing help, including veteran shelter and coordinated entry, so you won\u2019t have to repeat it all.",
+        "Fastest option now: call **5-4-1, 9-6-2, 7-9-9-4** right now for a same-night warming shelter line. If that does not connect, try **5-0-3, 6-5-0, 5-6-2-2**. If you feel in immediate danger where you are, call **9-1-1** now."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001059#turn-4",
+      "scenarioId": "phone_dialog_0001059",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "gresham",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Please make it remind me the day before and again two hours before, because I might forget.",
+      "normalizedQuery": "hi gresham replacing state id lost wallet sure start could say office name again slowly forget things if it too fast go on tuesday morning think don want miss set reminder appointment please make remind day before two hours because might",
+      "voiceResponse": "Perfect. I can do that. You want two reminders: one the day before, and one two hours before. I\u2019ll repeat that: one day before, and two hours before. What exact time is your Tuesday appointment?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Perfect. I can do that. You want two reminders: one the day before, and one two hours before. I\u2019ll repeat that: one day before, and two hours before. What exact time is your Tuesday appointment?",
+      "voiceResponseAlternatives": [
+        "First step: call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5** and ask for housing legal aid serving Gresham. From what I have, these programs are for people at or below **125% of federal poverty level**, and one listed office is limited to Marion or Polk legal issues. If you want, I can also give you the Salem office number: **5 0 3 \u2026 5 8 1 \u2026 5 2 6 5**.",
+        "First step: when you call, ask this before sharing details: \u201cWhat information do you keep, and who can access it?\u201d I don\u2019t see privacy-sharing details in the records I have here. You can call Legal Aid at **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. If you want, I can help you script exactly what to ask in one sentence.",
+        "I hear you. I\u2019ll keep this simple. Closest youth option I have in Gresham is SUN Youth Advocacy Program. Address: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. I\u2019ll repeat: 1700 Northwest Civic Drive, Suite 200, Gresham, 97080. Phone: 971, 506, 2609. I\u2019ll repeat: 971, 506, 2609. Are you in grades 5 through 12?",
+        "You\u2019re doing the right thing by acting early. Before filing, you still have options: ask for a payment plan in writing, request a move-out extension, and apply for emergency rent help today. If you want, I can connect you to a 211 housing specialist now for Gresham-specific eviction prevention. You can share only what you\u2019re comfortable sharing. If papers get filed, ask for legal aid right away so you don\u2019t miss court deadlines."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -1394,6 +2260,168 @@
       "to": "phone_dialog_0000615#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000631#turn-1",
+      "to": "phone_dialog_0000631#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000631#turn-2",
+      "to": "phone_dialog_0000631#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000631#turn-3",
+      "to": "phone_dialog_0000631#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000661#turn-4",
+      "to": "phone_dialog_0000661#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000669#turn-1",
+      "to": "phone_dialog_0000669#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000669#turn-4",
+      "to": "phone_dialog_0000669#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000688#turn-1",
+      "to": "phone_dialog_0000688#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000688#turn-4",
+      "to": "phone_dialog_0000688#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000724#turn-1",
+      "to": "phone_dialog_0000724#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000724#turn-2",
+      "to": "phone_dialog_0000724#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000724#turn-3",
+      "to": "phone_dialog_0000724#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000747#turn-5",
+      "to": "phone_dialog_0000747#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000772#turn-4",
+      "to": "phone_dialog_0000772#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000783#turn-3",
+      "to": "phone_dialog_0000783#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000783#turn-4",
+      "to": "phone_dialog_0000783#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000837#turn-1",
+      "to": "phone_dialog_0000837#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000837#turn-2",
+      "to": "phone_dialog_0000837#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000837#turn-3",
+      "to": "phone_dialog_0000837#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000858#turn-3",
+      "to": "phone_dialog_0000858#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000858#turn-4",
+      "to": "phone_dialog_0000858#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000858#turn-5",
+      "to": "phone_dialog_0000858#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000923#turn-1",
+      "to": "phone_dialog_0000923#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000923#turn-2",
+      "to": "phone_dialog_0000923#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001026#turn-3",
+      "to": "phone_dialog_0001026#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001026#turn-4",
+      "to": "phone_dialog_0001026#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001026#turn-5",
+      "to": "phone_dialog_0001026#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001059#turn-4",
+      "to": "phone_dialog_0001059#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
     }
   ]
 }

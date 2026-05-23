@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__legal__lane_county",
   "kind": "service_location",
   "key": "legal__lane_county",
-  "nodeCount": 2,
+  "nodeCount": 4,
   "nodes": [
     {
       "id": "phone_dialog_0000197#turn-3",
@@ -51,9 +51,68 @@
       ],
       "similarCases": [],
       "assistantResponse": "You did the right thing calling. A local option is General Legal Aid in Eugene. Phone: **5 4 1, 4 8 5, 1 0 1 7**. Extension: **1 0 0**. Address: **101 East Broadway, Suite 200, Eugene**. They help with landlord legal issues, and intake says no documents are required. If you want, you can call without giving extra details at first and just ask about eviction help.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "That\u2019s a fair question. You can keep this general, and share only what you\u2019re comfortable sharing. We can start without your full name or extra personal details and just use the minimum needed to find help. If you want, I can give Lane County legal aid contact info now: Oregon Law Center, phone **5 4 1, 4 8 5, 1 0 1 7**, extension **1 0 0**.",
+        "That makes sense, and you\u2019re not overreacting. You can stay general here and share only what feels safe. We can look up help without your full name, and you can ask legal aid about their privacy practices before giving case details. For Lane County, you can call Oregon Law Center at 5 4 1, 4 8 5, 1 0 1 7, extension 1 0 0. If you want, I can help you script exactly what to say first."
+      ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "bad_reception",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000709#turn-1",
+      "scenarioId": "phone_dialog_0000709",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I need legal aid in Lane County, but before I give details, who can see what I tell you?",
+      "normalizedQuery": "hi legal aid attorney advocacy lane county before give details who see tell",
+      "voiceResponse": "That\u2019s a fair question. You can keep this general, and share only what you\u2019re comfortable sharing. We can start without your full name or extra personal details and just use the minimum needed to find help. If you want, I can give Lane County legal aid contact info now: Oregon Law Center, phone **5 4 1, 4 8 5, 1 0 1 7**, extension **1 0 0**.",
+      "evidenceDocIds": [
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha",
+        "service:e0530c5806065ca3",
+        "service:a4f4532cd4713872",
+        "service:3694ab25654f4b81"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a fair question. You can keep this general, and share only what you\u2019re comfortable sharing. We can start without your full name or extra personal details and just use the minimum needed to find help. If you want, I can give Lane County legal aid contact info now: Oregon Law Center, phone **5 4 1, 4 8 5, 1 0 1 7**, extension **1 0 0**.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. A local option is General Legal Aid in Eugene. Phone: **5 4 1, 4 8 5, 1 0 1 7**. Extension: **1 0 0**. Address: **101 East Broadway, Suite 200, Eugene**. They help with landlord legal issues, and intake says no documents are required. If you want, you can call without giving extra details at first and just ask about eviction help.",
+        "That makes sense, and you\u2019re not overreacting. You can stay general here and share only what feels safe. We can look up help without your full name, and you can ask legal aid about their privacy practices before giving case details. For Lane County, you can call Oregon Law Center at 5 4 1, 4 8 5, 1 0 1 7, extension 1 0 0. If you want, I can help you script exactly what to say first."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000709#turn-2",
+      "scenarioId": "phone_dialog_0000709",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m dealing with a landlord issue and I\u2019m scared this could get back to them somehow.",
+      "normalizedQuery": "hi legal aid attorney advocacy lane county before give details who see tell dealing landlord issue scared this could back them somehow",
+      "voiceResponse": "That makes sense, and you\u2019re not overreacting. You can stay general here and share only what feels safe. We can look up help without your full name, and you can ask legal aid about their privacy practices before giving case details. For Lane County, you can call Oregon Law Center at 5 4 1, 4 8 5, 1 0 1 7, extension 1 0 0. If you want, I can help you script exactly what to say first.",
+      "evidenceDocIds": [
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu",
+        "page:bafkreigawl5nzrtvorkwvbvyrdp66mc2cfj535zrg4kqx7hlt7lgx5joha",
+        "service:3694ab25654f4b81",
+        "service:a4f4532cd4713872",
+        "service:e0530c5806065ca3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you\u2019re not overreacting. You can stay general here and share only what feels safe. We can look up help without your full name, and you can ask legal aid about their privacy practices before giving case details. For Lane County, you can call Oregon Law Center at 5 4 1, 4 8 5, 1 0 1 7, extension 1 0 0. If you want, I can help you script exactly what to say first.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. A local option is General Legal Aid in Eugene. Phone: **5 4 1, 4 8 5, 1 0 1 7**. Extension: **1 0 0**. Address: **101 East Broadway, Suite 200, Eugene**. They help with landlord legal issues, and intake says no documents are required. If you want, you can call without giving extra details at first and just ask about eviction help.",
+        "That\u2019s a fair question. You can keep this general, and share only what you\u2019re comfortable sharing. We can start without your full name or extra personal details and just use the minimum needed to find help. If you want, I can give Lane County legal aid contact info now: Oregon Law Center, phone **5 4 1, 4 8 5, 1 0 1 7**, extension **1 0 0**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
     }
   ],
@@ -69,6 +128,18 @@
       "to": "phone_dialog_0000467#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000709#turn-1",
+      "to": "phone_dialog_0000709#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000709#turn-2",
+      "to": "phone_dialog_0000709#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
     }
   ]
 }

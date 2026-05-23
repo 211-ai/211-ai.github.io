@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__general__lane_county",
   "kind": "service_location",
   "key": "general__lane_county",
-  "nodeCount": 17,
+  "nodeCount": 24,
   "nodes": [
     {
       "id": "phone_dialog_0000012#turn-1",
@@ -204,7 +204,8 @@
       "voiceResponseAlternatives": [
         "Neither. It\u2019s **2-1-1** \u2014 **two, one, one**. No area code.",
         "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**.",
-        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time."
+        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time.",
+        "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "background_noise",
@@ -413,7 +414,8 @@
       "voiceResponseAlternatives": [
         "Yes. The place is **St. Vincent de Paul First Place Family Center**. Call **541\u2026 342\u2026 7728**. That\u2019s **541\u2026 342\u2026 7728**.",
         "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**.",
-        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time."
+        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time.",
+        "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -442,7 +444,8 @@
       "voiceResponseAlternatives": [
         "Yes. The place is **St. Vincent de Paul First Place Family Center**. Call **541\u2026 342\u2026 7728**. That\u2019s **541\u2026 342\u2026 7728**.",
         "Neither. It\u2019s **2-1-1** \u2014 **two, one, one**. No area code.",
-        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time."
+        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time.",
+        "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**."
       ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -501,11 +504,222 @@
       "voiceResponseAlternatives": [
         "Yes. The place is **St. Vincent de Paul First Place Family Center**. Call **541\u2026 342\u2026 7728**. That\u2019s **541\u2026 342\u2026 7728**.",
         "Neither. It\u2019s **2-1-1** \u2014 **two, one, one**. No area code.",
-        "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**."
+        "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**.",
+        "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000646#turn-2",
+      "scenarioId": "phone_dialog_0000646",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Lane County, near Eugene, outside right now, and I feel kind of faint.",
+      "normalizedQuery": "lane county eugene outside right now feel kind faint",
+      "voiceResponse": "This is urgent. Feeling faint, shaking, and unable to get warm can be a medical emergency. Please call 911 right now and say: \u201cI\u2019m outside near Eugene in Lane County, I feel faint and very cold.\u201d If you can, sit or lie down somewhere safer while you wait.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:8f84270f81db184e",
+        "service:cac7c3dd2002e4d9",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29"
+      ],
+      "similarCases": [],
+      "assistantResponse": "This is urgent. Feeling faint, shaking, and unable to get warm can be a medical emergency. Please call 911 right now and say: \u201cI\u2019m outside near Eugene in Lane County, I feel faint and very cold.\u201d If you can, sit or lie down somewhere safer while you wait.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: stay on the line and I\u2019ll connect you to a live specialist now to look for same-day dental options in Lane County. If the call drops and you need immediate shelter help, call Lane County Shelter Finder at **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: stay on the line while I connect you to the live 211 specialist right now for same-day dental help in Lane County. If you get facial swelling, fever, or trouble breathing or swallowing, call **9 1 1** immediately. If this call drops and you need shelter support, call Lane County Shelter Finder: **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: please call **2 \u2026 1 \u2026 1** and ask them to confirm the exact office hours. I did **not** confirm Monday-through-Friday, and I don\u2019t have verified hours here. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**.",
+        "I hear you. That is a lot, and you did the right thing by calling. You are in Lane County, and sleeping in your car already. You are in Lane County, sleeping in your car already. I can bring in a live specialist right now to look for same-day shelter and eviction help near you. If you feel unsafe right now, call 9-1-1. That is 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000683#turn-5",
+      "scenarioId": "phone_dialog_0000683",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Also, if there\u2019s a phone number, say it slow please, reception is really bad on my end.",
+      "normalizedQuery": "we re lane county around eugene think his zip 97402 wait hear he 22 doesn really have resume yet sure if finished high school only know bits pieces repeat program name dropped right when said go also there phone number say it slow please reception bad on end",
+      "voiceResponse": "Next step: stay on the line while I complete the live 211 handoff for employment help in Lane County. If the call drops, dial **2-1-1** \u2014 **two\u2026 one\u2026 one**. I\u2019ll repeat it once more: **2-1-1** \u2014 **two\u2026 one\u2026 one**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on the line while I complete the live 211 handoff for employment help in Lane County. If the call drops, dial **2-1-1** \u2014 **two\u2026 one\u2026 one**. I\u2019ll repeat it once more: **2-1-1** \u2014 **two\u2026 one\u2026 one**.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: stay on the line and I\u2019ll connect you to a live specialist now to look for same-day dental options in Lane County. If the call drops and you need immediate shelter help, call Lane County Shelter Finder at **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: stay on the line while I connect you to the live 211 specialist right now for same-day dental help in Lane County. If you get facial swelling, fever, or trouble breathing or swallowing, call **9 1 1** immediately. If this call drops and you need shelter support, call Lane County Shelter Finder: **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: please call **2 \u2026 1 \u2026 1** and ask them to confirm the exact office hours. I did **not** confirm Monday-through-Friday, and I don\u2019t have verified hours here. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**.",
+        "I hear you. That is a lot, and you did the right thing by calling. You are in Lane County, and sleeping in your car already. You are in Lane County, sleeping in your car already. I can bring in a live specialist right now to look for same-day shelter and eviction help near you. If you feel unsafe right now, call 9-1-1. That is 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000861#turn-3",
+      "scenarioId": "phone_dialog_0000861",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I'm trying, I just... I'm in Lane County, near Eugene, and my phone's at like five percent.",
+      "normalizedQuery": "hi sorry can't really breathe right now just got car don't have anywhere sleep tonight i'm 23 veteran veterans va people keep saying call somewhere else doing slow down trying lane county eugene phone's at like five percent",
+      "voiceResponse": "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**.",
+      "evidenceDocIds": [
+        "service:2e6a4c77b4bef070",
+        "service:5819b975ba599d15",
+        "service:25a95eff19ab7393",
+        "service:95313434f76c4375",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slow and clear: if breathing gets worse or you feel unsafe, call **9-1-1** now. I\u2019m staying with you, and I\u2019m connecting a live agent so you don\u2019t get bounced. If the call drops, call VA Veterans Justice Outreach at **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**.",
+      "voiceResponseAlternatives": [
+        "Yes. The place is **St. Vincent de Paul First Place Family Center**. Call **541\u2026 342\u2026 7728**. That\u2019s **541\u2026 342\u2026 7728**.",
+        "Neither. It\u2019s **2-1-1** \u2014 **two, one, one**. No area code.",
+        "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**.",
+        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000861#turn-4",
+      "scenarioId": "phone_dialog_0000861",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Are they gonna turn me away if I don't have all my papers on me? I don't have everything, I left fast.",
+      "normalizedQuery": "hi sorry can't really breathe right now just got car don't have anywhere sleep tonight i'm 23 veteran veterans va people keep saying call somewhere else doing slow down trying lane county eugene phone's at like five percent they gonna turn away if all papers on everything left fast",
+      "voiceResponse": "You did the right thing leaving fast. For **Veterans Stand Down**, the requirement says **none** for documents, so not having papers should not block you. If your breathing gets worse or you feel unsafe, call **9-1-1** right now. I\u2019m keeping the live-agent handoff in place so you don\u2019t get bounced.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2e6a4c77b4bef070",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing leaving fast. For **Veterans Stand Down**, the requirement says **none** for documents, so not having papers should not block you. If your breathing gets worse or you feel unsafe, call **9-1-1** right now. I\u2019m keeping the live-agent handoff in place so you don\u2019t get bounced.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: stay on the line and I\u2019ll connect you to a live specialist now to look for same-day dental options in Lane County. If the call drops and you need immediate shelter help, call Lane County Shelter Finder at **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: stay on the line while I connect you to the live 211 specialist right now for same-day dental help in Lane County. If you get facial swelling, fever, or trouble breathing or swallowing, call **9 1 1** immediately. If this call drops and you need shelter support, call Lane County Shelter Finder: **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: please call **2 \u2026 1 \u2026 1** and ask them to confirm the exact office hours. I did **not** confirm Monday-through-Friday, and I don\u2019t have verified hours here. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**.",
+        "I hear you. That is a lot, and you did the right thing by calling. You are in Lane County, and sleeping in your car already. You are in Lane County, sleeping in your car already. I can bring in a live specialist right now to look for same-day shelter and eviction help near you. If you feel unsafe right now, call 9-1-1. That is 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000861#turn-5",
+      "scenarioId": "phone_dialog_0000861",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, sorry, what number was that? I missed it, there was a train going by, can you repeat it one more time?",
+      "normalizedQuery": "i'm 23 veteran veterans va people keep saying call somewhere else can't doing slow down trying just lane county eugene phone's at like five percent they gonna turn away if don't have all papers on everything left fast wait sorry number was missed it there train going by repeat one more time",
+      "voiceResponse": "Yes. The number is: **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**. I\u2019ll say it once more: **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is: **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**. I\u2019ll say it once more: **5 0 3** \u2026 **7 2 1** \u2026 **1 0 2 5**.",
+      "voiceResponseAlternatives": [
+        "Yes. The place is **St. Vincent de Paul First Place Family Center**. Call **541\u2026 342\u2026 7728**. That\u2019s **541\u2026 342\u2026 7728**.",
+        "Neither. It\u2019s **2-1-1** \u2014 **two, one, one**. No area code.",
+        "Yes: the agency is **211info**. I\u2019ll say it slowly: **two-one-one info**. Spelled: **2-1-1 I-N-F-O**.",
+        "Of course. The address is: **501 3rd Street, La Grande**. I\u2019ll say it in chunks: **Five-zero-one** \u2026 **Third Street** \u2026 **La Grande**. If you want, I can repeat it one more time."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001074#turn-2",
+      "scenarioId": "phone_dialog_0001074",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s in Lane County, around Eugene I think, but I don\u2019t know exactly what part right now.",
+      "normalizedQuery": "he lane county around eugene think don know exactly part right now",
+      "voiceResponse": "Next step: I\u2019ll connect you to a live 211 specialist right now for Lane County clothing help near Eugene. Stay on the line. Tell them what you just shared and, if you can, have your uncle\u2019s closest cross streets or ZIP code ready so they can find the fastest same-day options.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:8f84270f81db184e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I\u2019ll connect you to a live 211 specialist right now for Lane County clothing help near Eugene. Stay on the line. Tell them what you just shared and, if you can, have your uncle\u2019s closest cross streets or ZIP code ready so they can find the fastest same-day options.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: stay on the line and I\u2019ll connect you to a live specialist now to look for same-day dental options in Lane County. If the call drops and you need immediate shelter help, call Lane County Shelter Finder at **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: stay on the line while I connect you to the live 211 specialist right now for same-day dental help in Lane County. If you get facial swelling, fever, or trouble breathing or swallowing, call **9 1 1** immediately. If this call drops and you need shelter support, call Lane County Shelter Finder: **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: please call **2 \u2026 1 \u2026 1** and ask them to confirm the exact office hours. I did **not** confirm Monday-through-Friday, and I don\u2019t have verified hours here. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**.",
+        "I hear you. That is a lot, and you did the right thing by calling. You are in Lane County, and sleeping in your car already. You are in Lane County, sleeping in your car already. I can bring in a live specialist right now to look for same-day shelter and eviction help near you. If you feel unsafe right now, call 9-1-1. That is 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001074#turn-3",
+      "scenarioId": "phone_dialog_0001074",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "He just started staying in his car, and most of his stuff got thrown out, so he needs basic clothes and shoes.",
+      "normalizedQuery": "hi i'm calling uncle he needs clothes pretty urgently lane county around eugene think don know exactly part right now just started staying his car most stuff got thrown so basic shoes",
+      "voiceResponse": "Next step: stay on the line and I\u2019ll get you to the live 211 specialist now for urgent clothing and shoe help near Eugene in Lane County. Tell them he\u2019s currently staying in his car and needs basics right away, and share any location detail you can, even a nearby street or landmark, so they can find the fastest options.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on the line and I\u2019ll get you to the live 211 specialist now for urgent clothing and shoe help near Eugene in Lane County. Tell them he\u2019s currently staying in his car and needs basics right away, and share any location detail you can, even a nearby street or landmark, so they can find the fastest options.",
+      "voiceResponseAlternatives": [
+        "Okay, next step: stay on the line and I\u2019ll connect you to a live specialist now to look for same-day dental options in Lane County. If the call drops and you need immediate shelter help, call Lane County Shelter Finder at **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: stay on the line while I connect you to the live 211 specialist right now for same-day dental help in Lane County. If you get facial swelling, fever, or trouble breathing or swallowing, call **9 1 1** immediately. If this call drops and you need shelter support, call Lane County Shelter Finder: **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Next step: please call **2 \u2026 1 \u2026 1** and ask them to confirm the exact office hours. I did **not** confirm Monday-through-Friday, and I don\u2019t have verified hours here. I\u2019ll repeat the number slowly: **2 \u2026 1 \u2026 1**.",
+        "I hear you. That is a lot, and you did the right thing by calling. You are in Lane County, and sleeping in your car already. You are in Lane County, sleeping in your car already. I can bring in a live specialist right now to look for same-day shelter and eviction help near you. If you feel unsafe right now, call 9-1-1. That is 9-1-1. Can I connect you now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -602,6 +816,48 @@
     {
       "from": "phone_dialog_0000519#turn-5",
       "to": "phone_dialog_0000519#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000646#turn-2",
+      "to": "phone_dialog_0000646#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000683#turn-5",
+      "to": "phone_dialog_0000683#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000861#turn-3",
+      "to": "phone_dialog_0000861#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000861#turn-4",
+      "to": "phone_dialog_0000861#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000861#turn-5",
+      "to": "phone_dialog_0000861#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001074#turn-2",
+      "to": "phone_dialog_0001074#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001074#turn-3",
+      "to": "phone_dialog_0001074#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

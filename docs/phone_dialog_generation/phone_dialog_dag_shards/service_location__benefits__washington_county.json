@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__benefits__washington_county",
   "kind": "service_location",
   "key": "benefits__washington_county",
-  "nodeCount": 9,
+  "nodeCount": 10,
   "nodes": [
     {
       "id": "phone_dialog_0000255#turn-1",
@@ -265,6 +265,31 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000740#turn-5",
+      "scenarioId": "phone_dialog_0000740",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Please stay with me a second, I\u2019m shaking and I can\u2019t catch my breath all the way.",
+      "normalizedQuery": "washington county calm down feel really sick chest tight keep thinking might something bad did say signal cut repeat slower mental health right now next week like tonight please stay second shaking catch breath all way",
+      "voiceResponse": "I\u2019m here with you. This is an emergency. **Call 9-1-1 right now.** Say: \u201cI\u2019m in Washington County. My chest is tight, I\u2019m shaking, and I might hurt myself.\u201d If you can\u2019t dial, hand the phone to anyone nearby and have them call **9-1-1 now**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you. This is an emergency. **Call 9-1-1 right now.** Say: \u201cI\u2019m in Washington County. My chest is tight, I\u2019m shaking, and I might hurt myself.\u201d If you can\u2019t dial, hand the phone to anyone nearby and have them call **9-1-1 now**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -321,6 +346,12 @@
       "to": "phone_dialog_0000606#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000740#turn-5",
+      "to": "phone_dialog_0000740#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->provider_contact_support"
     }
   ]
 }

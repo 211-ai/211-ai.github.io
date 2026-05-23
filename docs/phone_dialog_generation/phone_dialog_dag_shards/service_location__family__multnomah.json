@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__family__multnomah",
   "kind": "service_location",
   "key": "family__multnomah",
-  "nodeCount": 11,
+  "nodeCount": 19,
   "nodes": [
     {
       "id": "phone_dialog_0000017#turn-1",
@@ -203,7 +203,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. I do not have a phone number in front of me right now. I only have the name: **two-one-one info**. I\u2019ll say it again: **two-one-one info**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Of course. Here\u2019s the key part again, slowly: Lane County Diaper Bank phone number is **5 4 1, 2 2 1, 0 8 2 4**. They provide diapers and wipes. It says **no documents are required at intake**. And eligibility can include **OHP, WIC, or SNAP**."
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "slow_clear_repetition"
@@ -326,6 +328,238 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000634#turn-1",
+      "scenarioId": "phone_dialog_0000634",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s really loud in here. I\u2019m in Multnomah County and I need diapers for my toddler, like today if possible.",
+      "normalizedQuery": "hi sorry it really loud here multnomah county diapers diaper baby toddler like if possible",
+      "voiceResponse": "You\u2019re okay to keep this minimal. I can share two diaper-help lines now: Lane County Diaper Bank: **5 4 1, 2 2 1, 0 8 2 4**. Emergency Diaper Closet: **5 4 1, 8 6 4, 0 7 7 6**. Both list **no documents required at intake**. One option also says eligibility can include **OHP, WIC, or SNAP**. If you want, I can repeat just one number slowly.",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:c196660a779416f8",
+        "page:bafkreidatvi3xnn4t26envnjeofc6fodbrnhgchf6rcp3xdt4khw4ge3ve",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay to keep this minimal. I can share two diaper-help lines now: Lane County Diaper Bank: **5 4 1, 2 2 1, 0 8 2 4**. Emergency Diaper Closet: **5 4 1, 8 6 4, 0 7 7 6**. Both list **no documents required at intake**. One option also says eligibility can include **OHP, WIC, or SNAP**. If you want, I can repeat just one number slowly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000634#turn-2",
+      "scenarioId": "phone_dialog_0000634",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just pulled up and I missed half of it.",
+      "normalizedQuery": "hi sorry it really loud here multnomah county diapers diaper baby toddler like if possible say again bus just pulled up missed half",
+      "voiceResponse": "Of course. Here\u2019s the key part again, slowly: Lane County Diaper Bank phone number is **5 4 1, 2 2 1, 0 8 2 4**. They provide diapers and wipes. It says **no documents are required at intake**. And eligibility can include **OHP, WIC, or SNAP**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:72a4239cdad3e299",
+        "page:bafkreifiy7fqrsozipehi36xifkqv3ao6cmkzu6hlq75hhfygwkgabyfza",
+        "service:25f3554514a1b499",
+        "service:c196660a779416f8"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Here\u2019s the key part again, slowly: Lane County Diaper Bank phone number is **5 4 1, 2 2 1, 0 8 2 4**. They provide diapers and wipes. It says **no documents are required at intake**. And eligibility can include **OHP, WIC, or SNAP**.",
+      "voiceResponseAlternatives": [
+        "I hear you. I do not have a phone number in front of me right now. I only have the name: **two-one-one info**. I\u2019ll say it again: **two-one-one info**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000634#turn-3",
+      "scenarioId": "phone_dialog_0000634",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I can share my ZIP, but I\u2019m nervous about giving too much info. Who can see what I tell you?",
+      "normalizedQuery": "hi sorry it really loud here multnomah county diapers diaper baby toddler like if possible say again bus just pulled up missed half share zip nervous giving too much info who see tell",
+      "voiceResponse": "That makes sense, and you can keep it very minimal. You can share just your ZIP, or even only your city, and I can still look for options. You don\u2019t need to give your full name, ID, or anything extra unless you choose to. If you want, we can keep going with no personal details and I\u2019ll just give public phone numbers you can call directly.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:72a4239cdad3e299"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you can keep it very minimal. You can share just your ZIP, or even only your city, and I can still look for options. You don\u2019t need to give your full name, ID, or anything extra unless you choose to. If you want, we can keep going with no personal details and I\u2019ll just give public phone numbers you can call directly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001012#turn-3",
+      "scenarioId": "phone_dialog_0001012",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I'm in Multnomah County, Portland side, and I need child care so I can keep my work shift.",
+      "normalizedQuery": "i'm multnomah county portland side child care so keep work shift",
+      "voiceResponse": "You\u2019re doing the right thing, and I can help you move fast. Start with **Child Care Resource and Referral** in Portland\u2014they can help match child care options so you can keep your shift. Call **503\u2026 491\u2026 6205**. That\u2019s **503-491-6205**. Address is **4510 Northeast 102nd Avenue, Portland, 97220**. If you\u2019re in construction trades, there\u2019s also **Child Care for Construction** at **503-205-4769**.",
+      "evidenceDocIds": [
+        "service:ae35ab93a253efdd",
+        "service:bcfe168519274472",
+        "service:c6e7d10a43fdd9cc",
+        "service:e7f69e9f7d66f5f6",
+        "service:d3ca3c18ece6f117"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and I can help you move fast. Start with **Child Care Resource and Referral** in Portland\u2014they can help match child care options so you can keep your shift. Call **503\u2026 491\u2026 6205**. That\u2019s **503-491-6205**. Address is **4510 Northeast 102nd Avenue, Portland, 97220**. If you\u2019re in construction trades, there\u2019s also **Child Care for Construction** at **503-205-4769**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001012#turn-4",
+      "scenarioId": "phone_dialog_0001012",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My thoughts are all over, I'm trying not to panic, I got two little ones and nowhere safe for after school.",
+      "normalizedQuery": "static hello can't hear bus right here um child no wait sorry it keeps cutting said kids missed asked i'm multnomah county portland side care so keep work shift thoughts all over trying panic got two little ones nowhere safe after school",
+      "voiceResponse": "You\u2019re not alone, and it makes sense to feel panicked. Let\u2019s do one step now: call **Child Care Resource and Referral** so they can find safe after-school care fast. The number is **503\u2026 491\u2026 6205**. Again: **503-491-6205**. If it helps, I can stay with you while you open your phone and dial.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone, and it makes sense to feel panicked. Let\u2019s do one step now: call **Child Care Resource and Referral** so they can find safe after-school care fast. The number is **503\u2026 491\u2026 6205**. Again: **503-491-6205**. If it helps, I can stay with you while you open your phone and dial.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001012#turn-5",
+      "scenarioId": "phone_dialog_0001012",
+      "turnIndex": 4,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you say the options again slower? I only caught like 'program' and then [inaudible].",
+      "normalizedQuery": "sorry it keeps cutting said kids missed asked i'm multnomah county portland side child care so keep work shift thoughts all over trying panic got two little ones nowhere safe after school say options again slower only caught like 'program' then inaudible",
+      "voiceResponse": "I hear you, and you\u2019re doing your best. The audio was unclear, so I\u2019ll say it slowly: option one is **Child Care Resource and Referral**, phone **503\u2026491\u20266205**. Option two, if you work construction, is **Child Care for Construction**, phone **503\u2026205\u20264769**. Which one do you want right now: **regular child care** or **construction child care**?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing your best. The audio was unclear, so I\u2019ll say it slowly: option one is **Child Care Resource and Referral**, phone **503\u2026491\u20266205**. Option two, if you work construction, is **Child Care for Construction**, phone **503\u2026205\u20264769**. Which one do you want right now: **regular child care** or **construction child care**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001012#turn-6",
+      "scenarioId": "phone_dialog_0001012",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there's a subsidy or a place that takes urgent drop-in, that's what I need, please.",
+      "normalizedQuery": "i'm multnomah county portland side child care so keep work shift thoughts all over trying panic got two little ones nowhere safe after school say options again slower only caught like 'program' then inaudible if there's subsidy place takes urgent drop that's please",
+      "voiceResponse": "I hear how urgent this is. Let\u2019s go straight to the fastest step: call **Child Care Resource and Referral** and say, \u201cI need **child care subsidy** and **urgent drop-in or after-school care today**.\u201d Their number is **503\u2026 491\u2026 6205**. Again: **503-491-6205**. If you\u2019re in construction trades, call **Child Care for Construction** at **503\u2026 205\u2026 4769**. Again: **503-205-4769**.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:755193c3d210f2d9"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how urgent this is. Let\u2019s go straight to the fastest step: call **Child Care Resource and Referral** and say, \u201cI need **child care subsidy** and **urgent drop-in or after-school care today**.\u201d Their number is **503\u2026 491\u2026 6205**. Again: **503-491-6205**. If you\u2019re in construction trades, call **Child Care for Construction** at **503\u2026 205\u2026 4769**. Again: **503-205-4769**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001102#turn-1",
+      "scenarioId": "phone_dialog_0001102",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "family",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, the signal keeps cutting out. I\u2019m in Multnomah County and I need help getting diapers for my baby.",
+      "normalizedQuery": "hi sorry signal keeps cutting multnomah county getting diapers diaper baby",
+      "voiceResponse": "I hear you. You need baby diapers in Multnomah County. I have one diaper bank contact: Lane County Diaper Bank. Phone: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. Again: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. Address: **3 0 5 0 Game Farm Road, Springfield**. They list OHP, WIC, or SNAP. I can also help you call and ask for a Multnomah referral. Want that?",
+      "evidenceDocIds": [
+        "service:72a4239cdad3e299",
+        "service:25f3554514a1b499",
+        "service:0de8e3b5ff9b859a",
+        "service:c196660a779416f8",
+        "service:0661e27999f1553c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You need baby diapers in Multnomah County. I have one diaper bank contact: Lane County Diaper Bank. Phone: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. Again: **5 4 1** \u2026 **2 2 1** \u2026 **0 8 2 4**. Address: **3 0 5 0 Game Farm Road, Springfield**. They list OHP, WIC, or SNAP. I can also help you call and ask for a Multnomah referral. Want that?",
+      "voiceResponseAlternatives": [
+        "You\u2019re in the right place. In Multnomah County, **211info** has a dedicated child care team that gives free, customized referrals for child care and preschool, plus other family supports. You can call **2-1-1** now, or if your phone won\u2019t connect, dial **5-0-3, 2-2-2, 5-5-5-5**. If you want, I can stay with you while you make the call and help you with what to say first.",
+        "Yes. Call **2-1-1**. If that doesn\u2019t connect, call **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**. I\u2019ll repeat it once more: **5-0-3 \u2026 2-2-2 \u2026 5-5-5-5**.",
+        "Thank you for calling for her. That helps. I can help with child care options in Multnomah County through 211info. I can help with child care options in Multnomah County through 211info. Let\u2019s do one step at a time. How old is her child, or children?",
+        "You\u2019re okay, and you did the right thing telling me. Since you\u2019re in Gresham with no car, I don\u2019t want to send you to the wrong county again. I can connect you to a 211 specialist now to find same-day diaper pickup near you and on a bus line. If you feel unsafe where you are right now, call 911 right away."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -394,6 +628,48 @@
       "to": "phone_dialog_0000394#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000634#turn-1",
+      "to": "phone_dialog_0000634#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000634#turn-2",
+      "to": "phone_dialog_0000634#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000634#turn-3",
+      "to": "phone_dialog_0000634#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001012#turn-3",
+      "to": "phone_dialog_0001012#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001012#turn-4",
+      "to": "phone_dialog_0001012#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001012#turn-5",
+      "to": "phone_dialog_0001012#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001102#turn-1",
+      "to": "phone_dialog_0001102#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__utilities__oregon_city",
   "kind": "service_location",
   "key": "utilities__oregon_city",
-  "nodeCount": 1,
+  "nodeCount": 8,
   "nodes": [
     {
       "id": "phone_dialog_0000331#turn-4",
@@ -26,10 +26,205 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**."
+      ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000856#turn-1",
+      "scenarioId": "phone_dialog_0000856",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my brother, not for me. He lives in Oregon City and he got a shutoff notice on his electric bill.",
+      "normalizedQuery": "hi calling brother he lives oregon city got shutoff notice on his electric bill",
+      "voiceResponse": "I\u2019m glad you called for him, that\u2019s a stressful notice to get. I only have one verified utility resource here: **City of Hillsboro/Cornelius/Sherwood Water Bill Verification Assistance** (not electric). You can still call and ask for referral options for Oregon City electric shutoff help. Phone: **5-0-3, 6-4-0, 4-3-1-1**. Address: **1-4-4-0 Southeast 21st Avenue, Hillsboro**. If you want, I can repeat just the phone number.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:cbb641cc5af6e9d6",
+        "service:437ec64b59b0ac16",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called for him, that\u2019s a stressful notice to get. I only have one verified utility resource here: **City of Hillsboro/Cornelius/Sherwood Water Bill Verification Assistance** (not electric). You can still call and ask for referral options for Oregon City electric shutoff help. Phone: **5-0-3, 6-4-0, 4-3-1-1**. Address: **1-4-4-0 Southeast 21st Avenue, Hillsboro**. If you want, I can repeat just the phone number.",
+      "voiceResponseAlternatives": [
+        "Of course. The program name is: **City of Hillsboro, Cornelius, and Sherwood Water Bill Verification Assistance**. I\u2019ll say it once more slowly: **Hillsboro, Cornelius, Sherwood \u2014 Water Bill Verification Assistance**.",
+        "Next step: please call Pacific Power and ask for utility bill help and any customer care options tied to your account. The number I have is **888-225-2611**. That\u2019s **888\u2026 225\u2026 2611**. There is also **888-221-7070**: **888\u2026 221\u2026 7070**. If you want, I can stay with you and help script exactly what to say when they answer.",
+        "Yes. Call **888\u2026 225\u2026 2611**. I\u2019ll say it again slowly: **888\u2026 225\u2026 2611**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000856#turn-2",
+      "scenarioId": "phone_dialog_0000856",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, your voice is cutting in and out on my end. Can you say that program name again?",
+      "normalizedQuery": "hi calling brother he lives oregon city got shutoff notice on his electric bill sorry your voice cutting end say program name again",
+      "voiceResponse": "Of course. The program name is: **City of Hillsboro, Cornelius, and Sherwood Water Bill Verification Assistance**. I\u2019ll say it once more slowly: **Hillsboro, Cornelius, Sherwood \u2014 Water Bill Verification Assistance**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:cbb641cc5af6e9d6",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:6c5e0b45a723461e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The program name is: **City of Hillsboro, Cornelius, and Sherwood Water Bill Verification Assistance**. I\u2019ll say it once more slowly: **Hillsboro, Cornelius, Sherwood \u2014 Water Bill Verification Assistance**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called for him, that\u2019s a stressful notice to get. I only have one verified utility resource here: **City of Hillsboro/Cornelius/Sherwood Water Bill Verification Assistance** (not electric). You can still call and ask for referral options for Oregon City electric shutoff help. Phone: **5-0-3, 6-4-0, 4-3-1-1**. Address: **1-4-4-0 Southeast 21st Avenue, Hillsboro**. If you want, I can repeat just the phone number.",
+        "Next step: please call Pacific Power and ask for utility bill help and any customer care options tied to your account. The number I have is **888-225-2611**. That\u2019s **888\u2026 225\u2026 2611**. There is also **888-221-7070**: **888\u2026 221\u2026 7070**. If you want, I can stay with you and help script exactly what to say when they answer.",
+        "Yes. Call **888\u2026 225\u2026 2611**. I\u2019ll say it again slowly: **888\u2026 225\u2026 2611**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000856#turn-4",
+      "scenarioId": "phone_dialog_0000856",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, hold on, I missed the number after 503... can you repeat the whole phone number slowly?",
+      "normalizedQuery": "hi calling brother he lives oregon city got shutoff notice on his electric bill sorry your voice cutting end say program name again don have all paperwork just know disability behind by like two months wait hold missed number after 503 repeat whole phone slowly",
+      "voiceResponse": "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:add9524a893c2ea9",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I can repeat it slowly. The phone number is: **5-0-3... 6-4-0... 4-3-1-1**. One more time: **5-0-3... 6-4-0... 4-3-1-1**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, no problem. The number is: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**. I\u2019ll say it once more: **8 0 0** \u2026 **5 4 4** \u2026 **1 7 9 5**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000878#turn-1",
+      "scenarioId": "phone_dialog_0000878",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Oregon City, and I called about utility help last week because my power bill got too high.",
+      "normalizedQuery": "hi oregon city called utility utilities heat electric last week because power bill got too high",
+      "voiceResponse": "Next step: please call Pacific Power and ask for utility bill help and any customer care options tied to your account. The number I have is **888-225-2611**. That\u2019s **888\u2026 225\u2026 2611**. There is also **888-221-7070**: **888\u2026 221\u2026 7070**. If you want, I can stay with you and help script exactly what to say when they answer.",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:dbea764a4f6362d4",
+        "service:b30d1ccbf8ca9924",
+        "service:5b6e593ffd964891"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call Pacific Power and ask for utility bill help and any customer care options tied to your account. The number I have is **888-225-2611**. That\u2019s **888\u2026 225\u2026 2611**. There is also **888-221-7070**: **888\u2026 221\u2026 7070**. If you want, I can stay with you and help script exactly what to say when they answer.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called for him, that\u2019s a stressful notice to get. I only have one verified utility resource here: **City of Hillsboro/Cornelius/Sherwood Water Bill Verification Assistance** (not electric). You can still call and ask for referral options for Oregon City electric shutoff help. Phone: **5-0-3, 6-4-0, 4-3-1-1**. Address: **1-4-4-0 Southeast 21st Avenue, Hillsboro**. If you want, I can repeat just the phone number.",
+        "Of course. The program name is: **City of Hillsboro, Cornelius, and Sherwood Water Bill Verification Assistance**. I\u2019ll say it once more slowly: **Hillsboro, Cornelius, Sherwood \u2014 Water Bill Verification Assistance**.",
+        "Yes. Call **888\u2026 225\u2026 2611**. I\u2019ll say it again slowly: **888\u2026 225\u2026 2611**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000878#turn-2",
+      "scenarioId": "phone_dialog_0000878",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "service_interaction_support",
+      "user": "I did an intake on Tuesday, I think, but I can\u2019t remember the agency name now.",
+      "normalizedQuery": "hi oregon city called utility utilities heat electric last week because power bill got too high did an intake on tuesday think remember agency name now",
+      "voiceResponse": "Next step: call Pacific Power now and ask them to look up your intake from Tuesday under your name and address. The number is **888\u2026 225\u2026 2611**. You can also try **888\u2026 221\u2026 7070**. What happened so far is you completed an intake, but the agency name was forgotten. When they answer, say: \u201cI did an intake on Tuesday for bill help. Can you confirm my case and next step?\u201d",
+      "evidenceDocIds": [
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:dbea764a4f6362d4",
+        "page:bafkreietsvvq53n4rqwdl6hff3nbacitcrhw5zsasoeuzhsyiatzsr7sua",
+        "service:b30d1ccbf8ca9924"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Pacific Power now and ask them to look up your intake from Tuesday under your name and address. The number is **888\u2026 225\u2026 2611**. You can also try **888\u2026 221\u2026 7070**. What happened so far is you completed an intake, but the agency name was forgotten. When they answer, say: \u201cI did an intake on Tuesday for bill help. Can you confirm my case and next step?\u201d",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000878#turn-3",
+      "scenarioId": "phone_dialog_0000878",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "wallet_document_support",
+      "user": "Could you write down that they said I needed to send proof of income and my shutoff notice?",
+      "normalizedQuery": "hi oregon city called utility utilities heat electric last week because power bill got too high did an intake on tuesday think remember agency name now could write down they said needed send proof income shutoff notice",
+      "voiceResponse": "Next step: write this sentence down exactly: \u201cPlease confirm which documents you need from me, and how to send them.\u201d From what I can see here, I cannot confirm a required document list. Call Pacific Power at **888\u2026 225\u2026 2611**. If needed, also try **888\u2026 221\u2026 7070**.",
+      "evidenceDocIds": [
+        "service:dbea764a4f6362d4",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:b30d1ccbf8ca9924",
+        "service:0f668a9d739733bb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: write this sentence down exactly: \u201cPlease confirm which documents you need from me, and how to send them.\u201d From what I can see here, I cannot confirm a required document list. Call Pacific Power at **888\u2026 225\u2026 2611**. If needed, also try **888\u2026 221\u2026 7070**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000878#turn-4",
+      "scenarioId": "phone_dialog_0000878",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, can you say that number again slowly, the one I\u2019m supposed to call next?",
+      "normalizedQuery": "hi oregon city called utility utilities heat electric last week because power bill got too high did an intake on tuesday think remember agency name now could write down they said needed send proof income shutoff notice sorry say number again slowly one supposed call next",
+      "voiceResponse": "Yes. Call **888\u2026 225\u2026 2611**. I\u2019ll say it again slowly: **888\u2026 225\u2026 2611**.",
+      "evidenceDocIds": [
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb",
+        "service:1341a8cba2a5d24e",
+        "service:b8a24b6e66b70d8d",
+        "service:b30d1ccbf8ca9924"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call **888\u2026 225\u2026 2611**. I\u2019ll say it again slowly: **888\u2026 225\u2026 2611**.",
+      "voiceResponseAlternatives": [
+        "I\u2019m glad you called for him, that\u2019s a stressful notice to get. I only have one verified utility resource here: **City of Hillsboro/Cornelius/Sherwood Water Bill Verification Assistance** (not electric). You can still call and ask for referral options for Oregon City electric shutoff help. Phone: **5-0-3, 6-4-0, 4-3-1-1**. Address: **1-4-4-0 Southeast 21st Avenue, Hillsboro**. If you want, I can repeat just the phone number.",
+        "Of course. The program name is: **City of Hillsboro, Cornelius, and Sherwood Water Bill Verification Assistance**. I\u2019ll say it once more slowly: **Hillsboro, Cornelius, Sherwood \u2014 Water Bill Verification Assistance**.",
+        "Next step: please call Pacific Power and ask for utility bill help and any customer care options tied to your account. The number I have is **888-225-2611**. That\u2019s **888\u2026 225\u2026 2611**. There is also **888-221-7070**: **888\u2026 221\u2026 7070**. If you want, I can stay with you and help script exactly what to say when they answer."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -38,6 +233,48 @@
       "to": "phone_dialog_0000331#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000856#turn-1",
+      "to": "phone_dialog_0000856#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000856#turn-2",
+      "to": "phone_dialog_0000856#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0000856#turn-4",
+      "to": "phone_dialog_0000856#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000878#turn-1",
+      "to": "phone_dialog_0000878#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000878#turn-2",
+      "to": "phone_dialog_0000878#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000878#turn-3",
+      "to": "phone_dialog_0000878#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000878#turn-4",
+      "to": "phone_dialog_0000878#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
     }
   ]
 }

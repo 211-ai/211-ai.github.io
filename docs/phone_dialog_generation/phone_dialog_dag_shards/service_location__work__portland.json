@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__work__portland",
   "kind": "service_location",
   "key": "work__portland",
-  "nodeCount": 12,
+  "nodeCount": 14,
   "nodes": [
     {
       "id": "phone_dialog_0000147#turn-5",
@@ -309,7 +309,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Okay. One next step: call Job Connection at Goodwill right now for fast job-search help in Portland. The number is **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. I can repeat it: **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. They\u2019re at **1943 Southeast Sixth Avenue, Portland, 97214**. If you feel in immediate danger, call **9 1 1** now.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Next step: stay with me while I connect you now to a live 211 specialist. Tell them exactly what you shared: he\u2019s on Portland\u2019s east side, recently out of treatment, and you need job services he may qualify for. They can do a local eligibility screen and give the best workforce options."
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "grounded_operator"
@@ -342,6 +344,58 @@
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001065#turn-2",
+      "scenarioId": "phone_dialog_0001065",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "We\u2019re in Portland, on the east side, and he just got out of a treatment program, so I don\u2019t really know what job services he qualifies for.",
+      "normalizedQuery": "we re portland on east side he just got treatment program so don really know job services qualifies",
+      "voiceResponse": "Next step: stay with me while I connect you now to a live 211 specialist. Tell them exactly what you shared: he\u2019s on Portland\u2019s east side, recently out of treatment, and you need job services he may qualify for. They can do a local eligibility screen and give the best workforce options.",
+      "evidenceDocIds": [
+        "service:28acd183a54cc8a5",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:f525d65d4bd89731"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay with me while I connect you now to a live 211 specialist. Tell them exactly what you shared: he\u2019s on Portland\u2019s east side, recently out of treatment, and you need job services he may qualify for. They can do a local eligibility screen and give the best workforce options.",
+      "voiceResponseAlternatives": [
+        "Okay. One next step: call Job Connection at Goodwill right now for fast job-search help in Portland. The number is **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. I can repeat it: **5 0 3** \u2026 **2 3 8** \u2026 **6 1 0 0**. They\u2019re at **1943 Southeast Sixth Avenue, Portland, 97214**. If you feel in immediate danger, call **9 1 1** now."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001065#turn-5",
+      "scenarioId": "phone_dialog_0001065",
+      "turnIndex": 4,
+      "route": "calendar_event_support",
+      "serviceTag": "work",
+      "locationTag": "portland",
+      "promptTemplate": "calendar_event_support",
+      "user": "If you give me a couple options, I can pass them to him and help him follow up.",
+      "normalizedQuery": "we re portland on east side he just got treatment program so don really know job services qualifies warehouse kitchen work think doesn have resume right now sure if his id current point places search maybe getting documents sorted actually hired give couple options pass them him follow up",
+      "voiceResponse": "Next step: set one follow-up reminder right now so he actually takes action. I can give you two simple call options to pass along once that alert is set. What time today should the reminder go off?",
+      "evidenceDocIds": [
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: set one follow-up reminder right now so he actually takes action. I can give you two simple call options to pass along once that alert is set. What time today should the reminder go off?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
     }
   ],
@@ -417,6 +471,12 @@
       "to": "phone_dialog_0000585#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001065#turn-2",
+      "to": "phone_dialog_0001065#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

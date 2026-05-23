@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "id": "service_location__legal__beaverton",
+  "kind": "service_location",
+  "key": "legal__beaverton",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0001016#turn-1",
+      "scenarioId": "phone_dialog_0001016",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Beaverton and I need legal aid, but this is a borrowed phone and it\u2019s about to die, so can you give me the main number first?",
+      "normalizedQuery": "hi beaverton legal aid attorney advocacy this borrowed phone it die so give main number first",
+      "voiceResponse": "Call **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. Again: **800, 359, 1845**. That\u2019s the general legal aid line in the listing I have. One listing says Marion or Polk County cases and income around 125% FPL, so when they answer, say you\u2019re in Beaverton and ask for the right legal aid office for your area.",
+      "evidenceDocIds": [
+        "service:3694ab25654f4b81",
+        "service:799e6ab996caa563",
+        "service:a4f4532cd4713872",
+        "service:9daa4747aa898de5",
+        "service:845e7c7de82757e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. Again: **800, 359, 1845**. That\u2019s the general legal aid line in the listing I have. One listing says Marion or Polk County cases and income around 125% FPL, so when they answer, say you\u2019re in Beaverton and ask for the right legal aid office for your area.",
+      "voiceResponseAlternatives": [
+        "Call this number now: **800 \u2026 359 \u2026 1845**. Again: **8-0-0 \u2026 3-5-9 \u2026 1-8-4-5**. When they answer, say: \u201cI have a landlord issue, I\u2019m in Beaverton, and I need the right legal aid office and next step today.\u201d If needed, they may ask about income (around 125% of Federal Poverty Level) and your housing papers."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001016#turn-2",
+      "scenarioId": "phone_dialog_0001016",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "legal",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, can you repeat that slower? I want to make sure I wrote the right number down.",
+      "normalizedQuery": "hi beaverton legal aid attorney advocacy this borrowed phone it die so give main number first sorry repeat slower want make sure wrote right down",
+      "voiceResponse": "Write this down now: **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. Again, slowly: **800 \u2026 359 \u2026 1845**.",
+      "evidenceDocIds": [
+        "service:799e6ab996caa563",
+        "service:3694ab25654f4b81",
+        "service:a6af0a0c66fba050",
+        "service:a4f4532cd4713872",
+        "service:757a8fe3fa531b01"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Write this down now: **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. Again, slowly: **800 \u2026 359 \u2026 1845**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001016#turn-3",
+      "scenarioId": "phone_dialog_0001016",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "legal",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "It\u2019s for a landlord issue, and I need the next step today if possible.",
+      "normalizedQuery": "hi beaverton legal aid attorney advocacy this borrowed phone it die so give main number first sorry repeat slower want make sure wrote right down landlord issue next step if possible",
+      "voiceResponse": "Call this number now: **800 \u2026 359 \u2026 1845**. Again: **8-0-0 \u2026 3-5-9 \u2026 1-8-4-5**. When they answer, say: \u201cI have a landlord issue, I\u2019m in Beaverton, and I need the right legal aid office and next step today.\u201d If needed, they may ask about income (around 125% of Federal Poverty Level) and your housing papers.",
+      "evidenceDocIds": [
+        "service:3694ab25654f4b81",
+        "service:a4f4532cd4713872",
+        "service:799e6ab996caa563",
+        "service:a6af0a0c66fba050",
+        "service:0963e94e6b3dc85a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call this number now: **800 \u2026 359 \u2026 1845**. Again: **8-0-0 \u2026 3-5-9 \u2026 1-8-4-5**. When they answer, say: \u201cI have a landlord issue, I\u2019m in Beaverton, and I need the right legal aid office and next step today.\u201d If needed, they may ask about income (around 125% of Federal Poverty Level) and your housing papers.",
+      "voiceResponseAlternatives": [
+        "Call **8 0 0 \u2026 3 5 9 \u2026 1 8 4 5**. Again: **800, 359, 1845**. That\u2019s the general legal aid line in the listing I have. One listing says Marion or Polk County cases and income around 125% FPL, so when they answer, say you\u2019re in Beaverton and ask for the right legal aid office for your area."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001016#turn-4",
+      "scenarioId": "phone_dialog_0001016",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "legal",
+      "locationTag": "beaverton",
+      "promptTemplate": "calendar_event_support",
+      "user": "Can you set me a reminder for tomorrow at 9 AM to call them and gather my lease and notices first?",
+      "normalizedQuery": "hi beaverton legal aid attorney advocacy this borrowed phone it die so give main number first sorry repeat slower want make sure wrote right down landlord issue next step if possible set reminder tomorrow at call them gather lease notices",
+      "voiceResponse": "Next step: set an alarm right now for tomorrow at 9:00 AM labeled, \u201cCall legal aid, gather lease and notices.\u201d I can\u2019t set it from here, but I can help you do it fast. Do you want just one reminder at 9:00 AM, or a second one 15 minutes earlier?",
+      "evidenceDocIds": [
+        "service:3694ab25654f4b81",
+        "service:a4f4532cd4713872",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreihz5wh4pp6shplhbvchdhqfmbkzll5ahnwxggxrvywvzozrnkh2wm",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: set an alarm right now for tomorrow at 9:00 AM labeled, \u201cCall legal aid, gather lease and notices.\u201d I can\u2019t set it from here, but I can help you do it fast. Do you want just one reminder at 9:00 AM, or a second one 15 minutes earlier?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0001016#turn-1",
+      "to": "phone_dialog_0001016#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001016#turn-2",
+      "to": "phone_dialog_0001016#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001016#turn-3",
+      "to": "phone_dialog_0001016#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001016#turn-4",
+      "to": "phone_dialog_0001016#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
+    }
+  ]
+}

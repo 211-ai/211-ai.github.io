@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__broad_help__lane_county",
   "kind": "service_location",
   "key": "broad_help__lane_county",
-  "nodeCount": 4,
+  "nodeCount": 6,
   "nodes": [
     {
       "id": "phone_dialog_0000142#turn-4",
@@ -54,7 +54,8 @@
       "similarCases": [],
       "assistantResponse": "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**.",
       "voiceResponseAlternatives": [
-        "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**."
+        "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**.",
+        "That makes sense. You can keep this very private here. Share only what you\u2019re comfortable with, and we can start without your name or exact address. I can just give you clothing resources and phone numbers in Lane County so you choose what to contact. If you want, we can keep it to basics only and skip personal details unless a provider later asks directly."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -108,11 +109,65 @@
       "similarCases": [],
       "assistantResponse": "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**.",
       "voiceResponseAlternatives": [
-        "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**."
+        "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**.",
+        "That makes sense. You can keep this very private here. Share only what you\u2019re comfortable with, and we can start without your name or exact address. I can just give you clothing resources and phone numbers in Lane County so you choose what to contact. If you want, we can keep it to basics only and skip personal details unless a provider later asks directly."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000817#turn-1",
+      "scenarioId": "phone_dialog_0000817",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Lane County and I need help getting clothes, like basics for me and my kid.",
+      "normalizedQuery": "hi lane county getting clothes like basics kid",
+      "voiceResponse": "Absolutely, we can keep this low-key and share as little as you want. I can look for either family clothing closets or kid-focused places with diapers and baby basics, then give you just phone numbers so you can decide if you want to call. Which do you want first: family basics for both of you, or child items first?",
+      "evidenceDocIds": [
+        "service:567e5b7c27ae7419",
+        "service:8149fdd1582fa7a0",
+        "service:bbea7883a5477e64",
+        "service:cf5193af90938dcc",
+        "service:f810a94f130abf74"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, we can keep this low-key and share as little as you want. I can look for either family clothing closets or kid-focused places with diapers and baby basics, then give you just phone numbers so you can decide if you want to call. Which do you want first: family basics for both of you, or child items first?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000817#turn-2",
+      "scenarioId": "phone_dialog_0000817",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before we do anything, who can see what I tell you? I really don\u2019t want my information floating around.",
+      "normalizedQuery": "hi lane county getting clothes like basics kid before we anything who see tell really don want information floating around",
+      "voiceResponse": "That makes sense. You can keep this very private here. Share only what you\u2019re comfortable with, and we can start without your name or exact address. I can just give you clothing resources and phone numbers in Lane County so you choose what to contact. If you want, we can keep it to basics only and skip personal details unless a provider later asks directly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:bbea7883a5477e64",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense. You can keep this very private here. Share only what you\u2019re comfortable with, and we can start without your name or exact address. I can just give you clothing resources and phone numbers in Lane County so you choose what to contact. If you want, we can keep it to basics only and skip personal details unless a provider later asks directly.",
+      "voiceResponseAlternatives": [
+        "Yes, I hear you. Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1\u2026 7 7 9\u2026 4 3 5 7**. They support people experiencing domestic violence, including stalking, with safety planning, emotional support, and resource navigation. If that line doesn\u2019t connect, try **5 4 1\u2026 7 7 9\u2026 2 3 9 3, extension 2 0 9**.",
+        "Next step: call HAVEN now at **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**. They offer a crisis line, safety planning, counseling, court advocacy, support groups, and short-term shelter. If you want, I can stay with you while you dial **5 4 1 \u2026 2 9 6 \u2026 1 6 6 2**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -139,6 +194,18 @@
       "to": "phone_dialog_0000285#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000817#turn-1",
+      "to": "phone_dialog_0000817#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000817#turn-2",
+      "to": "phone_dialog_0000817#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__food__washington_county",
   "kind": "service_location",
   "key": "food__washington_county",
-  "nodeCount": 21,
+  "nodeCount": 43,
   "nodes": [
     {
       "id": "phone_dialog_0000047#turn-1",
@@ -625,6 +625,651 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000644#turn-1",
+      "scenarioId": "phone_dialog_0000644",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s really loud out here by the bus stop, can you help me find free community meals in Washington County?",
+      "normalizedQuery": "hi sorry it really loud here by bus stop free community meals washington county",
+      "voiceResponse": "Absolutely, and I hear you. One free option is **Community Meals and Pantry** at **909 Southwest 11th Avenue, Portland**. Phone is **503\u2026 228\u2026 7465**. They offer community meals, and eligibility is unrestricted with **no documents required**. If you want, I can also help you ask for Washington County meal sites when you call: \u201cI need free community meals in Washington County, near [your location].\u201d",
+      "evidenceDocIds": [
+        "service:d8559ced93d0f936",
+        "service:0420159846f1dd26",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:b8c762144d937988",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and I hear you. One free option is **Community Meals and Pantry** at **909 Southwest 11th Avenue, Portland**. Phone is **503\u2026 228\u2026 7465**. They offer community meals, and eligibility is unrestricted with **no documents required**. If you want, I can also help you ask for Washington County meal sites when you call: \u201cI need free community meals in Washington County, near [your location].\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000644#turn-2",
+      "scenarioId": "phone_dialog_0000644",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, what was that name? I missed it when that bus went by.",
+      "normalizedQuery": "hi sorry it really loud here by bus stop free community meals washington county wait was name missed when went",
+      "voiceResponse": "No problem. The name is **Community Meals and Pantry**. I\u2019ll say it slowly: **Community Meals** \u2026 **and Pantry**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No problem. The name is **Community Meals and Pantry**. I\u2019ll say it slowly: **Community Meals** \u2026 **and Pantry**.",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000670#turn-5",
+      "scenarioId": "phone_dialog_0000670",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Could you say the options slower? I missed half of that when the announcement came on.",
+      "normalizedQuery": "uh place food pantry meal meals groceries hot supper sorry did say your name was again no church clothes closet don't think memory's great i'm washington county transit center can't remember street right now could options slower missed half when announcement came on",
+      "voiceResponse": "Of course. You\u2019re okay. I\u2019ll say it slowly: Option one: if you feel unsafe right now, call **9-1-1**. Option two: if you are not in immediate danger, stay on this call and I will connect you to a **live 211 specialist** for hot meal locations tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b8c762144d937988",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. You\u2019re okay. I\u2019ll say it slowly: Option one: if you feel unsafe right now, call **9-1-1**. Option two: if you are not in immediate danger, stay on this call and I will connect you to a **live 211 specialist** for hot meal locations tonight.",
+      "voiceResponseAlternatives": [
+        "First step: call **8 0 0, 9 6 5, 6 5 1 9** right now and ask for a **Washington County hot meal tonight** referral. Say: \u201cI\u2019m 19, I need a meal tonight, and I\u2019m worried about being turned away.\u201d If that line drops, backup is **5 5 9, 3 6 9, 4 2 1 2**. If you feel in immediate danger at any point, call **9 1 1**.",
+        "First step: call **8 0 0, 9 6 5, 6 5 1 9** now. Say: \u201cI\u2019m 19 in Washington County, I need a hot meal tonight, I don\u2019t have a car, and I need a place near a bus line so I won\u2019t be turned away.\u201d If that line drops, call **5 5 9, 3 6 9, 4 2 1 2**.",
+        "Absolutely. The name is **First Baptist Church pantry**. I\u2019ll say it slower: **First\u2026 Baptist\u2026 Church\u2026 pantry**. Again: **First\u2026 Baptist\u2026 Church\u2026 pantry**.",
+        "I hear you. Washington County, near Hillsboro, meal help for your dad. A good next call is Washington County Disability, Aging, and Veteran Services. Phone: **503 \u2026 846 \u2026 3060**. I\u2019ll repeat: **503 \u2026 846 \u2026 3060**. Second line: **503 \u2026 408 \u2026 0724**. Address: **5240 Northeast Elam Young Parkway, Suite 300, Hillsboro, Oregon, 97124**. I\u2019ll repeat: **5240 Northeast Elam Young Parkway, Suite 300, Hillsboro, 97124**. Do you want me to connect you to a live specialist now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000670#turn-6",
+      "scenarioId": "phone_dialog_0000670",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you give me a number, please repeat it twice, my phone's cutting in and out.",
+      "normalizedQuery": "no church clothes closet don't think meals memory's great i'm washington county transit center can't remember street name right now could say options slower missed half when announcement came on if give number please repeat it twice phone's cutting",
+      "voiceResponse": "Absolutely, I can do that. Here it is clearly, twice: if you feel unsafe right now, call **9-1-1**. Again, **9-1-1**. If you are not in immediate danger, stay on this call and I\u2019ll connect you to a live 211 specialist for hot meal locations tonight.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I can do that. Here it is clearly, twice: if you feel unsafe right now, call **9-1-1**. Again, **9-1-1**. If you are not in immediate danger, stay on this call and I\u2019ll connect you to a live 211 specialist for hot meal locations tonight.",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000682#turn-4",
+      "scenarioId": "phone_dialog_0000682",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down and repeat that number in chunks? I'm hard of hearing, and people keep talking behind me here.",
+      "normalizedQuery": "hello hear you're cutting can't make half this i'm washington county think hillsboro bus line been outside just somewhere clean up wait sorry did say food pantry meal meals groceries shelter shelters homeless overnight warming no first shower like if possible slow down repeat number chunks hard hearing people keep talking behind here",
+      "voiceResponse": "I hear you, and you\u2019re doing great. I\u2019ll go slow. The number is: **5-4-1** \u2026 **9-6-2** \u2026 **7-9-9-4**. I\u2019ll repeat: **5-4-1** \u2026 **9-6-2** \u2026 **7-9-9-4**.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "service:b4ef6dca3c3f73bd",
+        "service:57c4c63dcadba358",
+        "service:5ded755b33454184",
+        "page:bafkreidwnti4lcaifewaecedk7fvr3ry3yce5yjsx4rwzl7jtrwwpmnvmi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing great. I\u2019ll go slow. The number is: **5-4-1** \u2026 **9-6-2** \u2026 **7-9-9-4**. I\u2019ll repeat: **5-4-1** \u2026 **9-6-2** \u2026 **7-9-9-4**.",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000682#turn-5",
+      "scenarioId": "phone_dialog_0000682",
+      "turnIndex": 4,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I wrote down maybe 'five-one...?\" no, I missed it, please say the place name again.",
+      "normalizedQuery": "i'm washington county think hillsboro bus line been outside just somewhere clean up wait sorry did say food pantry meal meals groceries shelter shelters homeless overnight warming no first shower like if possible slow down repeat number chunks hard hearing people keep talking behind here wrote maybe 'five one missed it please place name again",
+      "voiceResponse": "Absolutely. The place name is **Overnight Winter Warming Shelter, Right Track Resource Center**. I\u2019ll say it again slowly: **Overnight Winter Warming Shelter** \u2026 **Right Track Resource Center**.",
+      "evidenceDocIds": [
+        "service:bd5c5bd198f76c8b",
+        "page:bafkreie5vynfu2edplzmncgruhhzspsdp3niux2fib2wrnrbrhn2iitrxu",
+        "page:bafkreidwnti4lcaifewaecedk7fvr3ry3yce5yjsx4rwzl7jtrwwpmnvmi",
+        "service:b4ef6dca3c3f73bd",
+        "page:bafkreie2kpqilogiaywufv5gwh2cfrsv5zofi2gpackunvpmawb2nts77m"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. The place name is **Overnight Winter Warming Shelter, Right Track Resource Center**. I\u2019ll say it again slowly: **Overnight Winter Warming Shelter** \u2026 **Right Track Resource Center**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000692#turn-1",
+      "scenarioId": "phone_dialog_0000692",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Washington County and I need places doing community meals this week, preferably evening hours.",
+      "normalizedQuery": "hi washington county places doing community meals this week preferably evening hours",
+      "voiceResponse": "Absolutely. I can give you two leads now, then connect you to a human for Washington County evening options. First: Men\u2019s Mission Meals in Salem, phone **5 0 3** \u2026 **3 6 2** \u2026 **3 9 8 3**. They serve meals daily, including evening. Second: Clackamas Service Center, **8 8 0 0** Southeast **8 0th** Avenue, Portland. Phone **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. If you want, call **2 1 1** and ask for \u201cWashington County community meals, evening hours this week.\u201d",
+      "evidenceDocIds": [
+        "service:312a08c27734b645",
+        "service:b8c762144d937988",
+        "page:bafkreicxbzphm7i44ai3ketd4lb5cujncwt3nwlps5kc3fzuwjvnqvjdrm",
+        "service:fef46dc01f825fb3",
+        "page:bafkreia53szva7jzo36rnojpqdjigyfup44oqkxyhpteenuql7fnddfzby"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I can give you two leads now, then connect you to a human for Washington County evening options. First: Men\u2019s Mission Meals in Salem, phone **5 0 3** \u2026 **3 6 2** \u2026 **3 9 8 3**. They serve meals daily, including evening. Second: Clackamas Service Center, **8 8 0 0** Southeast **8 0th** Avenue, Portland. Phone **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. If you want, call **2 1 1** and ask for \u201cWashington County community meals, evening hours this week.\u201d",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000692#turn-2",
+      "scenarioId": "phone_dialog_0000692",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m hard of hearing on this phone line, can you repeat that slower and in short chunks?",
+      "normalizedQuery": "hi washington county places doing community meals this week preferably evening hours sorry hard hearing on phone line repeat slower short chunks",
+      "voiceResponse": "Of course. Slow and short chunks: Clackamas Service Center. Address: **8 8 0 0** \u2026 Southeast **8 0th** Avenue \u2026 Portland, Oregon \u2026 **9 7 2 0 6**. Phone: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. If you want, I can repeat just the phone again, or just the address.",
+      "evidenceDocIds": [
+        "page:bafkreicji2q7u27uy3nnpkfdnmg6tusngfcpkphnifo6nqwapxbw7lakhm",
+        "service:b8c762144d937988",
+        "service:0515ac454b59ee68",
+        "service:24605f847b7d4bc4",
+        "page:bafkreia53szva7jzo36rnojpqdjigyfup44oqkxyhpteenuql7fnddfzby"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Slow and short chunks: Clackamas Service Center. Address: **8 8 0 0** \u2026 Southeast **8 0th** Avenue \u2026 Portland, Oregon \u2026 **9 7 2 0 6**. Phone: **5 0 3** \u2026 **7 7 1** \u2026 **7 9 1 4**. If you want, I can repeat just the phone again, or just the address.",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000692#turn-3",
+      "scenarioId": "phone_dialog_0000692",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "wallet_document_support",
+      "user": "Also, for check-in, what proofs do I already have stored in my wallet, and do I need to upload anything else?",
+      "normalizedQuery": "hi washington county places doing community meals this week preferably evening hours sorry hard hearing on phone line repeat slower short chunks also check proofs already have stored wallet upload anything else",
+      "voiceResponse": "For this check-in, you do not need to upload anything else. This program lists required documents as: none. For what is already in your wallet, open your wallet and check the Proofs or Files section. It will show any stored items there. If you want, I can walk you step by step on where to tap next.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:69a0def45f7321b0",
+        "page:bafkreicxbzphm7i44ai3ketd4lb5cujncwt3nwlps5kc3fzuwjvnqvjdrm",
+        "service:24605f847b7d4bc4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "For this check-in, you do not need to upload anything else. This program lists required documents as: none. For what is already in your wallet, open your wallet and check the Proofs or Files section. It will show any stored items there. If you want, I can walk you step by step on where to tap next.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000692#turn-4",
+      "scenarioId": "phone_dialog_0000692",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "app_surface_navigation",
+      "user": "If a site uses a QR code, can my wallet show it there, or do I need an export file?",
+      "normalizedQuery": "hi washington county places doing community meals this week preferably evening hours sorry hard hearing on phone line repeat slower short chunks also check proofs already have stored wallet upload anything else if site uses qr code show it there an export file",
+      "voiceResponse": "Yes, you can check that right in the wallet check-in surface. Open **Wallet** \u2192 **Proofs/Files** \u2192 select the item \u2192 look for **Show QR**. If **Show QR** is there, you can present it on-screen at the site. If it is not there, choose **Export/Download** and share the file instead. Either option is fine. I can walk you tap-by-tap if you want.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:24605f847b7d4bc4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, you can check that right in the wallet check-in surface. Open **Wallet** \u2192 **Proofs/Files** \u2192 select the item \u2192 look for **Show QR**. If **Show QR** is there, you can present it on-screen at the site. If it is not there, choose **Export/Download** and share the file instead. Either option is fine. I can walk you tap-by-tap if you want.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000831#turn-1",
+      "scenarioId": "phone_dialog_0000831",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m in Washington County and I keep looping on this, but I need senior meals for my dad, and not just any meal site.",
+      "normalizedQuery": "hi sorry washington county keep looping on this senior meals dad just any meal site",
+      "voiceResponse": "You\u2019re not looping, you\u2019re being clear. In Washington County, I can see a local 211 category for **Congregate Meals/Nutrition Sites for Native American community members**, with about **12 providers**. If that fits your dad, we can narrow by distance and meal setting. If not, we can pivot to general senior meal options. We can do this with minimal personal info, just what helps match the right site.",
+      "evidenceDocIds": [
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:0d4be1a249bfe7ab",
+        "service:47542cbe7e757ba4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not looping, you\u2019re being clear. In Washington County, I can see a local 211 category for **Congregate Meals/Nutrition Sites for Native American community members**, with about **12 providers**. If that fits your dad, we can narrow by distance and meal setting. If not, we can pivot to general senior meal options. We can do this with minimal personal info, just what helps match the right site.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000831#turn-4",
+      "scenarioId": "phone_dialog_0000831",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I already called two places and they said they only do standard menus, so if you\u2019re not seeing a real match, can you tell me plainly what evidence you do have and what\u2019s missing?",
+      "normalizedQuery": "hi sorry washington county keep looping on this senior meals dad just any meal site hear there leaf blower outside he needs something low sodium diabetic friendly ideally hot halal delivered before noon frozen drop offs wait know jumping around also won go into group settings so congregate probably work unless private pickup option already called two places they said only standard menus if re seeing real match tell plainly evidence have missing",
+      "voiceResponse": "Plainly: I can confirm only two things right now: Washington County has a 211 category for Native American congregate meal sites, with about 12 providers, and the two you called offer standard menus. What I do not have verified is any provider that confirms all of this together: low-sodium, diabetic-friendly, halal, hot delivery before noon, and no group setting. So there isn\u2019t a confirmed real match in hand yet. Best next option is a live 211 specialist to screen those exact criteria quickly.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Plainly: I can confirm only two things right now: Washington County has a 211 category for Native American congregate meal sites, with about 12 providers, and the two you called offer standard menus. What I do not have verified is any provider that confirms all of this together: low-sodium, diabetic-friendly, halal, hot delivery before noon, and no group setting. So there isn\u2019t a confirmed real match in hand yet. Best next option is a live 211 specialist to screen those exact criteria quickly.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000831#turn-6",
+      "scenarioId": "phone_dialog_0000831",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there\u2019s no exact fit in Washington County, can you steer me to the next-best search, like nearby counties or a medical meal program route?",
+      "normalizedQuery": "if there no exact fit washington county steer next best search like nearby counties medical meal program route",
+      "voiceResponse": "Yes. Next-best, with what we can verify, is to widen the 211 search radius beyond Washington County from 5 miles to 10, 25, 50, then 100, and screen those 12 Native American meal-site providers for private pickup or delivery. A second route is a medical-support path through 211 categories tied to care access, then ask for meal coordination options. If it helps, I can give you a tight one-minute script, or connect you to a live 211 specialist now so you only share the minimum.",
+      "evidenceDocIds": [
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreif6oq25dl3ub76e2er5nqlj7b5thgpddlhjgo5bifvy7mhgs36zuq",
+        "page:bafkreibzy5efotmw3ske2hfpvhghn5uxaccx2jhlgo7egckhrutj3izodq",
+        "page:bafkreihgzzfdnddpilinsiqs53aksaetzp5vxopovkee3ni2og2qeasori"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Next-best, with what we can verify, is to widen the 211 search radius beyond Washington County from 5 miles to 10, 25, 50, then 100, and screen those 12 Native American meal-site providers for private pickup or delivery. A second route is a medical-support path through 211 categories tied to care access, then ask for meal coordination options. If it helps, I can give you a tight one-minute script, or connect you to a live 211 specialist now so you only share the minimum.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000886#turn-1",
+      "scenarioId": "phone_dialog_0000886",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m on a borrowed phone and it\u2019s about to die, so can you give me the most important number first for community meals in Washington County?",
+      "normalizedQuery": "hi on borrowed phone it die so give most important number first community meals washington county",
+      "voiceResponse": "Most important number first: dial **2-1-1** now. Say: \u201cI need community meal sites in Washington County.\u201d If the call drops, try again and ask for the nearest open meal location by city or ZIP.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:e7f69e9f7d66f5f6",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number first: dial **2-1-1** now. Say: \u201cI need community meal sites in Washington County.\u201d If the call drops, try again and ask for the nearest open meal location by city or ZIP.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000886#turn-2",
+      "scenarioId": "phone_dialog_0000886",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, bad connection, can you repeat that number slower?",
+      "normalizedQuery": "hi on borrowed phone it die so give most important number first community meals washington county sorry bad connection repeat slower",
+      "voiceResponse": "Yes. Dial: **2\u2026 1\u2026 1**. That\u2019s **two, one, one**. Then say: \u201cI need community meal sites in Washington County.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:e7f69e9f7d66f5f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Dial: **2\u2026 1\u2026 1**. That\u2019s **two, one, one**. Then say: \u201cI need community meal sites in Washington County.\u201d",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000886#turn-3",
+      "scenarioId": "phone_dialog_0000886",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before I call, is this private? I just don\u2019t want my info shared around.",
+      "normalizedQuery": "hi on borrowed phone it die so give most important number first community meals washington county sorry bad connection repeat slower before call this private just don want info shared around",
+      "voiceResponse": "Good question. Start with **2\u20261\u20261**. You can keep it minimal: just say, \u201cI need community meal sites in Washington County.\u201d If privacy is a concern, share only what you\u2019re comfortable sharing. You can ask for locations by city or ZIP and skip extra details. If the call drops, just redial **2\u20261\u20261**.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "service:07b702b8ba249a9b",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Good question. Start with **2\u20261\u20261**. You can keep it minimal: just say, \u201cI need community meal sites in Washington County.\u201d If privacy is a concern, share only what you\u2019re comfortable sharing. You can ask for locations by city or ZIP and skip extra details. If the call drops, just redial **2\u20261\u20261**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000913#turn-3",
+      "scenarioId": "phone_dialog_0000913",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I'm in Washington County, near the transit center, and I need somewhere I can get a hot meal today.",
+      "normalizedQuery": "i'm washington county transit center somewhere hot meal",
+      "voiceResponse": "Thank you, that helps, and I\u2019m glad you told me where you are. Since you need a hot meal today near the Washington County transit center, I can get you to the closest open meal site right now. I don\u2019t want to risk giving you the wrong location. If you can, call 2-1-1 now and say: \u201cI need a hot meal today near the Washington County transit center.\u201d If your battery is too low, tell me and I\u2019ll keep this as short as possible.",
+      "evidenceDocIds": [
+        "page:bafkreieshrmg2i4oxhqgww626eqzokz7wbtmfd3u3rnzl7zry7n62tlbze",
+        "page:bafkreifrc76ni54qzcyau2midrqew4n55b22jhtse4zsoknh5mwnpd3cbm",
+        "page:bafkreie5mfpz2o4rugpqd5t6jxe7nqp3laotl5fpkfytjadagdh7pupvri",
+        "service:0d4be1a249bfe7ab",
+        "service:6b92be127fcce66a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you, that helps, and I\u2019m glad you told me where you are. Since you need a hot meal today near the Washington County transit center, I can get you to the closest open meal site right now. I don\u2019t want to risk giving you the wrong location. If you can, call 2-1-1 now and say: \u201cI need a hot meal today near the Washington County transit center.\u201d If your battery is too low, tell me and I\u2019ll keep this as short as possible.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000913#turn-4",
+      "scenarioId": "phone_dialog_0000913",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I know I already said it, I'm just tired and my brain's not lining up, I haven't eaten since yesterday.",
+      "normalizedQuery": "hello static uh food pantry meal meals groceries wait hear inaudible no sorry keep losing phone's at like two percent bus loud said think i'm washington county transit center somewhere hot know already it just tired brain's lining up haven't eaten since yesterday",
+      "voiceResponse": "You don\u2019t need to apologize, and I\u2019m really glad you told me. Since you haven\u2019t eaten since yesterday, let\u2019s do the fastest step now: call **2-1-1** and say, \u201cI need a hot meal today near the Washington County transit center.\u201d If 2-1-1 doesn\u2019t connect, backup number is **503\u2026771\u20267914**. I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:b8c762144d937988",
+        "service:0dfbfb30f06432a9",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:d8559ced93d0f936"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You don\u2019t need to apologize, and I\u2019m really glad you told me. Since you haven\u2019t eaten since yesterday, let\u2019s do the fastest step now: call **2-1-1** and say, \u201cI need a hot meal today near the Washington County transit center.\u201d If 2-1-1 doesn\u2019t connect, backup number is **503\u2026771\u20267914**. I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000913#turn-5",
+      "scenarioId": "phone_dialog_0000913",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you say the place name again slower? I missed the street part when that truck went by.",
+      "normalizedQuery": "no sorry keep losing phone's at like two percent bus loud said meals think i'm washington county transit center somewhere hot meal know already it just tired brain's lining up haven't eaten since yesterday say place name again slower missed street part when truck went by",
+      "voiceResponse": "You\u2019re okay, and thanks for repeating that. I don\u2019t have a confirmed street address to give you safely. The fastest step is call **2-1-1** now and say: \u201cI need a hot meal today near the Washington County transit center.\u201d If that doesn\u2019t connect, call **503, 771, 7914**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, and thanks for repeating that. I don\u2019t have a confirmed street address to give you safely. The fastest step is call **2-1-1** now and say: \u201cI need a hot meal today near the Washington County transit center.\u201d If that doesn\u2019t connect, call **503, 771, 7914**.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000941#turn-1",
+      "scenarioId": "phone_dialog_0000941",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, it\u2019s loud out here at the shelter lobby. I\u2019m in Washington County and I need somewhere I can get a meal today.",
+      "normalizedQuery": "hi sorry it loud here at shelter shelters homeless overnight warming lobby washington county somewhere meal",
+      "voiceResponse": "You\u2019re okay, I\u2019ll keep it simple. I have a nearby option: **Overnight Winter Warming Shelter** in Redmond, at **1350 South Highway 97**. They serve a meal each night, and they say **no documents are required**. Phone is **541\u2026 388\u2026 2096**. If you want, I can repeat just the phone or just the address slowly.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b",
+        "service:5ded755b33454184",
+        "service:da479dd20eb5563d",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019ll keep it simple. I have a nearby option: **Overnight Winter Warming Shelter** in Redmond, at **1350 South Highway 97**. They serve a meal each night, and they say **no documents are required**. Phone is **541\u2026 388\u2026 2096**. If you want, I can repeat just the phone or just the address slowly.",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000951#turn-4",
+      "scenarioId": "phone_dialog_0000951",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Washington County, yes, that one, I\u2019m in Washington County and I can\u2019t stand long enough to cook most days.",
+      "normalizedQuery": "hello static wait hear now line keeps cutting no sorry hold on somebody tv loud here um food pantry meal meals groceries older people keep losing words said seniors repeating myself mixed up when talk fast washington county yes one stand long enough cook most days",
+      "voiceResponse": "Thank you. I hear you. You need meals you do not have to cook. Meals you do not have to cook. A service that offers to-go meals and home-delivered food boxes is at **8 8 0 0, S E 8 0th Avenue, Portland, Oregon, 9 7 2 0 6**. Phone is **5 0 3, 7 7 1, 7 9 1 4**. Again: **5 0 3, 7 7 1, 7 9 1 4**. Do you want a short script for what to say when they answer?",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreignxlkjd53hfj72drnwi5m6eqmjdhoz6e37vv2hh6or4xlyhztp5q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I hear you. You need meals you do not have to cook. Meals you do not have to cook. A service that offers to-go meals and home-delivered food boxes is at **8 8 0 0, S E 8 0th Avenue, Portland, Oregon, 9 7 2 0 6**. Phone is **5 0 3, 7 7 1, 7 9 1 4**. Again: **5 0 3, 7 7 1, 7 9 1 4**. Do you want a short script for what to say when they answer?",
+      "voiceResponseAlternatives": [
+        "Absolutely. We can keep it minimal. You can say: \u201cHi, I\u2019m checking senior meal delivery status for Linda in Washington County. Was it approved?\u201d Only share more if they require verification, and you can ask what the minimum is. I won\u2019t include a full address unless they specifically need it.",
+        "You\u2019re doing the right thing calling. I can give you two pantry options today. First: **Clackamas Service Center**, **8800 Southeast 80th Avenue, Portland**. Phone: **503\u2026 771\u2026 7914**. Second: **First Baptist Church pantry**, **909 Southwest 11th Avenue, Portland**. Phone: **503\u2026 228\u2026 7465**. Both say no documents needed. If you want, I can repeat just one number slowly.",
+        "You\u2019re okay, and you did say Washington County. I\u2019m not asking anything else right now. Here\u2019s the key detail again: call **Clackamas Service Center** at **503, 771, 7914** and tell them you need community meals near Washington County. If someone can help you online, use the **Oregon Food Bank meal locator** to find closer sites. You\u2019re not doing this wrong, and I can stay with you while you make the call.",
+        "I hear how scared you are, and you\u2019re not alone. With feeling like you might pass out, call **9-1-1 now** first. If you can still place one quick non-emergency call right after, call **Clackamas Service Center** at **503\u2026771\u20267914** and say: \u201cI\u2019m in Washington County, very weak, and need meal help right away.\u201d If speaking is hard, just read that line. Stay seated, unlock your door if you can, and keep your phone plugged in."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000951#turn-5",
+      "scenarioId": "phone_dialog_0000951",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "food",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say it slow and maybe repeat the number twice? My phone is at like two percent and I panic when it dies.",
+      "normalizedQuery": "no sorry hold on somebody tv loud here um food pantry meal meals groceries older people keep losing words said seniors repeating myself mixed up when talk fast washington county yes one stand long enough cook most days say it slow maybe repeat number twice phone at like two percent panic dies",
+      "voiceResponse": "Yes. I\u2019ll say it slow. Phone number: **5 0 3, 7 7 1, 7 9 1 4**. Again: **5 0 3, 7 7 1, 7 9 1 4**. If it helps, I can repeat it one more time.",
+      "evidenceDocIds": [
+        "service:b8c762144d937988",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slow. Phone number: **5 0 3, 7 7 1, 7 9 1 4**. Again: **5 0 3, 7 7 1, 7 9 1 4**. If it helps, I can repeat it one more time.",
+      "voiceResponseAlternatives": [
+        "Just the missed part: no one gets sent anything unless you want it sent. If I draft a message, you see it first, and you can edit it, send it, or skip it.",
+        "Call this backup number if the main line drops: **5 5 9, 3 6 9, 4 2 1 2**. That\u2019s **five-five-nine**, not five-zero-three or five-one-three.",
+        "I don\u2019t have a confirmed street address or hours to repeat from what I can see. Next step: call **8 0 0, 9 6 5, 6 5 1 9** and ask them to repeat the exact address and tonight\u2019s hours near a bus line. If that drops, backup is **5 5 9, 3 6 9, 4 2 1 2**.",
+        "I hear you. Here it is, slow and clear: **909 Southwest 11th Avenue, Portland**. Phone: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**. Again: **909 Southwest 11th Avenue, Portland**. And: **5 0 3 \u2026 2 2 8 \u2026 7 4 6 5**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -753,6 +1398,126 @@
       "to": "phone_dialog_0000567#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000644#turn-1",
+      "to": "phone_dialog_0000644#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000644#turn-2",
+      "to": "phone_dialog_0000644#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000670#turn-5",
+      "to": "phone_dialog_0000670#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000682#turn-4",
+      "to": "phone_dialog_0000682#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000682#turn-5",
+      "to": "phone_dialog_0000682#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000692#turn-1",
+      "to": "phone_dialog_0000692#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000692#turn-2",
+      "to": "phone_dialog_0000692#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000692#turn-3",
+      "to": "phone_dialog_0000692#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000692#turn-4",
+      "to": "phone_dialog_0000692#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000831#turn-1",
+      "to": "phone_dialog_0000831#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000831#turn-4",
+      "to": "phone_dialog_0000831#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000886#turn-1",
+      "to": "phone_dialog_0000886#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000886#turn-2",
+      "to": "phone_dialog_0000886#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000886#turn-3",
+      "to": "phone_dialog_0000886#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000913#turn-3",
+      "to": "phone_dialog_0000913#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000913#turn-4",
+      "to": "phone_dialog_0000913#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000913#turn-5",
+      "to": "phone_dialog_0000913#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000941#turn-1",
+      "to": "phone_dialog_0000941#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000951#turn-4",
+      "to": "phone_dialog_0000951#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000951#turn-5",
+      "to": "phone_dialog_0000951#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

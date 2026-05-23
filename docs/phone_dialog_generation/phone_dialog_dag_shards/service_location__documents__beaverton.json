@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__beaverton",
   "kind": "service_location",
   "key": "documents__beaverton",
-  "nodeCount": 2,
+  "nodeCount": 8,
   "nodes": [
     {
       "id": "phone_dialog_0000252#turn-1",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re not alone, and we can keep this simple. I can connect you to a live specialist right now to find the fastest ID-replacement help in Beaverton, including same-day options and nearby document support. If your phone battery is low, we can do the shortest path first and get you connected immediately.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Absolutely, and you\u2019re asking the right thing. The best contact is Oregon\u2019s benefits line: **855, 328, 6715**. They can screen her for SSDI and SSI, help with the application, and tell you the right local office options for Beaverton. If you need in-person help, there\u2019s also **209 Southwest 4th Avenue, Suite 200, Portland**. For documents, call first even if you don\u2019t have them yet, then ask exactly what to bring next for her case."
+      ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
@@ -51,10 +53,171 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. Most important number: **2-1-1**. Again: **2-1-1**. Call 2-1-1 and say, \u201cI need ID replacement help in Beaverton.\u201d They can route you fast. If the call drops, call back **2-1-1**. Do you want a one-sentence script to read when they answer?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "That\u2019s really stressful, and you\u2019re doing the right thing by calling. A solid next step is 211info\u2014they can help you find the right local ID-replacement path in Beaverton and what to do first. If privacy is a concern, you can keep details minimal and only share what you\u2019re comfortable sharing. If you want, I can help you make a short call plan so you know exactly what to ask when you contact them.",
+        "That makes total sense, and you\u2019re not overreacting. Let\u2019s keep it low-risk: when you call 211info, start with, \u201cI lost my ID in Beaverton and want replacement steps without sharing extra personal details yet.\u201d Ask what the minimum information is for each step, and only give details if it unlocks the next action. If you want, I can help you rehearse a 20-second script before you call."
+      ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000752#turn-4",
+      "scenarioId": "phone_dialog_0000752",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "live_agent",
+      "user": "Could you tell me who in Beaverton can help her with the application and what documents she should bring?",
+      "normalizedQuery": "could tell who beaverton her application documents she should bring",
+      "voiceResponse": "Absolutely, and you\u2019re asking the right thing. The best contact is Oregon\u2019s benefits line: **855, 328, 6715**. They can screen her for SSDI and SSI, help with the application, and tell you the right local office options for Beaverton. If you need in-person help, there\u2019s also **209 Southwest 4th Avenue, Suite 200, Portland**. For documents, call first even if you don\u2019t have them yet, then ask exactly what to bring next for her case.",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and you\u2019re asking the right thing. The best contact is Oregon\u2019s benefits line: **855, 328, 6715**. They can screen her for SSDI and SSI, help with the application, and tell you the right local office options for Beaverton. If you need in-person help, there\u2019s also **209 Southwest 4th Avenue, Suite 200, Portland**. For documents, call first even if you don\u2019t have them yet, then ask exactly what to bring next for her case.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not alone, and we can keep this simple. I can connect you to a live specialist right now to find the fastest ID-replacement help in Beaverton, including same-day options and nearby document support. If your phone battery is low, we can do the shortest path first and get you connected immediately."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000829#turn-1",
+      "scenarioId": "phone_dialog_0000829",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, um, I\u2019m in Beaverton and I lost my ID, and I don\u2019t really know where to start replacing it.",
+      "normalizedQuery": "hi um beaverton lost id don really know start replacing it",
+      "voiceResponse": "That\u2019s really stressful, and you\u2019re doing the right thing by calling. A solid next step is 211info\u2014they can help you find the right local ID-replacement path in Beaverton and what to do first. If privacy is a concern, you can keep details minimal and only share what you\u2019re comfortable sharing. If you want, I can help you make a short call plan so you know exactly what to ask when you contact them.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s really stressful, and you\u2019re doing the right thing by calling. A solid next step is 211info\u2014they can help you find the right local ID-replacement path in Beaverton and what to do first. If privacy is a concern, you can keep details minimal and only share what you\u2019re comfortable sharing. If you want, I can help you make a short call plan so you know exactly what to ask when you contact them.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number: **2-1-1**. Again: **2-1-1**. Call 2-1-1 and say, \u201cI need ID replacement help in Beaverton.\u201d They can route you fast. If the call drops, call back **2-1-1**. Do you want a one-sentence script to read when they answer?",
+        "That makes total sense, and you\u2019re not overreacting. Let\u2019s keep it low-risk: when you call 211info, start with, \u201cI lost my ID in Beaverton and want replacement steps without sharing extra personal details yet.\u201d Ask what the minimum information is for each step, and only give details if it unlocks the next action. If you want, I can help you rehearse a 20-second script before you call."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000829#turn-2",
+      "scenarioId": "phone_dialog_0000829",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I do need help, but I\u2019m nervous about giving my information out over the phone.",
+      "normalizedQuery": "hi um beaverton lost id don really know start replacing it nervous giving information over phone",
+      "voiceResponse": "That makes total sense, and you\u2019re not overreacting. Let\u2019s keep it low-risk: when you call 211info, start with, \u201cI lost my ID in Beaverton and want replacement steps without sharing extra personal details yet.\u201d Ask what the minimum information is for each step, and only give details if it unlocks the next action. If you want, I can help you rehearse a 20-second script before you call.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:b3df5eb9eb4af8a4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:e8399a8259fb5c21"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re not overreacting. Let\u2019s keep it low-risk: when you call 211info, start with, \u201cI lost my ID in Beaverton and want replacement steps without sharing extra personal details yet.\u201d Ask what the minimum information is for each step, and only give details if it unlocks the next action. If you want, I can help you rehearse a 20-second script before you call.",
+      "voiceResponseAlternatives": [
+        "Yes. Most important number: **2-1-1**. Again: **2-1-1**. Call 2-1-1 and say, \u201cI need ID replacement help in Beaverton.\u201d They can route you fast. If the call drops, call back **2-1-1**. Do you want a one-sentence script to read when they answer?",
+        "That\u2019s really stressful, and you\u2019re doing the right thing by calling. A solid next step is 211info\u2014they can help you find the right local ID-replacement path in Beaverton and what to do first. If privacy is a concern, you can keep details minimal and only share what you\u2019re comfortable sharing. If you want, I can help you make a short call plan so you know exactly what to ask when you contact them."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000829#turn-4",
+      "scenarioId": "phone_dialog_0000829",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I\u2019m not trying to be difficult, I just can\u2019t risk my stuff getting out there.",
+      "normalizedQuery": "hi um beaverton lost id don really know start replacing it nervous giving information over phone if have upload proof documents who see those they shared anyone else trying be difficult just risk stuff getting there",
+      "voiceResponse": "You\u2019re not being difficult at all, and protecting your information is a smart call. I don\u2019t have a strong verified local policy match in front of me on document-sharing rules, so the safest next step is to get a live 211info specialist and ask privacy questions before you share anything. If you want, I can help you with one exact sentence to use so you only give the minimum.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not being difficult at all, and protecting your information is a smart call. I don\u2019t have a strong verified local policy match in front of me on document-sharing rules, so the safest next step is to get a live 211info specialist and ask privacy questions before you share anything. If you want, I can help you with one exact sentence to use so you only give the minimum.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000997#turn-6",
+      "scenarioId": "phone_dialog_0000997",
+      "turnIndex": 5,
+      "route": "app_surface_navigation",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "app_surface_navigation",
+      "user": "Also bring up the calendar so I can set a reminder to call them tomorrow morning.",
+      "normalizedQuery": "wait was on beaverton hillsdale somewhere else misheard street please read phone number chunks like three numbers at time so write it down abby open messages send this sister right now also bring up calendar set reminder call them tomorrow morning",
+      "voiceResponse": "Yes. Opening **Calendar** now. I\u2019ll repeat: opening **Calendar** now. On this screen, you can create a reminder to call them tomorrow morning. Next, tap **New Reminder**, then set it for tomorrow morning, then save it. What time tomorrow morning do you want?",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Opening **Calendar** now. I\u2019ll repeat: opening **Calendar** now. On this screen, you can create a reminder to call them tomorrow morning. Next, tap **New Reminder**, then set it for tomorrow morning, then save it. What time tomorrow morning do you want?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001046#turn-4",
+      "scenarioId": "phone_dialog_0001046",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "beaverton",
+      "promptTemplate": "wallet_document_support",
+      "user": "Do I need to send files, or can I use a QR code proof bundle from my wallet instead?",
+      "normalizedQuery": "hi beaverton clothing like place clothes this week sorry hard hearing on line repeat slowly phone number chunks before upload anything check already saved wallet don want extra personal stuff sitting there send files use qr code proof bundle from instead",
+      "voiceResponse": "You may not need to send full files. A QR proof bundle is often enough and shares less personal data, so it\u2019s a good first option. Try this: open Wallet, choose the document, tap **Share proof** or **QR bundle**, and show that first. If they can\u2019t accept QR, send only the one required file, not your whole wallet. You stay in control either way.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:bbea7883a5477e64",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You may not need to send full files. A QR proof bundle is often enough and shares less personal data, so it\u2019s a good first option. Try this: open Wallet, choose the document, tap **Share proof** or **QR bundle**, and show that first. If they can\u2019t accept QR, send only the one required file, not your whole wallet. You stay in control either way.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -69,6 +232,36 @@
       "to": "phone_dialog_0000603#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000752#turn-4",
+      "to": "phone_dialog_0000752#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000829#turn-1",
+      "to": "phone_dialog_0000829#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000829#turn-2",
+      "to": "phone_dialog_0000829#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000829#turn-4",
+      "to": "phone_dialog_0000829#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001046#turn-4",
+      "to": "phone_dialog_0001046#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->wallet_document_support"
     }
   ]
 }

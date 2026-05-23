@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__general__salem",
   "kind": "service_location",
   "key": "general__salem",
-  "nodeCount": 13,
+  "nodeCount": 28,
   "nodes": [
     {
       "id": "phone_dialog_0000050#turn-2",
@@ -386,6 +386,439 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "background_noise",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000630#turn-2",
+      "scenarioId": "phone_dialog_0000630",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in... uh... Salem, yeah, Salem, but I missed what you said after that.",
+      "normalizedQuery": "hello hear now your voice cutting on end uh salem yeah missed said after",
+      "voiceResponse": "Thanks. I heard \u201cSalem.\u201d Your audio is still unclear. Please say one choice: Do you want a **crisis hotline number**, or a **local service address**? Crisis hotline number, or local service address?",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:09f0f9ede3cd2dda",
+        "service:d9380e3f0b953616",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidmvamtlfb4hntegcosgjot4ufype3foxat2tsucu5g2jqm4oxyqm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks. I heard \u201cSalem.\u201d Your audio is still unclear. Please say one choice: Do you want a **crisis hotline number**, or a **local service address**? Crisis hotline number, or local service address?",
+      "voiceResponseAlternatives": [
+        "Thanks. I heard Salem. I heard Salem. The audio was unclear, so I asked you to pick one kind of help: laundry help, or free clothing and household help. Which one do you want?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000652#turn-2",
+      "scenarioId": "phone_dialog_0000652",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, and I\u2019m not okay right now, my head is racing and I keep feeling like I might do something dumb.",
+      "normalizedQuery": "salem okay right now head racing keep feeling like might something dumb",
+      "voiceResponse": "Thank you for telling me. This is urgent. Call **911 now**: **9-1-1**. Say: \u201cI\u2019m in Salem. I\u2019m not safe with myself right now. I need help now.\u201d If you can\u2019t make the call, hand the phone to someone nearby and have them call **911** for you. Stay with me while you do it.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:4e7a1d6f366bccc4",
+        "service:9c1a485121b7fe69",
+        "service:9f5dcc96f7ee265e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. This is urgent. Call **911 now**: **9-1-1**. Say: \u201cI\u2019m in Salem. I\u2019m not safe with myself right now. I need help now.\u201d If you can\u2019t make the call, hand the phone to someone nearby and have them call **911** for you. Stay with me while you do it.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000652#turn-3",
+      "scenarioId": "phone_dialog_0000652",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "I don\u2019t really trust hospitals, I just need somewhere I won\u2019t get judged or turned away.",
+      "normalizedQuery": "hi give most important number first this isn phone it at like two percent salem okay right now head racing keep feeling might something dumb don really trust hospitals just somewhere won judged turned away",
+      "voiceResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2ef319d5e12550a7",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000652#turn-4",
+      "scenarioId": "phone_dialog_0000652",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, you cut out for a second, can you say that number again slower?",
+      "normalizedQuery": "hi give most important number first this isn phone it at like two percent salem okay right now head racing keep feeling might something dumb don really trust hospitals just somewhere won judged turned away sorry cut second say again slower",
+      "voiceResponse": "Yes. The number is **9-1-1**. Slowly: **nine\u2026 one\u2026 one**. If you feel unsafe right now, call **9-1-1** now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need help now.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:2ef319d5e12550a7",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. Slowly: **nine\u2026 one\u2026 one**. If you feel unsafe right now, call **9-1-1** now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need help now.\u201d",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-1",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 0,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Hi, um, I called last week about getting help so I don\u2019t get evicted, in Salem, and I can\u2019t remember who I talked to.",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked",
+      "voiceResponse": "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:0f54d8a0521f759c",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+        "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-2",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Sorry, can you hold on\u2014there\u2019s noise here\u2014okay, they told me to do an intake, and I did one on Tuesday, I think.",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked sorry hold on there noise here okay they told an intake did one tuesday think",
+      "voiceResponse": "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+        "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-3",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "They asked for my lease and my shutoff notice, no, not shutoff, sorry, the pay-or-quit paper from my landlord.",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked sorry hold on there noise here okay they told an intake did one tuesday think asked lease shutoff notice no pay quit paper from landlord",
+      "voiceResponse": "You\u2019re doing great, and that correction helps a lot. Yes, that makes sense: they\u2019re asking for your lease and the pay-or-quit notice from your landlord. Next step is to send those two documents together, then call and say, \u201cI submitted my lease and pay-or-quit notice. Can you confirm you received them and tell me my next step?\u201d I can repeat that slowly if you want.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great, and that correction helps a lot. Yes, that makes sense: they\u2019re asking for your lease and the pay-or-quit notice from your landlord. Next step is to send those two documents together, then call and say, \u201cI submitted my lease and pay-or-quit notice. Can you confirm you received them and tell me my next step?\u201d I can repeat that slowly if you want.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000704#turn-4",
+      "scenarioId": "phone_dialog_0000704",
+      "turnIndex": 3,
+      "route": "service_interaction_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "service_interaction_support",
+      "user": "Can you write down that I already did the screening call so I don\u2019t have to start over again?",
+      "normalizedQuery": "hi um called last week getting so don evicted salem remember who talked sorry hold on there noise here okay they told an intake did one tuesday think asked lease shutoff notice no pay quit paper from landlord write down already screening call have start over again",
+      "voiceResponse": "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, and I\u2019m glad you said that. Here\u2019s the note to use: \u201cI already completed the screening call on Tuesday, and I\u2019m calling for a status update so I don\u2019t have to start over.\u201d Next step: send that with your lease and pay-or-quit notice, then ask them to confirm they received everything and tell you the next step.",
+      "voiceResponseAlternatives": [
+        "I hear you, and you did the right thing calling back. Here\u2019s what we know: last week you called for eviction help in Salem, but the staff name wasn\u2019t saved. Next step, we can restart that follow-up now so you don\u2019t lose time. I can help you draft exactly what to say: \u201cI called last week about eviction prevention in Salem and need to reconnect with that referral.\u201d If you\u2019d like, we can do that message together, slowly.",
+        "You\u2019re doing a good job keeping track, especially with all that noise. Here\u2019s what I heard: they asked you to complete an intake, and you likely did it on Tuesday. That\u2019s an important step done. Next follow-up is to call back and say, \u201cI completed the intake on Tuesday and need a status update on my eviction-prevention referral in Salem.\u201d If you want, I can help you say that slowly, one line at a time."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000780#turn-3",
+      "scenarioId": "phone_dialog_0000780",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, and I don\u2019t have much money right now.",
+      "normalizedQuery": "salem don have much money right now",
+      "voiceResponse": "One next step: I\u2019m going to connect you to a live 211 specialist right now to find same-day low-cost dental care in Salem. If you have trouble breathing, swelling in your face or throat, or severe chest pain, call 911 now. Stay with me while I start the handoff.",
+      "evidenceDocIds": [
+        "service:40ac5e4905ee6c6a",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:6a3157d5a2060487",
+        "page:bafkreig662pdvatlzqpnzwqcafv6s33loe2szwhmhzb46j7dqz6432s5ki",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "One next step: I\u2019m going to connect you to a live 211 specialist right now to find same-day low-cost dental care in Salem. If you have trouble breathing, swelling in your face or throat, or severe chest pain, call 911 now. Stay with me while I start the handoff.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000791#turn-3",
+      "scenarioId": "phone_dialog_0000791",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "What did you ask me? Sorry, my brain is foggy, I didn\u2019t sleep... Salem, I\u2019m in Salem.",
+      "normalizedQuery": "hello hi sorry hear bus loud hold on needed um washing place store like can't keep track did ask brain foggy didn sleep salem",
+      "voiceResponse": "Thanks. I heard Salem. I heard Salem. The audio was unclear, so I asked you to pick one kind of help: laundry help, or free clothing and household help. Which one do you want?",
+      "evidenceDocIds": [
+        "service:00423e828ac74a29",
+        "service:666ca144ed02ced9",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:a1e021534ee03771"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thanks. I heard Salem. I heard Salem. The audio was unclear, so I asked you to pick one kind of help: laundry help, or free clothing and household help. Which one do you want?",
+      "voiceResponseAlternatives": [
+        "Thanks. I heard \u201cSalem.\u201d Your audio is still unclear. Please say one choice: Do you want a **crisis hotline number**, or a **local service address**? Crisis hotline number, or local service address?"
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000796#turn-3",
+      "scenarioId": "phone_dialog_0000796",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Salem. I don't have a steady place right now, so I keep missing important letters.",
+      "normalizedQuery": "i'm salem don't have steady place right now so keep missing important letters",
+      "voiceResponse": "I hear how hard this is, and you\u2019re doing the right thing by calling. Let\u2019s do one step now: call **AnyDoor Place Coordinated Entry** and ask for help with a safe mailing address and housing navigation. The number is **503, 472, 0712**. A second line is **503, 472, 0457**. They\u2019re in McMinnville, and intake says no documents are required. If you feel in immediate danger tonight, call **911** right away.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:150f0f2cc852aa6d",
+        "service:0f54d8a0521f759c",
+        "service:8633bf7679779ba4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear how hard this is, and you\u2019re doing the right thing by calling. Let\u2019s do one step now: call **AnyDoor Place Coordinated Entry** and ask for help with a safe mailing address and housing navigation. The number is **503, 472, 0712**. A second line is **503, 472, 0457**. They\u2019re in McMinnville, and intake says no documents are required. If you feel in immediate danger tonight, call **911** right away.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000884#turn-5",
+      "scenarioId": "phone_dialog_0000884",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Can you repeat the number one more time, like really slow? My battery is low and I\u2019m writing it down.",
+      "normalizedQuery": "slow down little salem keep getting letters don understand wait sorry office was line cut missed it panicking because hands shake fill these forms right scared ll lose everything repeat number one more time like really battery low writing",
+      "voiceResponse": "Absolutely, I\u2019ll go slow. I don\u2019t have a phone number showing on my screen yet, so I don\u2019t want to give you a wrong one. Say just one word now: **\u201capply\u201d** or **\u201cappeal.\u201d** As soon as you say it, I\u2019ll give you the exact office number, slowly, in chunks for writing.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019ll go slow. I don\u2019t have a phone number showing on my screen yet, so I don\u2019t want to give you a wrong one. Say just one word now: **\u201capply\u201d** or **\u201cappeal.\u201d** As soon as you say it, I\u2019ll give you the exact office number, slowly, in chunks for writing.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000929#turn-4",
+      "scenarioId": "phone_dialog_0000929",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, near downtown, and I just need somewhere safe to sleep tonight.",
+      "normalizedQuery": "salem downtown just somewhere safe sleep tonight",
+      "voiceResponse": "If you feel too weak to stand or might pass out, call **9-1-1** first right now. If you can make one shelter call now: **SAFE SLEEP UNITED** at **503-816-3409**. I\u2019ll repeat: **5-0-3, 8-1-6, 3-4-0-9**. Address: **1910 Front Street Northeast, Salem**.",
+      "evidenceDocIds": [
+        "service:a1e021534ee03771",
+        "service:2e6331f97ca5eacd",
+        "page:bafkreiaivop5s26hcgcpstok2unp3jdsfec2wne2pd4macooorcwmvszka",
+        "page:bafkreihh2krqxnurjyvvx7znzvjfowgcehm54dx5fo5tqsdbi6lhxz6pjq",
+        "service:00423e828ac74a29"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If you feel too weak to stand or might pass out, call **9-1-1** first right now. If you can make one shelter call now: **SAFE SLEEP UNITED** at **503-816-3409**. I\u2019ll repeat: **5-0-3, 8-1-6, 3-4-0-9**. Address: **1910 Front Street Northeast, Salem**.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000957#turn-6",
+      "scenarioId": "phone_dialog_0000957",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Thank you, I wrote it down now. If that one has a waitlist, can you give me one more in Salem?",
+      "normalizedQuery": "okay wait number broke up on end heard five zero three then lost could repeat full phone one digit at time don hear well calls address too please thought said oak street might ve wrong thank wrote it down now if has waitlist give more salem",
+      "voiceResponse": "You\u2019re welcome. I\u2019m glad you got it down. If there\u2019s a waitlist, I can connect you to a live agent for Salem options. I can repeat the number now: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. Do you want me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:a9d632ba94833b03"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re welcome. I\u2019m glad you got it down. If there\u2019s a waitlist, I can connect you to a live agent for Salem options. I can repeat the number now: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. Do you want me to connect you now?",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001005#turn-1",
+      "scenarioId": "phone_dialog_0001005",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m calling for my nephew, not for me. He\u2019s 16 and staying with different people right now in Salem.",
+      "normalizedQuery": "hi calling nephew he 16 staying different people right now salem",
+      "voiceResponse": "You\u2019re doing the right thing calling for him. Since he\u2019s 16 and moving between places in Salem, let\u2019s treat this as urgent today: if he\u2019s in immediate danger or talking about hurting himself, call 911 right now. If he\u2019s not in immediate danger, contact 211 now and ask for youth crisis shelter and same-day safety resources in Salem; 211info serves all Oregon counties. I can stay with you while you make that call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:bf0682fd9fa9809c",
+        "service:437ec64b59b0ac16",
+        "page:bafkreib4ozk6icnke7h2icegdhgp37wo6u6kbcoqxxyxj5lbglv3fed65u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing calling for him. Since he\u2019s 16 and moving between places in Salem, let\u2019s treat this as urgent today: if he\u2019s in immediate danger or talking about hurting himself, call 911 right now. If he\u2019s not in immediate danger, contact 211 now and ask for youth crisis shelter and same-day safety resources in Salem; 211info serves all Oregon counties. I can stay with you while you make that call.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -440,6 +873,90 @@
     {
       "from": "phone_dialog_0000570#turn-1",
       "to": "phone_dialog_0000570#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000630#turn-2",
+      "to": "phone_dialog_0000630#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000652#turn-2",
+      "to": "phone_dialog_0000652#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0000652#turn-3",
+      "to": "phone_dialog_0000652#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000652#turn-4",
+      "to": "phone_dialog_0000652#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-1",
+      "to": "phone_dialog_0000704#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-2",
+      "to": "phone_dialog_0000704#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-3",
+      "to": "phone_dialog_0000704#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000704#turn-4",
+      "to": "phone_dialog_0000704#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000780#turn-3",
+      "to": "phone_dialog_0000780#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000791#turn-3",
+      "to": "phone_dialog_0000791#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000796#turn-3",
+      "to": "phone_dialog_0000796#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000884#turn-5",
+      "to": "phone_dialog_0000884#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000929#turn-4",
+      "to": "phone_dialog_0000929#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001005#turn-1",
+      "to": "phone_dialog_0001005#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

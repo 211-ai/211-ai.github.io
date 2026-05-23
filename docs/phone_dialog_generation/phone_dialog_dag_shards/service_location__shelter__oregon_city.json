@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__shelter__oregon_city",
   "kind": "service_location",
   "key": "shelter__oregon_city",
-  "nodeCount": 32,
+  "nodeCount": 56,
   "nodes": [
     {
       "id": "phone_dialog_0000019#turn-4",
@@ -950,6 +950,705 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000714#turn-2",
+      "scenarioId": "phone_dialog_0000714",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Oregon City, near downtown, and I need a warming center tonight because I can\u2019t stay outside.",
+      "normalizedQuery": "oregon city downtown warming center tonight because stay outside",
+      "voiceResponse": "You\u2019re in the right place. Because you have chest tightness and feel very sick, this could be an emergency, so call **911 now** if breathing or chest pain gets worse. For tonight, go to the **Daytime Winter Warming Center** at **606 John Adams Street, Oregon City**. Phone: **503\u2026 657\u2026 8269**. If you want, I can stay with you while you call.",
+      "evidenceDocIds": [
+        "service:b8b8a8019e422e3b",
+        "service:e629046ee4d2e382",
+        "service:0bd877900ad5d08d",
+        "service:9e7aba9bfb8fff16",
+        "service:1a6e464c5c032257"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re in the right place. Because you have chest tightness and feel very sick, this could be an emergency, so call **911 now** if breathing or chest pain gets worse. For tonight, go to the **Daytime Winter Warming Center** at **606 John Adams Street, Oregon City**. Phone: **503\u2026 657\u2026 8269**. If you want, I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000714#turn-3",
+      "scenarioId": "phone_dialog_0000714",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Can you slow down? I\u2019m trying to listen but I keep missing words, I\u2019m kind of panicking.",
+      "normalizedQuery": "hi sorry doing good shaking warm chest feels really tight oregon city downtown warming center tonight because stay outside slow down trying listen keep missing words kind panicking",
+      "voiceResponse": "Yes. I\u2019ll go slowly. First, safety check: if your chest tightness or breathing gets worse, call **911** now. For tonight, go to: **606 John Adams Street, Oregon City**. Phone number: **503 \u2026 657 \u2026 8269**. You can say \u201crepeat address\u201d or \u201crepeat phone,\u201d and I\u2019ll repeat just that part.",
+      "evidenceDocIds": [
+        "service:b8b8a8019e422e3b",
+        "service:0bd877900ad5d08d",
+        "service:9e7aba9bfb8fff16",
+        "service:1a6e464c5c032257",
+        "service:8238e7b7a38b001a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll go slowly. First, safety check: if your chest tightness or breathing gets worse, call **911** now. For tonight, go to: **606 John Adams Street, Oregon City**. Phone number: **503 \u2026 657 \u2026 8269**. You can say \u201crepeat address\u201d or \u201crepeat phone,\u201d and I\u2019ll repeat just that part.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000714#turn-4",
+      "scenarioId": "phone_dialog_0000714",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Wait, what did you say the address was? Please repeat it, I\u2019m dizzy and I didn\u2019t catch it.",
+      "normalizedQuery": "hi sorry doing good shaking warm chest feels really tight oregon city downtown warming center tonight because stay outside slow down trying listen keep missing words kind panicking wait did say address was please repeat it dizzy didn catch",
+      "voiceResponse": "Address: **606 John Adams Street, Oregon City**. I\u2019ll say it again: **606 \u2026 John Adams Street \u2026 Oregon City**. If your chest tightness or breathing gets worse, call **911** now.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Address: **606 John Adams Street, Oregon City**. I\u2019ll say it again: **606 \u2026 John Adams Street \u2026 Oregon City**. If your chest tightness or breathing gets worse, call **911** now.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000714#turn-5",
+      "scenarioId": "phone_dialog_0000714",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "My phone battery is at like two percent, so if we get cut off, can you give me the quickest place first?",
+      "normalizedQuery": "oregon city downtown warming center tonight because stay outside slow down trying listen keep missing words kind panicking wait did say address was please repeat it dizzy didn catch phone battery at like two percent so if we cut off give quickest place first",
+      "voiceResponse": "Quickest place first: **606 John Adams Street, Oregon City**. Phone: **503 \u2026 657 \u2026 8269**. If your chest tightness, dizziness, or breathing gets worse, call **911** right now. I can repeat just the phone or just the address one more time.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quickest place first: **606 John Adams Street, Oregon City**. Phone: **503 \u2026 657 \u2026 8269**. If your chest tightness, dizziness, or breathing gets worse, call **911** right now. I can repeat just the phone or just the address one more time.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000766#turn-4",
+      "scenarioId": "phone_dialog_0000766",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Oregon City, yes, Oregon City... did you say Portland? No, Oregon City.",
+      "normalizedQuery": "hello hear line keeps cutting sorry uh medical no legal aid attorney advocacy think um housing wait say slower please don well on this ear oregon city yes did portland",
+      "voiceResponse": "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
+      "evidenceDocIds": [
+        "service:0963e94e6b3dc85a",
+        "service:a4f4532cd4713872",
+        "service:edd134b3af222b57",
+        "service:886116c15fd78132",
+        "page:bafkreicuwafofc7at3r5slvg4m7hdnp5ny3f73xyfam7h6gpjygcenroay"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you. I heard **Oregon City**. I heard **Oregon City**. Your audio is still a little unclear on my end. One quick choice, please: Do you want **general legal aid for housing**, or **intimate partner violence legal help**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000766#turn-5",
+      "scenarioId": "phone_dialog_0000766",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you give me the number in little pieces? Like three digits at a time.",
+      "normalizedQuery": "uh medical no legal aid attorney advocacy think um housing wait say slower please don hear well on this ear oregon city yes did portland give number little pieces like three digits at time",
+      "voiceResponse": "Yes. I can do that slowly. For **general legal aid**: **Five four one**. **Three eight five**. **Six nine five zero**. I\u2019ll repeat: **five four one**. **three eight five**. **six nine five zero**. For **intimate partner violence legal help**: **Five zero three**. **Nine eight eight**. **Six four zero zero**. I\u2019ll repeat: **five zero three**. **nine eight eight**. **six four zero zero**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0963e94e6b3dc85a",
+        "service:a4f4532cd4713872",
+        "page:bafkreidauzrb4uivb5k7qe47ojiamoc2gyt4xsbvxsux6rclua2gvsfhla",
+        "page:bafkreih6misfhdwx4z2wqmfbd2tavnam7irrs7q3ekzsprs3aras3p5rpu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can do that slowly. For **general legal aid**: **Five four one**. **Three eight five**. **Six nine five zero**. I\u2019ll repeat: **five four one**. **three eight five**. **six nine five zero**. For **intimate partner violence legal help**: **Five zero three**. **Nine eight eight**. **Six four zero zero**. I\u2019ll repeat: **five zero three**. **nine eight eight**. **six four zero zero**.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000816#turn-1",
+      "scenarioId": "phone_dialog_0000816",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I\u2019m in Oregon City and I keep getting bounced around \u2014 I need a youth day center for my nephew, like daytime only, not overnight.",
+      "normalizedQuery": "hi sorry hear oregon city keep getting bounced around youth day center nephew like daytime only overnight",
+      "voiceResponse": "Yes, I hear you. For Oregon City, I can offer a daytime drop-in option: **Daytime Winter Warming Center** at **606 John Adams Street**. Phone is **503-657-8269**. It\u2019s daytime only, not overnight, and no documents are required. If you want, there\u2019s also a nearby daytime site in Milwaukie at **16201 SE McLoughlin Boulevard**, same phone number: **503-657-8269**.",
+      "evidenceDocIds": [
+        "service:b8b8a8019e422e3b",
+        "service:bcf37dc00eac7674",
+        "service:8238e7b7a38b001a",
+        "service:482bab1dc03c3d7f",
+        "service:61a8027f74a01ee0"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. For Oregon City, I can offer a daytime drop-in option: **Daytime Winter Warming Center** at **606 John Adams Street**. Phone is **503-657-8269**. It\u2019s daytime only, not overnight, and no documents are required. If you want, there\u2019s also a nearby daytime site in Milwaukie at **16201 SE McLoughlin Boulevard**, same phone number: **503-657-8269**.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000816#turn-2",
+      "scenarioId": "phone_dialog_0000816",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And I know this sounds super specific, but I need one that takes walk-ins, has trauma support, and maybe a quiet room for kids who get overstimulated \u2014 sorry, I\u2019m talking fast.",
+      "normalizedQuery": "hi sorry hear oregon city keep getting bounced around youth day center nephew like daytime only overnight know this sounds super specific one takes walk ins has trauma support maybe quiet room kids who overstimulated talking fast",
+      "voiceResponse": "You\u2019re making sense, and you\u2019re not asking too much. For the Oregon City daytime site, I can confirm daytime drop-in and no documents required, but I can\u2019t verify trauma support or a quiet room from what I have. Fastest option is to call and ask those three points directly: walk-ins, trauma-informed staff, and a low-stimulation space. Number: 503\u2026657\u20268269. If you want, use the same number for the Milwaukie daytime site too.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:b8b8a8019e422e3b",
+        "service:8238e7b7a38b001a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re making sense, and you\u2019re not asking too much. For the Oregon City daytime site, I can confirm daytime drop-in and no documents required, but I can\u2019t verify trauma support or a quiet room from what I have. Fastest option is to call and ask those three points directly: walk-ins, trauma-informed staff, and a low-stimulation space. Number: 503\u2026657\u20268269. If you want, use the same number for the Milwaukie daytime site too.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000816#turn-4",
+      "scenarioId": "phone_dialog_0000816",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I already checked two places and they were either full or basically after-school clubs, which is not the same thing I\u2019m asking for.",
+      "normalizedQuery": "hi sorry hear oregon city keep getting bounced around youth day center nephew like daytime only overnight know this sounds super specific one takes walk ins has trauma support maybe quiet room kids who overstimulated talking fast wait did say after clackamas cut second repeat name if they re actually already checked two places were either full basically school clubs which same asking",
+      "voiceResponse": "That makes total sense, and you\u2019re right, that\u2019s not the same service. Let\u2019s keep this simple: call **503-657-8269** and ask for three filters up front: **daytime-only youth drop-in**, **walk-ins accepted today**, and **trauma-informed staff with a low-stimulation space**. If they\u2019re full, ask what nearby site has openings **right now**. I can help you word it if you want.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense, and you\u2019re right, that\u2019s not the same service. Let\u2019s keep this simple: call **503-657-8269** and ask for three filters up front: **daytime-only youth drop-in**, **walk-ins accepted today**, and **trauma-informed staff with a low-stimulation space**. If they\u2019re full, ask what nearby site has openings **right now**. I can help you word it if you want.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000823#turn-1",
+      "scenarioId": "phone_dialog_0000823",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m sorry, I don\u2019t feel good at all, I\u2019m shaking and my chest hurts a little, and I\u2019m outside by the transit center in Oregon City.",
+      "normalizedQuery": "hi sorry don feel good at all shaking chest hurts little outside by transit center oregon city",
+      "voiceResponse": "I\u2019m really glad you told me. Chest pain and shaking can be serious, so please call **911 right now**. If you can, sit down, stay as still as possible, and take slow breaths while you wait. If someone is nearby, ask them to stay with you and call for you if speaking is hard. You\u2019re at the Oregon City transit center, so tell 911 that exact location first.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:0c11a529e3153ee8",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreib6nmht7udiukswm5qdmshwpitxtcttggofjrfwvaercrz5c2rrqy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. Chest pain and shaking can be serious, so please call **911 right now**. If you can, sit down, stay as still as possible, and take slow breaths while you wait. If someone is nearby, ask them to stay with you and call for you if speaking is hard. You\u2019re at the Oregon City transit center, so tell 911 that exact location first.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000823#turn-3",
+      "scenarioId": "phone_dialog_0000823",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "What? I missed that, there\u2019s a bus pulling in and I can\u2019t hear you, can you say the address again slower?",
+      "normalizedQuery": "hi sorry don feel good at all shaking chest hurts little outside by transit center oregon city warming tonight think stay here much longer missed there bus pulling hear say address again slower",
+      "voiceResponse": "I hear you. Here\u2019s the address again, slowly: **one one five four, Northwest A Street, Toledo**. I\u2019ll repeat it once more: **1154 Northwest A Street, Toledo**.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:b8b8a8019e422e3b",
+        "service:e5c3b5bc56325eec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Here\u2019s the address again, slowly: **one one five four, Northwest A Street, Toledo**. I\u2019ll repeat it once more: **1154 Northwest A Street, Toledo**.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000823#turn-5",
+      "scenarioId": "phone_dialog_0000823",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I keep coughing, my phone battery is at like three percent, can you give me the quickest option closest to downtown Oregon City?",
+      "normalizedQuery": "warming center tonight don think stay here much longer missed there bus pulling hear say address again slower trying call an ambulance right now just feel really weak kind panicky somewhere warm safe sorry keep coughing phone battery at like three percent give quickest option closest downtown oregon city",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing by asking. Fastest option right now: call **911** and say, \u201cI\u2019m in downtown Oregon City, very weak, coughing, and need a warm safe place now.\u201d With your battery at 3%, that gets help to your exact location quickest. If speaking is hard, hand your phone to someone nearby and have them read that line. I\u2019ll stay with you while you do it.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing by asking. Fastest option right now: call **911** and say, \u201cI\u2019m in downtown Oregon City, very weak, coughing, and need a warm safe place now.\u201d With your battery at 3%, that gets help to your exact location quickest. If speaking is hard, hand your phone to someone nearby and have them read that line. I\u2019ll stay with you while you do it.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000890#turn-2",
+      "scenarioId": "phone_dialog_0000890",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Oregon City, by the shelter lobby, and I need work fast or I\u2019m gonna lose my spot tonight.",
+      "normalizedQuery": "oregon city by shelter shelters homeless overnight warming lobby work fast gonna lose spot tonight",
+      "voiceResponse": "I hear you. Safety first: if you feel in immediate danger, call 911 now. For Oregon City tonight, try the warming shelter at **603 12th Street**. Phone is **503, 722, 9780**. I can connect you to a live 211 person right now to help you keep your spot and find fast work options today.",
+      "evidenceDocIds": [
+        "service:bab9f596e07026df",
+        "service:5ded755b33454184",
+        "service:a110aba06fd372f6",
+        "service:57c4c63dcadba358",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. Safety first: if you feel in immediate danger, call 911 now. For Oregon City tonight, try the warming shelter at **603 12th Street**. Phone is **503, 722, 9780**. I can connect you to a live 211 person right now to help you keep your spot and find fast work options today.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000890#turn-3",
+      "scenarioId": "phone_dialog_0000890",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just pulled up and I missed the name, I\u2019m sorry, I\u2019m trying.",
+      "normalizedQuery": "hi sorry really think right now everything too loud keep losing re saying oregon city by shelter shelters homeless overnight warming lobby work fast gonna lose spot tonight say again bus just pulled up missed name trying",
+      "voiceResponse": "Of course. The name is the **warming shelter** in Oregon City, at **603 12th Street**. Phone number is **503, 722, 9780**.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is the **warming shelter** in Oregon City, at **603 12th Street**. Phone number is **503, 722, 9780**.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000890#turn-4",
+      "scenarioId": "phone_dialog_0000890",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I keep crying, I know, I just need somewhere that helps with jobs, like today, not next month.",
+      "normalizedQuery": "hi sorry really think right now everything too loud keep losing re saying oregon city by shelter shelters homeless overnight warming lobby work fast gonna lose spot tonight say again bus just pulled up missed name trying crying know somewhere helps jobs like next month",
+      "voiceResponse": "You\u2019re doing the right thing by calling. If you feel unsafe right now or might be hurt, call 911 immediately. I\u2019m connecting you to a live 211 person now to help with same-day job leads and protecting your shelter spot tonight. Stay on the line with me.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bab9f596e07026df"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by calling. If you feel unsafe right now or might be hurt, call 911 immediately. I\u2019m connecting you to a live 211 person now to help with same-day job leads and protecting your shelter spot tonight. Stay on the line with me.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000890#turn-5",
+      "scenarioId": "phone_dialog_0000890",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Wait, hold on, my phone battery is at like two percent, can you give me the number slower?",
+      "normalizedQuery": "oregon city by shelter shelters homeless overnight warming lobby work fast gonna lose spot tonight say again bus just pulled up missed name sorry trying keep crying know somewhere helps jobs like next month wait hold on phone battery at two percent give number slower",
+      "voiceResponse": "Yes. The number is: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I\u2019ll say it once more: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**.",
+      "evidenceDocIds": [
+        "service:bab9f596e07026df",
+        "service:9ba6422a5084e69c",
+        "service:a110aba06fd372f6",
+        "service:be96f8a23ab9fa3c",
+        "service:5ded755b33454184"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I\u2019ll say it once more: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001106#turn-1",
+      "scenarioId": "phone_dialog_0001106",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my uncle, not for me. He\u2019s a veteran and he needs housing help in Oregon City.",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing oregon city",
+      "voiceResponse": "Absolutely, I\u2019m glad you called for him. For a veteran in Oregon City, 211 has a strong match for **Transitional Housing/Shelter for Homeless Veterans**. A good next step is to contact 211 and ask specifically for that veteran housing program list in Oregon City, plus any immediate openings. If you want, I can help you script exactly what to say on the call so they can route him faster.",
+      "evidenceDocIds": [
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "page:bafkreiekc5coret46eepgjkrdmccp4tf7oorp6vdziq4mpamleikrrgx4q",
+        "service:8ff51e4f0010077b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I\u2019m glad you called for him. For a veteran in Oregon City, 211 has a strong match for **Transitional Housing/Shelter for Homeless Veterans**. A good next step is to contact 211 and ask specifically for that veteran housing program list in Oregon City, plus any immediate openings. If you want, I can help you script exactly what to say on the call so they can route him faster.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001106#turn-2",
+      "scenarioId": "phone_dialog_0001106",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I only know parts of his situation, sorry. He\u2019s been staying with a friend and that can\u2019t continue much longer.",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing oregon city only know parts his situation sorry been staying friend continue much longer",
+      "voiceResponse": "You\u2019re doing the right thing, and that time pressure sounds really stressful. Let\u2019s keep it simple: call 2-1-1 now and say he\u2019s a veteran in Oregon City, currently staying with a friend, and may lose that place soon. Ask for **Transitional Housing/Shelter for Homeless Veterans** and any same-day or urgent openings. If you want, I can give you a 20-second script you can read word-for-word.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "page:bafkreihw2dnaahulxuzcyhte67fjre5uo736rf7gx3t5oxtxos6jtp7t4e",
+        "service:28acd183a54cc8a5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing, and that time pressure sounds really stressful. Let\u2019s keep it simple: call 2-1-1 now and say he\u2019s a veteran in Oregon City, currently staying with a friend, and may lose that place soon. Ask for **Transitional Housing/Shelter for Homeless Veterans** and any same-day or urgent openings. If you want, I can give you a 20-second script you can read word-for-word.",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001106#turn-3",
+      "scenarioId": "phone_dialog_0001106",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I don\u2019t have all his paperwork in front of me, but I think he has a DD-214 somewhere. Is that required right away?",
+      "normalizedQuery": "hi calling uncle he veteran veterans va needs housing oregon city only know parts his situation sorry been staying friend continue much longer don have all paperwork front think has dd 214 somewhere required right away",
+      "voiceResponse": "That\u2019s a very reasonable question, and you\u2019re doing the right prep. I don\u2019t have a strong local rule here on whether DD-214 is required immediately. Best next step is to call 2-1-1 and ask if they can start screening first and accept the DD-214 after intake. If you want, I can give you a short script for that call.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:28acd183a54cc8a5",
+        "page:bafkreiakltk4f7ajva6urd36geny3hwnxhyqfe5xh4i36qefdec5slxxse",
+        "page:bafkreid7xxxrifppuw2dykxxi4674uneduk7zexkjlramkrrpc4ojufkty",
+        "service:79470abe687085dd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a very reasonable question, and you\u2019re doing the right prep. I don\u2019t have a strong local rule here on whether DD-214 is required immediately. Best next step is to call 2-1-1 and ask if they can start screening first and accept the DD-214 after intake. If you want, I can give you a short script for that call.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001139#turn-3",
+      "scenarioId": "phone_dialog_0001139",
+      "turnIndex": 2,
+      "route": "app_surface_navigation",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "app_surface_navigation",
+      "user": "Can you bring up the proof center so I can see what counts for identity and address?",
+      "normalizedQuery": "hi oregon city replacing state id just fastest path lost wallet last week so don have much right now documents first bring up proof center see counts identity address",
+      "voiceResponse": "Next step: call Oregon DMV now at **503 \u2026 945 \u2026 5000** and ask them to open their **replacement-ID proof list** for identity and address while you\u2019re on the line. I can\u2019t see a verified \u201cProof Center\u201d view in the records I have. After that, I can help you turn their list into a quick checklist.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidatekeqsfbt5e46yxl2zjatpkqglwnqmxbbvdydhuiqfonfcr5hm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihqvuztlsjqaukkhyqax3v2tkpkh5w5e7jcvia7wv5udnsbl3jbfi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: call Oregon DMV now at **503 \u2026 945 \u2026 5000** and ask them to open their **replacement-ID proof list** for identity and address while you\u2019re on the line. I can\u2019t see a verified \u201cProof Center\u201d view in the records I have. After that, I can help you turn their list into a quick checklist.",
+      "voiceResponseAlternatives": [
+        "Next step: open the **Uploads** screen now. Tap **Add file** and send any ID-related photos you already have on your phone. Start with one identity item and one address item if you have both. Once they\u2019re in, I can help you label each upload so it lines up with the DMV proof categories."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001139#turn-4",
+      "scenarioId": "phone_dialog_0001139",
+      "turnIndex": 3,
+      "route": "app_surface_navigation",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "app_surface_navigation",
+      "user": "After that, switch to uploads so I can send whatever I already have on my phone.",
+      "normalizedQuery": "hi oregon city replacing state id just fastest path lost wallet last week so don have much right now documents first bring up proof center see counts identity address after switch uploads send whatever already on phone",
+      "voiceResponse": "Next step: open the **Uploads** screen now. Tap **Add file** and send any ID-related photos you already have on your phone. Start with one identity item and one address item if you have both. Once they\u2019re in, I can help you label each upload so it lines up with the DMV proof categories.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidatekeqsfbt5e46yxl2zjatpkqglwnqmxbbvdydhuiqfonfcr5hm",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: open the **Uploads** screen now. Tap **Add file** and send any ID-related photos you already have on your phone. Start with one identity item and one address item if you have both. Once they\u2019re in, I can help you label each upload so it lines up with the DMV proof categories.",
+      "voiceResponseAlternatives": [
+        "Next step: call Oregon DMV now at **503 \u2026 945 \u2026 5000** and ask them to open their **replacement-ID proof list** for identity and address while you\u2019re on the line. I can\u2019t see a verified \u201cProof Center\u201d view in the records I have. After that, I can help you turn their list into a quick checklist."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001147#turn-4",
+      "scenarioId": "phone_dialog_0001147",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Oregon City, near the transit center, I don't even know where to go right now.",
+      "normalizedQuery": "i'm oregon city transit center don't even know go right now",
+      "voiceResponse": "You did the right thing calling. If you feel unsafe, or think you might use right now, call **911** now, or ask someone near you to call. For detox tonight, call **Fora Health Detox Services** at **503\u2026 535\u2026 1151**. If no answer, call **503\u2026 399\u2026 5597**. Stay where there are people near the transit center, and I can connect you to a live specialist now.",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "service:57fcd59e218a59f6",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing calling. If you feel unsafe, or think you might use right now, call **911** now, or ask someone near you to call. For detox tonight, call **Fora Health Detox Services** at **503\u2026 535\u2026 1151**. If no answer, call **503\u2026 399\u2026 5597**. Stay where there are people near the transit center, and I can connect you to a live specialist now.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001147#turn-5",
+      "scenarioId": "phone_dialog_0001147",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "live_agent",
+      "user": "Do they take people same day, like today, without a car? I have like no one to call.",
+      "normalizedQuery": "i'm crying sorry trying be dramatic just detox before use again tonight say part slower missed name phone keeps cutting oregon city transit center don't even know go right now they take people same day like without car have no one call",
+      "voiceResponse": "Yes, ask for a **same-day detox intake** and tell them you have **no car**. Call **Fora Health Detox Services: 503\u2026 535\u2026 1151**. If they don\u2019t answer, call **503\u2026 399\u2026 5597**. Say: \u201cI\u2019m in Oregon City near the transit center, I need detox today, and I need transport help.\u201d If you feel like you might use right now, call **911** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, ask for a **same-day detox intake** and tell them you have **no car**. Call **Fora Health Detox Services: 503\u2026 535\u2026 1151**. If they don\u2019t answer, call **503\u2026 399\u2026 5597**. Say: \u201cI\u2019m in Oregon City near the transit center, I need detox today, and I need transport help.\u201d If you feel like you might use right now, call **911** immediately.",
+      "voiceResponseAlternatives": [
+        "I hear you. I\u2019ll say numbers one at a time. If you are in immediate danger: call **9 \u2026 1 \u2026 1**. I am still connecting you to a live **2 \u2026 1 \u2026 1** specialist for veteran housing tonight. Please stay on the line with me.",
+        "Yes, that is okay. You do not need to give your full name right now. I\u2019m keeping you connected to a live 2-1-1 specialist for veteran housing and a safe place tonight in Oregon City. If you are in immediate danger, call 9\u20261\u20261. Please stay on the line.",
+        "I want to get you inside fast, but I don\u2019t have a confirmed open address or bus route on this line right now. I\u2019m connecting you to the live 211 agent now, and ask them for the exact address first, then the fastest bus route from your location. If you\u2019re getting dangerously cold right now, call 911 immediately.",
+        "Yes, I hear you. Next step: call the Oregon City Overnight Winter Warming Shelter now at **503\u2026 722\u2026 9780**. It\u2019s at **603 12th Street, Oregon City, 97045**. This shelter opens when overnight wind chill is **33 degrees or below**. Adults 18+ are eligible, no documents required, and service animals are accepted. If you feel in immediate danger right now, call **911**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001147#turn-6",
+      "scenarioId": "phone_dialog_0001147",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Please stay with me, and repeat the number one more time, I wrote it wrong.",
+      "normalizedQuery": "say part again slower missed name phone keeps cutting i'm oregon city transit center don't even know go right now they take people same day like without car have no one call please stay repeat number more time wrote it wrong",
+      "voiceResponse": "Yes. The number is **503\u2026 535\u2026 1151**. I\u2019ll say it again slowly: **503\u2026 535\u2026 1151**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **503\u2026 535\u2026 1151**. I\u2019ll say it again slowly: **503\u2026 535\u2026 1151**.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1120,6 +1819,144 @@
       "to": "phone_dialog_0000461#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000714#turn-2",
+      "to": "phone_dialog_0000714#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0000714#turn-3",
+      "to": "phone_dialog_0000714#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000714#turn-4",
+      "to": "phone_dialog_0000714#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000714#turn-5",
+      "to": "phone_dialog_0000714#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000766#turn-4",
+      "to": "phone_dialog_0000766#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000766#turn-5",
+      "to": "phone_dialog_0000766#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000816#turn-1",
+      "to": "phone_dialog_0000816#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000816#turn-2",
+      "to": "phone_dialog_0000816#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000816#turn-4",
+      "to": "phone_dialog_0000816#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000823#turn-1",
+      "to": "phone_dialog_0000823#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000823#turn-3",
+      "to": "phone_dialog_0000823#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000823#turn-5",
+      "to": "phone_dialog_0000823#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000890#turn-2",
+      "to": "phone_dialog_0000890#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000890#turn-3",
+      "to": "phone_dialog_0000890#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000890#turn-4",
+      "to": "phone_dialog_0000890#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000890#turn-5",
+      "to": "phone_dialog_0000890#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001106#turn-1",
+      "to": "phone_dialog_0001106#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001106#turn-2",
+      "to": "phone_dialog_0001106#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0001106#turn-3",
+      "to": "phone_dialog_0001106#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001139#turn-3",
+      "to": "phone_dialog_0001139#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001139#turn-4",
+      "to": "phone_dialog_0001139#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "app_surface_navigation->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001147#turn-4",
+      "to": "phone_dialog_0001147#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001147#turn-5",
+      "to": "phone_dialog_0001147#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

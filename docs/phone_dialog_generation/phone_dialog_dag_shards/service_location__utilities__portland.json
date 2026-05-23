@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "id": "service_location__utilities__portland",
+  "kind": "service_location",
+  "key": "utilities__portland",
+  "nodeCount": 4,
+  "nodes": [
+    {
+      "id": "phone_dialog_0000639#turn-1",
+      "scenarioId": "phone_dialog_0000639",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "utilities",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, yes, I\u2019m in Portland and I called that electric bill place yesterday, or maybe Monday, and I did the intake with a lady named... I forget, sorry.",
+      "normalizedQuery": "hi yes portland called electric bill place yesterday maybe monday did intake lady named forget sorry",
+      "voiceResponse": "I hear you, and that\u2019s okay, these details are easy to lose track of. Your audio was a little unclear on my end. Could you repeat just one thing: do you want the PGE phone number to check the intake status?",
+      "evidenceDocIds": [
+        "service:6c5e0b45a723461e",
+        "service:f780d533641f2336",
+        "service:d9c7707e45d265ad",
+        "service:ee46fefe2a001b32",
+        "service:552dad99ccaaf31c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and that\u2019s okay, these details are easy to lose track of. Your audio was a little unclear on my end. Could you repeat just one thing: do you want the PGE phone number to check the intake status?",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing fine, and it makes sense to mix up dates. Your audio was a little unclear on my end. Please repeat just this one part: should I write the shutoff date as **June 3rd** or **June 4th**?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000639#turn-2",
+      "scenarioId": "phone_dialog_0000639",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "utilities",
+      "locationTag": "portland",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Can you write down that they said my shutoff is on June 3rd? Wait, was it the 4th... no, I think 3rd, sorry, I keep mixing it up.",
+      "normalizedQuery": "hi yes portland called electric bill place yesterday maybe monday did intake lady named forget sorry write down they said shutoff on june 3rd wait was it 4th no think keep mixing up",
+      "voiceResponse": "You\u2019re doing fine, and it makes sense to mix up dates. Your audio was a little unclear on my end. Please repeat just this one part: should I write the shutoff date as **June 3rd** or **June 4th**?",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:d9c7707e45d265ad",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing fine, and it makes sense to mix up dates. Your audio was a little unclear on my end. Please repeat just this one part: should I write the shutoff date as **June 3rd** or **June 4th**?",
+      "voiceResponseAlternatives": [
+        "I hear you, and that\u2019s okay, these details are easy to lose track of. Your audio was a little unclear on my end. Could you repeat just one thing: do you want the PGE phone number to check the intake status?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000639#turn-3",
+      "scenarioId": "phone_dialog_0000639",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "utilities",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "What did you say the agency name was again? Please say it slow, my hearing isn\u2019t great on this phone.",
+      "normalizedQuery": "hi yes portland called electric bill place yesterday maybe monday did intake lady named forget sorry write down they said shutoff on june 3rd wait was it 4th no think keep mixing up say agency name again please slow hearing isn great this phone",
+      "voiceResponse": "Of course, and you\u2019re doing just fine. The agency name is **two-one-one info**. I\u2019ll say it again slowly: **two-one-one \u2026 info**. If you want, I can repeat it one more time and then help with the next step for your shutoff date.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:d9c7707e45d265ad",
+        "service:ee46fefe2a001b32"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and you\u2019re doing just fine. The agency name is **two-one-one info**. I\u2019ll say it again slowly: **two-one-one \u2026 info**. If you want, I can repeat it one more time and then help with the next step for your shutoff date.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000639#turn-4",
+      "scenarioId": "phone_dialog_0000639",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "utilities",
+      "locationTag": "portland",
+      "promptTemplate": "wallet_document_support",
+      "user": "They told me to send proof of income and my power bill, and I already gave my case number, hold on\u2014no, don\u2019t hang up, I\u2019m just finding it.",
+      "normalizedQuery": "hi yes portland called electric bill place yesterday maybe monday did intake lady named forget sorry write down they said shutoff on june 3rd wait was it 4th no think keep mixing up say agency name again please slow hearing isn great this phone told send proof income power already gave case number hold don hang just finding",
+      "voiceResponse": "You\u2019re okay, I\u2019m here with you, and we can do this step by step. For document upload, keep it private: have your **proof of income** and **power bill** ready as clear photos or PDFs, and only share your **case number** in the secure form, not out loud on this call. Take your time finding it. When you\u2019re ready, I can walk you through the upload one item at a time.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:dbea764a4f6362d4",
+        "service:0f668a9d739733bb",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay, I\u2019m here with you, and we can do this step by step. For document upload, keep it private: have your **proof of income** and **power bill** ready as clear photos or PDFs, and only share your **case number** in the secure form, not out loud on this call. Take your time finding it. When you\u2019re ready, I can walk you through the upload one item at a time.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    }
+  ],
+  "edges": [
+    {
+      "from": "phone_dialog_0000639#turn-1",
+      "to": "phone_dialog_0000639#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000639#turn-2",
+      "to": "phone_dialog_0000639#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000639#turn-3",
+      "to": "phone_dialog_0000639#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000639#turn-4",
+      "to": "phone_dialog_0000639#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->calendar_event_support"
+    }
+  ]
+}

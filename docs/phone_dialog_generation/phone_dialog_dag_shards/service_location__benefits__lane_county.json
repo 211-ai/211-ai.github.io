@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__benefits__lane_county",
   "kind": "service_location",
   "key": "benefits__lane_county",
-  "nodeCount": 15,
+  "nodeCount": 30,
   "nodes": [
     {
       "id": "phone_dialog_0000038#turn-1",
@@ -178,7 +178,9 @@
       "assistantResponse": "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
       "voiceResponseAlternatives": [
         "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
-        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line."
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers.",
+        "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
       ],
       "callerArchetypeId": "hearing_impaired",
       "channelConditionId": "bad_reception",
@@ -262,7 +264,9 @@
       "assistantResponse": "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
       "voiceResponseAlternatives": [
         "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
-        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line."
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers.",
+        "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -438,11 +442,452 @@
       "assistantResponse": "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
       "voiceResponseAlternatives": [
         "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
-        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**."
+        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers.",
+        "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
       ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000664#turn-4",
+      "scenarioId": "phone_dialog_0000664",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Lane County, yeah, I'm in Eugene... sorry, what did you say, can you repeat that slower?",
+      "normalizedQuery": "hello hear wait cut uh tooth dental dentist clinic like medical health think sorry head's right emergency room no just bad pain can't pay lot lane county yeah i'm eugene did say repeat slower",
+      "voiceResponse": "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers.",
+      "evidenceDocIds": [
+        "page:bafkreidc6skebkc54co5zho222zelnr3warf6hwielrdx7xm2inwhjzkoe",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreics6yrahn4j5pnounpzcrmpbfbnxzdvefrsjkogfdbuwubjn2mkiu",
+        "page:bafkreigm6juabofe4leqleemgw2l3il5q7okbm67r4x4cuncnekmghabhe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers.",
+      "voiceResponseAlternatives": [
+        "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
+        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000664#turn-5",
+      "scenarioId": "phone_dialog_0000664",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If you gave a number, I missed half of it. Can you do it again, one part at a time?",
+      "normalizedQuery": "uh tooth dental dentist clinic like medical health think sorry head's right emergency room no just bad pain can't pay lot lane county yeah i'm eugene did say repeat slower if gave number missed half it again one part at time",
+      "voiceResponse": "Yes. One part at a time. I asked for your ZIP code. Your ZIP code. Just 5 numbers. Just 5 numbers. Please say it slowly, one digit at a time.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidc6skebkc54co5zho222zelnr3warf6hwielrdx7xm2inwhjzkoe",
+        "page:bafkreienrusvj3p44y4gfobplhwgske2hh3qrmn33id4whj72xq5lsqjtm",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. One part at a time. I asked for your ZIP code. Your ZIP code. Just 5 numbers. Just 5 numbers. Please say it slowly, one digit at a time.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000932#turn-1",
+      "scenarioId": "phone_dialog_0000932",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Lane County and I need to get seen at a medical clinic soon, but I can\u2019t remember which one I used last time.",
+      "normalizedQuery": "hi lane county seen at medical clinic health soon remember which one used last time",
+      "voiceResponse": "You\u2019re not alone, and we can keep this simple. One option is the **Monthly Pop-Up Medical Clinic** (Black Thistle Street Aid), for people experiencing homelessness. Their number is **5 4 1, 2 3 2, 8 5 4 6**. If your last clinic was with Neighborhood Health Center, I also have: **Canby: 5 0 3, 4 1 6, 4 5 4 7** and **Hillsboro youth clinic: 5 0 3, 9 4 1, 3 0 1 6**.",
+      "evidenceDocIds": [
+        "service:69bbcbe045e0a664",
+        "service:0867546050249785",
+        "service:49f391264d00676f",
+        "service:a7bbbd963eae8ac2",
+        "page:bafkreie3bwnhyrfvxcx5uroqaq6hgpxbxpkkerkbpf6jip3foedhoamg3a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone, and we can keep this simple. One option is the **Monthly Pop-Up Medical Clinic** (Black Thistle Street Aid), for people experiencing homelessness. Their number is **5 4 1, 2 3 2, 8 5 4 6**. If your last clinic was with Neighborhood Health Center, I also have: **Canby: 5 0 3, 4 1 6, 4 5 4 7** and **Hillsboro youth clinic: 5 0 3, 9 4 1, 3 0 1 6**.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000932#turn-3",
+      "scenarioId": "phone_dialog_0000932",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "wallet_document_support",
+      "user": "Before I upload anything new, can you check what\u2019s already saved in my wallet files?",
+      "normalizedQuery": "hi lane county seen at medical clinic health soon remember which one used last time sorry say name again slowly didn catch it before upload anything new check already saved wallet files",
+      "voiceResponse": "Yes. I can only see three items saved right now, and they look like 211info pages: \u201cFamilies, Children, and Youth with Special Needs,\u201d \u201c211 Advocacy Day: Visiting the Oregon State Capitol,\u201d and \u201cStaff Spotlight: Lucia.\u201d I don\u2019t see any IDs, proof documents, or medical forms in that list. If you want, we can review these first, then decide what to upload next.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can only see three items saved right now, and they look like 211info pages: \u201cFamilies, Children, and Youth with Special Needs,\u201d \u201c211 Advocacy Day: Visiting the Oregon State Capitol,\u201d and \u201cStaff Spotlight: Lucia.\u201d I don\u2019t see any IDs, proof documents, or medical forms in that list. If you want, we can review these first, then decide what to upload next.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000944#turn-1",
+      "scenarioId": "phone_dialog_0000944",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Lane County and this is a borrowed phone on low battery, so can you give me the most important number first for disability benefits help?",
+      "normalizedQuery": "hi lane county this borrowed phone on low battery so give most important number first disability benefits snap assistance",
+      "voiceResponse": "Most important number first: **8 5 5, 3 2 8, 6 7 1 5**. Again: **8 5 5, 3 2 8, 6 7 1 5**. That line is for Oregon EBT and SNAP benefits help. For disability benefits, do you want **SSI/SSDI** help, or **state benefits** help?",
+      "evidenceDocIds": [
+        "service:ea585d467287a4d5",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:59169fe563af08b7",
+        "service:6cc3b66978eab7fc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Most important number first: **8 5 5, 3 2 8, 6 7 1 5**. Again: **8 5 5, 3 2 8, 6 7 1 5**. That line is for Oregon EBT and SNAP benefits help. For disability benefits, do you want **SSI/SSDI** help, or **state benefits** help?",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000944#turn-2",
+      "scenarioId": "phone_dialog_0000944",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, the line cut for a second, can you repeat that number slowly?",
+      "normalizedQuery": "hi lane county this borrowed phone on low battery so give most important number first disability benefits snap assistance sorry line cut second repeat slowly",
+      "voiceResponse": "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**.",
+      "evidenceDocIds": [
+        "service:ea585d467287a4d5",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:59169fe563af08b7",
+        "service:6cc3b66978eab7fc"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slowly: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**. Again: **8 5 5** \u2026 **3 2 8** \u2026 **6 7 1 5**.",
+      "voiceResponseAlternatives": [
+        "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
+        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000944#turn-4",
+      "scenarioId": "phone_dialog_0000944",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "calendar_event_support",
+      "user": "Can you set me a reminder to call them Monday at 9:00 AM?",
+      "normalizedQuery": "hi lane county this borrowed phone on low battery so give most important number first disability benefits snap assistance sorry line cut second repeat slowly applying checking documents still go person if faster set reminder call them monday at 00",
+      "voiceResponse": "Yes. I can help with that fast. Reminder: call on **Monday, May 25, at 9:00 AM**. Again: **Monday, May 25, 9:00 AM**. One quick detail: do you want this reminder for **8 7 7, 8 7 4, 6 3 4 7**?",
+      "evidenceDocIds": [
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:ea585d467287a4d5",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "page:bafkreif5z6frzc2qnroluofhpy7bljvghzpceqn3dtuu5vyzydbnvaoks4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that fast. Reminder: call on **Monday, May 25, at 9:00 AM**. Again: **Monday, May 25, 9:00 AM**. One quick detail: do you want this reminder for **8 7 7, 8 7 4, 6 3 4 7**?",
+      "voiceResponseAlternatives": [
+        "First step: open the Clock app now, and I\u2019ll help you set a **9:00 AM tomorrow** reminder before your battery dies. Is this phone an **iPhone or Android**?"
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000984#turn-3",
+      "scenarioId": "phone_dialog_0000984",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Do you have details on who in Lane County does that specifically for adults with mixed physical and mental health diagnoses, preferably with outcomes data or at least recent success patterns?",
+      "normalizedQuery": "have details on who lane county does specifically adults mixed physical mental health diagnoses preferably outcomes data at least recent success patterns",
+      "voiceResponse": "I hear you. I don\u2019t have outcomes data in the local listing, but one Lane County option is **Volunteers in Medicine Clinic of Lane County** for adult primary care plus mental health evaluation and counseling. You can call **5 4 1 \u2026 6 8 5 \u2026 1 8 0 0** (or **5 4 1 \u2026 3 4 3 \u2026 2 3 9 8**). Address: **2 2 6 0 Marcola Road, Springfield**. If you want, ask directly: \u201cDo you handle SSA disability appeals for mixed physical and mental health cases, and what recent outcomes have you seen?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreiba5xvv5btcsteheaefjhuyknpgdzqzgxvf3qtpfbg66aszw5ckha",
+        "page:bafkreidzaatfly4esr44mom7ox3bf2drvle5mhnwb5do37i5xkw3uruxum",
+        "service:277ad5be5bdb6972",
+        "page:bafkreiaovah5q6usomn6ha2whsabw3bjfsjgtfrqvl4ojds3xf2ptwxi3y",
+        "page:bafkreic6mg7yxl4gvjdioopdi567ggv7uxusyhjz4edske2edjonaxkiie"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I don\u2019t have outcomes data in the local listing, but one Lane County option is **Volunteers in Medicine Clinic of Lane County** for adult primary care plus mental health evaluation and counseling. You can call **5 4 1 \u2026 6 8 5 \u2026 1 8 0 0** (or **5 4 1 \u2026 3 4 3 \u2026 2 3 9 8**). Address: **2 2 6 0 Marcola Road, Springfield**. If you want, ask directly: \u201cDo you handle SSA disability appeals for mixed physical and mental health cases, and what recent outcomes have you seen?\u201d",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000984#turn-5",
+      "scenarioId": "phone_dialog_0000984",
+      "turnIndex": 4,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Also before we go deep, can you tell me what you store about this call and whether my name is required?",
+      "normalizedQuery": "ve already read ssa stuff it all technically correct useless practice so local program will review denial letter line by build case have details on who lane county does specifically adults mixed physical mental health diagnoses preferably outcomes data at least recent success patterns know narrow ask don want burn weeks referrals just hand brochure waitlist also before we go deep tell store this call whether name required",
+      "voiceResponse": "Great question. For this call, you can keep it minimal. I only use what you share here to help with referrals, and you do not need to give your full name for me to keep helping. If a program later requires a name for intake, you can choose then. We can keep everything focused on your appeal needs without extra personal details.",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great question. For this call, you can keep it minimal. I only use what you share here to help with referrals, and you do not need to give your full name for me to keep helping. If a program later requires a name for intake, you can choose then. We can keep everything focused on your appeal needs without extra personal details.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001036#turn-1",
+      "scenarioId": "phone_dialog_0001036",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Lane County, and I need help applying for disability benefits. I can\u2019t hear great on this line, so please go slow.",
+      "normalizedQuery": "hi lane county applying disability benefits snap assistance hear great on this line so please go slow",
+      "voiceResponse": "Hi, this is Abby. I will go slow. I found a benefits assistance program in Oregon: Washington County Disability, Aging, and Veteran Services. Phone one is **503 \u2026 846 \u2026 3094**. Again: **503 \u2026 846 \u2026 3094**. Phone two is **541 \u2026 857 \u2026 7780**. Again: **541 \u2026 857 \u2026 7780**. This program helps with Medicare and veteran-related benefits. Are you applying for Social Security disability, or Medicare benefits?",
+      "evidenceDocIds": [
+        "service:59169fe563af08b7",
+        "service:6cc3b66978eab7fc",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:ea585d467287a4d5",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Hi, this is Abby. I will go slow. I found a benefits assistance program in Oregon: Washington County Disability, Aging, and Veteran Services. Phone one is **503 \u2026 846 \u2026 3094**. Again: **503 \u2026 846 \u2026 3094**. Phone two is **541 \u2026 857 \u2026 7780**. Again: **541 \u2026 857 \u2026 7780**. This program helps with Medicare and veteran-related benefits. Are you applying for Social Security disability, or Medicare benefits?",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001036#turn-2",
+      "scenarioId": "phone_dialog_0001036",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, what was that office name? I missed it. Can you say it again, a little louder?",
+      "normalizedQuery": "hi lane county applying disability benefits snap assistance hear great on this line so please go slow sorry was office name missed it say again little louder",
+      "voiceResponse": "Yes. The office name is **Washington County Disability, Aging, and Veteran Services**. I\u2019ll repeat that: **Washington County Disability, Aging, and Veteran Services**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreial32y3hqwwh35fangrldpwce6hqlz4r22ysrwxbni6aaxa6xa3cu",
+        "service:ea585d467287a4d5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The office name is **Washington County Disability, Aging, and Veteran Services**. I\u2019ll repeat that: **Washington County Disability, Aging, and Veteran Services**.",
+      "voiceResponseAlternatives": [
+        "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
+        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001036#turn-3",
+      "scenarioId": "phone_dialog_0001036",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "And the phone number too, one digit at a time, please. I keep mixing numbers up.",
+      "normalizedQuery": "hi lane county applying disability benefits snap assistance hear great on this line so please go slow sorry was office name missed it say again little louder phone number too one digit at time keep mixing numbers up",
+      "voiceResponse": "I\u2019m sorry. I can\u2019t see a verified phone number on my screen right now. I\u2019ll repeat that: I can\u2019t see a verified phone number right now. Would you like me to connect you to a 211 specialist who can give the number slowly, one digit at a time?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreifocmry3au445mzz2wj5xc5uswvqzpzqhzbaqq5m446yma6u52wjy",
+        "service:ea585d467287a4d5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry. I can\u2019t see a verified phone number on my screen right now. I\u2019ll repeat that: I can\u2019t see a verified phone number right now. Would you like me to connect you to a 211 specialist who can give the number slowly, one digit at a time?",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001099#turn-1",
+      "scenarioId": "phone_dialog_0001099",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, this isn\u2019t my phone and it\u2019s almost dead, can you give me the main dental clinic number first for Lane County?",
+      "normalizedQuery": "hi sorry this isn phone it almost dead give main dental dentist clinic medical health number first lane county",
+      "voiceResponse": "First step: call this dental clinic number now: **5 0 3\u2026 6 5 5\u2026 8 4 7 1**. Again, slowly: **(503) 655-8471**. I only have that dental clinic listing in the records here right now, with an address in Sandy. If you want, I can quickly help you get a Lane County-specific dental number next.",
+      "evidenceDocIds": [
+        "service:326611485112f09e",
+        "service:d6fa0b22a76c236a",
+        "service:69bbcbe045e0a664",
+        "service:d7626a4f121f2858",
+        "service:d15465dbaabf3ed2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call this dental clinic number now: **5 0 3\u2026 6 5 5\u2026 8 4 7 1**. Again, slowly: **(503) 655-8471**. I only have that dental clinic listing in the records here right now, with an address in Sandy. If you want, I can quickly help you get a Lane County-specific dental number next.",
+      "voiceResponseAlternatives": [
+        "I hear you. You need a clinic in Lane County, today. I have one possible option: **Monthly Pop-Up Medical Clinic** for people experiencing homelessness. Call **541-232-8546**. That is **541-232-8546**. I also see another clinic, but it is in Lafayette, not Lane County. If you want it, I can give that too. Are you currently experiencing homelessness?",
+        "You probably did not do it wrong. If it rang and rang, they may be closed or short-staffed. Try again now, then leave a voicemail. Say: \u201cI need same-day medical care in Lane County. Please call me back.\u201d The clinic is **Monthly Pop-Up Medical Clinic**. The number is **541-232-8546**. Again: **541, 232, 8546**. Do you want me to draft a 10-second voicemail script you can read word-for-word?",
+        "I hear you. You\u2019re in Lane County, and you need help applying for disability benefits. You\u2019re in Lane County, and you need help applying for disability benefits. I can help with next steps. Do you mean Social Security disability, like SSI or SSDI?",
+        "Yes. It is **Lane County**. I\u2019ll say it slowly: **Lane** \u2026 **County**. Again: **Lane County**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001099#turn-2",
+      "scenarioId": "phone_dialog_0001099",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, I missed that last part, can you say it slower? I forget numbers if they come too fast.",
+      "normalizedQuery": "hi sorry this isn phone it almost dead give main dental dentist clinic medical health number first lane county wait missed last part say slower forget numbers if they come too fast",
+      "voiceResponse": "First step: call this number now, slowly: **five zero three** \u2026 **six five five** \u2026 **eight four seven one**. Again: **(503) 655-8471**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreifp5pj6v675aibxcktp2nnt4i3gr4pmwoewchshdexnqlhnklyhnq",
+        "service:69bbcbe045e0a664",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:ad75ad49419633d5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: call this number now, slowly: **five zero three** \u2026 **six five five** \u2026 **eight four seven one**. Again: **(503) 655-8471**.",
+      "voiceResponseAlternatives": [
+        "I want to be accurate. I do not have an address in front of me to repeat. I do have the phone number. It is: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Again: 8 \u2026 5 \u2026 5 \u2026 3 \u2026 2 \u2026 8 \u2026 6 \u2026 7 \u2026 1 \u2026 5. Do you want me to repeat the county name too?",
+        "Neither\u2014it's **541\u2026 682\u2026 1001**. I\u2019ll say it again: **541\u2026 682\u2026 1001**. If you\u2019re in immediate danger or can\u2019t breathe safely, call **911**.",
+        "Yes. The name is the **SNAP / EBT help line**. Slowly: **S-N-A-P** \u2026 and **E-B-T** help line.",
+        "Yes. I\u2019ll say it slower. I asked for your ZIP code. Your ZIP code. Just the 5 numbers."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001099#turn-4",
+      "scenarioId": "phone_dialog_0001099",
+      "turnIndex": 3,
+      "route": "calendar_event_support",
+      "serviceTag": "benefits",
+      "locationTag": "lane_county",
+      "promptTemplate": "calendar_event_support",
+      "user": "If they can\u2019t see me today, can you set me a reminder to call them back tomorrow morning at 9?",
+      "normalizedQuery": "hi sorry this isn phone it almost dead give main dental dentist clinic medical health number first lane county wait missed last part say slower forget numbers if they come too fast ve got bad tooth low cost maybe eugene right see set reminder call them back tomorrow morning at",
+      "voiceResponse": "First step: open the Clock app now, and I\u2019ll help you set a **9:00 AM tomorrow** reminder before your battery dies. Is this phone an **iPhone or Android**?",
+      "evidenceDocIds": [
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:91035f1235ed3213"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: open the Clock app now, and I\u2019ll help you set a **9:00 AM tomorrow** reminder before your battery dies. Is this phone an **iPhone or Android**?",
+      "voiceResponseAlternatives": [
+        "Yes. I can help with that fast. Reminder: call on **Monday, May 25, at 9:00 AM**. Again: **Monday, May 25, 9:00 AM**. One quick detail: do you want this reminder for **8 7 7, 8 7 4, 6 3 4 7**?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -535,6 +980,96 @@
       "to": "phone_dialog_0000454#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000664#turn-4",
+      "to": "phone_dialog_0000664#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000664#turn-5",
+      "to": "phone_dialog_0000664#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000932#turn-1",
+      "to": "phone_dialog_0000932#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000932#turn-3",
+      "to": "phone_dialog_0000932#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000944#turn-1",
+      "to": "phone_dialog_0000944#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000944#turn-2",
+      "to": "phone_dialog_0000944#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000944#turn-4",
+      "to": "phone_dialog_0000944#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000984#turn-3",
+      "to": "phone_dialog_0000984#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000984#turn-5",
+      "to": "phone_dialog_0000984#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001036#turn-1",
+      "to": "phone_dialog_0001036#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001036#turn-2",
+      "to": "phone_dialog_0001036#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001036#turn-3",
+      "to": "phone_dialog_0001036#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001099#turn-1",
+      "to": "phone_dialog_0001099#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001099#turn-2",
+      "to": "phone_dialog_0001099#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001099#turn-4",
+      "to": "phone_dialog_0001099#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->calendar_event_support"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__legal__gresham",
   "kind": "service_location",
   "key": "legal__gresham",
-  "nodeCount": 3,
+  "nodeCount": 4,
   "nodes": [
     {
       "id": "phone_dialog_0000035#turn-5",
@@ -80,6 +80,31 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000736#turn-4",
+      "scenarioId": "phone_dialog_0000736",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "legal",
+      "locationTag": "gresham",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I'm in Gresham, east side, near Burnside... I missed what you said after that.",
+      "normalizedQuery": "hello hear you're kinda cutting on end um hold legal aid attorney advocacy think like papers court can't track it right now sorry say slower hearing's bad this phone i'm gresham east side burnside missed said after",
+      "voiceResponse": "I hear you. The audio was unclear after \u201cBurnside.\u201d Unclear after \u201cBurnside.\u201d Do you want me to repeat the phone number, or the address?",
+      "evidenceDocIds": [
+        "service:078087b57125137d",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:0963e94e6b3dc85a",
+        "service:57fcd59e218a59f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. The audio was unclear after \u201cBurnside.\u201d Unclear after \u201cBurnside.\u201d Do you want me to repeat the phone number, or the address?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -94,6 +119,12 @@
       "to": "phone_dialog_0000386#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000736#turn-4",
+      "to": "phone_dialog_0000736#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

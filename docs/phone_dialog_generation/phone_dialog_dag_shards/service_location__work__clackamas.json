@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__work__clackamas",
   "kind": "service_location",
   "key": "work__clackamas",
-  "nodeCount": 9,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000153#turn-1",
@@ -53,7 +53,8 @@
       "assistantResponse": "Okay. Slow version. You\u2019re in Clackamas. You need work right away. You\u2019re in Clackamas. You need work right away. One question: Do you want any job opening first, or job training first?",
       "voiceResponseAlternatives": [
         "You\u2019re right. I did not give you a phone number yet. I did not give you a phone number yet.",
-        "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**."
+        "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**.",
+        "Absolutely. The number is **503\u2026 364\u2026 9936**. Again, slowly: **5-0-3, 3-6-4, 9-9-3-6**."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
@@ -79,7 +80,11 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. You did warehouse and delivery work, and you need work fast. You did warehouse and delivery work, and you need work fast. We can focus on quick-hire jobs first. Then we can add support so you don\u2019t miss calls or deadlines. One question, just one: Do you want day shift, night shift, or either?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m really sorry you\u2019re dealing with that, and we can move fast. In Clackamas County, call **Children, Family & Community Connections** at **503\u2026 655\u2026 8840**. That\u2019s **503-655-8840**. Address is **821 Main Street, Oregon City, 97045**. They can connect people to local employment help, and intake says no documents are required. If you want, I can help you plan exactly what to say when they answer.",
+        "You\u2019re carrying a lot, and you\u2019re still doing the right next step. Let\u2019s keep it simple: for interview clothes, try **Clothes That Work**. Call **503\u2026 364\u2026 9936**. That\u2019s **503-364-9936**. They help with job interview and new-work clothing, and they say no documents are required. Address is **1755 13th Street SE, Salem, 97302**. For application help in Clackamas, call the number I gave: **503-655-8840**. If you want, I can give you a 20-second script for both calls.",
+        "Totally makes sense, and we can keep this very simple. Here are the categories only: 1. Job application and employment help. 2. Interview and new-work clothing help. Tell me just the number, 1 or 2, and I\u2019ll give that one contact slowly."
+      ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
@@ -106,7 +111,8 @@
       "assistantResponse": "You\u2019re right. I did not give you a phone number yet. I did not give you a phone number yet.",
       "voiceResponseAlternatives": [
         "Okay. Slow version. You\u2019re in Clackamas. You need work right away. You\u2019re in Clackamas. You need work right away. One question: Do you want any job opening first, or job training first?",
-        "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**."
+        "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**.",
+        "Absolutely. The number is **503\u2026 364\u2026 9936**. Again, slowly: **5-0-3, 3-6-4, 9-9-3-6**."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "hard_of_hearing",
@@ -162,7 +168,8 @@
       "assistantResponse": "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**.",
       "voiceResponseAlternatives": [
         "Okay. Slow version. You\u2019re in Clackamas. You need work right away. You\u2019re in Clackamas. You need work right away. One question: Do you want any job opening first, or job training first?",
-        "You\u2019re right. I did not give you a phone number yet. I did not give you a phone number yet."
+        "You\u2019re right. I did not give you a phone number yet. I did not give you a phone number yet.",
+        "Absolutely. The number is **503\u2026 364\u2026 9936**. Again, slowly: **5-0-3, 3-6-4, 9-9-3-6**."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "rambling_and_interrupting",
@@ -248,6 +255,122 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "clear_line",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000955#turn-3",
+      "scenarioId": "phone_dialog_0000955",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I\u2019m in Clackamas County, and I got let go last week, I\u2019m trying to find job help fast.",
+      "normalizedQuery": "sorry clackamas county got let go last week trying job fast",
+      "voiceResponse": "I\u2019m really sorry you\u2019re dealing with that, and we can move fast. In Clackamas County, call **Children, Family & Community Connections** at **503\u2026 655\u2026 8840**. That\u2019s **503-655-8840**. Address is **821 Main Street, Oregon City, 97045**. They can connect people to local employment help, and intake says no documents are required. If you want, I can help you plan exactly what to say when they answer.",
+      "evidenceDocIds": [
+        "service:77801dbfae971c49",
+        "page:bafkreibn3mhxxbtgrsqzkk4e2pickxxxbrqbkhsk2udr5fkngrflybgeha",
+        "page:bafkreigt53cfbcf2ygumwh66p54k2pzdbcgekxeasqbr36kaz76izuheui",
+        "service:810e4e02fb36fed1",
+        "page:bafkreia6oykiwtq3ntelbq7froyq2vfaf2owf2b4tdmzxdfhzvaiyrwo3i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really sorry you\u2019re dealing with that, and we can move fast. In Clackamas County, call **Children, Family & Community Connections** at **503\u2026 655\u2026 8840**. That\u2019s **503-655-8840**. Address is **821 Main Street, Oregon City, 97045**. They can connect people to local employment help, and intake says no documents are required. If you want, I can help you plan exactly what to say when they answer.",
+      "voiceResponseAlternatives": [
+        "I hear you. You did warehouse and delivery work, and you need work fast. You did warehouse and delivery work, and you need work fast. We can focus on quick-hire jobs first. Then we can add support so you don\u2019t miss calls or deadlines. One question, just one: Do you want day shift, night shift, or either?",
+        "You\u2019re carrying a lot, and you\u2019re still doing the right next step. Let\u2019s keep it simple: for interview clothes, try **Clothes That Work**. Call **503\u2026 364\u2026 9936**. That\u2019s **503-364-9936**. They help with job interview and new-work clothing, and they say no documents are required. Address is **1755 13th Street SE, Salem, 97302**. For application help in Clackamas, call the number I gave: **503-655-8840**. If you want, I can give you a 20-second script for both calls.",
+        "Totally makes sense, and we can keep this very simple. Here are the categories only: 1. Job application and employment help. 2. Interview and new-work clothing help. Tell me just the number, 1 or 2, and I\u2019ll give that one contact slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000955#turn-4",
+      "scenarioId": "phone_dialog_0000955",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My thoughts are all over, I keep losing track, but I need places that help with applications and maybe interview clothes.",
+      "normalizedQuery": "hello static phone keeps cutting sorry work think no wait re breaking up heard cla then nothing say again clackamas county got let go last week trying job fast thoughts all over keep losing track places applications maybe interview clothes",
+      "voiceResponse": "You\u2019re carrying a lot, and you\u2019re still doing the right next step. Let\u2019s keep it simple: for interview clothes, try **Clothes That Work**. Call **503\u2026 364\u2026 9936**. That\u2019s **503-364-9936**. They help with job interview and new-work clothing, and they say no documents are required. Address is **1755 13th Street SE, Salem, 97302**. For application help in Clackamas, call the number I gave: **503-655-8840**. If you want, I can give you a 20-second script for both calls.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8149fdd1582fa7a0",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiaingo724bqtdcrerrq3tmcsfysqbd2onxbvqpp5je5zj3ldcqsge",
+        "page:bafkreiewrcan5xmbqdxyz7d756hv2ekyoxnqqufb6oticmbviucpnf2ndi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re carrying a lot, and you\u2019re still doing the right next step. Let\u2019s keep it simple: for interview clothes, try **Clothes That Work**. Call **503\u2026 364\u2026 9936**. That\u2019s **503-364-9936**. They help with job interview and new-work clothing, and they say no documents are required. Address is **1755 13th Street SE, Salem, 97302**. For application help in Clackamas, call the number I gave: **503-655-8840**. If you want, I can give you a 20-second script for both calls.",
+      "voiceResponseAlternatives": [
+        "I hear you. You did warehouse and delivery work, and you need work fast. You did warehouse and delivery work, and you need work fast. We can focus on quick-hire jobs first. Then we can add support so you don\u2019t miss calls or deadlines. One question, just one: Do you want day shift, night shift, or either?",
+        "I\u2019m really sorry you\u2019re dealing with that, and we can move fast. In Clackamas County, call **Children, Family & Community Connections** at **503\u2026 655\u2026 8840**. That\u2019s **503-655-8840**. Address is **821 Main Street, Oregon City, 97045**. They can connect people to local employment help, and intake says no documents are required. If you want, I can help you plan exactly what to say when they answer.",
+        "Totally makes sense, and we can keep this very simple. Here are the categories only: 1. Job application and employment help. 2. Interview and new-work clothing help. Tell me just the number, 1 or 2, and I\u2019ll give that one contact slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000955#turn-5",
+      "scenarioId": "phone_dialog_0000955",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you repeat the number slow? I missed the middle part when the line dropped.",
+      "normalizedQuery": "no wait re breaking up heard cla then nothing say again sorry clackamas county got let go last week trying job fast thoughts all over keep losing track places applications maybe interview clothes repeat number slow missed middle part when line dropped",
+      "voiceResponse": "Absolutely. The number is **503\u2026 364\u2026 9936**. Again, slowly: **5-0-3, 3-6-4, 9-9-3-6**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreia6ueivkjerbf6qkfpph4umgigr742z77nwzqgg3klzv25iwegpdy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. The number is **503\u2026 364\u2026 9936**. Again, slowly: **5-0-3, 3-6-4, 9-9-3-6**.",
+      "voiceResponseAlternatives": [
+        "Okay. Slow version. You\u2019re in Clackamas. You need work right away. You\u2019re in Clackamas. You need work right away. One question: Do you want any job opening first, or job training first?",
+        "You\u2019re right. I did not give you a phone number yet. I did not give you a phone number yet.",
+        "Of course, totally understandable with noise. The name is: **Stuff A Bus School Supplies**. I\u2019ll say it once more: **Stuff A Bus School Supplies**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000955#turn-6",
+      "scenarioId": "phone_dialog_0000955",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "work",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "If there\u2019s more than one program, just tell me the categories first so I can pick, because this signal is really bad.",
+      "normalizedQuery": "sorry clackamas county got let go last week trying job fast thoughts all over keep losing track places applications maybe interview clothes repeat number slow missed middle part when line dropped if there more than one program just tell categories first so pick because this signal really bad",
+      "voiceResponse": "Totally makes sense, and we can keep this very simple. Here are the categories only: 1. Job application and employment help. 2. Interview and new-work clothing help. Tell me just the number, 1 or 2, and I\u2019ll give that one contact slowly.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Totally makes sense, and we can keep this very simple. Here are the categories only: 1. Job application and employment help. 2. Interview and new-work clothing help. Tell me just the number, 1 or 2, and I\u2019ll give that one contact slowly.",
+      "voiceResponseAlternatives": [
+        "I hear you. You did warehouse and delivery work, and you need work fast. You did warehouse and delivery work, and you need work fast. We can focus on quick-hire jobs first. Then we can add support so you don\u2019t miss calls or deadlines. One question, just one: Do you want day shift, night shift, or either?",
+        "I\u2019m really sorry you\u2019re dealing with that, and we can move fast. In Clackamas County, call **Children, Family & Community Connections** at **503\u2026 655\u2026 8840**. That\u2019s **503-655-8840**. Address is **821 Main Street, Oregon City, 97045**. They can connect people to local employment help, and intake says no documents are required. If you want, I can help you plan exactly what to say when they answer.",
+        "You\u2019re carrying a lot, and you\u2019re still doing the right next step. Let\u2019s keep it simple: for interview clothes, try **Clothes That Work**. Call **503\u2026 364\u2026 9936**. That\u2019s **503-364-9936**. They help with job interview and new-work clothing, and they say no documents are required. Address is **1755 13th Street SE, Salem, 97302**. For application help in Clackamas, call the number I gave: **503-655-8840**. If you want, I can give you a 20-second script for both calls."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -304,6 +427,24 @@
       "to": "phone_dialog_0000504#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000955#turn-3",
+      "to": "phone_dialog_0000955#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000955#turn-4",
+      "to": "phone_dialog_0000955#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000955#turn-5",
+      "to": "phone_dialog_0000955#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__health__gresham",
   "kind": "service_location",
   "key": "health__gresham",
-  "nodeCount": 7,
+  "nodeCount": 12,
   "nodes": [
     {
       "id": "phone_dialog_0000230#turn-1",
@@ -113,7 +113,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car."
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "grounded_operator"
@@ -168,7 +170,10 @@
       "similarCases": [],
       "assistantResponse": "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
       "voiceResponseAlternatives": [
-        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call."
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again.",
+        "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "clear_line",
@@ -195,11 +200,161 @@
       "similarCases": [],
       "assistantResponse": "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
       "voiceResponseAlternatives": [
-        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d"
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again.",
+        "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000985#turn-1",
+      "scenarioId": "phone_dialog_0000985",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Hi, sorry, I can barely hear you out here at the bus stop. I\u2019m in Gresham and I need detox help tonight.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop gresham detox tonight",
+      "voiceResponse": "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+      "evidenceDocIds": [
+        "service:45707f0c70045863",
+        "page:bafkreibdwkgbg3hrufwc37bzdrhn2fxaydgdaqdzbya2lvotcwdq4hdfgy",
+        "service:86384c62740499ba",
+        "service:9ba5f9088b3a76fc",
+        "page:bafkreibs3vq4ldjg4yixznfqyfzoclzavhlswak7rikatsrawmdcnazyey"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again.",
+        "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000985#turn-2",
+      "scenarioId": "phone_dialog_0000985",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Before we go further, is this private? I don\u2019t want this shared with police or my employer.",
+      "normalizedQuery": "hi sorry barely hear here at bus stop gresham detox tonight before we go further this private don want shared police employer",
+      "voiceResponse": "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again.",
+      "evidenceDocIds": [
+        "service:d7abe58ca7495460",
+        "page:bafkreie5ncth6bphx7avj7dqxmkhinjocastdd5zy67peh7bcezxhvvqde",
+        "service:a8985ec91c7fc1f1",
+        "service:d968ced621aea83d",
+        "service:45707f0c70045863"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000985#turn-6",
+      "scenarioId": "phone_dialog_0000985",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "My battery\u2019s at like 4 percent, so can we do the quickest option for detox near Gresham?",
+      "normalizedQuery": "battery at like percent so we quickest option detox gresham",
+      "voiceResponse": "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line.",
+      "evidenceDocIds": [
+        "service:b3d7aa7d9150b9d1",
+        "service:e7f69e9f7d66f5f6",
+        "service:0f54d8a0521f759c",
+        "service:45707f0c70045863",
+        "page:bafkreid5ogq2lnpojuvguslzoint7utmfi4kv357cn4gdoa7ako4jfu42u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Fastest low-info step: call detox now and ask only this: \u201cDo you have an open bed today, and what\u2019s the minimum info you need to start?\u201d Number: **5-0-3, 5-3-5, 1-1-5-1**. You can give just a first name, or ask anonymously first. If they don\u2019t pick up, call 211 for the next closest detox line.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001071#turn-3",
+      "scenarioId": "phone_dialog_0001071",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I missed that, my head's all over the place and I keep crying.",
+      "normalizedQuery": "hi um can't this anymore i'm freaking detox like now please sorry hold on people yelling background gresham don't have car keep using tonight slow down missed head's all over place crying",
+      "voiceResponse": "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif6ycgr5wr22b6fsimoaetsqofsjv4o73mhzuc3i2lsphtor5rmui",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreia5rv36ksutfdch5zzanzjbctx6qejdxuubtlymqtieoiwnw3kkiy",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Slow and clear: if you feel unsafe right now, or think you might use and overdose, call **911** now. Next: move to a quieter spot and stay near other people. Then I can connect you to a live person **right now** to find same-night detox in Gresham, even without a car.",
+      "voiceResponseAlternatives": [
+        "Yes. Call now: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**. I\u2019ll repeat: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5** \u2026 **1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001071#turn-4",
+      "scenarioId": "phone_dialog_0001071",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "gresham",
+      "promptTemplate": "live_agent",
+      "user": "Are they gonna turn me away if I don't have money or like all my paperwork with me?",
+      "normalizedQuery": "hi um can't this anymore i'm freaking detox like now please sorry hold on people yelling background gresham don't have car keep using tonight slow down missed head's all over place crying they gonna turn away if money paperwork",
+      "voiceResponse": "You\u2019re not alone in this. I can\u2019t confirm intake rules from here, but please don\u2019t wait because of money or paperwork. If you feel at risk of using or overdosing tonight, call **911** now. Otherwise, I\u2019ll connect you to a live person right now to find a same-night detox option in Gresham and tell you exactly what to bring.",
+      "evidenceDocIds": [
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not alone in this. I can\u2019t confirm intake rules from here, but please don\u2019t wait because of money or paperwork. If you feel at risk of using or overdosing tonight, call **911** now. Otherwise, I\u2019ll connect you to a live person right now to find a same-night detox option in Gresham and tell you exactly what to bring.",
+      "voiceResponseAlternatives": [
+        "Absolutely\u2014you\u2019re moving quickly, and that helps. In the app, stay on the **Detox Resources** screen, tap **Filters**, then choose **Beds available now** and apply it. After that, open the top result and call right away. If you don\u2019t see that filter, call the first listing immediately and ask, \u201cDo you have a detox bed available now?\u201d",
+        "That makes sense, and you\u2019re being really practical. On the **Detox Resources** screen, keep **Beds available now** on, then add **Distance** or **Near me** and set it to **Gresham** first. Open the closest result and ask, \u201cDo you have a detox bed available now, and can I get there by bus today?\u201d If they say no, call the next closest right away. I can stay with you while you do the first call.",
+        "You\u2019re not in trouble for asking, and you can keep this private. For detox tonight, call FORA Health Detox: **5-0-3, 5-3-5, 1-1-5-1**. Address: **1-0-2-3-0 Southeast Cherry Blossom Drive, Portland, 9-7-2-1-6**. They serve adults 18+ for alcohol or drug withdrawal support. If you feel in immediate danger, call **9-1-1** now.",
+        "Yes, that\u2019s a fair question. You can keep this as private as you want. You can ask for help without sharing extra details, and you can choose what to say when you call detox. I\u2019m here to help you get options, not report you. If you want, we can keep it simple and just use the detox phone number again."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -238,6 +393,30 @@
       "to": "phone_dialog_0000581#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000985#turn-1",
+      "to": "phone_dialog_0000985#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000985#turn-2",
+      "to": "phone_dialog_0000985#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001071#turn-3",
+      "to": "phone_dialog_0001071#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001071#turn-4",
+      "to": "phone_dialog_0001071#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__daily_needs__multnomah",
   "kind": "service_location",
   "key": "daily_needs__multnomah",
-  "nodeCount": 19,
+  "nodeCount": 25,
   "nodes": [
     {
       "id": "phone_dialog_0000069#turn-4",
@@ -146,7 +146,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yes. I can help set that reminder. What time tomorrow morning should I put it for?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and it makes sense you\u2019re stressed. Let\u2019s make tomorrow easier right now: I can help you set one reminder so you have clean clothes before your appointment. What time is the appointment tomorrow?"
+      ],
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -566,6 +568,178 @@
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000707#turn-1",
+      "scenarioId": "phone_dialog_0000707",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m in Multnomah County and I need clothing help, but not just a clothing closet situation.",
+      "normalizedQuery": "hi sorry hear okay multnomah county clothing just closet situation",
+      "voiceResponse": "Yes, I hear you. Next step: call **Hope on the Hill** now at **503 \u2026 472 \u2026 8476** and ask whether they can help with clothing plus personal care items and if they can refer you to a Multnomah County option. I only have these clothing resources in McMinnville, Dallas, and Seaside from my current list, not a confirmed Multnomah County program yet.",
+      "evidenceDocIds": [
+        "service:b26681286f52f9ba",
+        "service:a206f5d2276849fd",
+        "service:1a1916cf1f6f8f5c",
+        "service:7450cc0225895ec2",
+        "service:f9a2427433ede4e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. Next step: call **Hope on the Hill** now at **503 \u2026 472 \u2026 8476** and ask whether they can help with clothing plus personal care items and if they can refer you to a Multnomah County option. I only have these clothing resources in McMinnville, Dallas, and Seaside from my current list, not a confirmed Multnomah County program yet.",
+      "voiceResponseAlternatives": [
+        "Yes. The main number is **8-0-0, 9-6-5, 6-5-1-9**. I\u2019ll repeat: **8-0-0, 9-6-5, 6-5-1-9**. That\u2019s for clothing donation and pickup support.",
+        "You\u2019re doing the right thing. Call this number now for clothing help: **8-0-0 \u2026 9-6-5 \u2026 6-5-1-9**. Again: **8-0-0, 9-6-5, 6-5-1-9**.",
+        "You\u2019re okay, and I\u2019m glad you called. Let\u2019s take this one step at a time. I do have a Multnomah County resource list, updated January 22, 2026, that shows what shelters and daytime drop-in centers are open today and tonight. Those drop-in centers are usually the best place to ask for shower access. If you want, I can help you contact 211 now so they can give you the nearest open location.",
+        "I hear you, and I\u2019m glad you called. I don\u2019t have a confirmed mail-receiving site listed in the local results right here, but a good next step is **Multnomah County Library Mobile and Partner Libraries**. They support people experiencing homelessness and other barriers, and may know nearby mail options. Their number is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. If you want, I can stay with you while you call."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001053#turn-4",
+      "scenarioId": "phone_dialog_0001053",
+      "turnIndex": 3,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I need a place to do laundry, like today if possible, in Multnomah County... Portland side.",
+      "normalizedQuery": "place laundry like if possible multnomah county portland side",
+      "voiceResponse": "I\u2019m glad you said that, and I can help. Your audio got a little unclear again on my end. Please repeat just one choice: do you want **drop-in laundry services** or **shelter-based laundry** for today?",
+      "evidenceDocIds": [
+        "service:df6f05609bb7717a",
+        "service:e4488b03bff9c85e",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "service:5e64f6fc61237a11"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you said that, and I can help. Your audio got a little unclear again on my end. Please repeat just one choice: do you want **drop-in laundry services** or **shelter-based laundry** for today?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001053#turn-6",
+      "scenarioId": "phone_dialog_0001053",
+      "turnIndex": 5,
+      "route": "calendar_event_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "calendar_event_support",
+      "user": "Sorry, I keep repeating myself, I'm just stressed\u2014 I need clean clothes for an appointment tomorrow.",
+      "normalizedQuery": "ask again mixed up when people talk fast place laundry like if possible multnomah county portland side don't have quarters phone's at two percent so there's one number repeat it slow sorry keep repeating myself i'm just stressed clean clothes an appointment tomorrow",
+      "voiceResponse": "You\u2019re not a bother, and it makes sense you\u2019re stressed. Let\u2019s make tomorrow easier right now: I can help you set one reminder so you have clean clothes before your appointment. What time is the appointment tomorrow?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not a bother, and it makes sense you\u2019re stressed. Let\u2019s make tomorrow easier right now: I can help you set one reminder so you have clean clothes before your appointment. What time is the appointment tomorrow?",
+      "voiceResponseAlternatives": [
+        "Yes. I can help set that reminder. What time tomorrow morning should I put it for?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001068#turn-1",
+      "scenarioId": "phone_dialog_0001068",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, my hearing is bad on this line. I\u2019m in Multnomah County and I need somewhere I can get my mail.",
+      "normalizedQuery": "hi sorry hearing bad on this line multnomah county somewhere mail",
+      "voiceResponse": "I hear you. You are in Multnomah County, and you need a place for mail. I have one local option: Multnomah County Library Mobile and Partner Libraries. They offer Books by Mail. Call **503** \u2026 **988** \u2026 **5404**. Again: **503** \u2026 **988** \u2026 **5404**. Do you want a short script for what to say when you call?",
+      "evidenceDocIds": [
+        "page:bafkreier3wj7y5bn467kdri5todkxvzwqfyr6bwstbakv4xaibhuzesdke",
+        "page:bafkreic5b2nzvi3u5nxk37wnmspgbcbycyzpz6b355o6guyffdaldg26ua",
+        "service:5666b33971b67377",
+        "service:fc44520ae57bd644",
+        "page:bafkreigala5r2hrdjmriszh3yfjq5c2ckcyzckjurfplez6g5vhjfb6g3i"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You are in Multnomah County, and you need a place for mail. I have one local option: Multnomah County Library Mobile and Partner Libraries. They offer Books by Mail. Call **503** \u2026 **988** \u2026 **5404**. Again: **503** \u2026 **988** \u2026 **5404**. Do you want a short script for what to say when you call?",
+      "voiceResponseAlternatives": [
+        "Yes. The main number is **8-0-0, 9-6-5, 6-5-1-9**. I\u2019ll repeat: **8-0-0, 9-6-5, 6-5-1-9**. That\u2019s for clothing donation and pickup support.",
+        "You\u2019re doing the right thing. Call this number now for clothing help: **8-0-0 \u2026 9-6-5 \u2026 6-5-1-9**. Again: **8-0-0, 9-6-5, 6-5-1-9**.",
+        "You\u2019re okay, and I\u2019m glad you called. Let\u2019s take this one step at a time. I do have a Multnomah County resource list, updated January 22, 2026, that shows what shelters and daytime drop-in centers are open today and tonight. Those drop-in centers are usually the best place to ask for shower access. If you want, I can help you contact 211 now so they can give you the nearest open location.",
+        "I hear you, and I\u2019m glad you called. I don\u2019t have a confirmed mail-receiving site listed in the local results right here, but a good next step is **Multnomah County Library Mobile and Partner Libraries**. They support people experiencing homelessness and other barriers, and may know nearby mail options. Their number is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. If you want, I can stay with you while you call."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001068#turn-2",
+      "scenarioId": "phone_dialog_0001068",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I missed the street name, and the number too.",
+      "normalizedQuery": "hi sorry hearing bad on this line multnomah county somewhere mail say again slower missed street name number too",
+      "voiceResponse": "Yes. Slower. I do not have a street address for that option. I only have the phone number. It is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. Again: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreier3wj7y5bn467kdri5todkxvzwqfyr6bwstbakv4xaibhuzesdke",
+        "page:bafkreiaobtvhasqn22xpjuujosbgahpr3zeaytx5d3yatmh4bsblyn3qfi",
+        "page:bafkreic5b2nzvi3u5nxk37wnmspgbcbycyzpz6b355o6guyffdaldg26ua",
+        "service:5666b33971b67377"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Slower. I do not have a street address for that option. I only have the phone number. It is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. Again: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**.",
+      "voiceResponseAlternatives": [
+        "Yes. Call to Safety is: **5-0-3, 2-3-5, 5-3-3-3**. I\u2019ll repeat: **5-0-3, 2-3-5, 5-3-3-3**.",
+        "Yes. The main number is **8-0-0** \u2026 **9-6-5** \u2026 **6-5-1-9**. I\u2019ll say it again: **8-0-0, 9-6-5, 6-5-1-9**.",
+        "Please write this down: I don\u2019t have an address listed to repeat for that contact. The only detail I have is the phone number: **5-4-1** \u2026 **9-9-4** \u2026 **4-9-6-8**.",
+        "Of course, and you\u2019re doing okay. The name I said is **211**. You can dial it as: **2 \u2026 1 \u2026 1**. Tell them you\u2019re in Multnomah County and need the nearest open daytime drop-in center with shower access."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001068#turn-4",
+      "scenarioId": "phone_dialog_0001068",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "multnomah",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My battery is low, so can we do this quick? I need the address one more time, in chunks.",
+      "normalizedQuery": "hi sorry hearing bad on this line multnomah county somewhere mail say again slower missed street name number too was gresham did gray sum misheard battery low so we quick address one more time chunks",
+      "voiceResponse": "Quick answer: I do not have an address for this service. I do not have an address for this service. I only have a phone contact for it. Do you want me to repeat the phone number, slowly, in chunks?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u",
+        "page:bafkreidhaafteznjowxb5qlxmgbmjkaejixektbx4nsphfnrrcsr7t4rhy",
+        "page:bafkreib6isxhypfyf7qpxdmsps4orpdsexoy7x4c5l7c55gpfdka2nyvhu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Quick answer: I do not have an address for this service. I do not have an address for this service. I only have a phone contact for it. Do you want me to repeat the phone number, slowly, in chunks?",
+      "voiceResponseAlternatives": [
+        "Yes. The main number is **8-0-0, 9-6-5, 6-5-1-9**. I\u2019ll repeat: **8-0-0, 9-6-5, 6-5-1-9**. That\u2019s for clothing donation and pickup support.",
+        "You\u2019re doing the right thing. Call this number now for clothing help: **8-0-0 \u2026 9-6-5 \u2026 6-5-1-9**. Again: **8-0-0, 9-6-5, 6-5-1-9**.",
+        "You\u2019re okay, and I\u2019m glad you called. Let\u2019s take this one step at a time. I do have a Multnomah County resource list, updated January 22, 2026, that shows what shelters and daytime drop-in centers are open today and tonight. Those drop-in centers are usually the best place to ask for shower access. If you want, I can help you contact 211 now so they can give you the nearest open location.",
+        "I hear you, and I\u2019m glad you called. I don\u2019t have a confirmed mail-receiving site listed in the local results right here, but a good next step is **Multnomah County Library Mobile and Partner Libraries**. They support people experiencing homelessness and other barriers, and may know nearby mail options. Their number is: **5 0 3** \u2026 **9 8 8** \u2026 **5 4 0 4**. If you want, I can stay with you while you call."
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -670,6 +844,36 @@
       "to": "phone_dialog_0000563#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000707#turn-1",
+      "to": "phone_dialog_0000707#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001053#turn-4",
+      "to": "phone_dialog_0001053#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001068#turn-1",
+      "to": "phone_dialog_0001068#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001068#turn-2",
+      "to": "phone_dialog_0001068#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001068#turn-4",
+      "to": "phone_dialog_0001068#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->app_surface_navigation"
     }
   ]
 }

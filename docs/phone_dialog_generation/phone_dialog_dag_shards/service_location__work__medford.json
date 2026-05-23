@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__work__medford",
   "kind": "service_location",
   "key": "work__medford",
-  "nodeCount": 6,
+  "nodeCount": 10,
   "nodes": [
     {
       "id": "phone_dialog_0000107#turn-4",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "You\u2019re not being difficult at all, and I hear you. We can keep this private and minimal: \u201cI\u2019m in Medford, and I need interview clothes today.\u201d That\u2019s enough to start. You can decline your full name, exact address, or anything else you don\u2019t want to share. If you\u2019re ready, I\u2019ll connect you to a live specialist now, and you can open with: \u201cI want to stay private and share the least possible.\u201d",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Next step: I can connect you to a live 211 specialist right now, so they can help with work and employment options in Medford. You did the right thing calling, and we can take it one step at a time. Would you like me to bring that person on now?"
+      ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
@@ -164,6 +166,112 @@
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000980#turn-3",
+      "scenarioId": "phone_dialog_0000980",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hello? You cut out for a second, can you repeat the name of that program slower?",
+      "normalizedQuery": "hi sorry hear calling niece we re medford she needs finding work fast like job leads place helps resumes don know all her paperwork situation hello cut second repeat name program slower",
+      "voiceResponse": "Absolutely, I know the line is rough. The program is **two-one-one info**: **2-1-1 info**. I\u2019m connecting you to a **live 2-1-1 specialist** for Medford job leads and resume help.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely, I know the line is rough. The program is **two-one-one info**: **2-1-1 info**. I\u2019m connecting you to a **live 2-1-1 specialist** for Medford job leads and resume help.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001136#turn-1",
+      "scenarioId": "phone_dialog_0001136",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Medford, and I\u2019m trying to get back to work, but I\u2019m mixing things up a little.",
+      "normalizedQuery": "hi medford trying back work mixing things up little",
+      "voiceResponse": "Next step: I can connect you to a live 211 specialist right now, so they can help with work and employment options in Medford. You did the right thing calling, and we can take it one step at a time. Would you like me to bring that person on now?",
+      "evidenceDocIds": [
+        "service:34d9e92d3ede5e98",
+        "service:99e8679fab689416",
+        "service:f7f1a44948506f7a",
+        "service:3765a8082141d5b8",
+        "service:73273f6832e1bbfe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: I can connect you to a live 211 specialist right now, so they can help with work and employment options in Medford. You did the right thing calling, and we can take it one step at a time. Would you like me to bring that person on now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re not being difficult at all, and I hear you. We can keep this private and minimal: \u201cI\u2019m in Medford, and I need interview clothes today.\u201d That\u2019s enough to start. You can decline your full name, exact address, or anything else you don\u2019t want to share. If you\u2019re ready, I\u2019ll connect you to a live specialist now, and you can open with: \u201cI want to stay private and share the least possible.\u201d"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001136#turn-2",
+      "scenarioId": "phone_dialog_0001136",
+      "turnIndex": 1,
+      "route": "service_interaction_support",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "service_interaction_support",
+      "user": "I already had an intake at the workforce office on Tuesday morning, and they asked about my resume and past jobs.",
+      "normalizedQuery": "hi medford trying back work mixing things up little already had an intake at workforce office on tuesday morning they asked resume past jobs",
+      "voiceResponse": "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:ff1fa660f44a6130"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?",
+      "voiceResponseAlternatives": [
+        "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001136#turn-3",
+      "scenarioId": "phone_dialog_0001136",
+      "turnIndex": 2,
+      "route": "service_interaction_support",
+      "serviceTag": "work",
+      "locationTag": "medford",
+      "promptTemplate": "service_interaction_support",
+      "user": "Could you note that down for me, that I finished the intake and gave them my paperwork?",
+      "normalizedQuery": "hi medford trying back work mixing things up little already had an intake at workforce office on tuesday morning they asked resume past jobs could note down finished gave them paperwork",
+      "voiceResponse": "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "service:34d9e92d3ede5e98",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I\u2019ve noted it: you finished your intake on Tuesday morning, and you gave them your paperwork, resume, and past job details. Next step: call the workforce office and ask what they need from you before the next appointment. If you want, I can help you practice exactly what to say on that call.",
+      "voiceResponseAlternatives": [
+        "Next step: let\u2019s connect you to a live 211 specialist now to plan your follow-up with that workforce office. You already completed intake on Tuesday morning, and they reviewed your resume and past jobs, so that\u2019s good progress. The specialist can help you prepare what to say next and keep the steps organized. Would you like me to bring them on now?"
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
     }
   ],
   "edges": [
@@ -202,6 +310,30 @@
       "to": "phone_dialog_0000315#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000980#turn-3",
+      "to": "phone_dialog_0000980#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001136#turn-1",
+      "to": "phone_dialog_0001136#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0001136#turn-2",
+      "to": "phone_dialog_0001136#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0001136#turn-3",
+      "to": "phone_dialog_0001136#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "service_interaction_support->live_agent"
     }
   ]
 }

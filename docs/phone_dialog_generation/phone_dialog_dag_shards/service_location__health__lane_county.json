@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__health__lane_county",
   "kind": "service_location",
   "key": "health__lane_county",
-  "nodeCount": 3,
+  "nodeCount": 6,
   "nodes": [
     {
       "id": "phone_dialog_0000311#turn-1",
@@ -80,10 +80,94 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, and you\u2019re okay. The place is **Fora Health Detox Services**. The number is: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5 1**. I can repeat it again while you dial, one chunk at a time.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. Lane County. Lane County, Eugene area. Not Linn County. I\u2019ll say it again: Lane County, Eugene area. And my question was: are you age 55 or older?",
+        "Yes. I hear you. Lane County, Eugene area. Lane County, Eugene area. Not Linn County. Not Linn County. I do not have a Lane County ride number ready yet. One quick question: are you age 55 or older?"
+      ],
       "callerArchetypeId": "privacy_wary",
       "channelConditionId": "background_noise",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000900#turn-1",
+      "scenarioId": "phone_dialog_0000900",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, sorry, I can\u2019t hear great on this line. I\u2019m in Lane County and I need help getting rides to my medical appointments.",
+      "normalizedQuery": "hi sorry hear great on this line lane county getting rides medical appointments",
+      "voiceResponse": "Yes, I can help. I heard: Lane County, and rides to medical appointments. Lane County, and rides to medical appointments. Are you age **55 or older**?",
+      "evidenceDocIds": [
+        "service:c628bf14ff381928",
+        "service:2f3cf97bfe9b7f9f",
+        "service:8ce3cb945b6fc55c",
+        "service:4a5a0081811d7638",
+        "service:1700408eea20aebe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can help. I heard: Lane County, and rides to medical appointments. Lane County, and rides to medical appointments. Are you age **55 or older**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000900#turn-2",
+      "scenarioId": "phone_dialog_0000900",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? Did you say Lane or Linn County services? I need Lane County, Eugene area.",
+      "normalizedQuery": "hi sorry hear great on this line lane county getting rides medical appointments say again slower did linn services eugene area",
+      "voiceResponse": "Yes. Lane County. Lane County, Eugene area. Not Linn County. I\u2019ll say it again: Lane County, Eugene area. And my question was: are you age 55 or older?",
+      "evidenceDocIds": [
+        "service:8ce3cb945b6fc55c",
+        "service:4a5a0081811d7638",
+        "service:6355a9aeaf555886",
+        "service:c628bf14ff381928",
+        "page:bafkreidxozopzperiltgcphjgcuiasmnyx53dq65du4hjzavp4i2fqt4pm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Lane County. Lane County, Eugene area. Not Linn County. I\u2019ll say it again: Lane County, Eugene area. And my question was: are you age 55 or older?",
+      "voiceResponseAlternatives": [
+        "Absolutely, and you\u2019re okay. The place is **Fora Health Detox Services**. The number is: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5 1**. I can repeat it again while you dial, one chunk at a time.",
+        "Yes. I hear you. Lane County, Eugene area. Lane County, Eugene area. Not Linn County. Not Linn County. I do not have a Lane County ride number ready yet. One quick question: are you age 55 or older?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000900#turn-3",
+      "scenarioId": "phone_dialog_0000900",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "lane_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Also my phone battery is at like two percent, so if there\u2019s a number, please read it in chunks and repeat it once.",
+      "normalizedQuery": "hi sorry hear great on this line lane county getting rides medical appointments say again slower did linn services eugene area also phone battery at like two percent so if there number please read it chunks repeat once",
+      "voiceResponse": "Yes. I hear you. Lane County, Eugene area. Lane County, Eugene area. Not Linn County. Not Linn County. I do not have a Lane County ride number ready yet. One quick question: are you age 55 or older?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:8ce3cb945b6fc55c",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:4a5a0081811d7638"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I hear you. Lane County, Eugene area. Lane County, Eugene area. Not Linn County. Not Linn County. I do not have a Lane County ride number ready yet. One quick question: are you age 55 or older?",
+      "voiceResponseAlternatives": [
+        "Absolutely, and you\u2019re okay. The place is **Fora Health Detox Services**. The number is: **5 0 3** \u2026 **5 3 5** \u2026 **1 1 5 1**. I can repeat it again while you dial, one chunk at a time.",
+        "Yes. Lane County. Lane County, Eugene area. Not Linn County. I\u2019ll say it again: Lane County, Eugene area. And my question was: are you age 55 or older?"
+      ],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -104,6 +188,24 @@
       "to": "phone_dialog_0000311#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000900#turn-1",
+      "to": "phone_dialog_0000900#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000900#turn-2",
+      "to": "phone_dialog_0000900#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000900#turn-3",
+      "to": "phone_dialog_0000900#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->app_surface_navigation"
     }
   ]
 }

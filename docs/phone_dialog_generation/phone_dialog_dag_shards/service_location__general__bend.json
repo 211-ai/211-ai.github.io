@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__general__bend",
   "kind": "service_location",
   "key": "general__bend",
-  "nodeCount": 20,
+  "nodeCount": 36,
   "nodes": [
     {
       "id": "phone_dialog_0000007#turn-5",
@@ -589,6 +589,481 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000626#turn-6",
+      "scenarioId": "phone_dialog_0000626",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "My phone\u2019s at like three percent, please just tell me the fastest place in Bend I can go or call tonight.",
+      "normalizedQuery": "phone at like three percent please just tell fastest place bend go call tonight",
+      "voiceResponse": "Fastest and safest right now is **9-1-1**. Call **nine\u2026 one\u2026 one** now and say: \u201cI\u2019m in Bend, I don\u2019t feel safe being alone, and I might act on harmful thoughts.\u201d If your battery dies, go to the nearest people right away and ask them to call **9-1-1** for you. I\u2019m here with you.",
+      "evidenceDocIds": [
+        "service:1c25fa37ff636289",
+        "service:a558e2f5ba96f584",
+        "service:755193c3d210f2d9",
+        "service:b385a4631c24feca",
+        "service:484b4523643f9b5f"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Fastest and safest right now is **9-1-1**. Call **nine\u2026 one\u2026 one** now and say: \u201cI\u2019m in Bend, I don\u2019t feel safe being alone, and I might act on harmful thoughts.\u201d If your battery dies, go to the nearest people right away and ask them to call **9-1-1** for you. I\u2019m here with you.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000685#turn-2",
+      "scenarioId": "phone_dialog_0000685",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend, near downtown, and I\u2019ve been outside too long, I\u2019m shaking and I don\u2019t feel safe where I am.",
+      "normalizedQuery": "hi most important number first please this isn phone it die bend downtown ve been outside too long shaking don feel safe",
+      "voiceResponse": "You\u2019re not safe right now, so first call **9 1 1**. Say: \u201cI\u2019m in downtown Bend, I\u2019m shaking, outside too long, and I don\u2019t feel safe. I need help now.\u201d If you can, step into the nearest open public place while you wait. If 911 isn\u2019t possible, call **5 4 1 \u2014 3 2 2 \u2014 8 7 6 8** next.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:675e8d8ba442bfca"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not safe right now, so first call **9 1 1**. Say: \u201cI\u2019m in downtown Bend, I\u2019m shaking, outside too long, and I don\u2019t feel safe. I need help now.\u201d If you can, step into the nearest open public place while you wait. If 911 isn\u2019t possible, call **5 4 1 \u2014 3 2 2 \u2014 8 7 6 8** next.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000701#turn-5",
+      "scenarioId": "phone_dialog_0000701",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If there's a hotline or local advocate office in Bend, can you repeat the number twice so I can write it down?",
+      "normalizedQuery": "she just got her kids last night don't have all details think she's staying friend right now wait cut on part say program name again slower only know first phone might be off so behalf if there's hotline local advocate office bend repeat number twice write it down",
+      "voiceResponse": "Next step: stay on the line and I\u2019ll connect you to a live 211 specialist now for Bend options. I want to be accurate, and I don\u2019t have a verified Bend hotline number in front of me to repeat safely. A live specialist can give you the correct local advocate office number and repeat it twice while you write it down.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay on the line and I\u2019ll connect you to a live 211 specialist now for Bend options. I want to be accurate, and I don\u2019t have a verified Bend hotline number in front of me to repeat safely. A live specialist can give you the correct local advocate office number and repeat it twice while you write it down.",
+      "voiceResponseAlternatives": [
+        "Next step: write this exactly as **2-1-1**. Digit by digit, slowly: **two \u2026 one \u2026 one**. That\u2019s the number I have here.",
+        "Yes. Slower now. Call **8-8-8, 2-2-1, 7-0-7-0**. Again: **8-8-8, 2-2-1, 7-0-7-0**. Say: \u201cMy shutoff is tonight. I can\u2019t pay the full amount. I need a same-day payment plan to stop disconnection.\u201d Backup number: **8-8-8, 2-2-5, 2-6-1-1**. Again: **8-8-8, 2-2-5, 2-6-1-1**.",
+        "Absolutely. The number is **11** \u2014 one, one \u2014 veteran temporary housing or shelter programs in Bend. And the other number, if you want it later, is **3** veteran mental health evaluation services. If it helps, we can stay with just the **11 housing options** right now.",
+        "Sure. After Bend, I said: if he is in immediate danger, call **9-1-1** now. If he is in immediate danger, call **9-1-1** now. Is he safe right now?"
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000727#turn-1",
+      "scenarioId": "phone_dialog_0000727",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hello? ...can you hear me now? I'm in Bend, I think the call keeps cutting.",
+      "normalizedQuery": "hello hear now i'm bend think call keeps cutting",
+      "voiceResponse": "Yes, I hear you now. The audio was unclear for a moment. The audio was unclear. Please say one short thing you need most right now: parenting help, or lab testing?",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "service:3bf79b1da127b257",
+        "service:4cf2de0c28d3b829",
+        "service:5e908c23930ad3de",
+        "service:16c906930c61dd47"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you now. The audio was unclear for a moment. The audio was unclear. Please say one short thing you need most right now: parenting help, or lab testing?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "hearing_impaired",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000777#turn-5",
+      "scenarioId": "phone_dialog_0000777",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "My phone\u2019s at like two percent, if we get cut off can you tell me the fastest place in Bend I can go right now for an advocate?",
+      "normalizedQuery": "phone at like two percent if we cut off tell fastest place bend go right now an advocate",
+      "voiceResponse": "If we get cut off, and you feel in danger, call **9-1-1** immediately. For a live advocate right now, call **5-4-1, 6-8-6, 7-8-7-8**. Until they answer, stay in a busy, well-lit public place with your kids and doors locked.",
+      "evidenceDocIds": [
+        "service:2ef319d5e12550a7",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreigshe4u2qgpbz5yo6xodrigum5vzydtcrvans3mg4cbcuzshqs73y",
+        "service:98249e32a262b454",
+        "service:1c25fa37ff636289"
+      ],
+      "similarCases": [],
+      "assistantResponse": "If we get cut off, and you feel in danger, call **9-1-1** immediately. For a live advocate right now, call **5-4-1, 6-8-6, 7-8-7-8**. Until they answer, stay in a busy, well-lit public place with your kids and doors locked.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000866#turn-5",
+      "scenarioId": "phone_dialog_0000866",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Can you say that number again, slower? I want to write it down right this time.",
+      "normalizedQuery": "sorry slow down little i'm really overwhelmed right now it's ex left last night someone who helps survivors like advocacy safety planning bend don't have family here say number again slower want write it this time",
+      "voiceResponse": "Yes. The number is **9-1-1** \u2014 that\u2019s **nine\u2026 one\u2026 one**. Next step: if you feel in immediate danger, call **9-1-1** right now. If you\u2019re safe in this moment, stay with me and I\u2019ll keep the live 211 handoff moving, one step at a time.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:2a8dfbe44adb059e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1** \u2014 that\u2019s **nine\u2026 one\u2026 one**. Next step: if you feel in immediate danger, call **9-1-1** right now. If you\u2019re safe in this moment, stay with me and I\u2019ll keep the live 211 handoff moving, one step at a time.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000866#turn-6",
+      "scenarioId": "phone_dialog_0000866",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "And if they don't answer, is there another place in Bend I can call today?",
+      "normalizedQuery": "it's ex left last night someone who helps survivors like advocacy safety planning i'm bend don't have family here say number again slower want write it down right this time if they answer there another place call",
+      "voiceResponse": "Next step: stay with me on this call, and I\u2019ll keep pushing the live 211 handoff through right now. I don\u2019t have another verified Bend number in the evidence I can safely give you at this moment. If you become in immediate danger while we wait, call **9-1-1** \u2014 **nine\u2026 one\u2026 one**. I\u2019m here with you.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: stay with me on this call, and I\u2019ll keep pushing the live 211 handoff through right now. I don\u2019t have another verified Bend number in the evidence I can safely give you at this moment. If you become in immediate danger while we wait, call **9-1-1** \u2014 **nine\u2026 one\u2026 one**. I\u2019m here with you.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000889#turn-3",
+      "scenarioId": "phone_dialog_0000889",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "We\u2019re in Bend, on the east side, and I don\u2019t really have money for any of it right now.",
+      "normalizedQuery": "we re bend on east side don really have money any it right now",
+      "voiceResponse": "Thank you for telling me that. You shouldn\u2019t have to pay for help right now, and we can focus on free options near Bend\u2019s east side. If you or your son are in immediate danger, call 911 now. If not, I can connect you to a live 211 specialist right now for same-day clothing and family support nearby. Stay with me, and I\u2019ll get you to the right person.",
+      "evidenceDocIds": [
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me that. You shouldn\u2019t have to pay for help right now, and we can focus on free options near Bend\u2019s east side. If you or your son are in immediate danger, call 911 now. If not, I can connect you to a live 211 specialist right now for same-day clothing and family support nearby. Stay with me, and I\u2019ll get you to the right person.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000935#turn-2",
+      "scenarioId": "phone_dialog_0000935",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Bend... sorry, I\u2019m having trouble catching my breath, can you get me a live domestic violence advocate right now?",
+      "normalizedQuery": "bend sorry having trouble catching breath live domestic violence advocate right now",
+      "voiceResponse": "Yes. First, call **911** right now because you\u2019re having trouble breathing and need immediate help. Then ask 911 to connect you to a live domestic violence advocate. If the call drops, dial this Oregon number next: **5 4 1\u2026 6 8 6\u2026 7 8 7 8**.",
+      "evidenceDocIds": [
+        "service:2a8dfbe44adb059e",
+        "service:de79113abf2cae4b",
+        "service:8825e8162fecb883",
+        "service:2b32d7191207ca8c",
+        "service:29e33c4115645e64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First, call **911** right now because you\u2019re having trouble breathing and need immediate help. Then ask 911 to connect you to a live domestic violence advocate. If the call drops, dial this Oregon number next: **5 4 1\u2026 6 8 6\u2026 7 8 7 8**.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000935#turn-4",
+      "scenarioId": "phone_dialog_0000935",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Wait, say that number again slowly, I missed the middle part.",
+      "normalizedQuery": "hi most important number first please this isn phone it at two percent bend sorry having trouble catching breath live domestic violence advocate right now he been threatening don feel safe staying here tonight wait say again slowly missed middle part",
+      "voiceResponse": "It\u2019s **5 4 1** \u2026 **6 8 6** \u2026 **7 8 7 8**. If you\u2019re in danger or struggling to breathe, call **911** first.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "It\u2019s **5 4 1** \u2026 **6 8 6** \u2026 **7 8 7 8**. If you\u2019re in danger or struggling to breathe, call **911** first.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000935#turn-5",
+      "scenarioId": "phone_dialog_0000935",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "If this cuts off, what\u2019s the very next step I should do immediately?",
+      "normalizedQuery": "bend sorry having trouble catching breath live domestic violence advocate right now he been threatening don feel safe staying here tonight wait say number again slowly missed middle part if this cuts off very next step should immediately",
+      "voiceResponse": "Call **911 now**. Say: \u201cI can\u2019t breathe well, I\u2019m being threatened, and I\u2019m not safe. I need police and a domestic violence advocate now.\u201d If this call drops before 911 answers, dial **5 4 1 \u2026 6 8 6 \u2026 7 8 7 8** immediately.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:2a8dfbe44adb059e",
+        "service:8825e8162fecb883"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Call **911 now**. Say: \u201cI can\u2019t breathe well, I\u2019m being threatened, and I\u2019m not safe. I need police and a domestic violence advocate now.\u201d If this call drops before 911 answers, dial **5 4 1 \u2026 6 8 6 \u2026 7 8 7 8** immediately.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "sick_or_dying",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000958#turn-2",
+      "scenarioId": "phone_dialog_0000958",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Bend, like on the east side, and I don't wanna go somewhere that's just gonna turn me away again.",
+      "normalizedQuery": "hi um sorry can't really breathe right now somewhere safe go i'm bend like on east side don't wanna that's just gonna turn away again",
+      "voiceResponse": "I hear you. I\u2019m not sending you somewhere just to be turned away again. If you\u2019re still struggling to breathe right now or feel unsafe, call 911 now. If you can, get to a public place nearby while we do this. I\u2019m connecting you to a live 211 specialist for Bend east side options that can take you today, and I\u2019ll stay with you through the handoff.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreiaa4x4rnhydiuj34jkc6mjbepb7wriov4627ult5rqdfy6wssb75e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreibrwtwzp673s5y5nsk4qryompt2csus5eav4eeg7dkwzrfkwlc5uq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019m not sending you somewhere just to be turned away again. If you\u2019re still struggling to breathe right now or feel unsafe, call 911 now. If you can, get to a public place nearby while we do this. I\u2019m connecting you to a live 211 specialist for Bend east side options that can take you today, and I\u2019ll stay with you through the handoff.",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000958#turn-3",
+      "scenarioId": "phone_dialog_0000958",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I missed that, there's people yelling near me and I can't hear good.",
+      "normalizedQuery": "hi um sorry can't really breathe right now somewhere safe go i'm bend like on east side don't wanna that's just gonna turn away again slow down missed there's people yelling hear good",
+      "voiceResponse": "Okay. Slow and clear: if you can\u2019t breathe or you feel unsafe right now, call 9-1-1. Nine. One. One. If you can move, go to a public place with other people. Then I\u2019ll connect you to a live 211 specialist for east-side Bend options that can take you today, and I\u2019ll stay with you.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreigpdz7gkgx2mye6fznkrjudjznsysth4oynsm5sy5sx3lnlquzige",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. Slow and clear: if you can\u2019t breathe or you feel unsafe right now, call 9-1-1. Nine. One. One. If you can move, go to a public place with other people. Then I\u2019ll connect you to a live 211 specialist for east-side Bend options that can take you today, and I\u2019ll stay with you.",
+      "voiceResponseAlternatives": [
+        "Next step: write this exactly as **2-1-1**. Digit by digit, slowly: **two \u2026 one \u2026 one**. That\u2019s the number I have here.",
+        "Yes. Slower now. Call **8-8-8, 2-2-1, 7-0-7-0**. Again: **8-8-8, 2-2-1, 7-0-7-0**. Say: \u201cMy shutoff is tonight. I can\u2019t pay the full amount. I need a same-day payment plan to stop disconnection.\u201d Backup number: **8-8-8, 2-2-5, 2-6-1-1**. Again: **8-8-8, 2-2-5, 2-6-1-1**.",
+        "Absolutely. The number is **11** \u2014 one, one \u2014 veteran temporary housing or shelter programs in Bend. And the other number, if you want it later, is **3** veteran mental health evaluation services. If it helps, we can stay with just the **11 housing options** right now.",
+        "Sure. After Bend, I said: if he is in immediate danger, call **9-1-1** now. If he is in immediate danger, call **9-1-1** now. Is he safe right now?"
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001009#turn-2",
+      "scenarioId": "phone_dialog_0001009",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "He\u2019s kind of couch surfing right now, I don\u2019t know his exact zip code, just Bend area... wait, you cut out, can you say that part again?",
+      "normalizedQuery": "he kind couch surfing right now don know his exact zip code just bend area wait cut say part again",
+      "voiceResponse": "Sure\u2014next step: call St. Vincent de Paul Social Services of Bend at **five four one \u2026 three eight nine \u2026 six six four three**. Address: **950 Southeast 3rd Street, Bend, 97702**. They have seasonal used coats and clothing, plus a **$25 clothing voucher** for adults 18 and older, one per family once a year. **No documents are required.**",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:437ec64b59b0ac16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Sure\u2014next step: call St. Vincent de Paul Social Services of Bend at **five four one \u2026 three eight nine \u2026 six six four three**. Address: **950 Southeast 3rd Street, Bend, 97702**. They have seasonal used coats and clothing, plus a **$25 clothing voucher** for adults 18 and older, one per family once a year. **No documents are required.**",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001135#turn-5",
+      "scenarioId": "phone_dialog_0001135",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, I\u2019m exhausted and not thinking straight. Is that office in Bend proper or a different address?",
+      "normalizedQuery": "safe going back phone at like three percent so fastest option ve got wait bus just went by missed name place say it again slower first part number chunks numbers time sorry exhausted thinking straight office bend proper different address",
+      "voiceResponse": "You\u2019re okay. I hear you. I don\u2019t have the street address in front of me right now. The fastest step is still HAVEN. Call: five four one. Two nine six. One six six two. Again: five four one. Two nine six. One six six two. If you are in immediate danger, call 9-1-1 now. Are you safe enough to make that call right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:e25fd4aa967fb6a0",
+        "service:755193c3d210f2d9",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re okay. I hear you. I don\u2019t have the street address in front of me right now. The fastest step is still HAVEN. Call: five four one. Two nine six. One six six two. Again: five four one. Two nine six. One six six two. If you are in immediate danger, call 9-1-1 now. Are you safe enough to make that call right now?",
+      "voiceResponseAlternatives": [
+        "Next step: write this down as I read it, one digit at a time: **5 \u2026 4 \u2026 1 \u2026 5 \u2026 4 \u2026 8 \u2026 2 \u2026 3 \u2026 8 \u2026 0**. That is **five four one, five four eight, two three eight zero**. I can read it again just as slowly.",
+        "Thanks for saying that. We can keep this simple: I can connect you to a live specialist now and ask for **Bend jobs you can reach by bus today**. If your battery dies, call **2-1-1** and say: **\u201cBend, immediate job leads by bus.\u201d** If you feel unsafe where you\u2019re parked right now, call **9-1-1** first.",
+        "Okay. First option tonight is the **24-hour Crisis and Support Line**. Number: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. Again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. They can help you find a bus-reachable place in Bend right now. If you feel in immediate danger, call **9 1 1**.",
+        "Yes, I can hear you. Next step: I can connect you to a live 211 specialist right now to find same-day clothing in Bend. You can share only the minimum details you\u2019re comfortable sharing. If you\u2019re in immediate danger right now, call 911."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001135#turn-6",
+      "scenarioId": "phone_dialog_0001135",
+      "turnIndex": 5,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "bend",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Okay, please repeat the address one more time, really slow, then I\u2019ll head there now.",
+      "normalizedQuery": "wait bus just went by missed name place say it again slower got first part number phone chunks like three numbers at time sorry exhausted thinking straight office bend proper different address okay please repeat one more really slow then ll head there now",
+      "voiceResponse": "I don\u2019t have a street address for HAVEN right now. I don\u2019t have a street address for HAVEN right now. Best next step is to call them now. Five four one. Two nine six. One six six two. Again: five four one. Two nine six. One six six two.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I don\u2019t have a street address for HAVEN right now. I don\u2019t have a street address for HAVEN right now. Best next step is to call them now. Five four one. Two nine six. One six six two. Again: five four one. Two nine six. One six six two.",
+      "voiceResponseAlternatives": [
+        "Next step: write this exactly as **2-1-1**. Digit by digit, slowly: **two \u2026 one \u2026 one**. That\u2019s the number I have here.",
+        "Yes. Slower now. Call **8-8-8, 2-2-1, 7-0-7-0**. Again: **8-8-8, 2-2-1, 7-0-7-0**. Say: \u201cMy shutoff is tonight. I can\u2019t pay the full amount. I need a same-day payment plan to stop disconnection.\u201d Backup number: **8-8-8, 2-2-5, 2-6-1-1**. Again: **8-8-8, 2-2-5, 2-6-1-1**.",
+        "Absolutely. The number is **11** \u2014 one, one \u2014 veteran temporary housing or shelter programs in Bend. And the other number, if you want it later, is **3** veteran mental health evaluation services. If it helps, we can stay with just the **11 housing options** right now.",
+        "Sure. After Bend, I said: if he is in immediate danger, call **9-1-1** now. If he is in immediate danger, call **9-1-1** now. Is he safe right now?"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "slow_clear_repetition"
     }
   ],
   "edges": [
@@ -681,6 +1156,84 @@
       "to": "phone_dialog_0000514#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000685#turn-2",
+      "to": "phone_dialog_0000685#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000701#turn-5",
+      "to": "phone_dialog_0000701#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000727#turn-1",
+      "to": "phone_dialog_0000727#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0000777#turn-5",
+      "to": "phone_dialog_0000777#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000866#turn-5",
+      "to": "phone_dialog_0000866#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000889#turn-3",
+      "to": "phone_dialog_0000889#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000935#turn-2",
+      "to": "phone_dialog_0000935#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000935#turn-4",
+      "to": "phone_dialog_0000935#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000935#turn-5",
+      "to": "phone_dialog_0000935#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000958#turn-2",
+      "to": "phone_dialog_0000958#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000958#turn-3",
+      "to": "phone_dialog_0000958#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001009#turn-2",
+      "to": "phone_dialog_0001009#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001135#turn-5",
+      "to": "phone_dialog_0001135#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

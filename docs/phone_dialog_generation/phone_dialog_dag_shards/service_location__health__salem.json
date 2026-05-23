@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__health__salem",
   "kind": "service_location",
   "key": "health__salem",
-  "nodeCount": 7,
+  "nodeCount": 9,
   "nodes": [
     {
       "id": "phone_dialog_0000037#turn-1",
@@ -26,7 +26,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m with you. If your breathing gets worse right now, you can call 911. For a medical ride, we can try Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8**. What time is your appointment?",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "For Salem medical rides, call **Cascades West Ride Line** first: **five-four-one, nine-two-four, eight-seven-three-eight**. Backup: **eight-six-six, seven-two-four, two-nine-seven-five**. You can keep it minimal, just say you need a ride to a medical appointment tomorrow morning and ask the earliest pickup they can schedule. One quick detail I need to guide timing: what time is your appointment?"
+      ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "rambling_and_interrupting",
       "assistantStyleId": "privacy_trust_builder"
@@ -52,7 +54,8 @@
       "similarCases": [],
       "assistantResponse": "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**.",
       "voiceResponseAlternatives": [
-        "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time."
+        "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time.",
+        "Of course. The main Salem ride number is **five-four-one, nine-two-four, eight-seven-three-eight**. I\u2019ll repeat: **five-four-one\u2026 nine-two-four\u2026 eight-seven-three-eight**. Backup is **five-four-one, nine-six-seven, eight-six-three-zero**."
       ],
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "rambling_and_interrupting",
@@ -132,7 +135,8 @@
       "similarCases": [],
       "assistantResponse": "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time.",
       "voiceResponseAlternatives": [
-        "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**."
+        "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**.",
+        "Of course. The main Salem ride number is **five-four-one, nine-two-four, eight-seven-three-eight**. I\u2019ll repeat: **five-four-one\u2026 nine-two-four\u2026 eight-seven-three-eight**. Backup is **five-four-one, nine-six-seven, eight-six-three-zero**."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
@@ -193,6 +197,61 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000691#turn-2",
+      "scenarioId": "phone_dialog_0000691",
+      "turnIndex": 1,
+      "route": "calendar_event_support",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "calendar_event_support",
+      "user": "I\u2019m in Salem and I need transportation help for a medical appointment tomorrow morning.",
+      "normalizedQuery": "salem transportation transport ride bus medical appointment tomorrow morning",
+      "voiceResponse": "For Salem medical rides, call **Cascades West Ride Line** first: **five-four-one, nine-two-four, eight-seven-three-eight**. Backup: **eight-six-six, seven-two-four, two-nine-seven-five**. You can keep it minimal, just say you need a ride to a medical appointment tomorrow morning and ask the earliest pickup they can schedule. One quick detail I need to guide timing: what time is your appointment?",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:98ac0349caf0cda6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "For Salem medical rides, call **Cascades West Ride Line** first: **five-four-one, nine-two-four, eight-seven-three-eight**. Backup: **eight-six-six, seven-two-four, two-nine-seven-five**. You can keep it minimal, just say you need a ride to a medical appointment tomorrow morning and ask the earliest pickup they can schedule. One quick detail I need to guide timing: what time is your appointment?",
+      "voiceResponseAlternatives": [
+        "I\u2019m with you. If your breathing gets worse right now, you can call 911. For a medical ride, we can try Cascades West Ride Line at **5 4 1, 9 2 4, 8 7 3 8**. What time is your appointment?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000691#turn-3",
+      "scenarioId": "phone_dialog_0000691",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "health",
+      "locationTag": "salem",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, you cut out for a second, can you repeat that number slower?",
+      "normalizedQuery": "hi sorry this borrowed phone it at like two percent most important ride number first salem transportation transport bus medical appointment tomorrow morning wait cut second repeat slower",
+      "voiceResponse": "Of course. The main Salem ride number is **five-four-one, nine-two-four, eight-seven-three-eight**. I\u2019ll repeat: **five-four-one\u2026 nine-two-four\u2026 eight-seven-three-eight**. Backup is **five-four-one, nine-six-seven, eight-six-three-zero**.",
+      "evidenceDocIds": [
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:80bb5c1077a6fe59",
+        "service:772d7d7943af2255"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The main Salem ride number is **five-four-one, nine-two-four, eight-seven-three-eight**. I\u2019ll repeat: **five-four-one\u2026 nine-two-four\u2026 eight-seven-three-eight**. Backup is **five-four-one, nine-six-seven, eight-six-three-zero**.",
+      "voiceResponseAlternatives": [
+        "Of course. The ride line number is **5 4 1, 9 2 4, 8 7 3 8**. If that doesn\u2019t go through, backup is **8 6 6, 7 2 4, 2 9 7 5**.",
+        "Absolutely. Slow version: First, I\u2019ll connect you to a live 2-1-1 specialist now for an open detox option in Salem, tonight. Second, if he becomes unsafe, passes out, has trouble breathing, or talks about harming himself or others, call 9-1-1 right away. If you want, I can repeat that one more time."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -237,6 +296,18 @@
       "to": "phone_dialog_0000284#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000691#turn-2",
+      "to": "phone_dialog_0000691#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "calendar_event_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000691#turn-3",
+      "to": "phone_dialog_0000691#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
     }
   ]
 }

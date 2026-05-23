@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__health__hillsboro",
   "kind": "service_location",
   "key": "health__hillsboro",
-  "nodeCount": 9,
+  "nodeCount": 14,
   "nodes": [
     {
       "id": "phone_dialog_0000014#turn-2",
@@ -117,7 +117,9 @@
       "similarCases": [],
       "assistantResponse": "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**.",
       "voiceResponseAlternatives": [
-        "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**."
+        "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**.",
+        "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery.",
+        "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -171,7 +173,9 @@
       "similarCases": [],
       "assistantResponse": "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**.",
       "voiceResponseAlternatives": [
-        "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**."
+        "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**.",
+        "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery.",
+        "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
@@ -263,6 +267,144 @@
       "callerArchetypeId": "sick_or_dying",
       "channelConditionId": "clear_line",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000945#turn-1",
+      "scenarioId": "phone_dialog_0000945",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m talking fast because my phone is at like four percent, but I\u2019m in Hillsboro and I need ride help for medical stuff, not just regular bus info.",
+      "normalizedQuery": "hi sorry talking fast because phone at like four percent hillsboro ride medical stuff just regular bus info",
+      "voiceResponse": "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery.",
+      "evidenceDocIds": [
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526",
+        "service:06227c05cc4eea25"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery.",
+      "voiceResponseAlternatives": [
+        "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**.",
+        "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**.",
+        "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000952#turn-1",
+      "scenarioId": "phone_dialog_0000952",
+      "turnIndex": 0,
+      "route": "clarifying_prompt",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "clarifying_prompt",
+      "user": "Hi, I\u2019m in Hillsboro and I need help getting to medical appointments, but I\u2019m really nervous about giving out my information.",
+      "normalizedQuery": "hi hillsboro getting medical appointments really nervous giving information",
+      "voiceResponse": "That makes sense, and you can keep this minimal. We can look at options that share very little info, or I can help you contact a Hillsboro clinic first and ask about transportation without giving your details up front. Which feels safer to start with: a low-info ride option, or a clinic call script?",
+      "evidenceDocIds": [
+        "service:96ebddab94f2ec9c",
+        "page:bafkreidsb5ezey2pmag66byvvurjpzrjve5gbsxgsix2p7x2yobi7bo76a",
+        "service:8ce3cb945b6fc55c",
+        "service:085eb42951591644",
+        "page:bafkreiekddhpjynqgtdx62pakkkdmsgdyoptwe4zgmydow5pzoradbzayy"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes sense, and you can keep this minimal. We can look at options that share very little info, or I can help you contact a Hillsboro clinic first and ask about transportation without giving your details up front. Which feels safer to start with: a low-info ride option, or a clinic call script?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000952#turn-2",
+      "scenarioId": "phone_dialog_0000952",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Before I share anything, can you tell me who can see what I say here and if it gets shared outside your system?",
+      "normalizedQuery": "hi hillsboro getting medical appointments really nervous giving information before share anything tell who see say here if it gets shared outside your system",
+      "voiceResponse": "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a fair question. I don\u2019t need your name or ID to keep helping, and you can share only what feels safe. I can work with general details like city and type of ride need. I don\u2019t have a way here to verify internal data-access policy line by line, so if you want, we can stay fully minimal now and I can also give you a short script to ask any provider what they store and who they share it with before you give details.",
+      "voiceResponseAlternatives": [
+        "Call this now and ask for a same-day bed check: **five four one, five two three, four zero four nine**. Say: \u201cI\u2019m in Hillsboro near downtown, I can arrive today, and I need medical detox.\u201d If they don\u2019t answer, call backup: **five four one, four zero six, four three six three**.",
+        "Call first. I don\u2019t have confirmed walk-in information in front of me. Use this number now: **five four one** \u2026 **five two three** \u2026 **four zero four nine**. Ask: \u201cDo you take walk-ins for medical detox today, and is there a same-day bed?\u201d If no answer, backup is: **five four one** \u2026 **four zero six** \u2026 **four three six three**.",
+        "You\u2019re doing great, and we can keep this quick. I\u2019m not seeing a solid medical ride listing for Hillsboro in what I have right now. Best next step is a live 211 specialist who can pull real-time medical transportation options near you. If you want, I can connect you now so you don\u2019t lose battery."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000952#turn-4",
+      "scenarioId": "phone_dialog_0000952",
+      "turnIndex": 3,
+      "route": "template_guided_fallback",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "template_guided_fallback",
+      "user": "I do need the help, I just can\u2019t risk my personal stuff ending up somewhere I didn\u2019t agree to.",
+      "normalizedQuery": "hi hillsboro getting medical appointments really nervous giving information before share anything tell who see say here if it gets shared outside your system might have upload proof address ride program just know those files actually safe risk personal stuff ending up somewhere didn agree",
+      "voiceResponse": "I hear you, and you\u2019re right to protect your info. I don\u2019t have a strong local policy match in front of me that proves file-handling rules line by line. We can keep this low-risk: I can give you a short script to ask any ride program exactly who can view files, how long they keep them, and whether they share them, or I can connect you to a human specialist now. Which feels safer?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re right to protect your info. I don\u2019t have a strong local policy match in front of me that proves file-handling rules line by line. We can keep this low-risk: I can give you a short script to ask any ride program exactly who can view files, how long they keep them, and whether they share them, or I can connect you to a human specialist now. Which feels safer?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001013#turn-6",
+      "scenarioId": "phone_dialog_0001013",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "health",
+      "locationTag": "hillsboro",
+      "promptTemplate": "live_agent",
+      "user": "If you can\u2019t find exact matches in Hillsboro, can you tell me what part is the hard part and what I should loosen first?",
+      "normalizedQuery": "wait repeat county said missed it there train going by also don have dental dentist clinic insurance right now somewhere won ask big deposit up front like under hundred if possible they re open after weekends matters work two jobs sorry keep circling just miss another shift exact matches hillsboro tell part hard should loosen first",
+      "voiceResponse": "Great question. The hardest combo is all four at once: exact Hillsboro, after 7 or weekends, under $100 today, and no insurance. The first thing to loosen is city boundary, then exact time window, while keeping cost cap and no-insurance support. A practical order: 1) Ask for same-day low-cost urgent care within commuting distance. 2) Then ask evening/weekend waitlist. 3) If needed, take earliest slot and request a payment plan before confirming. That usually gets care fastest without surprise costs.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great question. The hardest combo is all four at once: exact Hillsboro, after 7 or weekends, under $100 today, and no insurance. The first thing to loosen is city boundary, then exact time window, while keeping cost cap and no-insurance support. A practical order: 1) Ask for same-day low-cost urgent care within commuting distance. 2) Then ask evening/weekend waitlist. 3) If needed, take earliest slot and request a payment plan before confirming. That usually gets care fastest without surprise costs.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. Shaking and feeling scared can be serious, so please do not stop on your own right now. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** now. For detox tonight, call **5 4 1, 5 2 3, 4 0 4 9** right now, and I can stay with you while you call.",
+        "That does not sound bad, it sounds dangerous, and I\u2019m really glad you said it. You\u2019re at real medical risk if you detox alone. If you feel faint, confused, or might hurt yourself, call **9 1 1** right now. I\u2019m getting you to a live agent now to help you get safe detox tonight. Stay with me and keep breathing slowly with me.",
+        "Yes, I can help you get into a place today. You should not do this alone tonight. If you feel like you might pass out, have a seizure, or hurt yourself, call **9 1 1** right now. Otherwise, call **5 4 1, 5 2 3, 4 0 4 9** now for detox intake, and if they can\u2019t take you, call **5 4 1, 4 0 6, 4 3 6 3** next. Stay with me while you make the call.",
+        "Of course. The provider is **Cascades West Ride Line**. Slowly: **Cas-cades**... **West**... **Ride**... **Line**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -313,6 +455,30 @@
       "to": "phone_dialog_0000469#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000945#turn-1",
+      "to": "phone_dialog_0000945#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0000952#turn-1",
+      "to": "phone_dialog_0000952#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000952#turn-2",
+      "to": "phone_dialog_0000952#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000952#turn-4",
+      "to": "phone_dialog_0000952#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
     }
   ]
 }

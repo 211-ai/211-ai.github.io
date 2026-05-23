@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__daily_needs__washington_county",
   "kind": "service_location",
   "key": "daily_needs__washington_county",
-  "nodeCount": 12,
+  "nodeCount": 32,
   "nodes": [
     {
       "id": "phone_dialog_0000268#turn-1",
@@ -59,7 +59,8 @@
       "voiceResponseAlternatives": [
         "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
         "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
-        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**.",
+        "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "rambling_and_interrupting",
@@ -88,7 +89,8 @@
       "voiceResponseAlternatives": [
         "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
         "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
-        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**.",
+        "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8."
       ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "rambling_and_interrupting",
@@ -237,7 +239,8 @@
       "voiceResponseAlternatives": [
         "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
         "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
-        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**.",
+        "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8."
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
@@ -263,7 +266,12 @@
       ],
       "similarCases": [],
       "assistantResponse": "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word.",
+        "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line."
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
@@ -321,7 +329,8 @@
       "voiceResponseAlternatives": [
         "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
         "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
-        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**."
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8."
       ],
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "bad_reception",
@@ -356,6 +365,596 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000790#turn-1",
+      "scenarioId": "phone_dialog_0000790",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Washington County and I need help finding a place for clothes, like a clothing closet.",
+      "normalizedQuery": "hi washington county finding place clothes like clothing closet",
+      "voiceResponse": "Yes. I can help with that. I found a clothing closet for women. Professional Women\u2019s Clothes Closet. They offer clothing and shoes for work. Phone: 5 0 3, 6 5 4, 3 1 6 1. Again: 5 0 3, 6 5 4, 3 1 6 1. Address: 1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7. Again: 1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7. Is this for women\u2019s clothing?",
+      "evidenceDocIds": [
+        "service:2cbe2274abaeab3b",
+        "service:4cd63f4e019d5636",
+        "service:52b9a055f4c58881",
+        "service:85654ab4502cb908",
+        "service:7fc520d7a68a1f4a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help with that. I found a clothing closet for women. Professional Women\u2019s Clothes Closet. They offer clothing and shoes for work. Phone: 5 0 3, 6 5 4, 3 1 6 1. Again: 5 0 3, 6 5 4, 3 1 6 1. Address: 1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7. Again: 1 4 7 0 0 Southeast Rupert Drive, Oak Grove, Oregon, 9 7 2 6 7. Is this for women\u2019s clothing?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000790#turn-2",
+      "scenarioId": "phone_dialog_0000790",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, I didn\u2019t catch that name, my hearing is not great on this phone. Can you say the provider name again slowly?",
+      "normalizedQuery": "hi washington county finding place clothes like clothing closet sorry didn catch name hearing great on this phone say provider again slowly",
+      "voiceResponse": "Yes. I will say it slowly. The provider name is **Bethlehem Children\u2019s Clothes Closet**. Again: **Bethlehem Children\u2019s Clothes Closet**.",
+      "evidenceDocIds": [
+        "service:bbea7883a5477e64",
+        "service:a206f5d2276849fd",
+        "service:b26681286f52f9ba",
+        "service:7450cc0225895ec2",
+        "service:f9a2427433ede4e5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I will say it slowly. The provider name is **Bethlehem Children\u2019s Clothes Closet**. Again: **Bethlehem Children\u2019s Clothes Closet**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000790#turn-3",
+      "scenarioId": "phone_dialog_0000790",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Was that number 503-55... no, wait, I missed it. Could you repeat the phone number in chunks?",
+      "normalizedQuery": "hi washington county finding place clothes like clothing closet sorry didn catch name hearing great on this phone say provider again slowly was number 503 55 no wait missed it could repeat chunks",
+      "voiceResponse": "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1a1916cf1f6f8f5c",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:bbea7883a5477e64",
+        "service:bb6aea3f778df0b5"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The phone number is: 5 0 3, 7 3 9, 0 1 5 8. Again: 5 0 3, 7 3 9, 0 1 5 8.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
+        "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000790#turn-4",
+      "scenarioId": "phone_dialog_0000790",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Thank you. And the address too, please, one part at a time so I can write it down right.",
+      "normalizedQuery": "hi washington county finding place clothes like clothing closet sorry didn catch name hearing great on this phone say provider again slowly was number 503 55 no wait missed it could repeat chunks thank address too please one part at time so write down right",
+      "voiceResponse": "Yes. I can help. I do not have a confirmed address in front of me right now. I do not want to give you a wrong one. I can connect you to a live 2-1-1 specialist to confirm it slowly. Again: I can connect you to a live 2-1-1 specialist. Would you like me to connect you now?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help. I do not have a confirmed address in front of me right now. I do not want to give you a wrong one. I can connect you to a live 2-1-1 specialist to confirm it slowly. Again: I can connect you to a live 2-1-1 specialist. Would you like me to connect you now?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000834#turn-3",
+      "scenarioId": "phone_dialog_0000834",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Washington County right now, and I really need somewhere I can take a shower.",
+      "normalizedQuery": "washington county right now really somewhere take shower",
+      "voiceResponse": "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word.",
+        "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000834#turn-4",
+      "scenarioId": "phone_dialog_0000834",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again slower? I missed the name when you said it.",
+      "normalizedQuery": "hi um don't even know start just some sorry i'm trying cry lost brother last week keeping it together washington county right now really somewhere take shower say again slower missed name when said",
+      "voiceResponse": "Yes. The name is **2-1-1 info**. I\u2019ll say it slowly: **two-one-one info**. That\u2019s the live Washington specialist line I can connect you to now for same-day shower options in Washington County.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The name is **2-1-1 info**. I\u2019ll say it slowly: **two-one-one info**. That\u2019s the live Washington specialist line I can connect you to now for same-day shower options in Washington County.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
+        "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000834#turn-5",
+      "scenarioId": "phone_dialog_0000834",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "My phone's about to die, so can you give me the address first and then the hours?",
+      "normalizedQuery": "sorry i'm trying cry lost brother last week just keeping it together washington county right now really somewhere take shower say again slower missed name when said phone's die so give address first then hours",
+      "voiceResponse": "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:a558e2f5ba96f584",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word.",
+        "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000865#turn-1",
+      "scenarioId": "phone_dialog_0000865",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m at the bus stop and it\u2019s loud out here. I need somewhere to shower today in Washington County.",
+      "normalizedQuery": "hi sorry at bus stop it loud here somewhere shower washington county",
+      "voiceResponse": "I hear you, and you\u2019re doing the right thing. To protect your privacy, you can call 2-1-1 without sharing more than you want and just ask for \u201cshower facilities open today in Washington County.\u201d If it helps, I can stay with you while you make that call and give you a short script: \u201cI need a shower today, near this bus stop, and I need the closest open location.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreia53szva7jzo36rnojpqdjigyfup44oqkxyhpteenuql7fnddfzby",
+        "page:bafkreieg6fostaqd4pefij22fhjh3ruicspnwcomvdpp5y3rvldh2hgucq",
+        "page:bafkreiacuazconmcbo4yhaaw3ijk2g3xltqah5f4s7577ahetoqjeyurii",
+        "page:bafkreiafc7hfqlezecmk3u54ggw3e4r5zb3udrhancrtwfaz4q3drbuwhm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re doing the right thing. To protect your privacy, you can call 2-1-1 without sharing more than you want and just ask for \u201cshower facilities open today in Washington County.\u201d If it helps, I can stay with you while you make that call and give you a short script: \u201cI need a shower today, near this bus stop, and I need the closest open location.\u201d",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000865#turn-2",
+      "scenarioId": "phone_dialog_0000865",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you say that again? A bus just went by and I missed the name.",
+      "normalizedQuery": "hi sorry at bus stop it loud here somewhere shower washington county say again just went by missed name",
+      "voiceResponse": "Absolutely \u2014 the name is **2-1-1**, said as \u201c**two, one, one**.\u201d You can call and say: \u201cI need shower facilities open today in Washington County, near this bus stop.\u201d You can share only what you\u2019re comfortable sharing.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidd4hparjklr47igvuvtqiixbb3miajfgmacnsp42aksaysui7yui",
+        "page:bafkreib5i5l3vyq3iujsfhsjmzuhmv3gkw27uibadvpbinn4f7w6cu7ksi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely \u2014 the name is **2-1-1**, said as \u201c**two, one, one**.\u201d You can call and say: \u201cI need shower facilities open today in Washington County, near this bus stop.\u201d You can share only what you\u2019re comfortable sharing.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
+        "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000909#turn-1",
+      "scenarioId": "phone_dialog_0000909",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m calling for my aunt, not for me. She needs help with laundry and I\u2019m trying to find what\u2019s available in Washington County.",
+      "normalizedQuery": "hi calling aunt she needs laundry trying available washington county",
+      "voiceResponse": "Great next step: open 211info and search **Basic Needs** under **Laundry Facilities** first, then **Laundry Products**, and set the area to Washington County. I can see there are many matches in those categories, and each listing\u2019s \u201cMore Details\u201d has the exact site location since the map pins are only estimates. If you want, I can help you narrow it by your aunt\u2019s city so you can pick the closest option.",
+      "evidenceDocIds": [
+        "page:bafkreicwhfjqhdllthz2wijnjkjt5u3ezzl2ki6rpqc7ls2oln6ajlvyqm",
+        "page:bafkreidivadofbns3bhaolkcjgurnu5hryzluci77e5bfk6r4ggwnie7tu",
+        "page:bafkreihk247ql3o7iya5zijnvoyt2lpbcafclj7kutjinzyfdopgaxq7wy",
+        "page:bafkreigcrxzostbee3khpk2q2psnnwlh22dimgwnm62zsi7wad3b7jcuw4",
+        "page:bafkreiahwhyblwnykp4u4rmmhnvra2unutr3xmazv7d2jdu6wwgxcicdru"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Great next step: open 211info and search **Basic Needs** under **Laundry Facilities** first, then **Laundry Products**, and set the area to Washington County. I can see there are many matches in those categories, and each listing\u2019s \u201cMore Details\u201d has the exact site location since the map pins are only estimates. If you want, I can help you narrow it by your aunt\u2019s city so you can pick the closest option.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000909#turn-3",
+      "scenarioId": "phone_dialog_0000909",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "I only have her ZIP written down somewhere, I can grab it if you need it, I just wanted to start the search.",
+      "normalizedQuery": "hi calling aunt she needs laundry trying available washington county older her washer broke think money tight right now don know all income details only have zip written down somewhere grab it if just wanted start search",
+      "voiceResponse": "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000991#turn-3",
+      "scenarioId": "phone_dialog_0000991",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you hear me now? I'm in Washington County, and I need help getting clothing, like basic stuff for this week.",
+      "normalizedQuery": "hear now i'm washington county getting clothing like basic stuff this week",
+      "voiceResponse": "Yes, I hear you now. You need basic clothing help this week. Basic clothing help this week. Quick check so I route you right: Is this Washington County, Oregon, or Washington state?",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c",
+        "service:0c199a9aef4e80f0",
+        "service:9fc8a4423060d526"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you now. You need basic clothing help this week. Basic clothing help this week. Quick check so I route you right: Is this Washington County, Oregon, or Washington state?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000991#turn-4",
+      "scenarioId": "phone_dialog_0000991",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Sorry, what did you say after county? You dropped out again.",
+      "normalizedQuery": "hello uh static can't phone cutting was trying say clothes think sorry didn't sleep this line bad hear now i'm washington county getting clothing like basic stuff week did after dropped again",
+      "voiceResponse": "Yes, I can repeat. I asked: is that Washington County, **Oregon** or Washington **state**? Oregon or Washington state?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:9c7b6b28cfc2b7b2",
+        "service:47377170b90d739c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can repeat. I asked: is that Washington County, **Oregon** or Washington **state**? Oregon or Washington state?",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000991#turn-5",
+      "scenarioId": "phone_dialog_0000991",
+      "turnIndex": 4,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "If you can, say it slow... I need where to go for clothes, and what I gotta bring.",
+      "normalizedQuery": "was trying say clothes think sorry didn't sleep this line bad hear now i'm washington county getting clothing like basic stuff week did after dropped again if it slow go gotta bring",
+      "voiceResponse": "I hear you. I\u2019ll go slow. Your audio is still unclear, so I missed part of it. One quick choice so I can give the right clothing place and what to bring: Are you in Washington County, **Oregon** or Washington County, **Washington state**?",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. I\u2019ll go slow. Your audio is still unclear, so I missed part of it. One quick choice so I can give the right clothing place and what to bring: Are you in Washington County, **Oregon** or Washington County, **Washington state**?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001048#turn-3",
+      "scenarioId": "phone_dialog_0001048",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "live_agent",
+      "user": "Yeah okay, I\u2019m in Washington County, and I don\u2019t got a mailbox right now, I need somewhere my mail can go.",
+      "normalizedQuery": "yeah okay washington county don got mailbox right now somewhere mail go",
+      "voiceResponse": "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line.",
+      "evidenceDocIds": [
+        "service:bf0682fd9fa9809c",
+        "service:06316d26dda9c85b",
+        "service:32f8d8103ea16592",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing a good job telling me what you need. Let\u2019s do this step by step: ask 211 for **mail pickup services** or a **proof-of-address mailing option** for people without a mailbox. If you\u2019re in **Southwest Washington**, WA 211 handles that now. I can stay with you while we get you to the right local line.",
+      "voiceResponseAlternatives": [
+        "Next step: we can connect you to a live 211 specialist now, and you can start without her full name. You can share only what she\u2019s comfortable with, like city, laundry need, and budget. If the specialist needs anything else, they\u2019ll ask for the minimum needed to find options.",
+        "One step right now: I can connect you to a live Washington 211 specialist to find same-day shower options in Washington County. I\u2019ll stay with you while we do that. If you\u2019re in immediate danger right now, please call 9-1-1.",
+        "First step: I\u2019ll connect you now to **2-1-1 info** so they can give you the exact shower **address first, then hours** in Washington County. If we get cut off, dial **2-1-1** \u2014 slowly: **two, one, one**. I don\u2019t have a verified address or hours in front of me here, but the live specialist can give both right away.",
+        "Perfect. Next step: grab her ZIP and call the live 211 navigator now. Say, \u201cI\u2019m calling for my aunt in Washington County; her washer broke and money is tight. I only have her ZIP right now.\u201d They can start the search with that and tell you the minimum details to collect next. If you want, once you find the ZIP, I can give you a 15-second script to read word-for-word."
+      ],
+      "callerArchetypeId": "intoxicated_or_sleep_deprived",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001097#turn-1",
+      "scenarioId": "phone_dialog_0001097",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me over this bus noise? I\u2019m in Washington County and I need a mail service setup, but not just a PO box.",
+      "normalizedQuery": "hi sorry hear over this bus noise washington county mail service setup just po box",
+      "voiceResponse": "Yes, I can hear you. One option is JOIN PDX, which offers **mail pick-up plus PO Box setup** and daytime services. Phone: **5 0 3, 2 3 2, 2 0 3 1**. Address: **1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3**. If you want, I can also help you script exactly what to ask so you can confirm options closer to Washington County.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:6ee668e6330d23d8",
+        "service:3cad750d175008ab",
+        "page:bafkreia53szva7jzo36rnojpqdjigyfup44oqkxyhpteenuql7fnddfzby",
+        "service:d037a0544f088c6d"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. One option is JOIN PDX, which offers **mail pick-up plus PO Box setup** and daytime services. Phone: **5 0 3, 2 3 2, 2 0 3 1**. Address: **1 4 3 5 Northeast 81st Avenue, Suite 1 0 0, Portland, 9 7 2 1 3**. If you want, I can also help you script exactly what to ask so you can confirm options closer to Washington County.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001122#turn-1",
+      "scenarioId": "phone_dialog_0001122",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m in Washington County and I\u2019m trying to find a place for clothing help.",
+      "normalizedQuery": "hi sorry hear okay washington county trying place clothing",
+      "voiceResponse": "Yes, I can hear you. For clothing help, I have St. Vincent de Paul First Place Family Center. They offer clothing vouchers and on-site clothing. You can call **5 4 1, 3 4 2, 7 7 2 8**. Another number is **5 4 1, 8 4 1, 1 9 7 4**. Address: **4 0 6 0 West Amazon Drive, Eugene**. If that\u2019s too far from Washington County, I can give you another nearby option next.",
+      "evidenceDocIds": [
+        "service:8f8b77f9c70206d7",
+        "service:c937c9fa6c05a20d",
+        "service:000f383b02383270",
+        "service:10301d048461816b",
+        "service:1850ffbe9250d85c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I can hear you. For clothing help, I have St. Vincent de Paul First Place Family Center. They offer clothing vouchers and on-site clothing. You can call **5 4 1, 3 4 2, 7 7 2 8**. Another number is **5 4 1, 8 4 1, 1 9 7 4**. Address: **4 0 6 0 West Amazon Drive, Eugene**. If that\u2019s too far from Washington County, I can give you another nearby option next.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001122#turn-2",
+      "scenarioId": "phone_dialog_0001122",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "My hearing\u2019s not great, could you say that slower and in small pieces? I missed the name.",
+      "normalizedQuery": "hi sorry hear okay washington county trying place clothing hearing great could say slower small pieces missed name",
+      "voiceResponse": "Of course. The name is: **St. Vincent de Paul First Place Family Center**. I\u2019ll say it slowly: **Saint Vincent de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+      "evidenceDocIds": [
+        "service:7bfdd3a498207bcd",
+        "service:ca2bc9d914433e0c",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreigkduwkh6hmk6nng2vp3meideebrahyyxmdxot5wzcdpu4a56ix2q",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The name is: **St. Vincent de Paul First Place Family Center**. I\u2019ll say it slowly: **Saint Vincent de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+      "voiceResponseAlternatives": [
+        "Of course. Slowly. The name is **Washington 2-1-1**. Again: **Washington 2-1-1**. They serve Southwest Washington. I can connect you now.",
+        "Yes. Slowly. The number is **2-1-1**. Again: **2-1-1**. Just dial 2, then 1, then 1.",
+        "Yes \u2014 the name is **St. Vincent de Paul First Place Family Center**. Slowly: **Saint Vincent** \u2026 **de Paul** \u2026 **First Place** \u2026 **Family Center**.",
+        "Yes. The name is **Stuff a Bus School Supplies**. I\u2019ll repeat it: **Stuff a Bus School Supplies**."
+      ],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001122#turn-3",
+      "scenarioId": "phone_dialog_0001122",
+      "turnIndex": 2,
+      "route": "wallet_document_support",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "wallet_document_support",
+      "user": "Before I upload anything, can you check what\u2019s already saved in my wallet? I don\u2019t want extra personal stuff sitting in there.",
+      "normalizedQuery": "hi sorry hear okay washington county trying place clothing hearing great could say slower small pieces missed name before upload anything check already saved wallet don want extra personal stuff sitting there",
+      "voiceResponse": "Absolutely. Good call to check first. I can help you do that without uploading anything new. Open your wallet, then go to **Documents** or **Saved files**. You can review each item there, then choose **remove** or **archive** for anything you don\u2019t want kept. If you want, I can walk you step by step, slowly, while you\u2019re on that screen.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Good call to check first. I can help you do that without uploading anything new. Open your wallet, then go to **Documents** or **Saved files**. You can review each item there, then choose **remove** or **archive** for anything you don\u2019t want kept. If you want, I can walk you step by step, slowly, while you\u2019re on that screen.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "elder_memory_gaps",
+      "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001153#turn-1",
+      "scenarioId": "phone_dialog_0001153",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "daily_needs",
+      "locationTag": "washington_county",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, I\u2019m talking fast because my battery is at like two percent, but I need mail service in Washington County, not just a PO box list.",
+      "normalizedQuery": "hi sorry talking fast because battery at like two percent mail service washington county just po box list",
+      "voiceResponse": "You\u2019re doing fine. Fastest option with low battery: call **971-319-9793** or **360-521-6527** and ask for **mail service in Washington County (not PO boxes)**. I don\u2019t want to make you repeat your story, so that exact phrase should get you routed quickly. Number again, chunked: **nine seven one, three one nine, nine seven nine three**.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:01fd72a2a842c1bc",
+        "service:98249e32a262b454",
+        "service:6ee668e6330d23d8",
+        "page:bafkreihgxooh2mvz44bjx2fswmej6makymwe3gcgfegbg5k3h46atak5fu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing fine. Fastest option with low battery: call **971-319-9793** or **360-521-6527** and ask for **mail service in Washington County (not PO boxes)**. I don\u2019t want to make you repeat your story, so that exact phrase should get you routed quickly. Number again, chunked: **nine seven one, three one nine, nine seven nine three**.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay. We can do this slowly. I\u2019m not seeing a mail-receiving service in the results I have right now. I only have Amtrak listings, not mail help. Do you want a place to pick up mail, like a PO box or general delivery, in Washington County?",
+        "Yes, I can repeat it slowly. The place I have is **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. If you want, I can repeat the name and number one more time.",
+        "Yes. The place was **Safe Place for Youth** in Hillsboro. Address: **454 S-E Washington Street, Hillsboro, Oregon, 97123**. Phone: **503\u2026 542\u2026 2717**. Second number: **503\u2026 542\u2026 2389**. I don\u2019t have the weekday hours listed here, but they can tell you when you call.",
+        "Of course. The name is **Safe Place for Youth**. Phone number: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**. I\u2019ll say it once more: **5 0 3** \u2026 **5 4 2** \u2026 **2 7 1 7**."
+      ],
+      "callerArchetypeId": "brilliant_tangential",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "privacy_trust_builder"
     }
   ],
   "edges": [
@@ -428,6 +1027,114 @@
     {
       "from": "phone_dialog_0000593#turn-3",
       "to": "phone_dialog_0000593#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000790#turn-1",
+      "to": "phone_dialog_0000790#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000790#turn-2",
+      "to": "phone_dialog_0000790#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000790#turn-3",
+      "to": "phone_dialog_0000790#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000790#turn-4",
+      "to": "phone_dialog_0000790#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000834#turn-3",
+      "to": "phone_dialog_0000834#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000834#turn-4",
+      "to": "phone_dialog_0000834#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000865#turn-1",
+      "to": "phone_dialog_0000865#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000865#turn-2",
+      "to": "phone_dialog_0000865#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->service_interaction_support"
+    },
+    {
+      "from": "phone_dialog_0000909#turn-1",
+      "to": "phone_dialog_0000909#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000909#turn-3",
+      "to": "phone_dialog_0000909#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000991#turn-3",
+      "to": "phone_dialog_0000991#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000991#turn-4",
+      "to": "phone_dialog_0000991#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001048#turn-3",
+      "to": "phone_dialog_0001048#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001097#turn-1",
+      "to": "phone_dialog_0001097#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001122#turn-1",
+      "to": "phone_dialog_0001122#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001122#turn-2",
+      "to": "phone_dialog_0001122#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001122#turn-3",
+      "to": "phone_dialog_0001122#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0001153#turn-1",
+      "to": "phone_dialog_0001153#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->grounded_211_answer"
     }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__broad_help__clackamas",
   "kind": "service_location",
   "key": "broad_help__clackamas",
-  "nodeCount": 2,
+  "nodeCount": 6,
   "nodes": [
     {
       "id": "phone_dialog_0000127#turn-5",
@@ -55,6 +55,110 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "background_noise",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000684#turn-4",
+      "scenarioId": "phone_dialog_0000684",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I really don't want my information shared around, are these calls private?",
+      "normalizedQuery": "hi um don't even know ask exactly just finding somewhere safe stay sorry slow down there's lot noise here missed part yeah it's i'm veteran veterans va clackamas county really want information shared around these calls private",
+      "voiceResponse": "That worry makes a lot of sense. I can keep this as private and minimal as possible here, and you only share what you\u2019re comfortable sharing. A good low-barrier option is **Veterans Stand Down**\u2014their listing says **no documents required**. There\u2019s also **Homeless Veterans Coordinated Entry** in 211 for housing help. If you want, I can walk you through exactly what to say without giving extra personal details.",
+      "evidenceDocIds": [
+        "service:2e6a4c77b4bef070",
+        "service:5819b975ba599d15",
+        "page:bafkreieptnyajz7wzo3lvxb6piqsayg2iw44lomspftz4rdwzkpdmlpoim",
+        "page:bafkreifsfavs7nphb66a26ddwupzl44x4d6t766e2zh2rwnkhx7hiyiehe",
+        "service:25a95eff19ab7393"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That worry makes a lot of sense. I can keep this as private and minimal as possible here, and you only share what you\u2019re comfortable sharing. A good low-barrier option is **Veterans Stand Down**\u2014their listing says **no documents required**. There\u2019s also **Homeless Veterans Coordinated Entry** in 211 for housing help. If you want, I can walk you through exactly what to say without giving extra personal details.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000844#turn-6",
+      "scenarioId": "phone_dialog_0000844",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "And if they can\u2019t see me, can you help me with one more place in Clackamas, I just need somebody to pull this tooth or something.",
+      "normalizedQuery": "slow down missed part there lot noise here thinking straight wait did say they take walk ins heard wrong think please repeat phone number one more time hands shaking typed it if see place clackamas just somebody pull this tooth something",
+      "voiceResponse": "Yes. If the first clinic can\u2019t see you, the live agent will find another place in Clackamas today and check walk-ins and bus access. You don\u2019t have to do this alone, I\u2019m staying with you through the handoff now. If your breathing gets worse or you feel unsafe, call 911 right away.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. If the first clinic can\u2019t see you, the live agent will find another place in Clackamas today and check walk-ins and bus access. You don\u2019t have to do this alone, I\u2019m staying with you through the handoff now. If your breathing gets worse or you feel unsafe, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "You\u2019re doing the right thing by saying that, and I\u2019m glad you told me where you are. First step: if you feel in immediate danger right now, call **9-1-1**. If you\u2019re safe enough to stay on the line, I\u2019ll connect you to a live **211** specialist serving Clackamas County who can help with survivor support today. Can you say, \u201csafe enough to stay on,\u201d or \u201cneed 9-1-1 now\u201d?"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001081#turn-4",
+      "scenarioId": "phone_dialog_0001081",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "live_agent",
+      "user": "I'm in Clackamas County, and I don't really know where to start.",
+      "normalizedQuery": "hi um don't even know ask right now just sorry i'm crying say again little slower it's ex feel safe think someone who helps survivors clackamas county really start",
+      "voiceResponse": "You\u2019re doing the right thing by saying that, and I\u2019m glad you told me where you are. First step: if you feel in immediate danger right now, call **9-1-1**. If you\u2019re safe enough to stay on the line, I\u2019ll connect you to a live **211** specialist serving Clackamas County who can help with survivor support today. Can you say, \u201csafe enough to stay on,\u201d or \u201cneed 9-1-1 now\u201d?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re doing the right thing by saying that, and I\u2019m glad you told me where you are. First step: if you feel in immediate danger right now, call **9-1-1**. If you\u2019re safe enough to stay on the line, I\u2019ll connect you to a live **211** specialist serving Clackamas County who can help with survivor support today. Can you say, \u201csafe enough to stay on,\u201d or \u201cneed 9-1-1 now\u201d?",
+      "voiceResponseAlternatives": [
+        "Yes. If the first clinic can\u2019t see you, the live agent will find another place in Clackamas today and check walk-ins and bus access. You don\u2019t have to do this alone, I\u2019m staying with you through the handoff now. If your breathing gets worse or you feel unsafe, call 911 right away."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001081#turn-5",
+      "scenarioId": "phone_dialog_0001081",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "clackamas",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you find someone, can you repeat the number twice so I can write it down right?",
+      "normalizedQuery": "sorry i'm crying say again little slower it's ex don't feel safe think someone who helps survivors clackamas county really know start if repeat number twice so write it down right",
+      "voiceResponse": "Absolutely. I\u2019ve got you. The number is **2-1-1**. Again: **2-1-1**. If you feel in immediate danger, that number is **9-1-1**. Again: **9-1-1**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. I\u2019ve got you. The number is **2-1-1**. Again: **2-1-1**. If you feel in immediate danger, that number is **9-1-1**. Again: **9-1-1**.",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -69,6 +173,18 @@
       "to": "phone_dialog_0000374#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "clarifying_prompt->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000684#turn-4",
+      "to": "phone_dialog_0000684#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001081#turn-4",
+      "to": "phone_dialog_0001081#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
     }
   ]
 }

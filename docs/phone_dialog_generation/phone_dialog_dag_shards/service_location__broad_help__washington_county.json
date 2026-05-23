@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__broad_help__washington_county",
   "kind": "service_location",
   "key": "broad_help__washington_county",
-  "nodeCount": 11,
+  "nodeCount": 13,
   "nodes": [
     {
       "id": "phone_dialog_0000060#turn-2",
@@ -56,7 +56,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. The part to repeat is: **take a clear photo of the notice right now** so the date and deadline are saved before your phone dies. Then tell the live agent exactly what the notice says, word for word, and that you\u2019re in Washington County.",
       "voiceResponseAlternatives": [
-        "Yes. The name is **HAVEN From Domestic and Sexual Violence**. I\u2019ll say it again: **HAVEN From Domestic and Sexual Violence**. Their crisis line is **5 4 1, 2 9 6, 1 6 6 2**. Again: **5 4 1, 2 9 6, 1 6 6 2**."
+        "Yes. The name is **HAVEN From Domestic and Sexual Violence**. I\u2019ll say it again: **HAVEN From Domestic and Sexual Violence**. Their crisis line is **5 4 1, 2 9 6, 1 6 6 2**. Again: **5 4 1, 2 9 6, 1 6 6 2**.",
+        "Of course. I\u2019ll go slowly. I heard you say: you need clothing help right now, for you and your kids, in Washington County. Is that correct?"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "emotionally_overloaded",
@@ -282,7 +283,8 @@
       "similarCases": [],
       "assistantResponse": "Yes. The name is **HAVEN From Domestic and Sexual Violence**. I\u2019ll say it again: **HAVEN From Domestic and Sexual Violence**. Their crisis line is **5 4 1, 2 9 6, 1 6 6 2**. Again: **5 4 1, 2 9 6, 1 6 6 2**.",
       "voiceResponseAlternatives": [
-        "Yes. The part to repeat is: **take a clear photo of the notice right now** so the date and deadline are saved before your phone dies. Then tell the live agent exactly what the notice says, word for word, and that you\u2019re in Washington County."
+        "Yes. The part to repeat is: **take a clear photo of the notice right now** so the date and deadline are saved before your phone dies. Then tell the live agent exactly what the notice says, word for word, and that you\u2019re in Washington County.",
+        "Of course. I\u2019ll go slowly. I heard you say: you need clothing help right now, for you and your kids, in Washington County. Is that correct?"
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
@@ -316,6 +318,59 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "background_noise",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000934#turn-2",
+      "scenarioId": "phone_dialog_0000934",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "My husband passed and I had to leave fast, I don\u2019t have enough clothes for me and my kids... we\u2019re in Washington County.",
+      "normalizedQuery": "hi sorry really breathe right now just don even know start husband passed had leave fast have enough clothes kids we re washington county",
+      "voiceResponse": "I\u2019m so sorry for your loss. Your audio cut out for a moment. Did you say you need emergency clothing help for you and your kids in Washington County right now?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:f525d65d4bd89731"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry for your loss. Your audio cut out for a moment. Did you say you need emergency clothing help for you and your kids in Washington County right now?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0000934#turn-3",
+      "scenarioId": "phone_dialog_0000934",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "broad_help",
+      "locationTag": "washington_county",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Can you slow down? I\u2019m trying to listen, I just keep losing track.",
+      "normalizedQuery": "hi sorry really breathe right now just don even know start husband passed had leave fast have enough clothes kids we re washington county slow down trying listen keep losing track",
+      "voiceResponse": "Of course. I\u2019ll go slowly. I heard you say: you need clothing help right now, for you and your kids, in Washington County. Is that correct?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:078087b57125137d",
+        "service:06316d26dda9c85b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. I\u2019ll go slowly. I heard you say: you need clothing help right now, for you and your kids, in Washington County. Is that correct?",
+      "voiceResponseAlternatives": [
+        "Yes. The part to repeat is: **take a clear photo of the notice right now** so the date and deadline are saved before your phone dies. Then tell the live agent exactly what the notice says, word for word, and that you\u2019re in Washington County.",
+        "Yes. The name is **HAVEN From Domestic and Sexual Violence**. I\u2019ll say it again: **HAVEN From Domestic and Sexual Violence**. Their crisis line is **5 4 1, 2 9 6, 1 6 6 2**. Again: **5 4 1, 2 9 6, 1 6 6 2**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -384,6 +439,18 @@
       "to": "phone_dialog_0000528#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000934#turn-2",
+      "to": "phone_dialog_0000934#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000934#turn-3",
+      "to": "phone_dialog_0000934#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->repeat_or_restate"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__rent__beaverton",
   "kind": "service_location",
   "key": "rent__beaverton",
-  "nodeCount": 12,
+  "nodeCount": 20,
   "nodes": [
     {
       "id": "phone_dialog_0000005#turn-1",
@@ -285,7 +285,11 @@
       ],
       "similarCases": [],
       "assistantResponse": "Absolutely, and I know this is a lot to carry for your dad. The agency name is **Rent Assistance**. I\u2019ll say it slowly: **Rent\u2026 Assistance**.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes. First number, slowly: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. Again: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**.",
+        "Of course, and I know this is a lot. The program name is **Rent Payment Assistance**.",
+        "Of course, and I know the signal\u2019s rough. Program name: **Multnomah County Eviction Prevention Program**. Phone, slowly: **503 \u2026 222 \u2026 5555**. Backup: **503 \u2026 226 \u2026 3099**. This is for an **unpaid rent** notice."
+      ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "compassionate_caseworker"
@@ -348,6 +352,243 @@
       ],
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "hard_of_hearing",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000809#turn-1",
+      "scenarioId": "phone_dialog_0000809",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, I\u2019m in Beaverton and this is a borrowed phone with like 3 percent battery, so can you give me the most important rent-assistance number first?",
+      "normalizedQuery": "hi beaverton this borrowed phone like percent battery so give most important rent eviction assistance number first",
+      "voiceResponse": "Absolutely. Call **5 0 3, 2 3 4, 2 0 4 8** first. I\u2019ll repeat: **5 0 3, 2 3 4, 2 0 4 8**. If that line is busy, try **5 0 3, 8 0 2, 0 0 8 2**. These are rent-assistance lines for families with children under 18 in the Portland area, including near Beaverton.",
+      "evidenceDocIds": [
+        "service:2281747e76c4abb0",
+        "service:7f151957f57c77f1",
+        "service:9b525f484625fd37",
+        "service:1b6e1c18557fb6a5",
+        "service:3655daf83f45f8e3"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Call **5 0 3, 2 3 4, 2 0 4 8** first. I\u2019ll repeat: **5 0 3, 2 3 4, 2 0 4 8**. If that line is busy, try **5 0 3, 8 0 2, 0 0 8 2**. These are rent-assistance lines for families with children under 18 in the Portland area, including near Beaverton.",
+      "voiceResponseAlternatives": [
+        "First step: call the rent assistance line now and ask for eviction-prevention help for this month. The number I have is **five four one, five four eight, two three eight zero**. They provide short-term rent help, including eviction prevention and move-in costs. Eligibility is listed as all, and required documents vary by service.",
+        "First step: call **2-1-1** now and say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction prevention help for about six hundred dollars this month.\u201d I can see 211info has an **Eviction Prevention Assistance** listing with multiple providers, so ask for the fastest referral and what documents they need before you call agencies.",
+        "First step: call **2-1-1** right now. Say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction-prevention help for **six hundred dollars** this month.\u201d Ask for the **fastest referral** from the Eviction Prevention Assistance providers and exactly what documents to gather before you make the next calls.",
+        "First step: contact **211info\u2019s Eviction Prevention Assistance** line right now and say, \u201cI can pay part on Friday, and I need help covering the remaining balance to avoid eviction.\u201d Ask for the **fastest provider referral** from the listed eviction-prevention programs and what documents to have ready for a pay-or-vacate notice."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000809#turn-2",
+      "scenarioId": "phone_dialog_0000809",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, the bus is loud and I missed that last part, can you repeat the number slower?",
+      "normalizedQuery": "hi beaverton this borrowed phone like percent battery so give most important rent eviction assistance number first sorry bus loud missed last part repeat slower",
+      "voiceResponse": "Yes. First number, slowly: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. Again: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**.",
+      "evidenceDocIds": [
+        "service:2281747e76c4abb0",
+        "service:7f151957f57c77f1",
+        "service:9b525f484625fd37",
+        "service:1b6e1c18557fb6a5",
+        "service:085fe55781b79fcb"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. First number, slowly: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. Again: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I know this is a lot to carry for your dad. The agency name is **Rent Assistance**. I\u2019ll say it slowly: **Rent\u2026 Assistance**.",
+        "Of course, and I know this is a lot. The program name is **Rent Payment Assistance**.",
+        "Of course, and I know the signal\u2019s rough. Program name: **Multnomah County Eviction Prevention Program**. Phone, slowly: **503 \u2026 222 \u2026 5555**. Backup: **503 \u2026 226 \u2026 3099**. This is for an **unpaid rent** notice."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000809#turn-4",
+      "scenarioId": "phone_dialog_0000809",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Please keep it basic, I don\u2019t want to share extra personal details from someone else\u2019s phone.",
+      "normalizedQuery": "hi beaverton this borrowed phone like percent battery so give most important rent eviction assistance number first sorry bus loud missed last part repeat slower if they don pick up draft short text send asking emergency week please keep it basic want share extra personal details from someone else",
+      "voiceResponse": "Absolutely. Keep it minimal. Call **5 0 3 \u2026 2 3 4 \u2026 2 0 4 8** and say: \u201cI need emergency rent help this week. What\u2019s the fastest way to apply?\u201d If no answer, try **5 0 3 \u2026 8 0 2 \u2026 0 0 8 2**. You can share only what you\u2019re comfortable with.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:1b6e1c18557fb6a5",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Absolutely. Keep it minimal. Call **5 0 3 \u2026 2 3 4 \u2026 2 0 4 8** and say: \u201cI need emergency rent help this week. What\u2019s the fastest way to apply?\u201d If no answer, try **5 0 3 \u2026 8 0 2 \u2026 0 0 8 2**. You can share only what you\u2019re comfortable with.",
+      "voiceResponseAlternatives": [
+        "First step: call the rent assistance line now and ask for eviction-prevention help for this month. The number I have is **five four one, five four eight, two three eight zero**. They provide short-term rent help, including eviction prevention and move-in costs. Eligibility is listed as all, and required documents vary by service.",
+        "First step: call **2-1-1** now and say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction prevention help for about six hundred dollars this month.\u201d I can see 211info has an **Eviction Prevention Assistance** listing with multiple providers, so ask for the fastest referral and what documents they need before you call agencies.",
+        "First step: call **2-1-1** right now. Say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction-prevention help for **six hundred dollars** this month.\u201d Ask for the **fastest referral** from the Eviction Prevention Assistance providers and exactly what documents to gather before you make the next calls.",
+        "First step: contact **211info\u2019s Eviction Prevention Assistance** line right now and say, \u201cI can pay part on Friday, and I need help covering the remaining balance to avoid eviction.\u201d Ask for the **fastest provider referral** from the listed eviction-prevention programs and what documents to have ready for a pay-or-vacate notice."
+      ],
+      "callerArchetypeId": "calm_practical",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000891#turn-1",
+      "scenarioId": "phone_dialog_0000891",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me okay? I\u2019m calling for my sister in Beaverton, she\u2019s behind on rent and I\u2019m trying to find help for her.",
+      "normalizedQuery": "hi sorry hear okay calling sister beaverton she behind on rent eviction assistance trying her",
+      "voiceResponse": "I can hear you, and you\u2019re doing the right thing for her. The rent-help program I can confirm is **Rent Assistance** at **541-548-2380**. Their listed offices are in Bend and La Pine, so ask if they can connect her to Beaverton-area help or transfer her. Number again: **5-4-1 \u2026 5-4-8 \u2026 2-3-8-0**. They also note documents needed can vary by service.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:8a6c6604cd95e457",
+        "service:3655daf83f45f8e3",
+        "service:a825ede72ffb05a6",
+        "service:66df89740da9485c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I can hear you, and you\u2019re doing the right thing for her. The rent-help program I can confirm is **Rent Assistance** at **541-548-2380**. Their listed offices are in Bend and La Pine, so ask if they can connect her to Beaverton-area help or transfer her. Number again: **5-4-1 \u2026 5-4-8 \u2026 2-3-8-0**. They also note documents needed can vary by service.",
+      "voiceResponseAlternatives": [
+        "First step: call the rent assistance line now and ask for eviction-prevention help for this month. The number I have is **five four one, five four eight, two three eight zero**. They provide short-term rent help, including eviction prevention and move-in costs. Eligibility is listed as all, and required documents vary by service.",
+        "First step: call **2-1-1** now and say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction prevention help for about six hundred dollars this month.\u201d I can see 211info has an **Eviction Prevention Assistance** listing with multiple providers, so ask for the fastest referral and what documents they need before you call agencies.",
+        "First step: call **2-1-1** right now. Say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction-prevention help for **six hundred dollars** this month.\u201d Ask for the **fastest referral** from the Eviction Prevention Assistance providers and exactly what documents to gather before you make the next calls.",
+        "First step: contact **211info\u2019s Eviction Prevention Assistance** line right now and say, \u201cI can pay part on Friday, and I need help covering the remaining balance to avoid eviction.\u201d Ask for the **fastest provider referral** from the listed eviction-prevention programs and what documents to have ready for a pay-or-vacate notice."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000891#turn-2",
+      "scenarioId": "phone_dialog_0000891",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "She told me she got, um, a pay-or-vacate notice, but I don\u2019t have the exact date in front of me.",
+      "normalizedQuery": "hi sorry hear okay calling sister beaverton she behind on rent eviction assistance trying her told got um pay vacate notice don have exact date front",
+      "voiceResponse": "That\u2019s okay, you\u2019re helping her at a hard moment. A pay-or-vacate notice may meet eligibility. I can confirm **Rent Payment Assistance** at **5-0-3 \u2026 5-8-5 \u2026 6-6-8-8**. They list: **1-9-7-7 Front Street N-E, Salem**. Their note says she must have a **72-hour eviction notice or be homeless**, and **no documents are required at intake**. When you call, ask if they can connect her to Beaverton-area eviction help right away.",
+      "evidenceDocIds": [
+        "service:8e7393d9b82b6a0b",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s okay, you\u2019re helping her at a hard moment. A pay-or-vacate notice may meet eligibility. I can confirm **Rent Payment Assistance** at **5-0-3 \u2026 5-8-5 \u2026 6-6-8-8**. They list: **1-9-7-7 Front Street N-E, Salem**. Their note says she must have a **72-hour eviction notice or be homeless**, and **no documents are required at intake**. When you call, ask if they can connect her to Beaverton-area eviction help right away.",
+      "voiceResponseAlternatives": [
+        "First step: call the rent assistance line now and ask for eviction-prevention help for this month. The number I have is **five four one, five four eight, two three eight zero**. They provide short-term rent help, including eviction prevention and move-in costs. Eligibility is listed as all, and required documents vary by service.",
+        "First step: call **2-1-1** now and say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction prevention help for about six hundred dollars this month.\u201d I can see 211info has an **Eviction Prevention Assistance** listing with multiple providers, so ask for the fastest referral and what documents they need before you call agencies.",
+        "First step: call **2-1-1** right now. Say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction-prevention help for **six hundred dollars** this month.\u201d Ask for the **fastest referral** from the Eviction Prevention Assistance providers and exactly what documents to gather before you make the next calls.",
+        "First step: contact **211info\u2019s Eviction Prevention Assistance** line right now and say, \u201cI can pay part on Friday, and I need help covering the remaining balance to avoid eviction.\u201d Ask for the **fastest provider referral** from the listed eviction-prevention programs and what documents to have ready for a pay-or-vacate notice."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0000891#turn-3",
+      "scenarioId": "phone_dialog_0000891",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "You cut out for a second, can you say that program name again?",
+      "normalizedQuery": "hi sorry hear okay calling sister beaverton she behind on rent eviction assistance trying her told got um pay vacate notice don have exact date front cut second say program name again",
+      "voiceResponse": "Of course, and I know this is a lot. The program name is **Rent Payment Assistance**.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "service:8e7393d9b82b6a0b",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:6f7a5b8f93e42931"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and I know this is a lot. The program name is **Rent Payment Assistance**.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I know this is a lot to carry for your dad. The agency name is **Rent Assistance**. I\u2019ll say it slowly: **Rent\u2026 Assistance**.",
+        "Yes. First number, slowly: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. Again: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**.",
+        "Of course, and I know the signal\u2019s rough. Program name: **Multnomah County Eviction Prevention Program**. Phone, slowly: **503 \u2026 222 \u2026 5555**. Backup: **503 \u2026 226 \u2026 3099**. This is for an **unpaid rent** notice."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001032#turn-1",
+      "scenarioId": "phone_dialog_0001032",
+      "turnIndex": 0,
+      "route": "grounded_211_answer",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Hi, sorry, can you hear me? I\u2019m calling for my niece in Beaverton, she got a notice and I\u2019m trying to find eviction help for her.",
+      "normalizedQuery": "hi sorry hear calling niece beaverton she got notice trying eviction her",
+      "voiceResponse": "Yes, I hear you. That\u2019s a lot to carry for your niece, and you\u2019re doing the right thing by calling. I have one eviction program on hand: **Multnomah County Eviction Prevention Program** for non-payment notices. If her notice is for unpaid rent, call: **503\u2026 222\u2026 5555**. Backup number: **503\u2026 226\u2026 3099**. They may ask for the eviction notice itself. If you want, I can repeat those numbers once more slowly.",
+      "evidenceDocIds": [
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:6f7a5b8f93e42931",
+        "service:5baf40645f0369dd",
+        "service:e6afcae43fb9094a"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, I hear you. That\u2019s a lot to carry for your niece, and you\u2019re doing the right thing by calling. I have one eviction program on hand: **Multnomah County Eviction Prevention Program** for non-payment notices. If her notice is for unpaid rent, call: **503\u2026 222\u2026 5555**. Backup number: **503\u2026 226\u2026 3099**. They may ask for the eviction notice itself. If you want, I can repeat those numbers once more slowly.",
+      "voiceResponseAlternatives": [
+        "First step: call the rent assistance line now and ask for eviction-prevention help for this month. The number I have is **five four one, five four eight, two three eight zero**. They provide short-term rent help, including eviction prevention and move-in costs. Eligibility is listed as all, and required documents vary by service.",
+        "First step: call **2-1-1** now and say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction prevention help for about six hundred dollars this month.\u201d I can see 211info has an **Eviction Prevention Assistance** listing with multiple providers, so ask for the fastest referral and what documents they need before you call agencies.",
+        "First step: call **2-1-1** right now. Say, \u201cI\u2019m in Beaverton, I have a pay-or-vacate notice, and I need eviction-prevention help for **six hundred dollars** this month.\u201d Ask for the **fastest referral** from the Eviction Prevention Assistance providers and exactly what documents to gather before you make the next calls.",
+        "First step: contact **211info\u2019s Eviction Prevention Assistance** line right now and say, \u201cI can pay part on Friday, and I need help covering the remaining balance to avoid eviction.\u201d Ask for the **fastest provider referral** from the listed eviction-prevention programs and what documents to have ready for a pay-or-vacate notice."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001032#turn-3",
+      "scenarioId": "phone_dialog_0001032",
+      "turnIndex": 2,
+      "route": "repeat_or_restate",
+      "serviceTag": "rent",
+      "locationTag": "beaverton",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Wait, you cut out after the program name... can you say that slower?",
+      "normalizedQuery": "hi sorry hear calling niece beaverton she got notice trying eviction her don have everything just know behind on rent assistance has two kids signal bad here if miss something repeat it wait cut after program name say slower",
+      "voiceResponse": "Of course, and I know the signal\u2019s rough. Program name: **Multnomah County Eviction Prevention Program**. Phone, slowly: **503 \u2026 222 \u2026 5555**. Backup: **503 \u2026 226 \u2026 3099**. This is for an **unpaid rent** notice.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course, and I know the signal\u2019s rough. Program name: **Multnomah County Eviction Prevention Program**. Phone, slowly: **503 \u2026 222 \u2026 5555**. Backup: **503 \u2026 226 \u2026 3099**. This is for an **unpaid rent** notice.",
+      "voiceResponseAlternatives": [
+        "Absolutely, and I know this is a lot to carry for your dad. The agency name is **Rent Assistance**. I\u2019ll say it slowly: **Rent\u2026 Assistance**.",
+        "Yes. First number, slowly: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**. Again: **5 0 3** \u2026 **2 3 4** \u2026 **2 0 4 8**.",
+        "Of course, and I know this is a lot. The program name is **Rent Payment Assistance**."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
     }
   ],
@@ -423,6 +664,54 @@
       "to": "phone_dialog_0000356#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0000809#turn-1",
+      "to": "phone_dialog_0000809#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000809#turn-2",
+      "to": "phone_dialog_0000809#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000809#turn-4",
+      "to": "phone_dialog_0000809#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0000891#turn-1",
+      "to": "phone_dialog_0000891#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0000891#turn-2",
+      "to": "phone_dialog_0000891#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000891#turn-3",
+      "to": "phone_dialog_0000891#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->template_guided_fallback"
+    },
+    {
+      "from": "phone_dialog_0001032#turn-1",
+      "to": "phone_dialog_0001032#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001032#turn-3",
+      "to": "phone_dialog_0001032#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

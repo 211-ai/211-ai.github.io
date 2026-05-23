@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__broad_help__medford",
   "kind": "service_location",
   "key": "broad_help__medford",
-  "nodeCount": 11,
+  "nodeCount": 12,
   "nodes": [
     {
       "id": "phone_dialog_0000042#turn-1",
@@ -319,6 +319,31 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001066#turn-3",
+      "scenarioId": "phone_dialog_0001066",
+      "turnIndex": 2,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "medford",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m in Medford, and I need rides to appointments this week... I can\u2019t drive since my husband passed.",
+      "normalizedQuery": "hi um don really know start just some getting around right now sorry say again little slower trying keep it together medford rides appointments this week drive since husband passed",
+      "voiceResponse": "I\u2019m so sorry for your loss, and I\u2019m really glad you reached out. Your audio cut out a little on my end. Please repeat just one thing: do you need rides for medical appointments, counseling, or both this week?",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m so sorry for your loss, and I\u2019m really glad you reached out. Your audio cut out a little on my end. Please repeat just one thing: do you need rides for medical appointments, counseling, or both this week?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -381,6 +406,12 @@
       "to": "phone_dialog_0000406#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001066#turn-3",
+      "to": "phone_dialog_0001066#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
     }
   ]
 }

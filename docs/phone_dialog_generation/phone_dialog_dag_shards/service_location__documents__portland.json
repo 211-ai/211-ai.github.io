@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T01:14:51.446701+00:00",
+  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
   "id": "service_location__documents__portland",
   "kind": "service_location",
   "key": "documents__portland",
-  "nodeCount": 11,
+  "nodeCount": 16,
   "nodes": [
     {
       "id": "phone_dialog_0000052#turn-3",
@@ -55,7 +55,8 @@
       "similarCases": [],
       "assistantResponse": "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next.",
       "voiceResponseAlternatives": [
-        "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?"
+        "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?",
+        "Yes. We can keep this low-info first. A simple approach is: call and ask, \u201cDo you require ID or paperwork for a shower today, and can I use first name only?\u201d You can also ask, \u201cCan I show documents in person instead of uploading?\u201d For today, we already have Sunnyside Shower Project: 9 7 1, 2 0 2, 1 7 2 1. You can share only what they say is required."
       ],
       "callerArchetypeId": "intoxicated_or_sleep_deprived",
       "channelConditionId": "bad_reception",
@@ -169,7 +170,10 @@
       ],
       "similarCases": [],
       "assistantResponse": "Totally fair. If you want one clean upload pass, do this priority set: `photo ID` first, then `insurance card` (front and back) if you have one, then any `benefit/coverage card` (front and back), and one `proof of address` if available. If a card is missing, upload what you do have now and keep a note: \u201ccan provide at visit.\u201d That usually prevents the back-and-forth without oversharing.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "That\u2019s a smart question. I can\u2019t verify exact file access rules from what I have here, so safest move is to share only what\u2019s required. If the app allows it, upload just the specific proof page, and blur unrelated details. You can also ask support, \u201cWho can view uploaded documents, and how long are they kept?\u201d If you want, I can help you draft that message in one line.",
+        "That makes total sense to ask. I can\u2019t promise app-level security from here, so safest move is share the minimum: only upload if required, and only pages they ask for. If there\u2019s an option, redact your current address and any extra identifiers first. You can also skip uploading and ask to review documents by phone instead. If you want, call Gateway Center at **503, 988, 6400** and ask, \u201cWho can view my files, and how long are they stored?\u201d"
+      ],
       "callerArchetypeId": "brilliant_tangential",
       "channelConditionId": "clear_line",
       "assistantStyleId": "privacy_trust_builder"
@@ -283,7 +287,8 @@
       "similarCases": [],
       "assistantResponse": "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?",
       "voiceResponseAlternatives": [
-        "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next."
+        "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next.",
+        "Yes. We can keep this low-info first. A simple approach is: call and ask, \u201cDo you require ID or paperwork for a shower today, and can I use first name only?\u201d You can also ask, \u201cCan I show documents in person instead of uploading?\u201d For today, we already have Sunnyside Shower Project: 9 7 1, 2 0 2, 1 7 2 1. You can share only what they say is required."
       ],
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "hard_of_hearing",
@@ -318,6 +323,145 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0000770#turn-4",
+      "scenarioId": "phone_dialog_0000770",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you check options that don\u2019t require a lot of personal info first?",
+      "normalizedQuery": "hi portland trying place shower before we go too far who see tell here really don want this shared around might upload an id something services nervous stuff getting exposed check options require lot personal info first",
+      "voiceResponse": "Yes. We can keep this low-info first. A simple approach is: call and ask, \u201cDo you require ID or paperwork for a shower today, and can I use first name only?\u201d You can also ask, \u201cCan I show documents in person instead of uploading?\u201d For today, we already have Sunnyside Shower Project: 9 7 1, 2 0 2, 1 7 2 1. You can share only what they say is required.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can keep this low-info first. A simple approach is: call and ask, \u201cDo you require ID or paperwork for a shower today, and can I use first name only?\u201d You can also ask, \u201cCan I show documents in person instead of uploading?\u201d For today, we already have Sunnyside Shower Project: 9 7 1, 2 0 2, 1 7 2 1. You can share only what they say is required.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can keep this simple. In Portland, one option is **ID Project** at **Outside In** if that fits you. They help with court or DMV document changes. Phone: **503\u2026 535\u2026 3828**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If that\u2019s not the right fit, I can help you draft a short call script for any DMV support line next.",
+        "I hear you. You\u2019re in Portland, and you need to replace a lost ID. I hear you: Portland, lost ID, need replacement. I can help step by step. One question first: is it an Oregon state ID, or an Oregon driver license?"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "clear_line",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000883#turn-4",
+      "scenarioId": "phone_dialog_0000883",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I have to upload proof in the app, is that safe, and who can actually see those files?",
+      "normalizedQuery": "hi sorry i'm at bus stop it's really loud here finding place laundry portland like if possible say again just went by missed name don't want info all over system though they full id use services have upload proof app safe who actually see those files",
+      "voiceResponse": "That\u2019s a smart question. I can\u2019t verify exact file access rules from what I have here, so safest move is to share only what\u2019s required. If the app allows it, upload just the specific proof page, and blur unrelated details. You can also ask support, \u201cWho can view uploaded documents, and how long are they kept?\u201d If you want, I can help you draft that message in one line.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:755193c3d210f2d9",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That\u2019s a smart question. I can\u2019t verify exact file access rules from what I have here, so safest move is to share only what\u2019s required. If the app allows it, upload just the specific proof page, and blur unrelated details. You can also ask support, \u201cWho can view uploaded documents, and how long are they kept?\u201d If you want, I can help you draft that message in one line.",
+      "voiceResponseAlternatives": [
+        "Totally fair. If you want one clean upload pass, do this priority set: `photo ID` first, then `insurance card` (front and back) if you have one, then any `benefit/coverage card` (front and back), and one `proof of address` if available. If a card is missing, upload what you do have now and keep a note: \u201ccan provide at visit.\u201d That usually prevents the back-and-forth without oversharing.",
+        "That makes total sense to ask. I can\u2019t promise app-level security from here, so safest move is share the minimum: only upload if required, and only pages they ask for. If there\u2019s an option, redact your current address and any extra identifiers first. You can also skip uploading and ask to review documents by phone instead. If you want, call Gateway Center at **503, 988, 6400** and ask, \u201cWho can view my files, and how long are they stored?\u201d"
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0000901#turn-3",
+      "scenarioId": "phone_dialog_0000901",
+      "turnIndex": 2,
+      "route": "template_guided_fallback",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "template_guided_fallback",
+      "user": "She just moved and I don\u2019t have her full paperwork in front of me, I just know she\u2019s near East Portland, maybe around 82nd.",
+      "normalizedQuery": "hi sorry calling aunt she needs somewhere portland her mail like mailing address mailbox re cutting little say part again only caught half it just moved don have full paperwork front know east maybe around 82nd",
+      "voiceResponse": "Next step: please call **2-1-1** now and say, \u201cI need mailing address services near East Portland, around 82nd, for my aunt.\u201d I don\u2019t have a strong local program match in my records right now, so a live 211 specialist is best for current options. Number is **2-1-1**. One quick detail to add: is she also needing help replacing documents, or just a mailing address?",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please call **2-1-1** now and say, \u201cI need mailing address services near East Portland, around 82nd, for my aunt.\u201d I don\u2019t have a strong local program match in my records right now, so a live 211 specialist is best for current options. Number is **2-1-1**. One quick detail to add: is she also needing help replacing documents, or just a mailing address?",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0000901#turn-5",
+      "scenarioId": "phone_dialog_0000901",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "repeat_or_restate",
+      "user": "If you have more than one option, can you repeat the phone numbers slowly? The signal keeps dropping.",
+      "normalizedQuery": "re cutting little say part again only caught half it she just moved don have her full paperwork front know east portland maybe around 82nd older gets meds by mail so we really safe place check regularly if more than one option repeat phone numbers slowly signal keeps dropping",
+      "voiceResponse": "Next step: please dial **2-1-1** now. Slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. That\u2019s the only number I have to give you right now.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreiaahvg2xocb35wmg6oeyim26fpoa6tsk23u4r3kdkts4qbeuxh4eu",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Next step: please dial **2-1-1** now. Slowly: **2 \u2026 1 \u2026 1**. Again: **2 \u2026 1 \u2026 1**. That\u2019s the only number I have to give you right now.",
+      "voiceResponseAlternatives": [
+        "Yeah. Slow version: Go to **Outside In**, for the **ID Project**. Address: **1132 Southwest 13th Avenue, Portland, 97205**. If you want to call first: **503 \u2026 535 \u2026 3828**. That\u2019s the place I mentioned for help with ID replacement steps.",
+        "Absolutely. Number one was: I can connect you to a live specialist who can confirm exactly what Portland accepts if you don\u2019t have your physical ID yet.",
+        "Yes. Here it is, twice. Hotline: **503, 222, 5555**. Again: **503, 222, 5555**. Second line: **503, 226, 3099**. Again: **503, 226, 3099**.",
+        "Yes. Here is the next step, clearly. She can call **211info today** and start. She can call **211info today** and start. Tell her to say: \u201cI only have partial details right now.\u201d \u201cI don\u2019t have my paperwork with me yet.\u201d They will guide her step by step."
+      ],
+      "callerArchetypeId": "helper_for_other_person",
+      "channelConditionId": "bad_reception",
+      "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001004#turn-4",
+      "scenarioId": "phone_dialog_0001004",
+      "turnIndex": 3,
+      "route": "wallet_document_support",
+      "serviceTag": "documents",
+      "locationTag": "portland",
+      "promptTemplate": "wallet_document_support",
+      "user": "If I upload proof files in the app, like my protection order, is that actually secure or can someone else access it?",
+      "normalizedQuery": "hi sorry it really loud this lobby hear domestic violence support portland trying be difficult just know private like does ex police databases see called wait bus pulling up missed part say agency name again slower if upload proof files app protection order actually secure someone else access",
+      "voiceResponse": "That makes total sense to ask. I can\u2019t promise app-level security from here, so safest move is share the minimum: only upload if required, and only pages they ask for. If there\u2019s an option, redact your current address and any extra identifiers first. You can also skip uploading and ask to review documents by phone instead. If you want, call Gateway Center at **503, 988, 6400** and ask, \u201cWho can view my files, and how long are they stored?\u201d",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "That makes total sense to ask. I can\u2019t promise app-level security from here, so safest move is share the minimum: only upload if required, and only pages they ask for. If there\u2019s an option, redact your current address and any extra identifiers first. You can also skip uploading and ask to review documents by phone instead. If you want, call Gateway Center at **503, 988, 6400** and ask, \u201cWho can view my files, and how long are they stored?\u201d",
+      "voiceResponseAlternatives": [
+        "Totally fair. If you want one clean upload pass, do this priority set: `photo ID` first, then `insurance card` (front and back) if you have one, then any `benefit/coverage card` (front and back), and one `proof of address` if available. If a card is missing, upload what you do have now and keep a note: \u201ccan provide at visit.\u201d That usually prevents the back-and-forth without oversharing.",
+        "That\u2019s a smart question. I can\u2019t verify exact file access rules from what I have here, so safest move is to share only what\u2019s required. If the app allows it, upload just the specific proof page, and blur unrelated details. You can also ask support, \u201cWho can view uploaded documents, and how long are they kept?\u201d If you want, I can help you draft that message in one line."
+      ],
+      "callerArchetypeId": "privacy_wary",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "compassionate_caseworker"
     }
   ],
   "edges": [
@@ -362,6 +506,30 @@
       "to": "phone_dialog_0000468#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0000770#turn-4",
+      "to": "phone_dialog_0000770#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->app_surface_navigation"
+    },
+    {
+      "from": "phone_dialog_0000883#turn-4",
+      "to": "phone_dialog_0000883#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0000901#turn-3",
+      "to": "phone_dialog_0000901#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "template_guided_fallback->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001004#turn-4",
+      "to": "phone_dialog_0001004#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "wallet_document_support->live_agent"
     }
   ]
 }
