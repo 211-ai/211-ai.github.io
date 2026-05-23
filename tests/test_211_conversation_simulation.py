@@ -185,6 +185,24 @@ def test_repeated_safety_guardrail_signal_escalates_to_live_agent() -> None:
     assert "earlier guardrail" in reasons[0]
 
 
+def test_overdose_or_unresponsive_signal_routes_to_live_agent() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("My friend may have overdosed and is unresponsive. What do I do?", [])
+
+    assert route == "live_agent"
+    assert "urgent" in reasons[0]
+
+
+def test_ambiguous_self_harm_language_gets_safety_check() -> None:
+    sim = _load_simulation_module()
+
+    route, reasons = sim.route_turn("I do not trust myself tonight and I need somewhere safe to be.", [])
+
+    assert route == "safety_guardrail_support"
+    assert "safety check" in reasons[0] or "at risk" in reasons[0]
+
+
 def test_mangled_speech_routes_to_speech_unclear_clarification() -> None:
     sim = _load_simulation_module()
 

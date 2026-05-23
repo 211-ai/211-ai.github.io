@@ -47,12 +47,17 @@ TOKEN_PATTERN = re.compile(r"[a-z0-9']+")
 URGENT_PATTERN = re.compile(
     r"\b("
     r"danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|"
-    r"bleeding|cannot breathe|tonight|right now|immediate danger|911"
+    r"bleeding|cannot breathe|can't breathe|not breathing|unresponsive|"
+    r"kill myself|hurt myself|hurt someone|right now|immediate danger|911"
     r")\b",
     re.I,
 )
 URGENT_EMERGENCY_PATTERN = re.compile(
-    r"\b(danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|bleeding|cannot breathe|immediate danger|911)\b",
+    r"\b("
+    r"danger|unsafe|assault|suicide|self[- ]?harm|overdose|medical emergency|"
+    r"bleeding|cannot breathe|can't breathe|not breathing|unresponsive|"
+    r"kill myself|hurt myself|hurt someone|immediate danger|911"
+    r")\b",
     re.I,
 )
 LIVE_AGENT_PATTERN = re.compile(r"\b(human|person|live agent|case worker|call me|talk to someone|operator)\b", re.I)
@@ -62,7 +67,11 @@ SAFETY_GUARDRAIL_PATTERN = re.compile(
     r"freezing|panic attack|panicking|spiraling|at risk|"
     r"hearing voices|hearing things|hallucinating|"
     r"can't keep going|cannot keep going|thoughts are getting dark|"
-    r"might collapse|not doing well|not okay"
+    r"might collapse|not doing well|not okay|"
+    r"don't trust myself|do not trust myself|want to disappear|"
+    r"scared of myself|someone is following me|i feel threatened|"
+    r"too hot|too cold|shaking|withdrawal|coming down|"
+    r"partner might find me|afraid to go back"
     r")\b",
     re.I,
 )

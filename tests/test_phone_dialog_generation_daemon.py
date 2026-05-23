@@ -6,6 +6,7 @@ from scripts.phone_dialog_generation_daemon import (
     build_seed,
     target_mode_weight,
     TARGET_MODE_PROFILE_BY_ID,
+    focus_profiles,
     enrich_dag_with_phone_variants,
     extract_first_json_object,
 )
@@ -47,6 +48,18 @@ def test_underrepresented_route_profiles_get_more_weight() -> None:
     underrepresented_weight = target_mode_weight(underrepresented_profile, route_counts, target_mode_counts)
 
     assert underrepresented_weight > common_weight
+
+
+def test_safety_focus_only_selects_risk_profiles() -> None:
+    import random
+
+    safety_profile_ids = {profile["id"] for profile in focus_profiles("safety-risk")}
+    seeds = [build_seed(index, random.Random(211), focus="safety-risk") for index in range(1, 25)]
+
+    assert safety_profile_ids
+    assert {seed.target_mode for seed in seeds}.issubset(safety_profile_ids)
+    assert "safety_guardrail_check" in safety_profile_ids
+    assert "medical_distress_check" in safety_profile_ids
 
 
 def test_enrich_dag_with_phone_variants_uses_assistant_responses() -> None:
