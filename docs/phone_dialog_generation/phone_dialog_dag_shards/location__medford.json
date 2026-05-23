@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "location__medford",
   "kind": "location",
   "key": "medford",
-  "nodeCount": 316,
+  "nodeCount": 318,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-2",
@@ -1899,7 +1899,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "Yeah, I hear you. First step: call Salem Electric right now and ask for emergency shutoff prevention or a same-day payment arrangement. Number: **5 0 3** \u2026 **3 6 2** \u2026 **3 6 0 1**. Backup: **5 4 1** \u2026 **6 8 8** \u2026 **8 7 1 1**. If being without power tonight could make you unsafe, call **9 1 1** immediately. I can stay with you while you dial.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You did the right thing by sitting down. With shaking hands, fogginess, and feeling like you might pass out, this is urgent. Please call **911 right now** and say: \u201cI\u2019m dizzy, weak, foggy, and feel like I may pass out from heat and not eating.\u201d Stay seated in shade, sip small sips of water if you have it, and do not stand up alone. I can stay with you while you call."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "grounded_operator"
@@ -9295,6 +9297,58 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001163#turn-1",
+      "scenarioId": "phone_dialog_0001163",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, there\u2019s a bus pulling in, I can\u2019t hear great. I\u2019m in Medford by the station and I feel really dizzy and weak from being out in this heat.",
+      "normalizedQuery": "hi sorry there bus pulling hear great medford by station feel really dizzy weak from being this heat utility utilities electric",
+      "voiceResponse": "I\u2019m glad you said this. First, please get into shade or inside now, sit down, and sip water if you have it. If you might pass out, feel confused, have chest pain, or trouble breathing, call **911** right now. Are you alone right now? If you\u2019re stable in a minute, I can give a nearby help line: **541\u2026488\u20266004** (Emergency Heat Assistance in Ashland).",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you said this. First, please get into shade or inside now, sit down, and sip water if you have it. If you might pass out, feel confused, have chest pain, or trouble breathing, call **911** right now. Are you alone right now? If you\u2019re stable in a minute, I can give a nearby help line: **541\u2026488\u20266004** (Emergency Heat Assistance in Ashland).",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001163#turn-3",
+      "scenarioId": "phone_dialog_0001163",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "utilities",
+      "locationTag": "medford",
+      "promptTemplate": "live_agent",
+      "user": "I haven\u2019t eaten much and my hands are shaking. I\u2019m sitting down now, but I\u2019m kind of foggy and I\u2019m scared to stand up.",
+      "normalizedQuery": "hi sorry there bus pulling hear great medford by station feel really dizzy weak from being this heat utility utilities electric say again got confused second medical clinic health er if possible just like might pass haven eaten much hands shaking sitting down now kind foggy scared stand up",
+      "voiceResponse": "You did the right thing by sitting down. With shaking hands, fogginess, and feeling like you might pass out, this is urgent. Please call **911 right now** and say: \u201cI\u2019m dizzy, weak, foggy, and feel like I may pass out from heat and not eating.\u201d Stay seated in shade, sip small sips of water if you have it, and do not stand up alone. I can stay with you while you call.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:2e6a4c77b4bef070",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You did the right thing by sitting down. With shaking hands, fogginess, and feeling like you might pass out, this is urgent. Please call **911 right now** and say: \u201cI\u2019m dizzy, weak, foggy, and feel like I may pass out from heat and not eating.\u201d Stay seated in shade, sip small sips of water if you have it, and do not stand up alone. I can stay with you while you call.",
+      "voiceResponseAlternatives": [
+        "Yeah, I hear you. First step: call Salem Electric right now and ask for emergency shutoff prevention or a same-day payment arrangement. Number: **5 0 3** \u2026 **3 6 2** \u2026 **3 6 0 1**. Backup: **5 4 1** \u2026 **6 8 8** \u2026 **8 7 1 1**. If being without power tonight could make you unsafe, call **9 1 1** immediately. I can stay with you while you dial."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -10977,6 +11031,18 @@
       "to": "phone_dialog_0001156#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001163#turn-1",
+      "to": "phone_dialog_0001163#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001163#turn-3",
+      "to": "phone_dialog_0001163#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

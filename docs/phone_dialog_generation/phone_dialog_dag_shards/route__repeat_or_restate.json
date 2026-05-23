@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "route__repeat_or_restate",
   "kind": "route",
   "key": "repeat_or_restate",
-  "nodeCount": 1301,
+  "nodeCount": 1306,
   "nodes": [
     {
       "id": "phone_dialog_0000020#turn-4",
@@ -38636,6 +38636,156 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-2",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s buses going by, I missed that, can you say it again?",
+      "normalizedQuery": "hi eugene lane county stay tonight sorry there buses going by missed say it again",
+      "voiceResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:66253a2a97571c16",
+        "service:67b4e3fbb47960bc",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1700408eea20aebe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "voiceResponseAlternatives": [
+        "Slowly, yes. I do **not** have an address or hours to repeat. I\u2019ll repeat that: I do **not** have an address or hours here. The only place detail I have is **downtown Eugene**. **Downtown Eugene**. Do you want me to connect you now so they can give the exact address and hours?",
+        "Of course. The address is: **1900 B West 7th Avenue, Eugene**. Again, slowly: **1900 B** \u2026 **West 7th Avenue** \u2026 **Eugene**. I don\u2019t have confirmed walk-in hours for this week. If you want, you can call and ask: **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**.",
+        "You\u2019re okay, let\u2019s do this slowly. I haven\u2019t given a specific hour yet. What I said was: each cooling site has its own hours. So the key part is: open the site, tap **\u201cMore Details,\u201d** then read that location\u2019s hours. If you want, read me the first listing, and I\u2019ll repeat the hours back one piece at a time.",
+        "Yes. Slower: stay on this call, and I\u2019ll connect you to a live 211 housing specialist for Eugene eviction help. If we get disconnected, call **2-1-1** back right away. Then say: **\u201cEugene. Eviction paper. Need urgent housing help.\u201d**"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-5",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hold on, bus noise\u2014what? Can you repeat the number slow, one digit at a time, I can\u2019t hold it in my head.",
+      "normalizedQuery": "no on drugs already said just somewhere mental health like tonight because make brain line up sorry asked if safe locked door voices say don trust this call so know keep pacing phone at two percent lost track was supposed go clinic medical shelter shelters homeless overnight warming first hold bus noise repeat number slow one digit time it head",
+      "voiceResponse": "Yes. The number is **9-1-1**. That\u2019s **nine\u2026 one\u2026 one**. If you feel unsafe right now, call **9-1-1** now.",
+      "evidenceDocIds": [
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "service:bd5c5bd198f76c8b",
+        "service:32f8d8103ea16592"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. The number is **9-1-1**. That\u2019s **nine\u2026 one\u2026 one**. If you feel unsafe right now, call **9-1-1** now.",
+      "voiceResponseAlternatives": [
+        "Yes\u2014please write this exactly: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. Again: **503** \u2026 **722** \u2026 **9780**.",
+        "Yes. I\u2019ll repeat it slowly. The address is: **one four four zero** Birch Avenue, Cottage Grove, Oregon, **nine seven four two four**. Again: **one four four zero** Birch Avenue, Cottage Grove, Oregon, **nine seven four two four**.",
+        "You\u2019re doing the right thing, and I know this is stressful. I\u2019ll repeat the two numbers slowly: first, **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. Second, **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. I don\u2019t have a confirmed program address in front of me right now, so write these numbers first and call now while your battery holds.",
+        "Next step: write this down now. The shelter name is **Overnight Winter Warming Shelter**. I\u2019ll repeat it once: **Overnight Winter Warming Shelter**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-5",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 4,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, I\u2019m crying and I missed that... can you say that number slower?",
+      "normalizedQuery": "he threatened last night keeps driving past sister place so scared go back hurt right this second if comes here again think it could bad fast shelter shelters homeless overnight warming tonight like somewhere confidential maybe how leave without him noticing sorry crying missed say number slower",
+      "voiceResponse": "Of course. The number is **2-1-1**: that\u2019s **two\u2026 one\u2026 one**. If he shows up or you feel in immediate danger, call **9-1-1**: **nine\u2026 one\u2026 one**.",
+      "evidenceDocIds": [
+        "service:57c4c63dcadba358",
+        "service:32f8d8103ea16592",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. The number is **2-1-1**: that\u2019s **two\u2026 one\u2026 one**. If he shows up or you feel in immediate danger, call **9-1-1**: **nine\u2026 one\u2026 one**.",
+      "voiceResponseAlternatives": [
+        "Yes\u2014please write this exactly: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. Again: **503** \u2026 **722** \u2026 **9780**.",
+        "Yes. I\u2019ll repeat it slowly. The address is: **one four four zero** Birch Avenue, Cottage Grove, Oregon, **nine seven four two four**. Again: **one four four zero** Birch Avenue, Cottage Grove, Oregon, **nine seven four two four**.",
+        "You\u2019re doing the right thing, and I know this is stressful. I\u2019ll repeat the two numbers slowly: first, **5 0 3 \u2026 2 2 2 \u2026 5 5 5 5**. Second, **5 0 3 \u2026 2 2 6 \u2026 3 0 9 9**. I don\u2019t have a confirmed program address in front of me right now, so write these numbers first and call now while your battery holds.",
+        "Next step: write this down now. The shelter name is **Overnight Winter Warming Shelter**. I\u2019ll repeat it once: **Overnight Winter Warming Shelter**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001164#turn-1",
+      "scenarioId": "phone_dialog_0001164",
+      "turnIndex": 0,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Hi, um, can you slow down a second? I\u2019m in Oregon City and I need somewhere to go during the day, like a youth day center or whatever.",
+      "normalizedQuery": "hi um slow down second oregon city somewhere go during day like youth center whatever",
+      "voiceResponse": "Yeah, I can slow down. The only Oregon City detail I have right now is **421 High Street, Suite 110**. The phone is **503\u2026655\u20268974**. That listing is for down payment help, not a youth day center. I can connect you to a live 211 specialist right now to find a youth day center for today.",
+      "evidenceDocIds": [
+        "service:07ca533531c908aa",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "service:8e98106e040e9fe3",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah, I can slow down. The only Oregon City detail I have right now is **421 High Street, Suite 110**. The phone is **503\u2026655\u20268974**. That listing is for down payment help, not a youth day center. I can connect you to a live 211 specialist right now to find a youth day center for today.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001164#turn-4",
+      "scenarioId": "phone_dialog_0001164",
+      "turnIndex": 3,
+      "route": "repeat_or_restate",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s people yelling where I am, can you repeat that name and the bus part?",
+      "normalizedQuery": "hi um slow down second oregon city somewhere go during day like youth center whatever 19 really don trust shelters shelter homeless overnight warming they always act doing something wrong know just feel disappearing tonight being here anymore sorry there people yelling repeat name bus part",
+      "voiceResponse": "Yeah. The name is **211info** \u2014 I can connect you to a live **211 specialist** now. For the bus part: I don\u2019t have a bus route confirmed yet. The only address I have is **421 High Street, Suite 110** in Oregon City. If you feel like you might hurt yourself tonight, call **911** right now.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "service:bab9f596e07026df",
+        "service:b4ef6dca3c3f73bd",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yeah. The name is **211info** \u2014 I can connect you to a live **211 specialist** now. For the bus part: I don\u2019t have a bus route confirmed yet. The only address I have is **421 High Street, Suite 110** in Oregon City. If you feel like you might hurt yourself tonight, call **911** right now.",
+      "voiceResponseAlternatives": [
+        "Yes. The name is **Overnight Winter Warming Shelter**. Slowly: **Overnight** \u2026 **Winter** \u2026 **Warming** \u2026 **Shelter**.",
+        "Yes. The address is: **603 12th Street**, **Oregon City, Oregon**, **9 7 0 4 5**. I\u2019ll say it once more: **603 12th Street, Oregon City, OR 97045**.",
+        "After the address: this shelter opens only when overnight wind chill is **33 degrees or below**. It\u2019s for **adults 18 and older**, **no documents are required**, and **service animals are accepted** if on a leash or in a kennel.",
+        "Yes. The name is **Safe Place for Youth**. I\u2019ll say it again slowly: **Safe Place for Youth**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -45040,6 +45190,36 @@
       "to": "phone_dialog_0001156#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "repeat_or_restate->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-2",
+      "to": "phone_dialog_0001159#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001160#turn-5",
+      "to": "phone_dialog_0001160#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-5",
+      "to": "phone_dialog_0001161#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001164#turn-1",
+      "to": "phone_dialog_0001164#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001164#turn-4",
+      "to": "phone_dialog_0001164#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

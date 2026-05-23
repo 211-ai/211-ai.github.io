@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__shelter__salem",
   "kind": "service_location",
   "key": "shelter__salem",
-  "nodeCount": 58,
+  "nodeCount": 59,
   "nodes": [
     {
       "id": "phone_dialog_0000102#turn-1",
@@ -1725,6 +1725,36 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "grounded_operator"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-5",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, what was that address? You cut out for a second, can you repeat it slow?",
+      "normalizedQuery": "salem by camp tracks it freezing rain right now some guys keep circling yelling at backpack got grabbed earlier so don feel safe staying here tonight yeah move if have somewhere warm inside like warming center sorry was address cut second repeat slow",
+      "voiceResponse": "No address yet. Call **9-1-1** now, right now. Say slowly: \u201cI\u2019m near the tracks in Salem, people are threatening me, and I need immediate help and a warm safe place tonight.\u201d If this call drops, dial **2-1-1** for a live shelter agent.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiebukbqef7xlvsd4nzflxrmo35w344eg45c3ge3hk5wj6ua5zdg4e",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q"
+      ],
+      "similarCases": [],
+      "assistantResponse": "No address yet. Call **9-1-1** now, right now. Say slowly: \u201cI\u2019m near the tracks in Salem, people are threatening me, and I need immediate help and a warm safe place tonight.\u201d If this call drops, dial **2-1-1** for a live shelter agent.",
+      "voiceResponseAlternatives": [
+        "You\u2019re okay, we can take this one step at a time. I don\u2019t see a Salem day center in what I have right now. One option I can give you is Right Track Resource Center in La Grande. Their number is **5 4 1 \u2026 9 6 2 \u2026 7 9 9 4**. Another number is **5 4 1 \u2026 9 1 0 \u2026 3 0 5 6**. If anyone is in immediate danger right now, call **9 1 1**.",
+        "You\u2019re doing the right thing. The place name we have is **ARCHES Day Center**. I\u2019ll repeat it slowly: **Ar-ches** \u2026 **Day** \u2026 **Center**. If you want, I can keep this simple and we can stick to just names and phone numbers, one at a time. If he is in immediate danger right now, call **9 1 1**.",
+        "I hear you, and I take you seriously. You\u2019re 23 and still eligible to ask for help tonight. If you feel in immediate danger, call 911 now. Stay with me while I connect you to a live specialist for Salem who can help with homeless veteran transitional shelter and coordinated entry right away.",
+        "You\u2019re right to flag that, and I\u2019m taking it seriously. We\u2019ll ask for a **nearby** safe placement so you\u2019re not stranded across town without a ride. If you feel unsafe right now or might be harmed, call **911** immediately. Stay with me while I connect you to the live housing specialist now so we can get tonight\u2019s plan locked in."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [

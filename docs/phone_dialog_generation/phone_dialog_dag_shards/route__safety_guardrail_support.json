@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "route__safety_guardrail_support",
   "kind": "route",
   "key": "safety_guardrail_support",
-  "nodeCount": 39,
+  "nodeCount": 41,
   "nodes": [
     {
       "id": "phone_dialog_0000636#turn-4",
@@ -134,7 +134,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -1025,6 +1027,58 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-3",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Some guys keep circling and yelling at me, and my backpack got grabbed earlier, so I don\u2019t feel safe staying out here tonight.",
+      "normalizedQuery": "hey only got like two percent this isn phone so give main number first case we drop salem by camp tracks it freezing rain right now some guys keep circling yelling at backpack grabbed earlier don feel safe staying here tonight",
+      "voiceResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "voiceResponseAlternatives": [
+        "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001163#turn-1",
+      "scenarioId": "phone_dialog_0001163",
+      "turnIndex": 0,
+      "route": "safety_guardrail_support",
+      "serviceTag": "utilities",
+      "locationTag": "medford",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Hi, sorry, there\u2019s a bus pulling in, I can\u2019t hear great. I\u2019m in Medford by the station and I feel really dizzy and weak from being out in this heat.",
+      "normalizedQuery": "hi sorry there bus pulling hear great medford by station feel really dizzy weak from being this heat utility utilities electric",
+      "voiceResponse": "I\u2019m glad you said this. First, please get into shade or inside now, sit down, and sip water if you have it. If you might pass out, feel confused, have chest pain, or trouble breathing, call **911** right now. Are you alone right now? If you\u2019re stable in a minute, I can give a nearby help line: **541\u2026488\u20266004** (Emergency Heat Assistance in Ashland).",
+      "evidenceDocIds": [
+        "service:9c4a0ab059aed565",
+        "service:d9c7707e45d265ad",
+        "service:b0fd90b106c6a4ef",
+        "service:ee46fefe2a001b32",
+        "service:6c757db4a03b77e1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you said this. First, please get into shade or inside now, sit down, and sip water if you have it. If you might pass out, feel confused, have chest pain, or trouble breathing, call **911** right now. Are you alone right now? If you\u2019re stable in a minute, I can give a nearby help line: **541\u2026488\u20266004** (Emergency Heat Assistance in Ashland).",
+      "voiceResponseAlternatives": [],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1235,6 +1289,18 @@
     {
       "from": "phone_dialog_0001125#turn-5",
       "to": "phone_dialog_0001125#turn-6",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-3",
+      "to": "phone_dialog_0001162#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001163#turn-1",
+      "to": "phone_dialog_0001163#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "safety_guardrail_support->live_agent"
     }

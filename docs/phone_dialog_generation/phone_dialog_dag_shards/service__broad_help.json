@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service__broad_help",
   "kind": "service",
   "key": "broad_help",
-  "nodeCount": 231,
+  "nodeCount": 234,
   "nodes": [
     {
       "id": "phone_dialog_0000002#turn-1",
@@ -6299,7 +6299,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?"
+      ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "privacy_trust_builder"
@@ -6678,6 +6680,87 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "privacy_trust_builder"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-1",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um... I need help, I\u2019m in Beaverton and I can\u2019t really talk loud, he checks my phone.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?",
+      "evidenceDocIds": [
+        "service:437ec64b59b0ac16",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:aff99442bdc0d67e",
+        "service:7a5cca37934277c2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-2",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "He threatened me last night and keeps driving past my sister\u2019s place, so I\u2019m scared to go back.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone threatened last night keeps driving past sister place so scared go back",
+      "voiceResponse": "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options.",
+      "evidenceDocIds": [
+        "service:4dd9127df246a0db",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:150f0f2cc852aa6d",
+        "service:17f85caae2094027"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options.",
+      "voiceResponseAlternatives": [
+        "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-3",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not hurt right this second, but if he comes here again I think it could get bad fast.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone threatened last night keeps driving past sister place so scared go back hurt right this second if comes here again think it could bad fast",
+      "voiceResponse": "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -7940,6 +8023,24 @@
       "to": "phone_dialog_0001146#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->provider_contact_support"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-1",
+      "to": "phone_dialog_0001161#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-2",
+      "to": "phone_dialog_0001161#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-3",
+      "to": "phone_dialog_0001161#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
     }
   ]
 }

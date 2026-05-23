@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__shelter__eugene",
   "kind": "service_location",
   "key": "shelter__eugene",
-  "nodeCount": 69,
+  "nodeCount": 70,
   "nodes": [
     {
       "id": "phone_dialog_0000002#turn-4",
@@ -2058,6 +2058,36 @@
       "callerArchetypeId": "disorganized_distressed",
       "channelConditionId": "emotionally_overloaded",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-4",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 3,
+      "route": "live_agent",
+      "serviceTag": "shelter",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m scared to sleep out here in this cold, and staff told me to leave the lobby.",
+      "normalizedQuery": "hi eugene lane county stay tonight sorry there buses going by missed say it again hurt right this second outside shelter shelters homeless overnight warming guy threatened took backpack earlier scared sleep here cold staff told leave lobby",
+      "voiceResponse": "I hear you. You\u2019re in a safety-risk situation right now. Please move to the nearest well-lit place with people around you immediately, and stay where cameras or staff can see you. If that person is nearby, you\u2019re being followed, or you feel in danger, call **911** right now. I\u2019m staying with you while we get a live agent on the line.",
+      "evidenceDocIds": [
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec",
+        "service:d3db844d9700f43d",
+        "service:bd5c5bd198f76c8b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you. You\u2019re in a safety-risk situation right now. Please move to the nearest well-lit place with people around you immediately, and stay where cameras or staff can see you. If that person is nearby, you\u2019re being followed, or you feel in danger, call **911** right now. I\u2019m staying with you while we get a live agent on the line.",
+      "voiceResponseAlternatives": [
+        "You did the right thing calling. Next step: stay on the line with me right now while I finish getting you to the live 211 specialist for a same-night shelter bed search. If you want one backup number while we connect, try **five four one, nine six two, seven nine nine four**. Another is **five four one, nine four eight, six six four nine**. If you feel in immediate danger while walking, call **9-1-1** now.",
+        "Next step: call **Community Works Domestic Violence Survivor Advocacy** now at **5 4 1 \u2026 7 7 9 \u2026 4 3 5 7**. If that line doesn\u2019t pick up, call **5 4 1 \u2026 7 7 9 \u2026 2 3 9 3, extension 2 0 9**. They provide safety planning, resource navigation, emotional support, and systems advocacy for survivors, including stalking.",
+        "Stay on the line with me now while I connect you to a live 211 specialist. I want to be accurate, and I don\u2019t have a verified Eugene domestic violence advocacy number in the evidence I can safely repeat right now. If you\u2019re in immediate danger, call 9-1-1.",
+        "Next step: stay with me right now so I can connect you to a live 211 specialist for safety planning and court advocacy. I don\u2019t have a verified Eugene advocacy number in the evidence I can safely read out at this moment. If you\u2019re in immediate danger right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -2406,6 +2436,12 @@
     {
       "from": "phone_dialog_0001080#turn-4",
       "to": "phone_dialog_0001080#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-4",
+      "to": "phone_dialog_0001159#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

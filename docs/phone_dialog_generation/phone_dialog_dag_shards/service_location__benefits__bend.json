@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__benefits__bend",
   "kind": "service_location",
   "key": "benefits__bend",
-  "nodeCount": 31,
+  "nodeCount": 34,
   "nodes": [
     {
       "id": "phone_dialog_0000202#turn-1",
@@ -920,6 +920,90 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "clear_line",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-1",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um... can you keep your voice low? I\u2019m in Bend, and my partner checks my phone, so I need to plan this quietly.",
+      "normalizedQuery": "hi um keep your voice low bend partner checks phone so plan this quietly",
+      "voiceResponse": "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:0964a8d5435f63c7",
+        "service:09f0f9ede3cd2dda",
+        "service:aff99442bdc0d67e",
+        "page:bafkreidmvamtlfb4hntegcosgjot4ufype3foxat2tsucu5g2jqm4oxyqm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+      "voiceResponseAlternatives": [
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-2",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m sorry, I\u2019m trying not to cry... he\u2019s been waiting outside my work and texting that if I leave he\u2019ll find me.",
+      "normalizedQuery": "hi um keep your voice low bend partner checks phone so plan this quietly sorry trying cry he been waiting outside work texting if leave ll",
+      "voiceResponse": "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:09f0f9ede3cd2dda",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:0964a8d5435f63c7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-3",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "live_agent",
+      "user": "Right this second he\u2019s not in the apartment, but he said he\u2019s coming back tonight, and I\u2019m scared to be there when he does.",
+      "normalizedQuery": "hi um keep your voice low bend partner checks phone so plan this quietly sorry trying cry he been waiting outside work texting if leave ll right second apartment said coming back tonight scared be there when does",
+      "voiceResponse": "Thank you for telling me. You\u2019re not overreacting, and this is a safety risk. Please do not stay there tonight if you can leave safely now. Go to a public place or someone you trust. If he shows up, follows you, or you feel in immediate danger, call 911 right away. I can connect you to a live agent now to make a safe plan with you.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreidd4texigqhazfumwoescl6ujljmzlem4gsbi37nkqjmber6aso3u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re not overreacting, and this is a safety risk. Please do not stay there tonight if you can leave safely now. Go to a public place or someone you trust. If he shows up, follows you, or you feel in immediate danger, call 911 right away. I can connect you to a live agent now to make a safe plan with you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re not a bother, and you deserve help tonight. If you feel in immediate danger, call **911** now. Another option is a 24-hour Crisis and Support Line: **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. They offer crisis support and referrals. If you want, you can call them now, or call 911 first if safety feels urgent.",
+        "I hear you. You don\u2019t have to prove anything to deserve help. You can start with a phone call instead of showing up in person, so you stay in control. The 24-hour crisis line is **541, 754, 0110**. I\u2019ll repeat: **541, 754, 0110**. You can tell them, \u201cI\u2019m 22, I\u2019m scared of being turned away, and I need options tonight.\u201d If you feel in immediate danger at any point, call **911**.",
+        "Yes. The place is the **24-hour Crisis and Support Line**. The number is: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. I\u2019ll say it again: **5 4 1** \u2026 **7 5 4** \u2026 **0 1 1 0**. If you feel in immediate danger, call **9 1 1**.",
+        "I hear you, and I\u2019m with you. If you might hurt yourself or you\u2019re not safe right now, call **9-1-1** now. If you\u2019re safe, I\u2019ll connect you to a live person right away to help with Oregon disability benefits in Bend. Stay on the line with me."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1090,6 +1174,24 @@
       "to": "phone_dialog_0001040#turn-4",
       "type": "scenario_next_turn",
       "routeTransition": "service_interaction_support->calendar_event_support"
+    },
+    {
+      "from": "phone_dialog_0001158#turn-1",
+      "to": "phone_dialog_0001158#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001158#turn-2",
+      "to": "phone_dialog_0001158#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001158#turn-3",
+      "to": "phone_dialog_0001158#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

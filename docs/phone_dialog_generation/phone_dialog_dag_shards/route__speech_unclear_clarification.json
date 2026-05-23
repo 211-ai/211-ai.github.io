@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "route__speech_unclear_clarification",
   "kind": "route",
   "key": "speech_unclear_clarification",
-  "nodeCount": 243,
+  "nodeCount": 246,
   "nodes": [
     {
       "id": "phone_dialog_0000620#turn-1",
@@ -6671,7 +6671,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?"
+      ],
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "privacy_trust_builder"
@@ -6932,6 +6934,87 @@
       "callerArchetypeId": "elder_memory_gaps",
       "channelConditionId": "hard_of_hearing",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-1",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um... can you keep your voice low? I\u2019m in Bend, and my partner checks my phone, so I need to plan this quietly.",
+      "normalizedQuery": "hi um keep your voice low bend partner checks phone so plan this quietly",
+      "voiceResponse": "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "service:0964a8d5435f63c7",
+        "service:09f0f9ede3cd2dda",
+        "service:aff99442bdc0d67e",
+        "page:bafkreidmvamtlfb4hntegcosgjot4ufype3foxat2tsucu5g2jqm4oxyqm"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?",
+      "voiceResponseAlternatives": [
+        "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-2",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 1,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "benefits",
+      "locationTag": "bend",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "I\u2019m sorry, I\u2019m trying not to cry... he\u2019s been waiting outside my work and texting that if I leave he\u2019ll find me.",
+      "normalizedQuery": "hi um keep your voice low bend partner checks phone so plan this quietly sorry trying cry he been waiting outside work texting if leave ll",
+      "voiceResponse": "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+      "evidenceDocIds": [
+        "service:e199df043ac5d3f3",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:09f0f9ede3cd2dda",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "service:0964a8d5435f63c7"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and this is serious. Your safety comes first. If you\u2019re in immediate danger right now, call 911 now. The audio is a little unclear, so please repeat just one phrase: **\u201csafe now\u201d** or **\u201cnot safe.\u201d**",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was unclear. I heard you need to plan quietly in Bend. Please say one word so I can help: **safety**, **housing**, **legal**, or **counseling**?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-1",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 0,
+      "route": "speech_unclear_clarification",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "speech_unclear_clarification",
+      "user": "Hi, um... I need help, I\u2019m in Beaverton and I can\u2019t really talk loud, he checks my phone.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone",
+      "voiceResponse": "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?",
+      "evidenceDocIds": [
+        "service:437ec64b59b0ac16",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:aff99442bdc0d67e",
+        "service:7a5cca37934277c2"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m sorry, your audio was unclear. I heard Beaverton and that it may not be safe to talk. If you\u2019re in immediate danger, call 911 now. Can you say just one word: **\u201csafe\u201d** or **\u201cnot safe\u201d**?",
+      "voiceResponseAlternatives": [
+        "I\u2019m sorry, the audio was a little unclear. I can speak slowly. For next step, please choose one: phone support now, or in-person office details."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -8356,6 +8439,24 @@
       "to": "phone_dialog_0001150#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "speech_unclear_clarification->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001158#turn-1",
+      "to": "phone_dialog_0001158#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->speech_unclear_clarification"
+    },
+    {
+      "from": "phone_dialog_0001158#turn-2",
+      "to": "phone_dialog_0001158#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-1",
+      "to": "phone_dialog_0001161#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "speech_unclear_clarification->grounded_211_answer"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "route__grounded_211_answer",
   "kind": "route",
   "key": "grounded_211_answer",
-  "nodeCount": 1537,
+  "nodeCount": 1543,
   "nodes": [
     {
       "id": "phone_dialog_0000001#turn-1",
@@ -45786,6 +45786,180 @@
       "callerArchetypeId": "calm_practical",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-2",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "He threatened me last night and keeps driving past my sister\u2019s place, so I\u2019m scared to go back.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone threatened last night keeps driving past sister place so scared go back",
+      "voiceResponse": "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options.",
+      "evidenceDocIds": [
+        "service:4dd9127df246a0db",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "service:150f0f2cc852aa6d",
+        "service:17f85caae2094027"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options.",
+      "voiceResponseAlternatives": [
+        "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?"
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-3",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "broad_help",
+      "locationTag": "beaverton",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m not hurt right this second, but if he comes here again I think it could get bad fast.",
+      "normalizedQuery": "hi um beaverton really talk loud he checks phone threatened last night keeps driving past sister place so scared go back hurt right this second if comes here again think it could bad fast",
+      "voiceResponse": "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreihyyflj2ldn76m4fjt3nye7fntrkypgqivfb2cceysz42b4mbwj3y",
+        "page:bafkreifyc4lqaiwuyhxvbqzfopulqkob5zojmowagtdqgiyreslvqoin7u"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You\u2019re not overreacting, and this could turn dangerous fast. If he shows up, call 911 right away. For now, stay where others are if you can, keep your phone charged, and avoid being alone outside. I can connect you to a live 211 advocate now for a safety plan and shelter options. Would you like me to do that now?",
+      "voiceResponseAlternatives": [
+        "I\u2019m really glad you told me. This sounds dangerous. If he is nearby now or you think he may come to your sister\u2019s place, call 911 right now. If you can, go to a public place and stay with someone you trust. I can keep this quiet and help you connect to a live 211 advocate next for safety planning and shelter options."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-4",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 3,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "Can you help me find a shelter tonight, like somewhere confidential, and maybe how to leave without him noticing?",
+      "normalizedQuery": "shelter shelters homeless overnight warming tonight like somewhere confidential maybe how leave without him noticing",
+      "voiceResponse": "Yes. I can help right now. For a confidential shelter tonight and a safe exit plan, the safest next step is a live 211 advocate who can place you discreetly. If he shows up or you feel immediate danger, call 911. Until then: keep your phone on silent, take only essentials, and leave when he cannot see you. If you want, I\u2019ll connect you to 211 now and stay with you while we do it.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:bd5c5bd198f76c8b",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d",
+        "service:dc93c9592519c012"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I can help right now. For a confidential shelter tonight and a safe exit plan, the safest next step is a live 211 advocate who can place you discreetly. If he shows up or you feel immediate danger, call 911. Until then: keep your phone on silent, take only essentials, and leave when he cannot see you. If you want, I\u2019ll connect you to 211 now and stay with you while we do it.",
+      "voiceResponseAlternatives": [
+        "First step: call Outside In East Burnside now and ask for the next same-day opening. The number is **five-zero-three, five-three-five, three-eight-six-zero**. It\u2019s on the east side at **one-six-one-four-four East Burnside Street, Portland**. From what I have, they also ask for insurance info if you have it, and proof of income if you\u2019re applying for sliding-scale fees.",
+        "Absolutely, we can keep it simple. You\u2019re looking for prevention help now, not shelter, and that makes sense. Next step: I can connect you to a 211 housing specialist for Gresham who can screen you for eviction-prevention rent assistance and legal prevention options before filing. If you want, have your notices and landlord emails nearby, but you only need to share what you\u2019re comfortable sharing.",
+        "First step: call **2-1-1** right now. Digit by digit: **2 \u2026 1 \u2026 1**. Say: \u201cI need same-day or next-day hiring in Washington County.\u201d If you get through, ask them to text you the fastest hiring contact so you have it before your battery dies.",
+        "Next step: look for the address on the shelter door or lobby sign and match it to this list. Redmond: **1350 South Highway 97**, phone **5 4 1 \u2026 3 8 8 \u2026 2 0 9 6**. La Pine: **16430 3rd Street**, phone **5 4 1 \u2026 9 4 8 \u2026 6 6 4 9**. Lebanon: **3000 South Santiam Highway**, phone **5 4 1 \u2026 4 5 1 \u2026 1 2 7 1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001161#turn-6",
+      "scenarioId": "phone_dialog_0001161",
+      "turnIndex": 5,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "My battery is at like three percent, so what\u2019s the first thing I should do before this call drops?",
+      "normalizedQuery": "hurt right this second if he comes here again think it could bad fast shelter shelters homeless overnight warming tonight like somewhere confidential maybe how leave without him noticing sorry crying missed say number slower battery at three percent so first should before call drops",
+      "voiceResponse": "First step: plug your phone in right now, if you can. If this drops, call **2-1-1** immediately: **two\u2026 one\u2026 one** and say, \u201cI need a confidential shelter tonight and a safe exit plan.\u201d If he shows up or you feel unsafe at any moment, call **9-1-1**: **nine\u2026 one\u2026 one**. You\u2019re doing the right thing.",
+      "evidenceDocIds": [
+        "page:bafkreih7xu6m4m3x2rrr7gjosijychnhqkpxarnwmogrdh3hmzf32fovu4",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:32f8d8103ea16592",
+        "service:06316d26dda9c85b",
+        "service:b5d06c266ca98fec"
+      ],
+      "similarCases": [],
+      "assistantResponse": "First step: plug your phone in right now, if you can. If this drops, call **2-1-1** immediately: **two\u2026 one\u2026 one** and say, \u201cI need a confidential shelter tonight and a safe exit plan.\u201d If he shows up or you feel unsafe at any moment, call **9-1-1**: **nine\u2026 one\u2026 one**. You\u2019re doing the right thing.",
+      "voiceResponseAlternatives": [
+        "First step: call Outside In East Burnside now and ask for the next same-day opening. The number is **five-zero-three, five-three-five, three-eight-six-zero**. It\u2019s on the east side at **one-six-one-four-four East Burnside Street, Portland**. From what I have, they also ask for insurance info if you have it, and proof of income if you\u2019re applying for sliding-scale fees.",
+        "Absolutely, we can keep it simple. You\u2019re looking for prevention help now, not shelter, and that makes sense. Next step: I can connect you to a 211 housing specialist for Gresham who can screen you for eviction-prevention rent assistance and legal prevention options before filing. If you want, have your notices and landlord emails nearby, but you only need to share what you\u2019re comfortable sharing.",
+        "First step: call **2-1-1** right now. Digit by digit: **2 \u2026 1 \u2026 1**. Say: \u201cI need same-day or next-day hiring in Washington County.\u201d If you get through, ask them to text you the fastest hiring contact so you have it before your battery dies.",
+        "Next step: look for the address on the shelter door or lobby sign and match it to this list. Redmond: **1350 South Highway 97**, phone **5 4 1 \u2026 3 8 8 \u2026 2 0 9 6**. La Pine: **16430 3rd Street**, phone **5 4 1 \u2026 9 4 8 \u2026 6 6 4 9**. Lebanon: **3000 South Santiam Highway**, phone **5 4 1 \u2026 4 5 1 \u2026 1 2 7 1**."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001164#turn-2",
+      "scenarioId": "phone_dialog_0001164",
+      "turnIndex": 1,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "statewide",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I\u2019m 19 and I really don\u2019t trust shelters, they always act like I\u2019m doing something wrong.",
+      "normalizedQuery": "19 really don trust shelters shelter homeless overnight warming they always act like doing something wrong",
+      "voiceResponse": "I hear you, and you\u2019re not doing anything wrong. We can skip shelters. Let\u2019s focus on a daytime youth-safe place in Oregon City where you can be indoors and not get judged. I can connect you to a live 211 specialist now and stay with you while we do it. If you feel in immediate danger at any point, call 911 right away.",
+      "evidenceDocIds": [
+        "service:5ded755b33454184",
+        "service:57c4c63dcadba358",
+        "service:da479dd20eb5563d",
+        "service:bd5c5bd198f76c8b",
+        "service:b4ef6dca3c3f73bd"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and you\u2019re not doing anything wrong. We can skip shelters. Let\u2019s focus on a daytime youth-safe place in Oregon City where you can be indoors and not get judged. I can connect you to a live 211 specialist now and stay with you while we do it. If you feel in immediate danger at any point, call 911 right away.",
+      "voiceResponseAlternatives": [
+        "First step: call Outside In East Burnside now and ask for the next same-day opening. The number is **five-zero-three, five-three-five, three-eight-six-zero**. It\u2019s on the east side at **one-six-one-four-four East Burnside Street, Portland**. From what I have, they also ask for insurance info if you have it, and proof of income if you\u2019re applying for sliding-scale fees.",
+        "Absolutely, we can keep it simple. You\u2019re looking for prevention help now, not shelter, and that makes sense. Next step: I can connect you to a 211 housing specialist for Gresham who can screen you for eviction-prevention rent assistance and legal prevention options before filing. If you want, have your notices and landlord emails nearby, but you only need to share what you\u2019re comfortable sharing.",
+        "First step: call **2-1-1** right now. Digit by digit: **2 \u2026 1 \u2026 1**. Say: \u201cI need same-day or next-day hiring in Washington County.\u201d If you get through, ask them to text you the fastest hiring contact so you have it before your battery dies.",
+        "Next step: look for the address on the shelter door or lobby sign and match it to this list. Redmond: **1350 South Highway 97**, phone **5 4 1 \u2026 3 8 8 \u2026 2 0 9 6**. La Pine: **16430 3rd Street**, phone **5 4 1 \u2026 9 4 8 \u2026 6 6 4 9**. Lebanon: **3000 South Santiam Highway**, phone **5 4 1 \u2026 4 5 1 \u2026 1 2 7 1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001164#turn-3",
+      "scenarioId": "phone_dialog_0001164",
+      "turnIndex": 2,
+      "route": "grounded_211_answer",
+      "serviceTag": "shelter",
+      "locationTag": "oregon_city",
+      "promptTemplate": "grounded_211_answer",
+      "user": "I don\u2019t know, I just feel like disappearing tonight, like not being here anymore.",
+      "normalizedQuery": "hi um slow down second oregon city somewhere go during day like youth center whatever 19 really don trust shelters shelter homeless overnight warming they always act doing something wrong know just feel disappearing tonight being here anymore",
+      "voiceResponse": "Thank you for telling me. That sounds really heavy, and your safety comes first. If you might hurt yourself tonight, call **911 right now**. If you can stay on the phone with me, I can connect you to a live **211** specialist immediately and ask for urgent youth-safe support in Oregon City tonight. Are you in immediate danger right now?",
+      "evidenceDocIds": [
+        "service:bab9f596e07026df",
+        "service:b4ef6dca3c3f73bd",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "service:bd5c5bd198f76c8b",
+        "service:a110aba06fd372f6"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. That sounds really heavy, and your safety comes first. If you might hurt yourself tonight, call **911 right now**. If you can stay on the phone with me, I can connect you to a live **211** specialist immediately and ask for urgent youth-safe support in Oregon City tonight. Are you in immediate danger right now?",
+      "voiceResponseAlternatives": [
+        "Next step: call the Oregon City site I can confirm, and ask for local job-resource referrals. The number is **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. I only have this Oregon City listing: Overnight Winter Warming Shelter, **603 12th Street**. If you want, I can connect you to a 211 specialist for direct employment programs nearby.",
+        "Next step: call them and ask directly if they have job referrals. From what I can confirm, this listing is only an overnight warming shelter, not a listed day-labor or regular-jobs program. Call: **5 0 3** \u2026 **7 2 2** \u2026 **9 7 8 0**. If you want, I can help you with exactly what to say when they answer.",
+        "I can\u2019t verify that bus connection from Oregon City Transit Center from what I have right now. The service I can confirm is Josephine Community Transit in Grants Pass. Call **5 4 1 \u2026 4 7 4 \u2026 5 4 5 2** and ask, \u201cDo you pick up from Oregon City Transit Center today?\u201d If you\u2019re in immediate danger where you are, call **911** now.",
+        "Most important first: call Transportation Reaching People at **5 0 3, 6 5 5, 8 2 0 8**. Again: **5 0 3, 6 5 5, 8 2 0 8**. They do medical appointment rides, and they prioritize life-sustaining trips. I cannot confirm same-day from what I have, so ask for an urgent same-day medical ride when they answer. If your breathing gets worse right now, call **9 1 1**."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -54308,6 +54482,36 @@
       "to": "phone_dialog_0001157#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "grounded_211_answer->wallet_document_support"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-2",
+      "to": "phone_dialog_0001161#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-3",
+      "to": "phone_dialog_0001161#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001161#turn-4",
+      "to": "phone_dialog_0001161#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001164#turn-2",
+      "to": "phone_dialog_0001164#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->grounded_211_answer"
+    },
+    {
+      "from": "phone_dialog_0001164#turn-3",
+      "to": "phone_dialog_0001164#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "grounded_211_answer->repeat_or_restate"
     }
   ]
 }

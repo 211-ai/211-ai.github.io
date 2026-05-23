@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__general__salem",
   "kind": "service_location",
   "key": "general__salem",
-  "nodeCount": 28,
+  "nodeCount": 30,
   "nodes": [
     {
       "id": "phone_dialog_0000050#turn-2",
@@ -464,7 +464,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -819,6 +821,63 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "clear_line",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-2",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, out by the camp near the tracks, and it\u2019s freezing rain right now.",
+      "normalizedQuery": "salem by camp tracks it freezing rain right now",
+      "voiceResponse": "You need immediate shelter from the freezing rain, so call **911 now** and say: \u201cI\u2019m outside near the tracks in Salem, cold and wet, and need urgent help.\u201d If this call drops, call **2-1-1** next and ask for a live agent for emergency shelter tonight. Stay off the tracks and get under any covered area you can right now.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You need immediate shelter from the freezing rain, so call **911 now** and say: \u201cI\u2019m outside near the tracks in Salem, cold and wet, and need urgent help.\u201d If this call drops, call **2-1-1** next and ask for a live agent for emergency shelter tonight. Stay off the tracks and get under any covered area you can right now.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-3",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Some guys keep circling and yelling at me, and my backpack got grabbed earlier, so I don\u2019t feel safe staying out here tonight.",
+      "normalizedQuery": "hey only got like two percent this isn phone so give main number first case we drop salem by camp tracks it freezing rain right now some guys keep circling yelling at backpack grabbed earlier don feel safe staying here tonight",
+      "voiceResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "voiceResponseAlternatives": [
+        "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -959,6 +1018,18 @@
       "to": "phone_dialog_0001005#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-2",
+      "to": "phone_dialog_0001162#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-3",
+      "to": "phone_dialog_0001162#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

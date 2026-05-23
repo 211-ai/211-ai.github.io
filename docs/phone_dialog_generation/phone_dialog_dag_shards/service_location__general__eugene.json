@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__general__eugene",
   "kind": "service_location",
   "key": "general__eugene",
-  "nodeCount": 51,
+  "nodeCount": 53,
   "nodes": [
     {
       "id": "phone_dialog_0000012#turn-3",
@@ -1508,6 +1508,66 @@
       "callerArchetypeId": "helper_for_other_person",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "compassionate_caseworker"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-1",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Eugene, Lane County, and I can\u2019t stay where I am tonight.",
+      "normalizedQuery": "hi eugene lane county stay tonight",
+      "voiceResponse": "I\u2019m glad you called. For tonight in Eugene, contact St. Vincent de Paul Dawn to Dawn at **541\u2026 689\u2026 5820**. If you can travel, go to **450 Highway 99 North, Eugene**. If you feel unsafe right now or someone is threatening you, call **911** now. If you want, I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "service:8f84270f81db184e",
+        "service:cac7c3dd2002e4d9",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29",
+        "service:66253a2a97571c16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called. For tonight in Eugene, contact St. Vincent de Paul Dawn to Dawn at **541\u2026 689\u2026 5820**. If you can travel, go to **450 Highway 99 North, Eugene**. If you feel unsafe right now or someone is threatening you, call **911** now. If you want, I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line so I can connect you now to the live 211 specialist for low-cost, same-day dental options near Eugene, including uninsured care. If your face swells, or you get fever, trouble breathing, or trouble swallowing, call **9 1 1** right away. If this call drops and you need shelter help, call **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Eugene. You are in Eugene, and that works. I did not have a street address for the Monthly Pop-Up clinic. I only had the phone: **541, 232, 8546**. Again: **541, 232, 8546**. If you feel unsafe or it is an emergency, call **911** now. Do you want a Eugene clinic with a full address?",
+        "Yes. Best two to start with near Eugene are the spots we already listed: **941 West 7th Avenue** at **541, 686, 4310**, and **4060 West Amazon Drive** at **541, 342, 7728**. When you call, you can keep it anonymous and ask: \u201cDo you have free laundry, vouchers, or reduced-cost wash and dry this week, and is there a bus stop nearby?\u201d If one says no, call the other right away.",
+        "Of course. I\u2019ll say the full number slowly. It is: **5 \u2026 4 \u2026 1 \u2026 6 \u2026 8 \u2026 8 \u2026 8 \u2026 7 \u2026 1 \u2026 1**. Again: **5 \u2026 4 \u2026 1 \u2026 6 \u2026 8 \u2026 8 \u2026 8 \u2026 7 \u2026 1 \u2026 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-2",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s buses going by, I missed that, can you say it again?",
+      "normalizedQuery": "hi eugene lane county stay tonight sorry there buses going by missed say it again",
+      "voiceResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:66253a2a97571c16",
+        "service:67b4e3fbb47960bc",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1700408eea20aebe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "voiceResponseAlternatives": [
+        "Slowly, yes. I do **not** have an address or hours to repeat. I\u2019ll repeat that: I do **not** have an address or hours here. The only place detail I have is **downtown Eugene**. **Downtown Eugene**. Do you want me to connect you now so they can give the exact address and hours?",
+        "Of course. The address is: **1900 B West 7th Avenue, Eugene**. Again, slowly: **1900 B** \u2026 **West 7th Avenue** \u2026 **Eugene**. I don\u2019t have confirmed walk-in hours for this week. If you want, you can call and ask: **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**.",
+        "You\u2019re okay, let\u2019s do this slowly. I haven\u2019t given a specific hour yet. What I said was: each cooling site has its own hours. So the key part is: open the site, tap **\u201cMore Details,\u201d** then read that location\u2019s hours. If you want, read me the first listing, and I\u2019ll repeat the hours back one piece at a time.",
+        "Yes. Slower: stay on this call, and I\u2019ll connect you to a live 211 housing specialist for Eugene eviction help. If we get disconnected, call **2-1-1** back right away. Then say: **\u201cEugene. Eviction paper. Need urgent housing help.\u201d**"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1738,6 +1798,18 @@
       "to": "phone_dialog_0001148#turn-3",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-1",
+      "to": "phone_dialog_0001159#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-2",
+      "to": "phone_dialog_0001159#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
     }
   ]
 }

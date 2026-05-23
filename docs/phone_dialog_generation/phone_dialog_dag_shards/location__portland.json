@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "location__portland",
   "kind": "location",
   "key": "portland",
-  "nodeCount": 320,
+  "nodeCount": 322,
   "nodes": [
     {
       "id": "phone_dialog_0000013#turn-1",
@@ -9338,6 +9338,66 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-1",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, wait, can you hear me? I\u2019m in Portland, Multnomah County, and they keep talking through the vents about me.",
+      "normalizedQuery": "hi wait hear portland multnomah county they keep talking through vents",
+      "voiceResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:bcfe168519274472",
+        "service:90c7ca5c66c5c48e",
+        "service:56b06f24d0db91fe",
+        "service:f0dc8dae97168e5b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-3",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 2,
+      "route": "live_agent",
+      "serviceTag": "benefits",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Sorry, you asked if I\u2019m safe? I locked the door but the voices say don\u2019t trust this call, so I don\u2019t know, I keep pacing.",
+      "normalizedQuery": "hi wait hear portland multnomah county they keep talking through vents no on drugs already said just somewhere mental health like tonight because make brain line up sorry asked if safe locked door voices say don trust this call so know pacing",
+      "voiceResponse": "Thank you for telling me. You did a good step by locking the door. Right now, because you don\u2019t feel safe and the voices are intense, I need you to call 911 now if there\u2019s any chance you might hurt yourself or someone could hurt you. I\u2019m staying with you while I connect you to the live crisis counselor. Keep pacing if it helps, and stay away from anything sharp or dangerous.",
+      "evidenceDocIds": [
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "page:bafkreiepj6m2v4wzv6ee6tybwqnbpygyr4pf265j3xomdy6axk2bzfgh2q",
+        "page:bafkreie347yxdopflenkpm5mhxspimi6s27aiwf4xmzvpoktxicfkt6t34"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Thank you for telling me. You did a good step by locking the door. Right now, because you don\u2019t feel safe and the voices are intense, I need you to call 911 now if there\u2019s any chance you might hurt yourself or someone could hurt you. I\u2019m staying with you while I connect you to the live crisis counselor. Keep pacing if it helps, and stay away from anything sharp or dangerous.",
+      "voiceResponseAlternatives": [
+        "Yes. I can connect you to a live advocate tonight to make a safety plan. Call to Safety: **5-0-3, 2-3-5, 5-3-3-3**. I\u2019ll repeat: **5-0-3, 2-3-5, 5-3-3-3**. If you are in immediate danger right now, call **9-1-1**.",
+        "Okay, first step: call the SSI/SSDI legal help line now at **503\u2026 228\u2026 5222**. They help adults and kids with SSI and SSD applications and appeals, and the listing says no documents are required at intake. If you want to go in person, it\u2019s **820 SW 2nd Avenue, Suite 200, Portland**. If you feel unsafe right now or might get hurt, call **911** immediately.",
+        "That helps, thank you. Since he needs care soon and mornings work best, use this exact script when you call: \u201cHe has ongoing pain, can do morning appointments, and needs the soonest new-patient visit.\u201d Ask, \u201cDo you have anything this week?\u201d If they can\u2019t, ask for a cancellation list. For fastest local options, call 2-1-1 and use the same wording. If his pain becomes severe or he has trouble breathing, call 9-1-1 right away.",
+        "I\u2019m glad you reached out, and I hear this is urgent. If you might hurt yourself or someone else right now, call **911** immediately. For same-day mental health help in Portland, call **Behavioral Health Services** at **5-0-3, 3-3-5, 5-9-7-5**. Backup number: **5-0-3, 3-3-5, 5-9-7-4**. Address: **1-1-0-1-0 Southeast Division Street, Suite 2-0-2, Portland, 9-7-2-6-6**."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -11080,6 +11140,18 @@
       "to": "phone_dialog_0001155#turn-5",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001160#turn-1",
+      "to": "phone_dialog_0001160#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001160#turn-3",
+      "to": "phone_dialog_0001160#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
     }
   ]
 }

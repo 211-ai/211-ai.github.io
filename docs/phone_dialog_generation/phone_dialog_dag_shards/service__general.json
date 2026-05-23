@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service__general",
   "kind": "service",
   "key": "general",
-  "nodeCount": 1218,
+  "nodeCount": 1227,
   "nodes": [
     {
       "id": "phone_dialog_0000003#turn-1",
@@ -21062,7 +21062,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again."
+      ],
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -36325,6 +36327,273 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-1",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "live_agent",
+      "user": "Hi, I\u2019m in Eugene, Lane County, and I can\u2019t stay where I am tonight.",
+      "normalizedQuery": "hi eugene lane county stay tonight",
+      "voiceResponse": "I\u2019m glad you called. For tonight in Eugene, contact St. Vincent de Paul Dawn to Dawn at **541\u2026 689\u2026 5820**. If you can travel, go to **450 Highway 99 North, Eugene**. If you feel unsafe right now or someone is threatening you, call **911** now. If you want, I can stay with you while you place the call.",
+      "evidenceDocIds": [
+        "service:8f84270f81db184e",
+        "service:cac7c3dd2002e4d9",
+        "service:9f407eef6a970ffa",
+        "service:bc8f2f2c925c3e29",
+        "service:66253a2a97571c16"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m glad you called. For tonight in Eugene, contact St. Vincent de Paul Dawn to Dawn at **541\u2026 689\u2026 5820**. If you can travel, go to **450 Highway 99 North, Eugene**. If you feel unsafe right now or someone is threatening you, call **911** now. If you want, I can stay with you while you place the call.",
+      "voiceResponseAlternatives": [
+        "Next step: stay on the line so I can connect you now to the live 211 specialist for low-cost, same-day dental options near Eugene, including uninsured care. If your face swells, or you get fever, trouble breathing, or trouble swallowing, call **9 1 1** right away. If this call drops and you need shelter help, call **5 4 1** \u2026 **6 8 2** \u2026 **3 7 9 8**.",
+        "Eugene. You are in Eugene, and that works. I did not have a street address for the Monthly Pop-Up clinic. I only had the phone: **541, 232, 8546**. Again: **541, 232, 8546**. If you feel unsafe or it is an emergency, call **911** now. Do you want a Eugene clinic with a full address?",
+        "Yes. Best two to start with near Eugene are the spots we already listed: **941 West 7th Avenue** at **541, 686, 4310**, and **4060 West Amazon Drive** at **541, 342, 7728**. When you call, you can keep it anonymous and ask: \u201cDo you have free laundry, vouchers, or reduced-cost wash and dry this week, and is there a bus stop nearby?\u201d If one says no, call the other right away.",
+        "Of course. I\u2019ll say the full number slowly. It is: **5 \u2026 4 \u2026 1 \u2026 6 \u2026 8 \u2026 8 \u2026 8 \u2026 7 \u2026 1 \u2026 1**. Again: **5 \u2026 4 \u2026 1 \u2026 6 \u2026 8 \u2026 8 \u2026 8 \u2026 7 \u2026 1 \u2026 1**."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-2",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 1,
+      "route": "repeat_or_restate",
+      "serviceTag": "general",
+      "locationTag": "eugene",
+      "promptTemplate": "repeat_or_restate",
+      "user": "Sorry, there\u2019s buses going by, I missed that, can you say it again?",
+      "normalizedQuery": "hi eugene lane county stay tonight sorry there buses going by missed say it again",
+      "voiceResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "evidenceDocIds": [
+        "page:bafkreif7g2gcpqes477n7n5caqwsx72w4fl3pvtsvoynhgsftfulgukeci",
+        "service:66253a2a97571c16",
+        "service:67b4e3fbb47960bc",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "service:1700408eea20aebe"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Of course. Here it is again, slowly: call Lane County Shelter Finder at **541 \u2026 682 \u2026 3798**. If you can go in person: **151 West 7th Avenue, Eugene**. If you\u2019re in immediate danger, call **911**.",
+      "voiceResponseAlternatives": [
+        "Slowly, yes. I do **not** have an address or hours to repeat. I\u2019ll repeat that: I do **not** have an address or hours here. The only place detail I have is **downtown Eugene**. **Downtown Eugene**. Do you want me to connect you now so they can give the exact address and hours?",
+        "Of course. The address is: **1900 B West 7th Avenue, Eugene**. Again, slowly: **1900 B** \u2026 **West 7th Avenue** \u2026 **Eugene**. I don\u2019t have confirmed walk-in hours for this week. If you want, you can call and ask: **5 4 1** \u2026 **2 2 8** \u2026 **9 7 5 1**.",
+        "You\u2019re okay, let\u2019s do this slowly. I haven\u2019t given a specific hour yet. What I said was: each cooling site has its own hours. So the key part is: open the site, tap **\u201cMore Details,\u201d** then read that location\u2019s hours. If you want, read me the first listing, and I\u2019ll repeat the hours back one piece at a time.",
+        "Yes. Slower: stay on this call, and I\u2019ll connect you to a live 211 housing specialist for Eugene eviction help. If we get disconnected, call **2-1-1** back right away. Then say: **\u201cEugene. Eviction paper. Need urgent housing help.\u201d**"
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-1",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, wait, can you hear me? I\u2019m in Portland, Multnomah County, and they keep talking through the vents about me.",
+      "normalizedQuery": "hi wait hear portland multnomah county they keep talking through vents",
+      "voiceResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:bcfe168519274472",
+        "service:90c7ca5c66c5c48e",
+        "service:56b06f24d0db91fe",
+        "service:f0dc8dae97168e5b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-6",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Please don\u2019t hang up, can you stay with me and get a live person, I think I might do something bad if I\u2019m alone.",
+      "normalizedQuery": "please don hang up stay live person think might something bad if alone",
+      "voiceResponse": "I\u2019m here with you, and I\u2019m not hanging up. You just said you might do something bad, so this is an emergency: call **9-1-1** now, or tell me and I\u2019ll stay with you while you do it. Put the phone on charger right now, keep the door locked, and move away from anything you could use to hurt yourself.",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidyfixwtff3erkb2pvjpd4sowjp7veuhdy4ztcl4v5znlagzwumzi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I\u2019m here with you, and I\u2019m not hanging up. You just said you might do something bad, so this is an emergency: call **9-1-1** now, or tell me and I\u2019ll stay with you while you do it. Put the phone on charger right now, keep the door locked, and move away from anything you could use to hurt yourself.",
+      "voiceResponseAlternatives": [
+        "Let\u2019s do one thing right now: I can connect you to a live 211info specialist to find a safe place for tonight. If you\u2019re in immediate danger, call 911 now. If not, stay with me and I\u2019ll get you to a person who can do same-night shelter and crisis routing.",
+        "First, please step outside right now to cooler air and sit down. If you still feel like you can\u2019t breathe, call **9-1-1** now. I\u2019m so sorry about your mom. You do not need to apologize. I can stay with you and connect you to a live specialist next for support.",
+        "Please stay on the line with me now so I can finish connecting you to the live 211 specialist. There are no cooling-center hours I can repeat right now, because the last update says cooling centers were not open as of May 1, 2026. The specialist will give you the current hours and exact location before you go anywhere.",
+        "First, call the Oregon State Bar **Modest Means Program** for legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I can repeat it: **5-0-3, 6-8-4, 3-7-6-3**. They also list **5-0-3, 6-2-0, 0-2-2-2**. If you want, I can stay with you and repeat the number again slowly."
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-1",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Hey, I only got like two percent and this isn\u2019t my phone, so can you give me the main number first in case we drop?",
+      "normalizedQuery": "hey only got like two percent this isn phone so give main number first case we drop",
+      "voiceResponse": "Okay, first: if you\u2019re in immediate danger right now, call **911**. If we drop, call **2-1-1** and ask for a live agent right away. Tell them: \u201cI\u2019m homeless, low battery, need immediate shelter or safe place tonight.\u201d",
+      "evidenceDocIds": [
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "service:b3d7aa7d9150b9d1",
+        "page:bafkreiajra4axphiit2e5kgqhijxxfjj7fqr7s626vbasgh3y4bdcizbqi",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay, first: if you\u2019re in immediate danger right now, call **911**. If we drop, call **2-1-1** and ask for a live agent right away. Tell them: \u201cI\u2019m homeless, low battery, need immediate shelter or safe place tonight.\u201d",
+      "voiceResponseAlternatives": [
+        "Let\u2019s do one thing right now: I can connect you to a live 211info specialist to find a safe place for tonight. If you\u2019re in immediate danger, call 911 now. If not, stay with me and I\u2019ll get you to a person who can do same-night shelter and crisis routing.",
+        "First, please step outside right now to cooler air and sit down. If you still feel like you can\u2019t breathe, call **9-1-1** now. I\u2019m so sorry about your mom. You do not need to apologize. I can stay with you and connect you to a live specialist next for support.",
+        "Please stay on the line with me now so I can finish connecting you to the live 211 specialist. There are no cooling-center hours I can repeat right now, because the last update says cooling centers were not open as of May 1, 2026. The specialist will give you the current hours and exact location before you go anywhere.",
+        "First, call the Oregon State Bar **Modest Means Program** for legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I can repeat it: **5-0-3, 6-8-4, 3-7-6-3**. They also list **5-0-3, 6-2-0, 0-2-2-2**. If you want, I can stay with you and repeat the number again slowly."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-2",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 1,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "live_agent",
+      "user": "I\u2019m in Salem, out by the camp near the tracks, and it\u2019s freezing rain right now.",
+      "normalizedQuery": "salem by camp tracks it freezing rain right now",
+      "voiceResponse": "You need immediate shelter from the freezing rain, so call **911 now** and say: \u201cI\u2019m outside near the tracks in Salem, cold and wet, and need urgent help.\u201d If this call drops, call **2-1-1** next and ask for a live agent for emergency shelter tonight. Stay off the tracks and get under any covered area you can right now.",
+      "evidenceDocIds": [
+        "service:5959bd235cc13850",
+        "service:87d76f238f161504",
+        "service:ce80e2ecc4805e30",
+        "service:d317367517a5230b",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You need immediate shelter from the freezing rain, so call **911 now** and say: \u201cI\u2019m outside near the tracks in Salem, cold and wet, and need urgent help.\u201d If this call drops, call **2-1-1** next and ask for a live agent for emergency shelter tonight. Stay off the tracks and get under any covered area you can right now.",
+      "voiceResponseAlternatives": [
+        "Next step: call **211info** now and ask for the nearest **open laundry/laundromat in downtown Salem today**. The number is **800 \u2026 965 \u2026 6519**. I\u2019ll repeat: **800 \u2026 965 \u2026 6519**. If this phone dies, borrow another and call that number first.",
+        "I don\u2019t have Salem or Keizer listed here. What I have is: **1 2 4 5 Fulton Avenue, Coos Bay, Oregon, 9 7 4 2 0**. So based on this, it\u2019s **Coos Bay**, not Salem/Keizer.",
+        "Thanks for saying that. This sounds urgent cold exposure risk. Please call **911 right now** in Salem and ask for a welfare check for your brother\u2019s exact location. If you can, stay on the line with him and get him indoors somewhere warm immediately. If he stops responding, treat it as an emergency and tell 911 that clearly.",
+        "Next step: stay on the line with me while I connect you to a live 211 specialist right now, and I\u2019ll tell them you\u2019re 22, near downtown Salem, no car, and worried about being turned away. You won\u2019t have to explain it all again alone. If you feel unsafe or might hurt yourself right now, call 9-1-1."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001162#turn-3",
+      "scenarioId": "phone_dialog_0001162",
+      "turnIndex": 2,
+      "route": "safety_guardrail_support",
+      "serviceTag": "general",
+      "locationTag": "salem",
+      "promptTemplate": "safety_guardrail_support",
+      "user": "Some guys keep circling and yelling at me, and my backpack got grabbed earlier, so I don\u2019t feel safe staying out here tonight.",
+      "normalizedQuery": "hey only got like two percent this isn phone so give main number first case we drop salem by camp tracks it freezing rain right now some guys keep circling yelling at backpack grabbed earlier don feel safe staying here tonight",
+      "voiceResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "evidenceDocIds": [
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e",
+        "page:bafkreidflwc4kvnjvqukknruym334clqwq7gi66bdwijbluz7d46nmnnvu",
+        "page:bafkreibh5nqf5im65kz4ewjcfcpca4y5nzfotdutvpieetkurewml6glue",
+        "page:bafkreidjanhd5apjcjj2xgclilf2vi5zkxazmq2qkziiqshr7tdmbceksm",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq"
+      ],
+      "similarCases": [],
+      "assistantResponse": "You\u2019re not safe right now. Are you injured at all? Call **911 now** and say: \u201cI\u2019m near the tracks in Salem, people are circling and yelling at me, and I\u2019m scared for my safety.\u201d Move toward a lit public place while you call, and stay where other people can see you. If this phone drops, borrow any phone and dial **911** again.",
+      "voiceResponseAlternatives": [
+        "I hear you. Quick safety check: are you safe for the next 10 minutes, yes or no? If no, call **9-1-1** right now and say: \u201cI\u2019m in Salem, I\u2019m in a mental health crisis, and I need a responder who can help me stay safe without judgment.\u201d You deserve help and respect. If your phone dies, ask the nearest person to call **9-1-1** for you and stay with you."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "borrowed_phone_low_battery",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001163#turn-5",
+      "scenarioId": "phone_dialog_0001163",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "Wait, hold on, my chest hurts bad now and I\u2019m getting more lightheaded. If I might collapse, should I call 911 right now?",
+      "normalizedQuery": "wait hold on chest hurts bad now getting more lightheaded if might collapse should call 911 right",
+      "voiceResponse": "Yes. Call **911 right now**. Chest pain, worsening lightheadedness, and possible collapse are an emergency. Say: \u201cI have bad chest pain, I\u2019m getting more lightheaded, and I might collapse.\u201d Stay seated, do not stand up, and keep sipping small sips of water if you can. If someone is nearby, ask them to call **911** for you now.",
+      "evidenceDocIds": [
+        "service:07b702b8ba249a9b",
+        "page:bafkreidwctdy5r2345ks5cqwaqgzuvelsi3iypi57nuzf5azypzvcsae3e",
+        "page:bafkreib6p2bhupwhg3uslvmpav7h2rruncysewf3qa6dxnkho5o6v737e4",
+        "service:3bf79b1da127b257",
+        "service:bf0682fd9fa9809c"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. Call **911 right now**. Chest pain, worsening lightheadedness, and possible collapse are an emergency. Say: \u201cI have bad chest pain, I\u2019m getting more lightheaded, and I might collapse.\u201d Stay seated, do not stand up, and keep sipping small sips of water if you can. If someone is nearby, ask them to call **911** for you now.",
+      "voiceResponseAlternatives": [
+        "Let\u2019s do one thing right now: I can connect you to a live 211info specialist to find a safe place for tonight. If you\u2019re in immediate danger, call 911 now. If not, stay with me and I\u2019ll get you to a person who can do same-night shelter and crisis routing.",
+        "First, please step outside right now to cooler air and sit down. If you still feel like you can\u2019t breathe, call **9-1-1** now. I\u2019m so sorry about your mom. You do not need to apologize. I can stay with you and connect you to a live specialist next for support.",
+        "Please stay on the line with me now so I can finish connecting you to the live 211 specialist. There are no cooling-center hours I can repeat right now, because the last update says cooling centers were not open as of May 1, 2026. The specialist will give you the current hours and exact location before you go anywhere.",
+        "First, call the Oregon State Bar **Modest Means Program** for legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I can repeat it: **5-0-3, 6-8-4, 3-7-6-3**. They also list **5-0-3, 6-2-0, 0-2-2-2**. If you want, I can stay with you and repeat the number again slowly."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001164#turn-6",
+      "scenarioId": "phone_dialog_0001164",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If you can get me a real person, do that, please. I don\u2019t want to mess this up.",
+      "normalizedQuery": "if real person please don want mess this up",
+      "voiceResponse": "Yes. I\u2019m connecting you to a live 211 specialist right now. Stay on the line with me; you\u2019re not messing this up. If at any moment you feel like you might hurt yourself, call 911 immediately. I\u2019m here with you until a real person picks up.",
+      "evidenceDocIds": [
+        "service:cd96a6558b0545d4",
+        "page:bafkreifcr4s36erd6q4cpx4vb5v4bei7llghvtfoanzcvsrhpnsisbq46a",
+        "page:bafkreibmn6xyxpuhpashuiyqx6q2yq4q752hhxd55cguurzjmnldm2qvcq",
+        "page:bafkreihrzrq6znndbfp2buu5bvwakgxu6yyvp57h5czre7lm32kehgn4ai",
+        "page:bafkreidfroqrzw3suir2f6oeijvni565x4fx54qlelqoqc5j7odzir372e"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. I\u2019m connecting you to a live 211 specialist right now. Stay on the line with me; you\u2019re not messing this up. If at any moment you feel like you might hurt yourself, call 911 immediately. I\u2019m here with you until a real person picks up.",
+      "voiceResponseAlternatives": [
+        "Let\u2019s do one thing right now: I can connect you to a live 211info specialist to find a safe place for tonight. If you\u2019re in immediate danger, call 911 now. If not, stay with me and I\u2019ll get you to a person who can do same-night shelter and crisis routing.",
+        "First, please step outside right now to cooler air and sit down. If you still feel like you can\u2019t breathe, call **9-1-1** now. I\u2019m so sorry about your mom. You do not need to apologize. I can stay with you and connect you to a live specialist next for support.",
+        "Please stay on the line with me now so I can finish connecting you to the live 211 specialist. There are no cooling-center hours I can repeat right now, because the last update says cooling centers were not open as of May 1, 2026. The specialist will give you the current hours and exact location before you go anywhere.",
+        "First, call the Oregon State Bar **Modest Means Program** for legal help. The number is **5-0-3, 6-8-4, 3-7-6-3**. I can repeat it: **5-0-3, 6-8-4, 3-7-6-3**. They also list **5-0-3, 6-2-0, 0-2-2-2**. If you want, I can stay with you and repeat the number again slowly."
+      ],
+      "callerArchetypeId": "youth_in_crisis",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -41985,6 +42254,42 @@
       "to": "phone_dialog_0001155#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-1",
+      "to": "phone_dialog_0001159#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->repeat_or_restate"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-2",
+      "to": "phone_dialog_0001159#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "repeat_or_restate->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001160#turn-1",
+      "to": "phone_dialog_0001160#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-1",
+      "to": "phone_dialog_0001162#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-2",
+      "to": "phone_dialog_0001162#turn-3",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->safety_guardrail_support"
+    },
+    {
+      "from": "phone_dialog_0001162#turn-3",
+      "to": "phone_dialog_0001162#turn-4",
+      "type": "scenario_next_turn",
+      "routeTransition": "safety_guardrail_support->live_agent"
     }
   ]
 }

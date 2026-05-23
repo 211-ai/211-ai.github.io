@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service_location__general__portland",
   "kind": "service_location",
   "key": "general__portland",
-  "nodeCount": 44,
+  "nodeCount": 45,
   "nodes": [
     {
       "id": "phone_dialog_0000013#turn-5",
@@ -1303,6 +1303,36 @@
       "callerArchetypeId": "homeless_exhausted",
       "channelConditionId": "bad_reception",
       "assistantStyleId": "slow_clear_repetition"
+    },
+    {
+      "id": "phone_dialog_0001160#turn-1",
+      "scenarioId": "phone_dialog_0001160",
+      "turnIndex": 0,
+      "route": "live_agent",
+      "serviceTag": "general",
+      "locationTag": "portland",
+      "promptTemplate": "live_agent",
+      "user": "Hi, wait, can you hear me? I\u2019m in Portland, Multnomah County, and they keep talking through the vents about me.",
+      "normalizedQuery": "hi wait hear portland multnomah county they keep talking through vents",
+      "voiceResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "evidenceDocIds": [
+        "service:8e98106e040e9fe3",
+        "service:bcfe168519274472",
+        "service:90c7ca5c66c5c48e",
+        "service:56b06f24d0db91fe",
+        "service:f0dc8dae97168e5b"
+      ],
+      "similarCases": [],
+      "assistantResponse": "I hear you, and your safety comes first. If you feel in immediate danger right now, call 911 right now. If you can stay with me, I\u2019ll connect you to a live crisis counselor in Multnomah County immediately. While we do that, please move to a place where you feel safer and away from anything that could hurt you.",
+      "voiceResponseAlternatives": [
+        "You\u2019re near Southeast 82nd and Powell, in Portland. I heard you. Southeast 82nd and Powell, in Portland. I do not have a street address for that service line. I can repeat the phone number slowly, one digit at a time. Do you want the first number now?",
+        "Yes. I\u2019ll say it very slowly. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. I\u2019ll repeat it. 5 \u2026 0 \u2026 3 \u2026 3 \u2026 3 \u2026 5 \u2026 5 \u2026 9 \u2026 7 \u2026 5. If you feel in immediate danger, call 9 1 1.",
+        "You\u2019re doing great. With 3% battery, let\u2019s do one fast step: call **2-1-1** now and say, \u201cI\u2019m at the downtown Portland bus mall, I need a warm men\u2019s coat, size large, today, and my battery is dying.\u201d Ask for the **closest open clothing help** and **walk-in hours**. If the call drops, call back and repeat that same line. If you feel in immediate danger, call **9-1-1**.",
+        "Start with **North East Health Center and Dental Clinic** on the east side. Call **5 0 3, 9 8 8, 3 3 8 7**. I\u2019ll repeat it once: **5 0 3, 9 8 8, 3 3 8 7**. Tell them: \u201cSevere tooth pain, very low income, need a same-day urgent visit.\u201d"
+      ],
+      "callerArchetypeId": "disorganized_distressed",
+      "channelConditionId": "rambling_and_interrupting",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -1531,6 +1561,12 @@
     {
       "from": "phone_dialog_0001155#turn-1",
       "to": "phone_dialog_0001155#turn-2",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001160#turn-1",
+      "to": "phone_dialog_0001160#turn-2",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }

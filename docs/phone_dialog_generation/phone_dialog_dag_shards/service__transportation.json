@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-05-22T23:14:31.448022+00:00",
+  "generatedAt": "2026-05-23T03:08:11.351284+00:00",
   "id": "service__transportation",
   "kind": "service",
   "key": "transportation",
-  "nodeCount": 113,
+  "nodeCount": 116,
   "nodes": [
     {
       "id": "phone_dialog_0000010#turn-1",
@@ -248,7 +248,9 @@
       ],
       "similarCases": [],
       "assistantResponse": "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now.",
-      "voiceResponseAlternatives": [],
+      "voiceResponseAlternatives": [
+        "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now."
+      ],
       "callerArchetypeId": "grieving_emotional",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
@@ -3228,6 +3230,93 @@
       "callerArchetypeId": "youth_in_crisis",
       "channelConditionId": "borrowed_phone_low_battery",
       "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001158#turn-6",
+      "scenarioId": "phone_dialog_0001158",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "If there\u2019s transport, I need that too, because he tracks my car and I don\u2019t want to go back home.",
+      "normalizedQuery": "if there transport ride transportation bus too because he tracks car don want go back home",
+      "voiceResponse": "Yes. We can plan transport so you don\u2019t use your car. I\u2019m connecting you to a live advocate now to coordinate safe pickup and shelter tonight. If he\u2019s on the way back or you feel in immediate danger, call **9 1 1** now. A ride line number I can give is **5 4 1, 9 2 4, 8 7 3 8**.",
+      "evidenceDocIds": [
+        "service:156176ac73be0658",
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "service:80bb5c1077a6fe59",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:b7ba0209781ffa75"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes. We can plan transport so you don\u2019t use your car. I\u2019m connecting you to a live advocate now to coordinate safe pickup and shelter tonight. If he\u2019s on the way back or you feel in immediate danger, call **9 1 1** now. A ride line number I can give is **5 4 1, 9 2 4, 8 7 3 8**.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "grieving_emotional",
+      "channelConditionId": "emotionally_overloaded",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-5",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 4,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "statewide",
+      "promptTemplate": "live_agent",
+      "user": "My phone battery is at like two percent, I just need a safe ride to somewhere I can stay.",
+      "normalizedQuery": "phone battery at like two percent just safe ride somewhere stay",
+      "voiceResponse": "Okay. With 2% battery, do this now: if you feel in danger, call **911** first. If not immediate danger, call **CARE-RIDE** right now for a ride: **541 \u2026 276 \u2026 8294**. Backup number: **541 \u2026 966 \u2026 0201**. Tell them: \u201cI\u2019m outside, unsafe, and need a ride to urgent care or the ER now.\u201d Stay in a lit place with people while you call.",
+      "evidenceDocIds": [
+        "service:06227c05cc4eea25",
+        "service:a52e78bc8469df64",
+        "page:bafkreidhyvr6q7x7s6ni7idrr6x46yw2bulpvmtpwpmfytecseu7mddvgq",
+        "service:c11da83204b4dafc",
+        "service:b3d7aa7d9150b9d1"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Okay. With 2% battery, do this now: if you feel in danger, call **911** first. If not immediate danger, call **CARE-RIDE** right now for a ride: **541 \u2026 276 \u2026 8294**. Backup number: **541 \u2026 966 \u2026 0201**. Tell them: \u201cI\u2019m outside, unsafe, and need a ride to urgent care or the ER now.\u201d Stay in a lit place with people while you call.",
+      "voiceResponseAlternatives": [
+        "First step: call CARE-RIDE now at **five four one, two seven six, eight two nine four**. They do non-emergency rides to urgent care or the ER, and they\u2019re listed as open daily 5 AM to 10 PM. If that line doesn\u2019t answer, try **five four one, nine six six, zero two zero one**. If you feel in immediate danger where you are, call **911** right now.",
+        "First step: stay on the line with me now so I can finish the live 211 handoff for a youth-safe place and a ride tonight in Clackamas. The only transport line I can confirm here is Cascades West Ride Line at **five four one, nine two four, eight seven three eight**; it\u2019s for eligible OHP/Medicaid or ICHN members. If you\u2019re in immediate danger right now, call **nine one one**.",
+        "You\u2019re doing the right thing. Most important first: call **(541) 924-8738** \u2014 that\u2019s **5 4 1, 9 2 4, 8 7 3 8** for Cascades West Ride Line. If anyone is in immediate danger or a medical emergency, call **911** right now.",
+        "I can\u2019t send it from here, but I can help you do it fast. Call **(541) 924-8738** now: **5 4 1, 9 2 4, 8 7 3 8**. Say: \u201cI\u2019m in Lane County near Eugene. I need pickup tomorrow morning for a medical appointment.\u201d If you want, I can stay with you while you make the call."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
+    },
+    {
+      "id": "phone_dialog_0001159#turn-6",
+      "scenarioId": "phone_dialog_0001159",
+      "turnIndex": 5,
+      "route": "live_agent",
+      "serviceTag": "transportation",
+      "locationTag": "lane_county",
+      "promptTemplate": "live_agent",
+      "user": "Is there any transportation help right now, like a voucher or pickup, anywhere in Lane County?",
+      "normalizedQuery": "there any transportation transport ride bus right now like voucher pickup anywhere lane county",
+      "voiceResponse": "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
+      "evidenceDocIds": [
+        "page:bafkreicifdycolhdowclruqsr2hbdf6h6nneakgnbttfickhkas2ngdzte",
+        "page:bafkreifk3l6bkf4lo6e5jxb65gsntxanfwnm6knuopjdhtneyg7lmqzpf4",
+        "service:156176ac73be0658",
+        "service:80bb5c1077a6fe59",
+        "service:a52e78bc8469df64"
+      ],
+      "similarCases": [],
+      "assistantResponse": "Yes, there may be help right now. If you feel unsafe where you are, call **911** first. For Lane County transportation options, call **211** now and ask for same-day ride help or vouchers. For medical rides, try **Cascades West Ride Line**: **541 \u2026 924 \u2026 8738**. Backup: **541 \u2026 967 \u2026 8630**. If you want, I can connect you to a live person right now.",
+      "voiceResponseAlternatives": [
+        "I\u2019m so sorry about your sister. You\u2019re doing enough right now. Most important next step: call **(541) 924-8738** \u2014 **5 4 1, 9 2 4, 8 7 3 8** \u2014 and say, \u201cI\u2019m in Lane County near Eugene and need a ride tomorrow morning for a medical appointment.\u201d If you feel unsafe or in immediate danger, call **911** now."
+      ],
+      "callerArchetypeId": "homeless_exhausted",
+      "channelConditionId": "background_noise",
+      "assistantStyleId": "crisis_triage"
     }
   ],
   "edges": [
@@ -3762,6 +3851,12 @@
     {
       "from": "phone_dialog_0001151#turn-4",
       "to": "phone_dialog_0001151#turn-5",
+      "type": "scenario_next_turn",
+      "routeTransition": "live_agent->live_agent"
+    },
+    {
+      "from": "phone_dialog_0001159#turn-5",
+      "to": "phone_dialog_0001159#turn-6",
       "type": "scenario_next_turn",
       "routeTransition": "live_agent->live_agent"
     }
