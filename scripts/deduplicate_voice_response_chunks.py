@@ -123,6 +123,115 @@ ADDRESS_HINT_WORDS = {
     "Way",
 }
 
+ENTITY_CUE_PATTERN = re.compile(
+    r"\b(?:call|contact|ask for|choose|open|try|reach|text|email|visit|go to|"
+    r"the(?: best| closest| nearest)?(?: match| option| program| provider| agency| clinic| shelter| pantry)? is|"
+    r"i found|i have|a(?: likely| grounded)? match is|another option is|backup option is)"
+    r"\s+(?P<entity>[A-Z][A-Za-z0-9&'.-]*(?:\s+(?:of|for|and|the|[A-Z][A-Za-z0-9&'.-]*)){0,8})",
+    re.IGNORECASE,
+)
+TITLECASE_SEQUENCE_PATTERN = re.compile(
+    r"\b[A-Z][A-Za-z0-9&'.-]*(?:\s+(?:of|for|and|the|[A-Z][A-Za-z0-9&'.-]*)){1,8}\b"
+)
+ACRONYM_PATTERN = re.compile(r"\b[A-Z]{2,}(?:[- ][A-Z0-9]{2,})*\b")
+LOCATION_PHRASE_PATTERN = re.compile(r"\b(?:" + "|".join(sorted(map(re.escape, LOCATION_WORDS), key=len, reverse=True)) + r")\b")
+
+NER_ENTITY_STOP_PHRASES = {
+    "Call",
+    "Call Two",
+    "Call Nine",
+    "I",
+    "I Found",
+    "The",
+    "You",
+}
+
+
+def looks_like_slot_candidate(phrase: str) -> bool:
+    cleaned = compact_entity_phrase(phrase)
+    if not cleaned or cleaned in NER_ENTITY_STOP_PHRASES:
+        return False
+    lowered = cleaned.lower()
+    if lowered in {"two one one", "nine one one", "call two one one", "call nine one one"}:
+        return False
+    if cleaned in ENTITY_STOPWORDS:
+        return False
+    if any(token in LOCATION_WORDS for token in cleaned.split()):
+        return True
+    if any(token in ADDRESS_HINT_WORDS for token in cleaned.split()):
+        return True
+    if ACRONYM_PATTERN.fullmatch(cleaned):
+        return True
+    tokens = [token for token in cleaned.split() if token.lower() not in {"of", "for", "and", "the"}]
+    if len(tokens) >= 2 and any(TITLE_TOKEN.match(token) for token in tokens):
+        return True
+    if len(tokens) == 1:
+        token = tokens[0]
+        return bool(token.isupper() or re.search(r"[a-z][A-Z]", token))
+    return False
+
+
+def compact_entity_phrase(phrase: str) -> str:
+    cleaned = re.sub(r"\s+", " ", str(phrase or "")).strip(" .,;:!?()[]{}\"'")
+    cleaned = re.split(r"[.;!?]", cleaned, maxsplit=1)[0].strip(" .,;:!?()[]{}\"'")
+    cleaned = re.sub(
+        r"^(?:call|contact|ask for|choose|open|try|reach|text|email|visit|go to)\s+",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
+    cleaned = re.sub(r"\b(?:now|today|first|instead|please|right away)$", "", cleaned, flags=re.IGNORECASE).strip()
+    cleaned = re.sub(
+        r"\s+\b(?:and|or|but|with|near|in|at|by|because|if|when|then|before|after|for|about|so)\b.*$",
+        "",
+        cleaned,
+    ).strip(" .,;:!?()[]{}\"'")
+    return cleaned
+
+
+def collect_ner_phrase_counts(chunks: Iterable[str]) -> Counter[str]:
+    counts: Counter[str] = Counter()
+    for chunk in chunks:
+        for phrase, _kind in detect_named_entity_phrases(chunk, Counter()):
+            counts[phrase] += 1
+    return counts
+
+
+def detect_named_entity_phrases(text: str, phrase_counts: Counter[str]) -> list[tuple[str, str]]:
+    """Return lightweight NER-style phrase candidates and slot kinds.
+
+    This intentionally avoids heavyweight model downloads. It recognizes the
+    shapes most common in generated 211 phone responses: provider/program names,
+    locations, acronyms, and address fragments.
+    """
+
+    found: list[tuple[str, str]] = []
+    seen: set[str] = set()
+
+    def add(raw: str, kind: str | None = None) -> None:
+        phrase = compact_entity_phrase(raw)
+        if not looks_like_slot_candidate(phrase):
+            return
+        resolved = kind or classify_phrase(phrase, phrase_counts)
+        if not resolved:
+            resolved = "entity"
+        key = phrase.lower()
+        if key in seen:
+            return
+        seen.add(key)
+        found.append((phrase, resolved))
+
+    for match in LOCATION_PHRASE_PATTERN.finditer(text):
+        add(match.group(0), "location")
+    for match in ENTITY_CUE_PATTERN.finditer(text):
+        add(match.group("entity"))
+    for match in TITLECASE_SEQUENCE_PATTERN.finditer(text):
+        add(match.group(0))
+    for match in ACRONYM_PATTERN.finditer(text):
+        add(match.group(0), "entity")
+
+    return sorted(found, key=lambda item: (-len(item[0]), item[0].lower()))
+
 
 def split_sentence_chunks(text: str, *, max_chars: int = 220) -> list[str]:
     normalized = " ".join(str(text or "").split())
@@ -227,6 +336,10 @@ def mask_chunk(text: str, phrase_counts: Counter[str]) -> dict[str, Any]:
     masked = PHONEISH_PATTERN.sub(replace_phone, masked)
     masked = NUMBER_PATTERN.sub(lambda match: slot("number", match.group(0)), masked)
 
+    for phrase, kind in detect_named_entity_phrases(masked, phrase_counts):
+        pattern = re.compile(rf"(?<![\w{{]){re.escape(phrase)}(?![\w}}])")
+        masked = pattern.sub(lambda match, k=kind: slot(k, match.group(0)), masked)
+
     phrases = sorted(candidate_entity_phrases(masked), key=lambda value: (-len(value), value.lower()))
     seen: set[str] = set()
     for phrase in phrases:
@@ -303,10 +416,12 @@ def build_analysis(args: argparse.Namespace) -> dict[str, Any]:
         response_chunk_refs[response["id"]] = refs
 
     phrase_counts = collect_phrase_counts(chunk_sources)
+    ner_phrase_counts = collect_ner_phrase_counts(chunk_sources)
+    combined_phrase_counts = phrase_counts + ner_phrase_counts
     template_sources: dict[str, dict[str, Any]] = {}
     chunks: list[dict[str, Any]] = []
     for item in chunk_sources.values():
-        masked = mask_chunk(item["text"], phrase_counts)
+        masked = mask_chunk(item["text"], combined_phrase_counts)
         chunk_payload = {
             **item,
             "routes": sorted(item["routes"]),
@@ -375,6 +490,7 @@ def build_analysis(args: argparse.Namespace) -> dict[str, Any]:
             "includeAssistantResponses": not args.voice_responses_only,
             "includeVoiceResponses": not args.assistant_responses_only,
             "maxChunkChars": args.max_chunk_chars,
+            "namedEntityRecognition": "local-cue-titlecase-acronym-location",
         },
         "summary": {
             "uniqueFullResponses": len(responses),
@@ -399,6 +515,7 @@ def build_analysis(args: argparse.Namespace) -> dict[str, Any]:
         ],
         "topMaskedTemplates": templates[: args.top],
         "properNounPhraseCounts": phrase_counts.most_common(args.top),
+        "namedEntityPhraseCounts": ner_phrase_counts.most_common(args.top),
         "responses": response_payload if args.include_details else [],
         "chunks": chunks if args.include_details else [],
         "maskedTemplates": templates if args.include_details else [],

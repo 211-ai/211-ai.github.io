@@ -4,6 +4,7 @@ from collections import Counter
 
 from scripts.deduplicate_voice_response_chunks import (
     collect_phrase_counts,
+    detect_named_entity_phrases,
     mask_chunk,
     split_sentence_chunks,
 )
@@ -41,10 +42,25 @@ def test_mask_chunk_turns_named_entities_into_reusable_templates() -> None:
     first_mask = mask_chunk(first, counts)
     second_mask = mask_chunk(second, counts)
 
-    assert "{entity_1}" in first_mask["maskedText"]
-    assert "{entity_1}" in second_mask["maskedText"]
+    assert any(slot["kind"] == "entity" for slot in first_mask["slots"])
+    assert any(slot["kind"] == "entity" for slot in second_mask["slots"])
     assert any(slot["value"] == "ShelterCare" for slot in first_mask["slots"])
     assert any(slot["value"] == "Rose Haven" for slot in second_mask["slots"])
+
+
+def test_local_ner_detects_cued_provider_and_location_slots() -> None:
+    text = "I found Rose Haven in Portland. You can call Rose Haven now."
+    phrases = detect_named_entity_phrases(text, Counter({"Rose Haven": 2}))
+
+    assert ("Rose Haven", "entity") in phrases
+    assert ("Portland", "location") in phrases
+
+
+def test_mask_chunk_uses_local_ner_for_cued_program_names() -> None:
+    masked = mask_chunk("The nearest option is Outside In near Portland.", Counter({"Outside In": 2}))
+
+    assert "{entity_1}" in masked["maskedText"]
+    assert any(slot["value"] == "Outside In" for slot in masked["slots"])
 
 
 def test_mask_chunk_detects_phoneish_spoken_numbers() -> None:
